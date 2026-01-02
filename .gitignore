@@ -1,37 +1,68 @@
-# Claude Code - Track these files (override global gitignore)
+# =============================================================================
+# NOIR .gitignore - Optimized for .NET 10 / ASP.NET Core / Clean Architecture
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Claude Code - Explicitly track these files
+# -----------------------------------------------------------------------------
 !CLAUDE.md
 !.claude/
 
-# Build results
+# -----------------------------------------------------------------------------
+# Build Outputs
+# -----------------------------------------------------------------------------
 [Dd]ebug/
 [Rr]elease/
 x64/
 x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+msbuild.log
+msbuild.err
+msbuild.wrn
 
-# .NET
+# -----------------------------------------------------------------------------
+# .NET / ASP.NET Core
+# -----------------------------------------------------------------------------
 *.user
 *.rsuser
 *.suo
 *.userosscache
 *.sln.docstates
 *.userprefs
+project.lock.json
+project.fragment.lock.json
+artifacts/
 
+# Entity Framework (keep migrations, ignore temp)
+*.edmx.diagram
+
+# Local tools
+.tools/
+.config/dotnet-tools.json.bak
+
+# Code generation (Wolverine, Source Generators)
+**/Internal/Generated/
+
+# -----------------------------------------------------------------------------
 # NuGet
+# -----------------------------------------------------------------------------
 *.nupkg
 *.snupkg
 **/[Pp]ackages/*
 !**/[Pp]ackages/build/
 *.nuget.props
 *.nuget.targets
-project.lock.json
-project.fragment.lock.json
-artifacts/
+.nuget/
 
-# Visual Studio
+# -----------------------------------------------------------------------------
+# IDE - Visual Studio
+# -----------------------------------------------------------------------------
 .vs/
 *.csproj.user
 *.vspx
@@ -53,27 +84,36 @@ ipch/
 *.VC.VC.opendb
 *.psess
 *.vsp
-*.vspx
 *.sap
 *.e2e
+AutoTest.Net/
 
-# Rider
+# -----------------------------------------------------------------------------
+# IDE - JetBrains Rider / ReSharper
+# -----------------------------------------------------------------------------
 .idea/
 *.sln.iml
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
 
-# VS Code
+# JetBrains profiling tools
+*.dotCover
+*.dotTrace
+*.dotMemory
+
+# -----------------------------------------------------------------------------
+# IDE - VS Code
+# -----------------------------------------------------------------------------
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# Resharper
-_ReSharper*/
-*.[Rr]e[Ss]harper
-*.DotSettings.user
-
-# Test Results
+# -----------------------------------------------------------------------------
+# Testing & Code Coverage
+# -----------------------------------------------------------------------------
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 *.trx
@@ -82,19 +122,80 @@ _ReSharper*/
 coverage*.json
 coverage*.xml
 coverage*.info
+coverage*.cobertura.xml
 coverage-merged/
+lcov.info
+coverlet/
 
 # NCrunch
 _NCrunch_*
 .*crunch*.local.xml
 nCrunchTemp_*
 
-# Publish
+# Stryker mutation testing
+StrykerOutput/
+
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
+
+# Playwright test artifacts
+playwright-report/
+test-results/
+playwright/.cache/
+
+# -----------------------------------------------------------------------------
+# Publishing / Deployment
+# -----------------------------------------------------------------------------
 *.Publish.xml
 *.azurePubxml
 *.pubxml
 *.publishproj
+PublishOutput/
+publish/
 
+# Azure
+serviceDependencies/
+.azure/
+
+# Docker
+docker-compose.override.yml
+
+# -----------------------------------------------------------------------------
+# Secrets & Sensitive Files
+# -----------------------------------------------------------------------------
+*.pfx
+*.key
+*.pem
+*.p12
+*.cer
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+secrets.json
+.env
+.env.*
+!.env.example
+
+# User secrets
+secrets/
+
+# -----------------------------------------------------------------------------
+# Database Files
+# -----------------------------------------------------------------------------
+# SQL Server
+*.mdf
+*.ldf
+*.ndf
+
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+!*.db.example
+
+# -----------------------------------------------------------------------------
+# Operating System
+# -----------------------------------------------------------------------------
 # Windows
 Thumbs.db
 ehthumbs.db
@@ -107,35 +208,32 @@ $RECYCLE.BIN/
 .AppleDouble
 .LSOverride
 ._*
+.Spotlight-V100
+.Trashes
 
-# Secrets
-*.pfx
-*.key
-*.pem
-appsettings.*.json
-!appsettings.json
-!appsettings.Development.json
-secrets.json
-.env
-.env.*
+# Linux
+*~
+.fuse_hidden*
+.nfs*
 
-# SQL Server
-*.mdf
-*.ldf
-*.ndf
-
-# Backup & misc
+# -----------------------------------------------------------------------------
+# Backup & Temporary Files
+# -----------------------------------------------------------------------------
 *.bak
 *.log
 *.tmp
 *.temp
-*~
+*.swp
+*.orig
+*.rej
 
+# -----------------------------------------------------------------------------
+# Static Analysis & Linting
+# -----------------------------------------------------------------------------
+StyleCopReport.xml
+*.StyleCop
 
-# Local tools (dotnet tool restore)
-.tools/
-
-# Wolverine auto-generated handlers
-**/Internal/Generated/
+# -----------------------------------------------------------------------------
+# Serena MCP (AI Agent State)
+# -----------------------------------------------------------------------------
 .serena/
-src/NOIR.Web/Internal/
