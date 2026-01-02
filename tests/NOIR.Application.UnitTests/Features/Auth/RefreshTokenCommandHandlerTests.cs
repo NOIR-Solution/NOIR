@@ -1,0 +1,480 @@
+namespace NOIR.Application.UnitTests.Features.Auth;
+
+/// <summary>
+/// Unit tests for RefreshTokenCommandHandler.
+/// Tests token rotation with security validations and theft detection.
+/// </summary>
+public class RefreshTokenCommandHandlerTests
+{
+    #region Test Setup
+
+    private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
+    private readonly Mock<ITokenService> _tokenServiceMock;
+    private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
+    private readonly Mock<IDeviceFingerprintService> _deviceFingerprintServiceMock;
+    private readonly Mock<ILogger<RefreshTokenCommandHandler>> _loggerMock;
+    private readonly RefreshTokenCommandHandler _handler;
+
+    public RefreshTokenCommandHandlerTests()
+    {
+        var userStore = new Mock<IUserStore<ApplicationUser>>();
+        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+            userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!);
+
+        _tokenServiceMock = new Mock<ITokenService>();
+        _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
+        _deviceFingerprintServiceMock = new Mock<IDeviceFingerprintService>();
+        _loggerMock = new Mock<ILogger<RefreshTokenCommandHandler>>();
+
+        _handler = new RefreshTokenCommandHandler(
+            _userManagerMock.Object,
+            _tokenServiceMock.Object,
+            _refreshTokenServiceMock.Object,
+            _deviceFingerprintServiceMock.Object,
+            _loggerMock.Object);
+    }
+
+    private ApplicationUser CreateTestUser(
+        string id = "user-123",
+        string email = "test@example.com",
+        bool isActive = true,
+        string? tenantId = null)
+    {
+        return new ApplicationUser
+        {
+            Id = id,
+            Email = email,
+            NormalizedEmail = email.ToUpperInvariant(),
+            UserName = email,
+            IsActive = isActive,
+            TenantId = tenantId
+        };
+    }
+
+    private ClaimsPrincipal CreateTestPrincipal(string userId)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, userId)
+        };
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        return new ClaimsPrincipal(identity);
+    }
+
+    private void SetupSuccessfulTokenRotation(ApplicationUser user)
+    {
+        var principal = CreateTestPrincipal(user.Id);
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        _userManagerMock
+            .Setup(x => x.FindByIdAsync(user.Id))
+            .ReturnsAsync(user);
+
+        var newRefreshToken = RefreshToken.Create(user.Id, 7, user.TenantId);
+        _refreshTokenServiceMock
+            .Setup(x => x.RotateTokenAsync(
+                It.IsAny<string>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(newRefreshToken);
+
+        _tokenServiceMock
+            .Setup(x => x.GenerateAccessToken(user.Id, user.Email!, user.TenantId))
+            .Returns("new-access-token");
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GetClientIpAddress())
+            .Returns("127.0.0.1");
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GenerateFingerprint())
+            .Returns("test-fingerprint");
+    }
+
+    #endregion
+
+    #region Success Scenarios
+
+    [Fact]
+    public async Task Handle_ValidTokens_ShouldReturnSuccess()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
+        SetupSuccessfulTokenRotation(user);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.UserId.Should().Be(user.Id);
+        result.Value.Email.Should().Be(user.Email);
+        result.Value.AccessToken.Should().Be("new-access-token");
+    }
+
+    [Fact]
+    public async Task Handle_ValidTokens_ShouldReturnNewRefreshToken()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
+        SetupSuccessfulTokenRotation(user);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.RefreshToken.Should().NotBeNullOrEmpty();
+        result.Value.ExpiresAt.Should().BeAfter(DateTimeOffset.UtcNow);
+    }
+
+    [Fact]
+    public async Task Handle_ValidTokens_ShouldCallTokenRotation()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
+        SetupSuccessfulTokenRotation(user);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _refreshTokenServiceMock.Verify(
+            x => x.RotateTokenAsync(
+                "valid-refresh-token",
+                "127.0.0.1",
+                "test-fingerprint",
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ValidTokens_WithTenant_ShouldGenerateTokenWithTenant()
+    {
+        // Arrange
+        var user = CreateTestUser(tenantId: "tenant-abc");
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
+        SetupSuccessfulTokenRotation(user);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _tokenServiceMock.Verify(
+            x => x.GenerateAccessToken(user.Id, user.Email!, "tenant-abc"),
+            Times.Once);
+    }
+
+    #endregion
+
+    #region Failure Scenarios - Invalid Access Token
+
+    [Fact]
+    public async Task Handle_InvalidAccessToken_ShouldReturnUnauthorized()
+    {
+        // Arrange
+        var command = new RefreshTokenCommand("invalid-access-token", "valid-refresh-token");
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns((ClaimsPrincipal?)null);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.Error.Message.Should().Contain("Invalid access token");
+    }
+
+    [Fact]
+    public async Task Handle_AccessTokenWithoutUserId_ShouldReturnUnauthorized()
+    {
+        // Arrange
+        var command = new RefreshTokenCommand("access-token-without-userid", "valid-refresh-token");
+
+        // Principal without NameIdentifier claim
+        var identity = new ClaimsIdentity(new List<Claim>(), "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.Error.Message.Should().Contain("Invalid access token");
+    }
+
+    [Fact]
+    public async Task Handle_InvalidAccessToken_ShouldNotCallUserManager()
+    {
+        // Arrange
+        var command = new RefreshTokenCommand("invalid-access-token", "valid-refresh-token");
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns((ClaimsPrincipal?)null);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _userManagerMock.Verify(
+            x => x.FindByIdAsync(It.IsAny<string>()),
+            Times.Never);
+    }
+
+    #endregion
+
+    #region Failure Scenarios - User Not Found
+
+    [Fact]
+    public async Task Handle_UserNotFound_ShouldReturnNotFound()
+    {
+        // Arrange
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
+        var principal = CreateTestPrincipal("non-existent-user");
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        _userManagerMock
+            .Setup(x => x.FindByIdAsync("non-existent-user"))
+            .ReturnsAsync((ApplicationUser?)null);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.Error.Message.Should().Contain("User not found");
+    }
+
+    #endregion
+
+    #region Failure Scenarios - Disabled User
+
+    [Fact]
+    public async Task Handle_DisabledUser_ShouldReturnForbidden()
+    {
+        // Arrange
+        var user = CreateTestUser(isActive: false);
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
+        var principal = CreateTestPrincipal(user.Id);
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        _userManagerMock
+            .Setup(x => x.FindByIdAsync(user.Id))
+            .ReturnsAsync(user);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Type.Should().Be(ErrorType.Forbidden);
+        result.Error.Message.Should().Contain("disabled");
+    }
+
+    [Fact]
+    public async Task Handle_DisabledUser_ShouldNotAttemptTokenRotation()
+    {
+        // Arrange
+        var user = CreateTestUser(isActive: false);
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
+        var principal = CreateTestPrincipal(user.Id);
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        _userManagerMock
+            .Setup(x => x.FindByIdAsync(user.Id))
+            .ReturnsAsync(user);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _refreshTokenServiceMock.Verify(
+            x => x.RotateTokenAsync(
+                It.IsAny<string>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    #endregion
+
+    #region Failure Scenarios - Token Rotation Failure
+
+    [Fact]
+    public async Task Handle_TokenRotationFails_ShouldReturnUnauthorized()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", "expired-refresh-token");
+        var principal = CreateTestPrincipal(user.Id);
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        _userManagerMock
+            .Setup(x => x.FindByIdAsync(user.Id))
+            .ReturnsAsync(user);
+
+        _refreshTokenServiceMock
+            .Setup(x => x.RotateTokenAsync(
+                It.IsAny<string>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((RefreshToken?)null);
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GetClientIpAddress())
+            .Returns("127.0.0.1");
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GenerateFingerprint())
+            .Returns("test-fingerprint");
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.Error.Message.Should().Contain("Invalid or expired refresh token");
+    }
+
+    [Fact]
+    public async Task Handle_TokenRotationFails_ShouldLogWarning()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", "reused-refresh-token");
+        var principal = CreateTestPrincipal(user.Id);
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        _userManagerMock
+            .Setup(x => x.FindByIdAsync(user.Id))
+            .ReturnsAsync(user);
+
+        _refreshTokenServiceMock
+            .Setup(x => x.RotateTokenAsync(
+                It.IsAny<string>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((RefreshToken?)null);
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GetClientIpAddress())
+            .Returns("127.0.0.1");
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GenerateFingerprint())
+            .Returns("test-fingerprint");
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Token rotation failed")),
+                It.IsAny<Exception?>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_TokenRotationFails_ShouldNotGenerateNewAccessToken()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", "invalid-refresh-token");
+        var principal = CreateTestPrincipal(user.Id);
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        _userManagerMock
+            .Setup(x => x.FindByIdAsync(user.Id))
+            .ReturnsAsync(user);
+
+        _refreshTokenServiceMock
+            .Setup(x => x.RotateTokenAsync(
+                It.IsAny<string>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((RefreshToken?)null);
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GetClientIpAddress())
+            .Returns("127.0.0.1");
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GenerateFingerprint())
+            .Returns("test-fingerprint");
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _tokenServiceMock.Verify(
+            x => x.GenerateAccessToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>()),
+            Times.Never);
+    }
+
+    #endregion
+
+    #region Device Fingerprint Tests
+
+    [Fact]
+    public async Task Handle_ShouldCollectDeviceInfo()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
+        SetupSuccessfulTokenRotation(user);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _deviceFingerprintServiceMock.Verify(x => x.GetClientIpAddress(), Times.Once);
+        _deviceFingerprintServiceMock.Verify(x => x.GenerateFingerprint(), Times.Once);
+    }
+
+    #endregion
+}

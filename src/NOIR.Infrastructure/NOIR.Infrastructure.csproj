@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>NOIR.Infrastructure</RootNamespace>
+        <AssemblyName>NOIR.Infrastructure</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NOIR.Application.UnitTests" />
+        <InternalsVisibleTo Include="NOIR.IntegrationTests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Database -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+
+        <!-- Authentication -->
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
+
+        <!-- Multi-Tenancy -->
+        <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="10.0.1" />
+        <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="10.0.1" />
+
+        <!-- Background Jobs -->
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.22" />
+        <PackageReference Include="Hangfire.SqlServer" Version="1.8.22" />
+
+        <!-- File Storage -->
+        <PackageReference Include="FluentStorage" Version="6.0.0" />
+        <PackageReference Include="FluentStorage.AWS" Version="6.0.1" />
+        <PackageReference Include="FluentStorage.Azure.Blobs" Version="6.0.0" />
+
+        <!-- Email -->
+        <PackageReference Include="FluentEmail.Core" Version="3.0.2" />
+        <PackageReference Include="FluentEmail.MailKit" Version="3.0.2" />
+        <PackageReference Include="FluentEmail.Razor" Version="3.0.2" />
+
+        <!-- Logging -->
+        <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+
+        <!-- Dependency Injection Auto-Registration -->
+        <PackageReference Include="Scrutor" Version="7.0.0" />
+
+        <!-- JSON Diff for Audit Logging (RFC 6902 JSON Patch) -->
+        <PackageReference Include="SystemTextJson.JsonDiffPatch" Version="2.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\NOIR.Domain\NOIR.Domain.csproj" />
+        <ProjectReference Include="..\NOIR.Application\NOIR.Application.csproj" />
+    </ItemGroup>
+
+</Project>

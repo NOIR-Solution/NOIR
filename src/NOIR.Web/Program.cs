@@ -1,0 +1,306 @@
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure Kestrel for performance and security
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // Request limits
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10 MB default
+    options.Limits.MaxRequestHeadersTotalSize = 32 * 1024; // 32 KB
+    options.Limits.MaxRequestLineSize = 8 * 1024; // 8 KB
+
+    // Connection limits
+    options.Limits.MaxConcurrentConnections = 100;
+    options.Limits.MaxConcurrentUpgradedConnections = 100;
+
+    // Timeouts
+    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
+    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(30);
+
+    // Enable HTTP/2 and HTTP/3 (QUIC)
+    options.ConfigureEndpointDefaults(listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
+    });
+});
+
+// Configure Serilog
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .Enrich.FromLogContext()
+        .WriteTo.Console();
+});
+
+// Add services to the container
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
+
+// Configure CORS for React frontend
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? ["http://localhost:3000", "http://localhost:5173"]; // Default React/Vite dev ports
+
+        policy
+            .WithOrigins(allowedOrigins)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
+// Configure Response Compression
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+
+// Configure Output Caching (server-side caching)
+builder.Services.AddOutputCache(options =>
+{
+    // Default policy - cache for 60 seconds
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(60)));
+
+    // Named policy for longer cache (5 minutes)
+    options.AddPolicy("CacheLong", builder => builder.Expire(TimeSpan.FromMinutes(5)));
+
+    // No cache policy for sensitive data
+    options.AddPolicy("NoCache", builder => builder.NoCache());
+});
+
+// Configure Response Caching (HTTP caching headers)
+builder.Services.AddResponseCaching();
+
+// Configure JSON options with Source Generator for performance
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
+
+// Configure Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // Global rate limit policy - 100 requests per minute (Fixed Window)
+    // Override in appsettings.json: RateLimiting:PermitLimit and RateLimiting:WindowMinutes
+    options.AddFixedWindowLimiter("fixed", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = builder.Configuration.GetValue("RateLimiting:PermitLimit", 100);
+        limiterOptions.Window = TimeSpan.FromMinutes(builder.Configuration.GetValue("RateLimiting:WindowMinutes", 1));
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        limiterOptions.QueueLimit = 2;
+    });
+
+    // Auth endpoints use Sliding Window to prevent burst attacks at window boundaries
+    // 5 requests per minute - stricter to prevent brute force attacks
+    options.AddSlidingWindowLimiter("auth", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = builder.Configuration.GetValue("RateLimiting:AuthPermitLimit", 5);
+        limiterOptions.Window = TimeSpan.FromMinutes(builder.Configuration.GetValue("RateLimiting:AuthWindowMinutes", 1));
+        limiterOptions.SegmentsPerWindow = 6; // 10-second segments for smoother limiting
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        limiterOptions.QueueLimit = 0; // No queuing for auth - immediate rejection
+    });
+
+    // Export endpoints - very strict limit for expensive data export operations
+    // 3 requests per hour to prevent abuse
+    options.AddFixedWindowLimiter("export", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = builder.Configuration.GetValue("RateLimiting:ExportPermitLimit", 3);
+        limiterOptions.Window = TimeSpan.FromHours(builder.Configuration.GetValue("RateLimiting:ExportWindowHours", 1));
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        limiterOptions.QueueLimit = 0; // No queuing for exports - immediate rejection
+    });
+});
+
+// Add Application and Infrastructure services
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
+
+// Configure AuditRetention settings
+builder.Services.Configure<AuditRetentionSettings>(builder.Configuration.GetSection(AuditRetentionSettings.SectionName));
+
+// Configure Wolverine for CQRS
+builder.Host.UseWolverine(opts =>
+{
+    opts.Discovery.IncludeAssembly(typeof(NOIR.Application.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(NOIR.Infrastructure.DependencyInjection).Assembly);
+
+    // Enable FluentValidation middleware - auto-validates all commands/queries
+    // Validators are discovered automatically from registered assemblies
+    opts.UseFluentValidation();
+
+    // Add logging middleware globally - logs before/after handler execution
+    opts.Policies.AddMiddleware<LoggingMiddleware>();
+
+    // Add performance tracking middleware - warns on slow handlers
+    opts.Policies.AddMiddleware<PerformanceMiddleware>();
+
+    // Add handler audit middleware - captures handler execution with DTO diff
+    opts.Policies.AddMiddleware<HandlerAuditMiddleware>();
+
+    // Static mode: generates handlers at build time for better cold start performance
+    // Note: BuildHost-net472 folders in bin/ are from JasperFx.RuntimeCompiler - safe to ignore
+    // Use Auto mode for testing so handlers can be dynamically generated when needed
+    opts.CodeGeneration.TypeLoadMode = builder.Environment.EnvironmentName == "Testing"
+        ? TypeLoadMode.Auto
+        : TypeLoadMode.Static;
+});
+
+// Configure JWT Authentication
+var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()!;
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
+
+// Add API documentation
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info.Title = "NOIR API";
+        document.Info.Version = "v1";
+        document.Info.Description = "Enterprise-ready .NET SaaS API with JWT authentication";
+        return Task.CompletedTask;
+    });
+});
+
+// Add Health Checks (skip SQL Server check in Testing environment)
+var healthChecksBuilder = builder.Services.AddHealthChecks();
+if (!builder.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
+{
+    healthChecksBuilder.AddSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")!,
+        name: "database",
+        tags: ["db", "sql", "sqlserver"]);
+}
+
+var app = builder.Build();
+
+// Seed database
+await ApplicationDbContextSeeder.SeedDatabaseAsync(app.Services);
+
+// Configure the HTTP request pipeline
+app.UseSerilogRequestLogging();
+
+// Custom exception handling middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// Security Headers
+app.UseSecurityHeaders();
+
+app.UseHttpsRedirection();
+
+// HSTS - HTTP Strict Transport Security (production only)
+// Forces browsers to always use HTTPS for this domain
+// Not used in development to allow HTTP debugging
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
+// CORS (must be before auth and routing)
+app.UseCors();
+
+// Routing must come before rate limiter for endpoint-specific rate limiting to work
+app.UseRouting();
+
+// Rate limiting - after routing for endpoint-specific policies ([EnableRateLimiting] attributes)
+app.UseRateLimiter();
+
+// Response compression (after rate limiting)
+app.UseResponseCompression();
+
+// Response caching (HTTP headers)
+app.UseResponseCaching();
+
+// Output caching (server-side)
+app.UseOutputCache();
+
+// API Documentation (available in all environments for now, can restrict later)
+// Route: /api/docs for Scalar UI, /api/openapi/v1.json for OpenAPI spec
+app.MapOpenApi("/api/openapi/{documentName}.json");
+app.MapScalarApiReference("/api/docs", options =>
+{
+    options
+        .WithTitle("NOIR API")
+        .WithTheme(ScalarTheme.DeepSpace)
+        .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
+        .WithOpenApiRoutePattern("/api/openapi/{documentName}.json");
+});
+
+// Multi-tenant middleware (must be before auth)
+app.UseMultiTenant();
+
+// HTTP Request Audit Middleware (captures request/response for audit logging)
+// Must be after multi-tenant and before authentication to have tenant context
+app.UseMiddleware<HttpRequestAuditMiddleware>();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Map API Endpoints
+app.MapAuthEndpoints();
+app.MapAuditEndpoints();
+app.MapRoleEndpoints();
+app.MapUserEndpoints();
+
+// Hangfire Dashboard (requires Admin role in production, skip in Testing)
+if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
+{
+    app.MapHangfireDashboard("/hangfire", new DashboardOptions
+    {
+        Authorization = [new HangfireAuthorizationFilter()]
+    });
+
+    // Register Hangfire Recurring Jobs
+    var auditRetentionSettings = app.Configuration.GetSection(AuditRetentionSettings.SectionName).Get<AuditRetentionSettings>()
+        ?? new AuditRetentionSettings();
+
+    if (auditRetentionSettings.Enabled)
+    {
+        RecurringJob.AddOrUpdate<AuditRetentionJob>(
+            "audit-retention",
+            job => job.ExecuteAsync(CancellationToken.None),
+            auditRetentionSettings.CronSchedule);
+    }
+}
+
+// Map Health Checks (under /api to avoid React routing conflicts)
+app.MapHealthChecks("/api/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+app.Run();
+
+// Make the implicit Program class public so test projects can access it
+public partial class Program { }

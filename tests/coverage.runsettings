@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <Exclude>
+            <!-- Exclude EF Core migrations -->
+            [NOIR.Infrastructure]NOIR.Infrastructure.Migrations.*
+            [NOIR.Infrastructure]NOIR.Infrastructure.Persistence.Migrations.*
+            <!-- Exclude ASP.NET Core and System generated code -->
+            [*]Microsoft.AspNetCore.OpenApi.Generated*
+            [*]System.Runtime.CompilerServices.*
+            <!-- Exclude JSON source generators -->
+            [NOIR.Web]NOIR.Web.Json.AppJsonSerializerContext*
+            <!-- Exclude Wolverine generated handlers (tested via original handlers) -->
+            [NOIR.Web]Internal.Generated.WolverineHandlers.*
+            [NOIR.Web]Internal.Generated.*
+            <!-- Exclude EF Core configurations (tested via integration tests) -->
+            [NOIR.Infrastructure]NOIR.Infrastructure.Persistence.Configurations.*
+            <!-- Exclude DbContext factory (tested via integration tests) -->
+            [NOIR.Infrastructure]NOIR.Infrastructure.Persistence.ApplicationDbContextFactory
+          </Exclude>
+          <ExcludeByAttribute>
+            GeneratedCodeAttribute
+            CompilerGeneratedAttribute
+            ExcludeFromCodeCoverageAttribute
+          </ExcludeByAttribute>
+          <ExcludeByFile>
+            **/Migrations/*.cs
+            **/Migrations/**/*.cs
+            **/*.Designer.cs
+            **/obj/**/*.cs
+            **/Internal/Generated/**/*.cs
+          </ExcludeByFile>
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+          <SingleHit>false</SingleHit>
+          <UseSourceLink>true</UseSourceLink>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

@@ -1,0 +1,124 @@
+// Global using directives for NOIR.Infrastructure
+
+// System
+global using System;
+global using System.Collections.Concurrent;
+global using System.Collections.Generic;
+global using System.ComponentModel.DataAnnotations;
+global using System.Diagnostics;
+global using System.IdentityModel.Tokens.Jwt;
+global using System.Linq;
+global using System.Linq.Expressions;
+global using System.Reflection;
+global using System.Security.Claims;
+global using System.Security.Cryptography;
+global using System.Text;
+global using System.Threading;
+global using System.Threading.Tasks;
+
+// Microsoft - ASP.NET Core
+global using Microsoft.AspNetCore.Hosting;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
+// Microsoft - Entity Framework Core
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.ChangeTracking;
+global using Microsoft.EntityFrameworkCore.Design;
+global using Microsoft.EntityFrameworkCore.Diagnostics;
+
+// Microsoft - Extensions
+global using Microsoft.Extensions.Caching.Memory;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
+global using Microsoft.IdentityModel.Tokens;
+
+// Finbuckle MultiTenant
+global using Finbuckle.MultiTenant;
+global using Finbuckle.MultiTenant.Abstractions;
+global using Finbuckle.MultiTenant.AspNetCore.Extensions;
+global using Finbuckle.MultiTenant.EntityFrameworkCore;
+global using Finbuckle.MultiTenant.EntityFrameworkCore.Extensions;
+global using Finbuckle.MultiTenant.Extensions;
+
+// FluentEmail
+global using FluentEmail.Core;
+global using FluentEmail.MailKitSmtp;
+
+// FluentValidation
+global using FluentValidation;
+
+// FluentStorage
+global using FluentStorage;
+global using FluentStorage.Blobs;
+
+// Hangfire
+global using Hangfire;
+global using Hangfire.SqlServer;
+
+// Wolverine
+global using Wolverine;
+
+// Scrutor
+global using Scrutor;
+
+// NOIR Application
+global using NOIR.Application.Common.Interfaces;
+global using NOIR.Application.Common.Models;
+global using NOIR.Application.Features.Auth.Commands.Login;
+global using NOIR.Application.Features.Auth.Commands.RefreshToken;
+global using NOIR.Application.Features.Auth.Commands.Register;
+global using NOIR.Application.Features.Auth.Commands.UpdateUserProfile;
+global using NOIR.Application.Features.Auth.DTOs;
+global using NOIR.Application.Features.Auth.Queries.GetCurrentUser;
+global using NOIR.Application.Features.Auth.Queries.GetUserById;
+global using NOIR.Application.Features.Roles.Commands.CreateRole;
+global using NOIR.Application.Features.Roles.Commands.UpdateRole;
+global using NOIR.Application.Features.Roles.Commands.DeleteRole;
+global using NOIR.Application.Features.Roles.Queries.GetRoles;
+global using NOIR.Application.Features.Roles.Queries.GetRoleById;
+global using NOIR.Application.Features.Roles.DTOs;
+global using NOIR.Application.Features.Users.Commands.UpdateUser;
+global using NOIR.Application.Features.Users.Commands.DeleteUser;
+global using NOIR.Application.Features.Users.Commands.AssignRoles;
+global using NOIR.Application.Features.Users.Queries.GetUsers;
+global using NOIR.Application.Features.Users.Queries.GetUserRoles;
+global using NOIR.Application.Features.Users.DTOs;
+global using NOIR.Application.Features.Permissions.Commands.AssignToRole;
+global using NOIR.Application.Features.Permissions.Commands.RemoveFromRole;
+global using NOIR.Application.Features.Permissions.Queries.GetRolePermissions;
+global using NOIR.Application.Features.Permissions.Queries.GetUserPermissions;
+global using NOIR.Application.Specifications;
+
+// NOIR Domain
+global using NOIR.Domain.Common;
+global using NOIR.Domain.Interfaces;
+global using NOIR.Domain.Specifications;
+
+// Microsoft - Authorization
+global using Microsoft.AspNetCore.Authorization;
+
+// NOIR Infrastructure
+global using NOIR.Infrastructure.Audit;
+global using NOIR.Infrastructure.Audit.Handlers;
+global using NOIR.Infrastructure.Email;
+global using NOIR.Infrastructure.Identity;
+global using NOIR.Infrastructure.Identity.Authorization;
+global using NOIR.Infrastructure.Persistence;
+global using NOIR.Infrastructure.Persistence.Configurations;
+global using NOIR.Infrastructure.Persistence.Interceptors;
+global using NOIR.Infrastructure.Services;
+global using NOIR.Infrastructure.Storage;
+
+// NOIR Domain Entities
+global using NOIR.Domain.Entities;
+
+// Microsoft - Entity Framework Core Metadata
+global using Microsoft.EntityFrameworkCore.Metadata;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

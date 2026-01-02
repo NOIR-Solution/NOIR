@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>NOIR.Web</RootNamespace>
+        <AssemblyName>NOIR.Web</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- API Documentation -->
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+        <PackageReference Include="Scalar.AspNetCore" Version="2.11.10" />
+
+        <!-- Authentication -->
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
+
+        <!-- Health Checks -->
+        <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+
+        <!-- CQRS/Mediator -->
+        <PackageReference Include="WolverineFx.Http" Version="5.9.2" />
+
+        <!-- EF Core Design for Migrations -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\NOIR.Application\NOIR.Application.csproj" />
+        <ProjectReference Include="..\NOIR.Infrastructure\NOIR.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

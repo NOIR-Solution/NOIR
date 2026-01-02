@@ -1,0 +1,50 @@
+@NOIR_HostAddress = http://localhost:5228
+@accessToken = <paste_access_token_here>
+@refreshToken = <paste_refresh_token_here>
+
+### Health Check
+GET {{NOIR_HostAddress}}/api/health
+Accept: application/json
+
+### OpenAPI Document
+GET {{NOIR_HostAddress}}/api/openapi/v1.json
+Accept: application/json
+
+### API Documentation (Scalar UI)
+# Open in browser: {{NOIR_HostAddress}}/api/docs
+
+### Login (Admin)
+# @name login
+POST {{NOIR_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@noir.local",
+  "password": "123qwe"
+}
+
+### Register New User
+POST {{NOIR_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "newuser@noir.local",
+  "password": "123qwe",
+  "firstName": "New",
+  "lastName": "User"
+}
+
+### Refresh Token
+POST {{NOIR_HostAddress}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "accessToken": "{{accessToken}}",
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Get Current User (requires auth)
+GET {{NOIR_HostAddress}}/api/auth/me
+Authorization: Bearer {{accessToken}}
+
+###

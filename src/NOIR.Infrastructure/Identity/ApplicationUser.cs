@@ -1,0 +1,33 @@
+namespace NOIR.Infrastructure.Identity;
+
+/// <summary>
+/// Application user entity extending ASP.NET Core Identity.
+/// Implements IAuditableEntity for consistent audit tracking.
+/// Implements ITenantEntity for multi-tenant data isolation.
+/// </summary>
+public class ApplicationUser : IdentityUser, IAuditableEntity
+{
+    public string? DisplayName { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTimeOffset? RefreshTokenExpiryTime { get; set; }
+    public bool IsActive { get; set; } = true;
+
+    // ITenantEntity implementation
+    // Null means host/root level user (super admin, can access all tenants)
+    public string? TenantId { get; set; }
+
+    // IAuditableEntity implementation
+    public DateTimeOffset CreatedAt { get; set; }
+    public string? CreatedBy { get; set; }
+    public DateTimeOffset? ModifiedAt { get; set; }
+    public string? ModifiedBy { get; set; }
+
+    // Soft delete (data safety - never hard delete users)
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
+    public string? DeletedBy { get; set; }
+
+    public string FullName => $"{FirstName} {LastName}".Trim();
+}

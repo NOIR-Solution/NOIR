@@ -1,0 +1,82 @@
+namespace NOIR.Infrastructure.Identity.Handlers;
+
+/// <summary>
+/// Wolverine handler for user login.
+/// Uses the RefreshToken entity with family tracking and device fingerprinting.
+/// Validation is handled automatically by Wolverine FluentValidation middleware.
+/// </summary>
+public class LoginCommandHandler
+{
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly ITokenService _tokenService;
+    private readonly IRefreshTokenService _refreshTokenService;
+    private readonly IDeviceFingerprintService _deviceFingerprintService;
+
+    public LoginCommandHandler(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        ITokenService tokenService,
+        IRefreshTokenService refreshTokenService,
+        IDeviceFingerprintService deviceFingerprintService)
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _tokenService = tokenService;
+        _refreshTokenService = refreshTokenService;
+        _deviceFingerprintService = deviceFingerprintService;
+    }
+
+    public async Task<Result<AuthResponse>> Handle(LoginCommand command, CancellationToken cancellationToken)
+    {
+        // Validation is handled by Wolverine FluentValidation middleware
+
+        // Normalize email for consistent lookup
+        var normalizedEmail = _userManager.NormalizeEmail(command.Email);
+        var user = await _userManager.FindByEmailAsync(normalizedEmail);
+
+        if (user is null)
+        {
+            return Result.Failure<AuthResponse>(Error.Unauthorized("Invalid email or password."));
+        }
+
+        if (!user.IsActive)
+        {
+            return Result.Failure<AuthResponse>(Error.Forbidden("User account is disabled."));
+        }
+
+        var result = await _signInManager.CheckPasswordSignInAsync(user, command.Password, lockoutOnFailure: true);
+
+        if (result.IsLockedOut)
+        {
+            return Result.Failure<AuthResponse>(Error.Forbidden("Account is locked out. Please try again later."));
+        }
+
+        if (!result.Succeeded)
+        {
+            return Result.Failure<AuthResponse>(Error.Unauthorized("Invalid email or password."));
+        }
+
+        // Generate access token
+        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, user.TenantId);
+
+        // Create refresh token with device tracking
+        var refreshToken = await _refreshTokenService.CreateTokenAsync(
+            user.Id,
+            user.TenantId,
+            _deviceFingerprintService.GetClientIpAddress(),
+            _deviceFingerprintService.GenerateFingerprint(),
+            _deviceFingerprintService.GetUserAgent(),
+            _deviceFingerprintService.GetDeviceName(),
+            cancellationToken);
+
+        var authResponse = new AuthResponse(
+            user.Id,
+            user.Email!,
+            accessToken,
+            refreshToken.Token,
+            refreshToken.ExpiresAt);
+
+        return Result.Success(authResponse);
+    }
+}

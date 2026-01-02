@@ -1,5 +1,6 @@
-# Claude Code
-.claude/
+# Claude Code - Track these files (override global gitignore)
+!CLAUDE.md
+!.claude/
 
 # Build results
 [Dd]ebug/
@@ -128,3 +129,7 @@ secrets.json
 *.tmp
 *.temp
 *~
+
+
+# Local tools (dotnet tool restore)
+.tools/
