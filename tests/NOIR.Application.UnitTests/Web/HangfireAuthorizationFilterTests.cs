@@ -95,7 +95,7 @@ public class HangfireAuthorizationFilterTests
     {
         // Document the expected behavior:
         // DEBUG: Always returns true (no authentication required)
-        // RELEASE: Requires authenticated user with Admin role
+        // RELEASE: Requires authenticated user with system:hangfire permission
 
         var filter = new HangfireAuthorizationFilter();
         filter.Should().NotBeNull("Filter should be instantiable");
@@ -105,14 +105,23 @@ public class HangfireAuthorizationFilterTests
     }
 
     [Fact]
-    public void Filter_ReleaseBehavior_ShouldRequireAdminRole()
+    public void Filter_ReleaseBehavior_ShouldRequireHangfirePermission()
     {
         // Document that in RELEASE mode:
         // - User must be authenticated (httpContext.User.Identity?.IsAuthenticated == true)
-        // - User must have Admin role (httpContext.User.IsInRole("Admin"))
+        // - User must have the system:hangfire permission claim
+        // - This is consistent with the permission-based auth used throughout the app
 
         var filter = new HangfireAuthorizationFilter();
         filter.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void HangfirePermission_ShouldBeDefinedInPermissionsClass()
+    {
+        // Verify the permission constant exists and has correct value
+        Permissions.HangfireDashboard.Should().Be("system:hangfire");
+        Permissions.ClaimType.Should().Be("permission");
     }
 
     #endregion

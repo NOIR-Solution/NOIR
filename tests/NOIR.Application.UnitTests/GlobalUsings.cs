@@ -58,7 +58,11 @@ global using Finbuckle.MultiTenant;
 global using Finbuckle.MultiTenant.Abstractions;
 
 // Hangfire
+global using Hangfire;
+global using Hangfire.Common;
 global using Hangfire.Dashboard;
+global using Hangfire.States;
+global using Hangfire.Storage;
 
 // Wolverine
 global using Wolverine;
@@ -84,6 +88,7 @@ global using NOIR.Domain.Interfaces;
 
 // NOIR Infrastructure
 global using NOIR.Infrastructure;
+global using NOIR.Infrastructure.BackgroundJobs;
 global using NOIR.Infrastructure.Email;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Identity.Authorization;

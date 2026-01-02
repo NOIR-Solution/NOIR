@@ -144,24 +144,38 @@ public static class DependencyInjection
             .WithSingletonLifetime()
         );
 
+        // Configure job notification settings
+        services.Configure<JobNotificationSettings>(
+            configuration.GetSection(JobNotificationSettings.SectionName));
+
         // Configure Hangfire for background jobs (skip in Testing - requires SQL Server)
         if (!isTesting)
         {
-            services.AddHangfire(config => config
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(
-                    configuration.GetConnectionString("DefaultConnection"),
-                    new SqlServerStorageOptions
-                    {
-                        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-                        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-                        QueuePollInterval = TimeSpan.FromSeconds(15),
-                        UseRecommendedIsolationLevel = true,
-                        DisableGlobalLocks = true,
-                        PrepareSchemaIfNecessary = true
-                    }));
+            // Register the job failure notification filter for DI
+            services.AddSingleton<JobFailureNotificationFilter>();
+
+            services.AddHangfire((sp, config) =>
+            {
+                config
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseSqlServerStorage(
+                        configuration.GetConnectionString("DefaultConnection"),
+                        new SqlServerStorageOptions
+                        {
+                            CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                            SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                            QueuePollInterval = TimeSpan.FromSeconds(15),
+                            UseRecommendedIsolationLevel = true,
+                            DisableGlobalLocks = true,
+                            PrepareSchemaIfNecessary = true
+                        });
+
+                // Add global job failure notification filter
+                var filter = sp.GetRequiredService<JobFailureNotificationFilter>();
+                config.UseFilter(filter);
+            });
             services.AddHangfireServer();
         }
 

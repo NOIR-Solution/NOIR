@@ -58,7 +58,9 @@ global using FluentStorage.Blobs;
 
 // Hangfire
 global using Hangfire;
+global using Hangfire.Common;
 global using Hangfire.SqlServer;
+global using Hangfire.States;
 
 // Wolverine
 global using Wolverine;
@@ -106,6 +108,7 @@ global using Microsoft.AspNetCore.Authorization;
 // NOIR Infrastructure
 global using NOIR.Infrastructure.Audit;
 global using NOIR.Infrastructure.Audit.Handlers;
+global using NOIR.Infrastructure.BackgroundJobs;
 global using NOIR.Infrastructure.Email;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Identity.Authorization;
