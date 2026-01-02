@@ -11,6 +11,7 @@ public class RegisterCommandHandlerTests
     private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
+    private readonly Mock<ICookieAuthService> _cookieAuthServiceMock;
     private readonly RegisterCommandHandler _handler;
 
     public RegisterCommandHandlerTests()
@@ -21,11 +22,23 @@ public class RegisterCommandHandlerTests
 
         _tokenServiceMock = new Mock<ITokenService>();
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
+        _cookieAuthServiceMock = new Mock<ICookieAuthService>();
+
+        var jwtSettings = Options.Create(new JwtSettings
+        {
+            Secret = "NOIRSecretKeyForJWTAuthenticationMustBeAtLeast32Characters!",
+            Issuer = "NOIR.API",
+            Audience = "NOIR.Client",
+            ExpirationInMinutes = 60,
+            RefreshTokenExpirationInDays = 7
+        });
 
         _handler = new RegisterCommandHandler(
             _userManagerMock.Object,
             _tokenServiceMock.Object,
-            _refreshTokenServiceMock.Object);
+            _refreshTokenServiceMock.Object,
+            _cookieAuthServiceMock.Object,
+            jwtSettings);
     }
 
     private void SetupSuccessfulRegistration()
@@ -318,6 +331,100 @@ public class RegisterCommandHandlerTests
                 It.Is<ApplicationUser>(u => u.UserName == "new@example.com"),
                 It.IsAny<string>()),
             Times.Once);
+    }
+
+    #endregion
+
+    #region Cookie Auth Tests
+
+    [Fact]
+    public async Task Handle_UseCookiesTrue_ShouldSetAuthCookies()
+    {
+        // Arrange
+        var command = new RegisterCommand("new@example.com", "password123", "John", "Doe", UseCookies: true);
+        SetupSuccessfulRegistration();
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                "test-access-token",
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_UseCookiesFalse_ShouldNotSetCookies()
+    {
+        // Arrange
+        var command = new RegisterCommand("new@example.com", "password123", "John", "Doe", UseCookies: false);
+        SetupSuccessfulRegistration();
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_UseCookiesDefault_ShouldNotSetCookies()
+    {
+        // Arrange
+        var command = new RegisterCommand("new@example.com", "password123", null, null); // Default UseCookies = false
+        SetupSuccessfulRegistration();
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_FailedRegistration_ShouldNotSetCookies()
+    {
+        // Arrange
+        var command = new RegisterCommand("new@example.com", "password123", null, null, UseCookies: true);
+
+        _userManagerMock
+            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
+            .Returns<string>(e => e.ToUpperInvariant());
+
+        _userManagerMock
+            .Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+            .ReturnsAsync(IdentityResult.Failed(
+                new IdentityError { Code = "Error", Description = "Registration failed" }));
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Never);
     }
 
     #endregion

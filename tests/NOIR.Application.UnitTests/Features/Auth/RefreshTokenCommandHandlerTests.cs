@@ -12,6 +12,7 @@ public class RefreshTokenCommandHandlerTests
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly Mock<IDeviceFingerprintService> _deviceFingerprintServiceMock;
+    private readonly Mock<ICookieAuthService> _cookieAuthServiceMock;
     private readonly Mock<ILogger<RefreshTokenCommandHandler>> _loggerMock;
     private readonly RefreshTokenCommandHandler _handler;
 
@@ -24,13 +25,25 @@ public class RefreshTokenCommandHandlerTests
         _tokenServiceMock = new Mock<ITokenService>();
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
         _deviceFingerprintServiceMock = new Mock<IDeviceFingerprintService>();
+        _cookieAuthServiceMock = new Mock<ICookieAuthService>();
         _loggerMock = new Mock<ILogger<RefreshTokenCommandHandler>>();
+
+        var jwtSettings = Options.Create(new JwtSettings
+        {
+            Secret = "NOIRSecretKeyForJWTAuthenticationMustBeAtLeast32Characters!",
+            Issuer = "NOIR.API",
+            Audience = "NOIR.Client",
+            ExpirationInMinutes = 60,
+            RefreshTokenExpirationInDays = 7
+        });
 
         _handler = new RefreshTokenCommandHandler(
             _userManagerMock.Object,
             _tokenServiceMock.Object,
             _refreshTokenServiceMock.Object,
             _deviceFingerprintServiceMock.Object,
+            _cookieAuthServiceMock.Object,
+            jwtSettings,
             _loggerMock.Object);
     }
 
@@ -474,6 +487,131 @@ public class RefreshTokenCommandHandlerTests
         // Assert
         _deviceFingerprintServiceMock.Verify(x => x.GetClientIpAddress(), Times.Once);
         _deviceFingerprintServiceMock.Verify(x => x.GenerateFingerprint(), Times.Once);
+    }
+
+    #endregion
+
+    #region Cookie Auth Tests
+
+    [Fact]
+    public async Task Handle_UseCookiesTrue_ShouldSetAuthCookies()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token", UseCookies: true);
+        SetupSuccessfulTokenRotation(user);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                "new-access-token",
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_UseCookiesFalse_ShouldNotSetCookies()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token", UseCookies: false);
+        SetupSuccessfulTokenRotation(user);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_NullRefreshToken_WithCookies_ShouldGetFromCookie()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", RefreshToken: null, UseCookies: true);
+        var principal = CreateTestPrincipal(user.Id);
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        _userManagerMock
+            .Setup(x => x.FindByIdAsync(user.Id))
+            .ReturnsAsync(user);
+
+        _cookieAuthServiceMock
+            .Setup(x => x.GetRefreshTokenFromCookie())
+            .Returns("cookie-refresh-token");
+
+        var newRefreshToken = RefreshToken.Create(user.Id, 7);
+        _refreshTokenServiceMock
+            .Setup(x => x.RotateTokenAsync(
+                "cookie-refresh-token",
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(newRefreshToken);
+
+        _tokenServiceMock
+            .Setup(x => x.GenerateAccessToken(user.Id, user.Email!, user.TenantId))
+            .Returns("new-access-token");
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GetClientIpAddress())
+            .Returns("127.0.0.1");
+
+        _deviceFingerprintServiceMock
+            .Setup(x => x.GenerateFingerprint())
+            .Returns("test-fingerprint");
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        _cookieAuthServiceMock.Verify(x => x.GetRefreshTokenFromCookie(), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_NullRefreshToken_NoCookie_ShouldReturnUnauthorized()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new RefreshTokenCommand("valid-access-token", RefreshToken: null, UseCookies: true);
+        var principal = CreateTestPrincipal(user.Id);
+
+        _tokenServiceMock
+            .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
+            .Returns(principal);
+
+        _userManagerMock
+            .Setup(x => x.FindByIdAsync(user.Id))
+            .ReturnsAsync(user);
+
+        _cookieAuthServiceMock
+            .Setup(x => x.GetRefreshTokenFromCookie())
+            .Returns((string?)null);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.Error.Message.Should().Contain("Refresh token is required");
     }
 
     #endregion

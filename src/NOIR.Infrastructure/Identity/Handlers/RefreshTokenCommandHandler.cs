@@ -3,6 +3,7 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 /// <summary>
 /// Wolverine handler for refreshing access tokens.
 /// Implements token rotation with family tracking for theft detection.
+/// Supports cookie-based authentication for browser clients.
 /// Validation is handled automatically by Wolverine FluentValidation middleware.
 /// </summary>
 public class RefreshTokenCommandHandler
@@ -11,6 +12,8 @@ public class RefreshTokenCommandHandler
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IDeviceFingerprintService _deviceFingerprintService;
+    private readonly ICookieAuthService _cookieAuthService;
+    private readonly JwtSettings _jwtSettings;
     private readonly ILogger<RefreshTokenCommandHandler> _logger;
 
     public RefreshTokenCommandHandler(
@@ -18,12 +21,16 @@ public class RefreshTokenCommandHandler
         ITokenService tokenService,
         IRefreshTokenService refreshTokenService,
         IDeviceFingerprintService deviceFingerprintService,
+        ICookieAuthService cookieAuthService,
+        IOptions<JwtSettings> jwtSettings,
         ILogger<RefreshTokenCommandHandler> logger)
     {
         _userManager = userManager;
         _tokenService = tokenService;
         _refreshTokenService = refreshTokenService;
         _deviceFingerprintService = deviceFingerprintService;
+        _cookieAuthService = cookieAuthService;
+        _jwtSettings = jwtSettings.Value;
         _logger = logger;
     }
 
@@ -58,9 +65,16 @@ public class RefreshTokenCommandHandler
             return Result.Failure<AuthResponse>(Error.Forbidden("User account is disabled."));
         }
 
+        // Get refresh token from command or cookie
+        var refreshToken = command.RefreshToken ?? _cookieAuthService.GetRefreshTokenFromCookie();
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return Result.Failure<AuthResponse>(Error.Unauthorized("Refresh token is required."));
+        }
+
         // Rotate token (validates and creates new token in one operation)
         var newToken = await _refreshTokenService.RotateTokenAsync(
-            command.RefreshToken,
+            refreshToken,
             _deviceFingerprintService.GetClientIpAddress(),
             _deviceFingerprintService.GenerateFingerprint(),
             cancellationToken);
@@ -75,6 +89,17 @@ public class RefreshTokenCommandHandler
 
         // Generate new access token
         var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, user.TenantId);
+        var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
+
+        // Set cookies if requested (for browser-based auth)
+        if (command.UseCookies)
+        {
+            _cookieAuthService.SetAuthCookies(
+                accessToken,
+                newToken.Token,
+                accessTokenExpiry,
+                newToken.ExpiresAt);
+        }
 
         var authResponse = new AuthResponse(
             user.Id,

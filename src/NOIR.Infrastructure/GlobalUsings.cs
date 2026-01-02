@@ -72,6 +72,7 @@ global using Scrutor;
 global using NOIR.Application.Common.Interfaces;
 global using NOIR.Application.Common.Models;
 global using NOIR.Application.Features.Auth.Commands.Login;
+global using NOIR.Application.Features.Auth.Commands.Logout;
 global using NOIR.Application.Features.Auth.Commands.RefreshToken;
 global using NOIR.Application.Features.Auth.Commands.Register;
 global using NOIR.Application.Features.Auth.Commands.UpdateUserProfile;

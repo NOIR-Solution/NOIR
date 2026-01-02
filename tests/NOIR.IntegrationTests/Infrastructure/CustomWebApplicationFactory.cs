@@ -78,6 +78,13 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
                 ["Finbuckle:MultiTenant:Stores:ConfigurationStore:Tenants:0:Id"] = "default",
                 ["Finbuckle:MultiTenant:Stores:ConfigurationStore:Tenants:0:Identifier"] = "default",
                 ["Finbuckle:MultiTenant:Stores:ConfigurationStore:Tenants:0:Name"] = "Default Tenant",
+
+                // Cookie Settings - for cookie-based authentication testing
+                ["CookieSettings:AccessTokenCookieName"] = "noir.access",
+                ["CookieSettings:RefreshTokenCookieName"] = "noir.refresh",
+                ["CookieSettings:SameSiteMode"] = "Strict",
+                ["CookieSettings:Path"] = "/",
+                ["CookieSettings:SecureInProduction"] = "false", // Allow non-secure in testing
             });
         });
 

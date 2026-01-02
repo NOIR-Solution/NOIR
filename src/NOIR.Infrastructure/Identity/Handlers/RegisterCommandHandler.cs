@@ -2,6 +2,7 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 
 /// <summary>
 /// Wolverine handler for user registration.
+/// Supports both JWT (header) and cookie-based authentication.
 /// Validation is handled automatically by Wolverine FluentValidation middleware.
 /// </summary>
 public class RegisterCommandHandler
@@ -9,15 +10,21 @@ public class RegisterCommandHandler
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenService _refreshTokenService;
+    private readonly ICookieAuthService _cookieAuthService;
+    private readonly JwtSettings _jwtSettings;
 
     public RegisterCommandHandler(
         UserManager<ApplicationUser> userManager,
         ITokenService tokenService,
-        IRefreshTokenService refreshTokenService)
+        IRefreshTokenService refreshTokenService,
+        ICookieAuthService cookieAuthService,
+        IOptions<JwtSettings> jwtSettings)
     {
         _userManager = userManager;
         _tokenService = tokenService;
         _refreshTokenService = refreshTokenService;
+        _cookieAuthService = cookieAuthService;
+        _jwtSettings = jwtSettings.Value;
     }
 
     public async Task<Result<AuthResponse>> Handle(RegisterCommand command, CancellationToken cancellationToken)
@@ -51,12 +58,23 @@ public class RegisterCommandHandler
 
         // Generate access token (minimal JWT - roles/permissions checked on each request)
         var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, user.TenantId);
+        var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Create refresh token in database (proper token rotation support)
         var refreshToken = await _refreshTokenService.CreateTokenAsync(
             user.Id,
             user.TenantId,
             cancellationToken: cancellationToken);
+
+        // Set cookies if requested (for browser-based auth)
+        if (command.UseCookies)
+        {
+            _cookieAuthService.SetAuthCookies(
+                accessToken,
+                refreshToken.Token,
+                accessTokenExpiry,
+                refreshToken.ExpiresAt);
+        }
 
         var authResponse = new AuthResponse(
             user.Id,

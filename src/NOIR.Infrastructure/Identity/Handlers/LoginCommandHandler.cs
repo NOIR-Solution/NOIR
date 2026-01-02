@@ -3,6 +3,7 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 /// <summary>
 /// Wolverine handler for user login.
 /// Uses the RefreshToken entity with family tracking and device fingerprinting.
+/// Supports both JWT (header) and cookie-based authentication.
 /// Validation is handled automatically by Wolverine FluentValidation middleware.
 /// </summary>
 public class LoginCommandHandler
@@ -12,19 +13,25 @@ public class LoginCommandHandler
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IDeviceFingerprintService _deviceFingerprintService;
+    private readonly ICookieAuthService _cookieAuthService;
+    private readonly JwtSettings _jwtSettings;
 
     public LoginCommandHandler(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         ITokenService tokenService,
         IRefreshTokenService refreshTokenService,
-        IDeviceFingerprintService deviceFingerprintService)
+        IDeviceFingerprintService deviceFingerprintService,
+        ICookieAuthService cookieAuthService,
+        IOptions<JwtSettings> jwtSettings)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _tokenService = tokenService;
         _refreshTokenService = refreshTokenService;
         _deviceFingerprintService = deviceFingerprintService;
+        _cookieAuthService = cookieAuthService;
+        _jwtSettings = jwtSettings.Value;
     }
 
     public async Task<Result<AuthResponse>> Handle(LoginCommand command, CancellationToken cancellationToken)
@@ -59,6 +66,7 @@ public class LoginCommandHandler
 
         // Generate access token
         var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, user.TenantId);
+        var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Create refresh token with device tracking
         var refreshToken = await _refreshTokenService.CreateTokenAsync(
@@ -69,6 +77,16 @@ public class LoginCommandHandler
             _deviceFingerprintService.GetUserAgent(),
             _deviceFingerprintService.GetDeviceName(),
             cancellationToken);
+
+        // Set cookies if requested (for browser-based auth)
+        if (command.UseCookies)
+        {
+            _cookieAuthService.SetAuthCookies(
+                accessToken,
+                refreshToken.Token,
+                accessTokenExpiry,
+                refreshToken.ExpiresAt);
+        }
 
         var authResponse = new AuthResponse(
             user.Id,

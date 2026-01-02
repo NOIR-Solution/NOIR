@@ -2,6 +2,7 @@ namespace NOIR.Web.Endpoints;
 
 /// <summary>
 /// Authentication API endpoints.
+/// Supports both JWT (header) and cookie-based authentication.
 /// Uses Result pattern with ToHttpResult() extension for consistent error handling.
 /// </summary>
 public static class AuthEndpoints
@@ -14,36 +15,67 @@ public static class AuthEndpoints
 
         // Login/Register/Refresh use stricter "auth" rate limit (Sliding Window, 5 req/min)
         // to prevent brute force attacks
-        group.MapPost("/register", async (RegisterCommand command, IMessageBus bus) =>
+        group.MapPost("/register", async (
+            RegisterCommand command,
+            IMessageBus bus,
+            bool useCookies = false) =>
         {
-            var result = await bus.InvokeAsync<Result<AuthResponse>>(command);
+            // Apply useCookies from query parameter
+            var commandWithCookies = command with { UseCookies = useCookies };
+            var result = await bus.InvokeAsync<Result<AuthResponse>>(commandWithCookies);
             return result.ToHttpResult();
         })
         .RequireRateLimiting("auth")
         .WithName("Register")
         .WithSummary("Register a new user account")
+        .WithDescription("Creates a new user account. Use ?useCookies=true to set HttpOnly auth cookies for browser clients.")
         .Produces<AuthResponse>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
 
-        group.MapPost("/login", async (LoginCommand command, IMessageBus bus) =>
+        group.MapPost("/login", async (
+            LoginCommand command,
+            IMessageBus bus,
+            bool useCookies = false) =>
         {
-            var result = await bus.InvokeAsync<Result<AuthResponse>>(command);
+            // Apply useCookies from query parameter
+            var commandWithCookies = command with { UseCookies = useCookies };
+            var result = await bus.InvokeAsync<Result<AuthResponse>>(commandWithCookies);
             return result.ToHttpResult();
         })
         .RequireRateLimiting("auth")
         .WithName("Login")
         .WithSummary("Login with email and password")
+        .WithDescription("Authenticates user and returns tokens. Use ?useCookies=true to set HttpOnly auth cookies for browser clients.")
         .Produces<AuthResponse>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
-        group.MapPost("/refresh", async (RefreshTokenCommand command, IMessageBus bus) =>
+        group.MapPost("/logout", async (
+            IMessageBus bus,
+            LogoutCommand? command) =>
         {
-            var result = await bus.InvokeAsync<Result<AuthResponse>>(command);
+            // Use provided command or create default
+            var logoutCommand = command ?? new LogoutCommand();
+            var result = await bus.InvokeAsync<Result>(logoutCommand);
+            return result.ToHttpResult();
+        })
+        .RequireRateLimiting("auth")
+        .WithName("Logout")
+        .WithSummary("Logout and clear authentication")
+        .WithDescription("Clears auth cookies and optionally revokes refresh token. Use revokeAllSessions=true to logout from all devices.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
+
+        group.MapPost("/refresh", async (RefreshTokenCommand command, IMessageBus bus, bool useCookies = false) =>
+        {
+            // Apply useCookies from query parameter
+            var commandWithCookies = command with { UseCookies = useCookies };
+            var result = await bus.InvokeAsync<Result<AuthResponse>>(commandWithCookies);
             return result.ToHttpResult();
         })
         .RequireRateLimiting("auth")
         .WithName("RefreshToken")
         .WithSummary("Refresh access token using refresh token")
+        .WithDescription("Refreshes access token. Use ?useCookies=true to update HttpOnly auth cookies for browser clients. Refresh token can be provided in request body or will be read from cookie.")
         .Produces<AuthResponse>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 

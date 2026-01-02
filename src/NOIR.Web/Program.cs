@@ -157,7 +157,16 @@ builder.Host.UseWolverine(opts =>
         : TypeLoadMode.Static;
 });
 
-// Configure JWT Authentication
+// Configure Cookie Settings for dual auth (JWT-in-Cookie support)
+builder.Services.AddOptions<CookieSettings>()
+    .Bind(builder.Configuration.GetSection(CookieSettings.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+// Register JwtCookieEvents for reading JWT from cookies
+builder.Services.AddScoped<JwtCookieEvents>();
+
+// Configure JWT Authentication with cookie support
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()!;
 builder.Services.AddAuthentication(options =>
 {
@@ -177,6 +186,9 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
         ClockSkew = TimeSpan.Zero
     };
+
+    // Use custom events to support reading JWT from cookies
+    options.EventsType = typeof(JwtCookieEvents);
 });
 
 builder.Services.AddAuthorization();

@@ -13,6 +13,7 @@ public class LoginCommandHandlerTests
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly Mock<IDeviceFingerprintService> _deviceFingerprintServiceMock;
+    private readonly Mock<ICookieAuthService> _cookieAuthServiceMock;
     private readonly LoginCommandHandler _handler;
 
     public LoginCommandHandlerTests()
@@ -34,13 +35,25 @@ public class LoginCommandHandlerTests
         _tokenServiceMock = new Mock<ITokenService>();
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
         _deviceFingerprintServiceMock = new Mock<IDeviceFingerprintService>();
+        _cookieAuthServiceMock = new Mock<ICookieAuthService>();
+
+        var jwtSettings = Options.Create(new JwtSettings
+        {
+            Secret = "NOIRSecretKeyForJWTAuthenticationMustBeAtLeast32Characters!",
+            Issuer = "NOIR.API",
+            Audience = "NOIR.Client",
+            ExpirationInMinutes = 60,
+            RefreshTokenExpirationInDays = 7
+        });
 
         _handler = new LoginCommandHandler(
             _userManagerMock.Object,
             _signInManagerMock.Object,
             _tokenServiceMock.Object,
             _refreshTokenServiceMock.Object,
-            _deviceFingerprintServiceMock.Object);
+            _deviceFingerprintServiceMock.Object,
+            _cookieAuthServiceMock.Object,
+            jwtSettings);
     }
 
     private ApplicationUser CreateTestUser(
@@ -407,6 +420,107 @@ public class LoginCommandHandlerTests
         _deviceFingerprintServiceMock.Verify(x => x.GenerateFingerprint(), Times.Once);
         _deviceFingerprintServiceMock.Verify(x => x.GetUserAgent(), Times.Once);
         _deviceFingerprintServiceMock.Verify(x => x.GetDeviceName(), Times.Once);
+    }
+
+    #endregion
+
+    #region Cookie Auth Tests
+
+    [Fact]
+    public async Task Handle_UseCookiesTrue_ShouldSetAuthCookies()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new LoginCommand("test@example.com", "validPassword123", UseCookies: true);
+        SetupSuccessfulLogin(user);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                "test-access-token",
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_UseCookiesFalse_ShouldNotSetCookies()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new LoginCommand("test@example.com", "validPassword123", UseCookies: false);
+        SetupSuccessfulLogin(user);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_UseCookiesDefault_ShouldNotSetCookies()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new LoginCommand("test@example.com", "validPassword123"); // Default UseCookies = false
+        SetupSuccessfulLogin(user);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_FailedLogin_ShouldNotSetCookies()
+    {
+        // Arrange
+        var user = CreateTestUser();
+        var command = new LoginCommand("test@example.com", "wrongPassword", UseCookies: true);
+
+        _userManagerMock
+            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
+            .Returns<string>(e => e.ToUpperInvariant());
+
+        _userManagerMock
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+
+        _signInManagerMock
+            .Setup(x => x.CheckPasswordSignInAsync(user, It.IsAny<string>(), true))
+            .ReturnsAsync(SignInResult.Failed);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        _cookieAuthServiceMock.Verify(
+            x => x.SetAuthCookies(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTimeOffset>(),
+                It.IsAny<DateTimeOffset>()),
+            Times.Never);
     }
 
     #endregion

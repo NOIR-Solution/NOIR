@@ -20,6 +20,7 @@ global using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 // Microsoft - Extensions
 global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
 global using Microsoft.IdentityModel.Tokens;
 
 // Finbuckle MultiTenant
@@ -54,6 +55,7 @@ global using NOIR.Application.Common.Exceptions;
 global using NOIR.Application.Common.Interfaces;
 global using NOIR.Application.Common.Models;
 global using NOIR.Application.Features.Auth.Commands.Login;
+global using NOIR.Application.Features.Auth.Commands.Logout;
 global using NOIR.Application.Features.Auth.Commands.RefreshToken;
 global using NOIR.Application.Features.Auth.Commands.Register;
 global using NOIR.Application.Features.Auth.Commands.UpdateUserProfile;
@@ -76,6 +78,7 @@ global using NOIR.Infrastructure.Persistence;
 global using NOIR.Web.Endpoints;
 global using NOIR.Web.Extensions;
 global using NOIR.Web.Filters;
+global using NOIR.Web.Internal;
 global using NOIR.Web.Json;
 global using NOIR.Web.Middleware;
 
