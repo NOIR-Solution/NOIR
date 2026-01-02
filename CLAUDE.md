@@ -178,10 +178,16 @@ public static class CreateOrderHandler
 |---------|-------|---------|
 | NOIR.Domain.UnitTests | 469 | Entity behavior, Result pattern, Value objects |
 | NOIR.Application.UnitTests | 962 | Handlers, Services, Validators, Specifications |
-| NOIR.IntegrationTests | 283 | End-to-end API tests with SQL Server LocalDB |
+| NOIR.IntegrationTests | 283 | End-to-end API tests with SQL Server |
 | NOIR.ArchitectureTests | 25 | Layer dependency validation |
 
-**Database Strategy:** SQL Server LocalDB for testing, SQL Server for production. No SQLite/InMemory - ensures identical behavior between test and production environments.
+**Cross-Platform Testing Strategy:**
+- **Windows**: Uses SQL Server LocalDB automatically
+- **macOS/Linux**: Uses Docker SQL Server (localhost:1433) automatically
+- **Override**: Set `NOIR_TEST_SQL_CONNECTION` environment variable for custom SQL Server
+- **Force LocalDB**: Set `NOIR_USE_LOCALDB=true` (e.g., WSL with LocalDB available)
+
+**Database Strategy:** SQL Server for both testing and production. No SQLite/InMemory - ensures identical behavior between test and production environments.
 
 ## Audit Diff Format
 

@@ -1,21 +1,52 @@
 namespace NOIR.IntegrationTests.Infrastructure;
 
 /// <summary>
-/// WebApplicationFactory that uses SQL Server LocalDB for integration testing.
-/// Provides realistic database testing with actual SQL Server behavior.
+/// WebApplicationFactory that uses SQL Server for integration testing.
+/// Supports both LocalDB (Windows) and Docker SQL Server (macOS/Linux).
 /// </summary>
 public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly string _databaseName = $"NOIR_Test_{Guid.NewGuid():N}";
     private string _connectionString = null!;
+    private string _masterConnectionString = null!;
     private Respawner? _respawner;
     private SqlConnection? _dbConnection;
 
     public string ConnectionString => _connectionString;
 
+    // Allow explicit override via environment variable for edge cases (e.g., WSL with LocalDB)
+    private static bool UseLocalDb
+    {
+        get
+        {
+            var forceLocalDb = Environment.GetEnvironmentVariable("NOIR_USE_LOCALDB");
+            if (bool.TryParse(forceLocalDb, out var useLocal))
+            {
+                return useLocal;
+            }
+
+            // Default: LocalDB on Windows, Docker elsewhere
+            return System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(
+                System.Runtime.InteropServices.OSPlatform.Windows);
+        }
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        _connectionString = $"Server=(localdb)\\mssqllocaldb;Database={_databaseName};Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
+        if (UseLocalDb)
+        {
+            // Windows/WSL with LocalDB: Use LocalDB
+            _connectionString = $"Server=(localdb)\\mssqllocaldb;Database={_databaseName};Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
+            _masterConnectionString = "Server=(localdb)\\mssqllocaldb;Database=master;Trusted_Connection=True;TrustServerCertificate=True";
+        }
+        else
+        {
+            // macOS/Linux: Use Docker SQL Server (or override via environment variable)
+            var baseConnection = Environment.GetEnvironmentVariable("NOIR_TEST_SQL_CONNECTION")
+                ?? "Server=localhost,1433;User Id=sa;Password=Noir@Dev2024!;TrustServerCertificate=True";
+            _connectionString = $"{baseConnection};Database={_databaseName}";
+            _masterConnectionString = $"{baseConnection};Database=master";
+        }
 
         // Set Testing environment
         builder.UseEnvironment("Testing");
@@ -151,7 +182,7 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
         // Drop the test database
         try
         {
-            using var masterConnection = new SqlConnection("Server=(localdb)\\mssqllocaldb;Database=master;Trusted_Connection=True;TrustServerCertificate=True");
+            using var masterConnection = new SqlConnection(_masterConnectionString);
             await masterConnection.OpenAsync();
 
             // Force close all connections and drop database

@@ -30,6 +30,7 @@ global using NOIR.Application.Features.Auth.DTOs;
 global using NOIR.Application.Features.Auth.Queries.GetUserById;
 global using NOIR.Application.Features.Audit.DTOs;
 global using NOIR.Application.Features.Audit.Queries;
+global using NOIR.Application.Specifications;
 
 // NOIR Domain
 global using NOIR.Domain.Common;

@@ -82,6 +82,7 @@ _ReSharper*/
 coverage*.json
 coverage*.xml
 coverage*.info
+coverage-merged/
 
 # NCrunch
 _NCrunch_*
@@ -133,3 +134,6 @@ secrets.json
 
 # Local tools (dotnet tool restore)
 .tools/
+
+# Wolverine auto-generated handlers
+**/Internal/Generated/

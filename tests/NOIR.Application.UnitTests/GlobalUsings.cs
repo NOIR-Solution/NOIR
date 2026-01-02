@@ -75,6 +75,7 @@ global using NOIR.Application.Features.Auth.Commands.Register;
 global using NOIR.Application.Features.Auth.DTOs;
 global using NOIR.Application.Features.Auth.Queries.GetCurrentUser;
 global using NOIR.Application.Specifications;
+global using NOIR.Domain.Specifications;
 
 // NOIR Domain
 global using NOIR.Domain.Common;
