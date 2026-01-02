@@ -99,6 +99,10 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 | Read-only queries | `AsNoTracking` (default) |
 | Multiple collections | `.AsSplitQuery()` |
 
+## Task Management
+
+This project uses **Vibe Kanban** for task tracking and sprint management. Check the kanban board for current tasks, priorities, and sprint goals before starting work.
+
 ## Detailed Documentation
 
 | Topic | Location |

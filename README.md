@@ -96,6 +96,10 @@ dotnet test src/NOIR.sln                     # Test
 | Permissions | `/api/permissions` | Admin |
 | System | `/api/health`, `/api/docs`, `/hangfire` | Varies |
 
+## Project Management
+
+This project uses **[Vibe Kanban](https://github.com/vibe-kanban/vibe-kanban)** for task management and sprint planning.
+
 ## Documentation
 
 | Document | Purpose |
