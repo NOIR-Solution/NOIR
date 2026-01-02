@@ -1,0 +1,215 @@
+{
+  "name": "NOIR",
+  "generated": "2026-01-03",
+  "framework": ".NET 10 LTS",
+  "architecture": "Clean Architecture + CQRS + DDD",
+  "testCount": 1739,
+  "structure": {
+    "src": {
+      "NOIR.Domain": {
+        "path": "src/NOIR.Domain",
+        "purpose": "Core entities, interfaces, value objects",
+        "dependencies": []
+      },
+      "NOIR.Application": {
+        "path": "src/NOIR.Application",
+        "purpose": "Commands, queries, specifications, DTOs",
+        "dependencies": ["NOIR.Domain"]
+      },
+      "NOIR.Infrastructure": {
+        "path": "src/NOIR.Infrastructure",
+        "purpose": "EF Core, handlers, external services",
+        "dependencies": ["NOIR.Domain", "NOIR.Application"]
+      },
+      "NOIR.Web": {
+        "path": "src/NOIR.Web",
+        "purpose": "API endpoints, middleware, Program.cs",
+        "dependencies": ["NOIR.Application", "NOIR.Infrastructure"]
+      }
+    },
+    "tests": {
+      "NOIR.Domain.UnitTests": "Domain unit tests",
+      "NOIR.Application.UnitTests": "Application unit tests",
+      "NOIR.ArchitectureTests": "Architecture constraint tests",
+      "NOIR.IntegrationTests": "Integration tests"
+    }
+  },
+  "entryPoints": {
+    "webApi": {
+      "path": "src/NOIR.Web/Program.cs",
+      "line": 1,
+      "purpose": "Application bootstrap, middleware pipeline"
+    },
+    "apiDocs": {
+      "route": "/api/docs",
+      "purpose": "Scalar API reference UI"
+    },
+    "openApi": {
+      "route": "/api/openapi/v1.json",
+      "purpose": "OpenAPI specification"
+    },
+    "health": {
+      "route": "/api/health",
+      "purpose": "Health check endpoint"
+    },
+    "hangfire": {
+      "route": "/hangfire",
+      "purpose": "Background jobs dashboard"
+    }
+  },
+  "modules": {
+    "domain": {
+      "baseClasses": [
+        {"name": "Entity<TId>", "purpose": "Base entity with ID"},
+        {"name": "AuditableEntity<TId>", "purpose": "Entity with created/modified tracking"},
+        {"name": "AggregateRoot<TId>", "purpose": "DDD aggregate root with domain events"},
+        {"name": "Result<T>", "purpose": "Railway-oriented result pattern"}
+      ],
+      "interfaces": [
+        {"name": "IRepository<TEntity, TId>", "purpose": "Generic repository interface"},
+        {"name": "ISpecification<T>", "purpose": "Specification pattern interface"}
+      ],
+      "entities": [
+        {"name": "Permission", "purpose": "RBAC permissions"},
+        {"name": "RefreshToken", "purpose": "JWT refresh token management"},
+        {"name": "ResourceShare", "purpose": "Resource sharing between users"},
+        {"name": "EntityAuditLog", "purpose": "Entity change audit trail"},
+        {"name": "HandlerAuditLog", "purpose": "CQRS handler audit"},
+        {"name": "HttpRequestAuditLog", "purpose": "HTTP request audit"}
+      ]
+    },
+    "application": {
+      "features": {
+        "Auth": {
+          "commands": ["Login", "Register", "RefreshToken", "UpdateUserProfile"],
+          "queries": ["GetCurrentUser", "GetUserById"]
+        },
+        "Users": {
+          "commands": ["UpdateUser", "DeleteUser", "AssignRoles"],
+          "queries": ["GetUsers", "GetUserRoles"]
+        },
+        "Roles": {
+          "commands": ["CreateRole", "UpdateRole", "DeleteRole"],
+          "queries": ["GetRoles", "GetRoleById"]
+        },
+        "Permissions": {
+          "commands": ["AssignToRole", "RemoveFromRole"],
+          "queries": ["GetRolePermissions", "GetUserPermissions"]
+        },
+        "Audit": {
+          "commands": [],
+          "queries": ["GetAuditTrail", "GetEntityHistory", "GetHttpRequestAuditLogs", "ExportAuditLogs"]
+        }
+      },
+      "specifications": ["RefreshTokens", "ResourceShares"],
+      "common": {
+        "interfaces": ["ITokenService", "IEmailService", "IFileStorage", "ICurrentUser", "IDateTime", "IDiffService"],
+        "exceptions": ["NotFoundException", "ValidationException", "ForbiddenAccessException"],
+        "models": ["PagedResult", "PaginatedList"],
+        "behaviors": ["LoggingMiddleware", "PerformanceMiddleware"]
+      }
+    },
+    "infrastructure": {
+      "persistence": {
+        "dbContext": "ApplicationDbContext",
+        "repository": "Repository<TEntity, TId>",
+        "specificationEvaluator": "SpecificationEvaluator",
+        "configurations": "Persistence/Configurations/",
+        "interceptors": ["AuditableEntityInterceptor", "DomainEventInterceptor", "TenantIdSetterInterceptor", "EntityAuditLogInterceptor"]
+      },
+      "identity": {
+        "applicationUser": "ApplicationUser",
+        "tokenService": "TokenService",
+        "refreshTokenService": "RefreshTokenService",
+        "handlers": "Identity/Handlers/"
+      },
+      "audit": {
+        "handlerAuditMiddleware": "HandlerAuditMiddleware",
+        "httpRequestAuditMiddleware": "HttpRequestAuditMiddleware",
+        "auditRetentionJob": "AuditRetentionJob"
+      },
+      "services": ["EmailService", "FileStorageService", "DateTimeService", "CurrentUserService", "JsonDiffService", "DeviceFingerprintService", "BackgroundJobsService"]
+    },
+    "web": {
+      "endpoints": {
+        "Auth": {"prefix": "/api/auth", "file": "AuthEndpoints.cs"},
+        "Users": {"prefix": "/api/users", "file": "UserEndpoints.cs"},
+        "Roles": {"prefix": "/api/roles", "file": "RoleEndpoints.cs"},
+        "Audit": {"prefix": "/api/audit", "file": "AuditEndpoints.cs"}
+      },
+      "middleware": ["ExceptionHandlingMiddleware", "SecurityHeadersMiddleware"]
+    }
+  },
+  "dependencies": {
+    "core": [
+      {"name": "WolverineFx", "version": "5.9.2", "purpose": "CQRS messaging/mediator"},
+      {"name": "FluentValidation", "version": "12.1.1", "purpose": "Command/query validation"},
+      {"name": "Riok.Mapperly", "version": "4.3.1", "purpose": "Source-generated object mapping"},
+      {"name": "Finbuckle.MultiTenant", "version": "10.0.1", "purpose": "Multi-tenancy"},
+      {"name": "Hangfire", "version": "1.8.22", "purpose": "Background jobs"}
+    ],
+    "data": [
+      {"name": "Microsoft.EntityFrameworkCore.SqlServer", "version": "10.0.1", "purpose": "SQL Server provider"},
+      {"name": "Microsoft.AspNetCore.Identity.EntityFrameworkCore", "version": "10.0.1", "purpose": "Identity storage"},
+      {"name": "FluentStorage", "version": "6.0.0", "purpose": "File storage abstraction"}
+    ],
+    "communication": [
+      {"name": "FluentEmail.Core", "version": "3.0.2", "purpose": "Email abstraction"},
+      {"name": "FluentEmail.MailKit", "version": "3.0.2", "purpose": "SMTP via MailKit"}
+    ],
+    "observability": [
+      {"name": "Serilog.AspNetCore", "version": "10.0.0", "purpose": "Structured logging"},
+      {"name": "Scalar.AspNetCore", "version": "2.11.10", "purpose": "API documentation UI"}
+    ],
+    "infrastructure": [
+      {"name": "Scrutor", "version": "7.0.0", "purpose": "DI auto-registration"},
+      {"name": "SystemTextJson.JsonDiffPatch", "version": "2.0.0", "purpose": "JSON diff for audit"}
+    ]
+  },
+  "configuration": {
+    "sections": [
+      {"name": "ConnectionStrings", "key": "DefaultConnection", "purpose": "SQL Server connection"},
+      {"name": "JwtSettings", "keys": ["Secret", "Issuer", "Audience", "ExpirationInMinutes"], "purpose": "JWT configuration"},
+      {"name": "Identity", "keys": ["Password", "Lockout"], "purpose": "Identity settings"},
+      {"name": "RateLimiting", "keys": ["PermitLimit", "WindowMinutes"], "purpose": "Rate limiting"},
+      {"name": "Email", "keys": ["SmtpHost", "SmtpPort"], "purpose": "SMTP configuration"},
+      {"name": "Storage", "keys": ["Provider", "LocalPath"], "purpose": "File storage"},
+      {"name": "AuditRetention", "keys": ["Enabled", "ArchiveAfterDays", "DeleteAfterDays"], "purpose": "Audit retention policy"},
+      {"name": "Finbuckle:MultiTenant", "purpose": "Tenant configuration"}
+    ],
+    "credentials": {
+      "default": {
+        "email": "admin@noir.local",
+        "password": "123qwe"
+      }
+    }
+  },
+  "commands": {
+    "build": "dotnet build src/NOIR.sln",
+    "run": "dotnet run --project src/NOIR.Web",
+    "watch": "dotnet watch --project src/NOIR.Web",
+    "test": "dotnet test src/NOIR.sln",
+    "migration": "dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web"
+  },
+  "patterns": {
+    "repository-specification": ".claude/patterns/repository-specification.md",
+    "di-auto-registration": ".claude/patterns/di-auto-registration.md",
+    "entity-configuration": ".claude/patterns/entity-configuration.md",
+    "jwt-refresh-token": ".claude/patterns/jwt-refresh-token.md",
+    "hierarchical-audit-logging": ".claude/patterns/hierarchical-audit-logging.md"
+  },
+  "decisions": {
+    "001-tech-stack": ".claude/decisions/001-tech-stack.md",
+    "002-frontend-ui-stack": ".claude/decisions/002-frontend-ui-stack.md"
+  },
+  "taskGuide": {
+    "addEntity": ["Domain/Entities/", "Infrastructure/Persistence/Configurations/"],
+    "addEndpoint": ["Web/Endpoints/"],
+    "addCommand": ["Application/Features/<Feature>/Commands/"],
+    "addQuery": ["Application/Features/<Feature>/Queries/"],
+    "addHandler": ["Infrastructure/Identity/Handlers/"],
+    "addSpecification": ["Application/Specifications/"],
+    "addValidation": ["Application/Features/<Feature>/Commands/<Command>Validator.cs"],
+    "configureDI": "Add marker interface (IScopedService, ITransientService, ISingletonService)"
+  }
+}

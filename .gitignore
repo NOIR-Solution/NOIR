@@ -138,3 +138,4 @@ secrets.json
 # Wolverine auto-generated handlers
 **/Internal/Generated/
 .serena/
+src/NOIR.Web/Internal/
