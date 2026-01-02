@@ -137,3 +137,4 @@ secrets.json
 
 # Wolverine auto-generated handlers
 **/Internal/Generated/
+.serena/

@@ -1,5 +1,9 @@
 # NOIR
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/)
+[![Tests](https://img.shields.io/badge/Tests-1739%2B-green.svg)](tests/)
+
 A modern, enterprise-ready .NET 10 + React SaaS foundation project with multi-tenancy support.
 
 ## Purpose
@@ -91,50 +95,58 @@ NOIR is a production-ready boilerplate designed to accelerate development of bus
 
 ## Getting Started
 
-### Prerequisites
-
-- .NET 10 SDK
-- SQL Server (or SQL Server LocalDB)
-- Node.js (for React frontend - planned)
-
-### Installation
+### Quick Start (Windows with LocalDB)
 
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/noir.git
 cd noir
 
-# Restore dependencies
+# Restore and run (database auto-creates)
 dotnet restore src/NOIR.sln
-
-# Run the application (database auto-migrates on startup)
 dotnet run --project src/NOIR.Web
+
+# Access: http://localhost:5000
+# Admin: admin@noir.local / 123qwe
 ```
 
-The application will:
-1. Create the database (SQL Server LocalDB)
-2. Apply migrations automatically
-3. Seed admin user: `admin@noir.local` / `123qwe`
-4. Start at http://localhost:5000
+### Full Setup Guide
 
-### Development
+For detailed setup instructions for all platforms, see **[SETUP.md](SETUP.md)**:
+
+| Platform | Database | Guide Section |
+|----------|----------|---------------|
+| **Windows** | SQL Server LocalDB | [Windows Setup](SETUP.md#windows-setup) |
+| **macOS** | Docker SQL Server | [macOS Setup](SETUP.md#macos-setup) |
+| **Linux** | Docker SQL Server | [Linux Setup](SETUP.md#linux-setup) |
+| **Production** | SQL Server | [Production Deployment](SETUP.md#production-deployment) |
+
+### Development Commands
 
 ```bash
 # Run with hot reload
 dotnet watch --project src/NOIR.Web
 
-# Run tests
+# Run all tests (1,739+)
 dotnet test src/NOIR.sln
 
 # Run tests with coverage
 dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
 
-# Generate coverage report
-reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"TestResults/CoverageReport" -reporttypes:Html
-
 # Add a migration
 dotnet ef migrations add MigrationName --project src/NOIR.Infrastructure --startup-project src/NOIR.Web
 ```
+
+### Cross-Platform Testing
+
+Tests automatically use the appropriate database:
+
+| Platform | Default | Override |
+|----------|---------|----------|
+| Windows | LocalDB | `NOIR_USE_LOCALDB=false` |
+| macOS/Linux | Docker | `NOIR_TEST_SQL_CONNECTION=...` |
+
+See [Running Tests](SETUP.md#running-tests) for details.
 
 ## Project Structure
 
@@ -330,11 +342,11 @@ Returns JSON with database connectivity status.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-Contributions are welcome! Please read our contributing guidelines before submitting PRs.
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
 
 ## Acknowledgments
 
