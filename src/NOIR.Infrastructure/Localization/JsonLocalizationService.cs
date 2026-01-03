@@ -47,11 +47,15 @@ public class JsonLocalizationService : ILocalizationService, IScopedService
             return key;
 
         var culture = GetCurrentCulture();
+        _logger.LogDebug("Localization: Getting key '{Key}' for culture '{Culture}'", key, culture);
+
         var value = GetLocalizedValue(key, culture);
+        _logger.LogDebug("Localization: Value for '{Key}' in '{Culture}': {Value}", key, culture, value ?? "(null)");
 
         // Fallback to default culture if enabled and key not found
         if (value == null && _settings.FallbackToDefaultCulture && culture != _settings.DefaultCulture)
         {
+            _logger.LogDebug("Localization: Falling back to default culture '{DefaultCulture}'", _settings.DefaultCulture);
             value = GetLocalizedValue(key, _settings.DefaultCulture);
         }
 
@@ -81,14 +85,20 @@ public class JsonLocalizationService : ILocalizationService, IScopedService
     {
         var httpContext = _httpContextAccessor.HttpContext;
         if (httpContext == null)
+        {
+            _logger.LogDebug("Localization: No HttpContext, using default culture '{Culture}'", _settings.DefaultCulture);
             return _settings.DefaultCulture;
+        }
 
         // Priority 1: Query parameter (for testing/debugging)
         if (httpContext.Request.Query.TryGetValue(LanguageQueryParam, out var queryLang))
         {
             var lang = queryLang.ToString().ToLowerInvariant();
             if (_settings.SupportedCultures.Contains(lang))
+            {
+                _logger.LogDebug("Localization: Culture from query param: '{Culture}'", lang);
                 return lang;
+            }
         }
 
         // Priority 2: Cookie (user's saved preference)
@@ -96,28 +106,40 @@ public class JsonLocalizationService : ILocalizationService, IScopedService
         {
             var lang = cookieLang.ToLowerInvariant();
             if (_settings.SupportedCultures.Contains(lang))
+            {
+                _logger.LogDebug("Localization: Culture from cookie: '{Culture}'", lang);
                 return lang;
+            }
         }
 
         // Priority 3: Accept-Language header
         var acceptLanguage = httpContext.Request.Headers[AcceptLanguageHeader].FirstOrDefault();
+        _logger.LogDebug("Localization: Accept-Language header: '{Header}'", acceptLanguage ?? "(not set)");
         if (!string.IsNullOrEmpty(acceptLanguage))
         {
             var preferredLanguages = ParseAcceptLanguageHeader(acceptLanguage);
+            _logger.LogDebug("Localization: Parsed languages: [{Languages}]", string.Join(", ", preferredLanguages));
             foreach (var lang in preferredLanguages)
             {
                 // Try exact match first (e.g., "en-US")
                 if (_settings.SupportedCultures.Contains(lang))
+                {
+                    _logger.LogDebug("Localization: Culture from Accept-Language (exact): '{Culture}'", lang);
                     return lang;
+                }
 
                 // Try language code without region (e.g., "en" from "en-US")
                 var langCode = lang.Split('-')[0];
                 if (_settings.SupportedCultures.Contains(langCode))
+                {
+                    _logger.LogDebug("Localization: Culture from Accept-Language (prefix): '{Culture}'", langCode);
                     return langCode;
+                }
             }
         }
 
         // Priority 4: Default culture
+        _logger.LogDebug("Localization: Using default culture '{Culture}'", _settings.DefaultCulture);
         return _settings.DefaultCulture;
     }
 
