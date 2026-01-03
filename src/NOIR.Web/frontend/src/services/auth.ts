@@ -1,9 +1,13 @@
 /**
  * Authentication API service
  *
- * Uses localStorage-based token storage for compatibility with
- * webview environments (like Vibe Kanban) where HTTP-only cookies
- * may not work properly.
+ * Dual Authentication Strategy:
+ * - Sets HTTP-only cookies via useCookies=true (for server-rendered pages: /api/docs, /hangfire)
+ * - Stores tokens in localStorage (for API calls in Vibe Kanban webview)
+ *
+ * This dual approach ensures:
+ * - Server-rendered pages work with cookie auth
+ * - SPA/webview pages work with Bearer token auth
  *
  * Error Handling Contract:
  * - login() - THROWS on failure (user must handle)
@@ -16,12 +20,14 @@ import { apiClient, apiClientPublic, ApiError } from './apiClient'
 
 /**
  * Authenticate user with email and password
- * Stores tokens in localStorage for subsequent requests
+ * Sets HTTP-only cookies AND stores tokens in localStorage (dual auth)
  * @throws Error on login failure or storage unavailable
  */
 export async function login(request: LoginRequest): Promise<AuthResponse> {
+  // useCookies=true sets HTTP-only cookies for server-rendered pages (/api/docs, /hangfire)
+  // The response still contains tokens which we store in localStorage for API calls
   const data = await apiClientPublic<AuthResponse>(
-    '/auth/login?useCookies=false',
+    '/auth/login?useCookies=true',
     {
       method: 'POST',
       body: JSON.stringify(request),

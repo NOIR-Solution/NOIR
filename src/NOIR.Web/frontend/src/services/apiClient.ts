@@ -5,10 +5,16 @@
  * - Automatic Bearer token injection from localStorage
  * - Auto-refresh on 401 responses (single retry)
  * - Consistent error handling across all API calls
+ * - Dual auth support: cookies for server pages + localStorage for API calls
  *
  * Security Note: Tokens are stored in localStorage for Vibe Kanban webview
  * compatibility. This is vulnerable to XSS - mitigated by CSP headers,
  * short token TTL (15 min), and refresh token rotation on the backend.
+ *
+ * Authentication Strategy:
+ * - Login/refresh use useCookies=true to set HTTP-only cookies (for /api/docs, /hangfire)
+ * - Tokens are also stored in localStorage for Bearer auth (for webview compatibility)
+ * - All requests include credentials to send/receive cookies
  */
 import { getAccessToken, getRefreshToken, storeTokens, clearTokens } from './tokenStorage'
 import type { AuthResponse, ApiError as ApiErrorType } from '@/types'
@@ -41,8 +47,10 @@ async function tryRefreshToken(): Promise<boolean> {
   }
 
   try {
-    const response = await fetch(`${API_BASE}/auth/refresh?useCookies=false`, {
+    // Use useCookies=true to also refresh the HTTP-only cookies (for /api/docs, /hangfire)
+    const response = await fetch(`${API_BASE}/auth/refresh?useCookies=true`, {
       method: 'POST',
+      credentials: 'include', // Send and receive cookies
       headers: {
         'Content-Type': 'application/json',
       },
@@ -94,6 +102,7 @@ export async function apiClient<T>(
 
   let response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
+    credentials: 'include', // Send cookies for dual auth support
     headers,
   })
 
@@ -107,6 +116,7 @@ export async function apiClient<T>(
         (headers as Record<string, string>)['Authorization'] = `Bearer ${newToken}`
         response = await fetch(`${API_BASE}${endpoint}`, {
           ...options,
+          credentials: 'include',
           headers,
         })
       }
@@ -150,6 +160,7 @@ export async function apiClientPublic<T>(
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
+    credentials: 'include', // Send cookies for dual auth support
     headers,
   })
 
