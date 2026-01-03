@@ -7,13 +7,16 @@ public class GetUserPermissionsQueryHandler
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ILocalizationService _localization;
 
     public GetUserPermissionsQueryHandler(
         UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<IdentityRole> roleManager,
+        ILocalizationService localization)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _localization = localization;
     }
 
     public async Task<Result<UserPermissionsDto>> Handle(
@@ -23,7 +26,7 @@ public class GetUserPermissionsQueryHandler
         var user = await _userManager.FindByIdAsync(query.UserId);
         if (user is null)
         {
-            return Result.Failure<UserPermissionsDto>(Error.NotFound("User", query.UserId));
+            return Result.Failure<UserPermissionsDto>(Error.NotFound(_localization["auth.user.notFound"]));
         }
 
         var roles = await _userManager.GetRolesAsync(user);

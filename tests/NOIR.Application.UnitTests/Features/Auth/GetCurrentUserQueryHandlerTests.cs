@@ -10,6 +10,7 @@ public class GetCurrentUserQueryHandlerTests
 
     private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<ILocalizationService> _localizationServiceMock;
     private readonly GetCurrentUserQueryHandler _handler;
 
     public GetCurrentUserQueryHandlerTests()
@@ -19,10 +20,13 @@ public class GetCurrentUserQueryHandlerTests
             userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!);
 
         _currentUserMock = new Mock<ICurrentUser>();
+        _localizationServiceMock = new Mock<ILocalizationService>();
+        _localizationServiceMock.Setup(x => x[It.IsAny<string>()]).Returns<string>(key => key);
 
         _handler = new GetCurrentUserQueryHandler(
             _userManagerMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _localizationServiceMock.Object);
     }
 
     private ApplicationUser CreateTestUser(
@@ -227,7 +231,7 @@ public class GetCurrentUserQueryHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("not authenticated");
+        result.Error.Message.Should().Contain("notAuthenticated");
     }
 
     [Fact]
@@ -291,7 +295,7 @@ public class GetCurrentUserQueryHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("User");
+        result.Error.Message.Should().Contain("user.notFound");
     }
 
     [Fact]

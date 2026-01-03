@@ -7,13 +7,16 @@ public class DeleteUserCommandHandler
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICurrentUser _currentUser;
+    private readonly ILocalizationService _localization;
 
     public DeleteUserCommandHandler(
         UserManager<ApplicationUser> userManager,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        ILocalizationService localization)
     {
         _userManager = userManager;
         _currentUser = currentUser;
+        _localization = localization;
     }
 
     public async Task<Result<bool>> Handle(DeleteUserCommand command, CancellationToken ct)
@@ -21,20 +24,20 @@ public class DeleteUserCommandHandler
         var user = await _userManager.FindByIdAsync(command.UserId);
         if (user is null)
         {
-            return Result.Failure<bool>(Error.NotFound("User", command.UserId));
+            return Result.Failure<bool>(Error.NotFound(_localization["auth.user.notFound"]));
         }
 
         // Prevent self-deletion
         if (user.Id == _currentUser.UserId)
         {
-            return Result.Failure<bool>(Error.Validation("UserId", "You cannot delete your own account"));
+            return Result.Failure<bool>(Error.Validation("UserId", _localization["auth.user.deleteSelf"]));
         }
 
         // Prevent deletion of admin users
         var isAdmin = await _userManager.IsInRoleAsync(user, Roles.Admin);
         if (isAdmin)
         {
-            return Result.Failure<bool>(Error.Validation("UserId", "Cannot delete users with Admin role"));
+            return Result.Failure<bool>(Error.Validation("UserId", _localization["auth.user.deleteAdmin"]));
         }
 
         // Soft delete: lock out permanently
@@ -48,8 +51,7 @@ public class DeleteUserCommandHandler
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
         {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            return Result.Failure<bool>(Error.Failure("User.DeleteFailed", $"Failed to delete user: {errors}"));
+            return Result.Failure<bool>(Error.Failure("User.DeleteFailed", _localization["auth.user.deleteFailed"]));
         }
 
         return Result.Success(true);

@@ -7,13 +7,16 @@ public class CreateRoleCommandHandler
 {
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IPermissionCacheInvalidator _cacheInvalidator;
+    private readonly ILocalizationService _localization;
 
     public CreateRoleCommandHandler(
         RoleManager<IdentityRole> roleManager,
-        IPermissionCacheInvalidator cacheInvalidator)
+        IPermissionCacheInvalidator cacheInvalidator,
+        ILocalizationService localization)
     {
         _roleManager = roleManager;
         _cacheInvalidator = cacheInvalidator;
+        _localization = localization;
     }
 
     public async Task<Result<RoleDto>> Handle(CreateRoleCommand command, CancellationToken ct)
@@ -21,7 +24,7 @@ public class CreateRoleCommandHandler
         // Check if role already exists
         if (await _roleManager.RoleExistsAsync(command.Name))
         {
-            return Result.Failure<RoleDto>(Error.Conflict($"Role '{command.Name}' already exists"));
+            return Result.Failure<RoleDto>(Error.Conflict(_localization["auth.role.alreadyExists"]));
         }
 
         var role = new IdentityRole(command.Name);
@@ -29,8 +32,7 @@ public class CreateRoleCommandHandler
 
         if (!result.Succeeded)
         {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            return Result.Failure<RoleDto>(Error.Failure("Role.CreateFailed", $"Failed to create role: {errors}"));
+            return Result.Failure<RoleDto>(Error.Failure("Role.CreateFailed", _localization["auth.role.createFailed"]));
         }
 
         // Assign permissions if provided

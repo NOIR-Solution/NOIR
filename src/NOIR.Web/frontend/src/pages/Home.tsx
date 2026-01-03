@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ShieldCheck, LogOut, ExternalLink } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { themeClasses } from "@/config/theme"
+import { useTranslation } from "react-i18next"
 
 export default function HomePage() {
+  const { t } = useTranslation('common')
   // User is guaranteed to exist because ProtectedRoute guards this component
   const { user, logout } = useAuthContext()
   const navigate = useNavigate()
@@ -34,7 +36,7 @@ export default function HomePage() {
             </span>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              {t('dashboard.logout')}
             </Button>
           </div>
         </div>
@@ -42,15 +44,15 @@ export default function HomePage() {
 
       <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {user.fullName}!</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('dashboard.title')}</h1>
+          <p className="text-gray-600">{t('dashboard.welcomeBack', { name: user.fullName })}</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
-              <CardTitle>API Documentation</CardTitle>
-              <CardDescription>Explore and test API endpoints</CardDescription>
+              <CardTitle>{t('dashboard.apiDocs.title')}</CardTitle>
+              <CardDescription>{t('dashboard.apiDocs.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <a
@@ -59,7 +61,7 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className={`inline-flex items-center ${themeClasses.linkPrimary}`}
               >
-                Open API Docs
+                {t('dashboard.apiDocs.link')}
                 <ExternalLink className="w-4 h-4 ml-1" />
               </a>
             </CardContent>
@@ -67,8 +69,8 @@ export default function HomePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Hangfire Dashboard</CardTitle>
-              <CardDescription>Monitor background jobs</CardDescription>
+              <CardTitle>{t('dashboard.hangfire.title')}</CardTitle>
+              <CardDescription>{t('dashboard.hangfire.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <a
@@ -77,7 +79,7 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className={`inline-flex items-center ${themeClasses.linkPrimary}`}
               >
-                Open Hangfire
+                {t('dashboard.hangfire.link')}
                 <ExternalLink className="w-4 h-4 ml-1" />
               </a>
             </CardContent>
@@ -85,21 +87,21 @@ export default function HomePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Your Profile</CardTitle>
-              <CardDescription>Account information</CardDescription>
+              <CardTitle>{t('dashboard.profile.title')}</CardTitle>
+              <CardDescription>{t('dashboard.profile.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">Email:</span>
+                <span className="text-gray-500">{t('dashboard.profile.email')}:</span>
                 <span className="font-medium">{user.email}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Tenant:</span>
-                <span className="font-medium">{user.tenantId || 'Not assigned'}</span>
+                <span className="text-gray-500">{t('dashboard.profile.tenant')}:</span>
+                <span className="font-medium">{user.tenantId || t('dashboard.profile.notAssigned')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Roles:</span>
-                <span className="font-medium">{user.roles?.join(', ') || 'None'}</span>
+                <span className="text-gray-500">{t('dashboard.profile.roles')}:</span>
+                <span className="font-medium">{user.roles?.join(', ') || t('dashboard.profile.noRoles')}</span>
               </div>
             </CardContent>
           </Card>

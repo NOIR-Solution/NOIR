@@ -13,6 +13,7 @@ public class RefreshTokenCommandHandler
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IDeviceFingerprintService _deviceFingerprintService;
     private readonly ICookieAuthService _cookieAuthService;
+    private readonly ILocalizationService _localization;
     private readonly JwtSettings _jwtSettings;
     private readonly ILogger<RefreshTokenCommandHandler> _logger;
 
@@ -22,6 +23,7 @@ public class RefreshTokenCommandHandler
         IRefreshTokenService refreshTokenService,
         IDeviceFingerprintService deviceFingerprintService,
         ICookieAuthService cookieAuthService,
+        ILocalizationService localization,
         IOptions<JwtSettings> jwtSettings,
         ILogger<RefreshTokenCommandHandler> logger)
     {
@@ -30,6 +32,7 @@ public class RefreshTokenCommandHandler
         _refreshTokenService = refreshTokenService;
         _deviceFingerprintService = deviceFingerprintService;
         _cookieAuthService = cookieAuthService;
+        _localization = localization;
         _jwtSettings = jwtSettings.Value;
         _logger = logger;
     }
@@ -42,34 +45,34 @@ public class RefreshTokenCommandHandler
         var principal = _tokenService.GetPrincipalFromExpiredToken(command.AccessToken);
         if (principal is null)
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized("Invalid access token."));
+            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.token.accessTokenInvalid"]));
         }
 
         // Get user ID from claims
         var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userId))
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized("Invalid access token."));
+            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.token.accessTokenInvalid"]));
         }
 
         // Find user
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
         {
-            return Result.Failure<AuthResponse>(Error.NotFound("User not found."));
+            return Result.Failure<AuthResponse>(Error.NotFound(_localization["auth.user.notFound"]));
         }
 
         // Check if user is active
         if (!user.IsActive)
         {
-            return Result.Failure<AuthResponse>(Error.Forbidden("User account is disabled."));
+            return Result.Failure<AuthResponse>(Error.Forbidden(_localization["auth.login.accountDisabled"]));
         }
 
         // Get refresh token from command or cookie
         var refreshToken = command.RefreshToken ?? _cookieAuthService.GetRefreshTokenFromCookie();
         if (string.IsNullOrEmpty(refreshToken))
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized("Refresh token is required."));
+            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.token.refreshTokenRequired"]));
         }
 
         // Rotate token (validates and creates new token in one operation)
@@ -84,7 +87,7 @@ public class RefreshTokenCommandHandler
             _logger.LogWarning(
                 "Token rotation failed for user {UserId}. Possible token reuse or theft.",
                 userId);
-            return Result.Failure<AuthResponse>(Error.Unauthorized("Invalid or expired refresh token."));
+            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.token.refreshTokenInvalid"]));
         }
 
         // Generate new access token

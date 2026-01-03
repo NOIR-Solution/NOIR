@@ -1,4 +1,28 @@
 {
+  "dashboard": {
+    "title": "Dashboard",
+    "welcomeBack": "Welcome back, {{name}}!",
+    "logout": "Logout",
+    "apiDocs": {
+      "title": "API Documentation",
+      "description": "Explore and test API endpoints",
+      "link": "Open API Docs"
+    },
+    "hangfire": {
+      "title": "Hangfire Dashboard",
+      "description": "Monitor background jobs",
+      "link": "Open Hangfire"
+    },
+    "profile": {
+      "title": "Your Profile",
+      "description": "Account information",
+      "email": "Email",
+      "tenant": "Tenant",
+      "roles": "Roles",
+      "notAssigned": "Not assigned",
+      "noRoles": "None"
+    }
+  },
   "buttons": {
     "save": "Save",
     "cancel": "Cancel",
@@ -67,7 +91,9 @@
     "items": "items",
     "page": "Page",
     "perPage": "Per page",
-    "language": "Language"
+    "language": "Language",
+    "selectLanguage": "Select language",
+    "switchToLanguage": "Switch to {{language}}"
   },
   "messages": {
     "saveSuccess": "Saved successfully",

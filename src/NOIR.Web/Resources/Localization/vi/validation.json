@@ -1,0 +1,62 @@
+{
+  "email": {
+    "required": "Email là bắt buộc.",
+    "invalid": "Định dạng email không hợp lệ."
+  },
+  "password": {
+    "required": "Mật khẩu là bắt buộc.",
+    "tooShort": "Mật khẩu phải có ít nhất {0} ký tự.",
+    "tooWeak": "Mật khẩu quá yếu."
+  },
+  "firstName": {
+    "maxLength": "Tên không được vượt quá {0} ký tự."
+  },
+  "lastName": {
+    "maxLength": "Họ không được vượt quá {0} ký tự."
+  },
+  "displayName": {
+    "maxLength": "Tên hiển thị không được vượt quá {0} ký tự."
+  },
+  "userId": {
+    "required": "ID người dùng là bắt buộc."
+  },
+  "roleId": {
+    "required": "ID vai trò là bắt buộc."
+  },
+  "roleName": {
+    "required": "Tên vai trò là bắt buộc.",
+    "minLength": "Tên vai trò phải có ít nhất {0} ký tự.",
+    "maxLength": "Tên vai trò không được vượt quá {0} ký tự.",
+    "pattern": "Tên vai trò phải bắt đầu bằng chữ cái và chỉ chứa chữ cái, số, dấu gạch dưới và dấu gạch ngang.",
+    "empty": "Tên vai trò không được để trống."
+  },
+  "rolesList": {
+    "required": "Danh sách vai trò là bắt buộc."
+  },
+  "permissions": {
+    "required": "Danh sách quyền là bắt buộc.",
+    "minOne": "Phải chọn ít nhất một quyền.",
+    "empty": "Quyền không được để trống.",
+    "invalid": "Quyền không hợp lệ: {0}."
+  },
+  "accessToken": {
+    "required": "Mã truy cập là bắt buộc."
+  },
+  "refreshToken": {
+    "required": "Mã làm mới là bắt buộc khi không sử dụng cookie."
+  },
+  "correlationId": {
+    "required": "ID tương quan là bắt buộc."
+  },
+  "entityType": {
+    "required": "Loại thực thể và ID thực thể là bắt buộc."
+  },
+  "maxRows": {
+    "positive": "Số hàng tối đa phải lớn hơn 0."
+  },
+  "dateRange": {
+    "exceeded": "Khoảng thời gian không được vượt quá {0} ngày. Yêu cầu: {1} ngày.",
+    "invalid": "Ngày bắt đầu phải trước ngày kết thúc.",
+    "filterRequired": "Phải có ít nhất một bộ lọc (ngày bắt đầu, ngày kết thúc, loại thực thể hoặc ID người dùng)."
+  }
+}

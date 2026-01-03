@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLanguage } from './LanguageContext';
 import type { SupportedLanguage } from './index';
 
@@ -20,6 +21,7 @@ export function LanguageSwitcher({
   className = '',
   variant = 'dropdown',
 }: LanguageSwitcherProps) {
+  const { t } = useTranslation('common');
   const { currentLanguage, languages, changeLanguage } = useLanguage();
 
   const handleChange = (language: SupportedLanguage) => {
@@ -40,7 +42,7 @@ export function LanguageSwitcher({
                   : 'bg-muted hover:bg-muted/80 text-muted-foreground'
               }`}
               aria-pressed={currentLanguage === code}
-              aria-label={`Switch to ${lang.name}`}
+              aria-label={t('labels.switchToLanguage', { language: lang.name })}
             >
               {showNativeName ? lang.nativeName : lang.name}
             </button>
@@ -55,7 +57,7 @@ export function LanguageSwitcher({
       value={currentLanguage}
       onChange={(e) => handleChange(e.target.value as SupportedLanguage)}
       className={`px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring ${className}`}
-      aria-label="Select language"
+      aria-label={t('labels.selectLanguage')}
     >
       {(Object.entries(languages) as [SupportedLanguage, typeof languages[SupportedLanguage]][]).map(
         ([code, lang]) => (
@@ -73,6 +75,7 @@ export function LanguageSwitcher({
  * Useful for headers or tight spaces
  */
 export function LanguageSwitcherCompact({ className = '' }: { className?: string }) {
+  const { t } = useTranslation('common');
   const { currentLanguage, languages, changeLanguage } = useLanguage();
 
   const handleChange = (language: SupportedLanguage) => {
@@ -92,7 +95,7 @@ export function LanguageSwitcherCompact({ className = '' }: { className?: string
                 : 'text-muted-foreground hover:text-foreground'
             }`}
             aria-pressed={currentLanguage === code}
-            aria-label={`Switch to ${languages[code].name}`}
+            aria-label={t('labels.switchToLanguage', { language: languages[code].name })}
           >
             {code}
           </button>

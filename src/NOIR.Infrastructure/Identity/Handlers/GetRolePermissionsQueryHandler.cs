@@ -6,10 +6,14 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 public class GetRolePermissionsQueryHandler
 {
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ILocalizationService _localization;
 
-    public GetRolePermissionsQueryHandler(RoleManager<IdentityRole> roleManager)
+    public GetRolePermissionsQueryHandler(
+        RoleManager<IdentityRole> roleManager,
+        ILocalizationService localization)
     {
         _roleManager = roleManager;
+        _localization = localization;
     }
 
     public async Task<Result<IReadOnlyList<string>>> Handle(
@@ -19,7 +23,7 @@ public class GetRolePermissionsQueryHandler
         var role = await _roleManager.FindByIdAsync(query.RoleId);
         if (role is null)
         {
-            return Result.Failure<IReadOnlyList<string>>(Error.NotFound("Role", query.RoleId));
+            return Result.Failure<IReadOnlyList<string>>(Error.NotFound(_localization["auth.role.notFound"]));
         }
 
         var claims = await _roleManager.GetClaimsAsync(role);

@@ -7,13 +7,16 @@ public class GetRoleByIdQueryHandler
 {
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ApplicationDbContext _dbContext;
+    private readonly ILocalizationService _localization;
 
     public GetRoleByIdQueryHandler(
         RoleManager<IdentityRole> roleManager,
-        ApplicationDbContext dbContext)
+        ApplicationDbContext dbContext,
+        ILocalizationService localization)
     {
         _roleManager = roleManager;
         _dbContext = dbContext;
+        _localization = localization;
     }
 
     public async Task<Result<RoleDto>> Handle(GetRoleByIdQuery query, CancellationToken ct)
@@ -21,7 +24,7 @@ public class GetRoleByIdQueryHandler
         var role = await _roleManager.FindByIdAsync(query.RoleId);
         if (role is null)
         {
-            return Result.Failure<RoleDto>(Error.NotFound("Role", query.RoleId));
+            return Result.Failure<RoleDto>(Error.NotFound(_localization["auth.role.notFound"]));
         }
 
         var claims = await _roleManager.GetClaimsAsync(role);

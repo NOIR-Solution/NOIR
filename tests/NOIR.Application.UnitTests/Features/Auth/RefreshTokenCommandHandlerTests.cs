@@ -13,6 +13,7 @@ public class RefreshTokenCommandHandlerTests
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly Mock<IDeviceFingerprintService> _deviceFingerprintServiceMock;
     private readonly Mock<ICookieAuthService> _cookieAuthServiceMock;
+    private readonly Mock<ILocalizationService> _localizationServiceMock;
     private readonly Mock<ILogger<RefreshTokenCommandHandler>> _loggerMock;
     private readonly RefreshTokenCommandHandler _handler;
 
@@ -26,7 +27,13 @@ public class RefreshTokenCommandHandlerTests
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
         _deviceFingerprintServiceMock = new Mock<IDeviceFingerprintService>();
         _cookieAuthServiceMock = new Mock<ICookieAuthService>();
+        _localizationServiceMock = new Mock<ILocalizationService>();
         _loggerMock = new Mock<ILogger<RefreshTokenCommandHandler>>();
+
+        // Setup localization to return the key (pass-through for testing)
+        _localizationServiceMock
+            .Setup(x => x[It.IsAny<string>()])
+            .Returns<string>(key => key);
 
         var jwtSettings = Options.Create(new JwtSettings
         {
@@ -43,6 +50,7 @@ public class RefreshTokenCommandHandlerTests
             _refreshTokenServiceMock.Object,
             _deviceFingerprintServiceMock.Object,
             _cookieAuthServiceMock.Object,
+            _localizationServiceMock.Object,
             jwtSettings,
             _loggerMock.Object);
     }
@@ -206,7 +214,7 @@ public class RefreshTokenCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("Invalid access token");
+        result.Error.Message.Should().Contain("accessTokenInvalid");
     }
 
     [Fact]
@@ -229,7 +237,7 @@ public class RefreshTokenCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("Invalid access token");
+        result.Error.Message.Should().Contain("accessTokenInvalid");
     }
 
     [Fact]
@@ -276,7 +284,7 @@ public class RefreshTokenCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("User not found");
+        result.Error.Message.Should().Contain("user.notFound");
     }
 
     #endregion
@@ -305,7 +313,7 @@ public class RefreshTokenCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Forbidden);
-        result.Error.Message.Should().Contain("disabled");
+        result.Error.Message.Should().Contain("accountDisabled");
     }
 
     [Fact]
@@ -379,7 +387,7 @@ public class RefreshTokenCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("Invalid or expired refresh token");
+        result.Error.Message.Should().Contain("refreshTokenInvalid");
     }
 
     [Fact]
@@ -611,7 +619,7 @@ public class RefreshTokenCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("Refresh token is required");
+        result.Error.Message.Should().Contain("refreshTokenRequired");
     }
 
     #endregion

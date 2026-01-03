@@ -1,4 +1,28 @@
 {
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "welcomeBack": "Chào mừng trở lại, {{name}}!",
+    "logout": "Đăng xuất",
+    "apiDocs": {
+      "title": "Tài liệu API",
+      "description": "Khám phá và kiểm tra các API",
+      "link": "Mở tài liệu API"
+    },
+    "hangfire": {
+      "title": "Bảng điều khiển Hangfire",
+      "description": "Theo dõi các tác vụ nền",
+      "link": "Mở Hangfire"
+    },
+    "profile": {
+      "title": "Hồ sơ của bạn",
+      "description": "Thông tin tài khoản",
+      "email": "Email",
+      "tenant": "Tổ chức",
+      "roles": "Vai trò",
+      "notAssigned": "Chưa phân công",
+      "noRoles": "Không có"
+    }
+  },
   "buttons": {
     "save": "Lưu",
     "cancel": "Hủy",
@@ -11,10 +35,10 @@
     "confirm": "Xác nhận",
     "back": "Quay lại",
     "next": "Tiếp theo",
-    "previous": "Trước",
+    "previous": "Trước đó",
     "submit": "Gửi",
     "reset": "Đặt lại",
-    "clear": "Xóa",
+    "clear": "Làm sạch",
     "search": "Tìm kiếm",
     "filter": "Lọc",
     "apply": "Áp dụng",
@@ -26,7 +50,7 @@
     "upload": "Tải lên",
     "yes": "Có",
     "no": "Không",
-    "ok": "OK"
+    "ok": "Đồng ý"
   },
   "labels": {
     "loading": "Đang tải...",
@@ -63,11 +87,13 @@
     "selected": "Đã chọn",
     "total": "Tổng",
     "showing": "Hiển thị",
-    "of": "của",
+    "of": "trên",
     "items": "mục",
     "page": "Trang",
-    "perPage": "Mỗi trang",
-    "language": "Ngôn ngữ"
+    "perPage": "Số mục mỗi trang",
+    "language": "Ngôn ngữ",
+    "selectLanguage": "Chọn ngôn ngữ",
+    "switchToLanguage": "Chuyển sang {{language}}"
   },
   "messages": {
     "saveSuccess": "Lưu thành công",

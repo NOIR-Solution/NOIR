@@ -6,10 +6,14 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 public class GetUserRolesQueryHandler
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILocalizationService _localization;
 
-    public GetUserRolesQueryHandler(UserManager<ApplicationUser> userManager)
+    public GetUserRolesQueryHandler(
+        UserManager<ApplicationUser> userManager,
+        ILocalizationService localization)
     {
         _userManager = userManager;
+        _localization = localization;
     }
 
     public async Task<Result<IReadOnlyList<string>>> Handle(GetUserRolesQuery query, CancellationToken ct)
@@ -17,7 +21,7 @@ public class GetUserRolesQueryHandler
         var user = await _userManager.FindByIdAsync(query.UserId);
         if (user is null)
         {
-            return Result.Failure<IReadOnlyList<string>>(Error.NotFound("User", query.UserId));
+            return Result.Failure<IReadOnlyList<string>>(Error.NotFound(_localization["auth.user.notFound"]));
         }
 
         var roles = await _userManager.GetRolesAsync(user);

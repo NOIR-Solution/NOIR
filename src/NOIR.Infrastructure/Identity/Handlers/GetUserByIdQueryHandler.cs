@@ -7,23 +7,27 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 public class GetUserByIdQueryHandler
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILocalizationService _localization;
 
-    public GetUserByIdQueryHandler(UserManager<ApplicationUser> userManager)
+    public GetUserByIdQueryHandler(
+        UserManager<ApplicationUser> userManager,
+        ILocalizationService localization)
     {
         _userManager = userManager;
+        _localization = localization;
     }
 
     public async Task<Result<UserProfileDto>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(query.UserId))
         {
-            return Result.Failure<UserProfileDto>(Error.Validation("UserId", "User ID is required."));
+            return Result.Failure<UserProfileDto>(Error.Validation("UserId", _localization["validation.userId.required"]));
         }
 
         var user = await _userManager.FindByIdAsync(query.UserId);
         if (user is null)
         {
-            return Result.Failure<UserProfileDto>(Error.NotFound("User", query.UserId));
+            return Result.Failure<UserProfileDto>(Error.NotFound(_localization["auth.user.notFound"]));
         }
 
         var roles = await _userManager.GetRolesAsync(user);

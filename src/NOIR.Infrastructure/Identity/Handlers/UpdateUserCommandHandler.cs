@@ -6,10 +6,14 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 public class UpdateUserCommandHandler
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILocalizationService _localization;
 
-    public UpdateUserCommandHandler(UserManager<ApplicationUser> userManager)
+    public UpdateUserCommandHandler(
+        UserManager<ApplicationUser> userManager,
+        ILocalizationService localization)
     {
         _userManager = userManager;
+        _localization = localization;
     }
 
     public async Task<Result<UserDto>> Handle(UpdateUserCommand command, CancellationToken ct)
@@ -17,7 +21,7 @@ public class UpdateUserCommandHandler
         var user = await _userManager.FindByIdAsync(command.UserId);
         if (user is null)
         {
-            return Result.Failure<UserDto>(Error.NotFound("User", command.UserId));
+            return Result.Failure<UserDto>(Error.NotFound(_localization["auth.user.notFound"]));
         }
 
         // Update fields if provided
@@ -36,8 +40,7 @@ public class UpdateUserCommandHandler
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
         {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            return Result.Failure<UserDto>(Error.Failure("User.UpdateFailed", $"Failed to update user: {errors}"));
+            return Result.Failure<UserDto>(Error.Failure("User.UpdateFailed", _localization["auth.user.updateFailed"]));
         }
 
         var roles = await _userManager.GetRolesAsync(user);

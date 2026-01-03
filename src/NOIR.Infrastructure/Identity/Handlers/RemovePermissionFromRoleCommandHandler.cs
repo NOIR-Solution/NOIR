@@ -7,13 +7,16 @@ public class RemovePermissionFromRoleCommandHandler
 {
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IPermissionCacheInvalidator _cacheInvalidator;
+    private readonly ILocalizationService _localization;
 
     public RemovePermissionFromRoleCommandHandler(
         RoleManager<IdentityRole> roleManager,
-        IPermissionCacheInvalidator cacheInvalidator)
+        IPermissionCacheInvalidator cacheInvalidator,
+        ILocalizationService localization)
     {
         _roleManager = roleManager;
         _cacheInvalidator = cacheInvalidator;
+        _localization = localization;
     }
 
     public async Task<Result<IReadOnlyList<string>>> Handle(
@@ -23,7 +26,7 @@ public class RemovePermissionFromRoleCommandHandler
         var role = await _roleManager.FindByIdAsync(command.RoleId);
         if (role is null)
         {
-            return Result.Failure<IReadOnlyList<string>>(Error.NotFound("Role", command.RoleId));
+            return Result.Failure<IReadOnlyList<string>>(Error.NotFound(_localization["auth.role.notFound"]));
         }
 
         // Remove specified permissions

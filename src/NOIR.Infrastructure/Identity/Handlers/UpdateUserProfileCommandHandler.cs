@@ -8,13 +8,16 @@ public class UpdateUserProfileCommandHandler
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICurrentUser _currentUser;
+    private readonly ILocalizationService _localization;
 
     public UpdateUserProfileCommandHandler(
         UserManager<ApplicationUser> userManager,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        ILocalizationService localization)
     {
         _userManager = userManager;
         _currentUser = currentUser;
+        _localization = localization;
     }
 
     public async Task<Result<UserProfileDto>> Handle(UpdateUserProfileCommand command, CancellationToken cancellationToken)
@@ -22,14 +25,14 @@ public class UpdateUserProfileCommandHandler
         // Check if user is authenticated
         if (!_currentUser.IsAuthenticated || string.IsNullOrEmpty(_currentUser.UserId))
         {
-            return Result.Failure<UserProfileDto>(Error.Unauthorized("User is not authenticated."));
+            return Result.Failure<UserProfileDto>(Error.Unauthorized(_localization["auth.user.notAuthenticated"]));
         }
 
         // Find user
         var user = await _userManager.FindByIdAsync(_currentUser.UserId);
         if (user is null)
         {
-            return Result.Failure<UserProfileDto>(Error.NotFound("User", _currentUser.UserId));
+            return Result.Failure<UserProfileDto>(Error.NotFound(_localization["auth.user.notFound"]));
         }
 
         // Update profile fields
@@ -52,7 +55,7 @@ public class UpdateUserProfileCommandHandler
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                return Result.Failure<UserProfileDto>(Error.ValidationErrors(result.Errors.Select(e => e.Description)));
+                return Result.Failure<UserProfileDto>(Error.Failure("User.UpdateFailed", _localization["auth.user.updateFailed"]));
             }
         }
 

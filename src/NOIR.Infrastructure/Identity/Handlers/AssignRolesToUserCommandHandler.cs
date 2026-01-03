@@ -8,15 +8,18 @@ public class AssignRolesToUserCommandHandler
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IPermissionCacheInvalidator _cacheInvalidator;
+    private readonly ILocalizationService _localization;
 
     public AssignRolesToUserCommandHandler(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
-        IPermissionCacheInvalidator cacheInvalidator)
+        IPermissionCacheInvalidator cacheInvalidator,
+        ILocalizationService localization)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _cacheInvalidator = cacheInvalidator;
+        _localization = localization;
     }
 
     public async Task<Result<UserDto>> Handle(AssignRolesToUserCommand command, CancellationToken ct)
@@ -24,7 +27,7 @@ public class AssignRolesToUserCommandHandler
         var user = await _userManager.FindByIdAsync(command.UserId);
         if (user is null)
         {
-            return Result.Failure<UserDto>(Error.NotFound("User", command.UserId));
+            return Result.Failure<UserDto>(Error.NotFound(_localization["auth.user.notFound"]));
         }
 
         // Validate all roles exist
@@ -32,7 +35,7 @@ public class AssignRolesToUserCommandHandler
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
             {
-                return Result.Failure<UserDto>(Error.NotFound($"Role '{roleName}' does not exist"));
+                return Result.Failure<UserDto>(Error.NotFound(_localization["auth.role.notFound"]));
             }
         }
 
@@ -46,8 +49,7 @@ public class AssignRolesToUserCommandHandler
             var removeResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
             if (!removeResult.Succeeded)
             {
-                var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
-                return Result.Failure<UserDto>(Error.Failure("User.RemoveRolesFailed", $"Failed to remove roles: {errors}"));
+                return Result.Failure<UserDto>(Error.Failure("User.RemoveRolesFailed", _localization["auth.user.removeRolesFailed"]));
             }
         }
 
@@ -58,8 +60,7 @@ public class AssignRolesToUserCommandHandler
             var addResult = await _userManager.AddToRolesAsync(user, rolesToAdd);
             if (!addResult.Succeeded)
             {
-                var errors = string.Join(", ", addResult.Errors.Select(e => e.Description));
-                return Result.Failure<UserDto>(Error.Failure("User.AddRolesFailed", $"Failed to add roles: {errors}"));
+                return Result.Failure<UserDto>(Error.Failure("User.AddRolesFailed", _localization["auth.user.addRolesFailed"]));
             }
         }
 
