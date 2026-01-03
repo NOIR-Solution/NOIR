@@ -232,6 +232,7 @@ builder.Services.AddOpenApi(options =>
 
             For development: `admin@noir.local` / `123qwe`
             """;
+
         return Task.CompletedTask;
     });
 });
@@ -316,9 +317,9 @@ app.MapScalarApiReference("/api/docs", options =>
         .WithTitle("NOIR API")
         .WithTheme(ScalarTheme.DeepSpace)
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-        .WithOpenApiRoutePattern("/api/openapi/{documentName}.json")
-        // Use relative URL so "Try it" works whether accessed via port 3000 (Vite) or 5228 (direct)
-        .AddServer("/", "Current Origin");
+        .WithOpenApiRoutePattern("/api/openapi/{documentName}.json");
+    // Use empty servers array so Scalar uses the current request URL (works with Vite proxy on 3000 or direct on 5228)
+    options.Servers = [];
 });
 
 // Multi-tenant middleware (must be before auth)
