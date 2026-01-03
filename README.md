@@ -15,15 +15,21 @@ git clone https://github.com/NOIR-Solution/NOIR.git
 cd NOIR
 dotnet build src/NOIR.sln
 
-# Run (database auto-creates)
+# Start backend (terminal 1)
 dotnet run --project src/NOIR.Web
+
+# Start frontend with hot reload (terminal 2)
+cd src/NOIR.Web/frontend
+npm install && npm run dev
 
 # Access: http://localhost:3000
 # API Docs: http://localhost:3000/api/docs
 # Admin: admin@noir.local / 123qwe
 ```
 
-**Requirements:** .NET 10 SDK, SQL Server (LocalDB on Windows, Docker on macOS/Linux)
+> **Production-like mode:** Build with `dotnet build -c Release` (auto-builds frontend), then access `http://localhost:4000` directly.
+
+**Requirements:** .NET 10 SDK, Node.js 20+, SQL Server (LocalDB on Windows, Docker on macOS/Linux)
 
 ## Features
 

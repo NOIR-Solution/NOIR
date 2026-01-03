@@ -50,10 +50,20 @@ Enterprise .NET web application with React SPA frontend.
 
 ## Quick Commands
 ```bash
+# Build
 dotnet build src/NOIR.sln
+
+# Run backend (terminal 1)
 dotnet run --project src/NOIR.Web
+
+# Run frontend with hot reload (terminal 2)
+cd src/NOIR.Web/frontend && npm install && npm run dev
+
+# Tests
 dotnet test src/NOIR.sln
 ```
+
+> Production-like: `dotnet build -c Release` (auto-builds frontend), access `localhost:4000`
 
 ## Development URLs
 | URL | Purpose |

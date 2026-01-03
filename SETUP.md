@@ -45,19 +45,30 @@ For experienced developers who want to get running quickly:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/noir.git
-cd noir
+git clone https://github.com/NOIR-Solution/NOIR.git
+cd NOIR
 
 # Restore and build
 dotnet restore src/NOIR.sln
 dotnet build src/NOIR.sln
 
-# Run (database auto-creates on first run)
+# Start backend (terminal 1)
 dotnet run --project src/NOIR.Web
 
-# Access: http://localhost:3000 (frontend with hot reload)
+# Start frontend with hot reload (terminal 2)
+cd src/NOIR.Web/frontend
+npm install && npm run dev
+
+# Access: http://localhost:3000
 # Admin: admin@noir.local / 123qwe
 ```
+
+> **Alternative - Production-like mode (single terminal):**
+> ```bash
+> dotnet build src/NOIR.sln -c Release  # Auto-builds frontend
+> dotnet run --project src/NOIR.Web -c Release
+> # Access: http://localhost:4000
+> ```
 
 **Note:** This assumes SQL Server LocalDB is available (Windows default). For macOS/Linux, see platform-specific setup below.
 
