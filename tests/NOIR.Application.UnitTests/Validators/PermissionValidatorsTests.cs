@@ -6,11 +6,36 @@ namespace NOIR.Application.UnitTests.Validators;
 /// </summary>
 public class PermissionValidatorsTests
 {
+    /// <summary>
+    /// Creates a mock ILocalizationService that returns the expected English messages.
+    /// </summary>
+    private static ILocalizationService CreateLocalizationMock()
+    {
+        var mock = new Mock<ILocalizationService>();
+
+        // Role ID validations
+        mock.Setup(x => x["validation.roleId.required"]).Returns("Role ID is required");
+
+        // Permission validations
+        mock.Setup(x => x["validation.permissions.required"]).Returns("Permissions list is required");
+        mock.Setup(x => x["validation.permissions.minOne"]).Returns("At least one permission must be specified");
+        mock.Setup(x => x["validation.permissions.empty"]).Returns("Permission cannot be empty");
+        mock.Setup(x => x.Get("validation.permissions.invalid", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Invalid permission: {args[0]}");
+
+        return mock.Object;
+    }
+
     #region AssignPermissionToRoleCommandValidator Tests
 
     public class AssignPermissionToRoleCommandValidatorTests
     {
-        private readonly AssignPermissionToRoleCommandValidator _validator = new();
+        private readonly AssignPermissionToRoleCommandValidator _validator;
+
+        public AssignPermissionToRoleCommandValidatorTests()
+        {
+            _validator = new AssignPermissionToRoleCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()
@@ -127,7 +152,12 @@ public class PermissionValidatorsTests
 
     public class RemovePermissionFromRoleCommandValidatorTests
     {
-        private readonly RemovePermissionFromRoleCommandValidator _validator = new();
+        private readonly RemovePermissionFromRoleCommandValidator _validator;
+
+        public RemovePermissionFromRoleCommandValidatorTests()
+        {
+            _validator = new RemovePermissionFromRoleCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()

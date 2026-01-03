@@ -9,6 +9,7 @@ global using Bogus;
 // System
 global using System;
 global using System.Collections.Generic;
+global using System.IO;
 global using System.Linq;
 global using System.Linq.Expressions;
 global using System.Net;
@@ -94,6 +95,7 @@ global using NOIR.Infrastructure.Email;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Identity.Authorization;
 global using NOIR.Infrastructure.Identity.Handlers;
+global using NOIR.Infrastructure.Localization;
 global using NOIR.Infrastructure.Persistence;
 global using NOIR.Infrastructure.Persistence.Conventions;
 global using NOIR.Infrastructure.Persistence.Interceptors;

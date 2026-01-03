@@ -152,6 +152,9 @@ public static class DependencyInjection
         services.Configure<LocalizationSettings>(
             configuration.GetSection(LocalizationSettings.SectionName));
 
+        // Register localization startup validator to validate resources at startup
+        services.AddHostedService<LocalizationStartupValidator>();
+
         // Configure Hangfire for background jobs (skip in Testing - requires SQL Server)
         if (!isTesting)
         {

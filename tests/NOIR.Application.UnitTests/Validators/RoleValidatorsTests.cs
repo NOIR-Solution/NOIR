@@ -6,11 +6,42 @@ namespace NOIR.Application.UnitTests.Validators;
 /// </summary>
 public class RoleValidatorsTests
 {
+    /// <summary>
+    /// Creates a mock ILocalizationService that returns the expected English messages.
+    /// </summary>
+    private static ILocalizationService CreateLocalizationMock()
+    {
+        var mock = new Mock<ILocalizationService>();
+
+        // Role ID validations
+        mock.Setup(x => x["validation.roleId.required"]).Returns("Role ID is required");
+
+        // Role name validations
+        mock.Setup(x => x["validation.roleName.required"]).Returns("Role name is required");
+        mock.Setup(x => x["validation.roleName.pattern"]).Returns("Role name must start with a letter and contain only letters, numbers, underscores, and hyphens");
+        mock.Setup(x => x.Get("validation.roleName.minLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Role name must be at least {args[0]} characters");
+        mock.Setup(x => x.Get("validation.roleName.maxLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Role name cannot exceed {args[0]} characters");
+
+        // Permission validations
+        mock.Setup(x => x["validation.permissions.empty"]).Returns("Permission cannot be empty");
+        mock.Setup(x => x.Get("validation.permissions.invalid", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Invalid permission: {args[0]}");
+
+        return mock.Object;
+    }
+
     #region CreateRoleCommandValidator Tests
 
     public class CreateRoleCommandValidatorTests
     {
-        private readonly CreateRoleCommandValidator _validator = new();
+        private readonly CreateRoleCommandValidator _validator;
+
+        public CreateRoleCommandValidatorTests()
+        {
+            _validator = new CreateRoleCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()
@@ -153,7 +184,12 @@ public class RoleValidatorsTests
 
     public class UpdateRoleCommandValidatorTests
     {
-        private readonly UpdateRoleCommandValidator _validator = new();
+        private readonly UpdateRoleCommandValidator _validator;
+
+        public UpdateRoleCommandValidatorTests()
+        {
+            _validator = new UpdateRoleCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()
@@ -247,7 +283,12 @@ public class RoleValidatorsTests
 
     public class DeleteRoleCommandValidatorTests
     {
-        private readonly DeleteRoleCommandValidator _validator = new();
+        private readonly DeleteRoleCommandValidator _validator;
+
+        public DeleteRoleCommandValidatorTests()
+        {
+            _validator = new DeleteRoleCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()

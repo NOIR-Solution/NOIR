@@ -5,13 +5,13 @@ namespace NOIR.Application.Features.Auth.Commands.Login;
 /// </summary>
 public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
-    public LoginCommandValidator()
+    public LoginCommandValidator(ILocalizationService localization)
     {
         RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Email is required.")
-            .EmailAddress().WithMessage("Invalid email format.");
+            .NotEmpty().WithMessage(localization["validation.email.required"])
+            .EmailAddress().WithMessage(localization["validation.email.invalid"]);
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Password is required.");
+            .NotEmpty().WithMessage(localization["validation.password.required"]);
     }
 }

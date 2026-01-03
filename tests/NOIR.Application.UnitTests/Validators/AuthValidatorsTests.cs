@@ -6,11 +6,45 @@ namespace NOIR.Application.UnitTests.Validators;
 /// </summary>
 public class AuthValidatorsTests
 {
+    /// <summary>
+    /// Creates a mock ILocalizationService that returns the expected English messages.
+    /// </summary>
+    private static ILocalizationService CreateLocalizationMock()
+    {
+        var mock = new Mock<ILocalizationService>();
+
+        // Email validations
+        mock.Setup(x => x["validation.email.required"]).Returns("Email is required.");
+        mock.Setup(x => x["validation.email.invalid"]).Returns("Invalid email format.");
+
+        // Password validations
+        mock.Setup(x => x["validation.password.required"]).Returns("Password is required.");
+        mock.Setup(x => x.Get("validation.password.tooShort", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Password must be at least {args[0]} characters.");
+
+        // Name validations
+        mock.Setup(x => x.Get("validation.firstName.maxLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"First name cannot exceed {args[0]} characters.");
+        mock.Setup(x => x.Get("validation.lastName.maxLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Last name cannot exceed {args[0]} characters.");
+
+        // Token validations
+        mock.Setup(x => x["validation.accessToken.required"]).Returns("Access token is required.");
+        mock.Setup(x => x["validation.refreshToken.required"]).Returns("Refresh token is required when not using cookies.");
+
+        return mock.Object;
+    }
+
     #region LoginCommandValidator Tests
 
     public class LoginCommandValidatorTests
     {
-        private readonly LoginCommandValidator _validator = new();
+        private readonly LoginCommandValidator _validator;
+
+        public LoginCommandValidatorTests()
+        {
+            _validator = new LoginCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()
@@ -133,7 +167,12 @@ public class AuthValidatorsTests
 
     public class RegisterCommandValidatorTests
     {
-        private readonly RegisterCommandValidator _validator = new();
+        private readonly RegisterCommandValidator _validator;
+
+        public RegisterCommandValidatorTests()
+        {
+            _validator = new RegisterCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()
@@ -331,7 +370,12 @@ public class AuthValidatorsTests
 
     public class RefreshTokenCommandValidatorTests
     {
-        private readonly RefreshTokenCommandValidator _validator = new();
+        private readonly RefreshTokenCommandValidator _validator;
+
+        public RefreshTokenCommandValidatorTests()
+        {
+            _validator = new RefreshTokenCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()

@@ -4,18 +4,21 @@ namespace NOIR.Application.Features.Roles.Commands.CreateRole;
 
 public sealed class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
 {
-    public CreateRoleCommandValidator()
+    private const int MinRoleNameLength = 2;
+    private const int MaxRoleNameLength = 50;
+
+    public CreateRoleCommandValidator(ILocalizationService localization)
     {
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Role name is required")
-            .MinimumLength(2).WithMessage("Role name must be at least 2 characters")
-            .MaximumLength(50).WithMessage("Role name cannot exceed 50 characters")
+            .NotEmpty().WithMessage(localization["validation.roleName.required"])
+            .MinimumLength(MinRoleNameLength).WithMessage(localization.Get("validation.roleName.minLength", MinRoleNameLength))
+            .MaximumLength(MaxRoleNameLength).WithMessage(localization.Get("validation.roleName.maxLength", MaxRoleNameLength))
             .Matches("^[a-zA-Z][a-zA-Z0-9_-]*$")
-            .WithMessage("Role name must start with a letter and contain only letters, numbers, underscores, and hyphens");
+            .WithMessage(localization["validation.roleName.pattern"]);
 
         RuleForEach(x => x.Permissions)
-            .NotEmpty().WithMessage("Permission cannot be empty")
+            .NotEmpty().WithMessage(localization["validation.permissions.empty"])
             .Must(p => DomainPermissions.All.Contains(p))
-            .WithMessage("Invalid permission: {PropertyValue}");
+            .WithMessage((_, permission) => localization.Get("validation.permissions.invalid", permission));
     }
 }

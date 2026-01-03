@@ -6,11 +6,43 @@ namespace NOIR.Application.UnitTests.Validators;
 /// </summary>
 public class UserValidatorsTests
 {
+    /// <summary>
+    /// Creates a mock ILocalizationService that returns the expected English messages.
+    /// </summary>
+    private static ILocalizationService CreateLocalizationMock()
+    {
+        var mock = new Mock<ILocalizationService>();
+
+        // User ID validations
+        mock.Setup(x => x["validation.userId.required"]).Returns("User ID is required");
+
+        // Display name validations
+        mock.Setup(x => x.Get("validation.displayName.maxLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Display name cannot exceed {args[0]} characters");
+
+        // Name validations
+        mock.Setup(x => x.Get("validation.firstName.maxLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"First name cannot exceed {args[0]} characters");
+        mock.Setup(x => x.Get("validation.lastName.maxLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Last name cannot exceed {args[0]} characters");
+
+        // Roles validations
+        mock.Setup(x => x["validation.rolesList.required"]).Returns("Roles list is required");
+        mock.Setup(x => x["validation.roleName.empty"]).Returns("Role name cannot be empty");
+
+        return mock.Object;
+    }
+
     #region UpdateUserCommandValidator Tests
 
     public class UpdateUserCommandValidatorTests
     {
-        private readonly UpdateUserCommandValidator _validator = new();
+        private readonly UpdateUserCommandValidator _validator;
+
+        public UpdateUserCommandValidatorTests()
+        {
+            _validator = new UpdateUserCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()
@@ -118,7 +150,12 @@ public class UserValidatorsTests
 
     public class DeleteUserCommandValidatorTests
     {
-        private readonly DeleteUserCommandValidator _validator = new();
+        private readonly DeleteUserCommandValidator _validator;
+
+        public DeleteUserCommandValidatorTests()
+        {
+            _validator = new DeleteUserCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()
@@ -167,7 +204,12 @@ public class UserValidatorsTests
 
     public class AssignRolesToUserCommandValidatorTests
     {
-        private readonly AssignRolesToUserCommandValidator _validator = new();
+        private readonly AssignRolesToUserCommandValidator _validator;
+
+        public AssignRolesToUserCommandValidatorTests()
+        {
+            _validator = new AssignRolesToUserCommandValidator(CreateLocalizationMock());
+        }
 
         [Fact]
         public void Validate_ValidCommand_ShouldPass()

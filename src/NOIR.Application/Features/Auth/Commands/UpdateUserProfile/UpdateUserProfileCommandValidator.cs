@@ -6,16 +6,18 @@ namespace NOIR.Application.Features.Auth.Commands.UpdateUserProfile;
 /// </summary>
 public sealed class UpdateUserProfileCommandValidator : AbstractValidator<UpdateUserProfileCommand>
 {
-    public UpdateUserProfileCommandValidator()
+    private const int MaxNameLength = 50;
+
+    public UpdateUserProfileCommandValidator(ILocalizationService localization)
     {
         RuleFor(x => x.FirstName)
-            .MaximumLength(50)
+            .MaximumLength(MaxNameLength)
             .When(x => x.FirstName is not null)
-            .WithMessage("First name cannot exceed 50 characters");
+            .WithMessage(localization.Get("validation.firstName.maxLength", MaxNameLength));
 
         RuleFor(x => x.LastName)
-            .MaximumLength(50)
+            .MaximumLength(MaxNameLength)
             .When(x => x.LastName is not null)
-            .WithMessage("Last name cannot exceed 50 characters");
+            .WithMessage(localization.Get("validation.lastName.maxLength", MaxNameLength));
     }
 }

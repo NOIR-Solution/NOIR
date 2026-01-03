@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.Json;
 using NOIR.Application.Common.Interfaces;
 
 namespace NOIR.Infrastructure.Localization;
@@ -101,18 +100,9 @@ public class JsonLocalizationService : ILocalizationService, IScopedService
             }
         }
 
-        // Priority 2: Cookie (user's saved preference)
-        if (httpContext.Request.Cookies.TryGetValue(LanguageCookie, out var cookieLang))
-        {
-            var lang = cookieLang.ToLowerInvariant();
-            if (_settings.SupportedCultures.Contains(lang))
-            {
-                _logger.LogDebug("Localization: Culture from cookie: '{Culture}'", lang);
-                return lang;
-            }
-        }
-
-        // Priority 3: Accept-Language header
+        // Priority 2: Accept-Language header (explicitly set by frontend apiClient)
+        // This takes priority over cookie because it's set fresh with each request,
+        // while cookies may have stale values from previous sessions
         var acceptLanguage = httpContext.Request.Headers[AcceptLanguageHeader].FirstOrDefault();
         _logger.LogDebug("Localization: Accept-Language header: '{Header}'", acceptLanguage ?? "(not set)");
         if (!string.IsNullOrEmpty(acceptLanguage))
@@ -135,6 +125,17 @@ public class JsonLocalizationService : ILocalizationService, IScopedService
                     _logger.LogDebug("Localization: Culture from Accept-Language (prefix): '{Culture}'", langCode);
                     return langCode;
                 }
+            }
+        }
+
+        // Priority 3: Cookie (fallback for direct page loads without explicit Accept-Language)
+        if (httpContext.Request.Cookies.TryGetValue(LanguageCookie, out var cookieLang))
+        {
+            var lang = cookieLang.ToLowerInvariant();
+            if (_settings.SupportedCultures.Contains(lang))
+            {
+                _logger.LogDebug("Localization: Culture from cookie: '{Culture}'", lang);
+                return lang;
             }
         }
 
@@ -200,117 +201,16 @@ public class JsonLocalizationService : ILocalizationService, IScopedService
 
     private Dictionary<string, object> LoadResourcesFromFiles(string culture)
     {
-        var resources = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-        var resourcePath = Path.Combine(_environment.ContentRootPath, _settings.ResourcesPath, culture);
+        var resourcePath = LocalizationResourceHelper.GetCultureResourcePath(
+            _environment.ContentRootPath,
+            _settings.ResourcesPath,
+            culture);
 
-        if (!Directory.Exists(resourcePath))
-        {
-            _logger.LogWarning("Localization resource path not found: {Path}", resourcePath);
-            return resources;
-        }
-
-        foreach (var file in Directory.GetFiles(resourcePath, "*.json"))
-        {
-            try
-            {
-                var json = File.ReadAllText(file);
-                var fileResources = JsonSerializer.Deserialize<Dictionary<string, object>>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    ReadCommentHandling = JsonCommentHandling.Skip,
-                    AllowTrailingCommas = true
-                });
-
-                if (fileResources != null)
-                {
-                    // Use the file name (without extension) as the namespace prefix
-                    var fileName = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
-
-                    // Create or get the namespace dictionary for this file
-                    if (!resources.TryGetValue(fileName, out var existingNamespace))
-                    {
-                        existingNamespace = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-                        resources[fileName] = existingNamespace;
-                    }
-
-                    // Add all entries (except _metadata) to the namespace
-                    if (existingNamespace is Dictionary<string, object> namespaceDict)
-                    {
-                        foreach (var kvp in fileResources.Where(kvp => kvp.Key != "_metadata"))
-                        {
-                            namespaceDict[kvp.Key] = kvp.Value;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to load localization file: {File}", file);
-            }
-        }
-
-        return resources;
+        return LocalizationResourceHelper.LoadResourcesFromDirectory(resourcePath, _logger);
     }
 
     private static string? NavigateToValue(Dictionary<string, object> resources, string key)
     {
-        var parts = key.Split('.');
-        object? current = resources;
-
-        foreach (var part in parts)
-        {
-            if (current is Dictionary<string, object> dict)
-            {
-                if (!dict.TryGetValue(part, out current))
-                    return null;
-            }
-            else if (current is JsonElement jsonElement)
-            {
-                if (jsonElement.ValueKind == JsonValueKind.Object)
-                {
-                    if (!jsonElement.TryGetProperty(part, out var nextElement))
-                    {
-                        // Try case-insensitive search
-                        var found = false;
-                        foreach (var prop in jsonElement.EnumerateObject())
-                        {
-                            if (string.Equals(prop.Name, part, StringComparison.OrdinalIgnoreCase))
-                            {
-                                current = prop.Value;
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found)
-                            return null;
-                    }
-                    else
-                    {
-                        current = nextElement;
-                    }
-                }
-                else if (jsonElement.ValueKind == JsonValueKind.String)
-                {
-                    return jsonElement.GetString();
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        // Final value should be a string
-        if (current is string strValue)
-            return strValue;
-
-        if (current is JsonElement finalElement && finalElement.ValueKind == JsonValueKind.String)
-            return finalElement.GetString();
-
-        return null;
+        return LocalizationResourceHelper.NavigateToValue(resources, key);
     }
 }

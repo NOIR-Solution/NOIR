@@ -2,21 +2,24 @@ namespace NOIR.Application.Features.Users.Commands.UpdateUser;
 
 public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
 {
-    public UpdateUserCommandValidator()
+    private const int MaxDisplayNameLength = 100;
+    private const int MaxNameLength = 50;
+
+    public UpdateUserCommandValidator(ILocalizationService localization)
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("User ID is required");
+            .NotEmpty().WithMessage(localization["validation.userId.required"]);
 
         RuleFor(x => x.DisplayName)
-            .MaximumLength(100).WithMessage("Display name cannot exceed 100 characters")
+            .MaximumLength(MaxDisplayNameLength).WithMessage(localization.Get("validation.displayName.maxLength", MaxDisplayNameLength))
             .When(x => x.DisplayName is not null);
 
         RuleFor(x => x.FirstName)
-            .MaximumLength(50).WithMessage("First name cannot exceed 50 characters")
+            .MaximumLength(MaxNameLength).WithMessage(localization.Get("validation.firstName.maxLength", MaxNameLength))
             .When(x => x.FirstName is not null);
 
         RuleFor(x => x.LastName)
-            .MaximumLength(50).WithMessage("Last name cannot exceed 50 characters")
+            .MaximumLength(MaxNameLength).WithMessage(localization.Get("validation.lastName.maxLength", MaxNameLength))
             .When(x => x.LastName is not null);
     }
 }

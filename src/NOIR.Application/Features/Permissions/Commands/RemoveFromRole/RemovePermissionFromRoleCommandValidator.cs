@@ -4,18 +4,18 @@ namespace NOIR.Application.Features.Permissions.Commands.RemoveFromRole;
 
 public sealed class RemovePermissionFromRoleCommandValidator : AbstractValidator<RemovePermissionFromRoleCommand>
 {
-    public RemovePermissionFromRoleCommandValidator()
+    public RemovePermissionFromRoleCommandValidator(ILocalizationService localization)
     {
         RuleFor(x => x.RoleId)
-            .NotEmpty().WithMessage("Role ID is required");
+            .NotEmpty().WithMessage(localization["validation.roleId.required"]);
 
         RuleFor(x => x.Permissions)
-            .NotNull().WithMessage("Permissions list is required")
-            .NotEmpty().WithMessage("At least one permission must be specified");
+            .NotNull().WithMessage(localization["validation.permissions.required"])
+            .NotEmpty().WithMessage(localization["validation.permissions.minOne"]);
 
         RuleForEach(x => x.Permissions)
-            .NotEmpty().WithMessage("Permission cannot be empty")
+            .NotEmpty().WithMessage(localization["validation.permissions.empty"])
             .Must(p => DomainPermissions.All.Contains(p))
-            .WithMessage("Invalid permission: {PropertyValue}");
+            .WithMessage((_, permission) => localization.Get("validation.permissions.invalid", permission));
     }
 }

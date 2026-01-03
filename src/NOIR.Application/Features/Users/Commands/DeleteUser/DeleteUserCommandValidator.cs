@@ -2,9 +2,9 @@ namespace NOIR.Application.Features.Users.Commands.DeleteUser;
 
 public sealed class DeleteUserCommandValidator : AbstractValidator<DeleteUserCommand>
 {
-    public DeleteUserCommandValidator()
+    public DeleteUserCommandValidator(ILocalizationService localization)
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("User ID is required");
+            .NotEmpty().WithMessage(localization["validation.userId.required"]);
     }
 }
