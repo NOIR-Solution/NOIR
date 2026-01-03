@@ -316,7 +316,9 @@ app.MapScalarApiReference("/api/docs", options =>
         .WithTitle("NOIR API")
         .WithTheme(ScalarTheme.DeepSpace)
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-        .WithOpenApiRoutePattern("/api/openapi/{documentName}.json");
+        .WithOpenApiRoutePattern("/api/openapi/{documentName}.json")
+        // Use relative URL so "Try it" works whether accessed via port 3000 (Vite) or 5228 (direct)
+        .AddServer("/", "Current Origin");
 });
 
 // Multi-tenant middleware (must be before auth)
