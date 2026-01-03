@@ -73,6 +73,7 @@ global using NOIR.Domain.Common;
 global using NOIR.Infrastructure;
 global using NOIR.Infrastructure.Audit;
 global using NOIR.Infrastructure.Identity;
+global using NOIR.Infrastructure.Localization;
 global using NOIR.Infrastructure.Persistence;
 
 // NOIR Web
