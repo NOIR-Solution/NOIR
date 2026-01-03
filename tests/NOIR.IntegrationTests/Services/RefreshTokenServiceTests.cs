@@ -29,10 +29,10 @@ public class RefreshTokenServiceTests : IAsyncLifetime
 
     private static IRefreshTokenService CreateService(IServiceProvider services)
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
+        var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
         var jwtSettings = services.GetRequiredService<IOptions<JwtSettings>>();
         var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-        return new RefreshTokenService(context, jwtSettings, logger);
+        return new RefreshTokenService(repository, jwtSettings, logger);
     }
 
     #region CreateTokenAsync Tests
@@ -414,6 +414,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
         await _factory.ExecuteWithTenantAsync(async services =>
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
+            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
             var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
 
             // Create service with MaxConcurrentSessions = 2
@@ -426,7 +427,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 RefreshTokenExpirationInDays = 7
             };
             var service = new RefreshTokenService(
-                context,
+                repository,
                 Options.Create(jwtSettings),
                 logger);
 
@@ -454,7 +455,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var context = services.GetRequiredService<ApplicationDbContext>();
+            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
             var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
 
             // Create service with MaxConcurrentSessions = 0 (unlimited)
@@ -467,7 +468,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 RefreshTokenExpirationInDays = 7
             };
             var service = new RefreshTokenService(
-                context,
+                repository,
                 Options.Create(jwtSettings),
                 logger);
 
@@ -497,7 +498,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var context = services.GetRequiredService<ApplicationDbContext>();
+            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
             var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
 
             // Create service with device fingerprinting enabled
@@ -510,7 +511,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 RefreshTokenExpirationInDays = 7
             };
             var service = new RefreshTokenService(
-                context,
+                repository,
                 Options.Create(jwtSettings),
                 logger);
 
@@ -536,7 +537,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var context = services.GetRequiredService<ApplicationDbContext>();
+            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
             var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
 
             var jwtSettings = new JwtSettings
@@ -548,7 +549,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 RefreshTokenExpirationInDays = 7
             };
             var service = new RefreshTokenService(
-                context,
+                repository,
                 Options.Create(jwtSettings),
                 logger);
 
@@ -575,6 +576,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
         await _factory.ExecuteWithTenantAsync(async services =>
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
+            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
             var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
 
             var jwtSettings = new JwtSettings
@@ -586,7 +588,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 RefreshTokenExpirationInDays = 7
             };
             var service = new RefreshTokenService(
-                context,
+                repository,
                 Options.Create(jwtSettings),
                 logger);
 
@@ -617,7 +619,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var context = services.GetRequiredService<ApplicationDbContext>();
+            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
             var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
 
             var jwtSettings = new JwtSettings
@@ -629,7 +631,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 RefreshTokenExpirationInDays = 7
             };
             var service = new RefreshTokenService(
-                context,
+                repository,
                 Options.Create(jwtSettings),
                 logger);
 
@@ -651,7 +653,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var context = services.GetRequiredService<ApplicationDbContext>();
+            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
             var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
 
             // Create service with fingerprinting DISABLED
@@ -664,7 +666,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 RefreshTokenExpirationInDays = 7
             };
             var service = new RefreshTokenService(
-                context,
+                repository,
                 Options.Create(jwtSettings),
                 logger);
 

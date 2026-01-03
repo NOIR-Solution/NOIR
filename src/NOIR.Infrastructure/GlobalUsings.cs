@@ -100,6 +100,7 @@ global using NOIR.Application.Features.Permissions.Commands.RemoveFromRole;
 global using NOIR.Application.Features.Permissions.Queries.GetRolePermissions;
 global using NOIR.Application.Features.Permissions.Queries.GetUserPermissions;
 global using NOIR.Application.Specifications;
+global using NOIR.Application.Specifications.RefreshTokens;
 global using NOIR.Application.Specifications.ResourceShares;
 
 // NOIR Domain

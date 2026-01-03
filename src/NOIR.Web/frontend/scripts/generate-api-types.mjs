@@ -18,7 +18,7 @@ const __dirname = dirname(__filename)
 const frontendDir = resolve(__dirname, "..")
 const outputFile = resolve(frontendDir, "src/types/api.generated.ts")
 
-const BACKEND_URL = "http://localhost:5228/api/openapi/v1.json"
+const BACKEND_URL = "http://localhost:4000/api/openapi/v1.json"
 const OPENAPI_FILE = resolve(frontendDir, "../wwwroot/openapi.json")
 
 function runCommand(command, args) {

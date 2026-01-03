@@ -114,14 +114,6 @@ public static class AuditAttributeExtensions
     }
 
     /// <summary>
-    /// Checks if a type is explicitly marked as audited.
-    /// </summary>
-    public static bool IsExplicitlyAudited(this Type type)
-    {
-        return type.GetCustomAttribute<AuditedAttribute>() is not null;
-    }
-
-    /// <summary>
     /// Checks if a property has auditing disabled.
     /// </summary>
     public static bool IsAuditingDisabled(this PropertyInfo property)
@@ -135,29 +127,5 @@ public static class AuditAttributeExtensions
     public static bool IsSensitive(this PropertyInfo property)
     {
         return property.GetCustomAttribute<AuditSensitiveAttribute>() is not null;
-    }
-
-    /// <summary>
-    /// Gets the sensitivity mask for a property.
-    /// </summary>
-    public static string GetSensitivityMask(this PropertyInfo property)
-    {
-        return property.GetCustomAttribute<AuditSensitiveAttribute>()?.Mask ?? "[REDACTED]";
-    }
-
-    /// <summary>
-    /// Gets the display name for a property (from [Audited] attribute or property name).
-    /// </summary>
-    public static string GetAuditDisplayName(this PropertyInfo property)
-    {
-        return property.GetCustomAttribute<AuditedAttribute>()?.DisplayName ?? property.Name;
-    }
-
-    /// <summary>
-    /// Checks if a handler type has auditing disabled.
-    /// </summary>
-    public static bool IsHandlerAuditingDisabled(this Type handlerType)
-    {
-        return handlerType.GetCustomAttribute<DisableHandlerAuditingAttribute>() is not null;
     }
 }

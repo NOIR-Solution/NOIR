@@ -1,4 +1,4 @@
-@NOIR_HostAddress = http://localhost:5228
+@NOIR_HostAddress = http://localhost:4000
 @accessToken = <paste_access_token_here>
 @refreshToken = <paste_refresh_token_here>
 

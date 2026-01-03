@@ -18,7 +18,7 @@ public class SecurityHeadersMiddleware
 
     // CSP for Scalar API documentation - allows CDN resources
     // Note: Includes unpkg.com and cdnjs.cloudflare.com as fallback CDNs
-    // Also allows localhost for development proxy scenarios (port 3000 -> 5228)
+    // Also allows localhost for development proxy scenarios (port 3000 -> 4000)
     private const string ScalarDocsCsp =
         "default-src 'self'; " +
         "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; " +

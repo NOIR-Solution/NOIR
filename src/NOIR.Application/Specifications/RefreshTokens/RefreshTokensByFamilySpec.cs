@@ -1,15 +1,15 @@
 namespace NOIR.Application.Specifications.RefreshTokens;
 
 /// <summary>
-/// Specification to find all refresh tokens in a token family.
-/// Used for detecting token reuse and revoking entire chains.
+/// Specification to find all active refresh tokens in a token family.
+/// Used for token theft detection and family revocation.
 /// </summary>
-public class RefreshTokensByFamilySpec : Specification<RefreshToken>
+public sealed class RefreshTokensByFamilySpec : Specification<RefreshToken>
 {
     public RefreshTokensByFamilySpec(Guid tokenFamily)
     {
         Query.Where(t => t.TokenFamily == tokenFamily)
-             .OrderByDescending(t => t.CreatedAt)
+             .Where(t => !t.RevokedAt.HasValue)
              .TagWith("RefreshTokensByFamily");
     }
 }

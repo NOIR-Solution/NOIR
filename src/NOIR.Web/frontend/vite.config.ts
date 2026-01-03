@@ -31,7 +31,7 @@ export default defineConfig({
     // Proxy API requests to .NET backend
     proxy: {
       '/api': {
-        target: 'http://localhost:5228',
+        target: 'http://localhost:4000',
         changeOrigin: true,
         // Enable WebSocket proxy for any real-time features
         ws: true,
@@ -49,7 +49,7 @@ export default defineConfig({
         },
       },
       '/hangfire': {
-        target: 'http://localhost:5228',
+        target: 'http://localhost:4000',
         changeOrigin: true,
         ws: true,
       },

@@ -3,11 +3,11 @@ namespace NOIR.Application.Specifications.RefreshTokens;
 /// <summary>
 /// Specification to find a refresh token by its value.
 /// </summary>
-public class RefreshTokenByValueSpec : Specification<RefreshToken>
+public sealed class RefreshTokenByValueSpec : Specification<RefreshToken>
 {
-    public RefreshTokenByValueSpec(string tokenValue)
+    public RefreshTokenByValueSpec(string token)
     {
-        Query.Where(t => t.Token == tokenValue)
+        Query.Where(t => t.Token == token)
              .TagWith("RefreshTokenByValue");
     }
 }

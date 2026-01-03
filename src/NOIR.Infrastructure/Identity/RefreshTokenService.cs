@@ -3,19 +3,20 @@ namespace NOIR.Infrastructure.Identity;
 /// <summary>
 /// Service for managing refresh tokens with rotation and theft detection.
 /// Implements token family tracking to detect and prevent token reuse attacks.
+/// Uses Specifications for all database queries per project patterns.
 /// </summary>
 public class RefreshTokenService : IRefreshTokenService, IScopedService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IRepository<RefreshToken, Guid> _repository;
     private readonly JwtSettings _jwtSettings;
     private readonly ILogger<RefreshTokenService> _logger;
 
     public RefreshTokenService(
-        ApplicationDbContext context,
+        IRepository<RefreshToken, Guid> repository,
         IOptions<JwtSettings> jwtSettings,
         ILogger<RefreshTokenService> logger)
     {
-        _context = context;
+        _repository = repository;
         _jwtSettings = jwtSettings.Value;
         _logger = logger;
     }
@@ -35,17 +36,14 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
             var activeCount = await GetActiveSessionCountAsync(userId, cancellationToken);
             if (activeCount >= _jwtSettings.MaxConcurrentSessions)
             {
-                // Revoke oldest session
-                var oldestToken = await _context.RefreshTokens
-                    .Where(t => t.UserId == userId)
-                    .Where(t => !t.RevokedAt.HasValue)
-                    .Where(t => t.ExpiresAt > DateTimeOffset.UtcNow)
-                    .OrderBy(t => t.CreatedAt)
-                    .FirstOrDefaultAsync(cancellationToken);
+                // Revoke oldest session using specification
+                var oldestTokenSpec = new OldestActiveRefreshTokenSpec(userId);
+                var oldestToken = await _repository.FirstOrDefaultAsync(oldestTokenSpec, cancellationToken);
 
                 if (oldestToken != null)
                 {
                     oldestToken.Revoke(ipAddress, "Session limit reached - oldest session revoked");
+                    _repository.Update(oldestToken);
                     _logger.LogInformation(
                         "Revoked oldest session for user {UserId} due to session limit",
                         userId);
@@ -62,8 +60,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
             userAgent,
             deviceName);
 
-        _context.RefreshTokens.Add(token);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _repository.AddAsync(token, cancellationToken);
 
         _logger.LogDebug(
             "Created refresh token for user {UserId}, family {TokenFamily}",
@@ -78,8 +75,8 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         string? deviceFingerprint = null,
         CancellationToken cancellationToken = default)
     {
-        var existingToken = await _context.RefreshTokens
-            .FirstOrDefaultAsync(t => t.Token == currentToken, cancellationToken);
+        var spec = new RefreshTokenByValueSpec(currentToken);
+        var existingToken = await _repository.FirstOrDefaultAsync(spec, cancellationToken);
 
         if (existingToken is null)
         {
@@ -122,7 +119,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
                 deviceFingerprint);
 
             existingToken.Revoke(ipAddress, "Device fingerprint mismatch");
-            await _context.SaveChangesAsync(cancellationToken);
+            _repository.Update(existingToken);
 
             return null;
         }
@@ -141,8 +138,8 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         // Revoke old token, link to new
         existingToken.Revoke(ipAddress, "Rotated", newToken.Token);
 
-        _context.RefreshTokens.Add(newToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        _repository.Update(existingToken);
+        await _repository.AddAsync(newToken, cancellationToken);
 
         _logger.LogDebug(
             "Rotated refresh token for user {UserId}, family {TokenFamily}",
@@ -156,8 +153,8 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         string? deviceFingerprint = null,
         CancellationToken cancellationToken = default)
     {
-        var refreshToken = await _context.RefreshTokens
-            .FirstOrDefaultAsync(t => t.Token == token, cancellationToken);
+        var spec = new RefreshTokenByValueSpec(token);
+        var refreshToken = await _repository.FirstOrDefaultAsync(spec, cancellationToken);
 
         if (refreshToken is null)
         {
@@ -189,8 +186,8 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         string? reason = null,
         CancellationToken cancellationToken = default)
     {
-        var refreshToken = await _context.RefreshTokens
-            .FirstOrDefaultAsync(t => t.Token == token, cancellationToken);
+        var spec = new RefreshTokenByValueSpec(token);
+        var refreshToken = await _repository.FirstOrDefaultAsync(spec, cancellationToken);
 
         if (refreshToken is null || refreshToken.IsRevoked)
         {
@@ -198,7 +195,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         }
 
         refreshToken.Revoke(ipAddress, reason ?? "Manually revoked");
-        await _context.SaveChangesAsync(cancellationToken);
+        _repository.Update(refreshToken);
 
         _logger.LogInformation(
             "Revoked refresh token for user {UserId}",
@@ -211,17 +208,14 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         string? reason = null,
         CancellationToken cancellationToken = default)
     {
-        var tokens = await _context.RefreshTokens
-            .Where(t => t.UserId == userId)
-            .Where(t => !t.RevokedAt.HasValue)
-            .ToListAsync(cancellationToken);
+        var spec = new ActiveRefreshTokensByUserSpec(userId);
+        var tokens = await _repository.ListAsync(spec, cancellationToken);
 
         foreach (var token in tokens)
         {
             token.Revoke(ipAddress, reason ?? "All sessions revoked");
+            _repository.Update(token);
         }
-
-        await _context.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(
             "Revoked all {Count} refresh tokens for user {UserId}",
@@ -234,17 +228,14 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         string? reason = null,
         CancellationToken cancellationToken = default)
     {
-        var tokens = await _context.RefreshTokens
-            .Where(t => t.TokenFamily == tokenFamily)
-            .Where(t => !t.RevokedAt.HasValue)
-            .ToListAsync(cancellationToken);
+        var spec = new RefreshTokensByFamilySpec(tokenFamily);
+        var tokens = await _repository.ListAsync(spec, cancellationToken);
 
         foreach (var token in tokens)
         {
             token.Revoke(ipAddress, reason ?? "Token family revoked");
+            _repository.Update(token);
         }
-
-        await _context.SaveChangesAsync(cancellationToken);
 
         _logger.LogWarning(
             "Revoked entire token family {TokenFamily} ({Count} tokens). Reason: {Reason}",
@@ -255,13 +246,8 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         string userId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.RefreshTokens
-            .Where(t => t.UserId == userId)
-            .Where(t => !t.RevokedAt.HasValue)
-            .Where(t => t.ExpiresAt > DateTimeOffset.UtcNow)
-            .OrderByDescending(t => t.CreatedAt)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+        var spec = new ActiveRefreshTokensByUserSpec(userId);
+        return await _repository.ListAsync(spec, cancellationToken);
     }
 
     public async Task CleanupExpiredTokensAsync(
@@ -269,12 +255,8 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         CancellationToken cancellationToken = default)
     {
         var cutoffDate = DateTimeOffset.UtcNow.AddDays(-daysToKeep);
-
-        var deletedCount = await _context.RefreshTokens
-            .IgnoreQueryFilters()
-            .Where(t => t.ExpiresAt < DateTimeOffset.UtcNow || t.RevokedAt.HasValue)
-            .Where(t => t.CreatedAt < cutoffDate)
-            .ExecuteDeleteAsync(cancellationToken);
+        var spec = new ExpiredRefreshTokensSpec(cutoffDate);
+        var deletedCount = await _repository.BulkDeleteAsync(spec, cancellationToken);
 
         _logger.LogInformation(
             "Cleaned up {Count} expired/revoked refresh tokens older than {Days} days",
@@ -285,10 +267,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         string userId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.RefreshTokens
-            .Where(t => t.UserId == userId)
-            .Where(t => !t.RevokedAt.HasValue)
-            .Where(t => t.ExpiresAt > DateTimeOffset.UtcNow)
-            .CountAsync(cancellationToken);
+        var spec = new ActiveRefreshTokensByUserSpec(userId);
+        return await _repository.CountAsync(spec, cancellationToken);
     }
 }

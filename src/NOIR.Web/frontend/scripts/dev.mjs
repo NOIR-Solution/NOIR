@@ -18,7 +18,7 @@ const frontendDir = resolve(__dirname, "..")
 const webProjectDir = resolve(frontendDir, "..")
 const solutionDir = resolve(webProjectDir, "../..")
 
-const BACKEND_URL = "http://localhost:5228"
+const BACKEND_URL = "http://localhost:4000"
 const HEALTH_CHECK_URL = `${BACKEND_URL}/api/health`
 const OPENAPI_URL = `${BACKEND_URL}/api/openapi/v1.json`
 

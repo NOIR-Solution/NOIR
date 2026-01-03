@@ -4,7 +4,7 @@ namespace NOIR.Application.Specifications.ResourceShares;
 /// Specification to find all shares for a specific resource.
 /// Used for listing who has access to a resource.
 /// </summary>
-public class ResourceSharesByResourceSpec : Specification<ResourceShare>
+public sealed class ResourceSharesByResourceSpec : Specification<ResourceShare>
 {
     public ResourceSharesByResourceSpec(string resourceType, Guid resourceId)
     {

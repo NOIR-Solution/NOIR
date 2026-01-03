@@ -65,18 +65,9 @@ builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Le
 // Configure Output Caching (server-side caching)
 builder.Services.AddOutputCache(options =>
 {
-    // Default policy - cache for 60 seconds
-    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(60)));
-
-    // Named policy for longer cache (5 minutes)
-    options.AddPolicy("CacheLong", builder => builder.Expire(TimeSpan.FromMinutes(5)));
-
-    // No cache policy for sensitive data
+    // No cache policy for sensitive data (auth, audit endpoints)
     options.AddPolicy("NoCache", builder => builder.NoCache());
 });
-
-// Configure Response Caching (HTTP caching headers)
-builder.Services.AddResponseCaching();
 
 // Configure JSON options with Source Generator for performance
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -102,22 +93,22 @@ builder.Services.AddRateLimiter(options =>
     });
 
     // Auth endpoints use Sliding Window to prevent burst attacks at window boundaries
-    // 5 requests per minute - stricter to prevent brute force attacks
+    // Configurable via appsettings.json: RateLimiting:AuthPermitLimit and RateLimiting:AuthWindowMinutes
     options.AddSlidingWindowLimiter("auth", limiterOptions =>
     {
-        limiterOptions.PermitLimit = builder.Configuration.GetValue("RateLimiting:AuthPermitLimit", 5);
+        limiterOptions.PermitLimit = builder.Configuration.GetValue("RateLimiting:AuthPermitLimit", 100);
         limiterOptions.Window = TimeSpan.FromMinutes(builder.Configuration.GetValue("RateLimiting:AuthWindowMinutes", 1));
         limiterOptions.SegmentsPerWindow = 6; // 10-second segments for smoother limiting
         limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         limiterOptions.QueueLimit = 0; // No queuing for auth - immediate rejection
     });
 
-    // Export endpoints - very strict limit for expensive data export operations
-    // 3 requests per hour to prevent abuse
+    // Export endpoints - limit for data export operations
+    // Configurable via appsettings.json: RateLimiting:ExportPermitLimit and RateLimiting:ExportWindowMinutes
     options.AddFixedWindowLimiter("export", limiterOptions =>
     {
-        limiterOptions.PermitLimit = builder.Configuration.GetValue("RateLimiting:ExportPermitLimit", 3);
-        limiterOptions.Window = TimeSpan.FromHours(builder.Configuration.GetValue("RateLimiting:ExportWindowHours", 1));
+        limiterOptions.PermitLimit = builder.Configuration.GetValue("RateLimiting:ExportPermitLimit", 100);
+        limiterOptions.Window = TimeSpan.FromMinutes(builder.Configuration.GetValue("RateLimiting:ExportWindowMinutes", 1));
         limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         limiterOptions.QueueLimit = 0; // No queuing for exports - immediate rejection
     });
@@ -302,9 +293,6 @@ app.UseRateLimiter();
 // Response compression (after rate limiting)
 app.UseResponseCompression();
 
-// Response caching (HTTP headers)
-app.UseResponseCaching();
-
 // Output caching (server-side)
 app.UseOutputCache();
 
@@ -318,7 +306,7 @@ app.MapScalarApiReference("/api/docs", options =>
         .WithTheme(ScalarTheme.DeepSpace)
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
         .WithOpenApiRoutePattern("/api/openapi/{documentName}.json");
-    // Use empty servers array so Scalar uses the current request URL (works with Vite proxy on 3000 or direct on 5228)
+    // Use empty servers array so Scalar uses the current request URL (works with Vite proxy on 3000 or direct on 4000)
     options.Servers = [];
 });
 

@@ -5,7 +5,7 @@ namespace NOIR.Application.Specifications.ResourceShares;
 /// Optionally filter by resource type.
 /// Used for listing accessible resources.
 /// </summary>
-public class ResourceSharesByUserSpec : Specification<ResourceShare>
+public sealed class ResourceSharesByUserSpec : Specification<ResourceShare>
 {
     public ResourceSharesByUserSpec(string userId, string? resourceType = null)
     {
