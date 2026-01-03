@@ -26,14 +26,17 @@ export interface StoredTokens {
 
 /**
  * Store authentication tokens in localStorage
+ * @returns true if successful, false if storage unavailable (e.g., Safari private mode)
  */
-export function storeTokens(tokens: StoredTokens): void {
+export function storeTokens(tokens: StoredTokens): boolean {
   try {
     localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken)
     localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken)
     localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, tokens.expiresAt)
+    return true
   } catch (error) {
     console.error('Failed to store tokens:', error)
+    return false
   }
 }
 

@@ -363,8 +363,8 @@ app.MapHealthChecks("/api/health", new HealthCheckOptions
 });
 
 // SPA Fallback - serve index.html for client-side routing
-// Must be last to avoid catching API routes
-app.MapFallbackToFile("index.html");
+// Excludes /api/* routes so they return 404 properly
+app.MapFallbackToFile("{*path:regex(^(?!api/).*$)}", "index.html");
 
 app.Run();
 
