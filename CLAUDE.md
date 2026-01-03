@@ -34,6 +34,7 @@ src/NOIR.Domain/          # Entities, IRepository, ISpecification
 src/NOIR.Application/     # Commands, Queries, Specifications, DTOs
 src/NOIR.Infrastructure/  # EF Core, Repositories, Handlers
 src/NOIR.Web/             # Endpoints, Middleware, Program.cs
+    └── frontend/         # React SPA
 ```
 
 ## Code Patterns
@@ -103,22 +104,46 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
 This project uses **Vibe Kanban** for task tracking and sprint management. Check the kanban board for current tasks, priorities, and sprint goals before starting work.
 
-## Detailed Documentation
+## Documentation
+
+### Backend
+
+| Topic | Location |
+|-------|----------|
+| **Backend overview** | `docs/backend/README.md` |
+| **Repository pattern** | `docs/backend/patterns/repository-specification.md` |
+| **DI registration** | `docs/backend/patterns/di-auto-registration.md` |
+| **Entity configuration** | `docs/backend/patterns/entity-configuration.md` |
+| **JWT refresh tokens** | `docs/backend/patterns/jwt-refresh-token.md` |
+| **Audit logging** | `docs/backend/patterns/hierarchical-audit-logging.md` |
+| **Bulk operations** | `docs/backend/patterns/bulk-operations.md` |
+
+### Frontend
+
+| Topic | Location |
+|-------|----------|
+| **Frontend overview** | `docs/frontend/README.md` |
+| **Architecture** | `docs/frontend/architecture.md` |
+| **Theme customization** | `docs/frontend/theme.md` |
+| **API type generation** | `docs/frontend/api-types.md` |
+
+### Architecture Decisions
+
+| ADR | Location |
+|-----|----------|
+| **Tech stack** | `docs/decisions/001-tech-stack.md` |
+| **Frontend UI stack** | `docs/decisions/002-frontend-ui-stack.md` |
+
+### Other
 
 | Topic | Location |
 |-------|----------|
 | **Setup guide** | `SETUP.md` |
 | **Project overview** | `README.md` |
-| **Tech decisions** | `.claude/decisions/001-tech-stack.md` |
-| **Frontend stack** | `.claude/decisions/002-frontend-ui-stack.md` |
-| **Repository pattern** | `.claude/patterns/repository-specification.md` |
-| **DI registration** | `.claude/patterns/di-auto-registration.md` |
-| **Entity configuration** | `.claude/patterns/entity-configuration.md` |
-| **JWT refresh tokens** | `.claude/patterns/jwt-refresh-token.md` |
-| **Audit logging** | `.claude/patterns/hierarchical-audit-logging.md` |
+| **AI assistant guide** | `AGENTS.md` |
 
 ## File Boundaries
 
-**Read freely:** `src/`, `tests/`, `.claude/`
+**Read freely:** `src/`, `tests/`, `docs/`, `.claude/`
 
 **Avoid modifying:** `*.Designer.cs`, `Migrations/` (auto-generated)

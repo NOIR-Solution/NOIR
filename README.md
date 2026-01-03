@@ -43,12 +43,14 @@ For macOS/Linux setup, see [SETUP.md](SETUP.md).
 | Background Jobs | Hangfire |
 | Multi-Tenancy | Finbuckle.MultiTenant |
 
-### Frontend (Planned)
+### Frontend
 | Category | Technology |
 |----------|------------|
-| Framework | React |
-| Components | 21st.dev |
-| Styling | Tailwind CSS |
+| Framework | React 19 |
+| Build Tool | Vite |
+| Styling | Tailwind CSS 4 |
+| Components | shadcn/ui + 21st.dev |
+| Routing | React Router 7 |
 
 ## Features
 
@@ -71,10 +73,13 @@ NOIR/
 │   ├── NOIR.Application/      # Commands, queries, DTOs
 │   ├── NOIR.Infrastructure/   # EF Core, handlers
 │   └── NOIR.Web/              # API endpoints
+│       └── frontend/          # React SPA
 ├── tests/                     # 1,739+ tests
-├── .claude/                   # Dev documentation
-├── SETUP.md                   # Setup guide
-└── CLAUDE.md                  # AI dev instructions
+├── docs/                      # Documentation
+│   ├── backend/               # Backend patterns & guides
+│   ├── frontend/              # Frontend architecture
+│   └── decisions/             # Architecture Decision Records
+└── .claude/                   # Claude Code commands
 ```
 
 ## Commands
@@ -102,12 +107,37 @@ This project uses **[Vibe Kanban](https://github.com/vibe-kanban/vibe-kanban)** 
 
 ## Documentation
 
+### Getting Started
+
 | Document | Purpose |
 |----------|---------|
 | [SETUP.md](SETUP.md) | Full setup guide (all platforms) |
-| [CLAUDE.md](CLAUDE.md) | AI development instructions |
-| [.claude/decisions/](/.claude/decisions/) | Architecture decisions |
-| [.claude/patterns/](/.claude/patterns/) | Code pattern guides |
+| [AGENTS.md](AGENTS.md) | AI assistant guidelines |
+| [CLAUDE.md](CLAUDE.md) | Claude Code instructions |
+
+### Backend
+
+| Document | Purpose |
+|----------|---------|
+| [Backend Overview](docs/backend/README.md) | Architecture and setup |
+| [Repository Pattern](docs/backend/patterns/repository-specification.md) | Data access patterns |
+| [DI Registration](docs/backend/patterns/di-auto-registration.md) | Service registration |
+| [Audit Logging](docs/backend/patterns/hierarchical-audit-logging.md) | Change tracking |
+
+### Frontend
+
+| Document | Purpose |
+|----------|---------|
+| [Frontend Overview](docs/frontend/README.md) | Architecture and conventions |
+| [Theme Guide](docs/frontend/theme.md) | Theme customization |
+| [API Types](docs/frontend/api-types.md) | Type generation |
+
+### Architecture Decisions
+
+| ADR | Title |
+|-----|-------|
+| [001](docs/decisions/001-tech-stack.md) | Technology Stack |
+| [002](docs/decisions/002-frontend-ui-stack.md) | Frontend UI Stack |
 
 ## License
 
