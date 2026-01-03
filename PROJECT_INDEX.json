@@ -1,9 +1,15 @@
 {
   "name": "NOIR",
-  "generated": "2026-01-03",
+  "generated": "2026-01-04",
   "framework": ".NET 10 LTS",
   "architecture": "Clean Architecture + CQRS + DDD",
-  "testCount": 1739,
+  "testCount": 1808,
+  "testBreakdown": {
+    "NOIR.Domain.UnitTests": 488,
+    "NOIR.Application.UnitTests": 993,
+    "NOIR.ArchitectureTests": 25,
+    "NOIR.IntegrationTests": 302
+  },
   "structure": {
     "src": {
       "NOIR.Domain": {
@@ -192,15 +198,27 @@
     "migration": "dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web"
   },
   "patterns": {
-    "repository-specification": ".claude/patterns/repository-specification.md",
-    "di-auto-registration": ".claude/patterns/di-auto-registration.md",
-    "entity-configuration": ".claude/patterns/entity-configuration.md",
-    "jwt-refresh-token": ".claude/patterns/jwt-refresh-token.md",
-    "hierarchical-audit-logging": ".claude/patterns/hierarchical-audit-logging.md"
+    "repository-specification": "docs/backend/patterns/repository-specification.md",
+    "di-auto-registration": "docs/backend/patterns/di-auto-registration.md",
+    "entity-configuration": "docs/backend/patterns/entity-configuration.md",
+    "jwt-refresh-token": "docs/backend/patterns/jwt-refresh-token.md",
+    "hierarchical-audit-logging": "docs/backend/patterns/hierarchical-audit-logging.md",
+    "bulk-operations": "docs/backend/patterns/bulk-operations.md"
+  },
+  "research": {
+    "audit-logging-comparison": "docs/backend/research/hierarchical-audit-logging-comparison-2025.md",
+    "role-permission-best-practices": "docs/backend/research/role-permission-best-practices-2025.md",
+    "iunitofwork-efcore": "docs/backend/research/research_iunitofwork_efcore_best_practices_20260103.md"
   },
   "decisions": {
-    "001-tech-stack": ".claude/decisions/001-tech-stack.md",
-    "002-frontend-ui-stack": ".claude/decisions/002-frontend-ui-stack.md"
+    "001-tech-stack": "docs/decisions/001-tech-stack.md",
+    "002-frontend-ui-stack": "docs/decisions/002-frontend-ui-stack.md"
+  },
+  "frontend": {
+    "architecture": "docs/frontend/architecture.md",
+    "theme": "docs/frontend/theme.md",
+    "api-types": "docs/frontend/api-types.md",
+    "localization": "docs/frontend/localization-guide.md"
   },
   "taskGuide": {
     "addEntity": ["Domain/Entities/", "Infrastructure/Persistence/Configurations/"],

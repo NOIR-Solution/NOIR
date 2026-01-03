@@ -22,7 +22,7 @@ dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 dotnet watch --project src/NOIR.Web
 
-# Tests (1,739 tests)
+# Tests (1,808 tests)
 dotnet test src/NOIR.sln
 
 # Migrations

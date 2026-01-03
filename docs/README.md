@@ -35,6 +35,7 @@ docs/
 | [Architecture](frontend/architecture.md) | Project structure and patterns |
 | [Theme](frontend/theme.md) | Theme customization guide |
 | [API Types](frontend/api-types.md) | Type generation from backend |
+| [Localization Guide](frontend/localization-guide.md) | Managing translations and adding languages |
 
 ### Architecture Decisions
 

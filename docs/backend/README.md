@@ -77,6 +77,7 @@ dotnet ef migrations add MigrationName \
 |-------|----------|
 | Audit Logging Comparison | [research/hierarchical-audit-logging-comparison-2025.md](research/hierarchical-audit-logging-comparison-2025.md) |
 | Role & Permission Systems | [research/role-permission-best-practices-2025.md](research/role-permission-best-practices-2025.md) |
+| IUnitOfWork & EF Core Best Practices | [research/research_iunitofwork_efcore_best_practices_20260103.md](research/research_iunitofwork_efcore_best_practices_20260103.md) |
 
 ## Critical Rules
 

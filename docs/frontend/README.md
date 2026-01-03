@@ -57,6 +57,7 @@ npm run lint
 | [Architecture](architecture.md) | Project structure and patterns |
 | [Theme](theme.md) | Theme customization guide |
 | [API Types](api-types.md) | Type generation from backend |
+| [Localization Guide](localization-guide.md) | Managing translations and adding languages |
 
 ## Integration with Backend
 

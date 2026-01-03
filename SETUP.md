@@ -398,7 +398,7 @@ dotnet run --project src/NOIR.Web --environment Development
 ### All Tests
 
 ```bash
-# Run all 1,739+ tests
+# Run all 1,808+ tests
 dotnet test src/NOIR.sln
 ```
 
