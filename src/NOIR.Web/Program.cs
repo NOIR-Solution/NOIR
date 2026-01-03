@@ -340,7 +340,7 @@ if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalI
 {
     app.MapHangfireDashboard("/hangfire", new DashboardOptions
     {
-        Authorization = [new HangfireAuthorizationFilter(app.Environment, app.Configuration)]
+        Authorization = [new HangfireAuthorizationFilter(app.Environment, app.Configuration, app.Services)]
     });
 
     // Register Hangfire Recurring Jobs

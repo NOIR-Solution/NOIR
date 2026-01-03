@@ -11,6 +11,7 @@ public class HangfireAuthorizationFilterTests
 {
     private readonly Mock<IHostEnvironment> _mockEnvironment;
     private readonly Mock<IConfiguration> _mockConfiguration;
+    private readonly Mock<IServiceProvider> _mockServiceProvider;
 
     public HangfireAuthorizationFilterTests()
     {
@@ -19,10 +20,12 @@ public class HangfireAuthorizationFilterTests
 
         _mockConfiguration = new Mock<IConfiguration>();
         _mockConfiguration.Setup(c => c["Spa:DevServerUrl"]).Returns("http://localhost:3000");
+
+        _mockServiceProvider = new Mock<IServiceProvider>();
     }
 
     private HangfireAuthorizationFilter CreateFilter() =>
-        new(_mockEnvironment.Object, _mockConfiguration.Object);
+        new(_mockEnvironment.Object, _mockConfiguration.Object, _mockServiceProvider.Object);
 
     #region Constructor Tests
 
@@ -40,7 +43,7 @@ public class HangfireAuthorizationFilterTests
     public void Constructor_WithNullEnvironment_ShouldCreateInstance()
     {
         // Constructor accepts null (no guard clause), but will throw when Authorize is called
-        var filter = new HangfireAuthorizationFilter(null!, _mockConfiguration.Object);
+        var filter = new HangfireAuthorizationFilter(null!, _mockConfiguration.Object, _mockServiceProvider.Object);
         filter.Should().NotBeNull();
     }
 
@@ -48,7 +51,15 @@ public class HangfireAuthorizationFilterTests
     public void Constructor_WithNullConfiguration_ShouldCreateInstance()
     {
         // Constructor accepts null (no guard clause), but will throw when Authorize is called
-        var filter = new HangfireAuthorizationFilter(_mockEnvironment.Object, null!);
+        var filter = new HangfireAuthorizationFilter(_mockEnvironment.Object, null!, _mockServiceProvider.Object);
+        filter.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Constructor_WithNullServiceProvider_ShouldCreateInstance()
+    {
+        // Constructor accepts null (no guard clause), but will throw when Authorize is called
+        var filter = new HangfireAuthorizationFilter(_mockEnvironment.Object, _mockConfiguration.Object, null!);
         filter.Should().NotBeNull();
     }
 
@@ -91,9 +102,9 @@ public class HangfireAuthorizationFilterTests
     [Fact]
     public void HangfireAuthorizationFilter_ShouldHaveRequiredConstructor()
     {
-        // Assert - Verify constructor with IHostEnvironment and IConfiguration exists
+        // Assert - Verify constructor with IHostEnvironment, IConfiguration, and IServiceProvider exists
         var constructor = typeof(HangfireAuthorizationFilter)
-            .GetConstructor([typeof(IHostEnvironment), typeof(IConfiguration)]);
+            .GetConstructor([typeof(IHostEnvironment), typeof(IConfiguration), typeof(IServiceProvider)]);
 
         constructor.Should().NotBeNull();
     }
@@ -154,7 +165,7 @@ public class HangfireAuthorizationFilterTests
         // If we return false, Hangfire will overwrite our redirect response with a 401 Unauthorized
         // By returning true, we prevent Hangfire from touching the response
         //
-        // Verification in code (HangfireAuthorizationFilter.cs:44):
+        // Verification in code (HangfireAuthorizationFilter.cs:49):
         // return true; // CRITICAL: Return true to prevent Hangfire from overwriting our redirect with a 401
 
         var filter = CreateFilter();
@@ -165,10 +176,11 @@ public class HangfireAuthorizationFilterTests
     public void Filter_AuthenticatedUserBehavior_Documentation()
     {
         // Document: For authenticated users:
-        // - If user has system:hangfire permission claim -> return true (allow access)
-        // - If user lacks system:hangfire permission claim -> return false (deny with 401)
+        // - Uses IAuthorizationService to check system:hangfire permission from database
+        // - If user has permission -> return true (allow access)
+        // - If user lacks permission -> return false (deny with 403)
         //
-        // This is consistent with NOIR's permission-based authorization model
+        // This leverages PermissionAuthorizationHandler which queries role claims from ASP.NET Identity
 
         var filter = CreateFilter();
         filter.Should().NotBeNull();
