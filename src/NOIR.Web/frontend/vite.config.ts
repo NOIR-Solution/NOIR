@@ -35,13 +35,15 @@ export default defineConfig({
         changeOrigin: true,
         // Enable WebSocket proxy for any real-time features
         ws: true,
-        // Configure proxy to handle Scalar API docs properly
+        // Configure proxy to handle Scalar API docs and security headers
         configure: (proxy) => {
-          proxy.on('proxyRes', (proxyRes) => {
-            // Remove X-Frame-Options for development to avoid issues
-            // with embedded API documentation viewers
-            if (proxyRes.headers['x-frame-options']) {
+          proxy.on('proxyRes', (proxyRes, req) => {
+            // For API docs, remove security headers that block Scalar's CDN scripts
+            // This is safe in development - production serves directly from backend
+            if (req.url?.startsWith('/api/docs') || req.url?.startsWith('/api/openapi')) {
+              delete proxyRes.headers['content-security-policy']
               delete proxyRes.headers['x-frame-options']
+              delete proxyRes.headers['x-content-type-options']
             }
           })
         },
