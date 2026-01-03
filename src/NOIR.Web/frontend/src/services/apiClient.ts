@@ -18,6 +18,7 @@
  */
 import { getAccessToken, getRefreshToken, storeTokens, clearTokens } from './tokenStorage'
 import type { AuthResponse, ApiError as ApiErrorType } from '@/types'
+import i18n from '@/i18n'
 
 const API_BASE = '/api'
 
@@ -53,6 +54,7 @@ async function tryRefreshToken(): Promise<boolean> {
       credentials: 'include', // Send and receive cookies
       headers: {
         'Content-Type': 'application/json',
+        'Accept-Language': i18n.language,
       },
       body: JSON.stringify({ refreshToken: refreshTokenValue }),
     })
@@ -90,9 +92,10 @@ export async function apiClient<T>(
 ): Promise<T> {
   const token = getAccessToken()
 
-  // Merge headers with Authorization if token exists
+  // Merge headers with Authorization and Accept-Language
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    'Accept-Language': i18n.language,
     ...options.headers,
   }
 
@@ -155,6 +158,7 @@ export async function apiClientPublic<T>(
 ): Promise<T> {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    'Accept-Language': i18n.language,
     ...options.headers,
   }
 
