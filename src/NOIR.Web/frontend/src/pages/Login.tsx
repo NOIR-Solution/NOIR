@@ -10,31 +10,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useLogin } from "@/hooks/useLogin"
 import { themeClasses } from "@/config/theme"
 import { isValidEmail } from "@/lib/validation"
-import { LanguageSwitcherCompact } from "@/i18n/LanguageSwitcher"
-
-interface AnimatedBlobProps {
-  color: string;
-  position: string;
-  delay?: string;
-}
-
-const AnimatedBlob = ({ color, position, delay = "" }: AnimatedBlobProps) => (
-  <div className={`absolute ${position} w-72 h-72 ${color} rounded-full mix-blend-screen filter blur-xl opacity-70 animate-blob ${delay}`} />
-)
-
-const GradientWave = () => (
-  <div className="absolute inset-0 opacity-20">
-    <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 1440 560">
-      <defs>
-        <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor={themeClasses.svgGradientStart} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={themeClasses.svgGradientEnd} stopOpacity="0.1" />
-        </linearGradient>
-      </defs>
-      <path fill="url(#gradient1)" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,218.7C672,235,768,245,864,234.7C960,224,1056,192,1152,186.7C1248,181,1344,203,1392,213.3L1440,224L1440,560L1392,560C1344,560,1248,560,1152,560C1056,560,960,560,864,560C768,560,672,560,576,560C480,560,384,560,288,560C192,560,96,560,48,560L0,560Z" />
-    </svg>
-  </div>
-)
+import { LanguageSwitcher } from "@/i18n/LanguageSwitcher"
+import { AnimatedBlob, GradientWave } from "@/components/decorative/BackgroundAnimations"
 
 /**
  * Validates the return URL to prevent open redirect attacks (CWE-601).
@@ -46,13 +23,14 @@ function validateReturnUrl(url: string): string {
   if (url && url.startsWith('/') && !url.startsWith('//')) {
     return url
   }
-  return '/'
+  // Default redirect to portal after login
+  return '/portal'
 }
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const returnUrl = searchParams.get('returnUrl') || '/'
+  const returnUrl = searchParams.get('returnUrl') || '/portal'
   const { login } = useLogin()
   const { t } = useTranslation('auth')
 
@@ -95,7 +73,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white relative">
         {/* Language Switcher - Top Right */}
         <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
-          <LanguageSwitcherCompact className="text-gray-500" />
+          <LanguageSwitcher variant="dropdown" />
         </div>
         <div className="w-full max-w-md space-y-8">
           <div className="text-center space-y-2">
@@ -212,7 +190,7 @@ export default function LoginPage() {
           <AnimatedBlob color={themeClasses.blobAccent} position="-bottom-8 left-20" delay="animation-delay-4000" />
         </div>
 
-        <GradientWave />
+        <GradientWave id="loginGradient" opacity="opacity-20" />
 
         <div className="relative z-10 flex items-center justify-center p-8 lg:p-12 w-full">
           <div className="text-center space-y-6 max-w-md">

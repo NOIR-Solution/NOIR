@@ -1,8 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { PortalLayout } from '@/layouts/PortalLayout'
 import LoginPage from '@/pages/Login'
-import HomePage from '@/pages/Home'
+import LandingPage from '@/pages/Landing'
+import Dashboard from '@/pages/portal/Dashboard'
 import './index.css'
 
 function App() {
@@ -10,15 +12,24 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+
+          {/* Protected Portal Routes */}
           <Route
-            path="/*"
+            path="/portal"
             element={
               <ProtectedRoute>
-                <HomePage />
+                <PortalLayout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<Dashboard />} />
+          </Route>
+
+          {/* Catch-all redirect to landing */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

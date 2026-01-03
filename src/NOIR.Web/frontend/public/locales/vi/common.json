@@ -1,27 +1,33 @@
 {
+  "landing": {
+    "badge": "Nền tảng Kinh doanh An toàn",
+    "welcomeTo": "Chào mừng đến",
+    "description": "Cổng thông tin an toàn để quản lý hoạt động kinh doanh với bảo mật cấp doanh nghiệp và cộng tác liền mạch.",
+    "accessPortal": "Truy cập Cổng",
+    "allRightsReserved": "Đã đăng ký bản quyền."
+  },
+  "nav": {
+    "portal": "Cổng thông tin",
+    "overview": "Tổng quan",
+    "collapse": "Thu gọn"
+  },
+  "auth": {
+    "signIn": "Đăng nhập",
+    "signOut": "Đăng xuất"
+  },
   "dashboard": {
     "title": "Bảng điều khiển",
-    "welcomeBack": "Chào mừng trở lại, {{name}}!",
-    "logout": "Đăng xuất",
-    "apiDocs": {
-      "title": "Tài liệu API",
-      "description": "Khám phá và kiểm tra các API",
-      "link": "Mở tài liệu API"
-    },
-    "hangfire": {
-      "title": "Bảng điều khiển Hangfire",
-      "description": "Theo dõi các tác vụ nền",
-      "link": "Mở Hangfire"
-    },
-    "profile": {
-      "title": "Hồ sơ của bạn",
-      "description": "Thông tin tài khoản",
-      "email": "Email",
-      "tenant": "Tổ chức",
-      "roles": "Vai trò",
-      "notAssigned": "Chưa phân công",
-      "noRoles": "Không có"
-    }
+    "welcome": "Chào mừng trở lại, {{name}}!",
+    "quickLinks": "Liên kết nhanh",
+    "quickLinksDescription": "Truy cập các tài nguyên thường dùng",
+    "apiDocs": "Tài liệu API",
+    "hangfire": "Bảng điều khiển Hangfire",
+    "yourProfile": "Hồ sơ của bạn"
+  },
+  "profile": {
+    "email": "Email",
+    "tenant": "Tổ chức",
+    "roles": "Vai trò"
   },
   "buttons": {
     "save": "Lưu",

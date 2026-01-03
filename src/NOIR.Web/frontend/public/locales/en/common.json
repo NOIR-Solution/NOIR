@@ -1,27 +1,33 @@
 {
+  "landing": {
+    "badge": "Secure Business Platform",
+    "welcomeTo": "Welcome to",
+    "description": "Your secure portal for managing business operations with enterprise-grade security and seamless collaboration.",
+    "accessPortal": "Access Portal",
+    "allRightsReserved": "All rights reserved."
+  },
+  "nav": {
+    "portal": "Portal",
+    "overview": "Overview",
+    "collapse": "Collapse"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
   "dashboard": {
     "title": "Dashboard",
-    "welcomeBack": "Welcome back, {{name}}!",
-    "logout": "Logout",
-    "apiDocs": {
-      "title": "API Documentation",
-      "description": "Explore and test API endpoints",
-      "link": "Open API Docs"
-    },
-    "hangfire": {
-      "title": "Hangfire Dashboard",
-      "description": "Monitor background jobs",
-      "link": "Open Hangfire"
-    },
-    "profile": {
-      "title": "Your Profile",
-      "description": "Account information",
-      "email": "Email",
-      "tenant": "Tenant",
-      "roles": "Roles",
-      "notAssigned": "Not assigned",
-      "noRoles": "None"
-    }
+    "welcome": "Welcome back, {{name}}!",
+    "quickLinks": "Quick Links",
+    "quickLinksDescription": "Access frequently used resources",
+    "apiDocs": "API Documentation",
+    "hangfire": "Hangfire Dashboard",
+    "yourProfile": "Your Profile"
+  },
+  "profile": {
+    "email": "Email",
+    "tenant": "Tenant",
+    "roles": "Roles"
   },
   "buttons": {
     "save": "Save",
