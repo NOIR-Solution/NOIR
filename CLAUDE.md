@@ -149,9 +149,14 @@ For detailed documentation, see the `docs/` folder:
 | Topic | Location |
 |-------|----------|
 | Backend patterns | `docs/backend/patterns/` |
+| Backend research | `docs/backend/research/` |
 | Frontend guide | `docs/frontend/` |
 | Architecture decisions | `docs/decisions/` |
 | Setup guide | `SETUP.md` |
+
+**When creating documentation:**
+- Research reports go to `docs/backend/research/` or `docs/frontend/research/`
+- Do NOT use `claudedocs/` - that folder is deprecated
 
 ## File Boundaries
 
