@@ -28,34 +28,33 @@ public static class ApplicationDbContextSeeder
                 tenantSetter.MultiTenantContext = new MultiTenantContext<TenantInfo>(defaultTenant);
             }
 
-            // Ensure database is created
-            // For fresh databases (like test LocalDB): Use EnsureCreated for fastest setup
-            // For existing databases with data: Use MigrateAsync to apply pending migrations
+            // Ensure database is created and migrations are applied
+            // MigrateAsync is idempotent - it checks __EFMigrationsHistory and only applies pending migrations
+            // EnsureCreatedAsync should ONLY be used for InMemory tests (no migration history tracking)
             if (context.Database.IsRelational())
             {
-                // Check if database exists and has migrations table
-                var canConnect = await context.Database.CanConnectAsync();
-                if (canConnect)
+                // MigrateAsync handles all cases correctly:
+                // 1. Database doesn't exist → Creates DB + applies all migrations + records in __EFMigrationsHistory
+                // 2. Database exists, no migrations applied → Applies all pending migrations
+                // 3. Database exists, some migrations applied → Applies only pending migrations
+                // 4. Database exists, all migrations applied → Does nothing (idempotent)
+                var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+                if (pendingMigrations.Any())
                 {
-                    // Database exists - check for pending migrations
-                    var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
-                    if (pendingMigrations.Any())
-                    {
-                        await context.Database.MigrateAsync();
-                        logger.LogInformation("Applied {Count} pending migrations", pendingMigrations.Count());
-                    }
+                    logger.LogInformation("Applying {Count} pending migrations: {Migrations}",
+                        pendingMigrations.Count(),
+                        string.Join(", ", pendingMigrations));
+                    await context.Database.MigrateAsync();
+                    logger.LogInformation("Successfully applied all pending migrations");
                 }
                 else
                 {
-                    // Database doesn't exist - create from current model
-                    // This is faster than migrations for fresh databases
-                    await context.Database.EnsureCreatedAsync();
-                    logger.LogInformation("Created database from model");
+                    logger.LogInformation("Database is up to date, no pending migrations");
                 }
             }
             else
             {
-                // Non-relational provider (InMemory) - just create
+                // Non-relational provider (InMemory for tests) - use EnsureCreatedAsync
                 await context.Database.EnsureCreatedAsync();
             }
 
