@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useLogin } from "@/hooks/useLogin"
 import { themeClasses } from "@/config/theme"
 import { isValidEmail } from "@/lib/validation"
+import { LanguageSwitcherCompact } from "@/i18n/LanguageSwitcher"
 
 interface AnimatedBlobProps {
   color: string;
@@ -91,7 +92,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row w-full bg-background">
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white relative">
+        {/* Language Switcher - Top Right */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+          <LanguageSwitcherCompact className="text-gray-500" />
+        </div>
         <div className="w-full max-w-md space-y-8">
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center mb-6">

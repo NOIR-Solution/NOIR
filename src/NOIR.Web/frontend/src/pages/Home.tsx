@@ -5,6 +5,7 @@ import { ShieldCheck, LogOut, ExternalLink } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { themeClasses } from "@/config/theme"
 import { useTranslation } from "react-i18next"
+import { LanguageSwitcherCompact } from "@/i18n/LanguageSwitcher"
 
 export default function HomePage() {
   const { t } = useTranslation('common')
@@ -31,6 +32,7 @@ export default function HomePage() {
             <span className="font-bold text-xl text-gray-900">NOIR</span>
           </div>
           <div className="flex items-center gap-4">
+            <LanguageSwitcherCompact className="text-gray-500" />
             <span className="text-sm text-gray-600">
               {user.email}
             </span>
