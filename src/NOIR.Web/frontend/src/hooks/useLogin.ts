@@ -7,14 +7,14 @@ import type { LoginRequest, AuthResponse } from '@/types'
  * Custom hook for handling login with automatic auth context synchronization.
  *
  * This hook encapsulates the pattern of:
- * 1. Calling the login API to authenticate and set cookies
+ * 1. Calling the login API to authenticate (tokens stored in localStorage)
  * 2. Refreshing the auth context so ProtectedRoute recognizes the authenticated state
  *
  * Using this hook prevents the common mistake of forgetting to call checkAuth()
  * after a successful login, which would cause ProtectedRoute to redirect back to login.
  *
  * @example
- * const { login, isLoggingIn } = useLogin()
+ * const { login } = useLogin()
  *
  * const handleSubmit = async () => {
  *   try {
@@ -29,8 +29,8 @@ export function useLogin() {
   const { checkAuth } = useAuthContext()
 
   const login = useCallback(async (credentials: LoginRequest): Promise<AuthResponse> => {
-    // Authenticate with the server (sets HTTP-only cookies)
-    const response = await loginApi(credentials, true)
+    // Authenticate with the server (tokens stored in localStorage)
+    const response = await loginApi(credentials)
 
     // Sync auth context so ProtectedRoute sees us as authenticated
     await checkAuth()
