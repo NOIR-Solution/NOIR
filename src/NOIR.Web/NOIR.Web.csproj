@@ -8,7 +8,7 @@
         <AssemblyName>NOIR.Web</AssemblyName>
         <!-- SPA Integration -->
         <SpaRoot>frontend/</SpaRoot>
-        <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
+        <SpaProxyServerUrl>http://localhost:3000</SpaProxyServerUrl>
     </PropertyGroup>
 
     <!-- Build React SPA before .NET build (Release only for faster dev builds) -->

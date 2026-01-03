@@ -42,7 +42,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
     {
         var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-            ?? ["http://localhost:3000", "http://localhost:5173"]; // Default React/Vite dev ports
+            ?? ["http://localhost:3000"]; // Vite dev server (port 3000 for Vibe Kanban compatibility)
 
         policy
             .WithOrigins(allowedOrigins)

@@ -25,8 +25,8 @@ export default defineConfig({
     },
   },
   server: {
-    // Dev server port
-    port: 5173,
+    // Dev server port (3000 for Vibe Kanban compatibility)
+    port: 3000,
     // Proxy API requests to .NET backend
     proxy: {
       '/api': {

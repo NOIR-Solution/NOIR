@@ -469,9 +469,9 @@ Check that the SA password meets SQL Server requirements:
 - Contains uppercase, lowercase, numbers, and symbols
 
 ```bash
-# Reset password in running container
-docker exec -it noir-sqlserver /opt/mssql-tools/bin/sqlcmd \
-  -S localhost -U SA -P 'OldPassword' \
+# Reset password in running container (Azure SQL Edge uses mssql-tools18)
+docker exec -it noir-sqlserver /opt/mssql-tools18/bin/sqlcmd \
+  -S localhost -U SA -P 'OldPassword' -C \
   -Q "ALTER LOGIN SA WITH PASSWORD = 'NewPassword123!'"
 ```
 
