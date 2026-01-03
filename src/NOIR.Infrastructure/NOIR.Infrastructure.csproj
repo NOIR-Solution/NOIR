@@ -22,6 +22,11 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
 
+        <!-- Bulk Operations (High Performance) -->
+        <!-- Uses SqlBulkCopy for SQL Server - 10-15x faster than AddRange for large datasets -->
+        <!-- MIT-licensed fork with EF Core 10 support: https://github.com/borisdj/EFCore.BulkExtensions -->
+        <PackageReference Include="EFCore.BulkExtensions.MIT" Version="10.22.0" />
+
         <!-- Authentication -->
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
 

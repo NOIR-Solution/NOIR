@@ -215,7 +215,7 @@ public interface IRepository<TEntity, TId> : IReadRepository<TEntity, TId>
 
     #endregion
 
-    #region Bulk Operations
+    #region Bulk Operations (Specification-based - Native EF Core)
 
     /// <summary>
     /// Bulk deletes entities matching the specification (hard delete).
@@ -240,6 +240,97 @@ public interface IRepository<TEntity, TId> : IReadRepository<TEntity, TId>
     /// <returns>The number of entities soft-deleted.</returns>
     Task<int> BulkSoftDeleteAsync(
         ISpecification<TEntity> specification,
+        CancellationToken cancellationToken = default);
+
+    #endregion
+
+    #region Bulk Operations (Collection-based - High Performance)
+
+    /// <summary>
+    /// Bulk inserts entities using SqlBulkCopy for maximum performance.
+    /// 10-15x faster than AddRange for large datasets (1000+ records).
+    /// NOTE: Bypasses change tracking and interceptors (no audit logging).
+    /// Use within a transaction for data consistency.
+    /// </summary>
+    /// <param name="entities">The entities to insert.</param>
+    /// <param name="config">Optional configuration for batch size, timeout, etc.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task BulkInsertAsync(
+        IEnumerable<TEntity> entities,
+        BulkOperationConfig? config = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Bulk updates entities using MERGE for maximum performance.
+    /// 4-5x faster than UpdateRange for large datasets.
+    /// NOTE: Bypasses change tracking and interceptors (no audit logging).
+    /// Entities must have their primary keys set.
+    /// </summary>
+    /// <param name="entities">The entities to update.</param>
+    /// <param name="config">Optional configuration. Use UpdateByProperties for custom matching.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task BulkUpdateAsync(
+        IEnumerable<TEntity> entities,
+        BulkOperationConfig? config = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Bulk inserts or updates entities (upsert) based on key matching.
+    /// If entity exists (by PK or UpdateByProperties), it's updated; otherwise inserted.
+    /// Ideal for sync scenarios where you don't know if records exist.
+    /// NOTE: Bypasses change tracking and interceptors.
+    /// </summary>
+    /// <param name="entities">The entities to upsert.</param>
+    /// <param name="config">Optional configuration. Use UpdateByProperties for business key matching.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task BulkInsertOrUpdateAsync(
+        IEnumerable<TEntity> entities,
+        BulkOperationConfig? config = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Bulk deletes the provided entities by their primary keys.
+    /// Uses bulk delete for maximum performance.
+    /// NOTE: This is HARD delete - entities are permanently removed.
+    /// WARNING: This cannot be undone.
+    /// </summary>
+    /// <remarks>
+    /// This differs from <see cref="BulkDeleteAsync(ISpecification{TEntity}, CancellationToken)"/>
+    /// which deletes by specification. Use this method when you have a collection of entities to delete.
+    /// </remarks>
+    /// <param name="entities">The entities to delete.</param>
+    /// <param name="config">Optional configuration.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task BulkDeleteEntitiesAsync(
+        IEnumerable<TEntity> entities,
+        BulkOperationConfig? config = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Synchronizes the database table with the provided collection.
+    /// Inserts new entities, updates existing ones, and deletes those not in the collection.
+    /// Useful for full sync scenarios (e.g., importing data from external systems).
+    /// WARNING: Entities not in the collection will be DELETED (hard delete).
+    /// </summary>
+    /// <param name="entities">The complete collection to sync to.</param>
+    /// <param name="config">Optional configuration. Use UpdateByProperties for business key matching.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task BulkSyncAsync(
+        IEnumerable<TEntity> entities,
+        BulkOperationConfig? config = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Bulk reads entities by their keys for efficient large-scale lookups.
+    /// More efficient than multiple GetByIdAsync calls for large datasets.
+    /// </summary>
+    /// <param name="entities">Entities with keys set (other properties populated from DB).</param>
+    /// <param name="config">Optional configuration. Use UpdateByProperties to match by business keys.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The entities with all properties populated from the database.</returns>
+    Task<IReadOnlyList<TEntity>> BulkReadAsync(
+        IEnumerable<TEntity> entities,
+        BulkOperationConfig? config = null,
         CancellationToken cancellationToken = default);
 
     #endregion

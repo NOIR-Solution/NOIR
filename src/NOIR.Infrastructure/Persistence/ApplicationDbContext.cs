@@ -119,4 +119,71 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             }
         }
     }
+
+    #region IUnitOfWork Transaction Support
+
+    private IDbContextTransaction? _currentTransaction;
+
+    /// <inheritdoc />
+    public bool HasActiveTransaction => _currentTransaction != null;
+
+    /// <inheritdoc />
+    public async Task<Domain.Interfaces.IDbTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_currentTransaction != null)
+        {
+            throw new InvalidOperationException(
+                "A transaction is already in progress. Commit or rollback the current transaction before starting a new one.");
+        }
+
+        _currentTransaction = await Database.BeginTransactionAsync(cancellationToken);
+        return new DbTransactionWrapper(_currentTransaction);
+    }
+
+    /// <inheritdoc />
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_currentTransaction == null)
+        {
+            throw new InvalidOperationException("No transaction is currently in progress.");
+        }
+
+        try
+        {
+            await _currentTransaction.CommitAsync(cancellationToken);
+        }
+        finally
+        {
+            await DisposeTransactionAsync();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_currentTransaction == null)
+        {
+            throw new InvalidOperationException("No transaction is currently in progress.");
+        }
+
+        try
+        {
+            await _currentTransaction.RollbackAsync(cancellationToken);
+        }
+        finally
+        {
+            await DisposeTransactionAsync();
+        }
+    }
+
+    private async Task DisposeTransactionAsync()
+    {
+        if (_currentTransaction != null)
+        {
+            await _currentTransaction.DisposeAsync();
+            _currentTransaction = null;
+        }
+    }
+
+    #endregion
 }

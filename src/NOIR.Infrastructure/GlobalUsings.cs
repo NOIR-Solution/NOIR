@@ -27,6 +27,10 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.ChangeTracking;
 global using Microsoft.EntityFrameworkCore.Design;
 global using Microsoft.EntityFrameworkCore.Diagnostics;
+global using Microsoft.EntityFrameworkCore.Storage;
+
+// EFCore.BulkExtensions (High Performance Bulk Operations)
+global using EFCore.BulkExtensions;
 
 // Microsoft - Extensions
 global using Microsoft.Extensions.Caching.Memory;

@@ -30,6 +30,9 @@ global using Microsoft.Data.SqlClient;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Diagnostics;
 
+// EFCore.BulkExtensions
+global using EFCore.BulkExtensions;
+
 // Microsoft - Extensions
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
