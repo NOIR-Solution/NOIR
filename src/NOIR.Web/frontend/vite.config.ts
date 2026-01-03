@@ -33,10 +33,23 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:5228',
         changeOrigin: true,
+        // Enable WebSocket proxy for any real-time features
+        ws: true,
+        // Configure proxy to handle Scalar API docs properly
+        configure: (proxy) => {
+          proxy.on('proxyRes', (proxyRes) => {
+            // Remove X-Frame-Options for development to avoid issues
+            // with embedded API documentation viewers
+            if (proxyRes.headers['x-frame-options']) {
+              delete proxyRes.headers['x-frame-options']
+            }
+          })
+        },
       },
       '/hangfire': {
         target: 'http://localhost:5228',
         changeOrigin: true,
+        ws: true,
       },
     },
   },
