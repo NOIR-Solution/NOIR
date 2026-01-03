@@ -54,7 +54,7 @@ public class TenantIdSetterInterceptorTests
         }
         else
         {
-            mock.Setup(x => x.MultiTenantContext).Returns((IMultiTenantContext<TenantInfo>?)null);
+            mock.Setup(x => x.MultiTenantContext).Returns(default(IMultiTenantContext<TenantInfo>)!);
         }
 
         return mock;

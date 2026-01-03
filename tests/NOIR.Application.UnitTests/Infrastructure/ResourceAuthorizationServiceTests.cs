@@ -150,7 +150,7 @@ public class ResourceAuthorizationServiceTests
     public async Task AuthorizeAsync_WithNullResource_ThrowsArgumentNullException()
     {
         // Act
-        var act = () => _sut.AuthorizeAsync("user", (IResource)null!, "read");
+        var act = () => _sut.AuthorizeAsync("user", default(IResource)!, "read");
 
         // Assert
         await act.Should().ThrowAsync<ArgumentNullException>();

@@ -10,6 +10,7 @@ public sealed class RefreshTokensByFamilySpec : Specification<RefreshToken>
     {
         Query.Where(t => t.TokenFamily == tokenFamily)
              .Where(t => !t.RevokedAt.HasValue)
+             .AsTracking()  // Required for family revocation (theft detection)
              .TagWith("RefreshTokensByFamily");
     }
 }

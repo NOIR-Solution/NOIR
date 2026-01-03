@@ -27,12 +27,17 @@ public class RefreshTokenServiceTests : IAsyncLifetime
         });
     }
 
-    private static IRefreshTokenService CreateService(IServiceProvider services)
+    private static IRefreshTokenService CreateService(
+        IServiceProvider services,
+        JwtSettings? customSettings = null)
     {
         var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
-        var jwtSettings = services.GetRequiredService<IOptions<JwtSettings>>();
+        var unitOfWork = services.GetRequiredService<IUnitOfWork>();
+        var jwtSettings = customSettings != null
+            ? Options.Create(customSettings)
+            : services.GetRequiredService<IOptions<JwtSettings>>();
         var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-        return new RefreshTokenService(repository, jwtSettings, logger);
+        return new RefreshTokenService(repository, unitOfWork, jwtSettings, logger);
     }
 
     #region CreateTokenAsync Tests
@@ -414,22 +419,14 @@ public class RefreshTokenServiceTests : IAsyncLifetime
         await _factory.ExecuteWithTenantAsync(async services =>
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
-            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
-            var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-
-            // Create service with MaxConcurrentSessions = 2
-            var jwtSettings = new JwtSettings
+            var service = CreateService(services, new JwtSettings
             {
                 Secret = "test-secret-key-that-is-long-enough-for-jwt",
                 Issuer = "test",
                 Audience = "test",
                 MaxConcurrentSessions = 2,
                 RefreshTokenExpirationInDays = 7
-            };
-            var service = new RefreshTokenService(
-                repository,
-                Options.Create(jwtSettings),
-                logger);
+            });
 
             var userId = $"max-sessions-{Guid.NewGuid()}";
 
@@ -455,22 +452,15 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
-            var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-
             // Create service with MaxConcurrentSessions = 0 (unlimited)
-            var jwtSettings = new JwtSettings
+            var service = CreateService(services, new JwtSettings
             {
                 Secret = "test-secret-key-that-is-long-enough-for-jwt",
                 Issuer = "test",
                 Audience = "test",
                 MaxConcurrentSessions = 0,
                 RefreshTokenExpirationInDays = 7
-            };
-            var service = new RefreshTokenService(
-                repository,
-                Options.Create(jwtSettings),
-                logger);
+            });
 
             var userId = $"unlimited-sessions-{Guid.NewGuid()}";
 
@@ -498,22 +488,15 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
-            var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-
             // Create service with device fingerprinting enabled
-            var jwtSettings = new JwtSettings
+            var service = CreateService(services, new JwtSettings
             {
                 Secret = "test-secret-key-that-is-long-enough-for-jwt",
                 Issuer = "test",
                 Audience = "test",
                 EnableDeviceFingerprinting = true,
                 RefreshTokenExpirationInDays = 7
-            };
-            var service = new RefreshTokenService(
-                repository,
-                Options.Create(jwtSettings),
-                logger);
+            });
 
             var userId = $"fingerprint-validate-{Guid.NewGuid()}";
 
@@ -537,21 +520,14 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
-            var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-
-            var jwtSettings = new JwtSettings
+            var service = CreateService(services, new JwtSettings
             {
                 Secret = "test-secret-key-that-is-long-enough-for-jwt",
                 Issuer = "test",
                 Audience = "test",
                 EnableDeviceFingerprinting = true,
                 RefreshTokenExpirationInDays = 7
-            };
-            var service = new RefreshTokenService(
-                repository,
-                Options.Create(jwtSettings),
-                logger);
+            });
 
             var userId = $"fingerprint-match-{Guid.NewGuid()}";
             var fingerprint = "test-fingerprint";
@@ -576,21 +552,14 @@ public class RefreshTokenServiceTests : IAsyncLifetime
         await _factory.ExecuteWithTenantAsync(async services =>
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
-            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
-            var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-
-            var jwtSettings = new JwtSettings
+            var service = CreateService(services, new JwtSettings
             {
                 Secret = "test-secret-key-that-is-long-enough-for-jwt",
                 Issuer = "test",
                 Audience = "test",
                 EnableDeviceFingerprinting = true,
                 RefreshTokenExpirationInDays = 7
-            };
-            var service = new RefreshTokenService(
-                repository,
-                Options.Create(jwtSettings),
-                logger);
+            });
 
             var userId = $"fingerprint-rotate-{Guid.NewGuid()}";
 
@@ -619,21 +588,14 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
-            var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-
-            var jwtSettings = new JwtSettings
+            var service = CreateService(services, new JwtSettings
             {
                 Secret = "test-secret-key-that-is-long-enough-for-jwt",
                 Issuer = "test",
                 Audience = "test",
                 EnableDeviceFingerprinting = true,
                 RefreshTokenExpirationInDays = 7
-            };
-            var service = new RefreshTokenService(
-                repository,
-                Options.Create(jwtSettings),
-                logger);
+            });
 
             var userId = $"no-fingerprint-{Guid.NewGuid()}";
 
@@ -653,22 +615,14 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
-            var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-
-            // Create service with fingerprinting DISABLED
-            var jwtSettings = new JwtSettings
+            var service = CreateService(services, new JwtSettings
             {
                 Secret = "test-secret-key-that-is-long-enough-for-jwt",
                 Issuer = "test",
                 Audience = "test",
                 EnableDeviceFingerprinting = false,
                 RefreshTokenExpirationInDays = 7
-            };
-            var service = new RefreshTokenService(
-                repository,
-                Options.Create(jwtSettings),
-                logger);
+            });
 
             var userId = $"disabled-fingerprint-{Guid.NewGuid()}";
 

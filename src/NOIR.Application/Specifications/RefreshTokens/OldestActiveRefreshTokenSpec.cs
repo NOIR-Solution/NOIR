@@ -13,6 +13,7 @@ public sealed class OldestActiveRefreshTokenSpec : Specification<RefreshToken>
              .Where(t => t.ExpiresAt > DateTimeOffset.UtcNow)
              .OrderBy(t => t.CreatedAt)
              .Take(1)
+             .AsTracking()  // Required for revocation when session limit exceeded
              .TagWith("OldestActiveRefreshToken");
     }
 }

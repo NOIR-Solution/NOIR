@@ -11,6 +11,7 @@ public sealed class ActiveRefreshTokensByUserSpec : Specification<RefreshToken>
              .Where(t => !t.RevokedAt.HasValue)
              .Where(t => t.ExpiresAt > DateTimeOffset.UtcNow)
              .OrderByDescending(t => t.CreatedAt)
+             .AsTracking()  // Required for batch revocation
              .TagWith("ActiveRefreshTokensByUser");
     }
 }

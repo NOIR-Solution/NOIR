@@ -8,15 +8,18 @@ namespace NOIR.Infrastructure.Identity;
 public class RefreshTokenService : IRefreshTokenService, IScopedService
 {
     private readonly IRepository<RefreshToken, Guid> _repository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly JwtSettings _jwtSettings;
     private readonly ILogger<RefreshTokenService> _logger;
 
     public RefreshTokenService(
         IRepository<RefreshToken, Guid> repository,
+        IUnitOfWork unitOfWork,
         IOptions<JwtSettings> jwtSettings,
         ILogger<RefreshTokenService> logger)
     {
         _repository = repository;
+        _unitOfWork = unitOfWork;
         _jwtSettings = jwtSettings.Value;
         _logger = logger;
     }
@@ -43,7 +46,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
                 if (oldestToken != null)
                 {
                     oldestToken.Revoke(ipAddress, "Session limit reached - oldest session revoked");
-                    _repository.Update(oldestToken);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
                     _logger.LogInformation(
                         "Revoked oldest session for user {UserId} due to session limit",
                         userId);
@@ -61,6 +64,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
             deviceName);
 
         await _repository.AddAsync(token, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogDebug(
             "Created refresh token for user {UserId}, family {TokenFamily}",
@@ -119,7 +123,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
                 deviceFingerprint);
 
             existingToken.Revoke(ipAddress, "Device fingerprint mismatch");
-            _repository.Update(existingToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return null;
         }
@@ -138,8 +142,8 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         // Revoke old token, link to new
         existingToken.Revoke(ipAddress, "Rotated", newToken.Token);
 
-        _repository.Update(existingToken);
         await _repository.AddAsync(newToken, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogDebug(
             "Rotated refresh token for user {UserId}, family {TokenFamily}",
@@ -195,7 +199,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         }
 
         refreshToken.Revoke(ipAddress, reason ?? "Manually revoked");
-        _repository.Update(refreshToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(
             "Revoked refresh token for user {UserId}",
@@ -214,8 +218,9 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         foreach (var token in tokens)
         {
             token.Revoke(ipAddress, reason ?? "All sessions revoked");
-            _repository.Update(token);
         }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(
             "Revoked all {Count} refresh tokens for user {UserId}",
@@ -234,8 +239,9 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         foreach (var token in tokens)
         {
             token.Revoke(ipAddress, reason ?? "Token family revoked");
-            _repository.Update(token);
         }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogWarning(
             "Revoked entire token family {TokenFamily} ({Count} tokens). Reason: {Reason}",

@@ -25,6 +25,8 @@
         <!-- Bulk Operations (High Performance) -->
         <!-- Uses SqlBulkCopy for SQL Server - 10-15x faster than AddRange for large datasets -->
         <!-- MIT-licensed fork with EF Core 10 support: https://github.com/borisdj/EFCore.BulkExtensions -->
+        <!-- Note: This package brings Pomelo.EntityFrameworkCore.MySql as transitive dependency (not used) -->
+        <!-- NU1608 warning is suppressed in Directory.Build.props -->
         <PackageReference Include="EFCore.BulkExtensions.MIT" Version="10.22.0" />
 
         <!-- Authentication -->

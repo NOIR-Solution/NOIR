@@ -62,7 +62,7 @@ public class EmailServiceTests
         var response = new SendResponse { MessageId = "123" };
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.Subject(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
-        _fluentEmailMock.Setup(x => x.Body(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
+        _fluentEmailMock.Setup(x => x.Body(It.IsAny<string>(), false)).Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.SendAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
@@ -70,7 +70,7 @@ public class EmailServiceTests
         await _sut.SendAsync("test@example.com", "Subject", "Plain text body", isHtml: false);
 
         // Assert
-        _fluentEmailMock.Verify(x => x.Body("Plain text body"), Times.Once);
+        _fluentEmailMock.Verify(x => x.Body("Plain text body", false), Times.Once);
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class EmailServiceTests
         var response = new SendResponse { MessageId = "123" };
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.Subject(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
-        _fluentEmailMock.Setup(x => x.UsingTemplateFromFile(It.IsAny<string>(), It.IsAny<object>()))
+        _fluentEmailMock.Setup(x => x.UsingTemplateFromFile(It.IsAny<string>(), It.IsAny<object>(), true))
             .Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.SendAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
@@ -217,7 +217,7 @@ public class EmailServiceTests
         response.ErrorMessages.Add("Template not found");
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.Subject(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
-        _fluentEmailMock.Setup(x => x.UsingTemplateFromFile(It.IsAny<string>(), It.IsAny<object>()))
+        _fluentEmailMock.Setup(x => x.UsingTemplateFromFile(It.IsAny<string>(), It.IsAny<object>(), true))
             .Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.SendAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);

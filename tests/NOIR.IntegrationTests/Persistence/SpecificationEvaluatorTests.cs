@@ -244,8 +244,8 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
 
-            // Arrange
-            var spec = new ActiveRefreshTokensByUserSpec("spec-test-user");
+            // Arrange - ExpiredRefreshTokensSpec uses default AsNoTracking behavior
+            var spec = new ExpiredRefreshTokensSpec(DateTimeOffset.UtcNow.AddDays(1));
 
             // Act
             var query = SpecificationEvaluator.GetQuery(context.RefreshTokens.AsQueryable(), spec);

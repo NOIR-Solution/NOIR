@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <!-- Suppress NU1608 for Pomelo.EntityFrameworkCore.MySql transitive dependency -->
+    <!-- EFCore.BulkExtensions.MIT brings Pomelo as transitive dependency, but this project uses SQL Server only -->
+    <!-- Pomelo 9.0 requires EF Core 9.x but we use EF Core 10.x - the warning is safe to suppress -->
+    <NoWarn>$(NoWarn);NU1608</NoWarn>
+  </PropertyGroup>
+</Project>

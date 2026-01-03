@@ -11,6 +11,8 @@
 5. **Soft delete only** - Never hard delete unless explicitly requested for GDPR
 6. **No using statements in files** - Add to `GlobalUsings.cs` in each project
 7. **Use marker interfaces** for DI - Add `IScopedService`, `ITransientService`, or `ISingletonService`
+8. **Use IUnitOfWork for persistence** - Repository methods do NOT auto-save. Always inject `IUnitOfWork` and call `SaveChangesAsync()` after mutations. Never inject `ApplicationDbContext` directly into services.
+9. **Use AsTracking for mutations** - Specifications default to `AsNoTracking`. For specs that retrieve entities for modification, add `.AsTracking()` to enable change detection.
 
 ## Quick Reference
 
@@ -82,6 +84,40 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
     {
         builder.ToTable("Customers");
         builder.HasKey(e => e.Id);
+    }
+}
+```
+
+### Unit of Work Pattern (CRITICAL)
+```csharp
+// Repository methods do NOT auto-save! Always use IUnitOfWork.
+// For tracked entities (from spec with AsTracking), just modify and save.
+// For new entities, call AddAsync then save.
+public class CustomerService : ICustomerService, IScopedService
+{
+    private readonly IRepository<Customer, Guid> _repository;
+    private readonly IUnitOfWork _unitOfWork; // REQUIRED for mutations
+
+    public async Task UpdateCustomerAsync(Customer customer, CancellationToken ct)
+    {
+        // Entity already tracked from spec query - just modify and save
+        customer.UpdateName("New Name");
+        await _unitOfWork.SaveChangesAsync(ct);
+    }
+}
+```
+
+### Specification Tracking (CRITICAL)
+```csharp
+// Specifications default to AsNoTracking (read-only).
+// For entities that WILL BE MODIFIED, use .AsTracking()!
+public class CustomerByIdSpec : Specification<Customer>
+{
+    public CustomerByIdSpec(Guid id)
+    {
+        Query.Where(c => c.Id == id)
+             .AsTracking()  // REQUIRED for modification!
+             .TagWith("CustomerById");
     }
 }
 ```

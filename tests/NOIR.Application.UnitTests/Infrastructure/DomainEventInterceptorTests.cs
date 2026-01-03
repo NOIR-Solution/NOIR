@@ -161,7 +161,7 @@ public class DomainEventInterceptorTests
         await _sut.SavedChangesAsync(eventData, 1, CancellationToken.None);
 
         // Assert
-        _messageBusMock.Verify(x => x.PublishAsync(It.IsAny<object>()), Times.Never);
+        _messageBusMock.Verify(x => x.PublishAsync(It.IsAny<object>(), default), Times.Never);
     }
 
     #endregion

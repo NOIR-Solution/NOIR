@@ -128,7 +128,7 @@ public class CurrentUserServiceTests
     public void TenantId_WhenNoTenant_ShouldReturnNull()
     {
         // Arrange
-        _tenantContextAccessorMock.Setup(x => x.MultiTenantContext).Returns((IMultiTenantContext<TenantInfo>?)null);
+        _tenantContextAccessorMock.Setup(x => x.MultiTenantContext).Returns(default(IMultiTenantContext<TenantInfo>)!);
 
         // Act
         var result = _sut.TenantId;
