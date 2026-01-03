@@ -54,5 +54,11 @@ public static class AuthEndpoints
 - Refresh token rotation with family tracking
 
 ## API Documentation
-- Scalar UI: `/scalar/v1`
-- OpenAPI spec: `/openapi/v1.json`
+- Scalar UI: `/api/docs`
+- OpenAPI spec: `/api/openapi/v1.json`
+
+## Development URLs
+- Application: `http://localhost:3000` (frontend + API via proxy)
+- API Docs: `http://localhost:3000/api/docs`
+
+> Port 4000 serves backend directly for production-like testing.

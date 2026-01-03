@@ -225,8 +225,8 @@ builder.Services.AddHangfireServer();
 
 ```csharp
 builder.Services.AddOpenApi();
-app.MapOpenApi();
-app.MapScalarApiReference(); // Visit /scalar/v1
+app.MapOpenApi("/api/openapi/{documentName}.json");
+app.MapScalarApiReference("/api/docs"); // Visit /api/docs
 ```
 
 [Scalar Website](https://scalar.com/)

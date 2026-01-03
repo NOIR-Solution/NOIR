@@ -55,7 +55,7 @@ dotnet build src/NOIR.sln
 # Run (database auto-creates on first run)
 dotnet run --project src/NOIR.Web
 
-# Access: http://localhost:5000
+# Access: http://localhost:3000 (frontend with hot reload)
 # Admin: admin@noir.local / 123qwe
 ```
 
@@ -130,9 +130,9 @@ dotnet run --project src/NOIR.Web
 
 ### Step 4: Verify Setup
 
-1. Open browser to http://localhost:5000/api/health
+1. Open browser to http://localhost:4000/api/health
    - Should return healthy status
-2. Open http://localhost:5000/api/docs
+2. Open http://localhost:4000/api/docs
    - Should show Scalar API documentation
 3. Login at POST `/api/auth/login`:
    ```json
@@ -179,13 +179,23 @@ SQL Server requires Docker on macOS (no native version available).
 
 ### Step 3: Start SQL Server Container
 
+**Recommended: Use Docker Compose**
 ```bash
-# Pull and run SQL Server 2022
+# Start SQL Server (uses Azure SQL Edge for ARM64/M1 Mac compatibility)
+docker-compose up -d sqlserver
+
+# Verify container is running
+docker-compose ps
+```
+
+**Alternative: Manual Docker Run**
+```bash
+# Azure SQL Edge (recommended for ARM64/M1 Macs)
 docker run -e "ACCEPT_EULA=Y" \
   -e "MSSQL_SA_PASSWORD=Noir@Dev2024!" \
   -p 1433:1433 \
   --name noir-sqlserver \
-  -d mcr.microsoft.com/mssql/mssql-server:2022-latest
+  -d mcr.microsoft.com/azure-sql-edge:latest
 
 # Verify container is running
 docker ps
@@ -291,8 +301,25 @@ sudo usermod -aG docker $USER
 
 ### Step 3: Start SQL Server Container
 
+**Recommended: Use Docker Compose**
 ```bash
-# Pull and run SQL Server 2022
+# Start SQL Server (uses Azure SQL Edge for ARM64/M1 compatibility)
+docker-compose up -d sqlserver
+
+# Verify container is running
+docker-compose ps
+```
+
+**Alternative: Manual Docker Run**
+```bash
+# For ARM64 (Apple Silicon, Raspberry Pi, etc.)
+docker run -e "ACCEPT_EULA=Y" \
+  -e "MSSQL_SA_PASSWORD=Noir@Dev2024!" \
+  -p 1433:1433 \
+  --name noir-sqlserver \
+  -d mcr.microsoft.com/azure-sql-edge:latest
+
+# For x64 (Intel/AMD)
 docker run -e "ACCEPT_EULA=Y" \
   -e "MSSQL_SA_PASSWORD=Noir@Dev2024!" \
   -p 1433:1433 \
@@ -337,12 +364,15 @@ dotnet run --project src/NOIR.Web --environment Development
 
 ### Application URLs
 
+**Development (use port 3000):**
 | URL | Purpose |
 |-----|---------|
-| http://localhost:5000 | Application root |
-| http://localhost:5000/api/docs | API documentation (Scalar) |
-| http://localhost:5000/api/health | Health check |
-| http://localhost:5000/hangfire | Background jobs dashboard (Admin only) |
+| http://localhost:3000 | Application (frontend + API via proxy) |
+| http://localhost:3000/api/docs | API documentation (Scalar) |
+| http://localhost:3000/api/health | Health check |
+| http://localhost:3000/hangfire | Background jobs dashboard (Admin only) |
+
+> **Note:** Port 4000 serves the .NET backend directly (API + embedded static files). Use for production-like testing.
 
 ### Default Credentials
 
@@ -610,7 +640,7 @@ Add `TrustServerCertificate=True` to your connection string (already set in defa
    SyslogIdentifier=noir
    User=www-data
    Environment=ASPNETCORE_ENVIRONMENT=Production
-   Environment=ASPNETCORE_URLS=http://localhost:5000
+   Environment=ASPNETCORE_URLS=http://localhost:4000
 
    [Install]
    WantedBy=multi-user.target
@@ -634,7 +664,7 @@ Add `TrustServerCertificate=True` to your connection string (already set in defa
        server_name your-domain.com;
 
        location / {
-           proxy_pass http://localhost:5000;
+           proxy_pass http://localhost:4000;
            proxy_http_version 1.1;
            proxy_set_header Upgrade $http_upgrade;
            proxy_set_header Connection keep-alive;

@@ -55,6 +55,19 @@ dotnet run --project src/NOIR.Web
 dotnet test src/NOIR.sln
 ```
 
+## Development URLs
+| URL | Purpose |
+|-----|---------|
+| `http://localhost:3000` | Application (frontend + API via proxy) |
+| `http://localhost:3000/api/docs` | API documentation (Scalar) |
+| `http://localhost:3000/hangfire` | Background jobs dashboard |
+
+> Port 4000 serves backend directly for production-like testing.
+
+## Database Setup
+- **Windows**: SQL Server LocalDB (default, included with VS)
+- **macOS/Linux**: Docker (Azure SQL Edge for ARM64/M1, SQL Server for x64)
+
 ## Admin Credentials
 - Email: `admin@noir.local`
 - Password: `123qwe`

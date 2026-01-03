@@ -18,8 +18,8 @@ dotnet build src/NOIR.sln
 # Run (database auto-creates)
 dotnet run --project src/NOIR.Web
 
-# Access
-# API Docs: http://localhost:5000/scalar/v1
+# Access: http://localhost:3000
+# API Docs: http://localhost:3000/api/docs
 # Admin: admin@noir.local / 123qwe
 ```
 
