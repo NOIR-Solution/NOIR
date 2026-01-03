@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text.Json;
 using NOIR.Application.Common.Interfaces;
@@ -16,7 +15,6 @@ public class JsonLocalizationService : ILocalizationService, IScopedService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<JsonLocalizationService> _logger;
     private readonly IHostEnvironment _environment;
-    private readonly ConcurrentDictionary<string, Dictionary<string, object>> _resourceCache = new();
 
     private const string CacheKeyPrefix = "loc_";
     private const string AcceptLanguageHeader = "Accept-Language";
@@ -162,16 +160,20 @@ public class JsonLocalizationService : ILocalizationService, IScopedService
     {
         var cacheKey = $"{CacheKeyPrefix}{culture}";
 
-        if (_settings.EnableCaching)
+        return _cache.GetOrCreate(cacheKey, entry =>
         {
-            return _cache.GetOrCreate(cacheKey, entry =>
+            // When caching is disabled, use minimal expiration to effectively bypass cache
+            // while still benefiting from IMemoryCache's thread-safety
+            if (_settings.EnableCaching)
             {
                 entry.SlidingExpiration = TimeSpan.FromMinutes(_settings.CacheDurationMinutes);
-                return LoadResourcesFromFiles(culture);
-            });
-        }
-
-        return _resourceCache.GetOrAdd(culture, LoadResourcesFromFiles);
+            }
+            else
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMilliseconds(1);
+            }
+            return LoadResourcesFromFiles(culture);
+        });
     }
 
     private Dictionary<string, object> LoadResourcesFromFiles(string culture)
@@ -226,14 +228,6 @@ public class JsonLocalizationService : ILocalizationService, IScopedService
         }
 
         return resources;
-    }
-
-    private static void MergeDictionaries(Dictionary<string, object> target, JsonElement source)
-    {
-        foreach (var property in source.EnumerateObject())
-        {
-            target[property.Name] = property.Value;
-        }
     }
 
     private static string? NavigateToValue(Dictionary<string, object> resources, string key)
