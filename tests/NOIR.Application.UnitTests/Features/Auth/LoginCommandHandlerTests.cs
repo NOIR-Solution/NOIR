@@ -14,6 +14,7 @@ public class LoginCommandHandlerTests
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly Mock<IDeviceFingerprintService> _deviceFingerprintServiceMock;
     private readonly Mock<ICookieAuthService> _cookieAuthServiceMock;
+    private readonly Mock<ILocalizationService> _localizationServiceMock;
     private readonly LoginCommandHandler _handler;
 
     public LoginCommandHandlerTests()
@@ -36,6 +37,12 @@ public class LoginCommandHandlerTests
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
         _deviceFingerprintServiceMock = new Mock<IDeviceFingerprintService>();
         _cookieAuthServiceMock = new Mock<ICookieAuthService>();
+        _localizationServiceMock = new Mock<ILocalizationService>();
+
+        // Setup localization to return the key (pass-through for testing)
+        _localizationServiceMock
+            .Setup(x => x[It.IsAny<string>()])
+            .Returns<string>(key => key);
 
         var jwtSettings = Options.Create(new JwtSettings
         {
@@ -53,6 +60,7 @@ public class LoginCommandHandlerTests
             _refreshTokenServiceMock.Object,
             _deviceFingerprintServiceMock.Object,
             _cookieAuthServiceMock.Object,
+            _localizationServiceMock.Object,
             jwtSettings);
     }
 
@@ -231,7 +239,7 @@ public class LoginCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("Invalid email or password");
+        result.Error.Message.Should().Contain("invalidCredentials");
     }
 
     [Fact]
@@ -282,7 +290,7 @@ public class LoginCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Forbidden);
-        result.Error.Message.Should().Contain("disabled");
+        result.Error.Message.Should().Contain("accountDisabled");
     }
 
     [Fact]
@@ -338,7 +346,7 @@ public class LoginCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("Invalid email or password");
+        result.Error.Message.Should().Contain("invalidCredentials");
     }
 
     #endregion
@@ -370,7 +378,7 @@ public class LoginCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Forbidden);
-        result.Error.Message.Should().Contain("locked out");
+        result.Error.Message.Should().Contain("accountLockedOut");
     }
 
     #endregion

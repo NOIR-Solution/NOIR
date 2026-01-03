@@ -1,6 +1,7 @@
 import * as React from "react"
 import { useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -52,6 +53,7 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams()
   const returnUrl = searchParams.get('returnUrl') || '/'
   const { login } = useLogin()
+  const { t } = useTranslation('auth')
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -64,12 +66,12 @@ export default function LoginPage() {
     setError("")
 
     if (!email || !password) {
-      setError("Please enter both email and password.")
+      setError(t('login.enterBothFields'))
       return
     }
 
     if (!isValidEmail(email)) {
-      setError("Please enter a valid email address.")
+      setError(t('login.invalidEmail'))
       return
     }
 
@@ -81,7 +83,7 @@ export default function LoginPage() {
       const safeReturnUrl = validateReturnUrl(returnUrl)
       navigate(safeReturnUrl)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Authentication failed')
+      setError(err instanceof Error ? err.message : t('login.authFailed'))
     } finally {
       setIsLoading(false)
     }
@@ -98,10 +100,10 @@ export default function LoginPage() {
               </div>
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              NOIR Authentication
+              {t('login.pageTitle')}
             </h1>
             <p className="text-gray-600">
-              Secure access to your account
+              {t('login.secureAccess')}
             </p>
           </div>
 
@@ -110,14 +112,14 @@ export default function LoginPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-gray-700">
-                    Email Address
+                    {t('login.emailLabel')}
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="email"
                       type="email"
-                      placeholder="name@example.com"
+                      placeholder={t('login.emailPlaceholder')}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
@@ -128,14 +130,14 @@ export default function LoginPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-gray-700">
-                    Password
+                    {t('login.password')}
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
+                      placeholder={t('login.passwordPlaceholder')}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10 pr-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
@@ -145,7 +147,7 @@ export default function LoginPage() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -169,10 +171,10 @@ export default function LoginPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      Authenticating...
+                      {t('login.submitting')}
                     </span>
                   ) : (
-                    "Sign In"
+                    t('login.submit')
                   )}
                 </Button>
               </form>
@@ -181,7 +183,7 @@ export default function LoginPage() {
               {import.meta.env.DEV && (
                 <div className="mt-6 text-center">
                   <p className="text-xs text-gray-500">
-                    Default credentials: <code className="bg-gray-100 px-1 py-0.5 rounded">admin@noir.local</code> / <code className="bg-gray-100 px-1 py-0.5 rounded">123qwe</code>
+                    {t('login.defaultCredentials')}: <code className="bg-gray-100 px-1 py-0.5 rounded">admin@noir.local</code> / <code className="bg-gray-100 px-1 py-0.5 rounded">123qwe</code>
                   </p>
                 </div>
               )}
@@ -190,7 +192,7 @@ export default function LoginPage() {
 
           <div className="text-center">
             <p className="text-xs text-gray-500">
-              Protected by enterprise-grade encryption
+              {t('login.protectedBy')}
             </p>
           </div>
         </div>
@@ -213,10 +215,10 @@ export default function LoginPage() {
               <ShieldCheck className="w-12 h-12 text-white" />
             </div>
             <h2 className="text-3xl lg:text-4xl font-bold text-white">
-              Secure Authentication
+              {t('login.secureAuthTitle')}
             </h2>
             <p className="text-lg text-white/80">
-              Your data is protected with industry-standard encryption and security measures. Sign in with confidence.
+              {t('login.secureAuthDescription')}
             </p>
             <div className="flex justify-center gap-2 pt-4">
               <div className="w-2 h-2 rounded-full bg-white/100" />

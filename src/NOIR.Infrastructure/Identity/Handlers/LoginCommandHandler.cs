@@ -14,6 +14,7 @@ public class LoginCommandHandler
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IDeviceFingerprintService _deviceFingerprintService;
     private readonly ICookieAuthService _cookieAuthService;
+    private readonly ILocalizationService _localization;
     private readonly JwtSettings _jwtSettings;
 
     public LoginCommandHandler(
@@ -23,6 +24,7 @@ public class LoginCommandHandler
         IRefreshTokenService refreshTokenService,
         IDeviceFingerprintService deviceFingerprintService,
         ICookieAuthService cookieAuthService,
+        ILocalizationService localization,
         IOptions<JwtSettings> jwtSettings)
     {
         _userManager = userManager;
@@ -31,6 +33,7 @@ public class LoginCommandHandler
         _refreshTokenService = refreshTokenService;
         _deviceFingerprintService = deviceFingerprintService;
         _cookieAuthService = cookieAuthService;
+        _localization = localization;
         _jwtSettings = jwtSettings.Value;
     }
 
@@ -44,24 +47,24 @@ public class LoginCommandHandler
 
         if (user is null)
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized("Invalid email or password."));
+            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.login.invalidCredentials"]));
         }
 
         if (!user.IsActive)
         {
-            return Result.Failure<AuthResponse>(Error.Forbidden("User account is disabled."));
+            return Result.Failure<AuthResponse>(Error.Forbidden(_localization["auth.login.accountDisabled"]));
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, command.Password, lockoutOnFailure: true);
 
         if (result.IsLockedOut)
         {
-            return Result.Failure<AuthResponse>(Error.Forbidden("Account is locked out. Please try again later."));
+            return Result.Failure<AuthResponse>(Error.Forbidden(_localization["auth.login.accountLockedOut"]));
         }
 
         if (!result.Succeeded)
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized("Invalid email or password."));
+            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.login.invalidCredentials"]));
         }
 
         // Generate access token
