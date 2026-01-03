@@ -66,6 +66,15 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+async function checkBackendAlreadyRunning() {
+  try {
+    const response = await fetch(HEALTH_CHECK_URL)
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
 async function waitForBackend(maxAttempts = 60, intervalMs = 1000) {
   logSystem(`Waiting for backend at ${BACKEND_URL}...`)
 
@@ -133,8 +142,6 @@ async function generateApiTypes() {
 }
 
 function startBackend() {
-  logBackend("Starting .NET backend...")
-
   const child = spawn("dotnet", ["run", "--project", "src/NOIR.Web"], {
     cwd: solutionDir,
     stdio: ["inherit", "pipe", "pipe"],
@@ -222,8 +229,8 @@ ${colors.bright}${colors.cyan}╔═══════════════�
 `)
 
   logSystem("Starting development environment...")
+  logSystem(`Frontend URL: http://localhost:3000`)
   logSystem(`Backend URL: ${BACKEND_URL}`)
-  logSystem(`Frontend URL: http://localhost:5173`)
   console.log()
 
   // Track child processes for cleanup
@@ -245,21 +252,29 @@ ${colors.bright}${colors.cyan}╔═══════════════�
   process.on("SIGTERM", cleanup)
 
   try {
-    // 1. Start backend
-    const backendProcess = startBackend()
-    processes.push(backendProcess)
+    // 1. Check if backend is already running
+    const alreadyRunning = await checkBackendAlreadyRunning()
 
-    // 2. Wait for backend to be ready
-    const backendReady = await waitForBackend()
-    if (!backendReady) {
-      logError("Cannot continue without backend. Exiting...")
-      cleanup()
-      return
+    if (alreadyRunning) {
+      logSuccess("Backend is already running - reusing existing instance")
+    } else {
+      // Start backend
+      logBackend("Starting .NET backend...")
+      const backendProcess = startBackend()
+      processes.push(backendProcess)
+
+      // Wait for backend to be ready
+      const backendReady = await waitForBackend()
+      if (!backendReady) {
+        logError("Cannot continue without backend. Exiting...")
+        cleanup()
+        return
+      }
     }
 
     console.log()
 
-    // 3. Generate API types
+    // 2. Generate API types
     try {
       await generateApiTypes()
     } catch (err) {
@@ -269,15 +284,15 @@ ${colors.bright}${colors.cyan}╔═══════════════�
 
     console.log()
 
-    // 4. Start frontend
+    // 3. Start frontend
     const frontendProcess = startFrontend()
     processes.push(frontendProcess)
 
     console.log()
     logSuccess("Development environment is ready!")
     console.log()
+    console.log(`  ${colors.bright}Frontend:${colors.reset} http://localhost:3000`)
     console.log(`  ${colors.bright}Backend:${colors.reset}  ${BACKEND_URL}`)
-    console.log(`  ${colors.bright}Frontend:${colors.reset} http://localhost:5173`)
     console.log(`  ${colors.bright}API Docs:${colors.reset} ${BACKEND_URL}/api/docs`)
     console.log()
     console.log(`${colors.dim}Press Ctrl+C to stop all servers${colors.reset}`)

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
-import { login } from "@/services/auth"
+import { useLogin } from "@/hooks/useLogin"
 import { themeClasses } from "@/config/theme"
 import { isValidEmail } from "@/lib/validation"
 
@@ -51,6 +51,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const returnUrl = searchParams.get('returnUrl') || '/'
+  const { login } = useLogin()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -75,7 +76,7 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      await login({ email, password }, true) // Use cookies for browser auth
+      await login({ email, password })
       // Redirect to validated return URL (prevents open redirect)
       const safeReturnUrl = validateReturnUrl(returnUrl)
       navigate(safeReturnUrl)

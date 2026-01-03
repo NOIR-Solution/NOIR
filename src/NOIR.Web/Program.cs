@@ -42,7 +42,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
     {
         var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-            ?? ["http://localhost:3000", "http://localhost:5173"]; // Default React/Vite dev ports
+            ?? ["http://localhost:3000"]; // Vite dev server (port 3000 for Vibe Kanban compatibility)
 
         policy
             .WithOrigins(allowedOrigins)
@@ -232,6 +232,7 @@ builder.Services.AddOpenApi(options =>
 
             For development: `admin@noir.local` / `123qwe`
             """;
+
         return Task.CompletedTask;
     });
 });
@@ -317,6 +318,8 @@ app.MapScalarApiReference("/api/docs", options =>
         .WithTheme(ScalarTheme.DeepSpace)
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
         .WithOpenApiRoutePattern("/api/openapi/{documentName}.json");
+    // Use empty servers array so Scalar uses the current request URL (works with Vite proxy on 3000 or direct on 5228)
+    options.Servers = [];
 });
 
 // Multi-tenant middleware (must be before auth)
@@ -340,7 +343,7 @@ if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalI
 {
     app.MapHangfireDashboard("/hangfire", new DashboardOptions
     {
-        Authorization = [new HangfireAuthorizationFilter()]
+        Authorization = [new HangfireAuthorizationFilter(app.Environment, app.Configuration, app.Services)]
     });
 
     // Register Hangfire Recurring Jobs
@@ -363,8 +366,8 @@ app.MapHealthChecks("/api/health", new HealthCheckOptions
 });
 
 // SPA Fallback - serve index.html for client-side routing
-// Must be last to avoid catching API routes
-app.MapFallbackToFile("index.html");
+// Excludes /api/* routes so they return 404 properly
+app.MapFallbackToFile("{*path:regex(^(?!api/).*$)}", "index.html");
 
 app.Run();
 

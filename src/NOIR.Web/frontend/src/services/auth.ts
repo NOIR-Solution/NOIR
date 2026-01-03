@@ -1,83 +1,91 @@
 /**
  * Authentication API service
- * Handles all auth-related API calls
+ *
+ * Dual Authentication Strategy:
+ * - Sets HTTP-only cookies via useCookies=true (for server-rendered pages: /api/docs, /hangfire)
+ * - Stores tokens in localStorage (for API calls in Vibe Kanban webview)
+ *
+ * This dual approach ensures:
+ * - Server-rendered pages work with cookie auth
+ * - SPA/webview pages work with Bearer token auth
+ *
+ * Error Handling Contract:
+ * - login() - THROWS on failure (user must handle)
+ * - getCurrentUser() - Returns null on auth failure, throws on network/server errors
+ * - logout() - Never throws (best effort server notification)
  */
-import type { LoginRequest, AuthResponse, CurrentUser, ApiError } from '@/types'
-
-const API_BASE = '/api'
+import type { LoginRequest, AuthResponse, CurrentUser } from '@/types'
+import { storeTokens, clearTokens, getAccessToken } from './tokenStorage'
+import { apiClient, apiClientPublic, ApiError } from './apiClient'
 
 /**
  * Authenticate user with email and password
- * @param request Login credentials
- * @param useCookies Whether to store tokens in HTTP-only cookies (recommended for browser)
+ * Sets HTTP-only cookies AND stores tokens in localStorage (dual auth)
+ * @throws Error on login failure or storage unavailable
  */
-export async function login(request: LoginRequest, useCookies = true): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE}/auth/login?useCookies=${useCookies}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify(request),
+export async function login(request: LoginRequest): Promise<AuthResponse> {
+  // useCookies=true sets HTTP-only cookies for server-rendered pages (/api/docs, /hangfire)
+  // The response still contains tokens which we store in localStorage for API calls
+  const data = await apiClientPublic<AuthResponse>(
+    '/auth/login?useCookies=true',
+    {
+      method: 'POST',
+      body: JSON.stringify(request),
+    }
+  )
+
+  // Store tokens in localStorage
+  const stored = storeTokens({
+    accessToken: data.accessToken,
+    refreshToken: data.refreshToken,
+    expiresAt: data.expiresAt,
   })
 
-  if (!response.ok) {
-    const error: ApiError = await response.json()
-    throw new Error(error.detail || error.title || 'Login failed')
+  if (!stored) {
+    throw new Error(
+      'Unable to store authentication tokens. Please enable localStorage or disable private browsing.'
+    )
   }
 
-  return response.json()
+  return data
 }
 
 /**
  * Get the current authenticated user's information
- * @returns User info or null if not authenticated
+ * Uses the stored access token for authentication
+ * @returns CurrentUser if authenticated, null if not logged in
+ * @throws ApiError on network/server errors (not 401)
  */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
-  try {
-    const response = await fetch(`${API_BASE}/auth/me`, {
-      credentials: 'include',
-    })
+  const token = getAccessToken()
+  if (!token) {
+    return null
+  }
 
-    if (!response.ok) {
+  try {
+    return await apiClient<CurrentUser>('/auth/me')
+  } catch (error) {
+    // Auth errors - return null (user not logged in)
+    if (error instanceof ApiError && error.status === 401) {
+      clearTokens()
       return null
     }
-
-    return response.json()
-  } catch {
-    return null
+    // Network/server errors - propagate (something's broken)
+    throw error
   }
 }
 
 /**
  * Log out the current user
- * Clears authentication cookies on the server
+ * Clears stored tokens and optionally notifies the server
+ * Never throws - tokens are cleared regardless of server response
  */
 export async function logout(): Promise<void> {
-  await fetch(`${API_BASE}/auth/logout`, {
-    method: 'POST',
-    credentials: 'include',
-  })
-}
-
-/**
- * Refresh the authentication token
- * Uses the refresh token cookie to get new tokens
- * @returns New auth response or null if refresh failed
- */
-export async function refreshToken(): Promise<AuthResponse | null> {
   try {
-    const response = await fetch(`${API_BASE}/auth/refresh?useCookies=true`, {
-      method: 'POST',
-      credentials: 'include',
-    })
-
-    if (!response.ok) {
-      return null
-    }
-
-    return response.json()
+    await apiClient('/auth/logout', { method: 'POST' })
   } catch {
-    return null
+    // Ignore errors - tokens will be cleared locally regardless
+  } finally {
+    clearTokens()
   }
 }

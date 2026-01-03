@@ -151,7 +151,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
     public Task InitializeAsync()
     {
         // Accessing Services triggers app startup which runs the seeder
-        // The seeder handles database creation (migrations or EnsureCreated)
+        // The seeder handles database creation and migrations (MigrateAsync for SQL, EnsureCreatedAsync for InMemory)
         _ = Services;
         return Task.CompletedTask;
     }
