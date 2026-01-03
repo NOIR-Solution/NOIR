@@ -229,8 +229,8 @@ ${colors.bright}${colors.cyan}╔═══════════════�
 `)
 
   logSystem("Starting development environment...")
-  logSystem(`Backend URL: ${BACKEND_URL}`)
   logSystem(`Frontend URL: http://localhost:3000`)
+  logSystem(`Backend URL: ${BACKEND_URL}`)
   console.log()
 
   // Track child processes for cleanup
@@ -291,8 +291,8 @@ ${colors.bright}${colors.cyan}╔═══════════════�
     console.log()
     logSuccess("Development environment is ready!")
     console.log()
-    console.log(`  ${colors.bright}Backend:${colors.reset}  ${BACKEND_URL}`)
     console.log(`  ${colors.bright}Frontend:${colors.reset} http://localhost:3000`)
+    console.log(`  ${colors.bright}Backend:${colors.reset}  ${BACKEND_URL}`)
     console.log(`  ${colors.bright}API Docs:${colors.reset} ${BACKEND_URL}/api/docs`)
     console.log()
     console.log(`${colors.dim}Press Ctrl+C to stop all servers${colors.reset}`)
