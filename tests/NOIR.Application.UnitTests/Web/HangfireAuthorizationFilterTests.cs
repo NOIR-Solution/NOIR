@@ -66,48 +66,25 @@ public class HangfireAuthorizationFilterTests
 
     #endregion
 
-    #region DEBUG Mode Tests (Compile-time verification)
-
-    [Fact]
-    public void InDebugMode_AuthorizeShouldReturnTrue()
-    {
-        // This test verifies the DEBUG behavior
-        // In DEBUG mode, the filter always returns true for easy development
-        var filter = new HangfireAuthorizationFilter();
-
-#if DEBUG
-        // In DEBUG configuration, this block runs
-        filter.Should().NotBeNull();
-        // The Authorize method returns true unconditionally in DEBUG
-#else
-        // In RELEASE configuration, this block runs
-        filter.Should().NotBeNull();
-        // The Authorize method checks for Admin role in RELEASE
-#endif
-    }
-
-    #endregion
-
     #region Filter Behavior Documentation Tests
 
     [Fact]
-    public void Filter_DebugBehavior_ShouldAllowAllAccess()
+    public void Filter_ShouldRequireAuthentication()
     {
         // Document the expected behavior:
-        // DEBUG: Always returns true (no authentication required)
-        // RELEASE: Requires authenticated user with system:hangfire permission
+        // - Unauthenticated users are redirected to /login with returnUrl
+        // - Authenticated users must have system:hangfire permission
 
         var filter = new HangfireAuthorizationFilter();
         filter.Should().NotBeNull("Filter should be instantiable");
 
-        // The actual authorization logic depends on the build configuration
-        // and requires a real DashboardContext with HttpContext
+        // The actual authorization logic requires a real DashboardContext with HttpContext
     }
 
     [Fact]
-    public void Filter_ReleaseBehavior_ShouldRequireHangfirePermission()
+    public void Filter_ShouldRequireHangfirePermission()
     {
-        // Document that in RELEASE mode:
+        // Document that the filter requires:
         // - User must be authenticated (httpContext.User.Identity?.IsAuthenticated == true)
         // - User must have the system:hangfire permission claim
         // - This is consistent with the permission-based auth used throughout the app

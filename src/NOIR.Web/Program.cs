@@ -200,7 +200,38 @@ builder.Services.AddOpenApi(options =>
     {
         document.Info.Title = "NOIR API";
         document.Info.Version = "v1";
-        document.Info.Description = "Enterprise-ready .NET SaaS API with JWT authentication";
+        document.Info.Description = """
+            Enterprise-ready .NET SaaS API with JWT authentication.
+
+            ## Authentication
+
+            NOIR supports two authentication methods:
+
+            ### 1. JWT Bearer Token (API Clients)
+            Include the JWT token in the Authorization header:
+            ```
+            Authorization: Bearer <your-jwt-token>
+            ```
+
+            ### 2. HttpOnly Cookie (Browser Clients)
+            For browser-based applications, use cookie authentication:
+            1. Call `POST /api/auth/login?useCookies=true` with credentials
+            2. The response sets HttpOnly cookies automatically
+            3. All subsequent requests include cookies automatically
+
+            **Login Page:** Visit `/login` to authenticate via the web interface.
+
+            ## Multi-Tenancy
+
+            Include the tenant ID in requests using the header:
+            ```
+            X-Tenant-Id: <tenant-id>
+            ```
+
+            ## Default Credentials
+
+            For development: `admin@noir.local` / `123qwe`
+            """;
         return Task.CompletedTask;
     });
 });
@@ -241,6 +272,25 @@ if (!app.Environment.IsDevelopment())
 
 // CORS (must be before auth and routing)
 app.UseCors();
+
+// Serve static files from wwwroot (React SPA build output)
+app.UseDefaultFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Cache static assets for 1 year (they have content hashes)
+        if (ctx.File.Name.Contains('.') && !ctx.File.Name.EndsWith(".html"))
+        {
+            ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=31536000, immutable");
+        }
+        else
+        {
+            // Don't cache HTML files
+            ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+        }
+    }
+});
 
 // Routing must come before rate limiter for endpoint-specific rate limiting to work
 app.UseRouting();
@@ -311,6 +361,10 @@ app.MapHealthChecks("/api/health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
+
+// SPA Fallback - serve index.html for client-side routing
+// Must be last to avoid catching API routes
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

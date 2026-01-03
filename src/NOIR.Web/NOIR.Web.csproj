@@ -6,7 +6,29 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>NOIR.Web</RootNamespace>
         <AssemblyName>NOIR.Web</AssemblyName>
+        <!-- SPA Integration -->
+        <SpaRoot>frontend/</SpaRoot>
+        <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
     </PropertyGroup>
+
+    <!-- Build React SPA before .NET build (Release only for faster dev builds) -->
+    <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release' And Exists('$(SpaRoot)')">
+        <Message Importance="high" Text="Building React SPA..." />
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+    </Target>
+
+    <!-- Clean wwwroot on clean -->
+    <Target Name="CleanFrontend" AfterTargets="Clean" Condition="Exists('wwwroot')">
+        <RemoveDir Directories="wwwroot" />
+    </Target>
+
+    <!-- Publish React SPA with .NET publish -->
+    <Target Name="PublishFrontend" BeforeTargets="Publish" Condition="Exists('$(SpaRoot)')">
+        <Message Importance="high" Text="Building React SPA for publish..." />
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+    </Target>
 
     <ItemGroup>
         <!-- API Documentation -->
