@@ -65,13 +65,16 @@ i18n
 
     // Language detection configuration
     detection: {
-      // Detection order: cookie, localStorage, then browser language
-      order: ['cookie', 'localStorage', 'navigator', 'htmlTag'],
+      // Detection order: URL param (highest), cookie, localStorage, then browser language
+      // Matches backend priority in JsonLocalizationService.cs
+      order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
+      // URL query parameter name (e.g., ?lang=vi)
+      lookupQuerystring: 'lang',
       // LocalStorage key for saving language preference
       lookupLocalStorage: LANGUAGE_STORAGE_KEY,
       // Cookie name for backend sync
       lookupCookie: LANGUAGE_COOKIE_NAME,
-      // Cache language in both cookie and localStorage
+      // Cache language in both cookie and localStorage (not querystring - it's for overrides)
       caches: ['cookie', 'localStorage'],
       // Cookie options
       cookieMinutes: 525600, // 1 year
