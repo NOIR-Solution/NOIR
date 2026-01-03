@@ -4,16 +4,27 @@ Thank you for your interest in contributing to NOIR! This document provides guid
 
 ## Code of Conduct
 
-Please be respectful and constructive in all interactions. We welcome contributors of all experience levels.
+Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). We expect all contributors to be respectful and constructive.
+
+## Getting Started
+
+1. Read [SETUP.md](SETUP.md) for development environment setup
+2. Review [CLAUDE.md](CLAUDE.md) for coding standards
+3. Check the [docs/](docs/) folder for architecture documentation
 
 ## How to Contribute
 
 ### Reporting Issues
 
-- Check existing issues before creating a new one
+Before creating an issue:
+- Check existing issues to avoid duplicates
+- Use the appropriate issue template in `.github/ISSUE_TEMPLATE/`
+
+When reporting bugs:
 - Use a clear, descriptive title
-- Include steps to reproduce for bugs
+- Include steps to reproduce
 - Provide environment details (.NET version, OS, database)
+- Attach relevant logs or error messages
 
 ### Submitting Changes
 
@@ -22,11 +33,7 @@ Please be respectful and constructive in all interactions. We welcome contributo
 3. **Write tests** for new functionality
 4. **Run all tests** before submitting: `dotnet test src/NOIR.sln`
 5. **Build successfully**: `dotnet build src/NOIR.sln`
-6. **Submit a pull request** with a clear description
-
-## Development Setup
-
-See [SETUP.md](SETUP.md) for comprehensive development environment setup instructions for Windows, macOS, and Linux.
+6. **Submit a pull request** using the PR template
 
 ## Coding Standards
 
@@ -49,16 +56,16 @@ See [SETUP.md](SETUP.md) for comprehensive development environment setup instruc
 ### Code Style
 
 - **No using statements in files** - add to `GlobalUsings.cs` instead
-- **Soft delete only** - never hard delete unless explicitly required
+- **Soft delete only** - never hard delete unless explicitly required for GDPR
 - Follow existing patterns in similar files
 
 ## Pull Request Process
 
-1. Update documentation if needed
-2. Add tests for new functionality
-3. Ensure all tests pass
-4. Update the README.md if applicable
-5. PR will be reviewed by maintainers
+1. Fill out the PR template completely
+2. Ensure all tests pass
+3. Update documentation if needed
+4. Request review from maintainers
+5. Address review feedback promptly
 
 ## Testing
 
@@ -82,9 +89,13 @@ dotnet test tests/NOIR.Application.UnitTests
 
 ## Documentation
 
-- Pattern documentation is in `.claude/patterns/`
-- Decision records are in `.claude/decisions/`
-- AI assistant instructions are in `CLAUDE.md`
+All documentation is in the `docs/` folder:
+
+| Location | Content |
+|----------|---------|
+| `docs/backend/` | Backend patterns and guides |
+| `docs/frontend/` | Frontend architecture |
+| `docs/decisions/` | Architecture Decision Records |
 
 ## Questions?
 

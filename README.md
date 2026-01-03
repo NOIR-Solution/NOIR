@@ -1,148 +1,114 @@
 # NOIR
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/)
-[![Tests](https://img.shields.io/badge/Tests-1739%2B-green.svg)](tests/)
+> Enterprise-ready .NET 10 + React SaaS foundation with multi-tenancy, Clean Architecture, and comprehensive testing.
 
-A modern, enterprise-ready .NET 10 + React SaaS foundation with multi-tenancy support.
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-1739+-green.svg)](tests/)
 
 ## Quick Start
 
 ```bash
-# Clone and run (Windows with LocalDB)
-git clone https://github.com/yourusername/noir.git
-cd noir
+# Clone and build
+git clone https://github.com/NOIR-Solution/NOIR.git
+cd NOIR
+dotnet build src/NOIR.sln
+
+# Run (database auto-creates)
 dotnet run --project src/NOIR.Web
 
-# Access: http://localhost:5000
+# Access
+# API Docs: http://localhost:5000/scalar/v1
 # Admin: admin@noir.local / 123qwe
 ```
 
-For macOS/Linux setup, see [SETUP.md](SETUP.md).
-
-## Why NOIR?
-
-- **Multi-tenant by design** - Finbuckle with auto-filtering from day one
-- **Zero licensing costs** - All libraries are MIT/Apache 2.0
-- **Enterprise patterns** - Clean Architecture, CQRS, DDD
-- **Fully tested** - 1,739 tests with comprehensive coverage
-- **Modern stack** - .NET 10 LTS, Wolverine, Mapperly
-
-## Tech Stack
-
-### Backend
-| Category | Technology |
-|----------|------------|
-| Framework | .NET 10 LTS |
-| Architecture | Clean Architecture + CQRS + DDD |
-| Database | SQL Server / Entity Framework Core 10 |
-| Auth | ASP.NET Core Identity + JWT (with refresh rotation) |
-| Messaging | Wolverine |
-| Validation | FluentValidation |
-| Mapping | Mapperly (source-generated) |
-| Background Jobs | Hangfire |
-| Multi-Tenancy | Finbuckle.MultiTenant |
-
-### Frontend
-| Category | Technology |
-|----------|------------|
-| Framework | React 19 |
-| Build Tool | Vite |
-| Styling | Tailwind CSS 4 |
-| Components | shadcn/ui + 21st.dev |
-| Routing | React Router 7 |
+**Requirements:** .NET 10 SDK, SQL Server (LocalDB on Windows, Docker on macOS/Linux)
 
 ## Features
 
-**Implemented:**
-- JWT with refresh token rotation and theft detection
-- Permission-based RBAC with cache invalidation
-- Hierarchical audit logging (HTTP, handler, entity levels)
-- Rate limiting (fixed + sliding window)
-- Health checks, security headers, response compression
+- **Multi-Tenancy** - Finbuckle.MultiTenant with automatic query filtering
+- **Authentication** - JWT + refresh tokens with cookie support
+- **Authorization** - Role-based + permission-based (`resource:action:scope`)
+- **Audit Logging** - 3-level tracking (HTTP, Handler, Entity)
+- **Soft Delete** - Data safety with GDPR-ready hard delete
+- **Background Jobs** - Hangfire with dashboard
+- **API Documentation** - Scalar with OpenAPI spec
 
-**Planned:**
-- React admin dashboard
+## Tech Stack
+
+| Layer | Technologies |
+|-------|--------------|
+| **Backend** | .NET 10, EF Core 10, SQL Server, Wolverine, FluentValidation, Mapperly |
+| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS 4, shadcn/ui, React Router 7 |
+| **Infrastructure** | Hangfire, Serilog, Finbuckle.MultiTenant, FluentStorage, FluentEmail |
 
 ## Project Structure
 
 ```
 NOIR/
 ├── src/
-│   ├── NOIR.Domain/           # Entities, interfaces
-│   ├── NOIR.Application/      # Commands, queries, DTOs
-│   ├── NOIR.Infrastructure/   # EF Core, handlers
-│   └── NOIR.Web/              # API endpoints
+│   ├── NOIR.Domain/           # Entities, interfaces, specifications
+│   ├── NOIR.Application/      # Commands, queries, DTOs, behaviors
+│   ├── NOIR.Infrastructure/   # EF Core, handlers, services
+│   └── NOIR.Web/              # API endpoints, middleware
 │       └── frontend/          # React SPA
 ├── tests/                     # 1,739+ tests
 ├── docs/                      # Documentation
 │   ├── backend/               # Backend patterns & guides
 │   ├── frontend/              # Frontend architecture
 │   └── decisions/             # Architecture Decision Records
-└── .claude/                   # Claude Code commands
+└── .github/                   # GitHub templates
 ```
+
+## Documentation
+
+| Document | Purpose |
+|----------|---------|
+| **[SETUP.md](SETUP.md)** | Development environment setup (Windows/macOS/Linux) |
+| **[docs/](docs/README.md)** | Complete documentation index |
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | How to contribute |
+| **[CLAUDE.md](CLAUDE.md)** | AI assistant instructions (Claude Code) |
+| **[AGENTS.md](AGENTS.md)** | Universal AI agent guidelines |
+
+### Quick Links
+
+- [Backend Architecture](docs/backend/README.md) - Clean Architecture, patterns, APIs
+- [Frontend Guide](docs/frontend/README.md) - React SPA structure, theming
+- [Architecture Decisions](docs/decisions/README.md) - ADRs for tech choices
 
 ## Commands
 
 ```bash
-dotnet build src/NOIR.sln                    # Build
-dotnet run --project src/NOIR.Web            # Run
+# Development
 dotnet watch --project src/NOIR.Web          # Hot reload
-dotnet test src/NOIR.sln                     # Test
+dotnet test src/NOIR.sln                      # Run all tests
+
+# Database
+dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web
+
+# Frontend
+cd src/NOIR.Web/frontend
+npm run dev                                   # Dev server
+npm run generate:api                          # Sync types from backend
 ```
 
-## API Endpoints
+## Contributing
 
-| Category | Endpoints | Auth |
-|----------|-----------|------|
-| Auth | `/api/auth/login`, `/register`, `/refresh`, `/me` | Varies |
-| Users | `/api/users/*` | Admin |
-| Roles | `/api/roles/*` | Admin |
-| Permissions | `/api/permissions` | Admin |
-| System | `/api/health`, `/api/docs`, `/hangfire` | Varies |
+We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## Project Management
-
-This project uses **[Vibe Kanban](https://github.com/vibe-kanban/vibe-kanban)** for task management and sprint planning.
-
-## Documentation
-
-### Getting Started
-
-| Document | Purpose |
-|----------|---------|
-| [SETUP.md](SETUP.md) | Full setup guide (all platforms) |
-| [AGENTS.md](AGENTS.md) | AI assistant guidelines |
-| [CLAUDE.md](CLAUDE.md) | Claude Code instructions |
-
-### Backend
-
-| Document | Purpose |
-|----------|---------|
-| [Backend Overview](docs/backend/README.md) | Architecture and setup |
-| [Repository Pattern](docs/backend/patterns/repository-specification.md) | Data access patterns |
-| [DI Registration](docs/backend/patterns/di-auto-registration.md) | Service registration |
-| [Audit Logging](docs/backend/patterns/hierarchical-audit-logging.md) | Change tracking |
-
-### Frontend
-
-| Document | Purpose |
-|----------|---------|
-| [Frontend Overview](docs/frontend/README.md) | Architecture and conventions |
-| [Theme Guide](docs/frontend/theme.md) | Theme customization |
-| [API Types](docs/frontend/api-types.md) | Type generation |
-
-### Architecture Decisions
-
-| ADR | Title |
-|-----|-------|
-| [001](docs/decisions/001-tech-stack.md) | Technology Stack |
-| [002](docs/decisions/002-frontend-ui-stack.md) | Frontend UI Stack |
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Follow coding standards in [CLAUDE.md](CLAUDE.md)
+4. Run tests (`dotnet test src/NOIR.sln`)
+5. Submit a pull request
 
 ## License
 
-Apache License 2.0 - see [LICENSE](LICENSE).
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-Built with: [Wolverine](https://wolverinefx.net/), [Finbuckle](https://www.finbuckle.com/MultiTenant), [Mapperly](https://mapperly.riok.app/), [FluentValidation](https://docs.fluentvalidation.net/), [Serilog](https://serilog.net/), [Hangfire](https://www.hangfire.io/), [Scalar](https://scalar.com/), [Scrutor](https://github.com/khellang/Scrutor)
+- [Jason Taylor's Clean Architecture](https://github.com/jasontaylordev/CleanArchitecture)
+- [Wolverine](https://wolverinefx.net/) for CQRS messaging
+- [shadcn/ui](https://ui.shadcn.com/) for React components

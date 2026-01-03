@@ -1,130 +1,115 @@
-# NOIR
+# AGENTS.md
 
-> Enterprise-ready .NET 10 + React SaaS foundation with multi-tenancy, Clean Architecture, and comprehensive testing.
+> Universal AI agent instructions for NOIR. Compatible with Claude Code, Cursor, Windsurf, GitHub Copilot, and other AI coding assistants.
 
-## Quick Start
+## Project Overview
 
-```bash
-# Build
-dotnet build src/NOIR.sln
-
-# Run
-dotnet run --project src/NOIR.Web
-
-# Test
-dotnet test src/NOIR.sln
-
-# Admin login: admin@noir.local / 123qwe
-```
-
-## Project Structure
+**NOIR** is an enterprise .NET 10 + React SaaS foundation using Clean Architecture, CQRS, and DDD patterns.
 
 ```
-NOIR/
-├── src/
-│   ├── NOIR.Domain/           # Entities, interfaces, domain logic
-│   ├── NOIR.Application/      # Commands, queries, DTOs, specifications
-│   ├── NOIR.Infrastructure/   # EF Core, handlers, external services
-│   └── NOIR.Web/              # API endpoints, middleware
-│       └── frontend/          # React SPA
-├── tests/                     # 1,739+ tests
-├── docs/                      # Documentation
-│   ├── backend/               # Backend patterns & guides
-│   ├── frontend/              # Frontend architecture & guides
-│   └── decisions/             # Architecture Decision Records
-└── .claude/                   # Claude Code commands
+src/
+├── NOIR.Domain/           # Core entities, interfaces (no dependencies)
+├── NOIR.Application/      # Commands, queries, specifications, DTOs
+├── NOIR.Infrastructure/   # EF Core, handlers, external services
+└── NOIR.Web/              # API endpoints, middleware
+    └── frontend/          # React 19 SPA
 ```
-
-## Key Patterns
-
-### Backend (.NET)
-
-1. **Specifications for queries** - Never use raw `DbSet` queries
-   ```csharp
-   var spec = new ActiveCustomersSpec();
-   return await _repository.ListAsync(spec);
-   ```
-
-2. **Tag all specifications** for SQL debugging
-   ```csharp
-   Query.Where(x => x.IsActive)
-        .TagWith("GetActiveCustomers");
-   ```
-
-3. **Marker interfaces for DI** - Auto-registered via Scrutor
-   ```csharp
-   public class CustomerService : ICustomerService, IScopedService { }
-   ```
-
-4. **Wolverine handlers** - Static classes, no interfaces
-   ```csharp
-   public static class CreateOrderHandler
-   {
-       public static async Task<OrderResponse> Handle(
-           CreateOrderCommand cmd, IRepository<Order, Guid> repo, CancellationToken ct)
-       { ... }
-   }
-   ```
-
-5. **Soft delete only** - Never hard delete unless GDPR-required
-
-### Frontend (React)
-
-1. **Import alias** - Use `@/` for src/ imports
-   ```tsx
-   import { Button } from '@/components/ui/button'
-   ```
-
-2. **Type sync** - Generate types from backend OpenAPI
-   ```bash
-   npm run generate:api
-   ```
-
-3. **21st.dev for components** - AI-assisted component generation
-   ```
-   /ui create a login form with validation
-   ```
-
-## Documentation
-
-| Topic | Location |
-|-------|----------|
-| Backend Overview | `docs/backend/README.md` |
-| Frontend Overview | `docs/frontend/README.md` |
-| Architecture Decisions | `docs/decisions/` |
-| Setup Guide | `SETUP.md` |
-| AI Instructions | `CLAUDE.md` |
 
 ## Commands
 
 ```bash
-# Database
+# Build & Run
+dotnet build src/NOIR.sln
+dotnet run --project src/NOIR.Web
+dotnet watch --project src/NOIR.Web
+
+# Tests (1,739+)
+dotnet test src/NOIR.sln
+
+# Database Migrations
 dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web
 dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web
 
 # Frontend
 cd src/NOIR.Web/frontend
-npm run dev        # Development
-npm run build      # Production build
-npm run lint       # Lint check
+npm install && npm run dev
+npm run generate:api          # Sync types from backend
 ```
 
 ## Critical Rules
 
-1. **Check existing patterns first** - Look at similar files before writing new code
-2. **Use Specifications** - Never raw DbSet queries in services
-3. **Tag specifications** - Always include `TagWith("MethodName")`
-4. **Soft delete only** - Unless explicitly GDPR-required
-5. **No using statements** - Add to GlobalUsings.cs in each project
-6. **Run tests** - `dotnet test src/NOIR.sln` before committing
+1. **Use Specifications for all queries** - Never raw `DbSet` queries in services
+2. **Tag all specifications** - Include `TagWith("MethodName")` for SQL debugging
+3. **Soft delete only** - Never hard delete unless explicitly GDPR-required
+4. **No using statements** - Add to `GlobalUsings.cs` in each project
+5. **Marker interfaces for DI** - Use `IScopedService`, `ITransientService`, `ISingletonService`
+6. **Run tests before committing** - `dotnet test src/NOIR.sln`
 
-## Tech Stack
+## Code Patterns
 
-### Backend
-- .NET 10 LTS, EF Core 10, SQL Server
-- Wolverine (CQRS), FluentValidation, Mapperly
-- Finbuckle.MultiTenant, Hangfire, Serilog
+### Specifications (Required for queries)
+```csharp
+public class ActiveCustomersSpec : Specification<Customer>
+{
+    public ActiveCustomersSpec(string? search = null)
+    {
+        Query.Where(c => c.IsActive)
+             .TagWith("GetActiveCustomers");  // REQUIRED
+    }
+}
+```
 
-### Frontend
-- React 19, TypeScript, Vite
-- Tailwind CSS 4, shadcn/ui, React Router 7
+### Wolverine Handlers
+```csharp
+public static class CreateOrderHandler
+{
+    public static async Task<OrderResponse> Handle(
+        CreateOrderCommand cmd,
+        IRepository<Order, Guid> repo,
+        CancellationToken ct)
+    {
+        // Implementation
+    }
+}
+```
+
+### DI Registration
+```csharp
+// Just add marker interface - auto-registered via Scrutor
+public class CustomerService : ICustomerService, IScopedService { }
+```
+
+## Naming Conventions
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Specification | `[Entity][Filter]Spec` | `ActiveCustomersSpec` |
+| Command | `[Action][Entity]Command` | `CreateOrderCommand` |
+| Query | `Get[Entity][Filter]Query` | `GetActiveUsersQuery` |
+| Handler | `[Command]Handler` | `CreateOrderHandler` |
+| Configuration | `[Entity]Configuration` | `CustomerConfiguration` |
+
+## File Boundaries
+
+**Read/Modify Freely:**
+- `src/` - All source code
+- `tests/` - Test projects
+- `docs/` - Documentation
+
+**Avoid Modifying:**
+- `*.Designer.cs` - Auto-generated
+- `Migrations/` - EF Core auto-generated
+
+## Documentation
+
+| Topic | Location |
+|-------|----------|
+| Backend patterns | `docs/backend/patterns/` |
+| Frontend guide | `docs/frontend/` |
+| Architecture decisions | `docs/decisions/` |
+| Setup guide | `SETUP.md` |
+
+## Admin Credentials
+
+- **Email:** `admin@noir.local`
+- **Password:** `123qwe`

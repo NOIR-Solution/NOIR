@@ -1,5 +1,7 @@
 # NOIR - Claude Code Instructions
 
+> Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).
+
 ## Critical Rules
 
 1. **Check existing patterns first** - Look at similar files before writing new code
@@ -106,41 +108,14 @@ This project uses **Vibe Kanban** for task tracking and sprint management. Check
 
 ## Documentation
 
-### Backend
+For detailed documentation, see the `docs/` folder:
 
 | Topic | Location |
 |-------|----------|
-| **Backend overview** | `docs/backend/README.md` |
-| **Repository pattern** | `docs/backend/patterns/repository-specification.md` |
-| **DI registration** | `docs/backend/patterns/di-auto-registration.md` |
-| **Entity configuration** | `docs/backend/patterns/entity-configuration.md` |
-| **JWT refresh tokens** | `docs/backend/patterns/jwt-refresh-token.md` |
-| **Audit logging** | `docs/backend/patterns/hierarchical-audit-logging.md` |
-| **Bulk operations** | `docs/backend/patterns/bulk-operations.md` |
-
-### Frontend
-
-| Topic | Location |
-|-------|----------|
-| **Frontend overview** | `docs/frontend/README.md` |
-| **Architecture** | `docs/frontend/architecture.md` |
-| **Theme customization** | `docs/frontend/theme.md` |
-| **API type generation** | `docs/frontend/api-types.md` |
-
-### Architecture Decisions
-
-| ADR | Location |
-|-----|----------|
-| **Tech stack** | `docs/decisions/001-tech-stack.md` |
-| **Frontend UI stack** | `docs/decisions/002-frontend-ui-stack.md` |
-
-### Other
-
-| Topic | Location |
-|-------|----------|
-| **Setup guide** | `SETUP.md` |
-| **Project overview** | `README.md` |
-| **AI assistant guide** | `AGENTS.md` |
+| Backend patterns | `docs/backend/patterns/` |
+| Frontend guide | `docs/frontend/` |
+| Architecture decisions | `docs/decisions/` |
+| Setup guide | `SETUP.md` |
 
 ## File Boundaries
 

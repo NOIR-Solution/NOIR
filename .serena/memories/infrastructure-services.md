@@ -1,0 +1,75 @@
+# NOIR Infrastructure Services
+
+## Location
+`src/NOIR.Infrastructure/`
+
+## Key Directories
+- `Persistence/` - EF Core context, repositories, configurations
+- `Identity/` - Authentication, authorization, token services
+- `Audit/` - Audit logging handlers and services
+- `Storage/` - File storage (FluentStorage)
+- `Migrations/` - EF Core migrations (auto-generated, don't modify)
+
+## Identity Services
+
+### TokenService (IScopedService)
+JWT token generation and validation:
+- Access token creation
+- Refresh token management
+- Token validation
+
+### RefreshTokenService (IScopedService)
+Refresh token lifecycle:
+- Token generation and storage
+- Family-based rotation
+- Revocation
+
+### CookieAuthService (IScopedService)
+Cookie-based authentication for browser clients.
+
+### PermissionCacheInvalidator (IScopedService)
+Invalidates permission cache on changes.
+
+## Persistence
+
+### AppDbContext
+Main EF Core context with:
+- Entity configurations (auto-discovered)
+- Global query filters (soft delete)
+- Audit interceptors
+
+### Repository Implementation
+Generic repository in `Persistence/`:
+```csharp
+public class Repository<TEntity, TId> : IRepository<TEntity, TId>
+    where TEntity : AggregateRoot<TId>
+{
+    // Full implementation with bulk operations
+}
+```
+
+## Audit System
+
+### 3-Level Audit Logging
+1. **HTTP Level** - Request/response logging
+2. **Handler Level** - Command/query execution
+3. **Entity Level** - EF Core changes (before/after)
+
+### Interceptors
+- `AuditableEntityInterceptor` - Sets audit fields
+- Entity change tracking for diff logging
+
+## DI Registration
+`DependencyInjection.cs`:
+```csharp
+services.Scan(scan => scan
+    .FromAssemblyOf<AppDbContext>()
+    .AddClasses(c => c.AssignableTo<IScopedService>())
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
+```
+
+## External Services
+- FluentStorage for file storage
+- FluentEmail for email sending
+- Hangfire for background jobs

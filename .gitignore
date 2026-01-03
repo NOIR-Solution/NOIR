@@ -241,6 +241,9 @@ StyleCopReport.xml
 *.StyleCop
 
 # -----------------------------------------------------------------------------
-# Serena MCP (AI Agent State)
+# Serena MCP (AI Agent State) - Track memories, ignore cache
 # -----------------------------------------------------------------------------
-.serena/
+.serena/cache/
+!.serena/
+!.serena/memories/
+!.serena/project.yml
