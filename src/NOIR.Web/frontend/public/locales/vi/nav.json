@@ -1,0 +1,25 @@
+{
+  "menu": {
+    "dashboard": "Bảng Điều Khiển",
+    "customers": "Khách Hàng",
+    "orders": "Đơn Hàng",
+    "products": "Sản Phẩm",
+    "reports": "Báo Cáo",
+    "settings": "Cài Đặt",
+    "users": "Người Dùng",
+    "roles": "Vai Trò",
+    "permissions": "Quyền",
+    "audit": "Nhật Ký Kiểm Tra",
+    "profile": "Hồ Sơ",
+    "logout": "Đăng Xuất"
+  },
+  "header": {
+    "search": "Tìm kiếm...",
+    "notifications": "Thông Báo",
+    "noNotifications": "Không có thông báo mới",
+    "viewAll": "Xem tất cả"
+  },
+  "breadcrumb": {
+    "home": "Trang Chủ"
+  }
+}

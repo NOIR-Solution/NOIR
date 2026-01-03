@@ -1,0 +1,44 @@
+{
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "email": "Vui lòng nhập địa chỉ email hợp lệ",
+    "minLength": "Phải có ít nhất {{min}} ký tự",
+    "maxLength": "Không được vượt quá {{max}} ký tự",
+    "pattern": "Định dạng không hợp lệ",
+    "unique": "Giá trị này đã tồn tại",
+    "range": "Giá trị phải nằm trong khoảng từ {{min}} đến {{max}}"
+  },
+  "api": {
+    "unknown": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.",
+    "networkError": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối internet của bạn.",
+    "timeout": "Yêu cầu đã hết thời gian chờ. Vui lòng thử lại.",
+    "notFound": "Không tìm thấy tài nguyên được yêu cầu.",
+    "unauthorized": "Bạn không được phép thực hiện hành động này.",
+    "forbidden": "Truy cập bị từ chối. Bạn không có quyền truy cập tài nguyên này.",
+    "conflict": "Đã xảy ra xung đột. Tài nguyên có thể đã được sửa đổi.",
+    "serverError": "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.",
+    "badRequest": "Yêu cầu không hợp lệ. Vui lòng kiểm tra thông tin nhập vào.",
+    "tooManyRequests": "Quá nhiều yêu cầu. Vui lòng đợi một lát trước khi thử lại."
+  },
+  "auth": {
+    "invalidCredentials": "Email hoặc mật khẩu không đúng",
+    "accountLocked": "Tài khoản của bạn đã bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau.",
+    "accountDisabled": "Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.",
+    "sessionExpired": "Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.",
+    "tokenInvalid": "Token xác thực không hợp lệ hoặc đã hết hạn.",
+    "refreshTokenExpired": "Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.",
+    "emailNotConfirmed": "Vui lòng xác nhận địa chỉ email của bạn trước khi đăng nhập.",
+    "passwordResetRequired": "Bạn phải đặt lại mật khẩu trước khi tiếp tục."
+  },
+  "file": {
+    "tooLarge": "Kích thước tệp vượt quá giới hạn cho phép {{maxSize}} MB",
+    "invalidType": "Loại tệp không được phép. Các loại được hỗ trợ: {{types}}",
+    "uploadFailed": "Tải lên tệp thất bại. Vui lòng thử lại."
+  },
+  "data": {
+    "notFound": "Không tìm thấy {{entity}}",
+    "alreadyExists": "{{entity}} đã tồn tại",
+    "cannotDelete": "Không thể xóa {{entity}} vì đang được sử dụng",
+    "invalidReference": "Tham chiếu không hợp lệ đến {{entity}}"
+  }
+}

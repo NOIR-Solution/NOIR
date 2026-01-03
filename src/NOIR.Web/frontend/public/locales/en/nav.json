@@ -1,0 +1,25 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "customers": "Customers",
+    "orders": "Orders",
+    "products": "Products",
+    "reports": "Reports",
+    "settings": "Settings",
+    "users": "Users",
+    "roles": "Roles",
+    "permissions": "Permissions",
+    "audit": "Audit Log",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "header": {
+    "search": "Search...",
+    "notifications": "Notifications",
+    "noNotifications": "No new notifications",
+    "viewAll": "View all"
+  },
+  "breadcrumb": {
+    "home": "Home"
+  }
+}

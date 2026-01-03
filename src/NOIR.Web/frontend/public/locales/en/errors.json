@@ -1,0 +1,44 @@
+{
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be no more than {{max}} characters",
+    "pattern": "Invalid format",
+    "unique": "This value already exists",
+    "range": "Value must be between {{min}} and {{max}}"
+  },
+  "api": {
+    "unknown": "An unexpected error occurred. Please try again.",
+    "networkError": "Unable to connect to the server. Please check your internet connection.",
+    "timeout": "The request timed out. Please try again.",
+    "notFound": "The requested resource was not found.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "forbidden": "Access denied. You do not have permission to access this resource.",
+    "conflict": "A conflict occurred. The resource may have been modified.",
+    "serverError": "A server error occurred. Please try again later.",
+    "badRequest": "Invalid request. Please check your input.",
+    "tooManyRequests": "Too many requests. Please wait a moment before trying again."
+  },
+  "auth": {
+    "invalidCredentials": "Invalid email or password",
+    "accountLocked": "Your account has been locked due to too many failed login attempts. Please try again later.",
+    "accountDisabled": "Your account has been disabled. Please contact support.",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "tokenInvalid": "Authentication token is invalid or expired.",
+    "refreshTokenExpired": "Your session has expired. Please log in again.",
+    "emailNotConfirmed": "Please confirm your email address before logging in.",
+    "passwordResetRequired": "You must reset your password before continuing."
+  },
+  "file": {
+    "tooLarge": "File size exceeds the maximum allowed limit of {{maxSize}} MB",
+    "invalidType": "File type not allowed. Supported types: {{types}}",
+    "uploadFailed": "Failed to upload file. Please try again."
+  },
+  "data": {
+    "notFound": "{{entity}} not found",
+    "alreadyExists": "{{entity}} already exists",
+    "cannotDelete": "Cannot delete {{entity}} because it is in use",
+    "invalidReference": "Invalid reference to {{entity}}"
+  }
+}

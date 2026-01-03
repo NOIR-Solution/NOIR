@@ -148,6 +148,10 @@ public static class DependencyInjection
         services.Configure<JobNotificationSettings>(
             configuration.GetSection(JobNotificationSettings.SectionName));
 
+        // Configure Localization settings
+        services.Configure<LocalizationSettings>(
+            configuration.GetSection(LocalizationSettings.SectionName));
+
         // Configure Hangfire for background jobs (skip in Testing - requires SQL Server)
         if (!isTesting)
         {

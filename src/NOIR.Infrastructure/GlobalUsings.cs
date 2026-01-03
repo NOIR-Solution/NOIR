@@ -123,6 +123,7 @@ global using NOIR.Infrastructure.Persistence.Configurations;
 global using NOIR.Infrastructure.Persistence.Interceptors;
 global using NOIR.Infrastructure.Services;
 global using NOIR.Infrastructure.Storage;
+global using NOIR.Infrastructure.Localization;
 
 // NOIR Domain Entities
 global using NOIR.Domain.Entities;
