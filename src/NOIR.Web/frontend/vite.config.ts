@@ -30,11 +30,11 @@ export default defineConfig({
     // Proxy API requests to .NET backend
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5228',
         changeOrigin: true,
       },
       '/hangfire': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5228',
         changeOrigin: true,
       },
     },

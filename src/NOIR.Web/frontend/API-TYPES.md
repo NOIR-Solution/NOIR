@@ -22,7 +22,7 @@ npm run generate:api
 
 | Command | Description |
 |---------|-------------|
-| `npm run generate:api` | Generate types from running backend at http://localhost:5000 |
+| `npm run generate:api` | Generate types from running backend at http://localhost:5228 |
 | `npm run generate:api:file` | Generate types from exported openapi.json file |
 | `node scripts/generate-api-types.mjs --help` | Show available options |
 
@@ -92,7 +92,7 @@ For CI pipelines, export the OpenAPI spec during build:
 # Option 1: Run backend temporarily
 dotnet run --project src/NOIR.Web &
 sleep 10
-curl http://localhost:5000/api/openapi/v1.json > frontend/openapi.json
+curl http://localhost:5228/api/openapi/v1.json > frontend/openapi.json
 kill %1
 npm run generate:api:file --prefix frontend
 
@@ -154,7 +154,7 @@ dotnet run --project src/NOIR.Web
 
 ### Generated file is empty or malformed
 
-1. Check the OpenAPI spec is valid: `curl http://localhost:5000/api/openapi/v1.json | jq .`
+1. Check the OpenAPI spec is valid: `curl http://localhost:5228/api/openapi/v1.json | jq .`
 2. Ensure openapi-typescript is installed: `npm install`
 
 ## Comparison with NSwag

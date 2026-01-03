@@ -2,20 +2,19 @@
 # Usage: docker-compose up -d
 
 services:
-  # SQL Server for development
+  # SQL Server for development (Azure SQL Edge for ARM64/M1 Mac support)
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/azure-sql-edge:latest
     container_name: noir-sqlserver
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=Noir@Dev2024!
-      - MSSQL_PID=Developer
+      - MSSQL_SA_PASSWORD=Noir@Dev2024!
     ports:
       - "1433:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
     healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Noir@Dev2024!" -C -Q "SELECT 1" || exit 1
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Noir@Dev2024!" -Q "SELECT 1" || exit 1
       interval: 10s
       timeout: 3s
       retries: 10
