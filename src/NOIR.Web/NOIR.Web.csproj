@@ -6,6 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>NOIR.Web</RootNamespace>
         <AssemblyName>NOIR.Web</AssemblyName>
+        <!-- Required for RazorLight email templates -->
+        <PreserveCompilationContext>true</PreserveCompilationContext>
         <!-- SPA Integration -->
         <SpaRoot>frontend/</SpaRoot>
         <SpaProxyServerUrl>http://localhost:3000</SpaProxyServerUrl>
