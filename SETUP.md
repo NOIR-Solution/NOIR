@@ -6,6 +6,7 @@ Complete setup instructions for Windows, macOS, and Linux development environmen
 
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
+- [Vibe Kanban Integration](#vibe-kanban-integration)
 - [Windows Setup](#windows-setup)
 - [macOS Setup](#macos-setup)
 - [Linux Setup](#linux-setup)
@@ -73,6 +74,14 @@ npm run dev
 > - Frontend runs on port 3000 (Vite dev server with HMR)
 > - Always access the app via **http://localhost:3000** for full functionality
 
+> **Alternative - Single command (recommended):**
+> ```bash
+> cd src/NOIR.Web/frontend
+> npm install
+> npm run dev:full
+> ```
+> This starts both backend and frontend with a single command, auto-generates API types, and handles graceful shutdown.
+
 > **Alternative - Production-like mode (single terminal):**
 > ```bash
 > dotnet build src/NOIR.sln -c Release  # Auto-builds frontend
@@ -81,6 +90,42 @@ npm run dev
 > ```
 
 **Note:** This assumes Docker is available for SQL Server and MailHog. For Windows LocalDB, see platform-specific setup below.
+
+---
+
+## Vibe Kanban Integration
+
+This project uses **Vibe Kanban** for task management and sprint tracking. When using Vibe Kanban to manage this project, configure the dev script as follows:
+
+### Dev Script Configuration
+
+**Command:**
+```bash
+cd NOIR/src/NOIR.Web/frontend && npm run dev:full
+```
+
+**What it does:**
+1. Checks if backend is already running (reuses existing instance)
+2. Starts .NET backend (`dotnet run`) if needed
+3. Waits for backend health check at `localhost:4000/api/health`
+4. Generates TypeScript API types from OpenAPI spec
+5. Starts Vite dev server on `localhost:3000`
+6. Handles graceful shutdown with Ctrl+C
+
+**Output URLs:**
+| URL | Purpose |
+|-----|---------|
+| http://localhost:3000 | Frontend (Vite dev server) |
+| http://localhost:4000 | Backend API |
+| http://localhost:4000/api/docs | API Documentation (Scalar) |
+| http://localhost:8025 | MailHog (email testing) |
+
+### Prerequisites for Dev Script
+
+Before running the dev script, ensure:
+1. Docker containers are running: `docker-compose up -d`
+2. Node.js dependencies installed: `cd src/NOIR.Web/frontend && npm install`
+3. .NET SDK 10.0+ installed
 
 ---
 
