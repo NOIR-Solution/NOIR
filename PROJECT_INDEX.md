@@ -226,8 +226,8 @@ docker-compose up -d  # Start SQL Server + MailHog
 |----------|-------|
 | C# Source Files | 229 |
 | C# Test Files | 98 |
-| Frontend TS/TSX | 34 |
-| Documentation (MD) | 19 |
+| Frontend TS/TSX | 36 |
+| Documentation (MD) | 46 |
 | Projects (csproj) | 8 |
 
 ---

@@ -2,6 +2,8 @@
 
 Welcome to the NOIR documentation. This folder contains comprehensive guides for both backend and frontend development.
 
+> **Start Here:** [KNOWLEDGE_BASE.md](KNOWLEDGE_BASE.md) - Comprehensive cross-referenced guide to the entire codebase
+
 ## Structure
 
 ```
