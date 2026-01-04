@@ -105,12 +105,14 @@ cd NOIR/src/NOIR.Web/frontend && npm run dev:full
 ```
 
 **What it does:**
-1. Checks if backend is already running (reuses existing instance)
-2. Starts .NET backend (`dotnet run`) if needed
-3. Waits for backend health check at `localhost:4000/api/health`
-4. Generates TypeScript API types from OpenAPI spec
-5. Starts Vite dev server on `localhost:3000`
-6. Handles graceful shutdown with Ctrl+C
+1. Installs frontend dependencies (`npm install`) if `node_modules` is missing
+2. Checks if backend is already running (reuses existing instance)
+3. Builds backend (`dotnet build`) if backend not running
+4. Starts .NET backend (`dotnet run`)
+5. Waits for backend health check at `localhost:4000/api/health`
+6. Generates TypeScript API types from OpenAPI spec
+7. Starts Vite dev server on `localhost:3000`
+8. Handles graceful shutdown with Ctrl+C
 
 **Output URLs:**
 | URL | Purpose |
@@ -124,8 +126,10 @@ cd NOIR/src/NOIR.Web/frontend && npm run dev:full
 
 Before running the dev script, ensure:
 1. Docker containers are running: `docker-compose up -d`
-2. Node.js dependencies installed: `cd src/NOIR.Web/frontend && npm install`
+2. Node.js installed (LTS version)
 3. .NET SDK 10.0+ installed
+
+> **Note:** The script auto-installs npm packages if `node_modules` is missing, and auto-builds the backend before starting. No manual `npm install` or `dotnet build` needed!
 
 ---
 

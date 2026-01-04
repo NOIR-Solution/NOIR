@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Cross-platform development server orchestration script.
- * Starts backend, waits for it to be ready, generates API types, then starts frontend.
+ * Installs dependencies, builds backend, waits for it to be ready,
+ * generates API types, then starts frontend.
  *
  * Usage:
  *   node scripts/dev.mjs
@@ -11,12 +12,14 @@
 import { spawn } from "node:child_process"
 import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
+import { existsSync } from "node:fs"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const frontendDir = resolve(__dirname, "..")
 const webProjectDir = resolve(frontendDir, "..")
 const solutionDir = resolve(webProjectDir, "../..")
+const solutionPath = resolve(solutionDir, "src/NOIR.sln")
 
 const BACKEND_URL = "http://localhost:4000"
 const HEALTH_CHECK_URL = `${BACKEND_URL}/api/health`
@@ -64,6 +67,89 @@ function logSuccess(message) {
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ * Run a command and wait for it to complete.
+ * @param {string} cmd - Command to run
+ * @param {string[]} args - Command arguments
+ * @param {object} options - Spawn options
+ * @param {function} logFn - Logging function for output
+ * @param {string} successMsg - Message to log on success
+ * @param {string} errorMsg - Message to log on error
+ * @returns {Promise<boolean>}
+ */
+async function runCommand(cmd, args, options, logFn, successMsg, errorMsg) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(cmd, args, {
+      ...options,
+      stdio: ["inherit", "pipe", "pipe"],
+      shell: isWindows,
+    })
+
+    child.stdout?.on("data", (data) => {
+      const lines = data.toString().trim().split("\n")
+      lines.forEach((line) => {
+        if (line.trim()) logFn(line)
+      })
+    })
+
+    child.stderr?.on("data", (data) => {
+      const lines = data.toString().trim().split("\n")
+      lines.forEach((line) => {
+        if (line.trim()) logFn(line)
+      })
+    })
+
+    child.on("close", (code) => {
+      if (code === 0) {
+        logSuccess(successMsg)
+        resolve(true)
+      } else {
+        logError(errorMsg)
+        reject(new Error(`${cmd} ${args.join(" ")} failed with code ${code}`))
+      }
+    })
+
+    child.on("error", (err) => {
+      logError(`Failed to run ${cmd}: ${err.message}`)
+      reject(err)
+    })
+  })
+}
+
+async function installFrontendDependencies() {
+  logSystem("Checking frontend dependencies...")
+
+  const nodeModulesPath = resolve(frontendDir, "node_modules")
+
+  if (existsSync(nodeModulesPath)) {
+    logSuccess("Frontend dependencies already installed")
+    return true
+  }
+
+  logSystem("Installing frontend dependencies (npm install)...")
+  const cmd = isWindows ? "npm.cmd" : "npm"
+  return runCommand(
+    cmd,
+    ["install"],
+    { cwd: frontendDir },
+    logFrontend,
+    "Frontend dependencies installed",
+    "Failed to install frontend dependencies"
+  )
+}
+
+async function buildBackend() {
+  logSystem("Building backend (dotnet build)...")
+  return runCommand(
+    "dotnet",
+    ["build", solutionPath, "--verbosity", "minimal"],
+    { cwd: solutionDir },
+    logBackend,
+    "Backend build completed",
+    "Backend build failed"
+  )
 }
 
 async function checkBackendAlreadyRunning() {
@@ -252,13 +338,35 @@ ${colors.bright}${colors.cyan}╔═══════════════�
   process.on("SIGTERM", cleanup)
 
   try {
-    // 1. Check if backend is already running
+    // 1. Install frontend dependencies if needed
+    try {
+      await installFrontendDependencies()
+    } catch (err) {
+      logError(`Failed to install dependencies: ${err.message}`)
+      cleanup()
+      return
+    }
+
+    console.log()
+
+    // 2. Check if backend is already running
     const alreadyRunning = await checkBackendAlreadyRunning()
 
     if (alreadyRunning) {
       logSuccess("Backend is already running - reusing existing instance")
     } else {
-      // Start backend
+      // 3. Build backend first
+      try {
+        await buildBackend()
+      } catch (err) {
+        logError(`Backend build failed: ${err.message}`)
+        cleanup()
+        return
+      }
+
+      console.log()
+
+      // 4. Start backend
       logBackend("Starting .NET backend...")
       const backendProcess = startBackend()
       processes.push(backendProcess)
@@ -274,7 +382,7 @@ ${colors.bright}${colors.cyan}╔═══════════════�
 
     console.log()
 
-    // 2. Generate API types
+    // 5. Generate API types
     try {
       await generateApiTypes()
     } catch (err) {
@@ -284,7 +392,7 @@ ${colors.bright}${colors.cyan}╔═══════════════�
 
     console.log()
 
-    // 3. Start frontend
+    // 6. Start frontend
     const frontendProcess = startFrontend()
     processes.push(frontendProcess)
 
