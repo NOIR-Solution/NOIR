@@ -95,14 +95,33 @@ npm run dev
 
 ## Vibe Kanban Integration
 
-This project uses **Vibe Kanban** for task management and sprint tracking. When using Vibe Kanban to manage this project, configure the dev script as follows:
+This project uses **Vibe Kanban** for task management and sprint tracking. When using Vibe Kanban to manage this project, you have two options for starting the dev server:
 
-### Dev Script Configuration
+### Option 1: Batch File (Recommended for Windows)
+
+**Command:**
+```
+D:\TOP\GIT\NOIR\src\NOIR.Web\frontend\start-dev.bat
+```
+
+Or use the relative path in Vibe Kanban's "Edit Dev Script" dialog:
+```
+src\NOIR.Web\frontend\start-dev.bat
+```
+
+The `start-dev.bat` file is a convenience wrapper that:
+- Automatically changes to the correct directory (`%~dp0` = script's directory)
+- Runs `npm run dev:full` in the frontend folder
+- Works reliably with Vibe Kanban's dev server launcher
+
+### Option 2: Direct Command
 
 **Command:**
 ```bash
 cd NOIR/src/NOIR.Web/frontend && npm run dev:full
 ```
+
+**Note:** This may not work properly in Vibe Kanban's dev script UI on Windows due to command parsing issues. Use the batch file instead.
 
 **What it does:**
 1. Installs frontend dependencies (`npm install`) if `node_modules` is missing
