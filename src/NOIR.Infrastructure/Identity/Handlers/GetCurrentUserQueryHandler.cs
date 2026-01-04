@@ -24,14 +24,14 @@ public class GetCurrentUserQueryHandler
         // Check if user is authenticated
         if (!_currentUser.IsAuthenticated || string.IsNullOrEmpty(_currentUser.UserId))
         {
-            return Result.Failure<CurrentUserDto>(Error.Unauthorized(_localization["auth.user.notAuthenticated"]));
+            return Result.Failure<CurrentUserDto>(Error.Unauthorized(_localization["auth.user.notAuthenticated"], ErrorCodes.Auth.Unauthorized));
         }
 
         // Find user
         var user = await _userManager.FindByIdAsync(_currentUser.UserId);
         if (user is null)
         {
-            return Result.Failure<CurrentUserDto>(Error.NotFound(_localization["auth.user.notFound"]));
+            return Result.Failure<CurrentUserDto>(Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         // Get roles

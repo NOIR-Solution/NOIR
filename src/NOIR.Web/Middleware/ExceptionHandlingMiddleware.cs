@@ -2,7 +2,7 @@ namespace NOIR.Web.Middleware;
 
 /// <summary>
 /// Middleware that handles exceptions and returns appropriate HTTP responses.
-/// Follows RFC 7807 Problem Details specification.
+/// Follows RFC 7807 Problem Details specification with NOIR error codes.
 /// </summary>
 public class ExceptionHandlingMiddleware
 {
@@ -34,7 +34,7 @@ public class ExceptionHandlingMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        var (statusCode, problemDetails) = exception switch
+        var (statusCode, problemDetails, errorCode) = exception switch
         {
             Application.Common.Exceptions.ValidationException validationException =>
                 HandleValidationException(validationException),
@@ -53,10 +53,12 @@ public class ExceptionHandlingMiddleware
         };
 
         // Log based on severity
-        LogException(exception, statusCode);
+        LogException(exception, statusCode, errorCode, context.TraceIdentifier);
 
-        // Add trace ID for correlation
-        problemDetails.Extensions["traceId"] = context.TraceIdentifier;
+        // Add standard error tracking extensions
+        problemDetails.Extensions["errorCode"] = errorCode;
+        problemDetails.Extensions["correlationId"] = context.TraceIdentifier;
+        problemDetails.Extensions["timestamp"] = DateTime.UtcNow.ToString("O");
 
         // In development, include exception details
         if (_environment.IsDevelopment() && statusCode == StatusCodes.Status500InternalServerError)
@@ -77,47 +79,56 @@ public class ExceptionHandlingMiddleware
         await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, options));
     }
 
-    private void LogException(Exception exception, int statusCode)
+    private void LogException(Exception exception, int statusCode, string errorCode, string correlationId)
     {
         // Don't log client errors (4xx) at Error level - they're expected
         if (statusCode >= 500)
         {
             _logger.LogError(
                 exception,
-                "Unhandled exception of type {ExceptionType}: {Message}",
-                exception.GetType().Name,
+                "Unhandled exception [{ErrorCode}] CorrelationId={CorrelationId}: {Message}",
+                errorCode,
+                correlationId,
                 exception.Message);
         }
         else if (statusCode == StatusCodes.Status400BadRequest)
         {
             // Validation errors are expected in normal operation - log at Information, not Warning
             _logger.LogInformation(
-                "Validation failed: {Message}",
+                "Validation failed [{ErrorCode}] CorrelationId={CorrelationId}: {Message}",
+                errorCode,
+                correlationId,
                 exception.Message);
         }
         else
         {
             _logger.LogInformation(
-                "Client error {StatusCode} - {ExceptionType}: {Message}",
+                "Client error {StatusCode} [{ErrorCode}] CorrelationId={CorrelationId}: {Message}",
                 statusCode,
-                exception.GetType().Name,
+                errorCode,
+                correlationId,
                 exception.Message);
         }
     }
 
-    private static (int, ProblemDetails) HandleValidationException(
-        Application.Common.Exceptions.ValidationException exception) =>
-        (StatusCodes.Status400BadRequest, new ValidationProblemDetails(exception.Errors)
+    private static (int, ProblemDetails, string) HandleValidationException(
+        Application.Common.Exceptions.ValidationException exception)
+    {
+        var errorCode = ErrorCodes.Validation.General;
+        return (StatusCodes.Status400BadRequest, new ValidationProblemDetails(exception.Errors)
         {
             Status = StatusCodes.Status400BadRequest,
             Title = "Validation Error",
             Detail = "One or more validation errors occurred.",
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
-        });
+            Type = $"https://api.noir.local/errors/{errorCode}"
+        }, errorCode);
+    }
 
-    private static (int, ProblemDetails) HandleFluentValidationException(
+    private static (int, ProblemDetails, string) HandleFluentValidationException(
         FluentValidation.ValidationException exception)
     {
+        var errorCode = ErrorCodes.Validation.General;
+
         // Convert FluentValidation errors to dictionary format
         var errors = exception.Errors
             .GroupBy(e => e.PropertyName)
@@ -130,52 +141,67 @@ public class ExceptionHandlingMiddleware
             Status = StatusCodes.Status400BadRequest,
             Title = "Validation Error",
             Detail = "One or more validation errors occurred.",
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
-        });
+            Type = $"https://api.noir.local/errors/{errorCode}"
+        }, errorCode);
     }
 
-    private static (int, ProblemDetails) HandleNotFoundException(NotFoundException exception) =>
-        (StatusCodes.Status404NotFound, new ProblemDetails
+    private static (int, ProblemDetails, string) HandleNotFoundException(NotFoundException exception)
+    {
+        var errorCode = ErrorCodes.Business.NotFound;
+        return (StatusCodes.Status404NotFound, new ProblemDetails
         {
             Status = StatusCodes.Status404NotFound,
             Title = "Not Found",
             Detail = exception.Message,
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4"
-        });
+            Type = $"https://api.noir.local/errors/{errorCode}"
+        }, errorCode);
+    }
 
-    private static (int, ProblemDetails) HandleForbiddenException(ForbiddenAccessException exception) =>
-        (StatusCodes.Status403Forbidden, new ProblemDetails
+    private static (int, ProblemDetails, string) HandleForbiddenException(ForbiddenAccessException exception)
+    {
+        var errorCode = ErrorCodes.Auth.Forbidden;
+        return (StatusCodes.Status403Forbidden, new ProblemDetails
         {
             Status = StatusCodes.Status403Forbidden,
             Title = "Forbidden",
             Detail = exception.Message,
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
-        });
+            Type = $"https://api.noir.local/errors/{errorCode}"
+        }, errorCode);
+    }
 
-    private static (int, ProblemDetails) HandleUnauthorizedException() =>
-        (StatusCodes.Status401Unauthorized, new ProblemDetails
+    private static (int, ProblemDetails, string) HandleUnauthorizedException()
+    {
+        var errorCode = ErrorCodes.Auth.Unauthorized;
+        return (StatusCodes.Status401Unauthorized, new ProblemDetails
         {
             Status = StatusCodes.Status401Unauthorized,
             Title = "Unauthorized",
             Detail = "You are not authorized to access this resource.",
-            Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
-        });
+            Type = $"https://api.noir.local/errors/{errorCode}"
+        }, errorCode);
+    }
 
-    private static (int, ProblemDetails) HandleCancelledException() =>
-        (499, new ProblemDetails
+    private static (int, ProblemDetails, string) HandleCancelledException()
+    {
+        var errorCode = ErrorCodes.System.InternalError;
+        return (499, new ProblemDetails
         {
             Status = 499, // Client Closed Request
             Title = "Client Closed Request",
             Detail = "The request was cancelled by the client.",
-            Type = "https://httpstatuses.com/499"
-        });
+            Type = $"https://api.noir.local/errors/{errorCode}"
+        }, errorCode);
+    }
 
-    private static (int, ProblemDetails) HandleUnknownException(Exception exception) =>
-        (StatusCodes.Status500InternalServerError, new ProblemDetails
+    private static (int, ProblemDetails, string) HandleUnknownException(Exception exception)
+    {
+        var errorCode = ErrorCodes.System.UnknownError;
+        return (StatusCodes.Status500InternalServerError, new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
             Title = "Internal Server Error",
             Detail = "An unexpected error occurred. Please try again later.",
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
-        });
+            Type = $"https://api.noir.local/errors/{errorCode}"
+        }, errorCode);
+    }
 }

@@ -74,6 +74,7 @@ public enum ErrorType
 
 /// <summary>
 /// Represents an error with a code, message, and type for HTTP mapping.
+/// Error codes follow the format: NOIR-{CATEGORY}-{NUMBER}
 /// </summary>
 public sealed record Error(string Code, string Message, ErrorType Type = ErrorType.Failure)
 {
@@ -81,41 +82,45 @@ public sealed record Error(string Code, string Message, ErrorType Type = ErrorTy
     public static readonly Error None = new(string.Empty, string.Empty);
 
     /// <summary>Represents a null value error.</summary>
-    public static readonly Error NullValue = new("Error.NullValue", "The specified result value is null.");
+    public static readonly Error NullValue = new(ErrorCodes.Validation.Required, "The specified result value is null.");
 
-    /// <summary>Creates a not found error for an entity.</summary>
-    public static Error NotFound(string entity, object id) =>
-        new($"{entity}.NotFound", $"{entity} with id '{id}' was not found.", ErrorType.NotFound);
+    /// <summary>Creates a not found error for an entity with a specific error code.</summary>
+    public static Error NotFound(string entity, object id, string? code = null) =>
+        new(code ?? ErrorCodes.Business.NotFound, $"{entity} with id '{id}' was not found.", ErrorType.NotFound);
 
     /// <summary>Creates a not found error with a custom message.</summary>
-    public static Error NotFound(string message) =>
-        new("Error.NotFound", message, ErrorType.NotFound);
+    public static Error NotFound(string message, string? code = null) =>
+        new(code ?? ErrorCodes.Business.NotFound, message, ErrorType.NotFound);
 
     /// <summary>Creates a validation error for a property.</summary>
-    public static Error Validation(string propertyName, string message) =>
-        new($"Validation.{propertyName}", message, ErrorType.Validation);
+    public static Error Validation(string propertyName, string message, string? code = null) =>
+        new(code ?? ErrorCodes.Validation.General, message, ErrorType.Validation);
 
     /// <summary>Creates a validation error from multiple errors.</summary>
-    public static Error ValidationErrors(IDictionary<string, string[]> errors) =>
-        new("Validation.Multiple", string.Join("; ", errors.SelectMany(e => e.Value)), ErrorType.Validation);
+    public static Error ValidationErrors(IDictionary<string, string[]> errors, string? code = null) =>
+        new(code ?? ErrorCodes.Validation.General, string.Join("; ", errors.SelectMany(e => e.Value)), ErrorType.Validation);
 
     /// <summary>Creates a validation error from error messages.</summary>
-    public static Error ValidationErrors(IEnumerable<string> errors) =>
-        new("Validation.Multiple", string.Join("; ", errors), ErrorType.Validation);
+    public static Error ValidationErrors(IEnumerable<string> errors, string? code = null) =>
+        new(code ?? ErrorCodes.Validation.General, string.Join("; ", errors), ErrorType.Validation);
 
     /// <summary>Creates a conflict error.</summary>
-    public static Error Conflict(string message) =>
-        new("Error.Conflict", message, ErrorType.Conflict);
+    public static Error Conflict(string message, string? code = null) =>
+        new(code ?? ErrorCodes.Business.Conflict, message, ErrorType.Conflict);
 
     /// <summary>Creates an unauthorized error.</summary>
-    public static Error Unauthorized(string message = "Unauthorized access.") =>
-        new("Error.Unauthorized", message, ErrorType.Unauthorized);
+    public static Error Unauthorized(string message = "Unauthorized access.", string? code = null) =>
+        new(code ?? ErrorCodes.Auth.Unauthorized, message, ErrorType.Unauthorized);
 
     /// <summary>Creates a forbidden error.</summary>
-    public static Error Forbidden(string message = "Access forbidden.") =>
-        new("Error.Forbidden", message, ErrorType.Forbidden);
+    public static Error Forbidden(string message = "Access forbidden.", string? code = null) =>
+        new(code ?? ErrorCodes.Auth.Forbidden, message, ErrorType.Forbidden);
 
     /// <summary>Creates a generic failure error.</summary>
     public static Error Failure(string code, string message) =>
         new(code, message, ErrorType.Failure);
+
+    /// <summary>Creates an internal system error.</summary>
+    public static Error Internal(string message, string? code = null) =>
+        new(code ?? ErrorCodes.System.InternalError, message, ErrorType.Failure);
 }

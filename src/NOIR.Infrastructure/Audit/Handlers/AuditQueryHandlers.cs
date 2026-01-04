@@ -20,7 +20,7 @@ public class GetAuditTrailQueryHandler
     {
         if (string.IsNullOrWhiteSpace(query.CorrelationId))
         {
-            return Result.Failure<AuditTrailDto>(Error.Validation("CorrelationId", "CorrelationId is required."));
+            return Result.Failure<AuditTrailDto>(Error.Validation("CorrelationId", "CorrelationId is required.", ErrorCodes.Validation.Required));
         }
 
         // Get HTTP request audit log
@@ -131,7 +131,7 @@ public class GetEntityHistoryQueryHandler
     {
         if (string.IsNullOrWhiteSpace(query.EntityType) || string.IsNullOrWhiteSpace(query.EntityId))
         {
-            return Result.Failure<EntityHistoryDto>(Error.Validation("EntityType", "EntityType and EntityId are required."));
+            return Result.Failure<EntityHistoryDto>(Error.Validation("EntityType", "EntityType and EntityId are required.", ErrorCodes.Validation.Required));
         }
 
         var historyQuery = _dbContext.EntityAuditLogs
@@ -362,7 +362,7 @@ public class ExportAuditLogsQueryHandler
         if (maxRows <= 0)
         {
             return Result.Failure<ExportAuditLogsResult>(
-                Error.Validation("MaxRows", "MaxRows must be greater than 0."));
+                Error.Validation("MaxRows", "MaxRows must be greater than 0.", ErrorCodes.Validation.OutOfRange));
         }
 
         // VALIDATION: Enforce date range limits
@@ -373,12 +373,12 @@ public class ExportAuditLogsQueryHandler
             {
                 return Result.Failure<ExportAuditLogsResult>(
                     Error.Validation("DateRange",
-                        $"Date range cannot exceed {ExportAuditLogsQuery.MaxDateRangeDays} days. Requested: {daysDiff:N0} days."));
+                        $"Date range cannot exceed {ExportAuditLogsQuery.MaxDateRangeDays} days. Requested: {daysDiff:N0} days.", ErrorCodes.Validation.OutOfRange));
             }
             if (daysDiff < 0)
             {
                 return Result.Failure<ExportAuditLogsResult>(
-                    Error.Validation("DateRange", "FromDate must be before ToDate."));
+                    Error.Validation("DateRange", "FromDate must be before ToDate.", ErrorCodes.Validation.InvalidDate));
             }
         }
 
@@ -387,7 +387,7 @@ public class ExportAuditLogsQueryHandler
             string.IsNullOrWhiteSpace(query.EntityType) && string.IsNullOrWhiteSpace(query.UserId))
         {
             return Result.Failure<ExportAuditLogsResult>(
-                Error.Validation("Filters", "At least one filter (FromDate, ToDate, EntityType, or UserId) is required."));
+                Error.Validation("Filters", "At least one filter (FromDate, ToDate, EntityType, or UserId) is required.", ErrorCodes.Validation.Required));
         }
 
         // Build the base query

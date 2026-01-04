@@ -24,20 +24,23 @@ public class DeleteUserCommandHandler
         var user = await _userManager.FindByIdAsync(command.UserId);
         if (user is null)
         {
-            return Result.Failure<bool>(Error.NotFound(_localization["auth.user.notFound"]));
+            return Result.Failure<bool>(
+                Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         // Prevent self-deletion
         if (user.Id == _currentUser.UserId)
         {
-            return Result.Failure<bool>(Error.Validation("UserId", _localization["auth.user.deleteSelf"]));
+            return Result.Failure<bool>(
+                Error.Validation("UserId", _localization["auth.user.deleteSelf"], ErrorCodes.Business.CannotDelete));
         }
 
         // Prevent deletion of admin users
         var isAdmin = await _userManager.IsInRoleAsync(user, Roles.Admin);
         if (isAdmin)
         {
-            return Result.Failure<bool>(Error.Validation("UserId", _localization["auth.user.deleteAdmin"]));
+            return Result.Failure<bool>(
+                Error.Validation("UserId", _localization["auth.user.deleteAdmin"], ErrorCodes.Business.CannotDelete));
         }
 
         // Soft delete: lock out permanently
@@ -51,7 +54,7 @@ public class DeleteUserCommandHandler
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
         {
-            return Result.Failure<bool>(Error.Failure("User.DeleteFailed", _localization["auth.user.deleteFailed"]));
+            return Result.Failure<bool>(Error.Failure(ErrorCodes.System.DatabaseError, _localization["auth.user.deleteFailed"]));
         }
 
         return Result.Success(true);

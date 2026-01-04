@@ -26,7 +26,7 @@ public class GetUserPermissionsQueryHandler
         var user = await _userManager.FindByIdAsync(query.UserId);
         if (user is null)
         {
-            return Result.Failure<UserPermissionsDto>(Error.NotFound(_localization["auth.user.notFound"]));
+            return Result.Failure<UserPermissionsDto>(Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         var roles = await _userManager.GetRolesAsync(user);

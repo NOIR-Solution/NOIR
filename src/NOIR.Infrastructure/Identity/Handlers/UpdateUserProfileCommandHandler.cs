@@ -25,14 +25,14 @@ public class UpdateUserProfileCommandHandler
         // Check if user is authenticated
         if (!_currentUser.IsAuthenticated || string.IsNullOrEmpty(_currentUser.UserId))
         {
-            return Result.Failure<UserProfileDto>(Error.Unauthorized(_localization["auth.user.notAuthenticated"]));
+            return Result.Failure<UserProfileDto>(Error.Unauthorized(_localization["auth.user.notAuthenticated"], ErrorCodes.Auth.Unauthorized));
         }
 
         // Find user
         var user = await _userManager.FindByIdAsync(_currentUser.UserId);
         if (user is null)
         {
-            return Result.Failure<UserProfileDto>(Error.NotFound(_localization["auth.user.notFound"]));
+            return Result.Failure<UserProfileDto>(Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         // Update profile fields
@@ -55,7 +55,7 @@ public class UpdateUserProfileCommandHandler
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                return Result.Failure<UserProfileDto>(Error.Failure("User.UpdateFailed", _localization["auth.user.updateFailed"]));
+                return Result.Failure<UserProfileDto>(Error.Failure(ErrorCodes.System.DatabaseError, _localization["auth.user.updateFailed"]));
             }
         }
 

@@ -24,7 +24,8 @@ public class CreateRoleCommandHandler
         // Check if role already exists
         if (await _roleManager.RoleExistsAsync(command.Name))
         {
-            return Result.Failure<RoleDto>(Error.Conflict(_localization["auth.role.alreadyExists"]));
+            return Result.Failure<RoleDto>(
+                Error.Conflict(_localization["auth.role.alreadyExists"], ErrorCodes.Business.AlreadyExists));
         }
 
         var role = new IdentityRole(command.Name);
@@ -32,7 +33,7 @@ public class CreateRoleCommandHandler
 
         if (!result.Succeeded)
         {
-            return Result.Failure<RoleDto>(Error.Failure("Role.CreateFailed", _localization["auth.role.createFailed"]));
+            return Result.Failure<RoleDto>(Error.Failure(ErrorCodes.System.DatabaseError, _localization["auth.role.createFailed"]));
         }
 
         // Assign permissions if provided

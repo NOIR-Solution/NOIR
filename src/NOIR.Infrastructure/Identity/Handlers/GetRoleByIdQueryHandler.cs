@@ -24,7 +24,8 @@ public class GetRoleByIdQueryHandler
         var role = await _roleManager.FindByIdAsync(query.RoleId);
         if (role is null)
         {
-            return Result.Failure<RoleDto>(Error.NotFound(_localization["auth.role.notFound"]));
+            return Result.Failure<RoleDto>(
+                Error.NotFound(_localization["auth.role.notFound"], ErrorCodes.Auth.RoleNotFound));
         }
 
         var claims = await _roleManager.GetClaimsAsync(role);

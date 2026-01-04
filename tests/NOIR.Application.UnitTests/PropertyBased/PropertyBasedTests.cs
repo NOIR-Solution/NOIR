@@ -296,7 +296,7 @@ public class PropertyBasedTests
 
             // Assert
             error.Type.Should().Be(ErrorType.NotFound);
-            error.Code.Should().Contain("NotFound");
+            error.Code.Should().Be(ErrorCodes.Business.NotFound);
         }
     }
 
@@ -316,7 +316,7 @@ public class PropertyBasedTests
 
             // Assert
             error.Type.Should().Be(ErrorType.Validation);
-            error.Code.Should().Contain("Validation");
+            error.Code.Should().Be(ErrorCodes.Validation.General);
         }
     }
 

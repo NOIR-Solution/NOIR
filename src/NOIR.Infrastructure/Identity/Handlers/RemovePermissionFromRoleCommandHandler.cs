@@ -26,7 +26,7 @@ public class RemovePermissionFromRoleCommandHandler
         var role = await _roleManager.FindByIdAsync(command.RoleId);
         if (role is null)
         {
-            return Result.Failure<IReadOnlyList<string>>(Error.NotFound(_localization["auth.role.notFound"]));
+            return Result.Failure<IReadOnlyList<string>>(Error.NotFound(_localization["auth.role.notFound"], ErrorCodes.Auth.RoleNotFound));
         }
 
         // Remove specified permissions

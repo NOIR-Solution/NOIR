@@ -21,7 +21,7 @@ public class ResultExtendedTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("Validation.Multiple");
+        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
         result.Error.Message.Should().Contain("Email is required");
         result.Error.Message.Should().Contain("Password is too short");
     }
@@ -89,7 +89,7 @@ public class ErrorExtendedTests
         var error = Error.NotFound("Custom not found message");
 
         // Assert
-        error.Code.Should().Be("Error.NotFound");
+        error.Code.Should().Be(ErrorCodes.Business.NotFound);
         error.Message.Should().Be("Custom not found message");
         error.Type.Should().Be(ErrorType.NotFound);
     }
@@ -101,7 +101,7 @@ public class ErrorExtendedTests
         var error = Error.Unauthorized();
 
         // Assert
-        error.Code.Should().Be("Error.Unauthorized");
+        error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
         error.Message.Should().Be("Unauthorized access.");
         error.Type.Should().Be(ErrorType.Unauthorized);
     }
@@ -113,7 +113,7 @@ public class ErrorExtendedTests
         var error = Error.Forbidden();
 
         // Assert
-        error.Code.Should().Be("Error.Forbidden");
+        error.Code.Should().Be(ErrorCodes.Auth.Forbidden);
         error.Message.Should().Be("Access forbidden.");
         error.Type.Should().Be(ErrorType.Forbidden);
     }
@@ -132,7 +132,7 @@ public class ErrorExtendedTests
         var error = Error.ValidationErrors(errors);
 
         // Assert
-        error.Code.Should().Be("Validation.Multiple");
+        error.Code.Should().Be(ErrorCodes.Validation.General);
         error.Type.Should().Be(ErrorType.Validation);
         error.Message.Should().Contain("Email is required");
         error.Message.Should().Contain("Email is invalid");
@@ -149,7 +149,7 @@ public class ErrorExtendedTests
         var error = Error.ValidationErrors(errors);
 
         // Assert
-        error.Code.Should().Be("Validation.Multiple");
+        error.Code.Should().Be(ErrorCodes.Validation.General);
         error.Type.Should().Be(ErrorType.Validation);
         error.Message.Should().Be("Error 1; Error 2; Error 3");
     }
@@ -178,7 +178,7 @@ public class ErrorExtendedTests
     public void NullValue_ShouldHaveCorrectCodeAndMessage()
     {
         // Assert
-        Error.NullValue.Code.Should().Be("Error.NullValue");
+        Error.NullValue.Code.Should().Be(ErrorCodes.Validation.Required);
         Error.NullValue.Message.Should().Be("The specified result value is null.");
     }
 }

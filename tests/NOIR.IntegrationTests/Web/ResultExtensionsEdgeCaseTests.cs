@@ -90,7 +90,7 @@ public class ResultExtensionsEdgeCaseTests
 
         // Assert
         capturedError.Should().NotBeNull();
-        capturedError!.Code.Should().Be("Validation.field");
+        capturedError!.Code.Should().Be(ErrorCodes.Validation.General);
     }
 
     #endregion

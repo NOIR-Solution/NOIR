@@ -21,7 +21,8 @@ public class UpdateUserCommandHandler
         var user = await _userManager.FindByIdAsync(command.UserId);
         if (user is null)
         {
-            return Result.Failure<UserDto>(Error.NotFound(_localization["auth.user.notFound"]));
+            return Result.Failure<UserDto>(
+                Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         // Update fields if provided
@@ -40,7 +41,7 @@ public class UpdateUserCommandHandler
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
         {
-            return Result.Failure<UserDto>(Error.Failure("User.UpdateFailed", _localization["auth.user.updateFailed"]));
+            return Result.Failure<UserDto>(Error.Failure(ErrorCodes.System.DatabaseError, _localization["auth.user.updateFailed"]));
         }
 
         var roles = await _userManager.GetRolesAsync(user);

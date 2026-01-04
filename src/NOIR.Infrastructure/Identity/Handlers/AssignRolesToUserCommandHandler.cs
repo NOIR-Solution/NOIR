@@ -27,7 +27,7 @@ public class AssignRolesToUserCommandHandler
         var user = await _userManager.FindByIdAsync(command.UserId);
         if (user is null)
         {
-            return Result.Failure<UserDto>(Error.NotFound(_localization["auth.user.notFound"]));
+            return Result.Failure<UserDto>(Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         // Validate all roles exist
@@ -35,7 +35,7 @@ public class AssignRolesToUserCommandHandler
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
             {
-                return Result.Failure<UserDto>(Error.NotFound(_localization["auth.role.notFound"]));
+                return Result.Failure<UserDto>(Error.NotFound(_localization["auth.role.notFound"], ErrorCodes.Auth.RoleNotFound));
             }
         }
 
@@ -49,7 +49,7 @@ public class AssignRolesToUserCommandHandler
             var removeResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
             if (!removeResult.Succeeded)
             {
-                return Result.Failure<UserDto>(Error.Failure("User.RemoveRolesFailed", _localization["auth.user.removeRolesFailed"]));
+                return Result.Failure<UserDto>(Error.Failure(ErrorCodes.System.DatabaseError, _localization["auth.user.removeRolesFailed"]));
             }
         }
 
@@ -60,7 +60,7 @@ public class AssignRolesToUserCommandHandler
             var addResult = await _userManager.AddToRolesAsync(user, rolesToAdd);
             if (!addResult.Succeeded)
             {
-                return Result.Failure<UserDto>(Error.Failure("User.AddRolesFailed", _localization["auth.user.addRolesFailed"]));
+                return Result.Failure<UserDto>(Error.Failure(ErrorCodes.System.DatabaseError, _localization["auth.user.addRolesFailed"]));
             }
         }
 

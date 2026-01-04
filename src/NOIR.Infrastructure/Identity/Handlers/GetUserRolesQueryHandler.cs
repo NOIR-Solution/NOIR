@@ -21,7 +21,7 @@ public class GetUserRolesQueryHandler
         var user = await _userManager.FindByIdAsync(query.UserId);
         if (user is null)
         {
-            return Result.Failure<IReadOnlyList<string>>(Error.NotFound(_localization["auth.user.notFound"]));
+            return Result.Failure<IReadOnlyList<string>>(Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         var roles = await _userManager.GetRolesAsync(user);

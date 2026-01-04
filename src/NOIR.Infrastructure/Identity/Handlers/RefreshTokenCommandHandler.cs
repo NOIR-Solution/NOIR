@@ -45,34 +45,39 @@ public class RefreshTokenCommandHandler
         var principal = _tokenService.GetPrincipalFromExpiredToken(command.AccessToken);
         if (principal is null)
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.token.accessTokenInvalid"]));
+            return Result.Failure<AuthResponse>(
+                Error.Unauthorized(_localization["auth.token.accessTokenInvalid"], ErrorCodes.Auth.TokenExpired));
         }
 
         // Get user ID from claims
         var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userId))
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.token.accessTokenInvalid"]));
+            return Result.Failure<AuthResponse>(
+                Error.Unauthorized(_localization["auth.token.accessTokenInvalid"], ErrorCodes.Auth.TokenExpired));
         }
 
         // Find user
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
         {
-            return Result.Failure<AuthResponse>(Error.NotFound(_localization["auth.user.notFound"]));
+            return Result.Failure<AuthResponse>(
+                Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         // Check if user is active
         if (!user.IsActive)
         {
-            return Result.Failure<AuthResponse>(Error.Forbidden(_localization["auth.login.accountDisabled"]));
+            return Result.Failure<AuthResponse>(
+                Error.Forbidden(_localization["auth.login.accountDisabled"], ErrorCodes.Auth.AccountDisabled));
         }
 
         // Get refresh token from command or cookie
         var refreshToken = command.RefreshToken ?? _cookieAuthService.GetRefreshTokenFromCookie();
         if (string.IsNullOrEmpty(refreshToken))
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.token.refreshTokenRequired"]));
+            return Result.Failure<AuthResponse>(
+                Error.Unauthorized(_localization["auth.token.refreshTokenRequired"], ErrorCodes.Auth.RefreshTokenRequired));
         }
 
         // Rotate token (validates and creates new token in one operation)
@@ -87,7 +92,8 @@ public class RefreshTokenCommandHandler
             _logger.LogWarning(
                 "Token rotation failed for user {UserId}. Possible token reuse or theft.",
                 userId);
-            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.token.refreshTokenInvalid"]));
+            return Result.Failure<AuthResponse>(
+                Error.Unauthorized(_localization["auth.token.refreshTokenInvalid"], ErrorCodes.Auth.RefreshTokenInvalid));
         }
 
         // Generate new access token

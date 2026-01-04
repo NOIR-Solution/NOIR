@@ -47,24 +47,28 @@ public class LoginCommandHandler
 
         if (user is null)
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.login.invalidCredentials"]));
+            return Result.Failure<AuthResponse>(
+                Error.Unauthorized(_localization["auth.login.invalidCredentials"], ErrorCodes.Auth.InvalidCredentials));
         }
 
         if (!user.IsActive)
         {
-            return Result.Failure<AuthResponse>(Error.Forbidden(_localization["auth.login.accountDisabled"]));
+            return Result.Failure<AuthResponse>(
+                Error.Forbidden(_localization["auth.login.accountDisabled"], ErrorCodes.Auth.AccountDisabled));
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, command.Password, lockoutOnFailure: true);
 
         if (result.IsLockedOut)
         {
-            return Result.Failure<AuthResponse>(Error.Forbidden(_localization["auth.login.accountLockedOut"]));
+            return Result.Failure<AuthResponse>(
+                Error.Forbidden(_localization["auth.login.accountLockedOut"], ErrorCodes.Auth.AccountLockedOut));
         }
 
         if (!result.Succeeded)
         {
-            return Result.Failure<AuthResponse>(Error.Unauthorized(_localization["auth.login.invalidCredentials"]));
+            return Result.Failure<AuthResponse>(
+                Error.Unauthorized(_localization["auth.login.invalidCredentials"], ErrorCodes.Auth.InvalidCredentials));
         }
 
         // Generate access token

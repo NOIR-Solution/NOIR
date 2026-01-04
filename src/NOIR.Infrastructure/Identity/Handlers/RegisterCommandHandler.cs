@@ -50,7 +50,7 @@ public class RegisterCommandHandler
         if (!result.Succeeded)
         {
             var errors = result.Errors.Select(e => e.Description);
-            return Result.Failure<AuthResponse>(Error.ValidationErrors(errors));
+            return Result.Failure<AuthResponse>(Error.ValidationErrors(errors, ErrorCodes.Validation.General));
         }
 
         // Assign default "User" role using constant

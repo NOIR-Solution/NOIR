@@ -21,13 +21,15 @@ public class GetUserByIdQueryHandler
     {
         if (string.IsNullOrWhiteSpace(query.UserId))
         {
-            return Result.Failure<UserProfileDto>(Error.Validation("UserId", _localization["validation.userId.required"]));
+            return Result.Failure<UserProfileDto>(
+                Error.Validation("UserId", _localization["validation.userId.required"], ErrorCodes.Validation.Required));
         }
 
         var user = await _userManager.FindByIdAsync(query.UserId);
         if (user is null)
         {
-            return Result.Failure<UserProfileDto>(Error.NotFound(_localization["auth.user.notFound"]));
+            return Result.Failure<UserProfileDto>(
+                Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         var roles = await _userManager.GetRolesAsync(user);

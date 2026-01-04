@@ -216,7 +216,7 @@ public class ExceptionHandlingTests
 
         // Assert
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("traceId");
+        content.Should().Contain("correlationId");
     }
 
     [Fact]

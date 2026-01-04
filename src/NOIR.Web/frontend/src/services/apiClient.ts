@@ -24,6 +24,7 @@ const API_BASE = '/api'
 
 /**
  * Custom API Error class for consistent error handling
+ * Automatically logs error details to console for customer support
  */
 export class ApiError extends Error {
   status: number
@@ -34,6 +35,54 @@ export class ApiError extends Error {
     this.name = 'ApiError'
     this.status = status
     this.response = response
+
+    // Always log to console for support debugging
+    this.logToConsole()
+  }
+
+  /**
+   * Get the NOIR error code from the response
+   */
+  get errorCode(): string | undefined {
+    return this.response?.errorCode
+  }
+
+  /**
+   * Get the correlation ID for support tracking
+   */
+  get correlationId(): string | undefined {
+    return this.response?.correlationId
+  }
+
+  /**
+   * Get the error timestamp
+   */
+  get timestamp(): string | undefined {
+    return this.response?.timestamp
+  }
+
+  /**
+   * Log error details to console for customer support
+   * Format is designed to be easily copied and shared with support team
+   */
+  private logToConsole(): void {
+    const errorCode = this.response?.errorCode || 'UNKNOWN'
+    const correlationId = this.response?.correlationId || 'N/A'
+    const timestamp = this.response?.timestamp || new Date().toISOString()
+
+    console.error(
+      `%c Error [${errorCode}] `,
+      'background: #dc2626; color: white; font-weight: bold; padding: 2px 6px; border-radius: 3px;'
+    )
+    console.error(
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+      `Code:         ${errorCode}\n` +
+      `Correlation:  ${correlationId}\n` +
+      `Timestamp:    ${timestamp}\n` +
+      `Status:       ${this.status}\n` +
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+      'Please provide this information to support if needed.'
+    )
   }
 }
 

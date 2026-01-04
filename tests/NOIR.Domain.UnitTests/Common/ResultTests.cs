@@ -77,12 +77,15 @@ public class ErrorTests
     [Fact]
     public void NotFound_ShouldCreateNotFoundError()
     {
-        // Act
-        var error = Error.NotFound("User", "123");
+        // Arrange
+        var id = Guid.NewGuid();
+
+        // Act - Use Guid to ensure (entity, id) overload is selected, not (message, code)
+        var error = Error.NotFound("User", id);
 
         // Assert
-        error.Code.Should().Be("User.NotFound");
-        error.Message.Should().Be("User with id '123' was not found.");
+        error.Code.Should().Be(ErrorCodes.Business.NotFound);
+        error.Message.Should().Be($"User with id '{id}' was not found.");
         error.Type.Should().Be(ErrorType.NotFound);
     }
 
@@ -93,7 +96,7 @@ public class ErrorTests
         var error = Error.Unauthorized("Invalid credentials.");
 
         // Assert
-        error.Code.Should().Be("Error.Unauthorized");
+        error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
         error.Message.Should().Be("Invalid credentials.");
         error.Type.Should().Be(ErrorType.Unauthorized);
     }
@@ -105,7 +108,7 @@ public class ErrorTests
         var error = Error.Forbidden("Access denied.");
 
         // Assert
-        error.Code.Should().Be("Error.Forbidden");
+        error.Code.Should().Be(ErrorCodes.Auth.Forbidden);
         error.Message.Should().Be("Access denied.");
         error.Type.Should().Be(ErrorType.Forbidden);
     }
@@ -117,7 +120,7 @@ public class ErrorTests
         var error = Error.Validation("Email", "Email is required.");
 
         // Assert
-        error.Code.Should().Be("Validation.Email");
+        error.Code.Should().Be(ErrorCodes.Validation.General);
         error.Message.Should().Be("Email is required.");
         error.Type.Should().Be(ErrorType.Validation);
     }
@@ -129,7 +132,7 @@ public class ErrorTests
         var error = Error.Conflict("Email already exists.");
 
         // Assert
-        error.Code.Should().Be("Error.Conflict");
+        error.Code.Should().Be(ErrorCodes.Business.Conflict);
         error.Message.Should().Be("Email already exists.");
         error.Type.Should().Be(ErrorType.Conflict);
     }
