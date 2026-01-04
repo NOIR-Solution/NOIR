@@ -193,9 +193,15 @@ public static class DependencyInjection
         // Configure FluentEmail
         var emailSettings = configuration.GetSection(EmailSettings.SectionName).Get<EmailSettings>() ?? new EmailSettings();
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
+
+        // FluentEmail's RazorRenderer requires an absolute path
+        var templatesPath = Path.IsPathRooted(emailSettings.TemplatesPath)
+            ? emailSettings.TemplatesPath
+            : Path.Combine(Directory.GetCurrentDirectory(), emailSettings.TemplatesPath);
+
         services
             .AddFluentEmail(emailSettings.DefaultFromEmail, emailSettings.DefaultFromName)
-            .AddRazorRenderer(emailSettings.TemplatesPath)
+            .AddRazorRenderer(templatesPath)
             .AddMailKitSender(new SmtpClientOptions
             {
                 Server = emailSettings.SmtpHost,

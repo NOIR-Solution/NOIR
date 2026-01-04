@@ -7,14 +7,17 @@ namespace NOIR.Application.UnitTests.Infrastructure;
 public class EmailServiceTests
 {
     private readonly Mock<IFluentEmail> _fluentEmailMock;
+    private readonly Mock<IOptions<EmailSettings>> _emailSettingsMock;
     private readonly Mock<ILogger<EmailService>> _loggerMock;
     private readonly EmailService _sut;
 
     public EmailServiceTests()
     {
         _fluentEmailMock = new Mock<IFluentEmail>();
+        _emailSettingsMock = new Mock<IOptions<EmailSettings>>();
+        _emailSettingsMock.Setup(x => x.Value).Returns(new EmailSettings { TemplatesPath = "EmailTemplates" });
         _loggerMock = new Mock<ILogger<EmailService>>();
-        _sut = new EmailService(_fluentEmailMock.Object, _loggerMock.Object);
+        _sut = new EmailService(_fluentEmailMock.Object, _emailSettingsMock.Object, _loggerMock.Object);
     }
 
     #region SendAsync Single Recipient Tests

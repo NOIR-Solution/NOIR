@@ -63,29 +63,7 @@ public class OtpService : IOtpService, IScopedService
 
     public string MaskEmail(string email)
     {
-        if (string.IsNullOrEmpty(email))
-            return string.Empty;
-
-        var atIndex = email.IndexOf('@');
-        if (atIndex <= 0)
-            return email;
-
-        var localPart = email[..atIndex];
-        var domainPart = email[atIndex..];
-
-        // Show first character and mask the rest of local part
-        if (localPart.Length <= 1)
-        {
-            return $"{localPart}***{domainPart}";
-        }
-
-        // For longer emails, show first character and last character
-        if (localPart.Length <= 3)
-        {
-            return $"{localPart[0]}***{domainPart}";
-        }
-
-        // Show first 2 chars, mask middle, show last char before @
-        return $"{localPart[0..2]}***{localPart[^1]}{domainPart}";
+        // Delegate to shared extension method
+        return email.MaskEmail();
     }
 }
