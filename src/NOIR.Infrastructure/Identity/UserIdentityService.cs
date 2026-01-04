@@ -212,6 +212,34 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         return IdentityOperationResult.Success(user.Id);
     }
 
+    public async Task<IdentityOperationResult> ResetPasswordAsync(
+        string userId,
+        string newPassword,
+        CancellationToken ct = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            return IdentityOperationResult.Failure("User not found.");
+        }
+
+        // Generate a password reset token and use it to reset
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+        if (!result.Succeeded)
+        {
+            return IdentityOperationResult.Failure(
+                result.Errors.Select(e => e.Description).ToArray());
+        }
+
+        // Update the password last changed timestamp
+        user.PasswordLastChangedAt = _dateTime.UtcNow;
+        await _userManager.UpdateAsync(user);
+
+        return IdentityOperationResult.Success(user.Id);
+    }
+
     #endregion
 
     #region Role Management

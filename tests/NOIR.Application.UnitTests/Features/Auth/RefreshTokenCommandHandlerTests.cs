@@ -6,6 +6,8 @@ namespace NOIR.Application.UnitTests.Features.Auth;
 /// </summary>
 public class RefreshTokenCommandHandlerTests
 {
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     #region Test Setup
 
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
@@ -94,7 +96,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var newRefreshToken = RefreshToken.Create(user.Id, 7, user.TenantId);
+        var newRefreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, user.TenantId);
         _refreshTokenServiceMock
             .Setup(x => x.RotateTokenAsync(
                 It.IsAny<string>(),
@@ -564,7 +566,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetRefreshTokenFromCookie())
             .Returns("cookie-refresh-token");
 
-        var newRefreshToken = RefreshToken.Create(user.Id, 7);
+        var newRefreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7);
         _refreshTokenServiceMock
             .Setup(x => x.RotateTokenAsync(
                 "cookie-refresh-token",

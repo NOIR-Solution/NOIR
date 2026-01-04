@@ -6,11 +6,16 @@ namespace NOIR.Infrastructure.Services;
 public class EmailService : IEmailService, IScopedService
 {
     private readonly IFluentEmail _fluentEmail;
+    private readonly EmailSettings _emailSettings;
     private readonly ILogger<EmailService> _logger;
 
-    public EmailService(IFluentEmail fluentEmail, ILogger<EmailService> logger)
+    public EmailService(
+        IFluentEmail fluentEmail,
+        IOptions<EmailSettings> emailSettings,
+        ILogger<EmailService> logger)
     {
         _fluentEmail = fluentEmail;
+        _emailSettings = emailSettings.Value;
         _logger = logger;
     }
 
@@ -76,10 +81,22 @@ public class EmailService : IEmailService, IScopedService
     {
         try
         {
+            // Build full template path - ensure it ends with .cshtml
+            var templatePath = templateName.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase)
+                ? templateName
+                : $"{templateName}.cshtml";
+
+            // Get the absolute templates path
+            var templatesPath = Path.IsPathRooted(_emailSettings.TemplatesPath)
+                ? _emailSettings.TemplatesPath
+                : Path.Combine(Directory.GetCurrentDirectory(), _emailSettings.TemplatesPath);
+
+            var fullTemplatePath = Path.Combine(templatesPath, templatePath);
+
             var response = await _fluentEmail
                 .To(to)
                 .Subject(subject)
-                .UsingTemplateFromFile(templateName, model)
+                .UsingTemplateFromFile(fullTemplatePath, model)
                 .SendAsync(cancellationToken);
 
             if (!response.Successful)

@@ -25,6 +25,8 @@ global using Microsoft.Extensions.Options;
 global using Microsoft.IdentityModel.Tokens;
 
 // Finbuckle MultiTenant
+global using Finbuckle.MultiTenant;
+global using Finbuckle.MultiTenant.Abstractions;
 global using Finbuckle.MultiTenant.AspNetCore.Extensions;
 
 // FluentValidation

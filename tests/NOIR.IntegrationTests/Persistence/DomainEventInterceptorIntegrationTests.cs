@@ -17,6 +17,8 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
     public Task InitializeAsync() => _factory.ResetDatabaseAsync();
     public Task DisposeAsync() => Task.CompletedTask;
 
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     #region SavedChangesAsync Tests
 
     [Fact]
@@ -27,7 +29,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
             // Add an entity
-            var token = RefreshToken.Create("domain-event-test", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "domain-event-test", 7);
             context.RefreshTokens.Add(token);
 
             // Act - SaveChangesAsync should work with the interceptor
@@ -49,9 +51,9 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
             // Add multiple entities
             var tokens = new[]
             {
-                RefreshToken.Create("event-user-1", 7),
-                RefreshToken.Create("event-user-2", 7),
-                RefreshToken.Create("event-user-3", 7)
+                RefreshToken.Create(GenerateTestToken(), "event-user-1", 7),
+                RefreshToken.Create(GenerateTestToken(), "event-user-2", 7),
+                RefreshToken.Create(GenerateTestToken(), "event-user-3", 7)
             };
 
             context.RefreshTokens.AddRange(tokens);
@@ -81,7 +83,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("sync-test", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "sync-test", 7);
             context.RefreshTokens.Add(token);
 
             // Act
@@ -106,7 +108,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("state-test", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "state-test", 7);
             context.RefreshTokens.Add(token);
 
             // Before save - Added state
@@ -129,7 +131,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("modify-state-test", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "modify-state-test", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -160,8 +162,8 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token1 = RefreshToken.Create("return-test-1", 7);
-            var token2 = RefreshToken.Create("return-test-2", 7);
+            var token1 = RefreshToken.Create(GenerateTestToken(), "return-test-1", 7);
+            var token2 = RefreshToken.Create(GenerateTestToken(), "return-test-2", 7);
             context.RefreshTokens.AddRange(token1, token2);
 
             // Act
@@ -183,7 +185,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("cancel-test", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "cancel-test", 7);
             context.RefreshTokens.Add(token);
 
             using var cts = new CancellationTokenSource();
@@ -203,7 +205,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("cancelled-test", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "cancelled-test", 7);
             context.RefreshTokens.Add(token);
 
             using var cts = new CancellationTokenSource();

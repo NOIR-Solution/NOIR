@@ -37,17 +37,19 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
         });
     }
 
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     private static async Task SeedTestDataAsync(ApplicationDbContext context)
     {
         var userId = "spec-test-user";
 
         // Create refresh tokens with different states
-        var activeToken1 = RefreshToken.Create(userId, 7, ipAddress: "127.0.0.1");
-        var activeToken2 = RefreshToken.Create(userId, 7, ipAddress: "127.0.0.1");
-        var revokedToken = RefreshToken.Create(userId, 7, ipAddress: "127.0.0.1");
+        var activeToken1 = RefreshToken.Create(GenerateTestToken(), userId, 7, ipAddress: "127.0.0.1");
+        var activeToken2 = RefreshToken.Create(GenerateTestToken(), userId, 7, ipAddress: "127.0.0.1");
+        var revokedToken = RefreshToken.Create(GenerateTestToken(), userId, 7, ipAddress: "127.0.0.1");
         revokedToken.Revoke("127.0.0.1", "Test revocation");
 
-        var otherUserToken = RefreshToken.Create("other-user", 7, ipAddress: "127.0.0.1");
+        var otherUserToken = RefreshToken.Create(GenerateTestToken(), "other-user", 7, ipAddress: "127.0.0.1");
 
         context.RefreshTokens.AddRange(activeToken1, activeToken2, revokedToken, otherUserToken);
 
@@ -70,7 +72,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var context = services.GetRequiredService<ApplicationDbContext>();
 
             // Arrange
-            var token = RefreshToken.Create("spec-value-user", 7, ipAddress: "127.0.0.1");
+            var token = RefreshToken.Create(GenerateTestToken(), "spec-value-user", 7, ipAddress: "127.0.0.1");
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -115,8 +117,8 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var context = services.GetRequiredService<ApplicationDbContext>();
 
             // Arrange
-            var familyToken = RefreshToken.Create("family-user", 7);
-            var relatedToken = RefreshToken.Create("family-user", 7, tokenFamily: familyToken.TokenFamily);
+            var familyToken = RefreshToken.Create(GenerateTestToken(), "family-user", 7);
+            var relatedToken = RefreshToken.Create(GenerateTestToken(), "family-user", 7, tokenFamily: familyToken.TokenFamily);
             context.RefreshTokens.AddRange(familyToken, relatedToken);
             await context.SaveChangesAsync();
 
@@ -432,9 +434,9 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
 
             // Arrange - Add tokens with different creation times
             var userId = $"order-test-{Guid.NewGuid()}";
-            var token1 = RefreshToken.Create(userId, 7);
+            var token1 = RefreshToken.Create(GenerateTestToken(), userId, 7);
             await Task.Delay(10); // Ensure different timestamps
-            var token2 = RefreshToken.Create(userId, 7);
+            var token2 = RefreshToken.Create(GenerateTestToken(), userId, 7);
             context.RefreshTokens.AddRange(token1, token2);
             await context.SaveChangesAsync();
 

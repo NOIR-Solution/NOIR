@@ -6,6 +6,7 @@ Complete setup instructions for Windows, macOS, and Linux development environmen
 
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
+- [Vibe Kanban Integration](#vibe-kanban-integration)
 - [Windows Setup](#windows-setup)
 - [macOS Setup](#macos-setup)
 - [Linux Setup](#linux-setup)
@@ -48,20 +49,38 @@ For experienced developers who want to get running quickly:
 git clone https://github.com/NOIR-Solution/NOIR.git
 cd NOIR
 
+# Start infrastructure (SQL Server + MailHog)
+docker-compose up -d
+
 # Restore and build
 dotnet restore src/NOIR.sln
 dotnet build src/NOIR.sln
 
-# Start backend (terminal 1)
-dotnet run --project src/NOIR.Web
+# Terminal 1: Start backend
+dotnet run --project src/NOIR.Web --environment Development
 
-# Start frontend with hot reload (terminal 2)
+# Terminal 2: Start frontend (REQUIRED for development)
 cd src/NOIR.Web/frontend
-npm install && npm run dev
+npm install
+npm run dev
 
-# Access: http://localhost:3000
-# Admin: admin@noir.local / 123qwe
+# Access application at: http://localhost:3000
+# Admin credentials: admin@noir.local / 123qwe
+# MailHog (email testing): http://localhost:8025
 ```
+
+> **IMPORTANT:** You must run both backend AND frontend separately during development:
+> - Backend runs on port 4000 (API server)
+> - Frontend runs on port 3000 (Vite dev server with HMR)
+> - Always access the app via **http://localhost:3000** for full functionality
+
+> **Alternative - Single command (recommended):**
+> ```bash
+> cd src/NOIR.Web/frontend
+> npm install
+> npm run dev:full
+> ```
+> This starts both backend and frontend with a single command, auto-generates API types, and handles graceful shutdown.
 
 > **Alternative - Production-like mode (single terminal):**
 > ```bash
@@ -70,7 +89,47 @@ npm install && npm run dev
 > # Access: http://localhost:4000
 > ```
 
-**Note:** This assumes SQL Server LocalDB is available (Windows default). For macOS/Linux, see platform-specific setup below.
+**Note:** This assumes Docker is available for SQL Server and MailHog. For Windows LocalDB, see platform-specific setup below.
+
+---
+
+## Vibe Kanban Integration
+
+This project uses **Vibe Kanban** for task management and sprint tracking. When using Vibe Kanban to manage this project, configure the dev script as follows:
+
+### Dev Script Configuration
+
+**Command:**
+```bash
+cd NOIR/src/NOIR.Web/frontend && npm run dev:full
+```
+
+**What it does:**
+1. Installs frontend dependencies (`npm install`) if `node_modules` is missing
+2. Checks if backend is already running (reuses existing instance)
+3. Builds backend (`dotnet build`) if backend not running
+4. Starts .NET backend (`dotnet run`)
+5. Waits for backend health check at `localhost:4000/api/health`
+6. Generates TypeScript API types from OpenAPI spec
+7. Starts Vite dev server on `localhost:3000`
+8. Handles graceful shutdown with Ctrl+C
+
+**Output URLs:**
+| URL | Purpose |
+|-----|---------|
+| http://localhost:3000 | Frontend (Vite dev server) |
+| http://localhost:4000 | Backend API |
+| http://localhost:4000/api/docs | API Documentation (Scalar) |
+| http://localhost:8025 | MailHog (email testing) |
+
+### Prerequisites for Dev Script
+
+Before running the dev script, ensure:
+1. Docker containers are running: `docker-compose up -d`
+2. Node.js installed (LTS version)
+3. .NET SDK 10.0+ installed
+
+> **Note:** The script auto-installs npm packages if `node_modules` is missing, and auto-builds the backend before starting. No manual `npm install` or `dotnet build` needed!
 
 ---
 
@@ -203,19 +262,26 @@ docker-compose ps
 ```bash
 # Azure SQL Edge (recommended for ARM64/M1 Macs)
 docker run -e "ACCEPT_EULA=Y" \
-  -e "MSSQL_SA_PASSWORD=Noir@Dev2024!" \
+  -e "MSSQL_SA_PASSWORD=coffee123@@" \
   -p 1433:1433 \
   --name noir-sqlserver \
   -d mcr.microsoft.com/azure-sql-edge:latest
 
-# Verify container is running
+# Start MailHog for email testing
+docker run -d \
+  -p 1025:1025 \
+  -p 8025:8025 \
+  --name noir-mailhog \
+  mailhog/mailhog
+
+# Verify containers are running
 docker ps
 
 # View logs if needed
 docker logs noir-sqlserver
 ```
 
-**Important:** The password `Noir@Dev2024!` matches `appsettings.Development.json`. Change both if you use a different password.
+**Important:** The password `coffee123@@` matches `appsettings.Development.json`. Change both if you use a different password.
 
 ### Step 4: Clone and Run
 
@@ -230,25 +296,43 @@ dotnet restore src/NOIR.sln
 # Build
 dotnet build src/NOIR.sln
 
-# Run (uses appsettings.Development.json with Docker connection string)
+# Terminal 1: Start backend (uses appsettings.Development.json with Docker connection string)
 dotnet run --project src/NOIR.Web --environment Development
+
+# Terminal 2: Start frontend (REQUIRED - open a new terminal)
+cd src/NOIR.Web/frontend
+npm install
+npm run dev
 ```
 
-### Step 5: Daily Development
+### Step 5: Access the Application
+
+| URL | Purpose |
+|-----|---------|
+| http://localhost:3000 | **Main application** (use this!) |
+| http://localhost:4000 | Backend API only |
+| http://localhost:8025 | MailHog - view sent emails |
+
+**Login:** `admin@noir.local` / `123qwe`
+
+### Step 6: Daily Development
 
 ```bash
-# Start SQL Server container (if stopped)
-docker start noir-sqlserver
+# Start infrastructure (if stopped)
+docker start noir-sqlserver noir-mailhog
 
-# Run with hot reload
+# Terminal 1: Run backend with hot reload
 dotnet watch --project src/NOIR.Web
+
+# Terminal 2: Run frontend with hot reload
+cd src/NOIR.Web/frontend && npm run dev
 ```
 
 ### Optional: Azure Data Studio
 
 For database management on macOS:
 1. Download from https://docs.microsoft.com/en-us/sql/azure-data-studio/
-2. Connect to `localhost,1433` with user `sa` and password `Noir@Dev2024!`
+2. Connect to `localhost,1433` with user `sa` and password `coffee123@@`
 
 ---
 
@@ -310,14 +394,14 @@ sudo systemctl enable docker
 sudo usermod -aG docker $USER
 ```
 
-### Step 3: Start SQL Server Container
+### Step 3: Start SQL Server and MailHog Containers
 
 **Recommended: Use Docker Compose**
 ```bash
-# Start SQL Server (uses Azure SQL Edge for ARM64/M1 compatibility)
-docker-compose up -d sqlserver
+# Start SQL Server and MailHog together
+docker-compose up -d
 
-# Verify container is running
+# Verify containers are running
 docker-compose ps
 ```
 
@@ -325,21 +409,30 @@ docker-compose ps
 ```bash
 # For ARM64 (Apple Silicon, Raspberry Pi, etc.)
 docker run -e "ACCEPT_EULA=Y" \
-  -e "MSSQL_SA_PASSWORD=Noir@Dev2024!" \
+  -e "MSSQL_SA_PASSWORD=coffee123@@" \
   -p 1433:1433 \
   --name noir-sqlserver \
   -d mcr.microsoft.com/azure-sql-edge:latest
 
 # For x64 (Intel/AMD)
 docker run -e "ACCEPT_EULA=Y" \
-  -e "MSSQL_SA_PASSWORD=Noir@Dev2024!" \
+  -e "MSSQL_SA_PASSWORD=coffee123@@" \
   -p 1433:1433 \
   --name noir-sqlserver \
   -d mcr.microsoft.com/mssql/mssql-server:2022-latest
 
-# Verify container is running
+# Start MailHog for email testing
+docker run -d \
+  -p 1025:1025 \
+  -p 8025:8025 \
+  --name noir-mailhog \
+  mailhog/mailhog
+
+# Verify containers are running
 docker ps
 ```
+
+**Important:** The password `coffee123@@` matches `appsettings.Development.json`. Change both if you use a different password.
 
 ### Step 4: Clone and Run
 
@@ -352,8 +445,36 @@ cd noir
 dotnet restore src/NOIR.sln
 dotnet build src/NOIR.sln
 
-# Run with Development environment
+# Terminal 1: Start backend (uses appsettings.Development.json with Docker connection string)
 dotnet run --project src/NOIR.Web --environment Development
+
+# Terminal 2: Start frontend (REQUIRED - open a new terminal)
+cd src/NOIR.Web/frontend
+npm install
+npm run dev
+```
+
+### Step 5: Access the Application
+
+| URL | Purpose |
+|-----|---------|
+| http://localhost:3000 | **Main application** (use this!) |
+| http://localhost:4000 | Backend API only |
+| http://localhost:8025 | MailHog - view sent emails |
+
+**Login:** `admin@noir.local` / `123qwe`
+
+### Step 6: Daily Development
+
+```bash
+# Start infrastructure (if stopped)
+docker start noir-sqlserver noir-mailhog
+
+# Terminal 1: Run backend with hot reload
+dotnet watch --project src/NOIR.Web
+
+# Terminal 2: Run frontend with hot reload
+cd src/NOIR.Web/frontend && npm run dev
 ```
 
 ---
@@ -723,7 +844,7 @@ docker-compose down
 ```
 
 Services:
-- SQL Server: `localhost:1433` (sa / Noir@Dev2024!)
+- SQL Server: `localhost:1433` (sa / coffee123@@)
 - MailHog Web UI: http://localhost:8025
 - MailHog SMTP: `localhost:1025`
 
@@ -831,7 +952,12 @@ Claude can:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost,1433;Database=NOIR;User Id=sa;Password=Noir@Dev2024!;TrustServerCertificate=True"
+    "DefaultConnection": "Server=localhost,1433;Database=NOIR;User Id=sa;Password=coffee123@@;TrustServerCertificate=True"
+  },
+  "Email": {
+    "SmtpHost": "localhost",
+    "SmtpPort": 1025,
+    "EnableSsl": false
   },
   "Identity": {
     "Password": {

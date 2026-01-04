@@ -6,6 +6,8 @@ namespace NOIR.Application.UnitTests.Features.Auth;
 /// </summary>
 public class LoginCommandHandlerTests
 {
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     #region Test Setup
 
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
@@ -83,7 +85,7 @@ public class LoginCommandHandlerTests
             .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId))
             .Returns("test-access-token");
 
-        var refreshToken = RefreshToken.Create(user.Id, 7, user.TenantId);
+        var refreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, user.TenantId);
         _refreshTokenServiceMock
             .Setup(x => x.CreateTokenAsync(
                 user.Id,

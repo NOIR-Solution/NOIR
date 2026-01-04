@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams, Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { Mail, Lock, Eye, EyeOff, ShieldCheck, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -162,6 +162,15 @@ export default function LoginPage() {
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
+                  </div>
+                  {/* Forgot Password Link */}
+                  <div className="flex justify-end mt-1">
+                    <Link
+                      to="/forgot-password"
+                      className="text-sm text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                    >
+                      {t('login.forgotPassword')}
+                    </Link>
                   </div>
                 </div>
 

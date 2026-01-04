@@ -111,5 +111,85 @@ public static class AuthEndpoints
         .Produces<UserProfileDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        // Forgot Password Flow
+        group.MapPost("/forgot-password", async (
+            ForgotPasswordRequest request,
+            IPasswordResetService passwordResetService,
+            HttpContext httpContext,
+            IMultiTenantContextAccessor tenantAccessor) =>
+        {
+            var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+            var tenantId = tenantAccessor.MultiTenantContext?.TenantInfo?.Id;
+
+            var result = await passwordResetService.RequestPasswordResetAsync(
+                request.Email,
+                tenantId,
+                ipAddress);
+
+            return result.ToHttpResult();
+        })
+        .RequireRateLimiting("auth")
+        .WithName("ForgotPassword")
+        .WithSummary("Request password reset OTP")
+        .WithDescription("Sends a 6-digit OTP to the email address for password reset verification. Returns session token for the reset flow.")
+        .Produces<PasswordResetRequestResult>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests);
+
+        group.MapPost("/forgot-password/verify", async (
+            VerifyOtpRequest request,
+            IPasswordResetService passwordResetService) =>
+        {
+            var result = await passwordResetService.VerifyOtpAsync(
+                request.SessionToken,
+                request.Otp);
+
+            return result.ToHttpResult();
+        })
+        .RequireRateLimiting("auth")
+        .WithName("VerifyPasswordResetOtp")
+        .WithSummary("Verify password reset OTP")
+        .WithDescription("Verifies the 6-digit OTP and returns a reset token for setting the new password.")
+        .Produces<PasswordResetVerifyResult>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
+
+        group.MapPost("/forgot-password/resend", async (
+            ResendOtpRequest request,
+            IPasswordResetService passwordResetService) =>
+        {
+            var result = await passwordResetService.ResendOtpAsync(request.SessionToken);
+            return result.ToHttpResult();
+        })
+        .RequireRateLimiting("auth")
+        .WithName("ResendPasswordResetOtp")
+        .WithSummary("Resend password reset OTP")
+        .WithDescription("Resends the OTP to the email. Subject to cooldown and max resend limits.")
+        .Produces<PasswordResetResendResult>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests);
+
+        group.MapPost("/forgot-password/reset", async (
+            ResetPasswordRequest request,
+            IPasswordResetService passwordResetService) =>
+        {
+            var result = await passwordResetService.ResetPasswordAsync(
+                request.ResetToken,
+                request.NewPassword);
+
+            return result.ToHttpResult();
+        })
+        .RequireRateLimiting("auth")
+        .WithName("ResetPassword")
+        .WithSummary("Reset password with token")
+        .WithDescription("Sets a new password using the reset token from OTP verification. All existing sessions are revoked for security.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
     }
 }
+
+// Request DTOs for forgot password endpoints
+public record ForgotPasswordRequest(string Email);
+public record VerifyOtpRequest(string SessionToken, string Otp);
+public record ResendOtpRequest(string SessionToken);
+public record ResetPasswordRequest(string ResetToken, string NewPassword);

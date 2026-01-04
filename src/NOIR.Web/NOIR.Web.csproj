@@ -6,6 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>NOIR.Web</RootNamespace>
         <AssemblyName>NOIR.Web</AssemblyName>
+        <!-- Required for RazorLight email templates -->
+        <PreserveCompilationContext>true</PreserveCompilationContext>
         <!-- SPA Integration -->
         <SpaRoot>frontend/</SpaRoot>
         <SpaProxyServerUrl>http://localhost:3000</SpaProxyServerUrl>
@@ -55,6 +57,11 @@
     <ItemGroup>
         <ProjectReference Include="..\NOIR.Application\NOIR.Application.csproj" />
         <ProjectReference Include="..\NOIR.Infrastructure\NOIR.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <!-- Copy email templates to output directory -->
+    <ItemGroup>
+        <None Include="EmailTemplates\**\*" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

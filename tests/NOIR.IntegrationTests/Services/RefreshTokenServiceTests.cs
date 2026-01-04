@@ -33,11 +33,12 @@ public class RefreshTokenServiceTests : IAsyncLifetime
     {
         var repository = services.GetRequiredService<IRepository<RefreshToken, Guid>>();
         var unitOfWork = services.GetRequiredService<IUnitOfWork>();
+        var tokenGenerator = services.GetRequiredService<ISecureTokenGenerator>();
         var jwtSettings = customSettings != null
             ? Options.Create(customSettings)
             : services.GetRequiredService<IOptions<JwtSettings>>();
         var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
-        return new RefreshTokenService(repository, unitOfWork, jwtSettings, logger);
+        return new RefreshTokenService(repository, unitOfWork, tokenGenerator, jwtSettings, logger);
     }
 
     #region CreateTokenAsync Tests
