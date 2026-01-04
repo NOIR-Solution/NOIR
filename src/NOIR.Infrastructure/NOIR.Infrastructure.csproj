@@ -60,6 +60,9 @@
 
         <!-- JSON Diff for Audit Logging (RFC 6902 JSON Patch) -->
         <PackageReference Include="SystemTextJson.JsonDiffPatch" Version="2.0.0" />
+
+        <!-- Password Hashing for OTP -->
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     </ItemGroup>
 
     <ItemGroup>

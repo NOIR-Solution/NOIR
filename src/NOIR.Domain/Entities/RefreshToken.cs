@@ -89,7 +89,17 @@ public class RefreshToken : TenantAggregateRoot<Guid>
     /// <summary>
     /// Creates a new refresh token.
     /// </summary>
+    /// <param name="token">Pre-generated cryptographically secure token value.</param>
+    /// <param name="userId">The user this token belongs to.</param>
+    /// <param name="expirationDays">Token validity duration in days.</param>
+    /// <param name="tenantId">Tenant ID for multi-tenancy.</param>
+    /// <param name="ipAddress">IP address that created this token.</param>
+    /// <param name="deviceFingerprint">Device fingerprint for binding.</param>
+    /// <param name="userAgent">User agent string.</param>
+    /// <param name="deviceName">Device name for display.</param>
+    /// <param name="tokenFamily">Token family for rotation tracking.</param>
     public static RefreshToken Create(
+        string token,
         string userId,
         int expirationDays,
         string? tenantId = null,
@@ -99,10 +109,13 @@ public class RefreshToken : TenantAggregateRoot<Guid>
         string? deviceName = null,
         Guid? tokenFamily = null)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(token);
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+
         return new RefreshToken
         {
             Id = Guid.NewGuid(),
-            Token = GenerateSecureToken(),
+            Token = token,
             UserId = userId,
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(expirationDays),
             CreatedByIp = ipAddress,
@@ -123,16 +136,5 @@ public class RefreshToken : TenantAggregateRoot<Guid>
         RevokedByIp = ipAddress;
         ReasonRevoked = reason;
         ReplacedByToken = replacedByToken;
-    }
-
-    /// <summary>
-    /// Generates a cryptographically secure token.
-    /// </summary>
-    private static string GenerateSecureToken()
-    {
-        var randomBytes = new byte[64];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomBytes);
-        return Convert.ToBase64String(randomBytes);
     }
 }

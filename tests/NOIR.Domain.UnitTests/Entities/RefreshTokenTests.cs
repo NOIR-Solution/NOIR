@@ -6,34 +6,38 @@ namespace NOIR.Domain.UnitTests.Entities;
 /// </summary>
 public class RefreshTokenTests
 {
+    // Helper to generate unique test tokens
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     #region Create Factory Tests
 
     [Fact]
     public void Create_WithRequiredParameters_ShouldCreateValidToken()
     {
         // Arrange
+        var tokenValue = GenerateTestToken();
         var userId = "user-123";
         var expirationDays = 7;
 
         // Act
-        var token = RefreshToken.Create(userId, expirationDays);
+        var token = RefreshToken.Create(tokenValue, userId, expirationDays);
 
         // Assert
         token.Should().NotBeNull();
         token.Id.Should().NotBe(Guid.Empty);
         token.UserId.Should().Be(userId);
-        token.Token.Should().NotBeNullOrEmpty();
+        token.Token.Should().Be(tokenValue);
         token.TokenFamily.Should().NotBe(Guid.Empty);
     }
 
     [Fact]
-    public void Create_ShouldGenerateCryptographicallySecureToken()
+    public void Create_WithDifferentTokenValues_ShouldHaveDifferentTokens()
     {
         // Arrange & Act
-        var token1 = RefreshToken.Create("user-1", 7);
-        var token2 = RefreshToken.Create("user-1", 7);
+        var token1 = RefreshToken.Create(GenerateTestToken(), "user-1", 7);
+        var token2 = RefreshToken.Create(GenerateTestToken(), "user-1", 7);
 
-        // Assert - Different tokens should be generated
+        // Assert - Different tokens should be created
         token1.Token.Should().NotBe(token2.Token);
     }
 
@@ -45,7 +49,7 @@ public class RefreshTokenTests
         var beforeCreate = DateTimeOffset.UtcNow;
 
         // Act
-        var token = RefreshToken.Create("user-123", expirationDays);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", expirationDays);
 
         // Assert
         var afterCreate = DateTimeOffset.UtcNow;
@@ -62,7 +66,7 @@ public class RefreshTokenTests
         var tenantId = "tenant-abc";
 
         // Act
-        var token = RefreshToken.Create("user-123", 7, tenantId: tenantId);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7, tenantId: tenantId);
 
         // Assert
         token.TenantId.Should().Be(tenantId);
@@ -75,7 +79,7 @@ public class RefreshTokenTests
         var ipAddress = "192.168.1.100";
 
         // Act
-        var token = RefreshToken.Create("user-123", 7, ipAddress: ipAddress);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7, ipAddress: ipAddress);
 
         // Assert
         token.CreatedByIp.Should().Be(ipAddress);
@@ -91,6 +95,7 @@ public class RefreshTokenTests
 
         // Act
         var token = RefreshToken.Create(
+            GenerateTestToken(),
             "user-123",
             7,
             deviceFingerprint: fingerprint,
@@ -110,7 +115,7 @@ public class RefreshTokenTests
         var family = Guid.NewGuid();
 
         // Act
-        var token = RefreshToken.Create("user-123", 7, tokenFamily: family);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7, tokenFamily: family);
 
         // Assert
         token.TokenFamily.Should().Be(family);
@@ -120,7 +125,7 @@ public class RefreshTokenTests
     public void Create_WithoutTokenFamily_ShouldGenerateNewFamily()
     {
         // Act
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Assert
         token.TokenFamily.Should().NotBe(Guid.Empty);
@@ -130,7 +135,7 @@ public class RefreshTokenTests
     public void Create_ShouldNotBeRevoked()
     {
         // Act
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Assert
         token.RevokedAt.Should().BeNull();
@@ -150,7 +155,7 @@ public class RefreshTokenTests
         var before = DateTimeOffset.UtcNow;
 
         // Act
-        var token = RefreshToken.Create("user-123", days);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", days);
 
         // Assert
         var expectedMin = before.AddDays(days);
@@ -165,7 +170,7 @@ public class RefreshTokenTests
     public void IsExpired_FreshToken_ShouldReturnFalse()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act & Assert
         token.IsExpired.Should().BeFalse();
@@ -179,7 +184,7 @@ public class RefreshTokenTests
         // The implementation uses >= which means at exactly ExpiresAt it's expired
 
         // This is tested implicitly by the IsActive tests
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // A fresh token should not be expired
         token.IsExpired.Should().BeFalse();
@@ -193,7 +198,7 @@ public class RefreshTokenTests
     public void IsRevoked_FreshToken_ShouldReturnFalse()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act & Assert
         token.IsRevoked.Should().BeFalse();
@@ -203,7 +208,7 @@ public class RefreshTokenTests
     public void IsRevoked_AfterRevoke_ShouldReturnTrue()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act
         token.Revoke();
@@ -220,7 +225,7 @@ public class RefreshTokenTests
     public void IsActive_FreshToken_ShouldReturnTrue()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act & Assert
         token.IsActive.Should().BeTrue();
@@ -230,7 +235,7 @@ public class RefreshTokenTests
     public void IsActive_RevokedToken_ShouldReturnFalse()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
         token.Revoke();
 
         // Act & Assert
@@ -245,7 +250,7 @@ public class RefreshTokenTests
     public void Revoke_ShouldSetRevokedAt()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
         var beforeRevoke = DateTimeOffset.UtcNow;
 
         // Act
@@ -261,7 +266,7 @@ public class RefreshTokenTests
     public void Revoke_WithIpAddress_ShouldSetRevokedByIp()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
         var ipAddress = "192.168.1.200";
 
         // Act
@@ -275,7 +280,7 @@ public class RefreshTokenTests
     public void Revoke_WithReason_ShouldSetReasonRevoked()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
         var reason = "User logged out";
 
         // Act
@@ -289,8 +294,8 @@ public class RefreshTokenTests
     public void Revoke_WithReplacedByToken_ShouldSetReplacedByToken()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
-        var newToken = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
+        var newToken = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act
         token.Revoke(replacedByToken: newToken.Token);
@@ -303,7 +308,7 @@ public class RefreshTokenTests
     public void Revoke_WithAllParameters_ShouldSetAllProperties()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
         var ipAddress = "192.168.1.200";
         var reason = "Token rotation";
         var newTokenValue = "new-token-value";
@@ -322,7 +327,7 @@ public class RefreshTokenTests
     public void Revoke_MultipleTimes_ShouldUpdateValues()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act
         token.Revoke(reason: "First revoke");
@@ -345,7 +350,7 @@ public class RefreshTokenTests
     public void Create_TokenLength_ShouldBeSufficient()
     {
         // Arrange & Act
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Assert - Base64 encoded 64 bytes should be ~88 characters
         token.Token.Length.Should().BeGreaterThan(80);
@@ -356,7 +361,7 @@ public class RefreshTokenTests
     {
         // Arrange & Act
         var tokens = Enumerable.Range(0, 100)
-            .Select(_ => RefreshToken.Create("user-123", 7).Token)
+            .Select(_ => RefreshToken.Create(GenerateTestToken(), "user-123", 7).Token)
             .ToList();
 
         // Assert - All tokens should be unique
@@ -367,7 +372,7 @@ public class RefreshTokenTests
     public void Create_TokenShouldBeBase64()
     {
         // Arrange
-        var token = RefreshToken.Create("user-123", 7);
+        var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act
         var act = () => Convert.FromBase64String(token.Token);
@@ -384,10 +389,11 @@ public class RefreshTokenTests
     public void Create_ChildToken_ShouldShareTokenFamily()
     {
         // Arrange
-        var parentToken = RefreshToken.Create("user-123", 7);
+        var parentToken = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act - Create child token with same family
         var childToken = RefreshToken.Create(
+            GenerateTestToken(),
             "user-123",
             7,
             tokenFamily: parentToken.TokenFamily);
@@ -401,8 +407,8 @@ public class RefreshTokenTests
     public void Create_IndependentTokens_ShouldHaveDifferentFamilies()
     {
         // Arrange & Act
-        var token1 = RefreshToken.Create("user-123", 7);
-        var token2 = RefreshToken.Create("user-123", 7);
+        var token1 = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
+        var token2 = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Assert
         token1.TokenFamily.Should().NotBe(token2.TokenFamily);

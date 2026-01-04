@@ -7,6 +7,8 @@ namespace NOIR.Application.UnitTests.PropertyBased;
 /// </summary>
 public class PropertyBasedTests
 {
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     private readonly Faker _faker = new();
 
     #region Result Pattern Property Tests
@@ -146,7 +148,7 @@ public class PropertyBasedTests
             var expirationDays = _faker.Random.Int(1, 365);
 
             // Act
-            var refreshToken = RefreshToken.Create(userId, expirationDays);
+            var refreshToken = RefreshToken.Create(GenerateTestToken(), userId, expirationDays);
 
             // Assert - Token should be unique
             tokens.Contains(refreshToken.Token).Should().BeFalse(
@@ -168,7 +170,7 @@ public class PropertyBasedTests
             var beforeCreation = DateTimeOffset.UtcNow;
 
             // Act
-            var refreshToken = RefreshToken.Create(userId, expirationDays);
+            var refreshToken = RefreshToken.Create(GenerateTestToken(), userId, expirationDays);
 
             // Assert
             refreshToken.ExpiresAt.Should().BeAfter(beforeCreation);
@@ -187,7 +189,7 @@ public class PropertyBasedTests
             var userId = _faker.Random.Guid().ToString();
 
             // Act
-            var refreshToken = RefreshToken.Create(userId, 7);
+            var refreshToken = RefreshToken.Create(GenerateTestToken(), userId, 7);
 
             // Assert
             refreshToken.UserId.Should().Be(userId);
@@ -213,7 +215,7 @@ public class PropertyBasedTests
 
             // Act
             var refreshToken = RefreshToken.Create(
-                userId, expirationDays, tenantId, ipAddress,
+                GenerateTestToken(), userId, expirationDays, tenantId, ipAddress,
                 deviceFingerprint, userAgent, deviceName, tokenFamily);
 
             // Assert - All values should be preserved
@@ -239,7 +241,7 @@ public class PropertyBasedTests
         for (int i = 0; i < iterations; i++)
         {
             // Arrange
-            var refreshToken = RefreshToken.Create(_faker.Random.Guid().ToString(), 7);
+            var refreshToken = RefreshToken.Create(GenerateTestToken(), _faker.Random.Guid().ToString(), 7);
             var beforeRevoke = DateTimeOffset.UtcNow;
 
             // Act
@@ -264,7 +266,7 @@ public class PropertyBasedTests
         for (int i = 0; i < iterations; i++)
         {
             // Arrange
-            var refreshToken = RefreshToken.Create(_faker.Random.Guid().ToString(), 7);
+            var refreshToken = RefreshToken.Create(GenerateTestToken(), _faker.Random.Guid().ToString(), 7);
 
             // Assert - Initially active
             refreshToken.IsActive.Should().Be(!refreshToken.IsRevoked && !refreshToken.IsExpired);
@@ -565,7 +567,7 @@ public class PropertyBasedTests
 
         for (int i = 0; i < 1000; i++)
         {
-            var token = RefreshToken.Create(_faker.Random.Guid().ToString(), 7);
+            var token = RefreshToken.Create(GenerateTestToken(), _faker.Random.Guid().ToString(), 7);
             token.Token.Length.Should().BeGreaterThanOrEqualTo(minExpectedLength,
                 $"Token {token.Token} is too short for security");
         }
@@ -576,7 +578,7 @@ public class PropertyBasedTests
     {
         // Property: Token characters should have reasonable distribution (entropy test)
         var tokens = Enumerable.Range(0, 1000)
-            .Select(_ => RefreshToken.Create(_faker.Random.Guid().ToString(), 7).Token)
+            .Select(_ => RefreshToken.Create(GenerateTestToken(), _faker.Random.Guid().ToString(), 7).Token)
             .ToList();
 
         var allChars = string.Join("", tokens);
@@ -600,7 +602,7 @@ public class PropertyBasedTests
         // Property: Edge case - 1 day expiration should work
         for (int i = 0; i < iterations; i++)
         {
-            var token = RefreshToken.Create(_faker.Random.Guid().ToString(), 1);
+            var token = RefreshToken.Create(GenerateTestToken(), _faker.Random.Guid().ToString(), 1);
             token.ExpiresAt.Should().BeAfter(DateTimeOffset.UtcNow);
             token.IsExpired.Should().BeFalse();
         }
@@ -613,7 +615,7 @@ public class PropertyBasedTests
         // Property: Edge case - Large expiration (1 year) should work
         for (int i = 0; i < iterations; i++)
         {
-            var token = RefreshToken.Create(_faker.Random.Guid().ToString(), 365);
+            var token = RefreshToken.Create(GenerateTestToken(), _faker.Random.Guid().ToString(), 365);
             token.ExpiresAt.Should().BeCloseTo(
                 DateTimeOffset.UtcNow.AddDays(365),
                 TimeSpan.FromSeconds(5));

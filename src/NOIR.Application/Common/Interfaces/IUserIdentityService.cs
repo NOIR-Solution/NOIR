@@ -84,6 +84,15 @@ public interface IUserIdentityService
         string deletedBy,
         CancellationToken ct = default);
 
+    /// <summary>
+    /// Resets a user's password without requiring the old password.
+    /// Used for password reset flow after OTP verification.
+    /// </summary>
+    Task<IdentityOperationResult> ResetPasswordAsync(
+        string userId,
+        string newPassword,
+        CancellationToken ct = default);
+
     #endregion
 
     #region Role Management

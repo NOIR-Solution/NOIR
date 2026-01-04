@@ -14,6 +14,12 @@ public class ApplicationUser : IdentityUser, IAuditableEntity
     public DateTimeOffset? RefreshTokenExpiryTime { get; set; }
     public bool IsActive { get; set; } = true;
 
+    /// <summary>
+    /// Timestamp of the last password change.
+    /// Used for security tracking and password age policies.
+    /// </summary>
+    public DateTimeOffset? PasswordLastChangedAt { get; set; }
+
     // ITenantEntity implementation
     // Null means host/root level user (super admin, can access all tenants)
     public string? TenantId { get; set; }

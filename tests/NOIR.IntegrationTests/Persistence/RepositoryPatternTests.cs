@@ -17,6 +17,8 @@ public class RepositoryPatternTests : IAsyncLifetime
     public Task InitializeAsync() => _factory.ResetDatabaseAsync();
     public Task DisposeAsync() => Task.CompletedTask;
 
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     #region GetByIdAsync Tests
 
     [Fact]
@@ -26,7 +28,7 @@ public class RepositoryPatternTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("test-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "test-user", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -66,9 +68,9 @@ public class RepositoryPatternTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            context.RefreshTokens.Add(RefreshToken.Create("user-1", 7));
-            context.RefreshTokens.Add(RefreshToken.Create("user-2", 7));
-            context.RefreshTokens.Add(RefreshToken.Create("user-3", 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), "user-1", 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), "user-2", 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), "user-3", 7));
             await context.SaveChangesAsync();
 
             // Act
@@ -90,7 +92,7 @@ public class RepositoryPatternTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("exists-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "exists-user", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -130,8 +132,8 @@ public class RepositoryPatternTests : IAsyncLifetime
 
             var initialCount = await context.RefreshTokens.CountAsync();
 
-            context.RefreshTokens.Add(RefreshToken.Create("count-1", 7));
-            context.RefreshTokens.Add(RefreshToken.Create("count-2", 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), "count-1", 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), "count-2", 7));
             await context.SaveChangesAsync();
 
             // Act
@@ -150,9 +152,9 @@ public class RepositoryPatternTests : IAsyncLifetime
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
             var userId = $"count-predicate-{Guid.NewGuid()}";
-            context.RefreshTokens.Add(RefreshToken.Create(userId, 7));
-            context.RefreshTokens.Add(RefreshToken.Create(userId, 7));
-            context.RefreshTokens.Add(RefreshToken.Create("other-user", 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), userId, 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), userId, 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), "other-user", 7));
             await context.SaveChangesAsync();
 
             // Act
@@ -175,7 +177,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
             var userId = $"first-{Guid.NewGuid()}";
-            var token = RefreshToken.Create(userId, 7);
+            var token = RefreshToken.Create(GenerateTestToken(), userId, 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -218,7 +220,7 @@ public class RepositoryPatternTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create($"single-{Guid.NewGuid()}", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), $"single-{Guid.NewGuid()}", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -245,9 +247,9 @@ public class RepositoryPatternTests : IAsyncLifetime
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
             var userId = $"find-{Guid.NewGuid()}";
-            context.RefreshTokens.Add(RefreshToken.Create(userId, 7));
-            context.RefreshTokens.Add(RefreshToken.Create(userId, 7));
-            context.RefreshTokens.Add(RefreshToken.Create("other", 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), userId, 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), userId, 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), "other", 7));
             await context.SaveChangesAsync();
 
             // Act
@@ -273,7 +275,7 @@ public class RepositoryPatternTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("add-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "add-user", 7);
 
             // Act
             context.RefreshTokens.Add(token);
@@ -294,9 +296,9 @@ public class RepositoryPatternTests : IAsyncLifetime
 
             var tokens = new[]
             {
-                RefreshToken.Create("range-1", 7),
-                RefreshToken.Create("range-2", 7),
-                RefreshToken.Create("range-3", 7)
+                RefreshToken.Create(GenerateTestToken(), "range-1", 7),
+                RefreshToken.Create(GenerateTestToken(), "range-2", 7),
+                RefreshToken.Create(GenerateTestToken(), "range-3", 7)
             };
 
             // Act
@@ -323,7 +325,7 @@ public class RepositoryPatternTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("update-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "update-user", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -350,7 +352,7 @@ public class RepositoryPatternTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("soft-delete-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "soft-delete-user", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
             var tokenId = token.Id;
@@ -385,7 +387,7 @@ public class RepositoryPatternTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("filter-test", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "filter-test", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -431,7 +433,7 @@ public class RepositoryPatternTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("any-test", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "any-test", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 

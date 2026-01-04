@@ -103,6 +103,7 @@ global using NOIR.Application.Features.Permissions.Queries.GetUserPermissions;
 global using NOIR.Application.Specifications;
 global using NOIR.Application.Specifications.RefreshTokens;
 global using NOIR.Application.Specifications.ResourceShares;
+global using NOIR.Application.Specifications.PasswordResetOtps;
 
 // NOIR Domain
 global using NOIR.Domain.Common;

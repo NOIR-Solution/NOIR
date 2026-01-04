@@ -57,4 +57,9 @@
         <ProjectReference Include="..\NOIR.Infrastructure\NOIR.Infrastructure.csproj" />
     </ItemGroup>
 
+    <!-- Copy email templates to output directory -->
+    <ItemGroup>
+        <None Include="EmailTemplates\**\*" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

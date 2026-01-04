@@ -39,6 +39,7 @@ global using NOIR.Application.Features.Audit.Queries;
 global using NOIR.Application.Features.Users.DTOs;
 global using NOIR.Application.Features.Roles.DTOs;
 global using NOIR.Application.Specifications;
+global using NOIR.Application.Specifications.PasswordResetOtps;
 
 // NOIR Domain
 global using NOIR.Domain.Common;

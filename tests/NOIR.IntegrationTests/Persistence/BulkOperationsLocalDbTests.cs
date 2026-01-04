@@ -33,6 +33,8 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
     public Task InitializeAsync() => _factory.ResetDatabaseAsync();
     public Task DisposeAsync() => Task.CompletedTask;
 
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     #region Test Helpers
 
     /// <summary>
@@ -45,6 +47,7 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
     {
         return Enumerable.Range(1, count)
             .Select(i => RefreshToken.Create(
+                GenerateTestToken(),
                 $"{userIdPrefix}-{i}",
                 expirationDays,
                 DefaultTenantId))
@@ -58,7 +61,7 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
         string userId,
         int expirationDays = 7)
     {
-        return RefreshToken.Create(userId, expirationDays, DefaultTenantId);
+        return RefreshToken.Create(GenerateTestToken(), userId, expirationDays, DefaultTenantId);
     }
 
     #endregion

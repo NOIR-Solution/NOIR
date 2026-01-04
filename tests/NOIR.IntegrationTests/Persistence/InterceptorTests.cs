@@ -27,6 +27,8 @@ public class InterceptorTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     #region AuditableEntityInterceptor Tests
 
     [Fact]
@@ -36,7 +38,7 @@ public class InterceptorTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("audit-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "audit-user", 7);
             var beforeCreate = DateTimeOffset.UtcNow;
 
             // Act
@@ -57,7 +59,7 @@ public class InterceptorTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("update-audit-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "update-audit-user", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -195,7 +197,7 @@ public class InterceptorTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("event-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "event-user", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -222,7 +224,7 @@ public class InterceptorTests : IAsyncLifetime
             var unitOfWork = sp.GetRequiredService<IUnitOfWork>();
 
             // Create a refresh token
-            var token = RefreshToken.Create("softdelete-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "softdelete-user", 7);
             context.RefreshTokens.Add(token);
             await unitOfWork.SaveChangesAsync();
             var tokenId = token.Id;
@@ -253,7 +255,7 @@ public class InterceptorTests : IAsyncLifetime
         {
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
-            var token = RefreshToken.Create("concurrent-user", 7);
+            var token = RefreshToken.Create(GenerateTestToken(), "concurrent-user", 7);
             context.RefreshTokens.Add(token);
             await context.SaveChangesAsync();
 
@@ -264,7 +266,7 @@ public class InterceptorTests : IAsyncLifetime
                 {
                     var innerContext = innerSp.GetRequiredService<ApplicationDbContext>();
 
-                    var newToken = RefreshToken.Create($"concurrent-{i}", 7);
+                    var newToken = RefreshToken.Create(GenerateTestToken(), $"concurrent-{i}", 7);
                     innerContext.RefreshTokens.Add(newToken);
                     await innerContext.SaveChangesAsync();
                 });

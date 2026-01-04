@@ -14,6 +14,8 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
         _factory = factory;
     }
 
+    private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+
     public Task InitializeAsync() => Task.CompletedTask;
 
     public async Task DisposeAsync()
@@ -38,7 +40,7 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             // Arrange - Add 15 tokens
             for (int i = 1; i <= 15; i++)
             {
-                context.RefreshTokens.Add(RefreshToken.Create($"paginated-test-user-{i:D2}", 7));
+                context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), $"paginated-test-user-{i:D2}", 7));
             }
             await context.SaveChangesAsync();
 
@@ -69,7 +71,7 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             // Arrange
             for (int i = 1; i <= 10; i++)
             {
-                context.RefreshTokens.Add(RefreshToken.Create($"paginated-test-first-{i}", 7));
+                context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), $"paginated-test-first-{i}", 7));
             }
             await context.SaveChangesAsync();
 
@@ -97,7 +99,7 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             // Arrange
             for (int i = 1; i <= 10; i++)
             {
-                context.RefreshTokens.Add(RefreshToken.Create($"paginated-test-last-{i}", 7));
+                context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), $"paginated-test-last-{i}", 7));
             }
             await context.SaveChangesAsync();
 
@@ -148,7 +150,7 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             // Arrange - Add only 3 items
             for (int i = 1; i <= 3; i++)
             {
-                context.RefreshTokens.Add(RefreshToken.Create($"paginated-test-single-{i}", 7));
+                context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), $"paginated-test-single-{i}", 7));
             }
             await context.SaveChangesAsync();
 
@@ -176,7 +178,7 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             var context = services.GetRequiredService<ApplicationDbContext>();
 
             // Arrange
-            context.RefreshTokens.Add(RefreshToken.Create("paginated-test-cancel-1", 7));
+            context.RefreshTokens.Add(RefreshToken.Create(GenerateTestToken(), "paginated-test-cancel-1", 7));
             await context.SaveChangesAsync();
 
             // Act
