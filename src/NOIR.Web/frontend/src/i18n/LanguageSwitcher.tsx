@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Check } from 'lucide-react'
 import { useLanguage } from './useLanguage'
+import { languageFlags } from './languageFlags'
 import type { SupportedLanguage } from './index'
 import {
   DropdownMenu,
@@ -10,12 +11,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-
-// Flag emojis for visual language identification
-const languageFlags: Record<SupportedLanguage, string> = {
-  en: '🇺🇸',
-  vi: '🇻🇳',
-}
 
 interface LanguageSwitcherProps {
   /** Show native language names instead of English names */
@@ -27,9 +22,8 @@ interface LanguageSwitcherProps {
 }
 
 /**
- * Professional Language Switcher Component
- * Uses Radix UI dropdown for smooth animations and accessibility
- * Inspired by shadcn.io language selector pattern
+ * Language Switcher - 21st.dev inspired design
+ * Features: Glassmorphism dropdown, smooth animations, accessible
  */
 export function LanguageSwitcher({
   showNativeName = true,
@@ -52,10 +46,11 @@ export function LanguageSwitcher({
               key={code}
               onClick={() => handleChange(code)}
               className={cn(
-                'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200',
+                'flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium',
+                'transition-all duration-200',
                 currentLanguage === code
-                  ? 'bg-gray-900 text-white shadow-sm'
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md'
+                  : 'bg-accent hover:bg-accent/80 text-foreground'
               )}
               aria-pressed={currentLanguage === code}
               aria-label={t('labels.switchToLanguage', { language: lang.name })}
@@ -79,35 +74,39 @@ export function LanguageSwitcher({
           variant="ghost"
           size="sm"
           className={cn(
-            'flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100',
+            'flex items-center gap-2 rounded-xl',
+            'text-muted-foreground hover:text-foreground hover:bg-accent',
+            'transition-all duration-200',
             className
           )}
           aria-label={t('labels.selectLanguage')}
         >
-          <span className="inline-flex items-center gap-1.5">
-            <span>{languageFlags[currentLanguage]}</span>
-            <span className="text-sm font-medium">{currentLang.nativeName}</span>
-          </span>
+          <span className="text-base">{languageFlags[currentLanguage]}</span>
+          <span className="text-sm font-medium hidden sm:inline">{currentLang.nativeName}</span>
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent
+        align="end"
+        className="w-44 backdrop-blur-xl bg-background/95 border-border/50"
+      >
         {(Object.entries(languages) as [SupportedLanguage, typeof languages[SupportedLanguage]][]).map(
           ([code, lang]) => (
             <DropdownMenuItem
               key={code}
               onClick={() => handleChange(code)}
               className={cn(
-                'flex items-center justify-between cursor-pointer',
-                currentLanguage === code && 'bg-gray-50'
+                'flex items-center justify-between rounded-lg',
+                'transition-all duration-200',
+                currentLanguage === code && 'bg-accent'
               )}
             >
               <div className="flex items-center gap-2">
-                <span>{languageFlags[code]}</span>
-                <span className="text-sm">{lang.nativeName}</span>
+                <span className="text-base">{languageFlags[code]}</span>
+                <span className="text-sm font-medium">{lang.nativeName}</span>
               </div>
               {currentLanguage === code && (
-                <Check className="h-4 w-4 text-gray-600" />
+                <Check className="h-4 w-4 text-blue-600" />
               )}
             </DropdownMenuItem>
           )
@@ -116,4 +115,3 @@ export function LanguageSwitcher({
     </DropdownMenu>
   )
 }
-

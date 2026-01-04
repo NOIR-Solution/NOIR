@@ -9,7 +9,18 @@
   "nav": {
     "portal": "Cổng thông tin",
     "overview": "Tổng quan",
-    "collapse": "Thu gọn"
+    "collapse": "Thu gọn",
+    "expand": "Mở rộng",
+    "main": "Chính",
+    "management": "Quản lý",
+    "settings": "Cài đặt",
+    "users": "Người dùng",
+    "notifications": "Thông báo",
+    "analytics": "Phân tích",
+    "reports": "Báo cáo",
+    "profile": "Hồ sơ",
+    "accountSettings": "Cài đặt tài khoản",
+    "menu": "Thực đơn"
   },
   "auth": {
     "signIn": "Đăng nhập",

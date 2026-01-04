@@ -13,7 +13,7 @@ createRoot(document.getElementById('root')!).render(
     <Suspense fallback={
       <div className="flex items-center justify-center h-screen">
         {/* Use spinner instead of text - works for all languages */}
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700" />
       </div>
     }>
       <LanguageProvider>

@@ -28,7 +28,24 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  /* Sidebar colors */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
+
+/*
+ * Color Scheme: Blue-Teal (Universally Accessible)
+ * - Blue: Trust, professionalism, stability
+ * - Teal undertones: Modern, accessible to colorblind users
+ * - Avoids red-green combinations (problematic for 8% of men)
+ * - High contrast ratios for WCAG compliance
+ */
 
 /* Light theme variables */
 :root {
@@ -51,9 +68,19 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+  /* Sidebar - Light theme uses deeper blue for consistency with Landing/Login */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  /* Deeper blue: oklch(0.50 0.20 250) - matches blue-600/700 level */
+  --sidebar-primary: oklch(0.50 0.20 250);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.50 0.20 250);
 }
 
-/* Dark theme variables */
+/* Dark theme variables - Blue-teal primary for accessibility */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -73,6 +100,16 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
+  /* Sidebar - Deeper blue primary (accessible, professional) */
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  /* Deeper blue: oklch(0.60 0.20 250) - matches blue-600 level for dark mode */
+  --sidebar-primary: oklch(0.60 0.20 250);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.60 0.20 250);
 }
 
 /* Tailwind base styles */
@@ -85,10 +122,22 @@
   }
 }
 
-/* Custom animations for the login page */
+/* Custom animations for landing and login pages */
+
+/* Gradient shift animation for backgrounds */
+@keyframes gradient-shift {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Blob floating animation */
 @keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
   }
   33% {
     transform: translate(30px, -50px) scale(1.1);
@@ -96,13 +145,76 @@
   66% {
     transform: translate(-20px, 20px) scale(0.9);
   }
-  100% {
-    transform: translate(0px, 0px) scale(1);
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
   }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fade in with upward movement */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gradient text animation */
+@keyframes gradient-text {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Animation utility classes */
+.animate-gradient-shift {
+  animation: gradient-shift 8s ease infinite;
 }
 
 .animate-blob {
   animation: blob 7s infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out;
+}
+
+.animate-gradient-text {
+  background-size: 200% 200%;
+  animation: gradient-text 3s ease infinite;
+}
+
+/* Animation delays */
+.animation-delay-200 {
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.animation-delay-600 {
+  animation-delay: 0.6s;
+  animation-fill-mode: both;
 }
 
 .animation-delay-2000 {

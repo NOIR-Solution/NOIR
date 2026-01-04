@@ -1,8 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import { Sidebar } from '@/components/portal/Sidebar'
-import { Header } from '@/components/portal/Header'
-import { cn } from '@/lib/utils'
+import { Sidebar, MobileSidebarTrigger } from '@/components/portal/Sidebar'
 
 export function PortalLayout() {
   // Use lazy initialization to read from localStorage on mount (avoids extra render)
@@ -18,66 +16,29 @@ export function PortalLayout() {
     localStorage.setItem('sidebar-collapsed', JSON.stringify(newState))
   }
 
-  // Close mobile menu when screen becomes large
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setMobileMenuOpen(false)
-      }
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Mobile Overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - Hidden on mobile, shown on desktop */}
-      <div className={cn(
-        'hidden lg:block'
-      )}>
-        <Sidebar 
-          collapsed={sidebarCollapsed} 
-          onToggle={handleSidebarToggle} 
-        />
-      </div>
-
-      {/* Mobile Sidebar */}
-      <div className={cn(
-        'lg:hidden fixed inset-y-0 left-0 z-40 transition-transform duration-300',
-        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      )}>
-        <Sidebar 
-          collapsed={false} 
-          onToggle={() => setMobileMenuOpen(false)} 
-        />
-      </div>
-
-      {/* Header */}
-      <Header 
-        sidebarCollapsed={sidebarCollapsed}
-        onMobileMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+    <div className="flex h-screen w-full bg-background">
+      {/* Desktop Sidebar - 21st.dev flex layout */}
+      <Sidebar
+        collapsed={sidebarCollapsed}
+        onToggle={handleSidebarToggle}
       />
 
-      {/* Main Content */}
-      <main 
-        className={cn(
-          'min-h-screen pt-16 transition-all duration-300',
-          sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-64'
-        )}
-      >
-        <div className="p-4 lg:p-6">
-          <Outlet />
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile Header - Only shows trigger on mobile */}
+        <div className="lg:hidden flex items-center h-16 px-4 border-b border-border bg-background">
+          <MobileSidebarTrigger
+            open={mobileMenuOpen}
+            onOpenChange={setMobileMenuOpen}
+          />
         </div>
-      </main>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto p-4 lg:p-6">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }

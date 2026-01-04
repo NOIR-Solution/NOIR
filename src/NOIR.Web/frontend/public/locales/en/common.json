@@ -9,7 +9,18 @@
   "nav": {
     "portal": "Portal",
     "overview": "Overview",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "main": "Main",
+    "management": "Management",
+    "settings": "Settings",
+    "users": "Users",
+    "notifications": "Notifications",
+    "analytics": "Analytics",
+    "reports": "Reports",
+    "profile": "Profile",
+    "accountSettings": "Account Settings",
+    "menu": "Menu"
   },
   "auth": {
     "signIn": "Sign In",

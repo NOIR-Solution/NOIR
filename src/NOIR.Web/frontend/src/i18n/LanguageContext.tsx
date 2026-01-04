@@ -1,7 +1,23 @@
-import { useCallback, type ReactNode } from 'react'
+import { createContext, useCallback, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supportedLanguages, type SupportedLanguage, LANGUAGE_COOKIE_NAME } from './index'
-import { LanguageContext, type LanguageContextType } from './languageContext'
+
+// Context type definition
+export interface LanguageContextType {
+  /** Current language code (e.g., 'en', 'vi') */
+  currentLanguage: SupportedLanguage
+  /** List of supported languages with metadata */
+  languages: typeof supportedLanguages
+  /** Change the current language */
+  changeLanguage: (language: SupportedLanguage) => Promise<void>
+  /** Check if a language is currently active */
+  isCurrentLanguage: (language: SupportedLanguage) => boolean
+}
+
+// Create the context
+export const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined
+)
 
 interface LanguageProviderProps {
   children: ReactNode
