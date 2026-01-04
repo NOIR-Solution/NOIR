@@ -8,13 +8,13 @@ services:
     container_name: noir-sqlserver
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=Noir@Dev2024!
+      - MSSQL_SA_PASSWORD=coffee123@@
     ports:
       - "1433:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "echo 'SELECT 1' | /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Noir@Dev2024!' -C -l 5 || exit 1"]
+      test: ["CMD-SHELL", "echo 'SELECT 1' | /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'coffee123@@' -C -l 5 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -39,7 +39,7 @@ services:
   #     - "5000:8080"
   #   environment:
   #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=NOIR;User Id=sa;Password=Noir@Dev2024!;TrustServerCertificate=True
+  #     - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=NOIR;User Id=sa;Password=coffee123@@;TrustServerCertificate=True
   #     - Email__SmtpHost=mailhog
   #     - Email__SmtpPort=1025
   #   depends_on:

@@ -39,7 +39,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         {
             // macOS/Linux: Use Docker SQL Server (or override via environment variable)
             var baseConnection = Environment.GetEnvironmentVariable("NOIR_TEST_SQL_CONNECTION")
-                ?? "Server=localhost,1433;User Id=sa;Password=Noir@Dev2024!;TrustServerCertificate=True";
+                ?? "Server=localhost,1433;User Id=sa;Password=coffee123@@;TrustServerCertificate=True";
             _connectionString = $"{baseConnection};Database={_databaseName}";
             _masterConnectionString = $"{baseConnection};Database=master";
         }
