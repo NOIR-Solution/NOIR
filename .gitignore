@@ -247,3 +247,4 @@ StyleCopReport.xml
 !.serena/
 !.serena/memories/
 !.serena/project.yml
+.playwright-mcp
