@@ -13,6 +13,7 @@
 7. **Use marker interfaces** for DI - Add `IScopedService`, `ITransientService`, or `ISingletonService`
 8. **Use IUnitOfWork for persistence** - Repository methods do NOT auto-save. Always inject `IUnitOfWork` and call `SaveChangesAsync()` after mutations. Never inject `ApplicationDbContext` directly into services.
 9. **Use AsTracking for mutations** - Specifications default to `AsNoTracking`. For specs that retrieve entities for modification, add `.AsTracking()` to enable change detection.
+10. **Co-locate Command + Handler + Validator** - All CQRS components live in the same folder under `Application/Features/{Feature}/Commands/{Action}/` or `Application/Features/{Feature}/Queries/{Action}/`
 
 ## Quick Reference
 
@@ -35,8 +36,18 @@ dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-projec
 
 ```
 src/NOIR.Domain/          # Entities, IRepository, ISpecification
-src/NOIR.Application/     # Commands, Queries, Specifications, DTOs
-src/NOIR.Infrastructure/  # EF Core, Repositories, Handlers
+src/NOIR.Application/     # Features (Command + Handler + Validator co-located), DTOs
+    └── Features/
+        └── {Feature}/
+            ├── Commands/{Action}/
+            │   ├── {Action}Command.cs
+            │   ├── {Action}CommandHandler.cs
+            │   └── {Action}CommandValidator.cs
+            └── Queries/{Action}/
+                ├── {Action}Query.cs
+                └── {Action}QueryHandler.cs
+    └── Common/Interfaces/  # Service abstractions (IUserIdentityService, etc.)
+src/NOIR.Infrastructure/  # EF Core, Repositories, Service implementations
 src/NOIR.Web/             # Endpoints, Middleware, Program.cs
     └── frontend/         # React SPA
 ```
@@ -61,16 +72,31 @@ public class ActiveCustomersSpec : Specification<Customer>
 }
 ```
 
-### Handlers (Wolverine)
+### Handlers (Wolverine - Vertical Slice)
 ```csharp
-public static class CreateOrderHandler
+// Handler co-located with Command in Application/Features/{Feature}/Commands/{Action}/
+public class CreateOrderCommandHandler
 {
-    public static async Task<OrderResponse> Handle(
+    private readonly IRepository<Order, Guid> _repository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateOrderCommandHandler(
+        IRepository<Order, Guid> repository,
+        IUnitOfWork unitOfWork)
+    {
+        _repository = repository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<Result<OrderDto>> Handle(
         CreateOrderCommand cmd,
-        IRepository<Order, Guid> repo,
         CancellationToken ct)
     {
-        // Implementation
+        // Validation and business logic
+        var order = Order.Create(cmd.CustomerId, cmd.Items);
+        await _repository.AddAsync(order, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
+        return Result.Success(order.ToDto());
     }
 }
 ```

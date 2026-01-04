@@ -8,28 +8,25 @@ public class GetCurrentUserQueryHandlerTests
 {
     #region Test Setup
 
-    private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
+    private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
     private readonly GetCurrentUserQueryHandler _handler;
 
     public GetCurrentUserQueryHandlerTests()
     {
-        var userStore = new Mock<IUserStore<ApplicationUser>>();
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!);
-
+        _userIdentityServiceMock = new Mock<IUserIdentityService>();
         _currentUserMock = new Mock<ICurrentUser>();
         _localizationServiceMock = new Mock<ILocalizationService>();
         _localizationServiceMock.Setup(x => x[It.IsAny<string>()]).Returns<string>(key => key);
 
         _handler = new GetCurrentUserQueryHandler(
-            _userManagerMock.Object,
+            _userIdentityServiceMock.Object,
             _currentUserMock.Object,
             _localizationServiceMock.Object);
     }
 
-    private ApplicationUser CreateTestUser(
+    private UserIdentityDto CreateTestUserDto(
         string id = "user-123",
         string email = "test@example.com",
         string? firstName = "John",
@@ -37,18 +34,18 @@ public class GetCurrentUserQueryHandlerTests
         bool isActive = true,
         string? tenantId = null)
     {
-        return new ApplicationUser
-        {
-            Id = id,
-            Email = email,
-            NormalizedEmail = email.ToUpperInvariant(),
-            UserName = email,
-            FirstName = firstName,
-            LastName = lastName,
-            IsActive = isActive,
-            TenantId = tenantId,
-            CreatedAt = DateTimeOffset.UtcNow.AddDays(-30)
-        };
+        return new UserIdentityDto(
+            id,
+            email,
+            firstName,
+            lastName,
+            null,
+            $"{firstName ?? ""} {lastName ?? ""}".Trim(),
+            tenantId,
+            isActive,
+            false,
+            DateTimeOffset.UtcNow.AddDays(-30),
+            null);
     }
 
     private void SetupAuthenticatedUser(string userId)
@@ -81,17 +78,17 @@ public class GetCurrentUserQueryHandlerTests
     public async Task Handle_AuthenticatedUser_ShouldReturnSuccess()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var query = new GetCurrentUserQuery();
 
         SetupAuthenticatedUser(user.Id);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _userManagerMock
-            .Setup(x => x.GetRolesAsync(user))
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string> { "User" });
 
         // Act
@@ -108,7 +105,7 @@ public class GetCurrentUserQueryHandlerTests
     public async Task Handle_AuthenticatedUser_ShouldReturnAllUserProperties()
     {
         // Arrange
-        var user = CreateTestUser(
+        var user = CreateTestUserDto(
             firstName: "Jane",
             lastName: "Smith",
             tenantId: "tenant-123");
@@ -116,12 +113,12 @@ public class GetCurrentUserQueryHandlerTests
 
         SetupAuthenticatedUser(user.Id);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _userManagerMock
-            .Setup(x => x.GetRolesAsync(user))
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string> { "User", "Admin" });
 
         // Act
@@ -141,18 +138,18 @@ public class GetCurrentUserQueryHandlerTests
     public async Task Handle_AuthenticatedUser_ShouldReturnRoles()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var query = new GetCurrentUserQuery();
         var roles = new List<string> { "User", "Admin", "Manager" };
 
         SetupAuthenticatedUser(user.Id);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _userManagerMock
-            .Setup(x => x.GetRolesAsync(user))
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(roles);
 
         // Act
@@ -167,17 +164,17 @@ public class GetCurrentUserQueryHandlerTests
     public async Task Handle_UserWithNoRoles_ShouldReturnEmptyRoles()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var query = new GetCurrentUserQuery();
 
         SetupAuthenticatedUser(user.Id);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _userManagerMock
-            .Setup(x => x.GetRolesAsync(user))
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string>());
 
         // Act
@@ -192,17 +189,17 @@ public class GetCurrentUserQueryHandlerTests
     public async Task Handle_UserWithNullNames_ShouldHandleGracefully()
     {
         // Arrange
-        var user = CreateTestUser(firstName: null, lastName: null);
+        var user = CreateTestUserDto(firstName: null, lastName: null);
         var query = new GetCurrentUserQuery();
 
         SetupAuthenticatedUser(user.Id);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _userManagerMock
-            .Setup(x => x.GetRolesAsync(user))
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string> { "User" });
 
         // Act
@@ -257,7 +254,7 @@ public class GetCurrentUserQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_UnauthenticatedUser_ShouldNotCallUserManager()
+    public async Task Handle_UnauthenticatedUser_ShouldNotCallUserIdentityService()
     {
         // Arrange
         var query = new GetCurrentUserQuery();
@@ -267,8 +264,8 @@ public class GetCurrentUserQueryHandlerTests
         await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        _userManagerMock.Verify(
-            x => x.FindByIdAsync(It.IsAny<string>()),
+        _userIdentityServiceMock.Verify(
+            x => x.FindByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -285,9 +282,9 @@ public class GetCurrentUserQueryHandlerTests
 
         SetupAuthenticatedUser(userId);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(userId))
-            .ReturnsAsync((ApplicationUser?)null);
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserIdentityDto?)null);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -307,16 +304,16 @@ public class GetCurrentUserQueryHandlerTests
 
         SetupAuthenticatedUser(userId);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(userId))
-            .ReturnsAsync((ApplicationUser?)null);
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserIdentityDto?)null);
 
         // Act
         await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        _userManagerMock.Verify(
-            x => x.GetRolesAsync(It.IsAny<ApplicationUser>()),
+        _userIdentityServiceMock.Verify(
+            x => x.GetRolesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -328,25 +325,25 @@ public class GetCurrentUserQueryHandlerTests
     public async Task Handle_ShouldUseCurrentUserUserId()
     {
         // Arrange
-        var user = CreateTestUser(id: "specific-user-456");
+        var user = CreateTestUserDto(id: "specific-user-456");
         var query = new GetCurrentUserQuery();
 
         SetupAuthenticatedUser("specific-user-456");
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync("specific-user-456"))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync("specific-user-456", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _userManagerMock
-            .Setup(x => x.GetRolesAsync(user))
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesAsync("specific-user-456", It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string>());
 
         // Act
         await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        _userManagerMock.Verify(
-            x => x.FindByIdAsync("specific-user-456"),
+        _userIdentityServiceMock.Verify(
+            x => x.FindByIdAsync("specific-user-456", It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -372,17 +369,17 @@ public class GetCurrentUserQueryHandlerTests
     public async Task Handle_InactiveUser_ShouldStillReturnProfile()
     {
         // Arrange - Inactive users can still view their profile
-        var user = CreateTestUser(isActive: false);
+        var user = CreateTestUserDto(isActive: false);
         var query = new GetCurrentUserQuery();
 
         SetupAuthenticatedUser(user.Id);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _userManagerMock
-            .Setup(x => x.GetRolesAsync(user))
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string> { "User" });
 
         // Act
@@ -397,17 +394,17 @@ public class GetCurrentUserQueryHandlerTests
     public async Task Handle_UserWithNoTenant_ShouldReturnNullTenantId()
     {
         // Arrange
-        var user = CreateTestUser(tenantId: null);
+        var user = CreateTestUserDto(tenantId: null);
         var query = new GetCurrentUserQuery();
 
         SetupAuthenticatedUser(user.Id);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _userManagerMock
-            .Setup(x => x.GetRolesAsync(user))
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string>());
 
         // Act

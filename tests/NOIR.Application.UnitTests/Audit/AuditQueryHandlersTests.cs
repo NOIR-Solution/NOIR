@@ -1,6 +1,5 @@
 using System.Reflection;
 using NOIR.Application.Features.Audit.Queries;
-using NOIR.Infrastructure.Audit.Handlers;
 
 namespace NOIR.Application.UnitTests.Audit;
 

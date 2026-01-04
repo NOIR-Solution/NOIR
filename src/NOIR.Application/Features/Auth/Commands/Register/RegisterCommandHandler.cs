@@ -1,4 +1,4 @@
-namespace NOIR.Infrastructure.Identity.Handlers;
+namespace NOIR.Application.Features.Auth.Commands.Register;
 
 /// <summary>
 /// Wolverine handler for user registration.
@@ -7,20 +7,20 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 /// </summary>
 public class RegisterCommandHandler
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserIdentityService _userIdentityService;
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly ICookieAuthService _cookieAuthService;
     private readonly JwtSettings _jwtSettings;
 
     public RegisterCommandHandler(
-        UserManager<ApplicationUser> userManager,
+        IUserIdentityService userIdentityService,
         ITokenService tokenService,
         IRefreshTokenService refreshTokenService,
         ICookieAuthService cookieAuthService,
         IOptions<JwtSettings> jwtSettings)
     {
-        _userManager = userManager;
+        _userIdentityService = userIdentityService;
         _tokenService = tokenService;
         _refreshTokenService = refreshTokenService;
         _cookieAuthService = cookieAuthService;
@@ -31,38 +31,42 @@ public class RegisterCommandHandler
     {
         // Validation is handled by Wolverine FluentValidation middleware
 
-        // Normalize email for consistent storage
-        var normalizedEmail = _userManager.NormalizeEmail(command.Email);
+        var createUserDto = new CreateUserDto(
+            command.Email,
+            command.FirstName,
+            command.LastName,
+            null, // DisplayName
+            null  // TenantId
+        );
 
-        var user = new ApplicationUser
+        var createResult = await _userIdentityService.CreateUserAsync(createUserDto, command.Password, cancellationToken);
+
+        if (!createResult.Succeeded)
         {
-            UserName = command.Email,
-            Email = command.Email,
-            NormalizedEmail = normalizedEmail,
-            FirstName = command.FirstName,
-            LastName = command.LastName,
-            IsActive = true
-            // Note: CreatedAt is set automatically by AuditableEntityInterceptor
-        };
-
-        var result = await _userManager.CreateAsync(user, command.Password);
-
-        if (!result.Succeeded)
-        {
-            var errors = result.Errors.Select(e => e.Description);
-            return Result.Failure<AuthResponse>(Error.ValidationErrors(errors, ErrorCodes.Validation.General));
+            return Result.Failure<AuthResponse>(
+                Error.ValidationErrors(createResult.Errors!, ErrorCodes.Validation.General));
         }
 
+        var userId = createResult.UserId!;
+
         // Assign default "User" role using constant
-        await _userManager.AddToRoleAsync(user, Roles.User);
+        await _userIdentityService.AddToRolesAsync(userId, [NOIR.Domain.Common.Roles.User], cancellationToken);
+
+        // Get the newly created user
+        var user = await _userIdentityService.FindByIdAsync(userId, cancellationToken);
+        if (user is null)
+        {
+            return Result.Failure<AuthResponse>(
+                Error.Failure(ErrorCodes.System.UnknownError, "Failed to retrieve created user"));
+        }
 
         // Generate access token (minimal JWT - roles/permissions checked on each request)
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, user.TenantId);
+        var accessToken = _tokenService.GenerateAccessToken(userId, user.Email, user.TenantId);
         var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Create refresh token in database (proper token rotation support)
         var refreshToken = await _refreshTokenService.CreateTokenAsync(
-            user.Id,
+            userId,
             user.TenantId,
             cancellationToken: cancellationToken);
 
@@ -77,8 +81,8 @@ public class RegisterCommandHandler
         }
 
         var authResponse = new AuthResponse(
-            user.Id,
-            user.Email!,
+            userId,
+            user.Email,
             accessToken,
             refreshToken.Token,
             refreshToken.ExpiresAt);

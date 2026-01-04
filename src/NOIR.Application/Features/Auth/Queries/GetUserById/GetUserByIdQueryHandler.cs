@@ -1,19 +1,20 @@
-namespace NOIR.Infrastructure.Identity.Handlers;
+namespace NOIR.Application.Features.Auth.Queries.GetUserById;
 
 /// <summary>
 /// Wolverine handler for getting a user's profile by ID.
 /// Used internally for before-state fetching in audit logging.
+/// Uses IUserIdentityService for user lookup operations.
 /// </summary>
 public class GetUserByIdQueryHandler
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserIdentityService _userIdentityService;
     private readonly ILocalizationService _localization;
 
     public GetUserByIdQueryHandler(
-        UserManager<ApplicationUser> userManager,
+        IUserIdentityService userIdentityService,
         ILocalizationService localization)
     {
-        _userManager = userManager;
+        _userIdentityService = userIdentityService;
         _localization = localization;
     }
 
@@ -25,18 +26,18 @@ public class GetUserByIdQueryHandler
                 Error.Validation("UserId", _localization["validation.userId.required"], ErrorCodes.Validation.Required));
         }
 
-        var user = await _userManager.FindByIdAsync(query.UserId);
+        var user = await _userIdentityService.FindByIdAsync(query.UserId, cancellationToken);
         if (user is null)
         {
             return Result.Failure<UserProfileDto>(
                 Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await _userIdentityService.GetRolesAsync(query.UserId, cancellationToken);
 
         var dto = new UserProfileDto(
             user.Id,
-            user.Email!,
+            user.Email,
             user.FirstName,
             user.LastName,
             user.FullName,

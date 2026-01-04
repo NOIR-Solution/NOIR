@@ -1,4 +1,4 @@
-namespace NOIR.Infrastructure.Identity.Handlers;
+namespace NOIR.Application.Features.Auth.Commands.RefreshToken;
 
 /// <summary>
 /// Wolverine handler for refreshing access tokens.
@@ -8,7 +8,7 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 /// </summary>
 public class RefreshTokenCommandHandler
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserIdentityService _userIdentityService;
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IDeviceFingerprintService _deviceFingerprintService;
@@ -18,7 +18,7 @@ public class RefreshTokenCommandHandler
     private readonly ILogger<RefreshTokenCommandHandler> _logger;
 
     public RefreshTokenCommandHandler(
-        UserManager<ApplicationUser> userManager,
+        IUserIdentityService userIdentityService,
         ITokenService tokenService,
         IRefreshTokenService refreshTokenService,
         IDeviceFingerprintService deviceFingerprintService,
@@ -27,7 +27,7 @@ public class RefreshTokenCommandHandler
         IOptions<JwtSettings> jwtSettings,
         ILogger<RefreshTokenCommandHandler> logger)
     {
-        _userManager = userManager;
+        _userIdentityService = userIdentityService;
         _tokenService = tokenService;
         _refreshTokenService = refreshTokenService;
         _deviceFingerprintService = deviceFingerprintService;
@@ -50,7 +50,7 @@ public class RefreshTokenCommandHandler
         }
 
         // Get user ID from claims
-        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId))
         {
             return Result.Failure<AuthResponse>(
@@ -58,7 +58,7 @@ public class RefreshTokenCommandHandler
         }
 
         // Find user
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userIdentityService.FindByIdAsync(userId, cancellationToken);
         if (user is null)
         {
             return Result.Failure<AuthResponse>(
@@ -97,7 +97,7 @@ public class RefreshTokenCommandHandler
         }
 
         // Generate new access token
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, user.TenantId);
+        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email, user.TenantId);
         var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Set cookies if requested (for browser-based auth)
@@ -112,7 +112,7 @@ public class RefreshTokenCommandHandler
 
         var authResponse = new AuthResponse(
             user.Id,
-            user.Email!,
+            user.Email,
             accessToken,
             newToken.Token,
             newToken.ExpiresAt);

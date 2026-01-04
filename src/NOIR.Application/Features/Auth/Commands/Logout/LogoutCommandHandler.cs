@@ -1,4 +1,4 @@
-namespace NOIR.Infrastructure.Identity.Handlers;
+namespace NOIR.Application.Features.Auth.Commands.Logout;
 
 /// <summary>
 /// Wolverine handler for user logout.

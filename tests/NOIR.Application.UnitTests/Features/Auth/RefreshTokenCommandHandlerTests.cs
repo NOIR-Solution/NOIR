@@ -8,7 +8,7 @@ public class RefreshTokenCommandHandlerTests
 {
     #region Test Setup
 
-    private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
+    private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly Mock<IDeviceFingerprintService> _deviceFingerprintServiceMock;
@@ -19,10 +19,7 @@ public class RefreshTokenCommandHandlerTests
 
     public RefreshTokenCommandHandlerTests()
     {
-        var userStore = new Mock<IUserStore<ApplicationUser>>();
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!);
-
+        _userIdentityServiceMock = new Mock<IUserIdentityService>();
         _tokenServiceMock = new Mock<ITokenService>();
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
         _deviceFingerprintServiceMock = new Mock<IDeviceFingerprintService>();
@@ -45,7 +42,7 @@ public class RefreshTokenCommandHandlerTests
         });
 
         _handler = new RefreshTokenCommandHandler(
-            _userManagerMock.Object,
+            _userIdentityServiceMock.Object,
             _tokenServiceMock.Object,
             _refreshTokenServiceMock.Object,
             _deviceFingerprintServiceMock.Object,
@@ -55,21 +52,24 @@ public class RefreshTokenCommandHandlerTests
             _loggerMock.Object);
     }
 
-    private ApplicationUser CreateTestUser(
+    private UserIdentityDto CreateTestUserDto(
         string id = "user-123",
         string email = "test@example.com",
         bool isActive = true,
         string? tenantId = null)
     {
-        return new ApplicationUser
-        {
-            Id = id,
-            Email = email,
-            NormalizedEmail = email.ToUpperInvariant(),
-            UserName = email,
-            IsActive = isActive,
-            TenantId = tenantId
-        };
+        return new UserIdentityDto(
+            Id: id,
+            Email: email,
+            FirstName: "Test",
+            LastName: "User",
+            DisplayName: null,
+            FullName: "Test User",
+            TenantId: tenantId,
+            IsActive: isActive,
+            IsDeleted: false,
+            CreatedAt: DateTimeOffset.UtcNow,
+            ModifiedAt: null);
     }
 
     private ClaimsPrincipal CreateTestPrincipal(string userId)
@@ -82,7 +82,7 @@ public class RefreshTokenCommandHandlerTests
         return new ClaimsPrincipal(identity);
     }
 
-    private void SetupSuccessfulTokenRotation(ApplicationUser user)
+    private void SetupSuccessfulTokenRotation(UserIdentityDto user)
     {
         var principal = CreateTestPrincipal(user.Id);
 
@@ -90,8 +90,8 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
             .Returns(principal);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         var newRefreshToken = RefreshToken.Create(user.Id, 7, user.TenantId);
@@ -104,7 +104,7 @@ public class RefreshTokenCommandHandlerTests
             .ReturnsAsync(newRefreshToken);
 
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Email!, user.TenantId))
+            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId))
             .Returns("new-access-token");
 
         _deviceFingerprintServiceMock
@@ -124,7 +124,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_ValidTokens_ShouldReturnSuccess()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
         SetupSuccessfulTokenRotation(user);
 
@@ -143,7 +143,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_ValidTokens_ShouldReturnNewRefreshToken()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
         SetupSuccessfulTokenRotation(user);
 
@@ -160,7 +160,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_ValidTokens_ShouldCallTokenRotation()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
         SetupSuccessfulTokenRotation(user);
 
@@ -181,7 +181,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_ValidTokens_WithTenant_ShouldGenerateTokenWithTenant()
     {
         // Arrange
-        var user = CreateTestUser(tenantId: "tenant-abc");
+        var user = CreateTestUserDto(tenantId: "tenant-abc");
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
         SetupSuccessfulTokenRotation(user);
 
@@ -190,7 +190,7 @@ public class RefreshTokenCommandHandlerTests
 
         // Assert
         _tokenServiceMock.Verify(
-            x => x.GenerateAccessToken(user.Id, user.Email!, "tenant-abc"),
+            x => x.GenerateAccessToken(user.Id, user.Email, "tenant-abc"),
             Times.Once);
     }
 
@@ -241,7 +241,7 @@ public class RefreshTokenCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_InvalidAccessToken_ShouldNotCallUserManager()
+    public async Task Handle_InvalidAccessToken_ShouldNotCallUserIdentityService()
     {
         // Arrange
         var command = new RefreshTokenCommand("invalid-access-token", "valid-refresh-token");
@@ -254,8 +254,8 @@ public class RefreshTokenCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _userManagerMock.Verify(
-            x => x.FindByIdAsync(It.IsAny<string>()),
+        _userIdentityServiceMock.Verify(
+            x => x.FindByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -274,9 +274,9 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
             .Returns(principal);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync("non-existent-user"))
-            .ReturnsAsync((ApplicationUser?)null);
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync("non-existent-user", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserIdentityDto?)null);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -295,7 +295,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_DisabledUser_ShouldReturnForbidden()
     {
         // Arrange
-        var user = CreateTestUser(isActive: false);
+        var user = CreateTestUserDto(isActive: false);
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
         var principal = CreateTestPrincipal(user.Id);
 
@@ -303,8 +303,8 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
             .Returns(principal);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
@@ -320,7 +320,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_DisabledUser_ShouldNotAttemptTokenRotation()
     {
         // Arrange
-        var user = CreateTestUser(isActive: false);
+        var user = CreateTestUserDto(isActive: false);
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
         var principal = CreateTestPrincipal(user.Id);
 
@@ -328,8 +328,8 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
             .Returns(principal);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
@@ -353,7 +353,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_TokenRotationFails_ShouldReturnUnauthorized()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "expired-refresh-token");
         var principal = CreateTestPrincipal(user.Id);
 
@@ -361,8 +361,8 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
             .Returns(principal);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _refreshTokenServiceMock
@@ -394,7 +394,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_TokenRotationFails_ShouldLogWarning()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "reused-refresh-token");
         var principal = CreateTestPrincipal(user.Id);
 
@@ -402,8 +402,8 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
             .Returns(principal);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _refreshTokenServiceMock
@@ -440,7 +440,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_TokenRotationFails_ShouldNotGenerateNewAccessToken()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "invalid-refresh-token");
         var principal = CreateTestPrincipal(user.Id);
 
@@ -448,8 +448,8 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
             .Returns(principal);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _refreshTokenServiceMock
@@ -485,7 +485,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_ShouldCollectDeviceInfo()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
         SetupSuccessfulTokenRotation(user);
 
@@ -505,7 +505,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_UseCookiesTrue_ShouldSetAuthCookies()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token", UseCookies: true);
         SetupSuccessfulTokenRotation(user);
 
@@ -527,7 +527,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_UseCookiesFalse_ShouldNotSetCookies()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token", UseCookies: false);
         SetupSuccessfulTokenRotation(user);
 
@@ -548,7 +548,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_NullRefreshToken_WithCookies_ShouldGetFromCookie()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", RefreshToken: null, UseCookies: true);
         var principal = CreateTestPrincipal(user.Id);
 
@@ -556,8 +556,8 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
             .Returns(principal);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _cookieAuthServiceMock
@@ -574,7 +574,7 @@ public class RefreshTokenCommandHandlerTests
             .ReturnsAsync(newRefreshToken);
 
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Email!, user.TenantId))
+            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId))
             .Returns("new-access-token");
 
         _deviceFingerprintServiceMock
@@ -597,7 +597,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_NullRefreshToken_NoCookie_ShouldReturnUnauthorized()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", RefreshToken: null, UseCookies: true);
         var principal = CreateTestPrincipal(user.Id);
 
@@ -605,8 +605,8 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetPrincipalFromExpiredToken(It.IsAny<string>()))
             .Returns(principal);
 
-        _userManagerMock
-            .Setup(x => x.FindByIdAsync(user.Id))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _cookieAuthServiceMock

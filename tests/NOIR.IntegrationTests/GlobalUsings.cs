@@ -52,6 +52,7 @@ global using Wolverine;
 // NOIR Application
 global using NOIR.Application.Common.Interfaces;
 global using NOIR.Application.Common.Models;
+global using NOIR.Application.Common.Settings;
 global using NOIR.Application.Features.Auth.Commands.Login;
 global using NOIR.Application.Features.Auth.Commands.Logout;
 global using NOIR.Application.Features.Auth.Commands.RefreshToken;

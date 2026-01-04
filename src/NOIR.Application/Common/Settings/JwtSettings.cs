@@ -1,4 +1,4 @@
-namespace NOIR.Infrastructure.Identity;
+namespace NOIR.Application.Common.Settings;
 
 /// <summary>
 /// JWT configuration settings with validation.

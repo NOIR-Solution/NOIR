@@ -17,6 +17,7 @@ An Architecture Decision Record (ADR) captures an important architectural decisi
 |--------|-------|--------|------|
 | [001](001-tech-stack.md) | Technology Stack Selection | Accepted | 2025-12-29 |
 | [002](002-frontend-ui-stack.md) | Frontend UI Stack | Accepted | 2026-01-03 |
+| [003](003-vertical-slice-cqrs.md) | Vertical Slice Architecture for CQRS | Accepted | 2026-01-04 |
 
 ## ADR Template
 

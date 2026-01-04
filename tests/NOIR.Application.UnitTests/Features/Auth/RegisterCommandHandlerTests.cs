@@ -8,7 +8,7 @@ public class RegisterCommandHandlerTests
 {
     #region Test Setup
 
-    private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
+    private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly Mock<ICookieAuthService> _cookieAuthServiceMock;
@@ -16,10 +16,7 @@ public class RegisterCommandHandlerTests
 
     public RegisterCommandHandlerTests()
     {
-        var userStore = new Mock<IUserStore<ApplicationUser>>();
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!);
-
+        _userIdentityServiceMock = new Mock<IUserIdentityService>();
         _tokenServiceMock = new Mock<ITokenService>();
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
         _cookieAuthServiceMock = new Mock<ICookieAuthService>();
@@ -34,32 +31,45 @@ public class RegisterCommandHandlerTests
         });
 
         _handler = new RegisterCommandHandler(
-            _userManagerMock.Object,
+            _userIdentityServiceMock.Object,
             _tokenServiceMock.Object,
             _refreshTokenServiceMock.Object,
             _cookieAuthServiceMock.Object,
             jwtSettings);
     }
 
-    private void SetupSuccessfulRegistration()
+    private void SetupSuccessfulRegistration(string userId = "new-user-id")
     {
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
+        _userIdentityServiceMock
+            .Setup(x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(IdentityOperationResult.Success(userId));
 
-        _userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Success);
+        _userIdentityServiceMock
+            .Setup(x => x.AddToRolesAsync(userId, It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(IdentityOperationResult.Success(userId));
 
-        _userManagerMock
-            .Setup(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Success);
+        var userDto = new UserIdentityDto(
+            Id: userId,
+            Email: "new@example.com",
+            FirstName: "John",
+            LastName: "Doe",
+            DisplayName: null,
+            FullName: "John Doe",
+            TenantId: null,
+            IsActive: true,
+            IsDeleted: false,
+            CreatedAt: DateTimeOffset.UtcNow,
+            ModifiedAt: null);
+
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(userDto);
 
         _tokenServiceMock
             .Setup(x => x.GenerateAccessToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>()))
             .Returns("test-access-token");
 
-        var refreshToken = RefreshToken.Create("user-id", 7);
+        var refreshToken = RefreshToken.Create(userId, 7);
         _refreshTokenServiceMock
             .Setup(x => x.CreateTokenAsync(
                 It.IsAny<string>(),
@@ -105,14 +115,14 @@ public class RegisterCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _userManagerMock.Verify(
-            x => x.CreateAsync(
-                It.Is<ApplicationUser>(u =>
-                    u.Email == "new@example.com" &&
-                    u.FirstName == "John" &&
-                    u.LastName == "Doe" &&
-                    u.IsActive == true),
-                "password123"),
+        _userIdentityServiceMock.Verify(
+            x => x.CreateUserAsync(
+                It.Is<CreateUserDto>(dto =>
+                    dto.Email == "new@example.com" &&
+                    dto.FirstName == "John" &&
+                    dto.LastName == "Doe"),
+                "password123",
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -127,8 +137,11 @@ public class RegisterCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _userManagerMock.Verify(
-            x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), "User"),
+        _userIdentityServiceMock.Verify(
+            x => x.AddToRolesAsync(
+                It.IsAny<string>(),
+                It.Is<IEnumerable<string>>(roles => roles.Contains("User")),
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -179,14 +192,9 @@ public class RegisterCommandHandlerTests
         // Arrange
         var command = new RegisterCommand("existing@example.com", "password123", null, null);
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Failed(
-                new IdentityError { Code = "DuplicateEmail", Description = "Email 'existing@example.com' is already taken." }));
+        _userIdentityServiceMock
+            .Setup(x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(IdentityOperationResult.Failure("Email 'existing@example.com' is already taken."));
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -203,15 +211,11 @@ public class RegisterCommandHandlerTests
         // Arrange
         var command = new RegisterCommand("new@example.com", "weak", null, null);
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Failed(
-                new IdentityError { Code = "PasswordTooShort", Description = "Passwords must be at least 6 characters." },
-                new IdentityError { Code = "PasswordRequiresDigit", Description = "Passwords must have at least one digit." }));
+        _userIdentityServiceMock
+            .Setup(x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(IdentityOperationResult.Failure(
+                "Passwords must be at least 6 characters.",
+                "Passwords must have at least one digit."));
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -228,15 +232,9 @@ public class RegisterCommandHandlerTests
         // Arrange
         var command = new RegisterCommand("new@example.com", "weak", null, null);
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Failed(
-                new IdentityError { Code = "Error1", Description = "First error." },
-                new IdentityError { Code = "Error2", Description = "Second error." }));
+        _userIdentityServiceMock
+            .Setup(x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(IdentityOperationResult.Failure("First error.", "Second error."));
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -253,84 +251,17 @@ public class RegisterCommandHandlerTests
         // Arrange
         var command = new RegisterCommand("new@example.com", "password123", null, null);
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Failed(
-                new IdentityError { Code = "Error", Description = "Failed" }));
+        _userIdentityServiceMock
+            .Setup(x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(IdentityOperationResult.Failure("Failed"));
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _userManagerMock.Verify(
-            x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()),
+        _userIdentityServiceMock.Verify(
+            x => x.AddToRolesAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()),
             Times.Never);
-    }
-
-    #endregion
-
-    #region Email Normalization Tests
-
-    [Fact]
-    public async Task Handle_ShouldNormalizeEmail()
-    {
-        // Arrange
-        var command = new RegisterCommand("Test@Example.COM", "password123", null, null);
-        SetupSuccessfulRegistration();
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        _userManagerMock.Verify(
-            x => x.CreateAsync(
-                It.Is<ApplicationUser>(u => u.NormalizedEmail == "TEST@EXAMPLE.COM"),
-                It.IsAny<string>()),
-            Times.Once);
-    }
-
-    #endregion
-
-    #region User Properties Tests
-
-    [Fact]
-    public async Task Handle_ShouldSetUserAsActive()
-    {
-        // Arrange
-        var command = new RegisterCommand("new@example.com", "password123", null, null);
-        SetupSuccessfulRegistration();
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        _userManagerMock.Verify(
-            x => x.CreateAsync(
-                It.Is<ApplicationUser>(u => u.IsActive == true),
-                It.IsAny<string>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldSetUsernameToEmail()
-    {
-        // Arrange
-        var command = new RegisterCommand("new@example.com", "password123", null, null);
-        SetupSuccessfulRegistration();
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        _userManagerMock.Verify(
-            x => x.CreateAsync(
-                It.Is<ApplicationUser>(u => u.UserName == "new@example.com"),
-                It.IsAny<string>()),
-            Times.Once);
     }
 
     #endregion
@@ -404,14 +335,9 @@ public class RegisterCommandHandlerTests
         // Arrange
         var command = new RegisterCommand("new@example.com", "password123", null, null, UseCookies: true);
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Failed(
-                new IdentityError { Code = "Error", Description = "Registration failed" }));
+        _userIdentityServiceMock
+            .Setup(x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(IdentityOperationResult.Failure("Registration failed"));
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

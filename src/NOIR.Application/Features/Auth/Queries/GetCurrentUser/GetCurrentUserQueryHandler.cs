@@ -1,20 +1,21 @@
-namespace NOIR.Infrastructure.Identity.Handlers;
+namespace NOIR.Application.Features.Auth.Queries.GetCurrentUser;
 
 /// <summary>
 /// Wolverine handler for getting the current user's profile.
+/// Uses IUserIdentityService for user lookup operations.
 /// </summary>
 public class GetCurrentUserQueryHandler
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserIdentityService _userIdentityService;
     private readonly ICurrentUser _currentUser;
     private readonly ILocalizationService _localization;
 
     public GetCurrentUserQueryHandler(
-        UserManager<ApplicationUser> userManager,
+        IUserIdentityService userIdentityService,
         ICurrentUser currentUser,
         ILocalizationService localization)
     {
-        _userManager = userManager;
+        _userIdentityService = userIdentityService;
         _currentUser = currentUser;
         _localization = localization;
     }
@@ -24,22 +25,24 @@ public class GetCurrentUserQueryHandler
         // Check if user is authenticated
         if (!_currentUser.IsAuthenticated || string.IsNullOrEmpty(_currentUser.UserId))
         {
-            return Result.Failure<CurrentUserDto>(Error.Unauthorized(_localization["auth.user.notAuthenticated"], ErrorCodes.Auth.Unauthorized));
+            return Result.Failure<CurrentUserDto>(
+                Error.Unauthorized(_localization["auth.user.notAuthenticated"], ErrorCodes.Auth.Unauthorized));
         }
 
         // Find user
-        var user = await _userManager.FindByIdAsync(_currentUser.UserId);
+        var user = await _userIdentityService.FindByIdAsync(_currentUser.UserId, cancellationToken);
         if (user is null)
         {
-            return Result.Failure<CurrentUserDto>(Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
+            return Result.Failure<CurrentUserDto>(
+                Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         // Get roles
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await _userIdentityService.GetRolesAsync(_currentUser.UserId, cancellationToken);
 
         var userDto = new CurrentUserDto(
             user.Id,
-            user.Email!,
+            user.Email,
             user.FirstName,
             user.LastName,
             user.FullName,

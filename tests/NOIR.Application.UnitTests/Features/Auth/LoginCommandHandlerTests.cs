@@ -8,8 +8,7 @@ public class LoginCommandHandlerTests
 {
     #region Test Setup
 
-    private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
-    private readonly Mock<SignInManager<ApplicationUser>> _signInManagerMock;
+    private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly Mock<IDeviceFingerprintService> _deviceFingerprintServiceMock;
@@ -19,20 +18,7 @@ public class LoginCommandHandlerTests
 
     public LoginCommandHandlerTests()
     {
-        // UserManager mock
-        var userStore = new Mock<IUserStore<ApplicationUser>>();
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!);
-
-        // SignInManager mock
-        var contextAccessor = new Mock<IHttpContextAccessor>();
-        var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
-        _signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
-            _userManagerMock.Object,
-            contextAccessor.Object,
-            claimsFactory.Object,
-            null!, null!, null!, null!);
-
+        _userIdentityServiceMock = new Mock<IUserIdentityService>();
         _tokenServiceMock = new Mock<ITokenService>();
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
         _deviceFingerprintServiceMock = new Mock<IDeviceFingerprintService>();
@@ -54,8 +40,7 @@ public class LoginCommandHandlerTests
         });
 
         _handler = new LoginCommandHandler(
-            _userManagerMock.Object,
-            _signInManagerMock.Object,
+            _userIdentityServiceMock.Object,
             _tokenServiceMock.Object,
             _refreshTokenServiceMock.Object,
             _deviceFingerprintServiceMock.Object,
@@ -64,39 +49,38 @@ public class LoginCommandHandlerTests
             jwtSettings);
     }
 
-    private ApplicationUser CreateTestUser(
+    private UserIdentityDto CreateTestUserDto(
         string id = "user-123",
         string email = "test@example.com",
         bool isActive = true,
         string? tenantId = null)
     {
-        return new ApplicationUser
-        {
-            Id = id,
-            Email = email,
-            NormalizedEmail = email.ToUpperInvariant(),
-            UserName = email,
-            IsActive = isActive,
-            TenantId = tenantId
-        };
+        return new UserIdentityDto(
+            Id: id,
+            Email: email,
+            FirstName: "Test",
+            LastName: "User",
+            DisplayName: null,
+            FullName: "Test User",
+            TenantId: tenantId,
+            IsActive: isActive,
+            IsDeleted: false,
+            CreatedAt: DateTimeOffset.UtcNow,
+            ModifiedAt: null);
     }
 
-    private void SetupSuccessfulLogin(ApplicationUser user)
+    private void SetupSuccessfulLogin(UserIdentityDto user)
     {
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _signInManagerMock
-            .Setup(x => x.CheckPasswordSignInAsync(user, It.IsAny<string>(), true))
-            .ReturnsAsync(SignInResult.Success);
+        _userIdentityServiceMock
+            .Setup(x => x.CheckPasswordSignInAsync(user.Id, It.IsAny<string>(), true, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PasswordSignInResult(Succeeded: true, IsLockedOut: false, IsNotAllowed: false, RequiresTwoFactor: false));
 
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Email!, user.TenantId))
+            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId))
             .Returns("test-access-token");
 
         var refreshToken = RefreshToken.Create(user.Id, 7, user.TenantId);
@@ -136,7 +120,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_ValidCredentials_ShouldReturnSuccess()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "validPassword123");
         SetupSuccessfulLogin(user);
 
@@ -155,7 +139,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_ValidCredentials_ShouldReturnRefreshToken()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "validPassword123");
         SetupSuccessfulLogin(user);
 
@@ -172,7 +156,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_ValidCredentials_ShouldCallTokenServices()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "validPassword123");
         SetupSuccessfulLogin(user);
 
@@ -181,7 +165,7 @@ public class LoginCommandHandlerTests
 
         // Assert
         _tokenServiceMock.Verify(
-            x => x.GenerateAccessToken(user.Id, user.Email!, user.TenantId),
+            x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId),
             Times.Once);
 
         _refreshTokenServiceMock.Verify(
@@ -200,7 +184,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_ValidCredentials_WithTenant_ShouldIncludeTenantId()
     {
         // Arrange
-        var user = CreateTestUser(tenantId: "tenant-abc");
+        var user = CreateTestUserDto(tenantId: "tenant-abc");
         var command = new LoginCommand("test@example.com", "validPassword123");
         SetupSuccessfulLogin(user);
 
@@ -211,7 +195,7 @@ public class LoginCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
 
         _tokenServiceMock.Verify(
-            x => x.GenerateAccessToken(user.Id, user.Email!, "tenant-abc"),
+            x => x.GenerateAccessToken(user.Id, user.Email, "tenant-abc"),
             Times.Once);
     }
 
@@ -225,13 +209,9 @@ public class LoginCommandHandlerTests
         // Arrange
         var command = new LoginCommand("nonexistent@example.com", "password");
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync((ApplicationUser?)null);
+        _userIdentityServiceMock
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserIdentityDto?)null);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -243,25 +223,21 @@ public class LoginCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_UserNotFound_ShouldNotCallSignInManager()
+    public async Task Handle_UserNotFound_ShouldNotCallPasswordCheck()
     {
         // Arrange
         var command = new LoginCommand("nonexistent@example.com", "password");
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync((ApplicationUser?)null);
+        _userIdentityServiceMock
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserIdentityDto?)null);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _signInManagerMock.Verify(
-            x => x.CheckPasswordSignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<bool>()),
+        _userIdentityServiceMock.Verify(
+            x => x.CheckPasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -273,15 +249,11 @@ public class LoginCommandHandlerTests
     public async Task Handle_DisabledUser_ShouldReturnForbidden()
     {
         // Arrange
-        var user = CreateTestUser(isActive: false);
+        var user = CreateTestUserDto(isActive: false);
         var command = new LoginCommand("test@example.com", "validPassword123");
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
@@ -297,23 +269,19 @@ public class LoginCommandHandlerTests
     public async Task Handle_DisabledUser_ShouldNotCheckPassword()
     {
         // Arrange
-        var user = CreateTestUser(isActive: false);
+        var user = CreateTestUserDto(isActive: false);
         var command = new LoginCommand("test@example.com", "validPassword123");
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _signInManagerMock.Verify(
-            x => x.CheckPasswordSignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<bool>()),
+        _userIdentityServiceMock.Verify(
+            x => x.CheckPasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -325,20 +293,16 @@ public class LoginCommandHandlerTests
     public async Task Handle_WrongPassword_ShouldReturnUnauthorized()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "wrongPassword");
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _signInManagerMock
-            .Setup(x => x.CheckPasswordSignInAsync(user, It.IsAny<string>(), true))
-            .ReturnsAsync(SignInResult.Failed);
+        _userIdentityServiceMock
+            .Setup(x => x.CheckPasswordSignInAsync(user.Id, It.IsAny<string>(), true, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PasswordSignInResult(Succeeded: false, IsLockedOut: false, IsNotAllowed: false, RequiresTwoFactor: false));
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -357,20 +321,16 @@ public class LoginCommandHandlerTests
     public async Task Handle_LockedOutUser_ShouldReturnForbidden()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "password");
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _signInManagerMock
-            .Setup(x => x.CheckPasswordSignInAsync(user, It.IsAny<string>(), true))
-            .ReturnsAsync(SignInResult.LockedOut);
+        _userIdentityServiceMock
+            .Setup(x => x.CheckPasswordSignInAsync(user.Id, It.IsAny<string>(), true, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PasswordSignInResult(Succeeded: false, IsLockedOut: true, IsNotAllowed: false, RequiresTwoFactor: false));
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -383,40 +343,13 @@ public class LoginCommandHandlerTests
 
     #endregion
 
-    #region Email Normalization Tests
-
-    [Fact]
-    public async Task Handle_ShouldNormalizeEmail()
-    {
-        // Arrange
-        var command = new LoginCommand("Test@Example.COM", "password");
-
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync((ApplicationUser?)null);
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        _userManagerMock.Verify(
-            x => x.NormalizeEmail("Test@Example.COM"),
-            Times.Once);
-    }
-
-    #endregion
-
     #region Device Fingerprint Tests
 
     [Fact]
     public async Task Handle_ShouldCollectDeviceInfo()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "validPassword123");
         SetupSuccessfulLogin(user);
 
@@ -438,7 +371,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_UseCookiesTrue_ShouldSetAuthCookies()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "validPassword123", UseCookies: true);
         SetupSuccessfulLogin(user);
 
@@ -460,7 +393,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_UseCookiesFalse_ShouldNotSetCookies()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "validPassword123", UseCookies: false);
         SetupSuccessfulLogin(user);
 
@@ -481,7 +414,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_UseCookiesDefault_ShouldNotSetCookies()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "validPassword123"); // Default UseCookies = false
         SetupSuccessfulLogin(user);
 
@@ -502,20 +435,16 @@ public class LoginCommandHandlerTests
     public async Task Handle_FailedLogin_ShouldNotSetCookies()
     {
         // Arrange
-        var user = CreateTestUser();
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "wrongPassword", UseCookies: true);
 
-        _userManagerMock
-            .Setup(x => x.NormalizeEmail(It.IsAny<string>()))
-            .Returns<string>(e => e.ToUpperInvariant());
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+        _userIdentityServiceMock
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _signInManagerMock
-            .Setup(x => x.CheckPasswordSignInAsync(user, It.IsAny<string>(), true))
-            .ReturnsAsync(SignInResult.Failed);
+        _userIdentityServiceMock
+            .Setup(x => x.CheckPasswordSignInAsync(user.Id, It.IsAny<string>(), true, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PasswordSignInResult(Succeeded: false, IsLockedOut: false, IsNotAllowed: false, RequiresTwoFactor: false));
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

@@ -38,8 +38,9 @@ export default function LoginPage() {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuthContext()
   const { t } = useTranslation('auth')
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  // Auto-fill credentials in development mode for smooth dev experience
+  const [email, setEmail] = useState(import.meta.env.DEV ? "admin@noir.local" : "")
+  const [password, setPassword] = useState(import.meta.env.DEV ? "123qwe" : "")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -191,14 +192,6 @@ export default function LoginPage() {
                 </Button>
               </form>
 
-              {/* Dev Credentials */}
-              {import.meta.env.DEV && (
-                <div className="mt-6 p-4 rounded-xl bg-muted/50 border border-border">
-                  <p className="text-xs text-muted-foreground text-center">
-                    {t('login.defaultCredentials')}: <code className="bg-background px-1.5 py-0.5 rounded text-foreground">admin@noir.local</code> / <code className="bg-background px-1.5 py-0.5 rounded text-foreground">123qwe</code>
-                  </p>
-                </div>
-              )}
             </CardContent>
           </Card>
 

@@ -1,4 +1,4 @@
-namespace NOIR.Infrastructure.Identity.Handlers;
+namespace NOIR.Application.Features.Auth.Commands.Login;
 
 /// <summary>
 /// Wolverine handler for user login.
@@ -8,8 +8,7 @@ namespace NOIR.Infrastructure.Identity.Handlers;
 /// </summary>
 public class LoginCommandHandler
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IUserIdentityService _userIdentityService;
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IDeviceFingerprintService _deviceFingerprintService;
@@ -18,8 +17,7 @@ public class LoginCommandHandler
     private readonly JwtSettings _jwtSettings;
 
     public LoginCommandHandler(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
+        IUserIdentityService userIdentityService,
         ITokenService tokenService,
         IRefreshTokenService refreshTokenService,
         IDeviceFingerprintService deviceFingerprintService,
@@ -27,8 +25,7 @@ public class LoginCommandHandler
         ILocalizationService localization,
         IOptions<JwtSettings> jwtSettings)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
+        _userIdentityService = userIdentityService;
         _tokenService = tokenService;
         _refreshTokenService = refreshTokenService;
         _deviceFingerprintService = deviceFingerprintService;
@@ -42,8 +39,8 @@ public class LoginCommandHandler
         // Validation is handled by Wolverine FluentValidation middleware
 
         // Normalize email for consistent lookup
-        var normalizedEmail = _userManager.NormalizeEmail(command.Email);
-        var user = await _userManager.FindByEmailAsync(normalizedEmail);
+        var normalizedEmail = _userIdentityService.NormalizeEmail(command.Email);
+        var user = await _userIdentityService.FindByEmailAsync(normalizedEmail, cancellationToken);
 
         if (user is null)
         {
@@ -57,7 +54,8 @@ public class LoginCommandHandler
                 Error.Forbidden(_localization["auth.login.accountDisabled"], ErrorCodes.Auth.AccountDisabled));
         }
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, command.Password, lockoutOnFailure: true);
+        var result = await _userIdentityService.CheckPasswordSignInAsync(
+            user.Id, command.Password, lockoutOnFailure: true, cancellationToken);
 
         if (result.IsLockedOut)
         {
@@ -72,7 +70,7 @@ public class LoginCommandHandler
         }
 
         // Generate access token
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, user.TenantId);
+        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email, user.TenantId);
         var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Create refresh token with device tracking
@@ -97,7 +95,7 @@ public class LoginCommandHandler
 
         var authResponse = new AuthResponse(
             user.Id,
-            user.Email!,
+            user.Email,
             accessToken,
             refreshToken.Token,
             refreshToken.ExpiresAt);
