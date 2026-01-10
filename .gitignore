@@ -7,6 +7,7 @@
 # -----------------------------------------------------------------------------
 !CLAUDE.md
 !.claude/
+.claude/settings.local.json
 
 # -----------------------------------------------------------------------------
 # Build Outputs
@@ -177,7 +178,7 @@ docker-compose.override.yml
 *.cer
 appsettings.*.json
 !appsettings.json
-!appsettings.Development.json
+# appsettings.Development.json - machine-specific, use appsettings.Development.json.example as template
 secrets.json
 .env
 .env.*
