@@ -35,6 +35,9 @@
     "hangfire": "Bảng điều khiển Hangfire",
     "yourProfile": "Hồ sơ của bạn"
   },
+  "settings": {
+    "title": "Cài đặt"
+  },
   "profile": {
     "email": "Email",
     "tenant": "Tổ chức",

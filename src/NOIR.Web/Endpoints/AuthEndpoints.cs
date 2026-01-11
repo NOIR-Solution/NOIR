@@ -185,6 +185,23 @@ public static class AuthEndpoints
         .WithDescription("Sets a new password using the reset token from OTP verification. All existing sessions are revoked for security.")
         .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
+
+        // Change Password (for authenticated users)
+        group.MapPost("/change-password", async (
+            ChangePasswordCommand command,
+            IMessageBus bus) =>
+        {
+            var result = await bus.InvokeAsync<Result>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .RequireRateLimiting("fixed")
+        .WithName("ChangePassword")
+        .WithSummary("Change the current user's password")
+        .WithDescription("Changes password after verifying current password. All sessions are revoked for security.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
     }
 }
 

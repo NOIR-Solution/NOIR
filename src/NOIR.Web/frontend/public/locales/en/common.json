@@ -35,6 +35,9 @@
     "hangfire": "Hangfire Dashboard",
     "yourProfile": "Your Profile"
   },
+  "settings": {
+    "title": "Settings"
+  },
   "profile": {
     "email": "Email",
     "tenant": "Tenant",

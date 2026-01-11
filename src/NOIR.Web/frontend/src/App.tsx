@@ -6,6 +6,7 @@ import { PortalLayout } from '@/layouts/PortalLayout'
 import LoginPage from '@/pages/Login'
 import LandingPage from '@/pages/Landing'
 import Dashboard from '@/pages/portal/Dashboard'
+import SettingsPage from '@/pages/portal/Settings'
 import ForgotPasswordPage from '@/pages/forgot-password/ForgotPassword'
 import VerifyOtpPage from '@/pages/forgot-password/VerifyOtp'
 import ResetPasswordPage from '@/pages/forgot-password/ResetPassword'
@@ -48,6 +49,7 @@ function App() {
             }
           >
             <Route index element={<Dashboard />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           {/* Catch-all redirect to landing */}

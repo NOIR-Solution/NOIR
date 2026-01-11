@@ -93,6 +93,16 @@ public interface IUserIdentityService
         string newPassword,
         CancellationToken ct = default);
 
+    /// <summary>
+    /// Changes user password after verifying current password.
+    /// Updates PasswordLastChangedAt timestamp.
+    /// </summary>
+    Task<IdentityOperationResult> ChangePasswordAsync(
+        string userId,
+        string currentPassword,
+        string newPassword,
+        CancellationToken ct = default);
+
     #endregion
 
     #region Role Management

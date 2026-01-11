@@ -5,7 +5,7 @@ import {
   LayoutDashboard,
   ChevronLeft,
   ChevronRight,
-  User,
+  Settings,
   LogOut,
   Menu,
   ChevronUp,
@@ -49,7 +49,7 @@ interface NavItem {
   path: string
 }
 
-// Simplified navigation - only Dashboard for now
+// Navigation items - Settings is accessed via profile dropdown
 const navItems: NavItem[] = [
   { titleKey: 'dashboard.title', icon: LayoutDashboard, path: '/portal' },
 ]
@@ -137,9 +137,9 @@ function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) 
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <User className="mr-2 h-4 w-4" />
-          <span>{t('nav.profile')}</span>
+        <DropdownMenuItem onClick={() => navigate('/portal/settings')}>
+          <Settings className="mr-2 h-4 w-4" />
+          <span>{t('settings.title')}</span>
         </DropdownMenuItem>
         {/* Language Switcher Sub-menu */}
         <DropdownMenuSub>

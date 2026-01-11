@@ -240,6 +240,34 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         return IdentityOperationResult.Success(user.Id);
     }
 
+    public async Task<IdentityOperationResult> ChangePasswordAsync(
+        string userId,
+        string currentPassword,
+        string newPassword,
+        CancellationToken ct = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            return IdentityOperationResult.Failure("User not found.");
+        }
+
+        // Use ChangePasswordAsync which verifies the current password
+        var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+        if (!result.Succeeded)
+        {
+            return IdentityOperationResult.Failure(
+                result.Errors.Select(e => e.Description).ToArray());
+        }
+
+        // Update the password last changed timestamp
+        user.PasswordLastChangedAt = _dateTime.UtcNow;
+        await _userManager.UpdateAsync(user);
+
+        return IdentityOperationResult.Success(user.Id);
+    }
+
     #endregion
 
     #region Role Management
