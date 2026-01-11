@@ -158,7 +158,7 @@ export function ChangePasswordForm() {
               </button>
             </div>
             {newPassword.length > 0 && newPassword.length < MIN_PASSWORD_LENGTH && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-amber-600 dark:text-amber-500 font-medium">
                 {t('changePassword.minLength', { count: MIN_PASSWORD_LENGTH })}
               </p>
             )}
