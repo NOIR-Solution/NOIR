@@ -63,39 +63,32 @@ public class AuditStatsService : IAuditStatsService, IScopedService
             entityQuery = entityQuery.Where(e => e.TenantId == tenantId);
         }
 
-        // Execute counts in parallel
-        var httpCountTask = httpQuery.CountAsync(ct);
-        var handlerCountTask = handlerQuery.CountAsync(ct);
-        var entityCountTask = entityQuery.CountAsync(ct);
-        var errorCountTask = handlerQuery.CountAsync(h => !h.IsSuccess, ct);
-        var activeUsersTask = httpQuery
+        // Execute counts sequentially to avoid DbContext concurrency issues
+        // (DbContext is not thread-safe and cannot be used from multiple threads simultaneously)
+        var httpCount = await httpQuery.CountAsync(ct);
+        var handlerCount = await handlerQuery.CountAsync(ct);
+        var entityCount = await entityQuery.CountAsync(ct);
+        var errorCount = await handlerQuery.CountAsync(h => !h.IsSuccess, ct);
+        var activeUsers = await httpQuery
             .Where(h => h.UserId != null)
             .Select(h => h.UserId)
             .Distinct()
             .CountAsync(ct);
-        var avgResponseTask = httpQuery
+        var avgResponse = await httpQuery
             .Where(h => h.DurationMs.HasValue)
-            .AverageAsync(h => (double?)h.DurationMs, ct);
-
-        await Task.WhenAll(
-            httpCountTask,
-            handlerCountTask,
-            entityCountTask,
-            errorCountTask,
-            activeUsersTask,
-            avgResponseTask);
+            .AverageAsync(h => (double?)h.DurationMs, ct) ?? 0;
 
         // Get hourly activity for last 24 hours
         var hourlyActivity = await GetHourlyActivityAsync(tenantId, now, ct);
 
         var stats = new AuditStatsUpdate(
             now,
-            await httpCountTask,
-            await handlerCountTask,
-            await entityCountTask,
-            await errorCountTask,
-            await activeUsersTask,
-            await avgResponseTask ?? 0,
+            httpCount,
+            handlerCount,
+            entityCount,
+            errorCount,
+            activeUsers,
+            avgResponse,
             hourlyActivity);
 
         // Cache the result
@@ -150,18 +143,24 @@ public class AuditStatsService : IAuditStatsService, IScopedService
         // Daily activity
         var dailyActivity = await GetDailyActivityAsync(httpQuery, entityQuery, handlerQuery, ct);
 
-        // Entity type breakdown
-        var entityTypeBreakdown = await entityQuery
-            .GroupBy(e => e.EntityType)
+        // Entity type breakdown - fetch grouped data and aggregate client-side
+        // EF Core cannot translate conditional aggregates in GroupBy
+        var entityGroupedData = await entityQuery
+            .GroupBy(e => new { e.EntityType, e.Operation })
+            .Select(g => new { g.Key.EntityType, g.Key.Operation, Count = g.Count() })
+            .ToListAsync(ct);
+
+        var entityTypeBreakdown = entityGroupedData
+            .GroupBy(x => x.EntityType)
             .Select(g => new EntityTypeBreakdown(
                 g.Key,
-                g.Count(e => e.Operation == "Added"),
-                g.Count(e => e.Operation == "Modified"),
-                g.Count(e => e.Operation == "Deleted"),
-                g.Count()))
+                g.Where(x => x.Operation == "Added").Sum(x => x.Count),
+                g.Where(x => x.Operation == "Modified").Sum(x => x.Count),
+                g.Where(x => x.Operation == "Deleted").Sum(x => x.Count),
+                g.Sum(x => x.Count)))
             .OrderByDescending(e => e.Total)
             .Take(10)
-            .ToListAsync(ct);
+            .ToList();
 
         // Top users - get request counts first
         var userRequests = await httpQuery
@@ -200,18 +199,29 @@ public class AuditStatsService : IAuditStatsService, IScopedService
             .Take(10)
             .ToList();
 
-        // Top handlers
-        var topHandlers = await handlerQuery
-            .GroupBy(h => h.HandlerName)
+        // Top handlers - fetch grouped data and aggregate client-side
+        // EF Core cannot translate conditional aggregates in GroupBy
+        var handlerGroupedData = await handlerQuery
+            .GroupBy(h => new { h.HandlerName, h.IsSuccess })
+            .Select(g => new {
+                g.Key.HandlerName,
+                g.Key.IsSuccess,
+                Count = g.Count(),
+                AvgDuration = g.Average(h => (double?)h.DurationMs) ?? 0
+            })
+            .ToListAsync(ct);
+
+        var topHandlers = handlerGroupedData
+            .GroupBy(x => x.HandlerName)
             .Select(g => new HandlerBreakdown(
                 g.Key,
-                g.Count(),
-                g.Count(h => h.IsSuccess),
-                g.Count(h => !h.IsSuccess),
-                g.Average(h => (double)(h.DurationMs ?? 0))))
+                g.Sum(x => x.Count),
+                g.Where(x => x.IsSuccess).Sum(x => x.Count),
+                g.Where(x => !x.IsSuccess).Sum(x => x.Count),
+                g.Sum(x => x.AvgDuration * x.Count) / Math.Max(g.Sum(x => x.Count), 1)))
             .OrderByDescending(h => h.ExecutionCount)
             .Take(10)
-            .ToListAsync(ct);
+            .ToList();
 
         return new AuditDetailedStats(
             fromDate,

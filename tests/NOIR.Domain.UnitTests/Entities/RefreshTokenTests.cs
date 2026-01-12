@@ -352,8 +352,8 @@ public class RefreshTokenTests
         // Arrange & Act
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
-        // Assert - Base64 encoded 64 bytes should be ~88 characters
-        token.Token.Length.Should().BeGreaterThan(80);
+        // Assert - Token should be sufficiently long for security (2 GUIDs = 64 chars)
+        token.Token.Length.Should().BeGreaterThan(60);
     }
 
     [Fact]

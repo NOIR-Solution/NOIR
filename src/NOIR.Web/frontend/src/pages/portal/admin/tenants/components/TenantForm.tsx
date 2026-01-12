@@ -29,10 +29,6 @@ export function TenantForm({ tenant, onSubmit, onCancel, loading }: TenantFormPr
   const [formData, setFormData] = useState({
     identifier: '',
     name: '',
-    logoUrl: '',
-    primaryColor: '',
-    accentColor: '',
-    theme: '',
     isActive: true,
   })
 
@@ -41,10 +37,6 @@ export function TenantForm({ tenant, onSubmit, onCancel, loading }: TenantFormPr
       setFormData({
         identifier: tenant.identifier,
         name: tenant.name || '',
-        logoUrl: tenant.logoUrl || '',
-        primaryColor: tenant.primaryColor || '',
-        accentColor: tenant.accentColor || '',
-        theme: tenant.theme || '',
         isActive: tenant.isActive,
       })
     }
@@ -55,11 +47,8 @@ export function TenantForm({ tenant, onSubmit, onCancel, loading }: TenantFormPr
 
     if (tenant) {
       const updateData: UpdateTenantRequest = {
+        identifier: formData.identifier,
         name: formData.name,
-        logoUrl: formData.logoUrl || null,
-        primaryColor: formData.primaryColor || null,
-        accentColor: formData.accentColor || null,
-        theme: formData.theme || null,
         isActive: formData.isActive,
       }
       // Type assertion needed because TypeScript can't narrow discriminated unions from variables
@@ -68,10 +57,6 @@ export function TenantForm({ tenant, onSubmit, onCancel, loading }: TenantFormPr
       const createData: CreateTenantRequest = {
         identifier: formData.identifier,
         name: formData.name,
-        logoUrl: formData.logoUrl || null,
-        primaryColor: formData.primaryColor || null,
-        accentColor: formData.accentColor || null,
-        theme: formData.theme || null,
       }
       await (onSubmit as (data: CreateTenantRequest) => Promise<void>)(createData)
     }
@@ -85,13 +70,11 @@ export function TenantForm({ tenant, onSubmit, onCancel, loading }: TenantFormPr
           id="identifier"
           value={formData.identifier}
           onChange={(e) => setFormData(prev => ({ ...prev, identifier: e.target.value }))}
-          disabled={isEditing || loading}
+          disabled={loading}
           placeholder={t('tenants.form.identifierPlaceholder')}
           required
         />
-        {!isEditing && (
-          <p className="text-xs text-muted-foreground">{t('tenants.form.identifierHint')}</p>
-        )}
+        <p className="text-xs text-muted-foreground">{t('tenants.form.identifierHint')}</p>
       </div>
 
       <div className="space-y-2">
@@ -103,53 +86,6 @@ export function TenantForm({ tenant, onSubmit, onCancel, loading }: TenantFormPr
           disabled={loading}
           placeholder={t('tenants.form.namePlaceholder')}
           required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="logoUrl">{t('tenants.form.logoUrl')}</Label>
-        <Input
-          id="logoUrl"
-          type="url"
-          value={formData.logoUrl}
-          onChange={(e) => setFormData(prev => ({ ...prev, logoUrl: e.target.value }))}
-          disabled={loading}
-          placeholder="https://example.com/logo.png"
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="primaryColor">{t('tenants.form.primaryColor')}</Label>
-          <Input
-            id="primaryColor"
-            value={formData.primaryColor}
-            onChange={(e) => setFormData(prev => ({ ...prev, primaryColor: e.target.value }))}
-            disabled={loading}
-            placeholder="#3B82F6"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="accentColor">{t('tenants.form.accentColor')}</Label>
-          <Input
-            id="accentColor"
-            value={formData.accentColor}
-            onChange={(e) => setFormData(prev => ({ ...prev, accentColor: e.target.value }))}
-            disabled={loading}
-            placeholder="#10B981"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="theme">{t('tenants.form.theme')}</Label>
-        <Input
-          id="theme"
-          value={formData.theme}
-          onChange={(e) => setFormData(prev => ({ ...prev, theme: e.target.value }))}
-          disabled={loading}
-          placeholder="light"
         />
       </div>
 

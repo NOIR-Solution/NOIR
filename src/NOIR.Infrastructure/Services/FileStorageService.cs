@@ -21,9 +21,20 @@ public class FileStorageService : IFileStorage, IScopedService
         {
             var path = string.IsNullOrEmpty(folder) ? fileName : $"{folder}/{fileName}";
 
-            await _storage.WriteAsync(path, content, false, cancellationToken);
+            // Ensure stream position is at the beginning
+            if (content.CanSeek)
+            {
+                content.Position = 0;
+            }
 
-            _logger.LogInformation("File uploaded: {Path}", path);
+            // Copy to MemoryStream for reliable writing (some storage providers need seekable streams)
+            using var memoryStream = new MemoryStream();
+            await content.CopyToAsync(memoryStream, cancellationToken);
+            memoryStream.Position = 0;
+
+            await _storage.WriteAsync(path, memoryStream, false, cancellationToken);
+
+            _logger.LogInformation("File uploaded: {Path}, Size: {Size} bytes", path, memoryStream.Length);
             return path;
         }
         catch (Exception ex)
@@ -102,9 +113,14 @@ public class FileStorageService : IFileStorage, IScopedService
 
     public string? GetPublicUrl(string path)
     {
-        // FluentStorage doesn't have built-in URL generation
-        // This would need to be implemented based on the storage provider
-        // For local storage, return null; for cloud storage, generate URL based on config
-        return null;
+        // Return API endpoint URL for serving files
+        // The FileEndpoints handles serving files from storage
+        if (string.IsNullOrEmpty(path))
+        {
+            return null;
+        }
+
+        // Return relative URL that will be handled by FileEndpoints
+        return $"/api/files/{path}";
     }
 }

@@ -338,6 +338,49 @@ public static class AuthEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
         .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests);
+
+        // Session Management Endpoints
+        group.MapGet("/me/sessions", async (
+            IMessageBus bus,
+            HttpContext httpContext,
+            IOptions<CookieSettings> cookieSettings) =>
+        {
+            // Get current refresh token to identify current session
+            var refreshTokenCookieName = cookieSettings.Value.RefreshTokenCookieName;
+            var currentToken = httpContext.Request.Cookies.TryGetValue(refreshTokenCookieName, out var cookieToken)
+                ? cookieToken
+                : httpContext.Request.Headers["X-Refresh-Token"].FirstOrDefault();
+
+            var result = await bus.InvokeAsync<Result<IReadOnlyList<ActiveSessionDto>>>(
+                new GetActiveSessionsQuery(currentToken));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .RequireRateLimiting("fixed")
+        .WithName("GetActiveSessions")
+        .WithSummary("Get active sessions for current user")
+        .WithDescription("Returns a list of active sessions/devices for the authenticated user.")
+        .Produces<IReadOnlyList<ActiveSessionDto>>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        group.MapDelete("/me/sessions/{sessionId:guid}", async (
+            Guid sessionId,
+            IMessageBus bus,
+            HttpContext httpContext) =>
+        {
+            var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+            var result = await bus.InvokeAsync<Result>(new RevokeSessionCommand(sessionId, ipAddress));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .RequireRateLimiting("fixed")
+        .WithName("RevokeSession")
+        .WithSummary("Revoke a specific session")
+        .WithDescription("Revokes a specific session by its ID. Users can only revoke their own sessions.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 }
 

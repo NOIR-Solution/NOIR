@@ -29,7 +29,7 @@ public static class AuditEndpoints
             var result = await bus.InvokeAsync<Result<AuditTrailDto>>(new GetAuditTrailQuery(correlationId));
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditRead))
+        .RequireAuthorization(Permissions.AuditRead)
         .WithName("GetAuditTrail")
         .WithSummary("Get complete audit trail for a correlation ID")
         .Produces<AuditTrailDto>(StatusCodes.Status200OK)
@@ -53,7 +53,7 @@ public static class AuditEndpoints
             var result = await bus.InvokeAsync<Result<EntityHistoryDto>>(query);
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditEntityHistory))
+        .RequireAuthorization(Permissions.AuditEntityHistory)
         .WithName("GetEntityHistory")
         .WithSummary("Get change history for a specific entity")
         .Produces<EntityHistoryDto>(StatusCodes.Status200OK)
@@ -83,7 +83,7 @@ public static class AuditEndpoints
             var result = await bus.InvokeAsync<Result<PaginatedList<HttpRequestAuditDto>>>(query);
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditRead))
+        .RequireAuthorization(Permissions.AuditRead)
         .WithName("GetHttpRequestAuditLogs")
         .WithSummary("Get paginated HTTP request audit logs with filtering")
         .Produces<PaginatedList<HttpRequestAuditDto>>(StatusCodes.Status200OK)
@@ -112,7 +112,7 @@ public static class AuditEndpoints
             var result = await bus.InvokeAsync<Result<PaginatedList<HandlerAuditDto>>>(query);
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditRead))
+        .RequireAuthorization(Permissions.AuditRead)
         .WithName("GetHandlerAuditLogs")
         .WithSummary("Get paginated handler audit logs with filtering")
         .Produces<PaginatedList<HandlerAuditDto>>(StatusCodes.Status200OK)
@@ -140,7 +140,7 @@ public static class AuditEndpoints
             var result = await bus.InvokeAsync<Result<AuditSearchResult>>(searchQuery);
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditRead))
+        .RequireAuthorization(Permissions.AuditRead)
         .WithName("SearchAuditLogs")
         .WithSummary("Full-text search across all audit logs")
         .Produces<AuditSearchResult>(StatusCodes.Status200OK)
@@ -154,7 +154,7 @@ public static class AuditEndpoints
             var result = await bus.InvokeAsync<Result<AuditStatsUpdate>>(new GetAuditStatsQuery());
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditRead))
+        .RequireAuthorization(Permissions.AuditRead)
         .WithName("GetAuditStats")
         .WithSummary("Get current audit statistics for dashboard")
         .Produces<AuditStatsUpdate>(StatusCodes.Status200OK)
@@ -171,7 +171,7 @@ public static class AuditEndpoints
                 new GetDetailedAuditStatsQuery(fromDate, toDate));
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditRead))
+        .RequireAuthorization(Permissions.AuditRead)
         .WithName("GetDetailedAuditStats")
         .WithSummary("Get detailed audit statistics for a date range")
         .Produces<AuditDetailedStats>(StatusCodes.Status200OK)
@@ -190,7 +190,7 @@ public static class AuditEndpoints
                 new GetRetentionPoliciesQuery());
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditPolicyRead))
+        .RequireAuthorization(Permissions.AuditPolicyRead)
         .WithName("GetRetentionPolicies")
         .WithSummary("List all audit retention policies")
         .Produces<List<AuditRetentionPolicyDto>>(StatusCodes.Status200OK)
@@ -204,7 +204,7 @@ public static class AuditEndpoints
                 new GetRetentionPolicyByIdQuery(id));
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditPolicyRead))
+        .RequireAuthorization(Permissions.AuditPolicyRead)
         .WithName("GetRetentionPolicyById")
         .WithSummary("Get a specific audit retention policy")
         .Produces<AuditRetentionPolicyDto>(StatusCodes.Status200OK)
@@ -230,7 +230,7 @@ public static class AuditEndpoints
             };
             return Results.Ok(presets);
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditPolicyRead))
+        .RequireAuthorization(Permissions.AuditPolicyRead)
         .WithName("GetCompliancePresets")
         .WithSummary("Get available compliance presets for retention policies")
         .Produces<List<CompliancePresetDto>>(StatusCodes.Status200OK)
@@ -245,7 +245,7 @@ public static class AuditEndpoints
                 ? Results.Created($"/api/audit/policies/{result.Value.Id}", result.Value)
                 : result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditPolicyWrite))
+        .RequireAuthorization(Permissions.AuditPolicyWrite)
         .WithName("CreateRetentionPolicy")
         .WithSummary("Create a new audit retention policy")
         .Produces<AuditRetentionPolicyDto>(StatusCodes.Status201Created)
@@ -265,7 +265,7 @@ public static class AuditEndpoints
             var result = await bus.InvokeAsync<Result<AuditRetentionPolicyDto>>(command);
             return result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditPolicyWrite))
+        .RequireAuthorization(Permissions.AuditPolicyWrite)
         .WithName("UpdateRetentionPolicy")
         .WithSummary("Update an existing audit retention policy")
         .Produces<AuditRetentionPolicyDto>(StatusCodes.Status200OK)
@@ -282,7 +282,7 @@ public static class AuditEndpoints
                 ? Results.NoContent()
                 : result.ToHttpResult();
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditPolicyDelete))
+        .RequireAuthorization(Permissions.AuditPolicyDelete)
         .WithName("DeleteRetentionPolicy")
         .WithSummary("Delete an audit retention policy")
         .Produces(StatusCodes.Status204NoContent)
@@ -328,7 +328,7 @@ public static class AuditEndpoints
                 result.Value.ContentType,
                 result.Value.FileName);
         })
-        .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditExport))
+        .RequireAuthorization(Permissions.AuditExport)
         .RequireRateLimiting("export") // Stricter rate limit for expensive exports
         .WithName("ExportAuditLogs")
         .WithSummary("Export audit logs to CSV or JSON for compliance reporting")

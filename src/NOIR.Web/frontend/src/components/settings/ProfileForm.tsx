@@ -105,6 +105,8 @@ export function ProfileForm() {
     try {
       await uploadAvatar(file)
       await checkAuth()
+      // Notify other components (like Sidebar) about avatar change
+      window.dispatchEvent(new Event('avatar-updated'))
       toast.success(t('profile.avatar.uploadSuccess'))
     } catch (err) {
       if (err instanceof ApiError) {
@@ -122,6 +124,8 @@ export function ProfileForm() {
     try {
       await deleteAvatar()
       await checkAuth()
+      // Notify other components (like Sidebar) about avatar change
+      window.dispatchEvent(new Event('avatar-updated'))
       toast.success(t('profile.avatar.deleteSuccess'))
     } catch (err) {
       if (err instanceof ApiError) {

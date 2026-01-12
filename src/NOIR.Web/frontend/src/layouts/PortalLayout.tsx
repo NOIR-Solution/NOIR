@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Sidebar, MobileSidebarTrigger } from '@/components/portal/Sidebar'
 import { NotificationDropdown } from '@/components/notifications'
+import { PageLoader } from '@/components/ui/page-loader'
 
 export function PortalLayout() {
   // Use lazy initialization to read from localStorage on mount (avoids extra render)
@@ -48,7 +49,9 @@ export function PortalLayout() {
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto p-4 lg:p-6">
-          <Outlet />
+          <Suspense fallback={<PageLoader text="Loading..." />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

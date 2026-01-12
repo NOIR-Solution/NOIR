@@ -26,30 +26,6 @@ public record Tenant : TenantInfo, IAuditableEntity
     {
     }
 
-    #region Branding Properties
-
-    /// <summary>
-    /// URL to the tenant's logo image.
-    /// </summary>
-    public string? LogoUrl { get; init; }
-
-    /// <summary>
-    /// Primary brand color (hex format, e.g., "#3B82F6").
-    /// </summary>
-    public string? PrimaryColor { get; init; }
-
-    /// <summary>
-    /// Accent/secondary brand color (hex format).
-    /// </summary>
-    public string? AccentColor { get; init; }
-
-    /// <summary>
-    /// UI theme preference: "Light", "Dark", or "System".
-    /// </summary>
-    public string? Theme { get; init; }
-
-    #endregion
-
     #region Status
 
     /// <summary>
@@ -88,18 +64,10 @@ public record Tenant : TenantInfo, IAuditableEntity
     /// </summary>
     /// <param name="identifier">Unique identifier/slug (will be lowercased).</param>
     /// <param name="name">Display name.</param>
-    /// <param name="logoUrl">Optional logo URL.</param>
-    /// <param name="primaryColor">Optional primary brand color.</param>
-    /// <param name="accentColor">Optional accent brand color.</param>
-    /// <param name="theme">Optional UI theme preference.</param>
     /// <param name="isActive">Whether the tenant is active (default: true).</param>
     public static Tenant Create(
         string identifier,
         string name,
-        string? logoUrl = null,
-        string? primaryColor = null,
-        string? accentColor = null,
-        string? theme = null,
         bool isActive = true)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identifier, nameof(identifier));
@@ -108,10 +76,6 @@ public record Tenant : TenantInfo, IAuditableEntity
         var id = Guid.NewGuid().ToString();
         return new Tenant(id, identifier.ToLowerInvariant().Trim(), name.Trim())
         {
-            LogoUrl = logoUrl?.Trim(),
-            PrimaryColor = primaryColor?.Trim(),
-            AccentColor = accentColor?.Trim(),
-            Theme = theme?.Trim(),
             IsActive = isActive
         };
     }
@@ -123,26 +87,20 @@ public record Tenant : TenantInfo, IAuditableEntity
 
     /// <summary>
     /// Creates an updated copy of this tenant with modified properties.
-    /// Note: Identifier cannot be changed after creation.
     /// </summary>
     /// <returns>A new Tenant record with the updated values.</returns>
     public Tenant WithUpdatedDetails(
+        string identifier,
         string name,
-        string? logoUrl,
-        string? primaryColor,
-        string? accentColor,
-        string? theme,
         bool isActive)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(identifier, nameof(identifier));
         ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
 
         return this with
         {
+            Identifier = identifier.ToLowerInvariant().Trim(),
             Name = name.Trim(),
-            LogoUrl = logoUrl?.Trim(),
-            PrimaryColor = primaryColor?.Trim(),
-            AccentColor = accentColor?.Trim(),
-            Theme = theme?.Trim(),
             IsActive = isActive,
             ModifiedAt = DateTimeOffset.UtcNow
         };

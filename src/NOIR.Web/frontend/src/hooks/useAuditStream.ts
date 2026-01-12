@@ -20,11 +20,76 @@ import type {
   UnifiedAuditEvent,
   AuditStatsUpdate,
   AuditConnectionInfo,
+  HttpRequestAuditEvent,
+  HandlerAuditEvent,
+  EntityAuditEvent,
 } from '@/types'
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting' | 'error'
 
 const MAX_RECENT_EVENTS = 100
+
+// Convert backend event types to unified frontend format
+function httpRequestToUnified(evt: HttpRequestAuditEvent): UnifiedAuditEvent {
+  return {
+    eventType: 'HttpRequest',
+    entityType: 'HttpRequest',
+    entityId: evt.id,
+    operation: evt.httpMethod,
+    userId: evt.userId,
+    userName: evt.userEmail,
+    tenantId: evt.tenantId,
+    timestamp: evt.timestamp,
+    correlationId: evt.correlationId,
+    details: {
+      url: evt.url,
+      statusCode: evt.statusCode,
+      ipAddress: evt.ipAddress,
+      durationMs: evt.durationMs,
+      handlerCount: evt.handlerCount,
+      entityChangeCount: evt.entityChangeCount,
+    },
+  }
+}
+
+function handlerToUnified(evt: HandlerAuditEvent): UnifiedAuditEvent {
+  return {
+    eventType: 'Handler',
+    entityType: evt.targetDtoType || 'Handler',
+    entityId: evt.targetDtoId,
+    operation: evt.operationType,
+    userId: null,
+    userName: null,
+    tenantId: null,
+    timestamp: evt.timestamp,
+    correlationId: evt.correlationId,
+    details: {
+      handlerName: evt.handlerName,
+      isSuccess: evt.isSuccess,
+      errorMessage: evt.errorMessage,
+      durationMs: evt.durationMs,
+      entityChangeCount: evt.entityChangeCount,
+    },
+  }
+}
+
+function entityToUnified(evt: EntityAuditEvent): UnifiedAuditEvent {
+  return {
+    eventType: 'EntityChange',
+    entityType: evt.entityType,
+    entityId: evt.entityId,
+    operation: evt.operation,
+    userId: null,
+    userName: null,
+    tenantId: null,
+    timestamp: evt.timestamp,
+    correlationId: evt.correlationId,
+    details: {
+      version: evt.version,
+      changeSummary: evt.changeSummary,
+    },
+  }
+}
 
 interface UseAuditStreamOptions {
   /** Auto-connect on mount (default: true) */
@@ -83,10 +148,29 @@ export function useAuditStream(options: UseAuditStreamOptions = {}): UseAuditStr
 
   const connectionRef = useRef<signalR.HubConnection | null>(null)
   const isConnectingRef = useRef(false)
+  const isMountedRef = useRef(true)
 
-  // Add event to recent events (prepend, limit to max)
+  // Reset mounted ref on mount
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  // Add event to recent events (prepend, limit to max, deduplicate)
   const addEvent = useCallback((event: UnifiedAuditEvent) => {
+    if (!isMountedRef.current) return
     setRecentEvents(prev => {
+      // Deduplicate by entityId (unique event ID)
+      // This prevents duplicates when subscribed to multiple groups
+      const isDuplicate = prev.some(e =>
+        e.entityId === event.entityId &&
+        e.eventType === event.eventType &&
+        e.timestamp === event.timestamp
+      )
+      if (isDuplicate) return prev
+
       const newEvents = [event, ...prev]
       if (newEvents.length > maxRecentEvents) {
         return newEvents.slice(0, maxRecentEvents)
@@ -119,36 +203,48 @@ export function useAuditStream(options: UseAuditStreamOptions = {}): UseAuditStr
       .configureLogging(signalR.LogLevel.Warning)
       .build()
 
-    // Set up event handlers
-    connection.on('ReceiveAuditEvent', (event: UnifiedAuditEvent) => {
-      addEvent(event)
+    // Set up event handlers with mounted checks
+    // Listen for all three audit event types from backend
+    connection.on('ReceiveHttpRequestAudit', (event: HttpRequestAuditEvent) => {
+      addEvent(httpRequestToUnified(event))
+    })
+
+    connection.on('ReceiveHandlerAudit', (event: HandlerAuditEvent) => {
+      addEvent(handlerToUnified(event))
+    })
+
+    connection.on('ReceiveEntityAudit', (event: EntityAuditEvent) => {
+      addEvent(entityToUnified(event))
     })
 
     connection.on('ReceiveStatsUpdate', (update: AuditStatsUpdate) => {
-      setStats(update)
+      if (isMountedRef.current) setStats(update)
     })
 
     connection.on('ReceiveConnectionConfirmed', (info: AuditConnectionInfo) => {
+      if (!isMountedRef.current) return
       setConnectionInfo(info)
       setStats(info.initialStats)
     })
 
     connection.on('ReceiveError', (errorMessage: string) => {
       console.error('Audit hub error:', errorMessage)
-      setError(errorMessage)
+      if (isMountedRef.current) setError(errorMessage)
     })
 
-    // Connection state handlers
+    // Connection state handlers with mounted checks
     connection.onreconnecting(() => {
-      setConnectionState('reconnecting')
+      if (isMountedRef.current) setConnectionState('reconnecting')
     })
 
     connection.onreconnected(() => {
+      if (!isMountedRef.current) return
       setConnectionState('connected')
       setError(null)
     })
 
     connection.onclose((err) => {
+      if (!isMountedRef.current) return
       setConnectionState('disconnected')
       if (err) {
         setError(err.message)
@@ -160,6 +256,7 @@ export function useAuditStream(options: UseAuditStreamOptions = {}): UseAuditStr
 
   // Connect to the hub
   const connect = useCallback(async () => {
+    if (!isMountedRef.current) return
     if (isConnectingRef.current || connectionRef.current?.state === signalR.HubConnectionState.Connected) {
       return
     }
@@ -173,6 +270,13 @@ export function useAuditStream(options: UseAuditStreamOptions = {}): UseAuditStr
       connectionRef.current = connection
 
       await connection.start()
+
+      // Check if still mounted after async operation
+      if (!isMountedRef.current) {
+        await connection.stop()
+        return
+      }
+
       setConnectionState('connected')
 
       // Auto-subscribe to dashboard if enabled
@@ -180,6 +284,12 @@ export function useAuditStream(options: UseAuditStreamOptions = {}): UseAuditStr
         await connection.invoke('SubscribeToDashboard')
       }
     } catch (err) {
+      if (!isMountedRef.current) return
+      // Ignore AbortError - this happens in React strict mode when the component
+      // unmounts during the connection negotiation phase
+      if (err instanceof Error && err.name === 'AbortError') {
+        return
+      }
       setConnectionState('error')
       setError(err instanceof Error ? err.message : 'Failed to connect')
       console.error('Failed to connect to audit hub:', err)
@@ -190,14 +300,17 @@ export function useAuditStream(options: UseAuditStreamOptions = {}): UseAuditStr
 
   // Disconnect from the hub
   const disconnect = useCallback(async () => {
-    if (connectionRef.current) {
+    const connection = connectionRef.current
+    connectionRef.current = null
+    if (connection) {
       try {
-        await connectionRef.current.stop()
+        await connection.stop()
       } catch (err) {
         console.error('Error disconnecting:', err)
       }
-      connectionRef.current = null
-      setConnectionState('disconnected')
+      if (isMountedRef.current) {
+        setConnectionState('disconnected')
+      }
     }
   }, [])
 
@@ -244,16 +357,24 @@ export function useAuditStream(options: UseAuditStreamOptions = {}): UseAuditStr
     }
   }, [])
 
-  // Auto-connect on mount
+  // Auto-connect on mount with delay to handle React strict mode double-mount
   useEffect(() => {
-    if (autoConnect) {
-      connect()
-    }
+    if (!autoConnect) return
+
+    // Small delay to skip React strict mode's first mount/unmount cycle
+    // In strict mode: mount -> unmount -> mount (we want to connect on the final mount)
+    const timeoutId = setTimeout(() => {
+      if (isMountedRef.current) {
+        connect()
+      }
+    }, 100)
 
     return () => {
+      clearTimeout(timeoutId)
       disconnect()
     }
-  }, [autoConnect, connect, disconnect])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoConnect]) // Only depend on autoConnect, not callbacks which change on every render
 
   return {
     connectionState,

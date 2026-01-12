@@ -1,4 +1,8 @@
 export { LoginPage } from './login.page'
+export { DashboardPage } from './dashboard.page'
+export { SettingsPage } from './settings.page'
+export { EmailTemplatesPage } from './email-templates.page'
+export { TenantsPage } from './tenants.page'
 export { NotificationDropdownPage } from './notification-dropdown.page'
 export { NotificationListPage } from './notification-list.page'
 export { NotificationPreferencesPage } from './notification-preferences.page'

@@ -41,7 +41,7 @@
     "form": {
       "identifier": "Mã định danh",
       "identifierPlaceholder": "cong-ty-toi",
-      "identifierHint": "Mã định danh duy nhất cho tổ chức (không thể thay đổi sau này)",
+      "identifierHint": "Mã định danh duy nhất cho tổ chức (chữ thường, số và dấu gạch ngang)",
       "name": "Tên hiển thị",
       "namePlaceholder": "Công ty của tôi",
       "logoUrl": "URL Logo",
@@ -56,6 +56,10 @@
       "brandingDescription": "Tùy chỉnh và cài đặt giao diện",
       "timestamps": "Thời gian"
     }
+  },
+  "audit": {
+    "title": "Nhật ký Kiểm toán",
+    "description": "Giám sát và theo dõi sự kiện kiểm toán theo thời gian thực"
   },
   "auth": {
     "signIn": "Đăng nhập",

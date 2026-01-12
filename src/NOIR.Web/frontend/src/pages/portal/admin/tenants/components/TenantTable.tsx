@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
-import { Edit, Trash2, Eye } from 'lucide-react'
+import { Edit, Trash2 } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -15,11 +14,12 @@ import type { TenantListItem } from '@/types'
 
 interface TenantTableProps {
   tenants: TenantListItem[]
+  onEdit: (tenant: TenantListItem) => void
   onDelete: (tenant: TenantListItem) => void
   loading?: boolean
 }
 
-export function TenantTable({ tenants, onDelete, loading }: TenantTableProps) {
+export function TenantTable({ tenants, onEdit, onDelete, loading }: TenantTableProps) {
   const { t } = useTranslation('common')
 
   if (loading) {
@@ -62,15 +62,12 @@ export function TenantTable({ tenants, onDelete, loading }: TenantTableProps) {
             </TableCell>
             <TableCell className="text-right">
               <div className="flex items-center justify-end space-x-2">
-                <Button variant="ghost" size="icon" asChild>
-                  <Link to={`/portal/admin/tenants/${tenant.id}`}>
-                    <Eye className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" size="icon" asChild>
-                  <Link to={`/portal/admin/tenants/${tenant.id}/edit`}>
-                    <Edit className="h-4 w-4" />
-                  </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEdit(tenant)}
+                >
+                  <Edit className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"

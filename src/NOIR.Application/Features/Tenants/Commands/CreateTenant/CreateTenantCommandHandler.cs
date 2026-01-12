@@ -35,10 +35,6 @@ public class CreateTenantCommandHandler
         var tenant = Tenant.Create(
             command.Identifier,
             command.Name,
-            command.LogoUrl,
-            command.PrimaryColor,
-            command.AccentColor,
-            command.Theme,
             command.IsActive);
 
         var success = await _tenantStore.AddAsync(tenant);
@@ -57,10 +53,6 @@ public class CreateTenantCommandHandler
         tenant.Id,
         tenant.Identifier,
         tenant.Name,
-        tenant.LogoUrl,
-        tenant.PrimaryColor,
-        tenant.AccentColor,
-        tenant.Theme,
         tenant.IsActive,
         tenant.CreatedAt,
         tenant.ModifiedAt);

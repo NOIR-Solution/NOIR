@@ -11,10 +11,6 @@ export interface Tenant {
   id: string
   identifier: string
   name: string | null
-  logoUrl: string | null
-  primaryColor: string | null
-  accentColor: string | null
-  theme: string | null
   isActive: boolean
   createdAt: string
   modifiedAt: string | null
@@ -39,10 +35,6 @@ export interface TenantListItem {
 export interface CreateTenantRequest {
   identifier: string
   name: string
-  logoUrl?: string | null
-  primaryColor?: string | null
-  accentColor?: string | null
-  theme?: string | null
 }
 
 /**
@@ -50,10 +42,7 @@ export interface CreateTenantRequest {
  * Matches backend UpdateTenantCommand
  */
 export interface UpdateTenantRequest {
+  identifier: string
   name: string
-  logoUrl?: string | null
-  primaryColor?: string | null
-  accentColor?: string | null
-  theme?: string | null
   isActive: boolean
 }

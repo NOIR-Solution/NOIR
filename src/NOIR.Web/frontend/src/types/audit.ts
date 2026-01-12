@@ -19,90 +19,99 @@ export interface UnifiedAuditEvent {
   details: Record<string, unknown>
 }
 
-// Audit statistics
+// Audit statistics (matches backend AuditStatsUpdate record)
 export interface AuditStatsUpdate {
-  totalEvents: number
-  eventsLast24Hours: number
-  eventsLastHour: number
-  httpRequestCount: number
-  handlerCount: number
-  entityChangeCount: number
-  topEntities: EntityCount[]
-  topOperations: OperationCount[]
-  lastUpdated: string
+  timestamp: string
+  todayHttpRequests: number
+  todayHandlerExecutions: number
+  todayEntityChanges: number
+  todayErrors: number
+  activeUsers: number
+  avgResponseTimeMs: number
+  hourlyActivity: HourlyActivityPoint[]
 }
 
-export interface EntityCount {
-  entityType: string
-  count: number
-}
-
-export interface OperationCount {
-  operation: string
-  count: number
-}
-
-// Detailed stats for charts
-export interface AuditDetailedStats {
-  hourlyBreakdown: HourlyStats[]
-  entityTypeBreakdown: EntityTypeStats[]
-  operationBreakdown: OperationStats[]
-  topUsers: UserActivityStats[]
-  periodStart: string
-  periodEnd: string
-}
-
-export interface HourlyStats {
-  hour: string
+// Single data point for hourly activity chart
+export interface HourlyActivityPoint {
+  hour: number
   httpRequests: number
-  handlers: number
   entityChanges: number
-  total: number
+  errors: number
 }
 
-export interface EntityTypeStats {
+// Detailed stats for charts (matches backend AuditDetailedStats record)
+export interface AuditDetailedStats {
+  fromDate: string
+  toDate: string
+  tenantId: string | null
+  totalHttpRequests: number
+  totalHandlerExecutions: number
+  totalEntityChanges: number
+  totalErrors: number
+  avgResponseTimeMs: number
+  dailyActivity: DailyActivitySummary[]
+  entityTypeBreakdown: EntityTypeBreakdown[]
+  topUsers: UserActivitySummary[]
+  topHandlers: HandlerBreakdown[]
+}
+
+export interface DailyActivitySummary {
+  date: string
+  httpRequests: number
+  entityChanges: number
+  errors: number
+  avgResponseTimeMs: number
+}
+
+export interface EntityTypeBreakdown {
   entityType: string
-  createCount: number
-  updateCount: number
-  deleteCount: number
-  readCount: number
+  created: number
+  updated: number
+  deleted: number
   total: number
 }
 
-export interface OperationStats {
-  operation: string
-  count: number
-  percentage: number
+export interface UserActivitySummary {
+  userId: string | null
+  userEmail: string | null
+  requestCount: number
+  changeCount: number
 }
 
-export interface UserActivityStats {
-  userId: string
-  userName: string | null
-  actionCount: number
-  lastActivity: string
+export interface HandlerBreakdown {
+  handlerName: string
+  executionCount: number
+  successCount: number
+  errorCount: number
+  avgDurationMs: number
 }
 
 // Search
 export type AuditSearchScope = 'All' | 'HttpRequests' | 'Handlers' | 'EntityChanges'
 
+// Matches backend AuditSearchHitType enum
+export type AuditSearchHitType = 'HttpRequest' | 'Handler' | 'Entity'
+
+// Matches backend AuditSearchResult record
 export interface AuditSearchResult {
-  items: AuditSearchItem[]
+  searchTerm: string
   totalCount: number
   pageNumber: number
   pageSize: number
-  totalPages: number
+  hits: AuditSearchHit[]
 }
 
-export interface AuditSearchItem {
+// Matches backend AuditSearchHit record
+export interface AuditSearchHit {
   id: string
-  eventType: AuditEventType
-  entityType: string
-  entityId: string | null
-  operation: string
-  userId: string | null
-  userName: string | null
+  type: AuditSearchHitType
+  correlationId: string
+  title: string
+  snippet: string | null
   timestamp: string
-  highlights: string[]
+  userId: string | null
+  userEmail: string | null
+  rank: number
 }
 
 // Retention Policies
@@ -170,6 +179,48 @@ export interface UpdateRetentionPolicyRequest {
 export interface AuditConnectionInfo {
   connectionId: string
   tenantId: string | null
-  groups: string[]
+  subscribedGroups: string[]
   initialStats: AuditStatsUpdate
+}
+
+// Backend SignalR event types (match C# records exactly)
+export interface HttpRequestAuditEvent {
+  id: string
+  correlationId: string
+  httpMethod: string
+  url: string
+  statusCode: number | null
+  userId: string | null
+  userEmail: string | null
+  tenantId: string | null
+  ipAddress: string | null
+  timestamp: string
+  durationMs: number | null
+  handlerCount: number
+  entityChangeCount: number
+}
+
+export interface HandlerAuditEvent {
+  id: string
+  correlationId: string
+  handlerName: string
+  operationType: string
+  targetDtoType: string | null
+  targetDtoId: string | null
+  isSuccess: boolean
+  errorMessage: string | null
+  timestamp: string
+  durationMs: number | null
+  entityChangeCount: number
+}
+
+export interface EntityAuditEvent {
+  id: string
+  correlationId: string
+  entityType: string
+  entityId: string
+  operation: string
+  timestamp: string
+  version: number
+  changeSummary: string | null
 }

@@ -8,10 +8,6 @@ public sealed record TenantDto(
     string? Id,
     string? Identifier,
     string? Name,
-    string? LogoUrl,
-    string? PrimaryColor,
-    string? AccentColor,
-    string? Theme,
     bool IsActive,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt);

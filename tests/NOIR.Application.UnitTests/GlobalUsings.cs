@@ -88,6 +88,7 @@ global using NOIR.Domain.Specifications;
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Enums;
 global using NOIR.Domain.Interfaces;
 
 // NOIR Infrastructure
@@ -128,3 +129,13 @@ global using NOIR.Application.Features.Permissions.Commands.AssignToRole;
 global using NOIR.Application.Features.Permissions.Commands.RemoveFromRole;
 global using NOIR.Application.Features.Permissions.Queries.GetRolePermissions;
 global using NOIR.Application.Features.Permissions.Queries.GetUserPermissions;
+
+// NOIR Application - Notifications
+global using NOIR.Application.Features.Notifications.Commands.DeleteNotification;
+global using NOIR.Application.Features.Notifications.Commands.MarkAsRead;
+global using NOIR.Application.Features.Notifications.Commands.MarkAllAsRead;
+global using NOIR.Application.Features.Notifications.Commands.UpdatePreferences;
+global using NOIR.Application.Features.Notifications.DTOs;
+global using NOIR.Application.Features.Notifications.Queries.GetNotifications;
+global using NOIR.Application.Features.Notifications.Queries.GetPreferences;
+global using NOIR.Application.Features.Notifications.Queries.GetUnreadCount;

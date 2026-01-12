@@ -236,10 +236,14 @@ public class PermissionsTests
     public void Groups_Audit_ShouldContainAllAuditPermissions()
     {
         // Assert
-        Permissions.Groups.Audit.Should().HaveCount(3);
+        Permissions.Groups.Audit.Should().HaveCount(7);
         Permissions.Groups.Audit.Should().Contain(Permissions.AuditRead);
         Permissions.Groups.Audit.Should().Contain(Permissions.AuditExport);
         Permissions.Groups.Audit.Should().Contain(Permissions.AuditEntityHistory);
+        Permissions.Groups.Audit.Should().Contain(Permissions.AuditPolicyRead);
+        Permissions.Groups.Audit.Should().Contain(Permissions.AuditPolicyWrite);
+        Permissions.Groups.Audit.Should().Contain(Permissions.AuditPolicyDelete);
+        Permissions.Groups.Audit.Should().Contain(Permissions.AuditStream);
     }
 
     #endregion
@@ -254,7 +258,8 @@ public class PermissionsTests
             + Permissions.Groups.Roles.Count
             + Permissions.Groups.Tenants.Count
             + Permissions.Groups.System.Count
-            + Permissions.Groups.Audit.Count;
+            + Permissions.Groups.Audit.Count
+            + Permissions.Groups.EmailTemplates.Count;
 
         // Assert
         Permissions.All.Should().HaveCount(expectedCount);

@@ -32,13 +32,24 @@ public class UpdateTenantCommandHandler
                     ErrorCodes.Auth.TenantNotFound));
         }
 
+        // Check if identifier is being changed and if new identifier already exists
+        var normalizedIdentifier = command.Identifier.ToLowerInvariant().Trim();
+        if (!string.Equals(tenant.Identifier, normalizedIdentifier, StringComparison.OrdinalIgnoreCase))
+        {
+            var existing = await _tenantStore.GetByIdentifierAsync(normalizedIdentifier);
+            if (existing is not null)
+            {
+                return Result.Failure<TenantDto>(
+                    Error.Conflict(
+                        string.Format(_localization["tenants.identifierExists"], command.Identifier),
+                        ErrorCodes.Business.AlreadyExists));
+            }
+        }
+
         // Create updated tenant using record 'with' expression
         var updatedTenant = tenant.WithUpdatedDetails(
+            command.Identifier,
             command.Name,
-            command.LogoUrl,
-            command.PrimaryColor,
-            command.AccentColor,
-            command.Theme,
             command.IsActive);
 
         var success = await _tenantStore.UpdateAsync(updatedTenant);
@@ -57,10 +68,6 @@ public class UpdateTenantCommandHandler
         tenant.Id,
         tenant.Identifier,
         tenant.Name,
-        tenant.LogoUrl,
-        tenant.PrimaryColor,
-        tenant.AccentColor,
-        tenant.Theme,
         tenant.IsActive,
         tenant.CreatedAt,
         tenant.ModifiedAt);

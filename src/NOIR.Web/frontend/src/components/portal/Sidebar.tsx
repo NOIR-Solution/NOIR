@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -13,6 +14,7 @@ import {
   Check,
   Mail,
   Building2,
+  Activity,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -60,6 +62,7 @@ const navItems: NavItem[] = [
 // Admin navigation items (only visible to Admin role)
 const adminNavItems: NavItem[] = [
   { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants' },
+  { titleKey: 'audit.title', icon: Activity, path: '/portal/admin/audit' },
 ]
 
 /**
@@ -77,6 +80,7 @@ interface UserData {
   fullName?: string
   email?: string
   roles?: string[]
+  avatarUrl?: string | null
 }
 
 /**
@@ -92,14 +96,24 @@ function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) 
   const displayName = user?.fullName || 'User'
   const displayEmail = user?.email || 'user@example.com'
   const initials = displayName.charAt(0).toUpperCase()
+  const avatarUrl = user?.avatarUrl
   const { currentLanguage, languages, changeLanguage } = useLanguage()
-  const { logout } = useAuthContext()
+  const { logout, checkAuth } = useAuthContext()
   const navigate = useNavigate()
 
   const handleLogout = async () => {
     await logout()
     navigate('/login')
   }
+
+  // Listen for avatar update events
+  useEffect(() => {
+    const handleAvatarUpdate = () => {
+      checkAuth()
+    }
+    window.addEventListener('avatar-updated', handleAvatarUpdate)
+    return () => window.removeEventListener('avatar-updated', handleAvatarUpdate)
+  }, [checkAuth])
 
   return (
     <DropdownMenu>
@@ -116,10 +130,19 @@ function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) 
             !isExpanded && 'justify-center'
           )}>
             <div className={cn(
-              'h-10 w-10 rounded-full bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center text-sidebar-primary-foreground font-semibold text-sm flex-shrink-0 transition-all',
+              'h-10 w-10 rounded-full flex-shrink-0 transition-all overflow-hidden',
+              !avatarUrl && 'bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center text-sidebar-primary-foreground font-semibold text-sm',
               isExpanded ? 'ring-2 ring-transparent group-hover:ring-4 group-hover:ring-sidebar-primary/20' : 'group-hover:ring-[6px] group-hover:ring-sidebar-primary/15'
             )}>
-              {initials}
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={displayName}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                initials
+              )}
             </div>
             {isExpanded && (
               <>

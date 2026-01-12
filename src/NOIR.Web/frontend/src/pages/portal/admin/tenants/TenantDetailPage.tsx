@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
@@ -31,6 +31,7 @@ import type { Tenant, UpdateTenantRequest } from '@/types'
 export default function TenantDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { t } = useTranslation('common')
 
   const [tenant, setTenant] = useState<Tenant | null>(null)
@@ -49,6 +50,13 @@ export default function TenantDetailPage() {
       try {
         const data = await getTenant(id)
         setTenant(data)
+
+        // Auto-open edit dialog if ?edit=true
+        if (searchParams.get('edit') === 'true') {
+          setEditDialogOpen(true)
+          // Remove the query param from URL
+          setSearchParams({}, { replace: true })
+        }
       } catch (err) {
         const message = err instanceof ApiError
           ? err.message
@@ -60,7 +68,7 @@ export default function TenantDetailPage() {
     }
 
     fetchTenant()
-  }, [id])
+  }, [id, searchParams, setSearchParams])
 
   const handleUpdate = async (data: UpdateTenantRequest) => {
     if (!id) return
@@ -172,55 +180,6 @@ export default function TenantDetailPage() {
               <Badge variant={tenant.isActive ? 'default' : 'secondary'}>
                 {tenant.isActive ? t('labels.active') : t('labels.inactive')}
               </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('tenants.details.branding')}</CardTitle>
-            <CardDescription>{t('tenants.details.brandingDescription')}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">{t('tenants.form.logoUrl')}</p>
-              {tenant.logoUrl ? (
-                <a href={tenant.logoUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  {tenant.logoUrl}
-                </a>
-              ) : (
-                <p className="text-muted-foreground">-</p>
-              )}
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">{t('tenants.form.primaryColor')}</p>
-                <div className="flex items-center space-x-2">
-                  {tenant.primaryColor && (
-                    <div
-                      className="h-6 w-6 rounded border"
-                      style={{ backgroundColor: tenant.primaryColor }}
-                    />
-                  )}
-                  <p>{tenant.primaryColor || '-'}</p>
-                </div>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">{t('tenants.form.accentColor')}</p>
-                <div className="flex items-center space-x-2">
-                  {tenant.accentColor && (
-                    <div
-                      className="h-6 w-6 rounded border"
-                      style={{ backgroundColor: tenant.accentColor }}
-                    />
-                  )}
-                  <p>{tenant.accentColor || '-'}</p>
-                </div>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">{t('tenants.form.theme')}</p>
-              <p>{tenant.theme || '-'}</p>
             </div>
           </CardContent>
         </Card>

@@ -4,6 +4,7 @@ import { Shield, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ChangePasswordForm } from '@/components/settings/ChangePasswordForm'
 import { ProfileForm } from '@/components/settings/ProfileForm'
+import { SessionManagement } from '@/components/settings/SessionManagement'
 
 type SettingsSection = 'profile' | 'security'
 
@@ -41,7 +42,7 @@ export default function SettingsPage() {
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
                   className={cn(
-                    'w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all',
+                    'w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all cursor-pointer',
                     isActive
                       ? 'bg-blue-600/10 text-blue-600 font-medium shadow-sm'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
@@ -58,7 +59,12 @@ export default function SettingsPage() {
         {/* Content Area */}
         <main className="flex-1 min-w-0">
           {activeSection === 'profile' && <ProfileForm />}
-          {activeSection === 'security' && <ChangePasswordForm />}
+          {activeSection === 'security' && (
+            <div className="space-y-6">
+              <ChangePasswordForm />
+              <SessionManagement />
+            </div>
+          )}
         </main>
       </div>
     </div>

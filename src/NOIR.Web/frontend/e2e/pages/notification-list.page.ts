@@ -37,7 +37,8 @@ export class NotificationListPage {
   }
 
   async goto() {
-    await this.page.goto('/portal/notifications', { waitUntil: 'networkidle' })
+    await this.page.goto('/portal/notifications', { waitUntil: 'load', timeout: 30000 })
+    await this.page.waitForURL(/\/portal\/notifications/, { timeout: 10000 })
     await expect(this.pageTitle).toBeVisible({ timeout: 15000 })
   }
 

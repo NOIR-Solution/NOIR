@@ -329,16 +329,17 @@ app.MapScalarApiReference("/api/docs", options =>
 // Multi-tenant middleware (must be before auth)
 app.UseMultiTenant();
 
-// HTTP Request Audit Middleware (captures request/response for audit logging)
-// Must be after multi-tenant and before authentication to have tenant context
-app.UseMiddleware<HttpRequestAuditMiddleware>();
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+// HTTP Request Audit Middleware (captures request/response for audit logging)
+// Must be AFTER authentication to capture user identity, and after multi-tenant for tenant context
+app.UseMiddleware<HttpRequestAuditMiddleware>();
 
 // Map API Endpoints
 app.MapAuthEndpoints();
 app.MapAuditEndpoints();
+app.MapFileEndpoints();
 app.MapRoleEndpoints();
 app.MapTenantEndpoints();
 app.MapUserEndpoints();
@@ -347,7 +348,7 @@ app.MapNotificationEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<AuditHub>("/hubs/audit")
-    .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditStream));
+    .RequireAuthorization(Permissions.AuditStream);
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");
 
 // Hangfire Dashboard (requires Admin role in production, skip in Testing)

@@ -118,11 +118,11 @@ export default function NotificationPreferences() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="container max-w-4xl py-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-8">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
               <Link to="/portal/notifications">
                 <ArrowLeft className="size-4" />
@@ -130,7 +130,7 @@ export default function NotificationPreferences() {
             </Button>
             <h1 className="text-2xl font-bold text-foreground">Notification Preferences</h1>
           </div>
-          <p className="text-muted-foreground pl-10">
+          <p className="text-muted-foreground ml-11">
             Choose how you want to receive notifications for each category.
           </p>
         </div>
@@ -147,8 +147,8 @@ export default function NotificationPreferences() {
           const Icon = config.icon
 
           return (
-            <Card key={pref.category} className="overflow-hidden">
-              <CardHeader className="pb-3">
+            <Card key={pref.category}>
+              <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
                     <Icon className="size-5 text-primary" />
@@ -159,12 +159,12 @@ export default function NotificationPreferences() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-5 pt-0">
                 {/* In-app notifications toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-3">
                     <Bell className="size-4 text-muted-foreground" />
-                    <Label htmlFor={`inapp-${pref.category}`} className="cursor-pointer">
+                    <Label htmlFor={`inapp-${pref.category}`} className="cursor-pointer font-normal">
                       In-app notifications
                     </Label>
                   </div>
@@ -189,18 +189,18 @@ export default function NotificationPreferences() {
                 </div>
 
                 {/* Email frequency */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
                     <Mail className="size-4 text-muted-foreground" />
-                    <Label>Email notifications</Label>
+                    <Label className="font-normal">Email notifications</Label>
                   </div>
-                  <div className="flex flex-wrap gap-2 pl-6">
+                  <div className="flex flex-wrap gap-2 ml-7">
                     {emailFrequencyOptions.map((option) => (
                       <button
                         key={option.value}
                         onClick={() => handleEmailFrequencyChange(pref.category, option.value)}
                         className={cn(
-                          'px-3 py-1.5 text-sm rounded-md border transition-colors',
+                          'px-3 py-1.5 text-sm rounded-md border transition-colors cursor-pointer',
                           pref.emailFrequency === option.value
                             ? 'bg-primary text-primary-foreground border-primary'
                             : 'bg-background hover:bg-muted border-input'
@@ -218,7 +218,7 @@ export default function NotificationPreferences() {
       </div>
 
       {/* Info */}
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-muted-foreground mt-6">
         Note: Security notifications are always sent immediately by email for your protection.
       </p>
     </div>

@@ -38,10 +38,6 @@ public class GetTenantByIdQueryHandler
         tenant.Id,
         tenant.Identifier,
         tenant.Name,
-        tenant.LogoUrl,
-        tenant.PrimaryColor,
-        tenant.AccentColor,
-        tenant.Theme,
         tenant.IsActive,
         tenant.CreatedAt,
         tenant.ModifiedAt);

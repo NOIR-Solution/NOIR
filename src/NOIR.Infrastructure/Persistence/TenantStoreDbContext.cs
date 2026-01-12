@@ -40,18 +40,6 @@ public class TenantStoreDbContext : EFCoreStoreDbContext<Tenant>
             entity.Property(t => t.Name)
                 .HasMaxLength(200);
 
-            entity.Property(t => t.LogoUrl)
-                .HasMaxLength(500);
-
-            entity.Property(t => t.PrimaryColor)
-                .HasMaxLength(50);
-
-            entity.Property(t => t.AccentColor)
-                .HasMaxLength(50);
-
-            entity.Property(t => t.Theme)
-                .HasMaxLength(50);
-
             // Audit fields
             entity.Property(t => t.CreatedBy).HasMaxLength(100);
             entity.Property(t => t.ModifiedBy).HasMaxLength(100);

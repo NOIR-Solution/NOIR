@@ -14,7 +14,7 @@
  * - getCurrentUser() - Returns null on auth failure, throws on network/server errors
  * - logout() - Never throws (best effort server notification)
  */
-import type { LoginRequest, AuthResponse, CurrentUser } from '@/types'
+import type { LoginRequest, AuthResponse, CurrentUser, ActiveSession } from '@/types'
 import { storeTokens, clearTokens, getAccessToken } from './tokenStorage'
 import { apiClient, apiClientPublic, ApiError } from './apiClient'
 
@@ -88,4 +88,22 @@ export async function logout(): Promise<void> {
   } finally {
     clearTokens()
   }
+}
+
+/**
+ * Get active sessions for the current user
+ * @returns List of active sessions
+ * @throws ApiError on network/server errors
+ */
+export async function getActiveSessions(): Promise<ActiveSession[]> {
+  return await apiClient<ActiveSession[]>('/auth/me/sessions')
+}
+
+/**
+ * Revoke a specific session by ID
+ * @param sessionId The session ID to revoke
+ * @throws ApiError on failure
+ */
+export async function revokeSession(sessionId: string): Promise<void> {
+  await apiClient(`/auth/me/sessions/${sessionId}`, { method: 'DELETE' })
 }

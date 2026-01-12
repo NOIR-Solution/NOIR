@@ -13,13 +13,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { OtpInput } from '@/components/forgot-password/OtpInput'
 import { CountdownTimer } from '@/components/forgot-password/CountdownTimer'
 import {
@@ -176,51 +176,64 @@ export function EmailChangeDialog({
   }
 
   return (
-    <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetTrigger asChild>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
         {trigger || (
           <Button type="button" variant="outline" size="sm">
             {t('profile.email.change')}
           </Button>
         )}
-      </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>{t('profile.email.changeTitle')}</SheetTitle>
-          <SheetDescription>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <div className="flex items-center gap-3 mb-1">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30">
+              <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <DialogTitle className="text-lg">{t('profile.email.changeTitle')}</DialogTitle>
+          </div>
+          <DialogDescription className="pl-[52px]">
             {step === 'email' && t('profile.email.changeDescription')}
             {step === 'otp' && t('profile.email.otpDescription', { email: maskedEmail })}
             {step === 'success' && t('profile.email.successDescription')}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="mt-6">
+        <div className="mt-4">
           {/* Step 1: Enter new email */}
           {step === 'email' && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="currentEmail">{t('profile.email.current')}</Label>
-                <Input
-                  id="currentEmail"
-                  type="email"
-                  value={currentEmail}
-                  disabled
-                  className="bg-muted"
-                />
+                <Label htmlFor="currentEmail" className="text-sm font-medium">
+                  {t('profile.email.current')}
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="currentEmail"
+                    type="email"
+                    value={currentEmail}
+                    disabled
+                    className="pl-10 bg-muted/50 text-muted-foreground"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="newEmail">{t('profile.email.new')}</Label>
+                <Label htmlFor="newEmail" className="text-sm font-medium">
+                  {t('profile.email.new')}
+                </Label>
                 <div className="relative group">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-blue-600 transition-colors" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                   <Input
                     id="newEmail"
                     type="email"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
                     placeholder={t('profile.email.newPlaceholder')}
-                    className="pl-10 focus:border-blue-600 focus:ring-blue-600/20"
+                    className="pl-10"
                     disabled={isLoading}
+                    autoFocus
                   />
                 </div>
               </div>
@@ -235,7 +248,7 @@ export function EmailChangeDialog({
                 type="button"
                 onClick={handleRequestEmailChange}
                 disabled={isLoading || !newEmail}
-                className="w-full bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white"
+                className="w-full"
               >
                 {isLoading ? (
                   <>
@@ -251,23 +264,26 @@ export function EmailChangeDialog({
 
           {/* Step 2: Enter OTP */}
           {step === 'otp' && (
-            <div className="space-y-6">
+            <div className="space-y-5">
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 onClick={handleBack}
-                className="mb-4 -ml-2"
+                className="-ml-2 -mt-2"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 {t('common.back')}
               </Button>
 
-              <div className="text-center mb-6">
-                <p className="text-sm text-muted-foreground mb-2">
+              <div className="text-center space-y-2">
+                <div className="w-14 h-14 mx-auto rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
+                  <Mail className="h-7 w-7 text-blue-600 dark:text-blue-400" />
+                </div>
+                <p className="text-sm text-muted-foreground">
                   {t('profile.email.enterCode')}
                 </p>
-                <p className="text-sm font-medium">{maskedEmail}</p>
+                <p className="text-sm font-medium text-foreground">{maskedEmail}</p>
               </div>
 
               <OtpInput
@@ -318,7 +334,7 @@ export function EmailChangeDialog({
 
           {/* Step 3: Success */}
           {step === 'success' && (
-            <div className="text-center py-8">
+            <div className="text-center py-6">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
                 <CheckCircle2 className="h-8 w-8 text-green-600" />
               </div>
@@ -331,7 +347,7 @@ export function EmailChangeDialog({
             </div>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }

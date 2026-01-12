@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { TenantTable } from './components/TenantTable'
 import { CreateTenantDialog } from './components/CreateTenantDialog'
+import { EditTenantDialog } from './components/EditTenantDialog'
 import { DeleteTenantDialog } from './components/DeleteTenantDialog'
 import { useTenants } from '@/hooks/useTenants'
 import type { TenantListItem } from '@/types'
@@ -15,11 +16,16 @@ export default function TenantsPage() {
   const { data, loading, error, refresh, setPage, setSearch, handleDelete, params } = useTenants()
 
   const [searchInput, setSearchInput] = useState('')
+  const [tenantToEdit, setTenantToEdit] = useState<TenantListItem | null>(null)
   const [tenantToDelete, setTenantToDelete] = useState<TenantListItem | null>(null)
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setSearch(searchInput)
+  }
+
+  const handleEditClick = (tenant: TenantListItem) => {
+    setTenantToEdit(tenant)
   }
 
   const handleDeleteClick = (tenant: TenantListItem) => {
@@ -70,6 +76,7 @@ export default function TenantsPage() {
 
           <TenantTable
             tenants={data?.items || []}
+            onEdit={handleEditClick}
             onDelete={handleDeleteClick}
             loading={loading}
           />
@@ -102,6 +109,13 @@ export default function TenantsPage() {
           )}
         </CardContent>
       </Card>
+
+      <EditTenantDialog
+        tenant={tenantToEdit}
+        open={!!tenantToEdit}
+        onOpenChange={(open) => !open && setTenantToEdit(null)}
+        onSuccess={refresh}
+      />
 
       <DeleteTenantDialog
         tenant={tenantToDelete}

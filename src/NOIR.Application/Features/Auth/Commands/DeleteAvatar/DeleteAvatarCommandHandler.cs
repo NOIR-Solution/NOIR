@@ -4,7 +4,7 @@ namespace NOIR.Application.Features.Auth.Commands.DeleteAvatar;
 /// Handler for deleting user avatar.
 /// Deletes file from storage and clears user's AvatarUrl.
 /// </summary>
-public class DeleteAvatarCommandHandler
+public class DeleteAvatarCommandHandler : IScopedService
 {
     private readonly IUserIdentityService _userIdentityService;
     private readonly IFileStorage _fileStorage;
@@ -47,8 +47,13 @@ public class DeleteAvatarCommandHandler
                 _localization["profile.avatar.noAvatar"]));
         }
 
+        // Convert public URL back to storage path (strip /api/files/ prefix)
+        var storagePath = user.AvatarUrl.StartsWith("/api/files/", StringComparison.OrdinalIgnoreCase)
+            ? user.AvatarUrl["/api/files/".Length..]
+            : user.AvatarUrl;
+
         // Delete from storage
-        await _fileStorage.DeleteAsync(user.AvatarUrl, cancellationToken);
+        await _fileStorage.DeleteAsync(storagePath, cancellationToken);
 
         // Clear user's AvatarUrl (set to empty string to indicate clearing)
         var updateResult = await _userIdentityService.UpdateUserAsync(

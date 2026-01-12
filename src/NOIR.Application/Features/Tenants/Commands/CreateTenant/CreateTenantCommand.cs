@@ -6,10 +6,6 @@ namespace NOIR.Application.Features.Tenants.Commands.CreateTenant;
 public sealed record CreateTenantCommand(
     string Identifier,
     string Name,
-    string? LogoUrl = null,
-    string? PrimaryColor = null,
-    string? AccentColor = null,
-    string? Theme = null,
     bool IsActive = true) : IAuditableCommand
 {
     public AuditOperationType OperationType => AuditOperationType.Create;

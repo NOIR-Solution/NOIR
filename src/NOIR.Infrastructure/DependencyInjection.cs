@@ -162,6 +162,10 @@ public static class DependencyInjection
             .WithSingletonLifetime()
         );
 
+        // Explicitly register Application layer handlers that are used with [FromServices] injection
+        services.AddScoped<NOIR.Application.Features.Auth.Commands.UploadAvatar.UploadAvatarCommandHandler>();
+        services.AddScoped<NOIR.Application.Features.Auth.Commands.DeleteAvatar.DeleteAvatarCommandHandler>();
+
         // Configure job notification settings
         services.Configure<JobNotificationSettings>(
             configuration.GetSection(JobNotificationSettings.SectionName));

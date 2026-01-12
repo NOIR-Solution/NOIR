@@ -42,3 +42,17 @@ export interface CurrentUser {
   isActive: boolean
   createdAt: string // DateTimeOffset serializes as ISO 8601 string
 }
+
+/**
+ * Active session/device information
+ * Matches backend ActiveSessionDto from GetActiveSessions query
+ */
+export interface ActiveSession {
+  id: string
+  deviceName: string | null
+  userAgent: string | null
+  ipAddress: string | null
+  createdAt: string
+  expiresAt: string
+  isCurrent: boolean
+}

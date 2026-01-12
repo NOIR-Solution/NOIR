@@ -1,23 +1,36 @@
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { PortalLayout } from '@/layouts/PortalLayout'
+import { PageLoader } from '@/components/ui/page-loader'
+
 import LoginPage from '@/pages/Login'
 import LandingPage from '@/pages/Landing'
-import Dashboard from '@/pages/portal/Dashboard'
-import SettingsPage from '@/pages/portal/Settings'
+import './index.css'
+
+// Loading fallback for lazy-loaded routes
+const LazyFallback = () => <PageLoader />
+
+// Lazy load portal pages for better loading experience
+const Dashboard = lazy(() => import('@/pages/portal/Dashboard'))
+const SettingsPage = lazy(() => import('@/pages/portal/Settings'))
+const Notifications = lazy(() => import('@/pages/portal/Notifications'))
+const NotificationPreferences = lazy(() => import('@/pages/portal/NotificationPreferences'))
+const TenantsPage = lazy(() => import('@/pages/portal/admin/tenants/TenantsPage'))
+const TenantDetailPage = lazy(() => import('@/pages/portal/admin/tenants/TenantDetailPage'))
+const AuditDashboard = lazy(() => import('@/components/audit/AuditDashboard'))
+
+// Email templates - keep named exports as eager load (smaller components)
 import { EmailTemplatesPage, EmailTemplateEditPage } from '@/pages/portal/email-templates'
-import TenantsPage from '@/pages/portal/admin/tenants/TenantsPage'
-import TenantDetailPage from '@/pages/portal/admin/tenants/TenantDetailPage'
-import Notifications from '@/pages/portal/Notifications'
-import NotificationPreferences from '@/pages/portal/NotificationPreferences'
+
+// Forgot password flow - keep as eager load (auth flow should be fast)
 import ForgotPasswordPage from '@/pages/forgot-password/ForgotPassword'
 import VerifyOtpPage from '@/pages/forgot-password/VerifyOtp'
 import ResetPasswordPage from '@/pages/forgot-password/ResetPassword'
 import SuccessPage from '@/pages/forgot-password/Success'
-import './index.css'
 
 function App() {
   return (
@@ -55,15 +68,16 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Dashboard />} />
-            <Route path="settings" element={<SettingsPage />} />
+            <Route index element={<Suspense fallback={<LazyFallback />}><Dashboard /></Suspense>} />
+            <Route path="settings" element={<Suspense fallback={<LazyFallback />}><SettingsPage /></Suspense>} />
             <Route path="email-templates" element={<EmailTemplatesPage />} />
             <Route path="email-templates/:id" element={<EmailTemplateEditPage />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="settings/notifications" element={<NotificationPreferences />} />
+            <Route path="notifications" element={<Suspense fallback={<LazyFallback />}><Notifications /></Suspense>} />
+            <Route path="settings/notifications" element={<Suspense fallback={<LazyFallback />}><NotificationPreferences /></Suspense>} />
             {/* Admin Routes */}
-            <Route path="admin/tenants" element={<TenantsPage />} />
-            <Route path="admin/tenants/:id" element={<TenantDetailPage />} />
+            <Route path="admin/tenants" element={<Suspense fallback={<LazyFallback />}><TenantsPage /></Suspense>} />
+            <Route path="admin/tenants/:id" element={<Suspense fallback={<LazyFallback />}><TenantDetailPage /></Suspense>} />
+            <Route path="admin/audit" element={<Suspense fallback={<LazyFallback />}><AuditDashboard /></Suspense>} />
           </Route>
 
           {/* Catch-all redirect to landing */}

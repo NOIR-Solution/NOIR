@@ -41,7 +41,7 @@
     "form": {
       "identifier": "Identifier",
       "identifierPlaceholder": "my-company",
-      "identifierHint": "Unique identifier for the tenant (cannot be changed later)",
+      "identifierHint": "Unique identifier for the tenant (lowercase letters, numbers, and hyphens)",
       "name": "Display Name",
       "namePlaceholder": "My Company",
       "logoUrl": "Logo URL",
@@ -56,6 +56,10 @@
       "brandingDescription": "Customization and visual settings",
       "timestamps": "Timestamps"
     }
+  },
+  "audit": {
+    "title": "Audit Logs",
+    "description": "Real-time audit event monitoring and tracking"
   },
   "auth": {
     "signIn": "Sign In",

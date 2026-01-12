@@ -4,7 +4,7 @@ namespace NOIR.Application.Features.Auth.Commands.UploadAvatar;
 /// Handler for uploading user avatar.
 /// Uploads file to storage and updates user's AvatarUrl.
 /// </summary>
-public class UploadAvatarCommandHandler
+public class UploadAvatarCommandHandler : IScopedService
 {
     private readonly IUserIdentityService _userIdentityService;
     private readonly IFileStorage _fileStorage;
@@ -55,7 +55,11 @@ public class UploadAvatarCommandHandler
         // Delete old avatar if exists
         if (!string.IsNullOrEmpty(user.AvatarUrl))
         {
-            await _fileStorage.DeleteAsync(user.AvatarUrl, cancellationToken);
+            // Convert public URL back to storage path (strip /api/files/ prefix)
+            var oldStoragePath = user.AvatarUrl.StartsWith("/api/files/", StringComparison.OrdinalIgnoreCase)
+                ? user.AvatarUrl["/api/files/".Length..]
+                : user.AvatarUrl;
+            await _fileStorage.DeleteAsync(oldStoragePath, cancellationToken);
         }
 
         // Generate unique filename: avatars/{userId}/{guid}{extension}
@@ -69,10 +73,13 @@ public class UploadAvatarCommandHandler
             folder,
             cancellationToken);
 
-        // Update user's AvatarUrl
+        // Get public URL for storage
+        var publicUrl = _fileStorage.GetPublicUrl(storagePath) ?? storagePath;
+
+        // Update user's AvatarUrl with public URL
         var updateResult = await _userIdentityService.UpdateUserAsync(
             command.UserId,
-            new UpdateUserDto(AvatarUrl: storagePath),
+            new UpdateUserDto(AvatarUrl: publicUrl),
             cancellationToken);
 
         if (!updateResult.Succeeded)
@@ -85,9 +92,6 @@ public class UploadAvatarCommandHandler
                     string.Join(", ", updateResult.Errors),
                     ErrorCodes.Auth.UpdateFailed));
         }
-
-        // Get public URL if available
-        var publicUrl = _fileStorage.GetPublicUrl(storagePath) ?? storagePath;
 
         return Result.Success(new AvatarUploadResultDto(
             publicUrl,

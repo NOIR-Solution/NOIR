@@ -59,10 +59,10 @@ public static class TenantEndpoints
         // Update tenant
         group.MapPut("/{tenantId:guid}", async (
             Guid tenantId,
-            UpdateTenantCommand command,
+            UpdateTenantRequest request,
             IMessageBus bus) =>
         {
-            var cmd = command with { TenantId = tenantId };
+            var cmd = UpdateTenantCommand.FromRequest(tenantId, request);
             var result = await bus.InvokeAsync<Result<TenantDto>>(cmd);
             return result.ToHttpResult();
         })

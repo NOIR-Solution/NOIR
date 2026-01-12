@@ -300,6 +300,8 @@ public class LayerDependencyTests
             .DoNotHaveNameEndingWith("Handler")
             .And()
             .DoNotHaveNameEndingWith("Validator")
+            .And()
+            .DoNotHaveNameEndingWith("Dto") // Exclude DTOs co-located with commands
             .GetTypes();
 
         // Assert

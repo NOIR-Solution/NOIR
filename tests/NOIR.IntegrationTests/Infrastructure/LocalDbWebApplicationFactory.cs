@@ -130,7 +130,11 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
             // Add TenantStoreDbContext for Finbuckle EFCoreStore
             services.AddDbContext<TenantStoreDbContext>(options =>
             {
-                options.UseSqlServer(_connectionString);
+                options.UseSqlServer(_connectionString, sqlOptions =>
+                {
+                    // Configure migration assembly - TenantStoreDb migrations are in Infrastructure
+                    sqlOptions.MigrationsAssembly(typeof(TenantStoreDbContext).Assembly.FullName);
+                });
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
             });
@@ -146,7 +150,11 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
                     sp.GetRequiredService<NOIR.Infrastructure.Persistence.Interceptors.DomainEventInterceptor>(),
                     sp.GetRequiredService<NOIR.Infrastructure.Persistence.Interceptors.EntityAuditLogInterceptor>());
 
-                options.UseSqlServer(_connectionString);
+                options.UseSqlServer(_connectionString, sqlOptions =>
+                {
+                    // Configure migration assembly
+                    sqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                });
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
             });
@@ -175,7 +183,8 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
             TablesToIgnore = new Respawn.Graph.Table[]
             {
                 "__EFMigrationsHistory",
-                "AspNetRoles" // Keep roles as they're seeded
+                "AspNetRoles", // Keep roles as they're seeded
+                "Tenants" // Keep tenants as they're seeded and required for multi-tenant resolution
             }
         });
     }
