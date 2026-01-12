@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Backend" type="LaunchSettings" factoryName=".NET Launch Settings">
+    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/src/NOIR.Web/NOIR.Web.csproj" />
+    <option name="LAUNCH_PROFILE_NAME" value="http" />
+    <option name="LAUNCH_PROFILE_IS_HTTPS_URL" value="false" />
+    <option name="USE_EXTERNAL_CONSOLE" value="0" />
+    <option name="USE_MONO" value="0" />
+    <method v="2" />
+  </configuration>
+</component>
