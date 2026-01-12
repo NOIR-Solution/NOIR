@@ -53,6 +53,18 @@ public class UpdateUserProfileCommandHandler
             hasChanges = true;
         }
 
+        if (command.DisplayName is not null && command.DisplayName != user.DisplayName)
+        {
+            updates = updates with { DisplayName = command.DisplayName };
+            hasChanges = true;
+        }
+
+        if (command.PhoneNumber is not null && command.PhoneNumber != user.PhoneNumber)
+        {
+            updates = updates with { PhoneNumber = command.PhoneNumber };
+            hasChanges = true;
+        }
+
         if (hasChanges)
         {
             var result = await _userIdentityService.UpdateUserAsync(_currentUser.UserId, updates, cancellationToken);
@@ -80,7 +92,10 @@ public class UpdateUserProfileCommandHandler
             user.Email,
             user.FirstName,
             user.LastName,
+            user.DisplayName,
             string.IsNullOrEmpty(fullName) ? user.Email : fullName,
+            user.PhoneNumber,
+            user.AvatarUrl,
             roles,
             user.TenantId,
             user.IsActive,

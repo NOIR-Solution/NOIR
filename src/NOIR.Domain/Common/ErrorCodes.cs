@@ -59,6 +59,33 @@ public static class ErrorCodes
 
         /// <summary>Permission not found</summary>
         public const string PermissionNotFound = "NOIR-AUTH-1406";
+
+        /// <summary>Update operation failed</summary>
+        public const string UpdateFailed = "NOIR-AUTH-1010";
+
+        /// <summary>Duplicate email address</summary>
+        public const string DuplicateEmail = "NOIR-AUTH-1011";
+
+        /// <summary>Too many requests (rate limited)</summary>
+        public const string TooManyRequests = "NOIR-AUTH-1429";
+
+        /// <summary>Invalid session token</summary>
+        public const string InvalidSession = "NOIR-AUTH-1012";
+
+        /// <summary>OTP has expired</summary>
+        public const string OtpExpired = "NOIR-AUTH-1013";
+
+        /// <summary>Invalid OTP code</summary>
+        public const string InvalidOtp = "NOIR-AUTH-1014";
+
+        /// <summary>OTP has already been used</summary>
+        public const string OtpAlreadyUsed = "NOIR-AUTH-1015";
+
+        /// <summary>Cooldown is active</summary>
+        public const string CooldownActive = "NOIR-AUTH-1016";
+
+        /// <summary>Maximum resends reached</summary>
+        public const string MaxResendsReached = "NOIR-AUTH-1017";
     }
 
     /// <summary>
@@ -95,6 +122,9 @@ public static class ErrorCodes
 
         /// <summary>Resource not found (404)</summary>
         public const string NotFound = "NOIR-VAL-2404";
+
+        /// <summary>Invalid input value</summary>
+        public const string InvalidInput = "NOIR-VAL-2009";
     }
 
     /// <summary>

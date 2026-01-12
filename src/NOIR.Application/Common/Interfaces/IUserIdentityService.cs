@@ -103,6 +103,15 @@ public interface IUserIdentityService
         string newPassword,
         CancellationToken ct = default);
 
+    /// <summary>
+    /// Updates a user's email address.
+    /// Used after OTP verification in email change flow.
+    /// </summary>
+    Task<IdentityOperationResult> UpdateEmailAsync(
+        string userId,
+        string newEmail,
+        CancellationToken ct = default);
+
     #endregion
 
     #region Role Management
@@ -158,6 +167,8 @@ public record UserIdentityDto(
     string? LastName,
     string? DisplayName,
     string FullName,
+    string? PhoneNumber,
+    string? AvatarUrl,
     string? TenantId,
     bool IsActive,
     bool IsDeleted,
@@ -181,6 +192,8 @@ public record UpdateUserDto(
     string? FirstName = null,
     string? LastName = null,
     string? DisplayName = null,
+    string? PhoneNumber = null,
+    string? AvatarUrl = null,
     bool? IsActive = null);
 
 /// <summary>

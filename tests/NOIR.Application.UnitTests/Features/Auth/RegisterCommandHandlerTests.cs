@@ -57,6 +57,8 @@ public class RegisterCommandHandlerTests
             LastName: "Doe",
             DisplayName: null,
             FullName: "John Doe",
+            PhoneNumber: null,
+            AvatarUrl: null,
             TenantId: null,
             IsActive: true,
             IsDeleted: false,

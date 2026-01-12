@@ -7,6 +7,8 @@ namespace NOIR.Application.Features.Auth.Commands.UpdateUserProfile;
 public sealed class UpdateUserProfileCommandValidator : AbstractValidator<UpdateUserProfileCommand>
 {
     private const int MaxNameLength = 50;
+    private const int MaxDisplayNameLength = 100;
+    private const int MaxPhoneLength = 20;
 
     public UpdateUserProfileCommandValidator(ILocalizationService localization)
     {
@@ -19,5 +21,15 @@ public sealed class UpdateUserProfileCommandValidator : AbstractValidator<Update
             .MaximumLength(MaxNameLength)
             .When(x => x.LastName is not null)
             .WithMessage(localization.Get("validation.lastName.maxLength", MaxNameLength));
+
+        RuleFor(x => x.DisplayName)
+            .MaximumLength(MaxDisplayNameLength)
+            .When(x => x.DisplayName is not null)
+            .WithMessage(localization.Get("validation.displayName.maxLength", MaxDisplayNameLength));
+
+        RuleFor(x => x.PhoneNumber)
+            .MaximumLength(MaxPhoneLength)
+            .When(x => x.PhoneNumber is not null)
+            .WithMessage(localization.Get("validation.phoneNumber.maxLength", MaxPhoneLength));
     }
 }

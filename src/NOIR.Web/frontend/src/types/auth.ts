@@ -33,7 +33,10 @@ export interface CurrentUser {
   email: string
   firstName: string | null
   lastName: string | null
+  displayName: string | null
   fullName: string
+  phoneNumber: string | null
+  avatarUrl: string | null
   roles: string[]
   tenantId: string | null
   isActive: boolean

@@ -67,6 +67,8 @@ public class RefreshTokenCommandHandlerTests
             LastName: "User",
             DisplayName: null,
             FullName: "Test User",
+            PhoneNumber: null,
+            AvatarUrl: null,
             TenantId: tenantId,
             IsActive: isActive,
             IsDeleted: false,

@@ -41,6 +41,8 @@ public class GetCurrentUserQueryHandlerTests
             lastName,
             null,
             $"{firstName ?? ""} {lastName ?? ""}".Trim(),
+            null,
+            null,
             tenantId,
             isActive,
             false,

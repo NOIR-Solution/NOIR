@@ -46,6 +46,8 @@ public class UserIdentityService : IUserIdentityService, IScopedService
                 u.LastName,
                 u.DisplayName,
                 (u.FirstName ?? "") + " " + (u.LastName ?? ""),
+                u.PhoneNumber,
+                u.AvatarUrl,
                 u.TenantId,
                 u.IsActive,
                 u.IsDeleted,
@@ -87,6 +89,8 @@ public class UserIdentityService : IUserIdentityService, IScopedService
                 u.LastName,
                 u.DisplayName,
                 (u.FirstName ?? "") + " " + (u.LastName ?? ""),
+                u.PhoneNumber,
+                u.AvatarUrl,
                 u.TenantId,
                 u.IsActive,
                 u.IsDeleted,
@@ -173,6 +177,10 @@ public class UserIdentityService : IUserIdentityService, IScopedService
             user.LastName = updates.LastName;
         if (updates.DisplayName is not null)
             user.DisplayName = updates.DisplayName;
+        if (updates.PhoneNumber is not null)
+            user.PhoneNumber = updates.PhoneNumber;
+        if (updates.AvatarUrl is not null)
+            user.AvatarUrl = updates.AvatarUrl;
         if (updates.IsActive.HasValue)
             user.IsActive = updates.IsActive.Value;
 
@@ -264,6 +272,41 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         // Update the password last changed timestamp
         user.PasswordLastChangedAt = _dateTime.UtcNow;
         await _userManager.UpdateAsync(user);
+
+        return IdentityOperationResult.Success(user.Id);
+    }
+
+    public async Task<IdentityOperationResult> UpdateEmailAsync(
+        string userId,
+        string newEmail,
+        CancellationToken ct = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            return IdentityOperationResult.Failure("User not found.");
+        }
+
+        // Check if email is already taken
+        var existingUser = await _userManager.FindByEmailAsync(newEmail);
+        if (existingUser is not null && existingUser.Id != userId)
+        {
+            return IdentityOperationResult.Failure("Email is already in use.");
+        }
+
+        // Update email and username (which is typically email-based)
+        var oldEmail = user.Email;
+        user.Email = newEmail;
+        user.NormalizedEmail = _userManager.NormalizeEmail(newEmail);
+        user.UserName = newEmail;
+        user.NormalizedUserName = _userManager.NormalizeName(newEmail);
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            return IdentityOperationResult.Failure(
+                result.Errors.Select(e => e.Description).ToArray());
+        }
 
         return IdentityOperationResult.Success(user.Id);
     }
@@ -409,6 +452,8 @@ public class UserIdentityService : IUserIdentityService, IScopedService
             user.LastName,
             user.DisplayName,
             user.FullName,
+            user.PhoneNumber,
+            user.AvatarUrl,
             user.TenantId,
             user.IsActive,
             user.IsDeleted,

@@ -137,9 +137,11 @@ function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) 
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate('/portal/settings')}>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>{t('settings.title')}</span>
+        <DropdownMenuItem asChild>
+          <Link to="/portal/settings">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>{t('settings.title')}</span>
+          </Link>
         </DropdownMenuItem>
         {/* Language Switcher Sub-menu */}
         <DropdownMenuSub>

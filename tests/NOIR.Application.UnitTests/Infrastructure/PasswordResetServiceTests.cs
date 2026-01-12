@@ -63,6 +63,8 @@ public class PasswordResetServiceTests
             LastName: "User",
             DisplayName: $"{firstName} User",
             FullName: $"{firstName} User",
+            PhoneNumber: null,
+            AvatarUrl: null,
             TenantId: null,
             IsActive: true,
             IsDeleted: false,

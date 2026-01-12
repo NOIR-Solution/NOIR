@@ -6,7 +6,9 @@ namespace NOIR.Application.Features.Auth.Commands.UpdateUserProfile;
 /// </summary>
 public sealed record UpdateUserProfileCommand(
     string? FirstName,
-    string? LastName) : IAuditableCommand<UserProfileDto>
+    string? LastName,
+    string? DisplayName,
+    string? PhoneNumber) : IAuditableCommand<UserProfileDto>
 {
     /// <summary>
     /// User ID to update. Set by the endpoint from current user context.

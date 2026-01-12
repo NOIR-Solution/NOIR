@@ -202,6 +202,142 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        // Avatar Upload
+        group.MapPost("/me/avatar", async (
+            IFormFile file,
+            [FromServices] ICurrentUser currentUser,
+            [FromServices] UploadAvatarCommandHandler handler,
+            CancellationToken cancellationToken) =>
+        {
+            if (string.IsNullOrEmpty(currentUser.UserId))
+            {
+                return Results.Unauthorized();
+            }
+
+            await using var stream = file.OpenReadStream();
+            var command = new UploadAvatarCommand(
+                file.FileName,
+                stream,
+                file.ContentType,
+                file.Length)
+            {
+                UserId = currentUser.UserId
+            };
+
+            var result = await handler.Handle(command, cancellationToken);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .RequireRateLimiting("fixed")
+        .DisableAntiforgery()
+        .WithName("UploadAvatar")
+        .WithSummary("Upload user avatar image")
+        .WithDescription("Uploads avatar image (JPG, PNG, GIF, WebP). Max 2MB. Replaces existing avatar if present.")
+        .Produces<AvatarUploadResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        // Avatar Delete
+        group.MapDelete("/me/avatar", async (
+            [FromServices] ICurrentUser currentUser,
+            [FromServices] DeleteAvatarCommandHandler handler,
+            CancellationToken cancellationToken) =>
+        {
+            if (string.IsNullOrEmpty(currentUser.UserId))
+            {
+                return Results.Unauthorized();
+            }
+
+            var command = new DeleteAvatarCommand { UserId = currentUser.UserId };
+            var result = await handler.Handle(command, cancellationToken);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .RequireRateLimiting("fixed")
+        .WithName("DeleteAvatar")
+        .WithSummary("Delete user avatar image")
+        .WithDescription("Deletes the user's custom avatar. Falls back to Gravatar or initials.")
+        .Produces<AvatarDeleteResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        // Email Change Flow
+        group.MapPost("/me/email/request", async (
+            RequestEmailChangeRequest request,
+            ICurrentUser currentUser,
+            IEmailChangeService emailChangeService,
+            HttpContext httpContext,
+            IMultiTenantContextAccessor tenantAccessor,
+            CancellationToken cancellationToken) =>
+        {
+            if (string.IsNullOrEmpty(currentUser.UserId))
+            {
+                return Results.Unauthorized();
+            }
+
+            var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
+            var tenantId = tenantAccessor.MultiTenantContext?.TenantInfo?.Id;
+
+            var result = await emailChangeService.RequestEmailChangeAsync(
+                currentUser.UserId,
+                request.NewEmail,
+                tenantId,
+                ipAddress,
+                cancellationToken);
+
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .RequireRateLimiting("auth")
+        .WithName("RequestEmailChange")
+        .WithSummary("Request email change with OTP verification")
+        .WithDescription("Initiates email change by sending a 6-digit OTP to the new email address. Returns session token for verification.")
+        .Produces<EmailChangeRequestResult>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+        .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests);
+
+        group.MapPost("/me/email/verify", async (
+            VerifyEmailChangeRequest request,
+            IEmailChangeService emailChangeService,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await emailChangeService.VerifyOtpAsync(
+                request.SessionToken,
+                request.Otp,
+                cancellationToken);
+
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .RequireRateLimiting("auth")
+        .WithName("VerifyEmailChange")
+        .WithSummary("Verify email change OTP")
+        .WithDescription("Verifies the 6-digit OTP and completes the email change if valid.")
+        .Produces<EmailChangeVerifyResult>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
+        group.MapPost("/me/email/resend", async (
+            ResendEmailChangeRequest request,
+            IEmailChangeService emailChangeService,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await emailChangeService.ResendOtpAsync(
+                request.SessionToken,
+                cancellationToken);
+
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .RequireRateLimiting("auth")
+        .WithName("ResendEmailChangeOtp")
+        .WithSummary("Resend email change OTP")
+        .WithDescription("Resends the OTP to the new email address. Subject to cooldown and max resend limits.")
+        .Produces<EmailChangeResendResult>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized)
+        .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests);
     }
 }
 
@@ -210,3 +346,8 @@ public record ForgotPasswordRequest(string Email);
 public record VerifyOtpRequest(string SessionToken, string Otp);
 public record ResendOtpRequest(string SessionToken);
 public record ResetPasswordRequest(string ResetToken, string NewPassword);
+
+// Request DTOs for email change endpoints
+public record RequestEmailChangeRequest(string NewEmail);
+public record VerifyEmailChangeRequest(string SessionToken, string Otp);
+public record ResendEmailChangeRequest(string SessionToken);

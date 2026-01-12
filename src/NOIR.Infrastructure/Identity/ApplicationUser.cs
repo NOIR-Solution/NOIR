@@ -15,6 +15,12 @@ public class ApplicationUser : IdentityUser, IAuditableEntity
     public bool IsActive { get; set; } = true;
 
     /// <summary>
+    /// Path to the user's uploaded avatar in storage.
+    /// When null, Gravatar or initials fallback is used.
+    /// </summary>
+    public string? AvatarUrl { get; set; }
+
+    /// <summary>
     /// Timestamp of the last password change.
     /// Used for security tracking and password age policies.
     /// </summary>

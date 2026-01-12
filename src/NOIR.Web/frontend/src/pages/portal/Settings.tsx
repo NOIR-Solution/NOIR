@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { Shield, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ChangePasswordForm } from '@/components/settings/ChangePasswordForm'
+import { ProfileForm } from '@/components/settings/ProfileForm'
 
-type SettingsSection = 'security' | 'profile'
+type SettingsSection = 'profile' | 'security'
 
 interface NavItem {
   id: SettingsSection
@@ -13,13 +14,13 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: 'security', icon: Shield, labelKey: 'profile.security' },
   { id: 'profile', icon: User, labelKey: 'profile.personalInfo' },
+  { id: 'security', icon: Shield, labelKey: 'profile.security' },
 ]
 
 export default function SettingsPage() {
   const { t } = useTranslation('auth')
-  const [activeSection, setActiveSection] = useState<SettingsSection>('security')
+  const [activeSection, setActiveSection] = useState<SettingsSection>('profile')
 
   return (
     <div className="container max-w-6xl py-6">
@@ -56,14 +57,8 @@ export default function SettingsPage() {
 
         {/* Content Area */}
         <main className="flex-1 min-w-0">
+          {activeSection === 'profile' && <ProfileForm />}
           {activeSection === 'security' && <ChangePasswordForm />}
-          {activeSection === 'profile' && (
-            <div className="rounded-lg border bg-card p-6">
-              <p className="text-muted-foreground text-center py-8">
-                {t('settings.profileComingSoon')}
-              </p>
-            </div>
-          )}
         </main>
       </div>
     </div>
