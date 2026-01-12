@@ -20,7 +20,42 @@
     "reports": "Reports",
     "profile": "Profile",
     "accountSettings": "Account Settings",
-    "menu": "Menu"
+    "menu": "Menu",
+    "admin": "Administration"
+  },
+  "tenants": {
+    "title": "Tenants",
+    "description": "Manage platform tenants and their settings",
+    "listTitle": "All Tenants",
+    "createNew": "Create Tenant",
+    "createDescription": "Create a new tenant for the platform",
+    "editTitle": "Edit Tenant",
+    "editDescription": "Update tenant settings and branding",
+    "deleteTitle": "Delete Tenant",
+    "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "searchPlaceholder": "Search tenants...",
+    "table": {
+      "identifier": "Identifier",
+      "name": "Name"
+    },
+    "form": {
+      "identifier": "Identifier",
+      "identifierPlaceholder": "my-company",
+      "identifierHint": "Unique identifier for the tenant (cannot be changed later)",
+      "name": "Display Name",
+      "namePlaceholder": "My Company",
+      "logoUrl": "Logo URL",
+      "primaryColor": "Primary Color",
+      "accentColor": "Accent Color",
+      "theme": "Theme"
+    },
+    "details": {
+      "basicInfo": "Basic Information",
+      "basicInfoDescription": "Core tenant details and status",
+      "branding": "Branding",
+      "brandingDescription": "Customization and visual settings",
+      "timestamps": "Timestamps"
+    }
   },
   "auth": {
     "signIn": "Sign In",

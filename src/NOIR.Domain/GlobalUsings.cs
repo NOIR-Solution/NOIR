@@ -9,6 +9,9 @@ global using System.Reflection;
 global using System.Threading;
 global using System.Threading.Tasks;
 
+// Finbuckle MultiTenant Abstractions
+global using Finbuckle.MultiTenant.Abstractions;
+
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;

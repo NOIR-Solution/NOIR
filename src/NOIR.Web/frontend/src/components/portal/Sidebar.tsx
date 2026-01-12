@@ -12,6 +12,7 @@ import {
   Languages,
   Check,
   Mail,
+  Building2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -50,10 +51,15 @@ interface NavItem {
   path: string
 }
 
-// Navigation items - Settings is accessed via profile dropdown
+// Navigation items - Settings is accessed via profile dropdown, with admin section
 const navItems: NavItem[] = [
   { titleKey: 'dashboard.title', icon: LayoutDashboard, path: '/portal' },
   { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates' },
+]
+
+// Admin navigation items (only visible to Admin role)
+const adminNavItems: NavItem[] = [
+  { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants' },
 ]
 
 /**
@@ -70,6 +76,7 @@ const isActivePath = (currentPathname: string, itemPath: string): boolean => {
 interface UserData {
   fullName?: string
   email?: string
+  roles?: string[]
 }
 
 /**
@@ -194,7 +201,7 @@ interface SidebarContentProps {
 }
 
 /**
- * SidebarContent - Simplified with only Dashboard
+ * SidebarContent - With Dashboard and Admin sections
  */
 function SidebarContent({
   isExpanded,
@@ -205,6 +212,55 @@ function SidebarContent({
   user,
 }: SidebarContentProps) {
   const isActive = (path: string) => isActivePath(pathname, path)
+  const isAdmin = user?.roles?.includes('Admin') ?? false
+
+  const renderNavItem = (item: NavItem) => {
+    const Icon = item.icon
+    const active = isActive(item.path)
+
+    const buttonContent = (
+      <Button
+        variant="ghost"
+        asChild
+        className={cn(
+          'w-full justify-start relative overflow-hidden transition-all duration-200',
+          isExpanded ? 'px-3' : 'px-0 justify-center',
+          active && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
+          !active && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+        )}
+      >
+        <Link to={item.path} onClick={() => onItemClick?.(item.path)}>
+          {active && (
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
+          )}
+          <Icon className={cn(
+            'h-5 w-5 flex-shrink-0',
+            isExpanded && 'mr-3'
+          )} />
+          {isExpanded && (
+            <span className="flex-1 text-left">{t(item.titleKey)}</span>
+          )}
+        </Link>
+      </Button>
+    )
+
+    if (!isExpanded) {
+      return (
+        <TooltipProvider key={item.path} delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {buttonContent}
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {t(item.titleKey)}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )
+    }
+
+    return <div key={item.path}>{buttonContent}</div>
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -236,57 +292,27 @@ function SidebarContent({
         </Button>
       </div>
 
-      {/* Navigation - Simplified */}
+      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4">
         <div className="space-y-1 px-2">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const active = isActive(item.path)
-
-            const buttonContent = (
-              <Button
-                variant="ghost"
-                asChild
-                className={cn(
-                  'w-full justify-start relative overflow-hidden transition-all duration-200',
-                  isExpanded ? 'px-3' : 'px-0 justify-center',
-                  active && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
-                  !active && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                )}
-              >
-                <Link to={item.path} onClick={() => onItemClick?.(item.path)}>
-                  {active && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
-                  )}
-                  <Icon className={cn(
-                    'h-5 w-5 flex-shrink-0',
-                    isExpanded && 'mr-3'
-                  )} />
-                  {isExpanded && (
-                    <span className="flex-1 text-left">{t(item.titleKey)}</span>
-                  )}
-                </Link>
-              </Button>
-            )
-
-            if (!isExpanded) {
-              return (
-                <TooltipProvider key={item.path} delayDuration={0}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      {buttonContent}
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      {t(item.titleKey)}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )
-            }
-
-            return <div key={item.path}>{buttonContent}</div>
-          })}
+          {navItems.map(renderNavItem)}
         </div>
+
+        {/* Admin Section */}
+        {isAdmin && (
+          <div className="mt-6">
+            {isExpanded && (
+              <div className="px-4 mb-2">
+                <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                  {t('nav.admin')}
+                </p>
+              </div>
+            )}
+            <div className="space-y-1 px-2">
+              {adminNavItems.map(renderNavItem)}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* User Profile Section */}
@@ -330,7 +356,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
 }
 
 /**
- * Mobile Sidebar Trigger - Simplified with Dashboard only
+ * Mobile Sidebar Trigger - With Dashboard and Admin sections
  */
 export function MobileSidebarTrigger({
   open,
@@ -342,6 +368,33 @@ export function MobileSidebarTrigger({
   const { t } = useTranslation('common')
   const location = useLocation()
   const { user } = useAuthContext()
+  const isAdmin = user?.roles?.includes('Admin') ?? false
+
+  const renderMobileNavItem = (item: NavItem) => {
+    const Icon = item.icon
+    const active = isActivePath(location.pathname, item.path)
+
+    return (
+      <Button
+        key={item.path}
+        variant="ghost"
+        asChild
+        className={cn(
+          'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
+          active && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
+          !active && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+        )}
+      >
+        <Link to={item.path} onClick={() => onOpenChange(false)}>
+          {active && (
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
+          )}
+          <Icon className="h-5 w-5 flex-shrink-0 mr-3" />
+          <span className="flex-1 text-left">{t(item.titleKey)}</span>
+        </Link>
+      </Button>
+    )
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -363,35 +416,25 @@ export function MobileSidebarTrigger({
             </Link>
           </div>
 
-          {/* Mobile Navigation - Simplified */}
+          {/* Mobile Navigation */}
           <nav className="flex-1 overflow-y-auto py-4">
             <div className="space-y-1 px-2">
-              {navItems.map((item) => {
-                const Icon = item.icon
-                const active = isActivePath(location.pathname, item.path)
-
-                return (
-                  <Button
-                    key={item.path}
-                    variant="ghost"
-                    asChild
-                    className={cn(
-                      'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
-                      active && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
-                      !active && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                    )}
-                  >
-                    <Link to={item.path} onClick={() => onOpenChange(false)}>
-                      {active && (
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
-                      )}
-                      <Icon className="h-5 w-5 flex-shrink-0 mr-3" />
-                      <span className="flex-1 text-left">{t(item.titleKey)}</span>
-                    </Link>
-                  </Button>
-                )
-              })}
+              {navItems.map(renderMobileNavItem)}
             </div>
+
+            {/* Admin Section */}
+            {isAdmin && (
+              <div className="mt-6">
+                <div className="px-4 mb-2">
+                  <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                    {t('nav.admin')}
+                  </p>
+                </div>
+                <div className="space-y-1 px-2">
+                  {adminNavItems.map(renderMobileNavItem)}
+                </div>
+              </div>
+            )}
           </nav>
 
           {/* Mobile User Profile */}

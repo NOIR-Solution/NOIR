@@ -340,6 +340,7 @@ app.UseAuthorization();
 app.MapAuthEndpoints();
 app.MapAuditEndpoints();
 app.MapRoleEndpoints();
+app.MapTenantEndpoints();
 app.MapUserEndpoints();
 app.MapEmailTemplateEndpoints();
 

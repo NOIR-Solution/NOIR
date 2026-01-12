@@ -7,7 +7,7 @@ namespace NOIR.Infrastructure.Persistence;
 /// </summary>
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext, IUnitOfWork, IMultiTenantDbContext
 {
-    private readonly IMultiTenantContextAccessor<TenantInfo>? _tenantContextAccessor;
+    private readonly IMultiTenantContextAccessor<Tenant>? _tenantContextAccessor;
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -16,18 +16,19 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options,
-        IMultiTenantContextAccessor<TenantInfo>? tenantContextAccessor)
+        IMultiTenantContextAccessor<Tenant>? tenantContextAccessor)
         : base(options)
     {
         _tenantContextAccessor = tenantContextAccessor;
     }
 
-    // IMultiTenantDbContext implementation
+    // IMultiTenantDbContext implementation - Tenant inherits from TenantInfo
     public TenantInfo? TenantInfo => _tenantContextAccessor?.MultiTenantContext?.TenantInfo;
     public TenantMismatchMode TenantMismatchMode => TenantMismatchMode.Throw;
     public TenantNotSetMode TenantNotSetMode => TenantNotSetMode.Throw;
 
     // Domain entities
+    // Note: Tenants are managed by TenantStoreDbContext for Finbuckle EFCoreStore
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<PasswordResetOtp> PasswordResetOtps => Set<PasswordResetOtp>();
     public DbSet<EmailChangeOtp> EmailChangeOtps => Set<EmailChangeOtp>();

@@ -86,6 +86,12 @@ public static class ErrorCodes
 
         /// <summary>Maximum resends reached</summary>
         public const string MaxResendsReached = "NOIR-AUTH-1017";
+
+        /// <summary>Tenant not found</summary>
+        public const string TenantNotFound = "NOIR-AUTH-1407";
+
+        /// <summary>Tenant is inactive</summary>
+        public const string TenantInactive = "NOIR-AUTH-1408";
     }
 
     /// <summary>

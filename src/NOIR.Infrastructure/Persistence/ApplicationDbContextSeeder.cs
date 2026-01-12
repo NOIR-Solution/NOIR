@@ -14,21 +14,12 @@ public static class ApplicationDbContextSeeder
         try
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
+            var tenantStoreContext = services.GetRequiredService<TenantStoreDbContext>();
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             var logger = services.GetRequiredService<ILogger<ApplicationDbContext>>();
 
-            // Set default tenant context for seeding (required for multi-tenant query filters)
-            var tenantSetter = services.GetService<IMultiTenantContextSetter>();
-            var tenantAccessor = services.GetService<IMultiTenantContextAccessor<TenantInfo>>();
-            if (tenantSetter != null && tenantAccessor?.MultiTenantContext?.TenantInfo == null)
-            {
-                // Create a default tenant for seeding operations
-                var defaultTenant = new TenantInfo("default", "default", "Default Tenant");
-                tenantSetter.MultiTenantContext = new MultiTenantContext<TenantInfo>(defaultTenant);
-            }
-
-            // Ensure database is created and migrations are applied
+            // Ensure database is created and migrations are applied FIRST
             // MigrateAsync is idempotent - it checks __EFMigrationsHistory and only applies pending migrations
             // EnsureCreatedAsync should ONLY be used for InMemory tests (no migration history tracking)
             if (context.Database.IsRelational())
@@ -38,6 +29,19 @@ public static class ApplicationDbContextSeeder
                 // 2. Database exists, no migrations applied → Applies all pending migrations
                 // 3. Database exists, some migrations applied → Applies only pending migrations
                 // 4. Database exists, all migrations applied → Does nothing (idempotent)
+
+                // Apply TenantStoreDbContext migrations first (creates Tenants table)
+                var tenantPendingMigrations = await tenantStoreContext.Database.GetPendingMigrationsAsync();
+                if (tenantPendingMigrations.Any())
+                {
+                    logger.LogInformation("Applying {Count} TenantStore pending migrations: {Migrations}",
+                        tenantPendingMigrations.Count(),
+                        string.Join(", ", tenantPendingMigrations));
+                    await tenantStoreContext.Database.MigrateAsync();
+                    logger.LogInformation("Successfully applied TenantStore migrations");
+                }
+
+                // Apply ApplicationDbContext migrations
                 var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
                 if (pendingMigrations.Any())
                 {
@@ -55,7 +59,22 @@ public static class ApplicationDbContextSeeder
             else
             {
                 // Non-relational provider (InMemory for tests) - use EnsureCreatedAsync
+                await tenantStoreContext.Database.EnsureCreatedAsync();
                 await context.Database.EnsureCreatedAsync();
+            }
+
+            // Seed default tenant (required for Finbuckle EFCoreStore and multi-tenant query filters)
+            // This creates the default tenant in the database if it doesn't exist
+            var defaultTenant = await SeedDefaultTenantAsync(tenantStoreContext, logger);
+
+            // Set default tenant context for seeding other data (required for multi-tenant query filters)
+            var tenantSetter = services.GetService<IMultiTenantContextSetter>();
+            var tenantAccessor = services.GetService<IMultiTenantContextAccessor<Tenant>>();
+            if (tenantSetter != null && tenantAccessor?.MultiTenantContext?.TenantInfo == null)
+            {
+                // Set the seeded default tenant as the context
+                // Finbuckle v10 requires constructor argument for MultiTenantContext
+                tenantSetter.MultiTenantContext = new MultiTenantContext<Tenant>(defaultTenant);
             }
 
             // Seed roles with permissions
@@ -73,6 +92,37 @@ public static class ApplicationDbContextSeeder
             logger.LogError(ex, "An error occurred while seeding the database.");
             throw;
         }
+    }
+
+    /// <summary>
+    /// Seeds the default tenant in the database.
+    /// This is required for Finbuckle EFCoreStore to resolve tenants.
+    /// Uses TenantStoreDbContext which manages the Tenants table.
+    /// </summary>
+    internal static async Task<Tenant> SeedDefaultTenantAsync(TenantStoreDbContext context, ILogger logger)
+    {
+        const string defaultIdentifier = "default";
+
+        // Check if default tenant already exists (bypass soft delete filter)
+        // TenantStoreDbContext inherits from EFCoreStoreDbContext<Tenant> which exposes TenantInfo as DbSet
+        var existingTenant = await context.TenantInfo
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(t => t.Identifier == defaultIdentifier);
+
+        if (existingTenant is null)
+        {
+            var tenant = Tenant.Create(
+                identifier: defaultIdentifier,
+                name: "Default Tenant",
+                isActive: true);
+
+            context.TenantInfo.Add(tenant);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Created default tenant: {Identifier}", defaultIdentifier);
+            return tenant;
+        }
+
+        return existingTenant;
     }
 
     internal static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager, ILogger logger)

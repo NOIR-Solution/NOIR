@@ -7,13 +7,13 @@ namespace NOIR.Application.UnitTests.Infrastructure;
 public class CurrentUserServiceTests
 {
     private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
-    private readonly Mock<IMultiTenantContextAccessor<TenantInfo>> _tenantContextAccessorMock;
+    private readonly Mock<IMultiTenantContextAccessor<Tenant>> _tenantContextAccessorMock;
     private readonly CurrentUserService _sut;
 
     public CurrentUserServiceTests()
     {
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-        _tenantContextAccessorMock = new Mock<IMultiTenantContextAccessor<TenantInfo>>();
+        _tenantContextAccessorMock = new Mock<IMultiTenantContextAccessor<Tenant>>();
         _sut = new CurrentUserService(_httpContextAccessorMock.Object, _tenantContextAccessorMock.Object);
     }
 
@@ -128,7 +128,7 @@ public class CurrentUserServiceTests
     public void TenantId_WhenNoTenant_ShouldReturnNull()
     {
         // Arrange
-        _tenantContextAccessorMock.Setup(x => x.MultiTenantContext).Returns(default(IMultiTenantContext<TenantInfo>)!);
+        _tenantContextAccessorMock.Setup(x => x.MultiTenantContext).Returns(default(IMultiTenantContext<Tenant>)!);
 
         // Act
         var result = _sut.TenantId;

@@ -40,8 +40,15 @@ global using NOIR.Application.Features.Users.DTOs;
 global using NOIR.Application.Features.Roles.DTOs;
 global using NOIR.Application.Features.EmailTemplates.DTOs;
 global using NOIR.Application.Features.EmailTemplates.Specifications;
+global using NOIR.Application.Features.Audit.Specifications;
+global using NOIR.Application.Features.Tenants.DTOs;
 global using NOIR.Application.Specifications;
 global using NOIR.Application.Specifications.PasswordResetOtps;
+
+// Finbuckle MultiTenant Abstractions
+// Note: For Tenant CRUD, use IMultiTenantStore<Tenant> (registered by Finbuckle)
+// instead of IRepository<Tenant, Guid> (Tenant doesn't inherit from AggregateRoot)
+global using Finbuckle.MultiTenant.Abstractions;
 
 // NOIR Domain
 global using NOIR.Domain.Common;

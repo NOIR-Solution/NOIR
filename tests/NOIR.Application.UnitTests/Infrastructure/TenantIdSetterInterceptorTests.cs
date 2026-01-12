@@ -42,19 +42,19 @@ public class TenantIdSetterInterceptorTests
         return new TestDbContext(options);
     }
 
-    private static Mock<IMultiTenantContextAccessor<TenantInfo>> CreateTenantAccessor(string? tenantId)
+    private static Mock<IMultiTenantContextAccessor<Tenant>> CreateTenantAccessor(string? tenantId)
     {
-        var mock = new Mock<IMultiTenantContextAccessor<TenantInfo>>();
+        var mock = new Mock<IMultiTenantContextAccessor<Tenant>>();
 
         if (tenantId != null)
         {
-            var tenantInfo = new TenantInfo(tenantId, tenantId, "Test Tenant");
-            var multiTenantContext = new MultiTenantContext<TenantInfo>(tenantInfo);
+            var tenant = new Tenant(tenantId, tenantId, "Test Tenant");
+            var multiTenantContext = new MultiTenantContext<Tenant>(tenant);
             mock.Setup(x => x.MultiTenantContext).Returns(multiTenantContext);
         }
         else
         {
-            mock.Setup(x => x.MultiTenantContext).Returns(default(IMultiTenantContext<TenantInfo>)!);
+            mock.Setup(x => x.MultiTenantContext).Returns(default(IMultiTenantContext<Tenant>)!);
         }
 
         return mock;

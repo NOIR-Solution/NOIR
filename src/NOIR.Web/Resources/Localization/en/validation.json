@@ -58,5 +58,30 @@
     "exceeded": "Date range cannot exceed {0} days. Requested: {1} days.",
     "invalid": "From date must be before to date.",
     "filterRequired": "At least one filter (from date, to date, entity type, or user ID) is required."
+  },
+  "tenantId": {
+    "required": "Tenant ID is required."
+  },
+  "tenantIdentifier": {
+    "required": "Tenant identifier is required.",
+    "minLength": "Tenant identifier must be at least {0} characters.",
+    "maxLength": "Tenant identifier cannot exceed {0} characters.",
+    "pattern": "Tenant identifier must contain only lowercase letters, numbers, and hyphens."
+  },
+  "tenantName": {
+    "required": "Tenant name is required.",
+    "minLength": "Tenant name must be at least {0} characters.",
+    "maxLength": "Tenant name cannot exceed {0} characters."
+  },
+  "url": {
+    "maxLength": "URL cannot exceed {0} characters.",
+    "invalid": "Invalid URL format."
+  },
+  "color": {
+    "maxLength": "Color value cannot exceed {0} characters.",
+    "invalidHex": "Color must be a valid hex color code (e.g., #FF5733)."
+  },
+  "theme": {
+    "invalid": "Theme must be 'Light', 'Dark', or 'System'."
   }
 }

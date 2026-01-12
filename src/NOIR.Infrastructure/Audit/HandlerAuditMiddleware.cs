@@ -60,7 +60,7 @@ public class HandlerAuditMiddleware
     public void Before(
         Envelope envelope,
         ApplicationDbContext dbContext,
-        IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor,
+        IMultiTenantContextAccessor<Tenant> tenantContextAccessor,
         IServiceProvider serviceProvider)
     {
         _stopwatch.Restart();

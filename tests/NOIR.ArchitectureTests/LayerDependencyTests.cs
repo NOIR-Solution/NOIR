@@ -396,7 +396,8 @@ public class LayerDependencyTests
     public void Entities_ShouldInherit_FromEntityBase()
     {
         // Join entities (many-to-many relationships) don't need Entity<> base
-        var joinEntityNames = new HashSet<string> { "RolePermission" };
+        // Tenant inherits from TenantInfo (Finbuckle requirement for EFCoreStore)
+        var joinEntityNames = new HashSet<string> { "RolePermission", "Tenant" };
 
         // Act
         var entityTypes = Types

@@ -105,6 +105,19 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
                 services.Remove(dbContextDescriptor);
             }
 
+            // Remove TenantStoreDbContext registrations (registered in DependencyInjection.cs)
+            var tenantStoreDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<TenantStoreDbContext>));
+            if (tenantStoreDescriptor != null)
+            {
+                services.Remove(tenantStoreDescriptor);
+            }
+
+            var tenantStoreDbContextDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(TenantStoreDbContext));
+            if (tenantStoreDbContextDescriptor != null)
+            {
+                services.Remove(tenantStoreDbContextDescriptor);
+            }
+
             // Add memory cache
             services.AddMemoryCache();
 
@@ -113,6 +126,14 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
             services.AddScoped<NOIR.Infrastructure.Persistence.Interceptors.DomainEventInterceptor>();
             services.AddScoped<NOIR.Infrastructure.Persistence.Interceptors.EntityAuditLogInterceptor>();
             services.AddScoped<NOIR.Infrastructure.Persistence.Interceptors.TenantIdSetterInterceptor>();
+
+            // Add TenantStoreDbContext for Finbuckle EFCoreStore
+            services.AddDbContext<TenantStoreDbContext>(options =>
+            {
+                options.UseSqlServer(_connectionString);
+                options.EnableSensitiveDataLogging();
+                options.EnableDetailedErrors();
+            });
 
             // Add SQL Server LocalDB for testing with multi-tenant support
             // Use the factory overload to inject IMultiTenantContextAccessor
@@ -253,8 +274,8 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
         var tenantSetter = services.GetService<IMultiTenantContextSetter>();
         if (tenantSetter != null)
         {
-            var tenant = new TenantInfo(tenantId, tenantId, "Test Tenant");
-            tenantSetter.MultiTenantContext = new MultiTenantContext<TenantInfo>(tenant);
+            var tenant = new Tenant(tenantId, tenantId, "Test Tenant");
+            tenantSetter.MultiTenantContext = new MultiTenantContext<Tenant>(tenant);
         }
 
         await action(services);
@@ -273,8 +294,8 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
         var tenantSetter = services.GetService<IMultiTenantContextSetter>();
         if (tenantSetter != null)
         {
-            var tenant = new TenantInfo(tenantId, tenantId, "Test Tenant");
-            tenantSetter.MultiTenantContext = new MultiTenantContext<TenantInfo>(tenant);
+            var tenant = new Tenant(tenantId, tenantId, "Test Tenant");
+            tenantSetter.MultiTenantContext = new MultiTenantContext<Tenant>(tenant);
         }
 
         return await func(services);

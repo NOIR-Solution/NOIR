@@ -6,9 +6,9 @@ namespace NOIR.Infrastructure.Persistence.Interceptors;
 /// </summary>
 public class TenantIdSetterInterceptor : SaveChangesInterceptor
 {
-    private readonly IMultiTenantContextAccessor<TenantInfo> _tenantContextAccessor;
+    private readonly IMultiTenantContextAccessor<Tenant> _tenantContextAccessor;
 
-    public TenantIdSetterInterceptor(IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor)
+    public TenantIdSetterInterceptor(IMultiTenantContextAccessor<Tenant> tenantContextAccessor)
     {
         _tenantContextAccessor = tenantContextAccessor;
     }

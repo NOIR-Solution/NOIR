@@ -125,3 +125,11 @@ global using NOIR.Application.Features.EmailTemplates.Queries.GetEmailTemplates;
 global using NOIR.Application.Features.EmailTemplates.Queries.GetEmailTemplate;
 global using NOIR.Application.Features.EmailTemplates.Commands.UpdateEmailTemplate;
 global using NOIR.Application.Features.EmailTemplates.Commands.SendTestEmail;
+
+// NOIR Application - Tenants
+global using NOIR.Application.Features.Tenants.DTOs;
+global using NOIR.Application.Features.Tenants.Commands.CreateTenant;
+global using NOIR.Application.Features.Tenants.Commands.UpdateTenant;
+global using NOIR.Application.Features.Tenants.Commands.DeleteTenant;
+global using NOIR.Application.Features.Tenants.Queries.GetTenants;
+global using NOIR.Application.Features.Tenants.Queries.GetTenantById;

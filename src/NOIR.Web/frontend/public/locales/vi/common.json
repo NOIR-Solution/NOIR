@@ -20,7 +20,42 @@
     "reports": "Báo cáo",
     "profile": "Hồ sơ",
     "accountSettings": "Cài đặt tài khoản",
-    "menu": "Thực đơn"
+    "menu": "Thực đơn",
+    "admin": "Quản trị"
+  },
+  "tenants": {
+    "title": "Tổ chức",
+    "description": "Quản lý tổ chức và cài đặt của họ",
+    "listTitle": "Tất cả Tổ chức",
+    "createNew": "Tạo Tổ chức",
+    "createDescription": "Tạo tổ chức mới cho nền tảng",
+    "editTitle": "Sửa Tổ chức",
+    "editDescription": "Cập nhật cài đặt và thương hiệu tổ chức",
+    "deleteTitle": "Xóa Tổ chức",
+    "deleteDescription": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Hành động này không thể hoàn tác.",
+    "searchPlaceholder": "Tìm kiếm tổ chức...",
+    "table": {
+      "identifier": "Mã định danh",
+      "name": "Tên"
+    },
+    "form": {
+      "identifier": "Mã định danh",
+      "identifierPlaceholder": "cong-ty-toi",
+      "identifierHint": "Mã định danh duy nhất cho tổ chức (không thể thay đổi sau này)",
+      "name": "Tên hiển thị",
+      "namePlaceholder": "Công ty của tôi",
+      "logoUrl": "URL Logo",
+      "primaryColor": "Màu chính",
+      "accentColor": "Màu phụ",
+      "theme": "Giao diện"
+    },
+    "details": {
+      "basicInfo": "Thông tin cơ bản",
+      "basicInfoDescription": "Chi tiết và trạng thái tổ chức",
+      "branding": "Thương hiệu",
+      "brandingDescription": "Tùy chỉnh và cài đặt giao diện",
+      "timestamps": "Thời gian"
+    }
   },
   "auth": {
     "signIn": "Đăng nhập",

@@ -58,5 +58,30 @@
     "exceeded": "Khoảng thời gian không được vượt quá {0} ngày. Yêu cầu: {1} ngày.",
     "invalid": "Ngày bắt đầu phải trước ngày kết thúc.",
     "filterRequired": "Phải có ít nhất một bộ lọc (ngày bắt đầu, ngày kết thúc, loại thực thể hoặc ID người dùng)."
+  },
+  "tenantId": {
+    "required": "ID tenant là bắt buộc."
+  },
+  "tenantIdentifier": {
+    "required": "Mã định danh tenant là bắt buộc.",
+    "minLength": "Mã định danh tenant phải có ít nhất {0} ký tự.",
+    "maxLength": "Mã định danh tenant không được vượt quá {0} ký tự.",
+    "pattern": "Mã định danh tenant chỉ được chứa chữ cái thường, số và dấu gạch ngang."
+  },
+  "tenantName": {
+    "required": "Tên tenant là bắt buộc.",
+    "minLength": "Tên tenant phải có ít nhất {0} ký tự.",
+    "maxLength": "Tên tenant không được vượt quá {0} ký tự."
+  },
+  "url": {
+    "maxLength": "URL không được vượt quá {0} ký tự.",
+    "invalid": "Định dạng URL không hợp lệ."
+  },
+  "color": {
+    "maxLength": "Giá trị màu không được vượt quá {0} ký tự.",
+    "invalidHex": "Màu phải là mã màu hex hợp lệ (ví dụ: #FF5733)."
+  },
+  "theme": {
+    "invalid": "Chủ đề phải là 'Light', 'Dark' hoặc 'System'."
   }
 }

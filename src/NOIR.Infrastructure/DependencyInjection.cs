@@ -12,12 +12,14 @@ public static class DependencyInjection
         IHostEnvironment? environment = null)
     {
         var isTesting = environment?.EnvironmentName == "Testing";
-        // Configure Multi-Tenancy with Finbuckle
-        services.AddMultiTenant<TenantInfo>()
+        // Configure Multi-Tenancy with Finbuckle using database-backed EFCoreStore
+        // Tenant entity inherits from TenantInfo for Finbuckle compatibility
+        // Using separate TenantStoreDbContext because EFCoreStore requires EFCoreStoreDbContext base class
+        services.AddMultiTenant<Tenant>()
             .WithHeaderStrategy("X-Tenant")  // Detect tenant from header
             .WithClaimStrategy("tenant_id")  // Or from JWT claim
             .WithStaticStrategy("default")   // Fallback for non-HTTP contexts (like seeding)
-            .WithConfigurationStore();       // Store tenants in appsettings.json
+            .WithEFCoreStore<TenantStoreDbContext, Tenant>();  // Store tenants in dedicated DbContext
 
         // Register EF Core interceptors
         services.AddScoped<AuditableEntityInterceptor>();
@@ -28,6 +30,21 @@ public static class DependencyInjection
         // Skip DbContext registration in Testing - tests configure their own database
         if (!isTesting)
         {
+            // Register TenantStoreDbContext for Finbuckle EFCoreStore
+            services.AddDbContext<TenantStoreDbContext>(options =>
+            {
+                options.UseSqlServer(
+                    configuration.GetConnectionString("DefaultConnection"),
+                    sqlOptions =>
+                    {
+                        sqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 3,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorNumbersToAdd: null);
+                    });
+            });
+
             // Register DbContext with SQL Server and multi-tenant support
             // Note: Using AddDbContext (not Pool) to support IMultiTenantContextAccessor injection
             services.AddDbContext<ApplicationDbContext>((sp, options) =>

@@ -15,11 +15,11 @@ namespace NOIR.Infrastructure.Services;
 public class CurrentUserService : ICurrentUser, IScopedService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IMultiTenantContextAccessor<TenantInfo> _tenantContextAccessor;
+    private readonly IMultiTenantContextAccessor<Tenant> _tenantContextAccessor;
 
     public CurrentUserService(
         IHttpContextAccessor httpContextAccessor,
-        IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor)
+        IMultiTenantContextAccessor<Tenant> tenantContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
         _tenantContextAccessor = tenantContextAccessor;

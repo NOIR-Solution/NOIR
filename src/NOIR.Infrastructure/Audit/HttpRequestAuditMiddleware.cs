@@ -52,7 +52,7 @@ public class HttpRequestAuditMiddleware
         HttpContext context,
         ApplicationDbContext dbContext,
         ICurrentUser currentUser,
-        IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor,
+        IMultiTenantContextAccessor<Tenant> tenantContextAccessor,
         IAuditBroadcastService auditBroadcast)
     {
         // Disable audit logging in Testing environment to avoid test interference
@@ -86,7 +86,7 @@ public class HttpRequestAuditMiddleware
         HttpContext context,
         ApplicationDbContext dbContext,
         ICurrentUser currentUser,
-        IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor,
+        IMultiTenantContextAccessor<Tenant> tenantContextAccessor,
         IAuditBroadcastService auditBroadcast)
     {
         var stopwatch = Stopwatch.StartNew();

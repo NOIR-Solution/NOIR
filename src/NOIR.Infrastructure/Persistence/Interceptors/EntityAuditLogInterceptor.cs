@@ -16,7 +16,7 @@ namespace NOIR.Infrastructure.Persistence.Interceptors;
 public class EntityAuditLogInterceptor : SaveChangesInterceptor
 {
     private readonly IDiffService _diffService;
-    private readonly IMultiTenantContextAccessor<TenantInfo> _tenantContextAccessor;
+    private readonly IMultiTenantContextAccessor<Tenant> _tenantContextAccessor;
 
     // Cache for entity type audit settings
     private static readonly ConcurrentDictionary<Type, bool> EntityAuditDisabledCache = new();
@@ -44,7 +44,7 @@ public class EntityAuditLogInterceptor : SaveChangesInterceptor
 
     public EntityAuditLogInterceptor(
         IDiffService diffService,
-        IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor)
+        IMultiTenantContextAccessor<Tenant> tenantContextAccessor)
     {
         _diffService = diffService;
         _tenantContextAccessor = tenantContextAccessor;

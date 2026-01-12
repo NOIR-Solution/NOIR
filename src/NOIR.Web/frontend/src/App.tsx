@@ -8,6 +8,8 @@ import LandingPage from '@/pages/Landing'
 import Dashboard from '@/pages/portal/Dashboard'
 import SettingsPage from '@/pages/portal/Settings'
 import { EmailTemplatesPage, EmailTemplateEditPage } from '@/pages/portal/email-templates'
+import TenantsPage from '@/pages/portal/admin/tenants/TenantsPage'
+import TenantDetailPage from '@/pages/portal/admin/tenants/TenantDetailPage'
 import ForgotPasswordPage from '@/pages/forgot-password/ForgotPassword'
 import VerifyOtpPage from '@/pages/forgot-password/VerifyOtp'
 import ResetPasswordPage from '@/pages/forgot-password/ResetPassword'
@@ -53,6 +55,9 @@ function App() {
             <Route path="settings" element={<SettingsPage />} />
             <Route path="email-templates" element={<EmailTemplatesPage />} />
             <Route path="email-templates/:id" element={<EmailTemplateEditPage />} />
+            {/* Admin Routes */}
+            <Route path="admin/tenants" element={<TenantsPage />} />
+            <Route path="admin/tenants/:id" element={<TenantDetailPage />} />
           </Route>
 
           {/* Catch-all redirect to landing */}
