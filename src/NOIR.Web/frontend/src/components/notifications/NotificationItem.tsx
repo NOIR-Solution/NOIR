@@ -99,8 +99,7 @@ export function NotificationItem({
   const handleAction = (e: React.MouseEvent, url: string, method?: string) => {
     e.stopPropagation()
     if (method === 'POST' || method === 'DELETE') {
-      // Handle API actions - these would typically be handled by the page
-      console.log('Action:', method, url)
+      // API actions would typically be handled by the parent component
     } else {
       if (url.startsWith('/')) {
         navigate(url)

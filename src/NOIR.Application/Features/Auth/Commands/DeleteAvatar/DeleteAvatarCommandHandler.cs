@@ -66,7 +66,7 @@ public class DeleteAvatarCommandHandler : IScopedService
             return Result.Failure<AvatarDeleteResultDto>(
                 Error.Failure(
                     ErrorCodes.Auth.UpdateFailed,
-                    string.Join(", ", updateResult.Errors)));
+                    string.Join(", ", updateResult.Errors ?? [])));
         }
 
         return Result.Success(new AvatarDeleteResultDto(

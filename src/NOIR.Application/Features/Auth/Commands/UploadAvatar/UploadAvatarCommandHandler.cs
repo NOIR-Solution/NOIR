@@ -91,7 +91,7 @@ public class UploadAvatarCommandHandler : IScopedService
             return Result.Failure<AvatarUploadResultDto>(
                 Error.Failure(
                     ErrorCodes.Auth.UpdateFailed,
-                    string.Join(", ", updateResult.Errors)));
+                    string.Join(", ", updateResult.Errors ?? [])));
         }
 
         return Result.Success(new AvatarUploadResultDto(

@@ -322,7 +322,6 @@ public class RevokeSessionCommandHandlerTests
     {
         // Arrange
         const string currentUserId = "user-123";
-        const string otherUserId = "user-456";
         var otherUserSessionId = Guid.NewGuid();
 
         SetupAuthenticatedUser(currentUserId);
