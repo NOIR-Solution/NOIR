@@ -114,6 +114,15 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
+// Add SignalR for real-time audit streaming
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.MaximumReceiveMessageSize = 64 * 1024; // 64 KB
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+});
+
 // Add Application and Infrastructure services
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
@@ -332,6 +341,10 @@ app.MapAuthEndpoints();
 app.MapAuditEndpoints();
 app.MapRoleEndpoints();
 app.MapUserEndpoints();
+
+// Map SignalR Hubs
+app.MapHub<AuditHub>("/hubs/audit")
+    .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditStream));
 
 // Hangfire Dashboard (requires Admin role in production, skip in Testing)
 if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))

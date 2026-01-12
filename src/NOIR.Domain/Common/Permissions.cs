@@ -41,6 +41,10 @@ public static class Permissions
     public const string AuditRead = "audit:read";
     public const string AuditExport = "audit:export";
     public const string AuditEntityHistory = "audit:entity-history";
+    public const string AuditPolicyRead = "audit:policy-read";
+    public const string AuditPolicyWrite = "audit:policy-write";
+    public const string AuditPolicyDelete = "audit:policy-delete";
+    public const string AuditStream = "audit:stream";
 
     /// <summary>
     /// All permissions grouped by resource.
@@ -60,7 +64,7 @@ public static class Permissions
             [SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard];
 
         public static readonly IReadOnlyList<string> Audit =
-            [AuditRead, AuditExport, AuditEntityHistory];
+            [AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream];
     }
 
     /// <summary>
@@ -77,7 +81,7 @@ public static class Permissions
         // System
         SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
         // Audit
-        AuditRead, AuditExport, AuditEntityHistory
+        AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream
     ];
 
     /// <summary>

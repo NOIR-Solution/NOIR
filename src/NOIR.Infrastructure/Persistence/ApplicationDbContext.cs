@@ -40,6 +40,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<HttpRequestAuditLog> HttpRequestAuditLogs => Set<HttpRequestAuditLog>();
     public DbSet<HandlerAuditLog> HandlerAuditLogs => Set<HandlerAuditLog>();
     public DbSet<EntityAuditLog> EntityAuditLogs => Set<EntityAuditLog>();
+    public DbSet<AuditRetentionPolicy> AuditRetentionPolicies => Set<AuditRetentionPolicy>();
 
     /// <summary>
     /// Configures global type conventions.
@@ -97,13 +98,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     private void ConfigureMultiTenancy(ModelBuilder modelBuilder)
     {
-        // Audit log types should not enforce tenant requirement
+        // Audit-related types should not enforce tenant requirement
         // They store TenantId for filtering but allow null for system-level operations
         var auditLogTypes = new HashSet<Type>
         {
             typeof(HttpRequestAuditLog),
             typeof(HandlerAuditLog),
-            typeof(EntityAuditLog)
+            typeof(EntityAuditLog),
+            typeof(AuditRetentionPolicy) // Allows null TenantId for system defaults
         };
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())

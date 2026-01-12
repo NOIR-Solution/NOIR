@@ -44,6 +44,7 @@ global using NOIR.Application.Specifications.PasswordResetOtps;
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Interfaces;
 global using NOIR.Domain.Specifications;
 
 // Wolverine

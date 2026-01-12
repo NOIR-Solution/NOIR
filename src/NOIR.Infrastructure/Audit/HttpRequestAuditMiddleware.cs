@@ -52,7 +52,8 @@ public class HttpRequestAuditMiddleware
         HttpContext context,
         ApplicationDbContext dbContext,
         ICurrentUser currentUser,
-        IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor)
+        IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor,
+        IAuditBroadcastService auditBroadcast)
     {
         // Disable audit logging in Testing environment to avoid test interference
         if (_environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
@@ -71,7 +72,7 @@ public class HttpRequestAuditMiddleware
 
         try
         {
-            await ProcessWithAuditingAsync(context, dbContext, currentUser, tenantContextAccessor);
+            await ProcessWithAuditingAsync(context, dbContext, currentUser, tenantContextAccessor, auditBroadcast);
         }
         catch (Exception ex)
         {
@@ -85,7 +86,8 @@ public class HttpRequestAuditMiddleware
         HttpContext context,
         ApplicationDbContext dbContext,
         ICurrentUser currentUser,
-        IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor)
+        IMultiTenantContextAccessor<TenantInfo> tenantContextAccessor,
+        IAuditBroadcastService auditBroadcast)
     {
         var stopwatch = Stopwatch.StartNew();
         var correlationId = context.TraceIdentifier;
@@ -155,6 +157,30 @@ public class HttpRequestAuditMiddleware
             try
             {
                 await dbContext.SaveChangesAsync();
+
+                // Broadcast the completed HTTP request audit event
+                var handlerCount = await dbContext.HandlerAuditLogs
+                    .CountAsync(h => h.CorrelationId == correlationId);
+                var entityCount = await dbContext.EntityAuditLogs
+                    .CountAsync(e => e.CorrelationId == correlationId);
+
+                var auditEvent = new HttpRequestAuditEvent(
+                    httpAuditLog.Id,
+                    httpAuditLog.CorrelationId,
+                    httpAuditLog.HttpMethod,
+                    httpAuditLog.Url,
+                    httpAuditLog.ResponseStatusCode,
+                    httpAuditLog.UserId,
+                    httpAuditLog.UserEmail,
+                    httpAuditLog.TenantId,
+                    httpAuditLog.IpAddress,
+                    httpAuditLog.StartTime,
+                    httpAuditLog.DurationMs,
+                    handlerCount,
+                    entityCount);
+
+                // Fire and forget - don't block the response
+                _ = auditBroadcast.BroadcastHttpRequestAuditAsync(auditEvent);
             }
             catch (Exception ex)
             {

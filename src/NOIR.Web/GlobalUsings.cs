@@ -71,6 +71,9 @@ global using NOIR.Application.Features.Auth.DTOs;
 global using NOIR.Application.Features.Auth.Queries.GetCurrentUser;
 global using NOIR.Application.Features.Audit.DTOs;
 global using NOIR.Application.Features.Audit.Queries;
+global using NOIR.Application.Features.Audit.Commands.CreateRetentionPolicy;
+global using NOIR.Application.Features.Audit.Commands.UpdateRetentionPolicy;
+global using NOIR.Application.Features.Audit.Commands.DeleteRetentionPolicy;
 
 // NOIR Domain
 global using NOIR.Domain.Common;
