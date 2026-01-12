@@ -163,18 +163,42 @@ public class AuditStatsService : IAuditStatsService, IScopedService
             .Take(10)
             .ToListAsync(ct);
 
-        // Top users
-        var topUsers = await httpQuery
+        // Top users - get request counts first
+        var userRequests = await httpQuery
             .Where(h => h.UserId != null)
             .GroupBy(h => new { h.UserId, h.UserEmail })
-            .Select(g => new UserActivitySummary(
-                g.Key.UserId,
-                g.Key.UserEmail,
-                g.Count(),
-                0)) // TODO: Join with entity changes
+            .Select(g => new { g.Key.UserId, g.Key.UserEmail, RequestCount = g.Count() })
+            .ToListAsync(ct);
+
+        // Get entity change counts per user by joining through CorrelationId
+        // EntityAuditLog -> CorrelationId -> HttpRequestAuditLog.UserId
+        var userCorrelations = await httpQuery
+            .Where(h => h.UserId != null)
+            .Select(h => new { h.CorrelationId, h.UserId })
+            .Distinct()
+            .ToDictionaryAsync(x => x.CorrelationId, x => x.UserId, ct);
+
+        var entityChangesByCorrelation = await entityQuery
+            .GroupBy(e => e.CorrelationId)
+            .Select(g => new { CorrelationId = g.Key, ChangeCount = g.Count() })
+            .ToListAsync(ct);
+
+        // Aggregate entity changes by user
+        var userChanges = entityChangesByCorrelation
+            .Where(e => userCorrelations.ContainsKey(e.CorrelationId))
+            .GroupBy(e => userCorrelations[e.CorrelationId])
+            .ToDictionary(g => g.Key!, g => g.Sum(e => e.ChangeCount));
+
+        // Combine into UserActivitySummary with actual entity change counts
+        var topUsers = userRequests
+            .Select(u => new UserActivitySummary(
+                u.UserId,
+                u.UserEmail,
+                u.RequestCount,
+                userChanges.GetValueOrDefault(u.UserId!, 0)))
             .OrderByDescending(u => u.RequestCount)
             .Take(10)
-            .ToListAsync(ct);
+            .ToList();
 
         // Top handlers
         var topHandlers = await handlerQuery

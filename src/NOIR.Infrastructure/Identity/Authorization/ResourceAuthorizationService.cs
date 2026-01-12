@@ -127,14 +127,15 @@ public class ResourceAuthorizationService : IResourceAuthorizationService
             return directShare.Permission;
         }
 
-        // 2. Check inherited permission from parent hierarchy
+        // 2. Check inherited permission from parent hierarchy (walks full hierarchy)
         if (resource.ParentResourceId.HasValue && !string.IsNullOrEmpty(resource.ParentResourceType))
         {
-            var inheritedPermission = await GetInheritedPermissionAsync(
+            var inheritedPermission = await WalkParentHierarchyAsync(
                 resource.ParentResourceType,
                 resource.ParentResourceId.Value,
                 userId,
-                ct);
+                ct,
+                depth: 0);
 
             if (inheritedPermission.HasValue)
             {
@@ -167,34 +168,55 @@ public class ResourceAuthorizationService : IResourceAuthorizationService
 
     /// <summary>
     /// Walks up the parent hierarchy to find inherited permission.
+    /// Uses ParentResourceType/ParentResourceId stored on ResourceShare entities
+    /// to traverse the hierarchy without needing to load actual resources.
     /// </summary>
-    private async Task<SharePermission?> GetInheritedPermissionAsync(
-        string parentType,
-        Guid parentId,
+    private async Task<SharePermission?> WalkParentHierarchyAsync(
+        string resourceType,
+        Guid resourceId,
         string userId,
         CancellationToken ct,
-        int depth = 0)
+        int depth)
     {
         // Prevent infinite loops (max 10 levels deep)
         if (depth > 10)
         {
-            _logger.LogWarning("Permission inheritance depth exceeded for user {UserId}", userId);
+            _logger.LogWarning(
+                "Permission inheritance depth exceeded for user {UserId} on {ResourceType}:{ResourceId}",
+                userId, resourceType, resourceId);
             return null;
         }
 
-        var parentShare = await SpecificationEvaluator
-            .GetQuery(_context.ResourceShares, new ResourceShareByUserSpec(parentType, parentId, userId))
+        // Check if user has a share on this resource
+        var share = await SpecificationEvaluator
+            .GetQuery(_context.ResourceShares, new ResourceShareByUserSpec(resourceType, resourceId, userId))
             .FirstOrDefaultAsync(ct);
 
-        if (parentShare != null)
+        if (share != null)
         {
-            return parentShare.Permission;
+            return share.Permission;
         }
 
-        // TODO: If parent resource also has a parent, continue walking up
-        // This would require loading the parent resource to get its ParentResourceId
-        // For now, we only support single-level inheritance
-        // Future: Inject IResourceLoader to load parent and continue
+        // Get parent info from any share on this resource (they all have same parent info)
+        var parentInfo = await _context.ResourceShares
+            .AsNoTracking()
+            .TagWith("ResourceAuthorizationService.WalkParentHierarchy")
+            .Where(s => s.ResourceType == resourceType.ToLowerInvariant())
+            .Where(s => s.ResourceId == resourceId)
+            .Where(s => s.ParentResourceId != null)
+            .Select(s => new { s.ParentResourceType, s.ParentResourceId })
+            .FirstOrDefaultAsync(ct);
+
+        // If parent exists, recursively walk up the hierarchy
+        if (parentInfo?.ParentResourceId != null && !string.IsNullOrEmpty(parentInfo.ParentResourceType))
+        {
+            return await WalkParentHierarchyAsync(
+                parentInfo.ParentResourceType,
+                parentInfo.ParentResourceId.Value,
+                userId,
+                ct,
+                depth + 1);
+        }
 
         return null;
     }

@@ -37,6 +37,18 @@ public class ResourceShare : TenantEntity<Guid>, IAuditableEntity
     /// </summary>
     public string? SharedByUserId { get; private set; }
 
+    /// <summary>
+    /// Parent resource type for permission inheritance traversal.
+    /// Copied from the resource when the share is created.
+    /// </summary>
+    public string? ParentResourceType { get; private set; }
+
+    /// <summary>
+    /// Parent resource ID for permission inheritance traversal.
+    /// Copied from the resource when the share is created.
+    /// </summary>
+    public Guid? ParentResourceId { get; private set; }
+
     #region IAuditableEntity Implementation
 
     public string? CreatedBy { get; set; }
@@ -59,7 +71,9 @@ public class ResourceShare : TenantEntity<Guid>, IAuditableEntity
         string sharedWithUserId,
         SharePermission permission,
         string? sharedByUserId = null,
-        DateTimeOffset? expiresAt = null)
+        DateTimeOffset? expiresAt = null,
+        string? parentResourceType = null,
+        Guid? parentResourceId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(resourceType);
         ArgumentException.ThrowIfNullOrWhiteSpace(sharedWithUserId);
@@ -75,8 +89,33 @@ public class ResourceShare : TenantEntity<Guid>, IAuditableEntity
             SharedWithUserId = sharedWithUserId,
             Permission = permission,
             SharedByUserId = sharedByUserId,
-            ExpiresAt = expiresAt
+            ExpiresAt = expiresAt,
+            ParentResourceType = parentResourceType?.ToLowerInvariant(),
+            ParentResourceId = parentResourceId
         };
+    }
+
+    /// <summary>
+    /// Creates a new resource share from a resource, automatically capturing parent hierarchy.
+    /// </summary>
+    public static ResourceShare CreateFromResource(
+        IResource resource,
+        string sharedWithUserId,
+        SharePermission permission,
+        string? sharedByUserId = null,
+        DateTimeOffset? expiresAt = null)
+    {
+        ArgumentNullException.ThrowIfNull(resource);
+
+        return Create(
+            resource.ResourceType,
+            resource.Id,
+            sharedWithUserId,
+            permission,
+            sharedByUserId,
+            expiresAt,
+            resource.ParentResourceType,
+            resource.ParentResourceId);
     }
 
     /// <summary>
