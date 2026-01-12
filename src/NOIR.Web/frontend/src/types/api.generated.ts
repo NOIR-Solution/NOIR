@@ -185,6 +185,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/change-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change the current user's password
+         * @description Changes password after verifying current password. All sessions are revoked for security.
+         */
+        post: operations["ChangePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/audit/trail/{correlationId}": {
         parameters: {
             query?: never;
@@ -428,6 +448,10 @@ export interface components {
             refreshToken: string;
             /** Format: date-time */
             expiresAt: string;
+        };
+        ChangePasswordCommand: {
+            currentPassword: string;
+            newPassword: string;
         };
         CreateRoleCommand: {
             name: string;
@@ -1086,6 +1110,46 @@ export interface operations {
             };
             /** @description Bad Request */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ChangePassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordCommand"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
