@@ -1,14 +1,27 @@
 {
-  "name": "NOIR",
-  "generated": "2026-01-04",
-  "framework": ".NET 10 LTS",
-  "architecture": "Clean Architecture + CQRS + DDD",
-  "testCount": 1808,
-  "testBreakdown": {
-    "NOIR.Domain.UnitTests": 488,
-    "NOIR.Application.UnitTests": 993,
-    "NOIR.ArchitectureTests": 25,
-    "NOIR.IntegrationTests": 302
+  "project": {
+    "name": "NOIR",
+    "type": "Enterprise .NET 10 + React SaaS Foundation",
+    "architecture": "Clean Architecture, CQRS, DDD",
+    "generated": "2026-01-12"
+  },
+  "entryPoints": {
+    "backend": "src/NOIR.Web/Program.cs",
+    "frontend": "src/NOIR.Web/frontend/src/main.tsx",
+    "solution": "src/NOIR.sln",
+    "apiDocs": "/api/docs",
+    "openApi": "/api/openapi/v1.json",
+    "health": "/api/health",
+    "hangfire": "/hangfire"
+  },
+  "urls": {
+    "app": "http://localhost:3000",
+    "apiDocs": "http://localhost:3000/api/docs",
+    "hangfire": "http://localhost:3000/hangfire"
+  },
+  "credentials": {
+    "email": "admin@noir.local",
+    "password": "123qwe"
   },
   "structure": {
     "src": {
@@ -34,60 +47,45 @@
       }
     },
     "tests": {
-      "NOIR.Domain.UnitTests": "Domain unit tests",
-      "NOIR.Application.UnitTests": "Application unit tests",
-      "NOIR.ArchitectureTests": "Architecture constraint tests",
-      "NOIR.IntegrationTests": "Integration tests"
-    }
-  },
-  "entryPoints": {
-    "webApi": {
-      "path": "src/NOIR.Web/Program.cs",
-      "line": 1,
-      "purpose": "Application bootstrap, middleware pipeline"
-    },
-    "apiDocs": {
-      "route": "/api/docs",
-      "purpose": "Scalar API reference UI"
-    },
-    "openApi": {
-      "route": "/api/openapi/v1.json",
-      "purpose": "OpenAPI specification"
-    },
-    "health": {
-      "route": "/api/health",
-      "purpose": "Health check endpoint"
-    },
-    "hangfire": {
-      "route": "/hangfire",
-      "purpose": "Background jobs dashboard"
+      "NOIR.Domain.UnitTests": "Domain unit tests (488)",
+      "NOIR.Application.UnitTests": "Application unit tests (993)",
+      "NOIR.ArchitectureTests": "Architecture constraint tests (25)",
+      "NOIR.IntegrationTests": "Integration tests (302)"
     }
   },
   "modules": {
     "domain": {
+      "path": "src/NOIR.Domain",
       "baseClasses": [
         {"name": "Entity<TId>", "purpose": "Base entity with ID"},
         {"name": "AuditableEntity<TId>", "purpose": "Entity with created/modified tracking"},
-        {"name": "AggregateRoot<TId>", "purpose": "DDD aggregate root with domain events"},
+        {"name": "AggregateRoot<TId>", "purpose": "DDD aggregate root with soft delete"},
+        {"name": "ValueObject", "purpose": "DDD value object base"},
         {"name": "Result<T>", "purpose": "Railway-oriented result pattern"}
       ],
       "interfaces": [
         {"name": "IRepository<TEntity, TId>", "purpose": "Generic repository interface"},
-        {"name": "ISpecification<T>", "purpose": "Specification pattern interface"}
+        {"name": "IUnitOfWork", "purpose": "Unit of work for saving changes"},
+        {"name": "ISpecification<T>", "purpose": "Specification pattern interface"},
+        {"name": "IAuditableEntity", "purpose": "Audit fields interface"}
       ],
       "entities": [
-        {"name": "Permission", "purpose": "RBAC permissions"},
-        {"name": "RefreshToken", "purpose": "JWT refresh token management"},
-        {"name": "ResourceShare", "purpose": "Resource sharing between users"},
-        {"name": "EntityAuditLog", "purpose": "Entity change audit trail"},
-        {"name": "HandlerAuditLog", "purpose": "CQRS handler audit"},
-        {"name": "HttpRequestAuditLog", "purpose": "HTTP request audit"}
+        {"name": "Permission", "file": "Entities/Permission.cs", "purpose": "RBAC permissions (resource:action:scope)"},
+        {"name": "RefreshToken", "file": "Entities/RefreshToken.cs", "purpose": "JWT refresh token management"},
+        {"name": "ResourceShare", "file": "Entities/ResourceShare.cs", "purpose": "Resource sharing between users"},
+        {"name": "EmailTemplate", "file": "Entities/EmailTemplate.cs", "purpose": "Email template management"},
+        {"name": "PasswordResetOtp", "file": "Entities/PasswordResetOtp.cs", "purpose": "OTP for password reset"},
+        {"name": "AuditRetentionPolicy", "file": "Entities/AuditRetentionPolicy.cs", "purpose": "Audit log retention rules"},
+        {"name": "EntityAuditLog", "file": "Entities/EntityAuditLog.cs", "purpose": "Entity change audit trail"},
+        {"name": "HandlerAuditLog", "file": "Entities/HandlerAuditLog.cs", "purpose": "CQRS handler audit"},
+        {"name": "HttpRequestAuditLog", "file": "Entities/HttpRequestAuditLog.cs", "purpose": "HTTP request audit"}
       ]
     },
     "application": {
+      "path": "src/NOIR.Application",
       "features": {
         "Auth": {
-          "commands": ["Login", "Register", "RefreshToken", "UpdateUserProfile"],
+          "commands": ["Login", "Logout", "Register", "RefreshToken", "ChangePassword", "RequestEmailChange", "VerifyEmailChange", "UpdateUserProfile", "UploadAvatar", "DeleteAvatar"],
           "queries": ["GetCurrentUser", "GetUserById"]
         },
         "Users": {
@@ -103,131 +101,288 @@
           "queries": ["GetRolePermissions", "GetUserPermissions"]
         },
         "Audit": {
-          "commands": [],
-          "queries": ["GetAuditTrail", "GetEntityHistory", "GetHttpRequestAuditLogs", "ExportAuditLogs"]
+          "commands": ["CreateRetentionPolicy", "UpdateRetentionPolicy", "DeleteRetentionPolicy"],
+          "queries": ["GetAuditTrail", "GetEntityHistory", "SearchAuditLogs", "ExportAuditLogs", "GetRetentionStatistics"]
+        },
+        "EmailTemplates": {
+          "commands": ["UpdateEmailTemplate", "SendTestEmail"],
+          "queries": ["GetEmailTemplates", "GetEmailTemplate"]
+        },
+        "Tenants": {
+          "commands": ["CreateTenant", "UpdateTenant", "DeleteTenant"],
+          "queries": ["GetTenants", "GetTenant"]
+        },
+        "Notifications": {
+          "commands": ["MarkAsRead", "MarkAllAsRead", "DeleteNotification", "UpdatePreferences"],
+          "queries": ["GetNotifications", "GetPreferences"]
         }
       },
-      "specifications": ["RefreshTokens", "ResourceShares"],
-      "common": {
-        "interfaces": ["ITokenService", "IEmailService", "IFileStorage", "ICurrentUser", "IDateTime", "IDiffService"],
-        "exceptions": ["NotFoundException", "ValidationException", "ForbiddenAccessException"],
-        "models": ["PagedResult", "PaginatedList"],
-        "behaviors": ["LoggingMiddleware", "PerformanceMiddleware"]
-      }
+      "specifications": {
+        "RefreshTokens": ["ActiveRefreshTokensByUserSpec", "ExpiredRefreshTokensSpec", "RefreshTokenByValueSpec", "RefreshTokensByFamilySpec"],
+        "PasswordResetOtps": ["ActivePasswordResetOtpByEmailSpec", "PasswordResetOtpByResetTokenSpec", "PasswordResetOtpBySessionTokenSpec"],
+        "ResourceShares": ["ResourceShareByUserSpec", "ResourceSharesByResourceSpec", "ResourceSharesByUserSpec"]
+      },
+      "behaviors": ["LoggingMiddleware", "PerformanceMiddleware"],
+      "interfaces": [
+        "ITokenService", "IRefreshTokenService", "ICookieAuthService",
+        "IEmailService", "IFileStorage", "ICurrentUser", "IDateTime",
+        "IDiffService", "IDeviceFingerprintService", "IOtpService",
+        "IPasswordResetService", "IPermissionCacheInvalidator",
+        "IResourceAuthorizationService", "IRoleIdentityService",
+        "IUserIdentityService", "IAuditQueryService", "IAuditSearchService",
+        "IAuditStreamService", "IAuditEventQueue", "IBackgroundJobs",
+        "ILocalizationService", "ISecureTokenGenerator"
+      ]
     },
     "infrastructure": {
+      "path": "src/NOIR.Infrastructure",
       "persistence": {
         "dbContext": "ApplicationDbContext",
         "repository": "Repository<TEntity, TId>",
-        "specificationEvaluator": "SpecificationEvaluator",
         "configurations": "Persistence/Configurations/",
         "interceptors": ["AuditableEntityInterceptor", "DomainEventInterceptor", "TenantIdSetterInterceptor", "EntityAuditLogInterceptor"]
       },
       "identity": {
-        "applicationUser": "ApplicationUser",
-        "tokenService": "TokenService",
-        "refreshTokenService": "RefreshTokenService",
-        "handlers": "Identity/Handlers/"
+        "applicationUser": "Identity/ApplicationUser.cs",
+        "services": [
+          {"name": "TokenService", "purpose": "JWT token generation"},
+          {"name": "RefreshTokenService", "purpose": "Refresh token lifecycle"},
+          {"name": "CookieAuthService", "purpose": "Cookie-based auth"},
+          {"name": "PasswordResetService", "purpose": "Password reset flow"},
+          {"name": "UserIdentityService", "purpose": "User management"},
+          {"name": "RoleIdentityService", "purpose": "Role management"}
+        ],
+        "authorization": [
+          {"name": "PermissionAuthorizationHandler", "purpose": "Permission-based auth"},
+          {"name": "PermissionPolicyProvider", "purpose": "Dynamic policy creation"},
+          {"name": "ResourceAuthorizationHandler", "purpose": "Resource-level auth"},
+          {"name": "ResourceAuthorizationService", "purpose": "Resource auth queries"}
+        ]
       },
-      "audit": {
-        "handlerAuditMiddleware": "HandlerAuditMiddleware",
-        "httpRequestAuditMiddleware": "HttpRequestAuditMiddleware",
-        "auditRetentionJob": "AuditRetentionJob"
-      },
-      "services": ["EmailService", "FileStorageService", "DateTimeService", "CurrentUserService", "JsonDiffService", "DeviceFingerprintService", "BackgroundJobsService"]
+      "audit": [
+        {"name": "HandlerAuditMiddleware", "purpose": "Wolverine handler audit logging"},
+        {"name": "HttpRequestAuditMiddleware", "purpose": "HTTP request audit logging"},
+        {"name": "AuditQueryService", "purpose": "Audit log queries"},
+        {"name": "AuditSearchService", "purpose": "Advanced audit search"},
+        {"name": "AuditRetentionJob", "purpose": "Background audit cleanup"}
+      ],
+      "services": [
+        "EmailService", "FileStorageService", "DateTimeService",
+        "CurrentUserService", "JsonDiffService", "DeviceFingerprintService",
+        "BackgroundJobsService", "LocalizationService"
+      ]
     },
     "web": {
-      "endpoints": {
-        "Auth": {"prefix": "/api/auth", "file": "AuthEndpoints.cs"},
-        "Users": {"prefix": "/api/users", "file": "UserEndpoints.cs"},
-        "Roles": {"prefix": "/api/roles", "file": "RoleEndpoints.cs"},
-        "Audit": {"prefix": "/api/audit", "file": "AuditEndpoints.cs"}
-      },
+      "path": "src/NOIR.Web",
+      "endpoints": [
+        {"name": "AuthEndpoints", "prefix": "/api/auth", "file": "Endpoints/AuthEndpoints.cs"},
+        {"name": "UserEndpoints", "prefix": "/api/users", "file": "Endpoints/UserEndpoints.cs"},
+        {"name": "RoleEndpoints", "prefix": "/api/roles", "file": "Endpoints/RoleEndpoints.cs"},
+        {"name": "AuditEndpoints", "prefix": "/api/audit", "file": "Endpoints/AuditEndpoints.cs"},
+        {"name": "EmailTemplateEndpoints", "prefix": "/api/email-templates", "file": "Endpoints/EmailTemplateEndpoints.cs"},
+        {"name": "TenantEndpoints", "prefix": "/api/tenants", "file": "Endpoints/TenantEndpoints.cs"},
+        {"name": "NotificationEndpoints", "prefix": "/api/notifications", "file": "Endpoints/NotificationEndpoints.cs"}
+      ],
+      "hubs": [
+        {"name": "AuditStreamHub", "purpose": "Real-time audit streaming via SignalR"}
+      ],
       "middleware": ["ExceptionHandlingMiddleware", "SecurityHeadersMiddleware"]
     }
   },
-  "dependencies": {
-    "core": [
-      {"name": "WolverineFx", "version": "5.9.2", "purpose": "CQRS messaging/mediator"},
-      {"name": "FluentValidation", "version": "12.1.1", "purpose": "Command/query validation"},
-      {"name": "Riok.Mapperly", "version": "4.3.1", "purpose": "Source-generated object mapping"},
-      {"name": "Finbuckle.MultiTenant", "version": "10.0.1", "purpose": "Multi-tenancy"},
-      {"name": "Hangfire", "version": "1.8.22", "purpose": "Background jobs"}
-    ],
-    "data": [
-      {"name": "Microsoft.EntityFrameworkCore.SqlServer", "version": "10.0.1", "purpose": "SQL Server provider"},
-      {"name": "Microsoft.AspNetCore.Identity.EntityFrameworkCore", "version": "10.0.1", "purpose": "Identity storage"},
-      {"name": "FluentStorage", "version": "6.0.0", "purpose": "File storage abstraction"}
-    ],
-    "communication": [
-      {"name": "FluentEmail.Core", "version": "3.0.2", "purpose": "Email abstraction"},
-      {"name": "FluentEmail.MailKit", "version": "3.0.2", "purpose": "SMTP via MailKit"}
-    ],
-    "observability": [
-      {"name": "Serilog.AspNetCore", "version": "10.0.0", "purpose": "Structured logging"},
-      {"name": "Scalar.AspNetCore", "version": "2.11.10", "purpose": "API documentation UI"}
-    ],
-    "infrastructure": [
-      {"name": "Scrutor", "version": "7.0.0", "purpose": "DI auto-registration"},
-      {"name": "SystemTextJson.JsonDiffPatch", "version": "2.0.0", "purpose": "JSON diff for audit"}
-    ]
-  },
-  "configuration": {
-    "sections": [
-      {"name": "ConnectionStrings", "key": "DefaultConnection", "purpose": "SQL Server connection"},
-      {"name": "JwtSettings", "keys": ["Secret", "Issuer", "Audience", "ExpirationInMinutes"], "purpose": "JWT configuration"},
-      {"name": "Identity", "keys": ["Password", "Lockout"], "purpose": "Identity settings"},
-      {"name": "RateLimiting", "keys": ["PermitLimit", "WindowMinutes"], "purpose": "Rate limiting"},
-      {"name": "Email", "keys": ["SmtpHost", "SmtpPort"], "purpose": "SMTP configuration"},
-      {"name": "Storage", "keys": ["Provider", "LocalPath"], "purpose": "File storage"},
-      {"name": "AuditRetention", "keys": ["Enabled", "ArchiveAfterDays", "DeleteAfterDays"], "purpose": "Audit retention policy"},
-      {"name": "Finbuckle:MultiTenant", "purpose": "Tenant configuration"}
-    ],
-    "credentials": {
-      "default": {
-        "email": "admin@noir.local",
-        "password": "123qwe"
-      }
+  "endpoints": {
+    "auth": {
+      "base": "/api/auth",
+      "routes": [
+        {"method": "POST", "path": "/login", "purpose": "User login"},
+        {"method": "POST", "path": "/logout", "purpose": "User logout"},
+        {"method": "POST", "path": "/register", "purpose": "User registration"},
+        {"method": "POST", "path": "/refresh", "purpose": "Token refresh"},
+        {"method": "GET", "path": "/me", "purpose": "Current user info"},
+        {"method": "PUT", "path": "/me", "purpose": "Update profile"},
+        {"method": "POST", "path": "/me/avatar", "purpose": "Upload avatar"},
+        {"method": "DELETE", "path": "/me/avatar", "purpose": "Delete avatar"},
+        {"method": "POST", "path": "/me/change-password", "purpose": "Change password"},
+        {"method": "POST", "path": "/me/change-email/request", "purpose": "Request email change"},
+        {"method": "POST", "path": "/me/change-email/verify", "purpose": "Verify email change"}
+      ]
+    },
+    "users": {
+      "base": "/api/users",
+      "routes": [
+        {"method": "GET", "path": "/", "purpose": "List users"},
+        {"method": "GET", "path": "/{id}", "purpose": "Get user"},
+        {"method": "PUT", "path": "/{id}", "purpose": "Update user"},
+        {"method": "DELETE", "path": "/{id}", "purpose": "Delete user"},
+        {"method": "GET", "path": "/{id}/roles", "purpose": "Get user roles"},
+        {"method": "POST", "path": "/{id}/roles", "purpose": "Assign roles"}
+      ]
+    },
+    "roles": {
+      "base": "/api/roles",
+      "routes": [
+        {"method": "GET", "path": "/", "purpose": "List roles"},
+        {"method": "POST", "path": "/", "purpose": "Create role"},
+        {"method": "GET", "path": "/{id}", "purpose": "Get role"},
+        {"method": "PUT", "path": "/{id}", "purpose": "Update role"},
+        {"method": "DELETE", "path": "/{id}", "purpose": "Delete role"},
+        {"method": "GET", "path": "/{id}/permissions", "purpose": "Get role permissions"},
+        {"method": "POST", "path": "/{id}/permissions", "purpose": "Assign permissions"},
+        {"method": "DELETE", "path": "/{id}/permissions/{permissionId}", "purpose": "Remove permission"}
+      ]
+    },
+    "audit": {
+      "base": "/api/audit",
+      "routes": [
+        {"method": "GET", "path": "/http", "purpose": "HTTP request logs"},
+        {"method": "GET", "path": "/handlers", "purpose": "Handler logs"},
+        {"method": "GET", "path": "/entities", "purpose": "Entity change logs"},
+        {"method": "GET", "path": "/entities/{type}/{id}", "purpose": "Entity history"},
+        {"method": "GET", "path": "/search", "purpose": "Advanced search"},
+        {"method": "GET", "path": "/export", "purpose": "Export logs"},
+        {"method": "GET", "path": "/retention", "purpose": "Get retention policies"},
+        {"method": "POST", "path": "/retention", "purpose": "Create retention policy"},
+        {"method": "PUT", "path": "/retention/{id}", "purpose": "Update retention policy"},
+        {"method": "DELETE", "path": "/retention/{id}", "purpose": "Delete retention policy"}
+      ]
+    },
+    "emailTemplates": {
+      "base": "/api/email-templates",
+      "routes": [
+        {"method": "GET", "path": "/", "purpose": "List templates"},
+        {"method": "GET", "path": "/{id}", "purpose": "Get template"},
+        {"method": "PUT", "path": "/{id}", "purpose": "Update template"},
+        {"method": "POST", "path": "/{id}/preview", "purpose": "Preview template"},
+        {"method": "POST", "path": "/{id}/test", "purpose": "Send test email"}
+      ]
+    },
+    "tenants": {
+      "base": "/api/tenants",
+      "routes": [
+        {"method": "GET", "path": "/", "purpose": "List tenants"},
+        {"method": "POST", "path": "/", "purpose": "Create tenant"},
+        {"method": "GET", "path": "/{id}", "purpose": "Get tenant"},
+        {"method": "PUT", "path": "/{id}", "purpose": "Update tenant"},
+        {"method": "DELETE", "path": "/{id}", "purpose": "Delete tenant"}
+      ]
+    },
+    "notifications": {
+      "base": "/api/notifications",
+      "routes": [
+        {"method": "GET", "path": "/", "purpose": "List notifications"},
+        {"method": "PUT", "path": "/{id}/read", "purpose": "Mark as read"},
+        {"method": "POST", "path": "/mark-all-read", "purpose": "Mark all as read"},
+        {"method": "DELETE", "path": "/{id}", "purpose": "Delete notification"},
+        {"method": "GET", "path": "/preferences", "purpose": "Get preferences"},
+        {"method": "PUT", "path": "/preferences", "purpose": "Update preferences"}
+      ]
     }
   },
+  "technologies": {
+    "backend": {
+      "runtime": ".NET 10.0",
+      "orm": "EF Core 10.0",
+      "database": "SQL Server",
+      "cqrs": "Wolverine",
+      "jobs": "Hangfire",
+      "validation": "FluentValidation",
+      "mapping": "Mapperly",
+      "logging": "Serilog",
+      "realtime": "SignalR",
+      "multitenancy": "Finbuckle.MultiTenant",
+      "email": "FluentEmail",
+      "storage": "FluentStorage"
+    },
+    "frontend": {
+      "framework": "React 19",
+      "language": "TypeScript 5.9",
+      "build": "Vite 7",
+      "styling": "Tailwind CSS 4",
+      "routing": "React Router 7",
+      "components": "shadcn/ui",
+      "i18n": "i18next"
+    }
+  },
+  "statistics": {
+    "csharpSourceFiles": 377,
+    "csharpTestFiles": 112,
+    "frontendFiles": 87,
+    "documentationFiles": 24,
+    "projects": 8,
+    "tests": {
+      "domain": 488,
+      "application": 993,
+      "architecture": 25,
+      "integration": 302,
+      "total": 1808
+    }
+  },
+  "documentation": {
+    "patterns": [
+      "docs/backend/patterns/repository-specification.md",
+      "docs/backend/patterns/di-auto-registration.md",
+      "docs/backend/patterns/jwt-refresh-token.md",
+      "docs/backend/patterns/hierarchical-audit-logging.md",
+      "docs/backend/patterns/bulk-operations.md",
+      "docs/backend/patterns/entity-configuration.md"
+    ],
+    "research": [
+      "docs/backend/research/hierarchical-audit-logging-comparison-2025.md",
+      "docs/backend/research/role-permission-best-practices-2025.md",
+      "docs/backend/research/research_iunitofwork_efcore_best_practices_20260103.md"
+    ],
+    "frontend": [
+      "docs/frontend/architecture.md",
+      "docs/frontend/theme.md",
+      "docs/frontend/COLOR_SCHEMA_GUIDE.md",
+      "docs/frontend/api-types.md",
+      "docs/frontend/localization-guide.md",
+      "docs/frontend/vibe-kanban-integration.md"
+    ],
+    "decisions": [
+      "docs/decisions/001-tech-stack.md",
+      "docs/decisions/002-frontend-ui-stack.md",
+      "docs/decisions/003-vertical-slice-cqrs.md"
+    ],
+    "ai": ["CLAUDE.md", "AGENTS.md"]
+  },
+  "memories": [
+    "project-overview",
+    "architecture-patterns",
+    "api-endpoints",
+    "application-features",
+    "domain-entities",
+    "frontend-architecture",
+    "infrastructure-services",
+    "authentication-authorization",
+    "coding-standards",
+    "testing-strategy"
+  ],
+  "criticalPatterns": [
+    "Use Specifications for all database queries - never raw DbSet",
+    "Tag all specifications with TagWith() for SQL debugging",
+    "Use IUnitOfWork for persistence - repositories don't auto-save",
+    "Use AsTracking for mutation specs - default is AsNoTracking",
+    "Soft delete only - never hard delete except for GDPR",
+    "Marker interfaces for DI: IScopedService, ITransientService, ISingletonService",
+    "Co-locate Command + Handler + Validator in same folder"
+  ],
   "commands": {
     "build": "dotnet build src/NOIR.sln",
     "run": "dotnet run --project src/NOIR.Web",
     "watch": "dotnet watch --project src/NOIR.Web",
     "test": "dotnet test src/NOIR.sln",
-    "migration": "dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web"
-  },
-  "patterns": {
-    "repository-specification": "docs/backend/patterns/repository-specification.md",
-    "di-auto-registration": "docs/backend/patterns/di-auto-registration.md",
-    "entity-configuration": "docs/backend/patterns/entity-configuration.md",
-    "jwt-refresh-token": "docs/backend/patterns/jwt-refresh-token.md",
-    "hierarchical-audit-logging": "docs/backend/patterns/hierarchical-audit-logging.md",
-    "bulk-operations": "docs/backend/patterns/bulk-operations.md"
-  },
-  "research": {
-    "audit-logging-comparison": "docs/backend/research/hierarchical-audit-logging-comparison-2025.md",
-    "role-permission-best-practices": "docs/backend/research/role-permission-best-practices-2025.md",
-    "iunitofwork-efcore": "docs/backend/research/research_iunitofwork_efcore_best_practices_20260103.md"
-  },
-  "decisions": {
-    "001-tech-stack": "docs/decisions/001-tech-stack.md",
-    "002-frontend-ui-stack": "docs/decisions/002-frontend-ui-stack.md"
-  },
-  "frontend": {
-    "architecture": "docs/frontend/architecture.md",
-    "theme": "docs/frontend/theme.md",
-    "api-types": "docs/frontend/api-types.md",
-    "localization": "docs/frontend/localization-guide.md"
+    "migration": "dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web",
+    "frontendDev": "cd src/NOIR.Web/frontend && npm run dev",
+    "frontendBuild": "cd src/NOIR.Web/frontend && npm run build",
+    "generateApi": "cd src/NOIR.Web/frontend && npm run generate:api"
   },
   "taskGuide": {
     "addEntity": ["Domain/Entities/", "Infrastructure/Persistence/Configurations/"],
     "addEndpoint": ["Web/Endpoints/"],
-    "addCommand": ["Application/Features/<Feature>/Commands/"],
-    "addQuery": ["Application/Features/<Feature>/Queries/"],
-    "addHandler": ["Infrastructure/Identity/Handlers/"],
+    "addCommand": ["Application/Features/<Feature>/Commands/<Action>/"],
+    "addQuery": ["Application/Features/<Feature>/Queries/<Action>/"],
     "addSpecification": ["Application/Specifications/"],
-    "addValidation": ["Application/Features/<Feature>/Commands/<Command>Validator.cs"],
+    "addValidation": "Application/Features/<Feature>/Commands/<Action>/<Action>CommandValidator.cs",
     "configureDI": "Add marker interface (IScopedService, ITransientService, ISingletonService)"
   }
 }

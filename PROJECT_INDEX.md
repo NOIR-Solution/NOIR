@@ -1,8 +1,32 @@
 # Project Index: NOIR
 
-**Generated:** 2026-01-04
+**Generated:** 2026-01-12
 **Type:** Enterprise .NET 10 + React SaaS Foundation
 **Architecture:** Clean Architecture, CQRS, DDD
+
+---
+
+## Quick Start
+
+```bash
+# Build & Run
+dotnet build src/NOIR.sln
+dotnet run --project src/NOIR.Web
+
+# Frontend (separate terminal)
+cd src/NOIR.Web/frontend && npm install && npm run dev
+
+# Tests (1,808 tests)
+dotnet test src/NOIR.sln
+
+# Admin Login: admin@noir.local / 123qwe
+```
+
+| URL | Purpose |
+|-----|---------|
+| `http://localhost:3000` | Application (frontend + API via proxy) |
+| `http://localhost:3000/api/docs` | API documentation (Scalar) |
+| `http://localhost:3000/hangfire` | Background jobs dashboard |
 
 ---
 
@@ -24,9 +48,9 @@ NOIR/
 ├── docs/
 │   ├── backend/patterns/      # 6 pattern docs
 │   ├── backend/research/      # 3 research docs
-│   ├── frontend/              # 4 frontend docs
-│   └── decisions/             # 2 ADRs
-└── .claude/commands/          # 3 Claude Code skills
+│   ├── frontend/              # 7 frontend docs
+│   └── decisions/             # 3 ADRs
+└── .serena/memories/          # 11 AI context memories
 ```
 
 ---
@@ -44,38 +68,169 @@ NOIR/
 ## Core Modules
 
 ### Domain Layer (`src/NOIR.Domain/`)
-| Module | Purpose |
-|--------|---------|
-| `Entities/` | EntityAuditLog, HandlerAuditLog, HttpRequestAuditLog, Permission, RefreshToken, ResourceShare |
-| `Common/` | Entity, AuditableEntity, AggregateRoot, ValueObject, Result, Permissions, Roles |
-| `Interfaces/` | IRepository, ISpecification, IUnitOfWork |
+
+| Module | Files | Purpose |
+|--------|-------|---------|
+| `Entities/` | 10 | EntityAuditLog, HandlerAuditLog, HttpRequestAuditLog, Permission, RefreshToken, ResourceShare, EmailTemplate, AuditRetentionPolicy, PasswordResetOtp |
+| `Common/` | 18 | Entity, AuditableEntity, AggregateRoot, ValueObject, Result, Permissions, Roles, ErrorCodes |
+| `Interfaces/` | 2 | IRepository, IUnitOfWork |
+| `Specifications/` | 1 | ISpecification base |
 
 ### Application Layer (`src/NOIR.Application/`)
+
+| Feature | Commands | Queries | Purpose |
+|---------|----------|---------|---------|
+| `Auth/` | 9 | 2 | Login, Logout, Register, RefreshToken, ChangePassword, ChangeEmail, UpdateProfile, Avatar |
+| `Users/` | 3 | 2 | CRUD, AssignRoles, GetUserRoles |
+| `Roles/` | 3 | 2 | CRUD, GetRoleById |
+| `Permissions/` | 2 | 2 | Assign/Remove permissions to roles |
+| `Audit/` | 3 | 5 | AuditTrail, EntityHistory, Search, Export, RetentionPolicy |
+| `EmailTemplates/` | 2 | 2 | Update templates, SendTestEmail, Preview |
+| `Tenants/` | 3 | 2 | CRUD, Multi-tenant management |
+| `Notifications/` | 4 | 2 | MarkAsRead, Delete, Preferences, List |
+
+**Supporting Modules:**
 | Module | Purpose |
 |--------|---------|
-| `Features/Auth/` | Login, Logout, Register, GetCurrentUser, UpdateProfile |
-| `Features/Users/` | CRUD, AssignRoles, GetUserRoles |
-| `Features/Roles/` | CRUD, Permissions management |
-| `Features/Permissions/` | Assign/Remove permissions to roles |
-| `Features/Audit/` | GetAuditTrail, ExportAuditLogs, EntityHistory |
 | `Behaviors/` | LoggingMiddleware, PerformanceMiddleware |
-| `Common/Interfaces/` | ICurrentUser, ITokenService, IEmailService, IFileStorage |
+| `Specifications/` | RefreshTokens, PasswordResetOtps, ResourceShares |
+| `Common/Interfaces/` | ICurrentUser, ITokenService, IEmailService, IFileStorage, +25 more |
 
 ### Infrastructure Layer (`src/NOIR.Infrastructure/`)
-| Module | Purpose |
-|--------|---------|
-| `Persistence/` | ApplicationDbContext, Repositories, Specifications |
-| `Identity/` | ApplicationUser, TokenService, JwtSettings |
-| `Identity/Authorization/` | PermissionHandler, ResourceAuthorization |
-| `Audit/` | HandlerAuditMiddleware, HttpRequestAuditMiddleware |
-| `Services/` | EmailService, FileStorage, BackgroundJobs |
+
+| Module | Files | Purpose |
+|--------|-------|---------|
+| `Persistence/` | 15+ | ApplicationDbContext, Repositories, Entity Configurations |
+| `Identity/` | 9 | ApplicationUser, TokenService, RefreshTokenService, PasswordResetService |
+| `Identity/Authorization/` | 8 | PermissionHandler, PermissionPolicyProvider, ResourceAuthorization |
+| `Audit/` | 8 | HandlerAuditMiddleware, HttpRequestAuditMiddleware, AuditSearchService |
+| `Email/` | 4 | FluentEmail integration, templating |
+| `Storage/` | 2 | FluentStorage file storage |
+| `BackgroundJobs/` | 2 | Hangfire job implementations |
+| `Localization/` | 2 | i18n service implementations |
 
 ### Web Layer (`src/NOIR.Web/`)
-| Module | Purpose |
-|--------|---------|
-| `Endpoints/` | Minimal API endpoints (Auth, Users, Roles, Audit) |
-| `Middleware/` | ExceptionHandling, SecurityHeaders |
-| `frontend/` | React 19 SPA with Vite |
+
+| Module | Files | Purpose |
+|--------|-------|---------|
+| `Endpoints/` | 7 | Auth, Users, Roles, Audit, EmailTemplates, Tenants, Notifications |
+| `Middleware/` | 4 | ExceptionHandling, SecurityHeaders, Correlation |
+| `Hubs/` | 3 | SignalR for real-time audit streaming |
+| `Extensions/` | 5 | Service configuration, result extensions |
+| `frontend/` | 87 | React 19 SPA |
+
+---
+
+## API Endpoints
+
+### Authentication (`/api/auth/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| POST | `/login` | User login (JWT + optional cookies) |
+| POST | `/logout` | User logout |
+| POST | `/register` | User registration |
+| POST | `/refresh` | Token refresh |
+| GET | `/me` | Current user info |
+| PUT | `/me` | Update profile |
+| POST | `/me/avatar` | Upload avatar |
+| DELETE | `/me/avatar` | Delete avatar |
+| POST | `/me/change-password` | Change password |
+| POST | `/me/change-email/request` | Request email change |
+| POST | `/me/change-email/verify` | Verify email change OTP |
+
+### Users (`/api/users/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/` | List users (paginated) |
+| GET | `/{id}` | Get user by ID |
+| PUT | `/{id}` | Update user |
+| DELETE | `/{id}` | Delete user (soft) |
+| GET | `/{id}/roles` | Get user roles |
+| POST | `/{id}/roles` | Assign roles |
+
+### Roles (`/api/roles/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/` | List roles |
+| POST | `/` | Create role |
+| GET | `/{id}` | Get role by ID |
+| PUT | `/{id}` | Update role |
+| DELETE | `/{id}` | Delete role |
+| GET | `/{id}/permissions` | Get role permissions |
+| POST | `/{id}/permissions` | Assign permissions |
+| DELETE | `/{id}/permissions/{permissionId}` | Remove permission |
+
+### Audit (`/api/audit/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/http` | HTTP request logs |
+| GET | `/handlers` | Handler execution logs |
+| GET | `/entities` | Entity change logs |
+| GET | `/entities/{type}/{id}` | Entity history |
+| GET | `/search` | Advanced search |
+| GET | `/export` | Export logs |
+| GET | `/retention` | Get retention policies |
+| POST | `/retention` | Create retention policy |
+| PUT | `/retention/{id}` | Update retention policy |
+| DELETE | `/retention/{id}` | Delete retention policy |
+
+### Email Templates (`/api/email-templates/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/` | List templates |
+| GET | `/{id}` | Get template |
+| PUT | `/{id}` | Update template |
+| POST | `/{id}/preview` | Preview template |
+| POST | `/{id}/test` | Send test email |
+
+### Tenants (`/api/tenants/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/` | List tenants |
+| POST | `/` | Create tenant |
+| GET | `/{id}` | Get tenant |
+| PUT | `/{id}` | Update tenant |
+| DELETE | `/{id}` | Delete tenant |
+
+### Notifications (`/api/notifications/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/` | List notifications |
+| PUT | `/{id}/read` | Mark as read |
+| POST | `/mark-all-read` | Mark all as read |
+| DELETE | `/{id}` | Delete notification |
+| GET | `/preferences` | Get notification preferences |
+| PUT | `/preferences` | Update preferences |
+
+---
+
+## Frontend Structure
+
+```
+frontend/src/
+├── components/
+│   ├── audit/              # Audit dashboard, retention manager
+│   ├── decorative/         # Background animations
+│   ├── forgot-password/    # Password reset flow components
+│   ├── notifications/      # Real-time notification system
+│   ├── portal/             # Sidebar navigation
+│   ├── settings/           # Profile, password, email change
+│   └── ui/                 # shadcn/ui base components
+├── contexts/               # Auth, Notification, Language
+├── hooks/                  # useLogin, useImageUpload, useSignalR, useTenants
+├── i18n/                   # i18next setup, language switching
+├── layouts/                # PortalLayout with sidebar
+├── lib/                    # Utilities, validation, gravatar
+├── pages/
+│   ├── forgot-password/    # Password reset flow
+│   ├── portal/             # Dashboard, Settings, Notifications
+│   │   ├── admin/tenants/  # Tenant management
+│   │   └── email-templates/# Email template editor
+│   ├── Landing.tsx
+│   └── Login.tsx
+├── services/               # API clients
+└── types/                  # TypeScript types + generated API types
+```
 
 ---
 
@@ -92,6 +247,10 @@ NOIR/
 | FluentValidation | Latest | Request validation |
 | Mapperly | Latest | Compile-time mapping |
 | Serilog | Latest | Structured logging |
+| SignalR | Latest | Real-time notifications |
+| Finbuckle.MultiTenant | Latest | Multi-tenancy |
+| FluentEmail | Latest | Email sending |
+| FluentStorage | Latest | File storage abstraction |
 
 ### Frontend
 | Technology | Version | Purpose |
@@ -106,39 +265,6 @@ NOIR/
 
 ---
 
-## API Endpoints
-
-### Authentication (`/api/auth/`)
-- `POST /login` - User login
-- `POST /logout` - User logout
-- `POST /register` - User registration
-- `POST /refresh` - Token refresh
-- `GET /me` - Current user info
-
-### Users (`/api/users/`)
-- `GET /` - List users (paginated)
-- `GET /{id}` - Get user by ID
-- `PUT /{id}` - Update user
-- `DELETE /{id}` - Delete user (soft)
-- `GET /{id}/roles` - Get user roles
-- `POST /{id}/roles` - Assign roles
-
-### Roles (`/api/roles/`)
-- `GET /` - List roles
-- `POST /` - Create role
-- `PUT /{id}` - Update role
-- `DELETE /{id}` - Delete role
-- `GET /{id}/permissions` - Get role permissions
-- `POST /{id}/permissions` - Assign permissions
-
-### Audit (`/api/audit/`)
-- `GET /http` - HTTP request logs
-- `GET /handlers` - Handler execution logs
-- `GET /entities` - Entity change logs
-- `GET /entities/{type}/{id}` - Entity history
-
----
-
 ## Configuration
 
 | File | Purpose |
@@ -147,31 +273,31 @@ NOIR/
 | `src/NOIR.Web/appsettings.Development.json` | Dev overrides |
 | `docker-compose.yml` | SQL Server + MailHog |
 | `Dockerfile` | Production container |
+| `Directory.Build.props` | Shared MSBuild properties |
 
 ---
 
-## Quick Commands
+## Critical Patterns
 
-```bash
-# Build & Run
-dotnet build src/NOIR.sln
-dotnet run --project src/NOIR.Web
-dotnet watch --project src/NOIR.Web
+1. **Use Specifications** for all database queries - never raw `DbSet`
+2. **Tag all specifications** with `TagWith("MethodName")` for SQL debugging
+3. **Use IUnitOfWork** for persistence - repositories don't auto-save
+4. **Use AsTracking** for mutation specs - default is `AsNoTracking`
+5. **Soft delete only** - never hard delete (except GDPR)
+6. **Marker interfaces** for DI: `IScopedService`, `ITransientService`, `ISingletonService`
+7. **Co-locate Command + Handler + Validator** in same folder
 
-# Tests (1,808 total)
-dotnet test src/NOIR.sln
+---
 
-# Frontend
-cd src/NOIR.Web/frontend
-npm install && npm run dev
-npm run generate:api  # Sync types from backend
+## File Statistics
 
-# Database
-dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web
-
-# Docker
-docker-compose up -d  # Start SQL Server + MailHog
-```
+| Category | Count |
+|----------|-------|
+| C# Source Files | 377 |
+| C# Test Files | 112 |
+| Frontend TS/TSX | 87 |
+| Documentation (MD) | 24 |
+| Projects (csproj) | 8 |
 
 ---
 
@@ -189,7 +315,7 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ## Documentation
 
-### Backend
+### Backend Patterns
 - [Repository & Specification](docs/backend/patterns/repository-specification.md)
 - [DI Auto-Registration](docs/backend/patterns/di-auto-registration.md)
 - [JWT Refresh Tokens](docs/backend/patterns/jwt-refresh-token.md)
@@ -200,35 +326,32 @@ docker-compose up -d  # Start SQL Server + MailHog
 ### Frontend
 - [Architecture](docs/frontend/architecture.md)
 - [Theme](docs/frontend/theme.md)
+- [Color Schema Guide](docs/frontend/COLOR_SCHEMA_GUIDE.md)
 - [API Types](docs/frontend/api-types.md)
 - [Localization](docs/frontend/localization-guide.md)
+- [Vibe Kanban Integration](docs/frontend/vibe-kanban-integration.md)
+
+### Architecture Decisions
+- [001 - Tech Stack](docs/decisions/001-tech-stack.md)
+- [002 - Frontend UI Stack](docs/decisions/002-frontend-ui-stack.md)
+- [003 - Vertical Slice CQRS](docs/decisions/003-vertical-slice-cqrs.md)
 
 ### AI Instructions
 - [CLAUDE.md](CLAUDE.md) - Claude Code specific
 - [AGENTS.md](AGENTS.md) - Universal AI agents
 
----
-
-## Critical Patterns
-
-1. **Use Specifications** for all database queries
-2. **Tag all specifications** with `TagWith("MethodName")`
-3. **Use IUnitOfWork** for persistence (repos don't auto-save)
-4. **Use AsTracking** for mutation specs
-5. **Soft delete only** - Never hard delete
-6. **Marker interfaces** for DI: `IScopedService`, `ITransientService`, `ISingletonService`
-
----
-
-## File Statistics
-
-| Category | Count |
-|----------|-------|
-| C# Source Files | 229 |
-| C# Test Files | 98 |
-| Frontend TS/TSX | 36 |
-| Documentation (MD) | 46 |
-| Projects (csproj) | 8 |
+### AI Context (Serena Memories)
+Available memories for quick context:
+- `project-overview` - High-level project summary
+- `architecture-patterns` - Repository, specification, CQRS patterns
+- `api-endpoints` - Endpoint patterns and conventions
+- `application-features` - Feature module structure
+- `domain-entities` - Entity definitions and patterns
+- `frontend-architecture` - React architecture and patterns
+- `infrastructure-services` - Service implementations
+- `authentication-authorization` - JWT, permissions, roles
+- `coding-standards` - Coding conventions and rules
+- `testing-strategy` - Test patterns and coverage
 
 ---
 
@@ -239,4 +362,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Index size: ~4KB | Full codebase read: ~60KB+ tokens*
+*Index size: ~6KB | Full codebase context: ~80KB+ tokens*
