@@ -22,7 +22,7 @@ public class GetEmailTemplateQueryHandler
         if (template is null)
         {
             return Result.Failure<EmailTemplateDto>(
-                Error.NotFound("NOIR-EMAIL-001", $"Email template with ID '{query.Id}' not found."));
+                Error.NotFound($"Email template with ID '{query.Id}' not found.", "NOIR-EMAIL-001"));
         }
 
         var dto = new EmailTemplateDto(

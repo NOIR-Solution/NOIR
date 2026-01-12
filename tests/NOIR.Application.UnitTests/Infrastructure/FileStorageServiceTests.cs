@@ -388,20 +388,40 @@ public class FileStorageServiceTests
     #region GetPublicUrl Tests
 
     [Fact]
-    public void GetPublicUrl_ShouldReturnNull()
+    public void GetPublicUrl_ShouldReturnApiEndpointUrl()
     {
         // Act
         var result = _sut.GetPublicUrl("test.txt");
+
+        // Assert
+        result.Should().Be("/api/files/test.txt");
+    }
+
+    [Fact]
+    public void GetPublicUrl_WithNestedPath_ShouldReturnApiEndpointUrl()
+    {
+        // Act
+        var result = _sut.GetPublicUrl("folder/subfolder/file.txt");
+
+        // Assert
+        result.Should().Be("/api/files/folder/subfolder/file.txt");
+    }
+
+    [Fact]
+    public void GetPublicUrl_WithEmptyPath_ShouldReturnNull()
+    {
+        // Act
+        var result = _sut.GetPublicUrl("");
 
         // Assert
         result.Should().BeNull();
     }
 
     [Fact]
-    public void GetPublicUrl_WithAnyPath_ShouldReturnNull()
+    public void GetPublicUrl_WithNullPath_ShouldReturnNull()
     {
         // Act
-        var result = _sut.GetPublicUrl("folder/subfolder/file.txt");
+        var result = _sut.GetPublicUrl(null!);
 
         // Assert
         result.Should().BeNull();

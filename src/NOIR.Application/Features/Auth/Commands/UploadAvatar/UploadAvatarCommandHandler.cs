@@ -48,6 +48,7 @@ public class UploadAvatarCommandHandler : IScopedService
         {
             return Result.Failure<AvatarUploadResultDto>(
                 Error.Validation(
+                    "avatar",
                     _localization["profile.avatar.invalidFormat"],
                     ErrorCodes.Validation.InvalidInput));
         }
@@ -89,8 +90,8 @@ public class UploadAvatarCommandHandler : IScopedService
 
             return Result.Failure<AvatarUploadResultDto>(
                 Error.Failure(
-                    string.Join(", ", updateResult.Errors),
-                    ErrorCodes.Auth.UpdateFailed));
+                    ErrorCodes.Auth.UpdateFailed,
+                    string.Join(", ", updateResult.Errors)));
         }
 
         return Result.Success(new AvatarUploadResultDto(

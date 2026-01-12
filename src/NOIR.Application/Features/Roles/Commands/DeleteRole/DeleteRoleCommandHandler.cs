@@ -32,7 +32,7 @@ public class DeleteRoleCommandHandler
         if (systemRoles.Contains(role.Name, StringComparer.OrdinalIgnoreCase))
         {
             return Result.Failure<bool>(
-                Error.Validation(_localization["roles.cannotDeleteSystemRole"], ErrorCodes.Business.CannotDelete));
+                Error.Validation("role", _localization["roles.cannotDeleteSystemRole"], ErrorCodes.Business.CannotDelete));
         }
 
         // Check if role has users
@@ -41,6 +41,7 @@ public class DeleteRoleCommandHandler
         {
             return Result.Failure<bool>(
                 Error.Validation(
+                    "role",
                     string.Format(_localization["roles.hasAssignedUsers"], userCount),
                     ErrorCodes.Business.CannotDelete));
         }

@@ -32,6 +32,7 @@ public class UpdateRoleCommandHandler
         {
             return Result.Failure<RoleDto>(
                 Error.Validation(
+                    "name",
                     string.Format(_localization["roles.alreadyExists"], command.Name),
                     ErrorCodes.Business.AlreadyExists));
         }

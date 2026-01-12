@@ -27,7 +27,7 @@ public class UpdateEmailTemplateCommandHandler
         if (template is null)
         {
             return Result.Failure<EmailTemplateDto>(
-                Error.NotFound("NOIR-EMAIL-001", $"Email template with ID '{command.Id}' not found."));
+                Error.NotFound($"Email template with ID '{command.Id}' not found.", "NOIR-EMAIL-001"));
         }
 
         // Update the template (this increments the version)

@@ -30,7 +30,7 @@ public class SendTestEmailCommandHandler
         if (template is null)
         {
             return Result.Failure<EmailPreviewResponse>(
-                Error.NotFound("NOIR-EMAIL-001", $"Email template with ID '{command.TemplateId}' not found."));
+                Error.NotFound($"Email template with ID '{command.TemplateId}' not found.", "NOIR-EMAIL-001"));
         }
 
         // Replace variables in subject and body

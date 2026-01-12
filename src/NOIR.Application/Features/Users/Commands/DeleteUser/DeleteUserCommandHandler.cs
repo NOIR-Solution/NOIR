@@ -34,7 +34,7 @@ public class DeleteUserCommandHandler
         if (_currentUser.UserId == command.UserId)
         {
             return Result.Failure<bool>(
-                Error.Validation(_localization["users.cannotDeleteSelf"], ErrorCodes.Validation.General));
+                Error.Validation("userId", _localization["users.cannotDeleteSelf"], ErrorCodes.Business.CannotDelete));
         }
 
         // Soft delete user

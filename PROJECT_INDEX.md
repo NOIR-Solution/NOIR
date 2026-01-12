@@ -1,6 +1,6 @@
 # Project Index: NOIR
 
-**Generated:** 2026-01-12
+**Generated:** 2026-01-12 (Updated)
 **Type:** Enterprise .NET 10 + React SaaS Foundation
 **Architecture:** Clean Architecture, CQRS, DDD
 
@@ -16,7 +16,7 @@ dotnet run --project src/NOIR.Web
 # Frontend (separate terminal)
 cd src/NOIR.Web/frontend && npm install && npm run dev
 
-# Tests (1,808 tests)
+# Tests (2,050 tests)
 dotnet test src/NOIR.sln
 
 # Admin Login: admin@noir.local / 123qwe
@@ -42,7 +42,7 @@ NOIR/
 │       └── frontend/          # React 19 SPA
 ├── tests/
 │   ├── NOIR.Domain.UnitTests/       # 488 tests
-│   ├── NOIR.Application.UnitTests/  # 993 tests
+│   ├── NOIR.Application.UnitTests/  # 1,235 tests
 │   ├── NOIR.ArchitectureTests/      # 25 tests
 │   └── NOIR.IntegrationTests/       # 302 tests
 ├── docs/
@@ -80,14 +80,16 @@ NOIR/
 
 | Feature | Commands | Queries | Purpose |
 |---------|----------|---------|---------|
-| `Auth/` | 9 | 2 | Login, Logout, Register, RefreshToken, ChangePassword, ChangeEmail, UpdateProfile, Avatar |
+| `Auth/` | 10 | 3 | Login, Logout, Register, RefreshToken, ChangePassword, ChangeEmail, UpdateProfile, Avatar, RevokeSession, GetActiveSessions |
 | `Users/` | 3 | 2 | CRUD, AssignRoles, GetUserRoles |
 | `Roles/` | 3 | 2 | CRUD, GetRoleById |
 | `Permissions/` | 2 | 2 | Assign/Remove permissions to roles |
-| `Audit/` | 3 | 5 | AuditTrail, EntityHistory, Search, Export, RetentionPolicy |
+| `Audit/` | 0 | 5 | AuditTrail, EntityHistory, Search, Export, RetentionPolicy |
 | `EmailTemplates/` | 2 | 2 | Update templates, SendTestEmail, Preview |
 | `Tenants/` | 3 | 2 | CRUD, Multi-tenant management |
-| `Notifications/` | 4 | 2 | MarkAsRead, Delete, Preferences, List |
+| `Notifications/` | 4 | 3 | MarkAsRead, Delete, Preferences, List, UnreadCount |
+
+**Totals:** 29 Command Handlers, 21 Query Handlers (50 handlers total)
 
 **Supporting Modules:**
 | Module | Purpose |
@@ -305,11 +307,23 @@ frontend/src/
 
 | Project | Tests | Duration |
 |---------|-------|----------|
-| Domain.UnitTests | 488 | ~250ms |
-| Application.UnitTests | 993 | ~1s |
-| ArchitectureTests | 25 | ~1s |
-| IntegrationTests | 302 | ~40s |
-| **Total** | **1,808** | ~43s |
+| Domain.UnitTests | 488 | ~120ms |
+| Application.UnitTests | 1,235 | ~1s |
+| ArchitectureTests | 25 | ~960ms |
+| IntegrationTests | 302 | ~26s |
+| **Total** | **2,050** | ~28s |
+
+### Handler Test Coverage (31 test files)
+
+| Feature | Handler Tests |
+|---------|---------------|
+| Auth | LoginCommand, Logout, Register, RefreshToken, ChangePassword, RevokeSession, UploadAvatar, DeleteAvatar, GetCurrentUser |
+| Roles | CreateRole, UpdateRole, DeleteRole |
+| Permissions | AssignPermissionToRole, RemovePermissionFromRole |
+| Users | UpdateUser, DeleteUser, AssignRolesToUser |
+| Tenants | CreateTenant, UpdateTenant, DeleteTenant |
+| EmailTemplates | GetEmailTemplate, GetEmailTemplates, UpdateEmailTemplate, SendTestEmail |
+| Notifications | MarkAsRead, MarkAllAsRead, DeleteNotification, UpdatePreferences, GetPreferences, GetNotifications, GetUnreadCount |
 
 ---
 
@@ -362,4 +376,22 @@ Available memories for quick context:
 
 ---
 
-*Index size: ~6KB | Full codebase context: ~80KB+ tokens*
+---
+
+## Recent Changes (2026-01-12)
+
+- Test coverage increased from 1,808 to 2,050 tests (+13%)
+- Added 21 new handler test files covering all major features
+- Fixed Error.Validation/Error.Failure/Error.NotFound parameter order bugs in:
+  - UploadAvatarCommandHandler
+  - DeleteAvatarCommandHandler
+  - DeleteRoleCommandHandler
+  - UpdateRoleCommandHandler
+  - DeleteUserCommandHandler
+  - GetEmailTemplateQueryHandler
+  - UpdateEmailTemplateCommandHandler
+  - SendTestEmailCommandHandler
+
+---
+
+*Index size: ~8KB | Full codebase context: ~100KB+ tokens*
