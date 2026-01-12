@@ -343,10 +343,12 @@ app.MapRoleEndpoints();
 app.MapTenantEndpoints();
 app.MapUserEndpoints();
 app.MapEmailTemplateEndpoints();
+app.MapNotificationEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<AuditHub>("/hubs/audit")
     .RequireAuthorization(policy => policy.RequireClaim(Permissions.ClaimType, Permissions.AuditStream));
+app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");
 
 // Hangfire Dashboard (requires Admin role in production, skip in Testing)
 if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))

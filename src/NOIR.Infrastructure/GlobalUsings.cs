@@ -103,14 +103,17 @@ global using NOIR.Application.Features.Permissions.Queries.GetRolePermissions;
 global using NOIR.Application.Features.Permissions.Queries.GetUserPermissions;
 global using NOIR.Application.Specifications;
 global using NOIR.Application.Specifications.EmailChangeOtps;
+global using NOIR.Application.Specifications.Notifications;
 global using NOIR.Application.Specifications.RefreshTokens;
 global using NOIR.Application.Specifications.ResourceShares;
 global using NOIR.Application.Specifications.PasswordResetOtps;
 
 // NOIR Domain
 global using NOIR.Domain.Common;
+global using NOIR.Domain.Enums;
 global using NOIR.Domain.Interfaces;
 global using NOIR.Domain.Specifications;
+global using NOIR.Domain.ValueObjects;
 
 // Microsoft - Authorization
 global using Microsoft.AspNetCore.Authorization;
@@ -119,6 +122,7 @@ global using Microsoft.AspNetCore.Authorization;
 global using NOIR.Infrastructure.Audit;
 global using NOIR.Infrastructure.BackgroundJobs;
 global using NOIR.Infrastructure.Email;
+global using NOIR.Infrastructure.Hubs;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Identity.Authorization;
 global using NOIR.Infrastructure.Persistence;

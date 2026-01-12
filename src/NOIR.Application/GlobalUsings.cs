@@ -43,6 +43,7 @@ global using NOIR.Application.Features.EmailTemplates.Specifications;
 global using NOIR.Application.Features.Audit.Specifications;
 global using NOIR.Application.Features.Tenants.DTOs;
 global using NOIR.Application.Specifications;
+global using NOIR.Application.Specifications.Notifications;
 global using NOIR.Application.Specifications.PasswordResetOtps;
 
 // Finbuckle MultiTenant Abstractions
@@ -53,6 +54,7 @@ global using Finbuckle.MultiTenant.Abstractions;
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Enums;
 global using NOIR.Domain.Interfaces;
 global using NOIR.Domain.Specifications;
 

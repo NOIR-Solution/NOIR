@@ -12,6 +12,7 @@ public static class DependencyInjection
         IHostEnvironment? environment = null)
     {
         var isTesting = environment?.EnvironmentName == "Testing";
+
         // Configure Multi-Tenancy with Finbuckle using database-backed EFCoreStore
         // Tenant entity inherits from TenantInfo for Finbuckle compatibility
         // Using separate TenantStoreDbContext because EFCoreStore requires EFCoreStoreDbContext base class

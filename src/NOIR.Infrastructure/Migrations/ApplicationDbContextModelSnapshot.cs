@@ -730,6 +730,207 @@ namespace NOIR.Infrastructure.Migrations
                     b.ToTable("HttpRequestAuditLogs", (string)null);
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ActionUrl")
+                        .HasMaxLength(2000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("ActionsJson")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Actions");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("EmailSent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("IconClass")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IncludedInDigest")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Metadata")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("ReadAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UserId", "Category")
+                        .HasDatabaseName("IX_Notifications_UserId_Category");
+
+                    b.HasIndex("UserId", "IsDeleted")
+                        .HasDatabaseName("IX_Notifications_UserId_IsDeleted");
+
+                    b.HasIndex("UserId", "IncludedInDigest", "CreatedAt")
+                        .HasDatabaseName("IX_Notifications_PendingDigest");
+
+                    b.HasIndex("UserId", "IsRead", "CreatedAt")
+                        .HasDatabaseName("IX_Notifications_UserId_IsRead_CreatedAt");
+
+                    b.ToTable("Notifications", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.NotificationPreference", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("EmailFrequency")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(2);
+
+                    b.Property<bool>("InAppEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_NotificationPreferences_UserId");
+
+                    b.HasIndex("UserId", "Category")
+                        .IsUnique()
+                        .HasDatabaseName("IX_NotificationPreferences_UserId_Category");
+
+                    b.ToTable("NotificationPreferences", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.PasswordResetOtp", b =>
                 {
                     b.Property<Guid>("Id")

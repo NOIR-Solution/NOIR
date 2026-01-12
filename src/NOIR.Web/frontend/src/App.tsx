@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { NotificationProvider } from '@/contexts/NotificationContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { PortalLayout } from '@/layouts/PortalLayout'
 import LoginPage from '@/pages/Login'
@@ -10,6 +11,8 @@ import SettingsPage from '@/pages/portal/Settings'
 import { EmailTemplatesPage, EmailTemplateEditPage } from '@/pages/portal/email-templates'
 import TenantsPage from '@/pages/portal/admin/tenants/TenantsPage'
 import TenantDetailPage from '@/pages/portal/admin/tenants/TenantDetailPage'
+import Notifications from '@/pages/portal/Notifications'
+import NotificationPreferences from '@/pages/portal/NotificationPreferences'
 import ForgotPasswordPage from '@/pages/forgot-password/ForgotPassword'
 import VerifyOtpPage from '@/pages/forgot-password/VerifyOtp'
 import ResetPasswordPage from '@/pages/forgot-password/ResetPassword'
@@ -19,7 +22,8 @@ import './index.css'
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <NotificationProvider>
+        <BrowserRouter>
         <Toaster
           position="top-center"
           richColors
@@ -55,6 +59,8 @@ function App() {
             <Route path="settings" element={<SettingsPage />} />
             <Route path="email-templates" element={<EmailTemplatesPage />} />
             <Route path="email-templates/:id" element={<EmailTemplateEditPage />} />
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="settings/notifications" element={<NotificationPreferences />} />
             {/* Admin Routes */}
             <Route path="admin/tenants" element={<TenantsPage />} />
             <Route path="admin/tenants/:id" element={<TenantDetailPage />} />
@@ -63,7 +69,8 @@ function App() {
           {/* Catch-all redirect to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+      </NotificationProvider>
     </AuthProvider>
   )
 }

@@ -1,0 +1,57 @@
+{
+  "cookies": [
+    {
+      "name": "noir-language",
+      "value": "en",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1799721307,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "noir.access",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjI0NDgwNDEzLWE0NWItNGRlOC1iYjI1LTBlNjE1MDAxY2ZjYiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFkbWluQG5vaXIubG9jYWwiLCJqdGkiOiJmNjk2MDlhNS04NTQxLTQxODgtYmI0Mi03YTFiOTBiYTBlN2EiLCJleHAiOjE3NjgxODg5MDcsImlzcyI6Ik5PSVIuQVBJIiwiYXVkIjoiTk9JUi5DbGllbnQifQ.0g-ke5DRo3V61pqGZtWbSP5a2SEUxl9bKkIwrKM_YKM",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1768188907.902025,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "noir.refresh",
+      "value": "ffsivAE33CFcZ8E7Y4_BkLkbQwM9-nc4OlS2Cn_M0mAUeYb6KM_NncPHtjoMTkVttchpzqzjMJr8n238FYVBOw",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1768790107.902164,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Strict"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "noir-language",
+          "value": "en"
+        },
+        {
+          "name": "noir.accessToken",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjI0NDgwNDEzLWE0NWItNGRlOC1iYjI1LTBlNjE1MDAxY2ZjYiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFkbWluQG5vaXIubG9jYWwiLCJqdGkiOiJmNjk2MDlhNS04NTQxLTQxODgtYmI0Mi03YTFiOTBiYTBlN2EiLCJleHAiOjE3NjgxODg5MDcsImlzcyI6Ik5PSVIuQVBJIiwiYXVkIjoiTk9JUi5DbGllbnQifQ.0g-ke5DRo3V61pqGZtWbSP5a2SEUxl9bKkIwrKM_YKM"
+        },
+        {
+          "name": "noir.refreshToken",
+          "value": "ffsivAE33CFcZ8E7Y4_BkLkbQwM9-nc4OlS2Cn_M0mAUeYb6KM_NncPHtjoMTkVttchpzqzjMJr8n238FYVBOw"
+        },
+        {
+          "name": "noir.tokenExpiry",
+          "value": "2026-01-19T02:35:07.8984415+00:00"
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Sidebar, MobileSidebarTrigger } from '@/components/portal/Sidebar'
+import { NotificationDropdown } from '@/components/notifications'
 
 export function PortalLayout() {
   // Use lazy initialization to read from localStorage on mount (avoids extra render)
@@ -26,12 +27,23 @@ export function PortalLayout() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Mobile Header - Only shows trigger on mobile */}
-        <div className="lg:hidden flex items-center h-16 px-4 border-b border-border bg-background">
-          <MobileSidebarTrigger
-            open={mobileMenuOpen}
-            onOpenChange={setMobileMenuOpen}
-          />
+        {/* Header */}
+        <div className="flex items-center justify-between h-16 px-4 border-b border-border bg-background">
+          {/* Mobile sidebar trigger */}
+          <div className="lg:hidden">
+            <MobileSidebarTrigger
+              open={mobileMenuOpen}
+              onOpenChange={setMobileMenuOpen}
+            />
+          </div>
+
+          {/* Spacer for desktop */}
+          <div className="hidden lg:block" />
+
+          {/* Right side actions */}
+          <div className="flex items-center gap-2">
+            <NotificationDropdown />
+          </div>
         </div>
 
         {/* Main Content */}

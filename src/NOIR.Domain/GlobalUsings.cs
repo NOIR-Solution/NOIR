@@ -15,7 +15,9 @@ global using Finbuckle.MultiTenant.Abstractions;
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Enums;
 global using NOIR.Domain.Specifications;
+global using NOIR.Domain.ValueObjects;
 
 // System.Security
 global using System.Security.Cryptography;
