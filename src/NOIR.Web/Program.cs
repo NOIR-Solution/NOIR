@@ -341,6 +341,7 @@ app.MapAuthEndpoints();
 app.MapAuditEndpoints();
 app.MapRoleEndpoints();
 app.MapUserEndpoints();
+app.MapEmailTemplateEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<AuditHub>("/hubs/audit")

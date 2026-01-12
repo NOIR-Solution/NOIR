@@ -38,6 +38,22 @@
   "settings": {
     "title": "Cài đặt"
   },
+  "emailTemplates": {
+    "title": "Mẫu Email",
+    "description": "Quản lý các mẫu email hệ thống cho thông báo và liên lạc.",
+    "subject": "Tiêu đề",
+    "htmlBody": "Nội dung HTML",
+    "plainTextBody": "Nội dung văn bản",
+    "variables": "Biến",
+    "version": "Phiên bản",
+    "preview": "Xem trước",
+    "sendTestEmail": "Gửi Email Thử",
+    "testEmailSent": "Đã gửi email thử thành công!",
+    "recipientEmail": "Email người nhận",
+    "sampleData": "Dữ liệu mẫu",
+    "editTemplate": "Chỉnh sửa Mẫu",
+    "insertVariable": "Chèn Biến"
+  },
   "profile": {
     "email": "Email",
     "tenant": "Tổ chức",

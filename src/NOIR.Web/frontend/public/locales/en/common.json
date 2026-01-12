@@ -38,6 +38,22 @@
   "settings": {
     "title": "Settings"
   },
+  "emailTemplates": {
+    "title": "Email Templates",
+    "description": "Manage your system email templates for notifications and communications.",
+    "subject": "Subject",
+    "htmlBody": "HTML Body",
+    "plainTextBody": "Plain Text Body",
+    "variables": "Variables",
+    "version": "Version",
+    "preview": "Preview",
+    "sendTestEmail": "Send Test Email",
+    "testEmailSent": "Test email sent successfully!",
+    "recipientEmail": "Recipient Email",
+    "sampleData": "Sample Data",
+    "editTemplate": "Edit Template",
+    "insertVariable": "Insert Variable"
+  },
   "profile": {
     "email": "Email",
     "tenant": "Tenant",

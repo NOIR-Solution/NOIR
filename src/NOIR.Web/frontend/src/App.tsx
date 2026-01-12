@@ -7,6 +7,7 @@ import LoginPage from '@/pages/Login'
 import LandingPage from '@/pages/Landing'
 import Dashboard from '@/pages/portal/Dashboard'
 import SettingsPage from '@/pages/portal/Settings'
+import { EmailTemplatesPage, EmailTemplateEditPage } from '@/pages/portal/email-templates'
 import ForgotPasswordPage from '@/pages/forgot-password/ForgotPassword'
 import VerifyOtpPage from '@/pages/forgot-password/VerifyOtp'
 import ResetPasswordPage from '@/pages/forgot-password/ResetPassword'
@@ -50,6 +51,8 @@ function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="email-templates" element={<EmailTemplatesPage />} />
+            <Route path="email-templates/:id" element={<EmailTemplateEditPage />} />
           </Route>
 
           {/* Catch-all redirect to landing */}

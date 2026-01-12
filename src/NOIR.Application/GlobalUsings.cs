@@ -38,6 +38,8 @@ global using NOIR.Application.Features.Audit.DTOs;
 global using NOIR.Application.Features.Audit.Queries;
 global using NOIR.Application.Features.Users.DTOs;
 global using NOIR.Application.Features.Roles.DTOs;
+global using NOIR.Application.Features.EmailTemplates.DTOs;
+global using NOIR.Application.Features.EmailTemplates.Specifications;
 global using NOIR.Application.Specifications;
 global using NOIR.Application.Specifications.PasswordResetOtps;
 
@@ -46,6 +48,9 @@ global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
 global using NOIR.Domain.Interfaces;
 global using NOIR.Domain.Specifications;
+
+// System.Text.Json
+global using System.Text.Json;
 
 // Wolverine
 global using Wolverine;

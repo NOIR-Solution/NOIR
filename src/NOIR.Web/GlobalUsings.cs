@@ -117,3 +117,11 @@ global using NOIR.Application.Features.Permissions.Commands.AssignToRole;
 global using NOIR.Application.Features.Permissions.Commands.RemoveFromRole;
 global using NOIR.Application.Features.Permissions.Queries.GetRolePermissions;
 global using NOIR.Application.Features.Permissions.Queries.GetUserPermissions;
+
+// NOIR Application - Email Templates
+global using NOIR.Application.Features.EmailTemplates.DTOs;
+global using NOIR.Application.Features.EmailTemplates.Specifications;
+global using NOIR.Application.Features.EmailTemplates.Queries.GetEmailTemplates;
+global using NOIR.Application.Features.EmailTemplates.Queries.GetEmailTemplate;
+global using NOIR.Application.Features.EmailTemplates.Commands.UpdateEmailTemplate;
+global using NOIR.Application.Features.EmailTemplates.Commands.SendTestEmail;

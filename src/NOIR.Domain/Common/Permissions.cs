@@ -46,6 +46,10 @@ public static class Permissions
     public const string AuditPolicyDelete = "audit:policy-delete";
     public const string AuditStream = "audit:stream";
 
+    // Email Templates
+    public const string EmailTemplatesRead = "email-templates:read";
+    public const string EmailTemplatesUpdate = "email-templates:update";
+
     /// <summary>
     /// All permissions grouped by resource.
     /// </summary>
@@ -65,6 +69,9 @@ public static class Permissions
 
         public static readonly IReadOnlyList<string> Audit =
             [AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream];
+
+        public static readonly IReadOnlyList<string> EmailTemplates =
+            [EmailTemplatesRead, EmailTemplatesUpdate];
     }
 
     /// <summary>
@@ -81,7 +88,9 @@ public static class Permissions
         // System
         SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
         // Audit
-        AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream
+        AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream,
+        // Email Templates
+        EmailTemplatesRead, EmailTemplatesUpdate
     ];
 
     /// <summary>

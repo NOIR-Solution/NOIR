@@ -11,6 +11,7 @@ import {
   ChevronUp,
   Languages,
   Check,
+  Mail,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -52,6 +53,7 @@ interface NavItem {
 // Navigation items - Settings is accessed via profile dropdown
 const navItems: NavItem[] = [
   { titleKey: 'dashboard.title', icon: LayoutDashboard, path: '/portal' },
+  { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates' },
 ]
 
 /**
