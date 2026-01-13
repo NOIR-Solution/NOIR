@@ -70,7 +70,6 @@ export function useTenants(initialParams: GetTenantsParams = {}): UseTenantsRetu
       const message = err instanceof ApiError
         ? err.message
         : 'Failed to delete tenant'
-      setState(prev => ({ ...prev, error: message }))
       return { success: false, error: message }
     }
   }, [fetchTenants])

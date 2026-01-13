@@ -507,18 +507,18 @@ public static class ApplicationDbContextSeeder
             </head>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="color: white; margin: 0;">NOIR</h1>
+                    <h1 style="color: white; margin: 0; font-family: Arial, sans-serif;">NOIR</h1>
                 </div>
                 <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #1e40af;">Xin chào {{UserName}},</h2>
-                    <p>Vui lòng nhấp vào nút dưới đây để xác minh địa chỉ email và kích hoạt tài khoản của bạn:</p>
+                    <h2 style="color: #1e40af; font-family: Arial, sans-serif;">Xin chào {{UserName}},</h2>
+                    <p style="font-family: Arial, sans-serif;">Vui lòng nhấp vào nút dưới đây để xác minh địa chỉ email và kích hoạt tài khoản của bạn:</p>
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="{{ActivationLink}}" style="background: #1e40af; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Kích hoạt tài khoản</a>
+                        <a href="{{ActivationLink}}" style="background: #1e40af; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-family: Arial, sans-serif;">Kích hoạt tài khoản</a>
                     </div>
-                    <p style="color: #6b7280; font-size: 14px;">Liên kết này sẽ hết hạn sau <strong>{{ExpiryHours}} giờ</strong>.</p>
-                    <p style="color: #6b7280; font-size: 14px;">Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này.</p>
+                    <p style="color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">Liên kết này sẽ hết hạn sau <strong>{{ExpiryHours}} giờ</strong>.</p>
+                    <p style="color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này.</p>
                     <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                    <p style="color: #9ca3af; font-size: 12px; text-align: center;">© 2024 NOIR. Tất cả các quyền được bảo lưu.</p>
+                    <p style="color: #9ca3af; font-size: 12px; text-align: center; font-family: Arial, sans-serif;">© 2024 NOIR. Tất cả các quyền được bảo lưu.</p>
                 </div>
             </body>
             </html>
@@ -533,18 +533,18 @@ public static class ApplicationDbContextSeeder
             </head>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="color: white; margin: 0;">NOIR</h1>
+                    <h1 style="color: white; margin: 0; font-family: Arial, sans-serif;">NOIR</h1>
                 </div>
                 <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #1e40af;">Hello {{UserName}},</h2>
-                    <p>Please click the button below to verify your email address and activate your account:</p>
+                    <h2 style="color: #1e40af; font-family: Arial, sans-serif;">Hello {{UserName}},</h2>
+                    <p style="font-family: Arial, sans-serif;">Please click the button below to verify your email address and activate your account:</p>
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="{{ActivationLink}}" style="background: #1e40af; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Activate Account</a>
+                        <a href="{{ActivationLink}}" style="background: #1e40af; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-family: Arial, sans-serif;">Activate Account</a>
                     </div>
-                    <p style="color: #6b7280; font-size: 14px;">This link will expire in <strong>{{ExpiryHours}} hours</strong>.</p>
-                    <p style="color: #6b7280; font-size: 14px;">If you did not create this account, please ignore this email.</p>
+                    <p style="color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">This link will expire in <strong>{{ExpiryHours}} hours</strong>.</p>
+                    <p style="color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">If you did not create this account, please ignore this email.</p>
                     <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                    <p style="color: #9ca3af; font-size: 12px; text-align: center;">© 2024 NOIR. All rights reserved.</p>
+                    <p style="color: #9ca3af; font-size: 12px; text-align: center; font-family: Arial, sans-serif;">© 2024 NOIR. All rights reserved.</p>
                 </div>
             </body>
             </html>

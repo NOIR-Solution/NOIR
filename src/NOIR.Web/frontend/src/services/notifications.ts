@@ -14,7 +14,12 @@ import type {
   PaginatedNotificationsResponse,
   UpdatePreferencesRequest,
 } from '@/types'
-import { mapNotificationCategory, mapEmailFrequency } from '@/types'
+import {
+  mapNotificationCategory,
+  mapEmailFrequency,
+  NotificationCategoryToNumber,
+  EmailFrequencyToNumber,
+} from '@/types'
 
 /**
  * Raw preference response from API (enums as numbers)
@@ -101,9 +106,17 @@ export async function getPreferences(): Promise<NotificationPreference[]> {
 export async function updatePreferences(
   request: UpdatePreferencesRequest
 ): Promise<void> {
+  // Convert frontend string enums to backend numeric enums
+  const backendRequest = {
+    preferences: request.preferences.map((p) => ({
+      category: NotificationCategoryToNumber[p.category],
+      inAppEnabled: p.inAppEnabled,
+      emailFrequency: EmailFrequencyToNumber[p.emailFrequency],
+    })),
+  }
   await apiClient('/notifications/preferences', {
     method: 'PUT',
-    body: JSON.stringify(request),
+    body: JSON.stringify(backendRequest),
   })
 }
 

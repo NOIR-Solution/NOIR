@@ -132,3 +132,21 @@ export function mapEmailFrequency(value: number | string): EmailFrequency {
   if (typeof value === 'number') return EmailFrequencyMap[value] || 'none'
   return value as EmailFrequency
 }
+
+/**
+ * Reverse maps - convert frontend strings to backend enum numbers
+ */
+export const NotificationCategoryToNumber: Record<NotificationCategory, number> = {
+  'system': 0,
+  'userAction': 1,
+  'workflow': 2,
+  'security': 3,
+  'integration': 4,
+}
+
+export const EmailFrequencyToNumber: Record<EmailFrequency, number> = {
+  'none': 0,
+  'immediate': 1,
+  'daily': 2,
+  'weekly': 3,
+}
