@@ -27,7 +27,7 @@ public class CreateTenantCommandHandler
         {
             return Result.Failure<TenantDto>(
                 Error.Conflict(
-                    string.Format(_localization["tenants.identifierExists"], command.Identifier),
+                    string.Format(_localization["auth.tenants.identifierExists"], command.Identifier),
                     ErrorCodes.Business.AlreadyExists));
         }
 
@@ -42,7 +42,7 @@ public class CreateTenantCommandHandler
         {
             return Result.Failure<TenantDto>(
                 Error.Internal(
-                    _localization["tenants.createFailed"],
+                    _localization["auth.tenants.createFailed"],
                     ErrorCodes.System.InternalError));
         }
 

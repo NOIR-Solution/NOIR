@@ -28,7 +28,7 @@ public class DeleteTenantCommandHandler
         {
             return Result.Failure<bool>(
                 Error.NotFound(
-                    _localization["tenants.notFound"],
+                    _localization["auth.tenants.notFound"],
                     ErrorCodes.Auth.TenantNotFound));
         }
 
@@ -37,7 +37,7 @@ public class DeleteTenantCommandHandler
         {
             return Result.Failure<bool>(
                 Error.Validation("identifier",
-                    _localization["tenants.cannotDeleteDefault"],
+                    _localization["auth.tenants.cannotDeleteDefault"],
                     ErrorCodes.Business.InvalidState));
         }
 
@@ -54,7 +54,7 @@ public class DeleteTenantCommandHandler
         {
             return Result.Failure<bool>(
                 Error.Internal(
-                    _localization["tenants.deleteFailed"],
+                    _localization["auth.tenants.deleteFailed"],
                     ErrorCodes.System.InternalError));
         }
 

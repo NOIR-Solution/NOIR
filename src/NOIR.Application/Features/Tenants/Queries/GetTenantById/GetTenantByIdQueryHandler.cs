@@ -27,7 +27,7 @@ public class GetTenantByIdQueryHandler
         {
             return Result.Failure<TenantDto>(
                 Error.NotFound(
-                    _localization["tenants.notFound"],
+                    _localization["auth.tenants.notFound"],
                     ErrorCodes.Auth.TenantNotFound));
         }
 

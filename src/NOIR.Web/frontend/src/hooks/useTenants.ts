@@ -14,7 +14,7 @@ interface UseTenantsReturn extends UseTenantsState {
   setPage: (page: number) => void
   setPageSize: (size: number) => void
   setSearch: (search: string) => void
-  handleDelete: (id: string) => Promise<boolean>
+  handleDelete: (id: string) => Promise<{ success: boolean; error?: string }>
   params: GetTenantsParams
 }
 
@@ -61,17 +61,17 @@ export function useTenants(initialParams: GetTenantsParams = {}): UseTenantsRetu
     setParams(prev => ({ ...prev, search, pageNumber: 1 }))
   }, [])
 
-  const handleDelete = useCallback(async (id: string): Promise<boolean> => {
+  const handleDelete = useCallback(async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
       await deleteTenant(id)
       await fetchTenants()
-      return true
+      return { success: true }
     } catch (err) {
       const message = err instanceof ApiError
         ? err.message
         : 'Failed to delete tenant'
       setState(prev => ({ ...prev, error: message }))
-      return false
+      return { success: false, error: message }
     }
   }, [fetchTenants])
 

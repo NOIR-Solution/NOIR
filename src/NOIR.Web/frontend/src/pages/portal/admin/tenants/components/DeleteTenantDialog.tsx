@@ -17,7 +17,7 @@ interface DeleteTenantDialogProps {
   tenant: TenantListItem | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  onConfirm: (id: string) => Promise<boolean>
+  onConfirm: (id: string) => Promise<{ success: boolean; error?: string }>
 }
 
 export function DeleteTenantDialog({
@@ -33,14 +33,14 @@ export function DeleteTenantDialog({
     if (!tenant) return
 
     setLoading(true)
-    const success = await onConfirm(tenant.id)
+    const result = await onConfirm(tenant.id)
     setLoading(false)
 
-    if (success) {
+    if (result.success) {
       toast.success(t('messages.deleteSuccess'))
       onOpenChange(false)
     } else {
-      toast.error(t('messages.operationFailed'))
+      toast.error(result.error || t('messages.operationFailed'))
     }
   }
 

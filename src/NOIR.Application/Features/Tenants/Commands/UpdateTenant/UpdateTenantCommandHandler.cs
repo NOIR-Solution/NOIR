@@ -28,7 +28,7 @@ public class UpdateTenantCommandHandler
         {
             return Result.Failure<TenantDto>(
                 Error.NotFound(
-                    _localization["tenants.notFound"],
+                    _localization["auth.tenants.notFound"],
                     ErrorCodes.Auth.TenantNotFound));
         }
 
@@ -41,7 +41,7 @@ public class UpdateTenantCommandHandler
             {
                 return Result.Failure<TenantDto>(
                     Error.Conflict(
-                        string.Format(_localization["tenants.identifierExists"], command.Identifier),
+                        string.Format(_localization["auth.tenants.identifierExists"], command.Identifier),
                         ErrorCodes.Business.AlreadyExists));
             }
         }
@@ -57,7 +57,7 @@ public class UpdateTenantCommandHandler
         {
             return Result.Failure<TenantDto>(
                 Error.Internal(
-                    _localization["tenants.updateFailed"],
+                    _localization["auth.tenants.updateFailed"],
                     ErrorCodes.System.InternalError));
         }
 

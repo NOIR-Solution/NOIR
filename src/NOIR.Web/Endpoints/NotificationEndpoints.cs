@@ -104,10 +104,9 @@ public static class NotificationEndpoints
 
         // PUT /api/notifications/preferences - Update notification preferences
         group.MapPut("/preferences", async (
-            IEnumerable<UpdatePreferenceRequest> preferences,
+            UpdatePreferencesCommand command,
             IMessageBus bus) =>
         {
-            var command = new UpdatePreferencesCommand(preferences);
             var result = await bus.InvokeAsync<Result<IEnumerable<NotificationPreferenceDto>>>(command);
             return result.ToHttpResult();
         })
