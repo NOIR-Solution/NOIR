@@ -62,6 +62,35 @@ export class ApiError extends Error {
   }
 
   /**
+   * Get validation errors by field name
+   */
+  get errors(): Record<string, string[]> | undefined {
+    return this.response?.errors
+  }
+
+  /**
+   * Check if this is a validation error with field-specific errors
+   */
+  get hasFieldErrors(): boolean {
+    return !!this.response?.errors && Object.keys(this.response.errors).length > 0
+  }
+
+  /**
+   * Get a formatted message including field errors if available
+   */
+  getDetailedMessage(): string {
+    if (!this.hasFieldErrors || !this.errors) {
+      return this.message
+    }
+
+    const fieldMessages = Object.entries(this.errors)
+      .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+      .join('\n')
+
+    return `${this.message}\n${fieldMessages}`
+  }
+
+  /**
    * Log error details to console for customer support
    * Format is designed to be easily copied and shared with support team
    */

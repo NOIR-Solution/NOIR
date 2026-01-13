@@ -122,6 +122,24 @@ public static class ApplicationDbContextSeeder
             return tenant;
         }
 
+        // Restore soft-deleted default tenant
+        if (existingTenant.IsDeleted)
+        {
+            var restoredTenant = existingTenant with
+            {
+                IsDeleted = false,
+                DeletedAt = null,
+                DeletedBy = null,
+                IsActive = true,
+                ModifiedAt = DateTimeOffset.UtcNow
+            };
+
+            context.TenantInfo.Entry(existingTenant).CurrentValues.SetValues(restoredTenant);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Restored soft-deleted default tenant: {Identifier}", defaultIdentifier);
+            return restoredTenant;
+        }
+
         return existingTenant;
     }
 
@@ -219,23 +237,37 @@ public static class ApplicationDbContextSeeder
 
     internal static async Task SeedEmailTemplatesAsync(ApplicationDbContext context, ILogger logger)
     {
-        // Check if templates already exist
+        // Check if templates already exist (bypass soft delete filter)
         var existingTemplates = await context.Set<EmailTemplate>()
             .IgnoreQueryFilters()
-            .Select(t => new { t.Name, t.Language })
             .ToListAsync();
 
-        var existingKeys = existingTemplates
-            .Select(t => $"{t.Name}:{t.Language}")
-            .ToHashSet();
+        var existingByKey = existingTemplates
+            .ToDictionary(t => $"{t.Name}:{t.Language}");
 
         var templatesToSeed = GetEmailTemplateDefinitions();
         var newTemplates = new List<EmailTemplate>();
+        var restoredCount = 0;
 
         foreach (var template in templatesToSeed)
         {
             var key = $"{template.Name}:{template.Language}";
-            if (!existingKeys.Contains(key))
+            if (existingByKey.TryGetValue(key, out var existing))
+            {
+                // Restore soft-deleted template using EF Core Entry API
+                if (existing.IsDeleted)
+                {
+                    var entry = context.Entry(existing);
+                    entry.Property(e => e.IsDeleted).CurrentValue = false;
+                    entry.Property(e => e.DeletedAt).CurrentValue = null;
+                    entry.Property(e => e.DeletedBy).CurrentValue = null;
+                    entry.Property(e => e.ModifiedAt).CurrentValue = DateTimeOffset.UtcNow;
+                    existing.Activate(); // Use domain method for IsActive
+                    restoredCount++;
+                    logger.LogInformation("Restored soft-deleted email template: {Name} ({Language})", template.Name, template.Language);
+                }
+            }
+            else
             {
                 newTemplates.Add(template);
                 logger.LogInformation("Seeding email template: {Name} ({Language})", template.Name, template.Language);
@@ -245,8 +277,19 @@ public static class ApplicationDbContextSeeder
         if (newTemplates.Count > 0)
         {
             await context.Set<EmailTemplate>().AddRangeAsync(newTemplates);
+        }
+
+        if (newTemplates.Count > 0 || restoredCount > 0)
+        {
             await context.SaveChangesAsync();
-            logger.LogInformation("Seeded {Count} email templates", newTemplates.Count);
+            if (newTemplates.Count > 0)
+            {
+                logger.LogInformation("Seeded {Count} email templates", newTemplates.Count);
+            }
+            if (restoredCount > 0)
+            {
+                logger.LogInformation("Restored {Count} soft-deleted email templates", restoredCount);
+            }
         }
     }
 

@@ -3,14 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import type { TenantListItem } from '@/types'
 
 interface DeleteTenantDialogProps {
@@ -29,7 +28,8 @@ export function DeleteTenantDialog({
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (e: React.FormEvent) => {
+    e.preventDefault()
     if (!tenant) return
 
     setLoading(true)
@@ -47,22 +47,26 @@ export function DeleteTenantDialog({
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t('tenants.deleteTitle')}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t('tenants.deleteDescription', { name: tenant?.name || tenant?.identifier })}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>{t('buttons.cancel')}</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleConfirm}
-            disabled={loading}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            {loading ? t('labels.loading') : t('buttons.delete')}
-          </AlertDialogAction>
-        </AlertDialogFooter>
+        <form onSubmit={handleConfirm}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('tenants.deleteTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('tenants.deleteDescription', { name: tenant?.name || tenant?.identifier })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+              {t('buttons.cancel')}
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="border border-destructive bg-transparent text-destructive hover:bg-destructive hover:text-white"
+            >
+              {loading ? t('labels.loading') : t('buttons.delete')}
+            </Button>
+          </AlertDialogFooter>
+        </form>
       </AlertDialogContent>
     </AlertDialog>
   )

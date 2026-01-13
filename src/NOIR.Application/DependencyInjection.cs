@@ -7,8 +7,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        // Register FluentValidation validators from this assembly
-        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+        // Note: FluentValidation validators are auto-discovered by Wolverine's UseFluentValidation()
+        // from assemblies registered via opts.Discovery.IncludeAssembly(), so we don't need to
+        // register them here to avoid duplicate registration.
 
         return services;
     }

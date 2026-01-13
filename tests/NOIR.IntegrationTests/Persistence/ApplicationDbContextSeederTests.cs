@@ -308,5 +308,76 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
         });
     }
 
+
+    #endregion
+
+    #region Default Tenant Seeding Tests
+
+    [Fact]
+    public async Task SeedDatabaseAsync_ShouldCreateDefaultTenant()
+    {
+        await _factory.ExecuteWithTenantAsync(async services =>
+        {
+            var tenantContext = services.GetRequiredService<TenantStoreDbContext>();
+
+            // Assert - Default tenant should exist
+            var defaultTenant = await tenantContext.TenantInfo
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(t => t.Identifier == "default");
+
+            defaultTenant.Should().NotBeNull();
+            defaultTenant!.IsActive.Should().BeTrue();
+            defaultTenant.IsDeleted.Should().BeFalse();
+        });
+    }
+
+    [Fact]
+    public async Task SeedDefaultTenantAsync_WhenTenantSoftDeleted_ShouldRestoreTenant()
+    {
+        await _factory.ExecuteWithTenantAsync(async services =>
+        {
+            var tenantContext = services.GetRequiredService<TenantStoreDbContext>();
+            var logger = services.GetRequiredService<ILogger<ApplicationDbContext>>();
+
+            // Arrange - Soft delete the default tenant
+            var defaultTenant = await tenantContext.TenantInfo
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(t => t.Identifier == "default");
+
+            defaultTenant.Should().NotBeNull();
+
+            // Soft delete using record with expression (Tenant is a record)
+            var deletedTenant = defaultTenant! with
+            {
+                IsDeleted = true,
+                DeletedAt = DateTimeOffset.UtcNow,
+                DeletedBy = "test-soft-delete"
+            };
+
+            tenantContext.TenantInfo.Entry(defaultTenant).CurrentValues.SetValues(deletedTenant);
+            await tenantContext.SaveChangesAsync();
+
+            // Verify it's soft-deleted
+            var verifyDeleted = await tenantContext.TenantInfo
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(t => t.Identifier == "default");
+            verifyDeleted!.IsDeleted.Should().BeTrue();
+
+            // Act - Re-run the seeder which should restore the tenant
+            await ApplicationDbContextSeeder.SeedDefaultTenantAsync(tenantContext, logger);
+
+            // Assert - Tenant should be restored
+            var restoredTenant = await tenantContext.TenantInfo
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(t => t.Identifier == "default");
+
+            restoredTenant.Should().NotBeNull();
+            restoredTenant!.IsDeleted.Should().BeFalse();
+            restoredTenant.DeletedAt.Should().BeNull();
+            restoredTenant.DeletedBy.Should().BeNull();
+            restoredTenant.IsActive.Should().BeTrue();
+        });
+    }
+
     #endregion
 }

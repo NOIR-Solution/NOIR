@@ -55,7 +55,8 @@ export function TestEmailDialog({
   }
 
   // Handle send
-  const handleSend = async () => {
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault()
     if (!recipientEmail) {
       toast.error('Please enter a recipient email address.')
       return
@@ -83,74 +84,76 @@ export function TestEmailDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Send className="h-5 w-5 text-blue-600" />
-            {t('emailTemplates.sendTestEmail')}
-          </DialogTitle>
-          <DialogDescription>
-            Send a test email to verify the template rendering with your sample data.
-          </DialogDescription>
-        </DialogHeader>
+        <form onSubmit={handleSend}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Send className="h-5 w-5 text-blue-600" />
+              {t('emailTemplates.sendTestEmail')}
+            </DialogTitle>
+            <DialogDescription>
+              Send a test email to verify the template rendering with your sample data.
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          {/* Recipient Email */}
-          <div className="space-y-2">
-            <Label htmlFor="recipient-email" className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              {t('emailTemplates.recipientEmail')}
-            </Label>
-            <Input
-              id="recipient-email"
-              type="email"
-              value={recipientEmail}
-              onChange={(e) => setRecipientEmail(e.target.value)}
-              placeholder="Enter email address..."
-            />
+          <div className="space-y-4 py-4">
+            {/* Recipient Email */}
+            <div className="space-y-2">
+              <Label htmlFor="recipient-email" className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                {t('emailTemplates.recipientEmail')}
+              </Label>
+              <Input
+                id="recipient-email"
+                type="email"
+                value={recipientEmail}
+                onChange={(e) => setRecipientEmail(e.target.value)}
+                placeholder="Enter email address..."
+              />
+            </div>
+
+            {/* Sample Data */}
+            {availableVariables.length > 0 && (
+              <div className="space-y-3">
+                <Label>{t('emailTemplates.sampleData')}</Label>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {availableVariables.map((variable) => (
+                    <div key={variable} className="space-y-1">
+                      <Label htmlFor={`sample-${variable}`} className="text-xs font-mono">
+                        {`{{${variable}}}`}
+                      </Label>
+                      <Input
+                        id={`sample-${variable}`}
+                        value={sampleData[variable] || ''}
+                        onChange={(e) => updateSampleData(variable, e.target.value)}
+                        placeholder={`Value for ${variable}...`}
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Sample Data */}
-          {availableVariables.length > 0 && (
-            <div className="space-y-3">
-              <Label>{t('emailTemplates.sampleData')}</Label>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {availableVariables.map((variable) => (
-                  <div key={variable} className="space-y-1">
-                    <Label htmlFor={`sample-${variable}`} className="text-xs font-mono">
-                      {`{{${variable}}}`}
-                    </Label>
-                    <Input
-                      id={`sample-${variable}`}
-                      value={sampleData[variable] || ''}
-                      onChange={(e) => updateSampleData(variable, e.target.value)}
-                      placeholder={`Value for ${variable}...`}
-                      className="h-8 text-sm"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
-            {t('buttons.cancel')}
-          </Button>
-          <Button onClick={handleSend} disabled={sending}>
-            {sending ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                Sending...
-              </>
-            ) : (
-              <>
-                <Send className="h-4 w-4 mr-2" />
-                Send Test
-              </>
-            )}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
+              {t('buttons.cancel')}
+            </Button>
+            <Button type="submit" disabled={sending}>
+              {sending ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  Send Test
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

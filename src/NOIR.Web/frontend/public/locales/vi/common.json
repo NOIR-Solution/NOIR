@@ -84,6 +84,7 @@
     "htmlBody": "Nội dung HTML",
     "plainTextBody": "Nội dung văn bản",
     "variables": "Biến",
+    "variablesHint": "Kéo thả vào trình soạn thảo hoặc nhấp để sao chép. Gõ {{ để hiện gợi ý.",
     "version": "Phiên bản",
     "preview": "Xem trước",
     "sendTestEmail": "Gửi Email Thử",

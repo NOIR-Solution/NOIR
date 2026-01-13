@@ -84,6 +84,7 @@
     "htmlBody": "HTML Body",
     "plainTextBody": "Plain Text Body",
     "variables": "Variables",
+    "variablesHint": "Drag to editor or click to copy. Type {{ in editor for autocomplete.",
     "version": "Version",
     "preview": "Preview",
     "sendTestEmail": "Send Test Email",

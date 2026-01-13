@@ -37,6 +37,7 @@ import {
   ChevronDown,
   FileText,
   ChevronUp,
+  GripVertical,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -69,6 +70,10 @@ export default function EmailTemplateEditPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const editorRef = useRef<TinyMCEEditor | null>(null)
+
+  // Track editor initialization to prevent false "unsaved changes" from TinyMCE normalization
+  const editorInitializedRef = useRef(false)
+  const initialHtmlBodyRef = useRef<string | null>(null)
 
   // State
   const [template, setTemplate] = useState<EmailTemplateDto | null>(null)
@@ -106,6 +111,10 @@ export default function EmailTemplateEditPage() {
     async function loadTemplate() {
       if (!id) return
 
+      // Reset editor tracking when loading new template
+      editorInitializedRef.current = false
+      initialHtmlBodyRef.current = null
+
       setLoading(true)
       try {
         const data = await getEmailTemplate(id)
@@ -129,12 +138,15 @@ export default function EmailTemplateEditPage() {
     loadTemplate()
   }, [id, navigate, t])
 
-  // Track changes
+  // Track changes - compare against normalized initial values after TinyMCE initialization
   useEffect(() => {
     if (!template) return
+    // Don't track changes until editor has initialized (to avoid false positives from TinyMCE normalization)
+    if (!editorInitializedRef.current) return
+
     const changed =
       subject !== template.subject ||
-      htmlBody !== template.htmlBody ||
+      htmlBody !== (initialHtmlBodyRef.current ?? template.htmlBody) ||
       plainTextBody !== (template.plainTextBody || '') ||
       description !== (template.description || '')
     setHasChanges(changed)
@@ -153,6 +165,8 @@ export default function EmailTemplateEditPage() {
         description: description || null,
       })
       setTemplate(updated)
+      // Update the initial reference to the current content after successful save
+      initialHtmlBodyRef.current = htmlBody
       setHasChanges(false)
       toast.success(t('messages.updateSuccess'))
     } catch (error) {
@@ -297,13 +311,31 @@ export default function EmailTemplateEditPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex gap-2">
-                <Input
-                  id="subject-input"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Enter email subject..."
+                <div
                   className="flex-1"
-                />
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    e.dataTransfer.dropEffect = 'copy'
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    const variableData = e.dataTransfer.getData('text/variable')
+                    if (variableData) {
+                      const input = document.getElementById('subject-input') as HTMLInputElement
+                      const start = input?.selectionStart || subject.length
+                      const newValue = subject.slice(0, start) + `{{${variableData}}}` + subject.slice(start)
+                      setSubject(newValue)
+                    }
+                  }}
+                >
+                  <Input
+                    id="subject-input"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder="Enter email subject..."
+                    className="w-full"
+                  />
+                </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="icon">
@@ -350,7 +382,15 @@ export default function EmailTemplateEditPage() {
             </CardHeader>
             <CardContent>
               <Editor
-                onInit={(_evt, editor) => (editorRef.current = editor)}
+                onInit={(_evt, editor) => {
+                  editorRef.current = editor
+                  // Capture the normalized HTML after TinyMCE initialization
+                  // Use setTimeout to ensure we get the fully normalized content
+                  setTimeout(() => {
+                    initialHtmlBodyRef.current = editor.getContent()
+                    editorInitializedRef.current = true
+                  }, 100)
+                }}
                 value={htmlBody}
                 onEditorChange={(content) => setHtmlBody(content)}
                 init={{
@@ -392,6 +432,59 @@ export default function EmailTemplateEditPage() {
                   `,
                   branding: false,
                   promotion: false,
+                  // Setup autocomplete for variables when typing {{
+                  setup: (editor) => {
+                    // Register autocompleter for {{ trigger with CardMenuItem for better UX
+                    editor.ui.registry.addAutocompleter('variables', {
+                      trigger: '{{',
+                      minChars: 0,
+                      columns: 1,
+                      highlightOn: ['variable_name'],
+                      fetch: (pattern) => {
+                        const variables = template?.availableVariables || []
+                        const filtered = variables.filter((v) =>
+                          v.toLowerCase().includes(pattern.toLowerCase())
+                        )
+                        return Promise.resolve(
+                          filtered.map((variable) => ({
+                            type: 'cardmenuitem' as const,
+                            value: `{{${variable}}}`,
+                            label: variable,
+                            items: [
+                              {
+                                type: 'cardcontainer',
+                                direction: 'horizontal',
+                                align: 'left',
+                                valign: 'middle',
+                                items: [
+                                  {
+                                    type: 'cardtext',
+                                    text: variable,
+                                    name: 'variable_name',
+                                    classes: ['tox-collection__item-label'],
+                                  },
+                                ],
+                              },
+                            ],
+                          }))
+                        )
+                      },
+                      onAction: (autocompleteApi, rng, value) => {
+                        editor.selection.setRng(rng)
+                        editor.insertContent(value)
+                        autocompleteApi.hide()
+                      },
+                    })
+
+                    // Handle drag & drop of variables
+                    editor.on('drop', (e) => {
+                      const variableData = e.dataTransfer?.getData('text/variable')
+                      if (variableData) {
+                        e.preventDefault()
+                        editor.insertContent(`{{${variableData}}}`)
+                      }
+                    })
+                  },
                 }}
               />
             </CardContent>
@@ -473,22 +566,37 @@ export default function EmailTemplateEditPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">{t('emailTemplates.variables')}</CardTitle>
-              <CardDescription>Click to copy variable to clipboard.</CardDescription>
+              <CardDescription>
+                {t('emailTemplates.variablesHint', 'Drag to editor or click to copy. Type {{ in editor for autocomplete.')}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 {template.availableVariables.map((variable) => (
-                  <Button
+                  <div
                     key={variable}
-                    variant="outline"
-                    className="w-full justify-start font-mono text-xs"
-                    onClick={() => {
-                      navigator.clipboard.writeText(`{{${variable}}}`)
-                      toast.success(t('messages.copySuccess'))
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData('text/variable', variable)
+                      e.dataTransfer.setData('text/plain', `{{${variable}}}`)
+                      e.dataTransfer.effectAllowed = 'copy'
                     }}
+                    className="flex items-center gap-1 group"
                   >
-                    {`{{${variable}}}`}
-                  </Button>
+                    <div className="p-1 cursor-grab text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                      <GripVertical className="h-4 w-4" />
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="flex-1 justify-start font-mono text-xs cursor-grab active:cursor-grabbing"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`{{${variable}}}`)
+                        toast.success(t('messages.copySuccess'))
+                      }}
+                    >
+                      {`{{${variable}}}`}
+                    </Button>
+                  </div>
                 ))}
               </div>
             </CardContent>

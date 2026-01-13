@@ -40,6 +40,8 @@ public class ExceptionHandlingMiddleware
                 HandleValidationException(validationException),
             FluentValidation.ValidationException fluentValidationException =>
                 HandleFluentValidationException(fluentValidationException),
+            Microsoft.AspNetCore.Http.BadHttpRequestException badRequestException =>
+                HandleBadHttpRequestException(badRequestException),
             NotFoundException notFoundException =>
                 HandleNotFoundException(notFoundException),
             ForbiddenAccessException forbiddenException =>
@@ -76,7 +78,8 @@ public class ExceptionHandlingMiddleware
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, options));
+        // Use runtime type to ensure derived properties (like Errors in ValidationProblemDetails) are serialized
+        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, problemDetails.GetType(), options));
     }
 
     private void LogException(Exception exception, int statusCode, string errorCode, string correlationId)
@@ -141,6 +144,19 @@ public class ExceptionHandlingMiddleware
             Status = StatusCodes.Status400BadRequest,
             Title = "Validation Error",
             Detail = "One or more validation errors occurred.",
+            Type = $"https://api.noir.local/errors/{errorCode}"
+        }, errorCode);
+    }
+
+    private static (int, ProblemDetails, string) HandleBadHttpRequestException(
+        Microsoft.AspNetCore.Http.BadHttpRequestException exception)
+    {
+        var errorCode = ErrorCodes.Validation.General;
+        return (StatusCodes.Status400BadRequest, new ProblemDetails
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Bad Request",
+            Detail = exception.Message,
             Type = $"https://api.noir.local/errors/{errorCode}"
         }, errorCode);
     }

@@ -211,3 +211,60 @@
 .animation-delay-4000 {
   animation-delay: 4s;
 }
+
+/* TinyMCE Autocomplete Popup Styling */
+.tox .tox-autocompleter {
+  animation: tinymce-autocomplete-fade-in 150ms ease-out;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+@keyframes tinymce-autocomplete-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Autocomplete menu items */
+.tox .tox-autocompleter .tox-menu {
+  border: none;
+  background: var(--popover);
+}
+
+.tox .tox-autocompleter .tox-collection__item {
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 2px 4px;
+  transition: background-color 100ms ease;
+}
+
+.tox .tox-autocompleter .tox-collection__item:hover,
+.tox .tox-autocompleter .tox-collection__item--active {
+  background-color: var(--accent);
+}
+
+/* Highlight matched text in autocomplete */
+.tox .tox-autocompleter .tox-collection__item-label mark,
+.tox .tox-autocompleter .tox-collection__item mark {
+  background-color: hsl(var(--primary) / 0.2);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* Variable badge styling in autocomplete */
+.tox .tox-autocompleter .tox-collection__item-caret {
+  display: none;
+}
+
+/* Dark mode adjustments */
+.dark .tox .tox-autocompleter {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}

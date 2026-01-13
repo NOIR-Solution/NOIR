@@ -70,16 +70,9 @@ public class HttpRequestAuditMiddleware
             return;
         }
 
-        try
-        {
-            await ProcessWithAuditingAsync(context, dbContext, currentUser, tenantContextAccessor, auditBroadcast);
-        }
-        catch (Exception ex)
-        {
-            // Log but don't fail the request if auditing fails
-            _logger.LogError(ex, "HTTP request audit logging failed for {Path}", path);
-            await _next(context);
-        }
+        // Process with auditing - exceptions from request processing will propagate
+        // to ExceptionHandlingMiddleware for proper handling
+        await ProcessWithAuditingAsync(context, dbContext, currentUser, tenantContextAccessor, auditBroadcast);
     }
 
     private async Task ProcessWithAuditingAsync(

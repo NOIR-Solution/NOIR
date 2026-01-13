@@ -79,7 +79,8 @@ export function EmailChangeDialog({
     }
   }
 
-  const handleRequestEmailChange = async () => {
+  const handleRequestEmailChange = async (e: React.FormEvent) => {
+    e.preventDefault()
     setError('')
 
     if (!newEmail || newEmail === currentEmail) {
@@ -202,7 +203,7 @@ export function EmailChangeDialog({
         <div className="mt-4">
           {/* Step 1: Enter new email */}
           {step === 'email' && (
-            <div className="space-y-5">
+            <form onSubmit={handleRequestEmailChange} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="currentEmail" className="text-sm font-medium">
                   {t('profile.email.current')}
@@ -245,8 +246,7 @@ export function EmailChangeDialog({
               )}
 
               <Button
-                type="button"
-                onClick={handleRequestEmailChange}
+                type="submit"
                 disabled={isLoading || !newEmail}
                 className="w-full"
               >
@@ -259,7 +259,7 @@ export function EmailChangeDialog({
                   t('profile.email.sendCode')
                 )}
               </Button>
-            </div>
+            </form>
           )}
 
           {/* Step 2: Enter OTP */}
