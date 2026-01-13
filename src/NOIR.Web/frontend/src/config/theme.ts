@@ -261,26 +261,3 @@ export const SELECTED_THEME: keyof typeof themes = "blue"
  * Export the selected theme's classes for use in components
  */
 export const themeClasses = themes[SELECTED_THEME]
-
-/**
- * Export theme metadata for documentation/tooling
- */
-export const currentTheme = {
-  id: SELECTED_THEME,
-  name: themeClasses.name,
-  description: themeClasses.description,
-}
-
-/**
- * Export all available themes for theme switcher UI (if needed)
- */
-export const availableThemes = Object.entries(themes).map(([id, theme]) => ({
-  id,
-  name: theme.name,
-  description: theme.description,
-}))
-
-/**
- * Type for theme class keys (useful for type-safe access)
- */
-export type ThemeClassKey = keyof typeof themeClasses

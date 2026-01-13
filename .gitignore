@@ -151,6 +151,8 @@ BenchmarkDotNet.Artifacts/
 playwright-report/
 test-results/
 playwright/.cache/
+**/e2e/.auth/
+**/e2e/test-results/
 
 # -----------------------------------------------------------------------------
 # Publishing / Deployment
