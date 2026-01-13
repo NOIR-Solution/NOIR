@@ -85,6 +85,9 @@ public static class ApplicationDbContextSeeder
 
             // Seed email templates
             await SeedEmailTemplatesAsync(context, logger);
+
+            // Fix notification preferences TenantId (for preferences created before proper tenant context)
+            await FixNotificationPreferencesTenantAsync(context, logger);
         }
         catch (Exception ex)
         {
@@ -248,16 +251,30 @@ public static class ApplicationDbContextSeeder
         var templatesToSeed = GetEmailTemplateDefinitions();
         var newTemplates = new List<EmailTemplate>();
         var restoredCount = 0;
+        var tenantFixedCount = 0;
+
+        // Get current tenant ID from context for fixing templates with incorrect tenant
+        var currentTenantId = context.TenantInfo?.Id;
 
         foreach (var template in templatesToSeed)
         {
             var key = $"{template.Name}:{template.Language}";
             if (existingByKey.TryGetValue(key, out var existing))
             {
+                var entry = context.Entry(existing);
+
+                // Fix TenantId if it's missing or incorrect (from old seeding without tenant context)
+                if (!string.IsNullOrEmpty(currentTenantId) && existing.TenantId != currentTenantId)
+                {
+                    entry.Property(nameof(ITenantEntity.TenantId)).CurrentValue = currentTenantId;
+                    entry.Property(e => e.ModifiedAt).CurrentValue = DateTimeOffset.UtcNow;
+                    tenantFixedCount++;
+                    logger.LogInformation("Fixed TenantId for email template: {Name} ({Language})", template.Name, template.Language);
+                }
+
                 // Restore soft-deleted template using EF Core Entry API
                 if (existing.IsDeleted)
                 {
-                    var entry = context.Entry(existing);
                     entry.Property(e => e.IsDeleted).CurrentValue = false;
                     entry.Property(e => e.DeletedAt).CurrentValue = null;
                     entry.Property(e => e.DeletedBy).CurrentValue = null;
@@ -279,7 +296,7 @@ public static class ApplicationDbContextSeeder
             await context.Set<EmailTemplate>().AddRangeAsync(newTemplates);
         }
 
-        if (newTemplates.Count > 0 || restoredCount > 0)
+        if (newTemplates.Count > 0 || restoredCount > 0 || tenantFixedCount > 0)
         {
             await context.SaveChangesAsync();
             if (newTemplates.Count > 0)
@@ -290,6 +307,47 @@ public static class ApplicationDbContextSeeder
             {
                 logger.LogInformation("Restored {Count} soft-deleted email templates", restoredCount);
             }
+            if (tenantFixedCount > 0)
+            {
+                logger.LogInformation("Fixed TenantId for {Count} existing email templates", tenantFixedCount);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Fixes TenantId for notification preferences that were created before proper tenant context was set.
+    /// This handles the case where preferences exist but with a different TenantId than the current default tenant.
+    /// </summary>
+    internal static async Task FixNotificationPreferencesTenantAsync(ApplicationDbContext context, ILogger logger)
+    {
+        var currentTenantId = context.TenantInfo?.Id;
+        if (string.IsNullOrEmpty(currentTenantId))
+        {
+            return;
+        }
+
+        // Get all preferences ignoring query filters to find those with wrong TenantId
+        var allPreferences = await context.Set<NotificationPreference>()
+            .IgnoreQueryFilters()
+            .Where(p => !p.IsDeleted)
+            .ToListAsync();
+
+        var fixedCount = 0;
+        foreach (var preference in allPreferences)
+        {
+            if (preference.TenantId != currentTenantId)
+            {
+                var entry = context.Entry(preference);
+                entry.Property(nameof(ITenantEntity.TenantId)).CurrentValue = currentTenantId;
+                entry.Property(p => p.ModifiedAt).CurrentValue = DateTimeOffset.UtcNow;
+                fixedCount++;
+            }
+        }
+
+        if (fixedCount > 0)
+        {
+            await context.SaveChangesAsync();
+            logger.LogInformation("Fixed TenantId for {Count} existing notification preferences", fixedCount);
         }
     }
 
