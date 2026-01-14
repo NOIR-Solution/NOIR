@@ -37,7 +37,6 @@
     "react-hook-form": "^7.71.1",
     "react-i18next": "^15.4.1",
     "react-router-dom": "^7.11.0",
-    "recharts": "^2.15.3",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "tinymce": "^6.8.5",
