@@ -23,10 +23,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { TenantForm } from './components/TenantForm'
+import { TenantFormValidated, type CreateTenantFormData, type UpdateTenantFormData } from './components/TenantFormValidated'
 import { getTenant, updateTenant, deleteTenant } from '@/services/tenants'
 import { ApiError } from '@/services/apiClient'
-import type { Tenant, UpdateTenantRequest } from '@/types'
+import type { Tenant } from '@/types'
 
 export default function TenantDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -70,22 +70,18 @@ export default function TenantDetailPage() {
     fetchTenant()
   }, [id, searchParams, setSearchParams])
 
-  const handleUpdate = async (data: UpdateTenantRequest) => {
+  const handleUpdate = async (data: CreateTenantFormData | UpdateTenantFormData) => {
     if (!id) return
-    setSaving(true)
-    try {
-      const updated = await updateTenant(id, data)
-      setTenant(updated)
-      toast.success(t('messages.updateSuccess'))
-      setEditDialogOpen(false)
-    } catch (err) {
-      const message = err instanceof ApiError
-        ? err.message
-        : t('messages.operationFailed')
-      toast.error(message)
-    } finally {
-      setSaving(false)
-    }
+    // When editing, data will have UpdateTenantFormData shape
+    const updateData = data as UpdateTenantFormData
+    const updated = await updateTenant(id, {
+      identifier: updateData.identifier,
+      name: updateData.name,
+      isActive: updateData.isActive ?? true,
+    })
+    setTenant(updated)
+    toast.success(t('messages.updateSuccess'))
+    setEditDialogOpen(false)
   }
 
   const handleDelete = async () => {
@@ -210,11 +206,10 @@ export default function TenantDetailPage() {
             <DialogTitle>{t('tenants.editTitle')}</DialogTitle>
             <DialogDescription>{t('tenants.editDescription')}</DialogDescription>
           </DialogHeader>
-          <TenantForm
+          <TenantFormValidated
             tenant={tenant}
             onSubmit={handleUpdate}
             onCancel={() => setEditDialogOpen(false)}
-            loading={saving}
           />
         </DialogContent>
       </Dialog>

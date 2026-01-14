@@ -6,7 +6,7 @@
  * 2. Enter OTP sent to new email
  * 3. Success message
  */
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Mail, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -28,8 +28,25 @@ import {
   resendEmailChangeOtp,
   ApiError,
 } from '@/services/profile'
+import { useValidatedForm } from '@/hooks/useValidatedForm'
+import { requestEmailChangeSchema, verifyEmailChangeSchema } from '@/validation/schemas.generated'
+import { createValidationTranslator } from '@/lib/validation-i18n'
+import { z } from 'zod'
 
 type Step = 'email' | 'otp' | 'success'
+
+// Email step schema - extend to check new email differs from current
+const createEmailStepSchema = (currentEmail: string) =>
+  requestEmailChangeSchema.refine((data) => data.newEmail !== currentEmail, {
+    message: 'New email must be different from current email',
+    path: ['newEmail'],
+  })
+
+type EmailStepFormData = z.infer<typeof requestEmailChangeSchema>
+
+// OTP step schema - sessionToken is managed in state, not form
+const otpStepSchema = verifyEmailChangeSchema.pick({ otp: true })
+type OtpStepFormData = z.infer<typeof otpStepSchema>
 
 interface EmailChangeDialogProps {
   currentEmail: string
@@ -43,14 +60,12 @@ export function EmailChangeDialog({
   trigger,
 }: EmailChangeDialogProps) {
   const { t } = useTranslation('auth')
+  const { t: tCommon } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState<Step>('email')
 
-  // Form state
-  const [newEmail, setNewEmail] = useState('')
-  const [otp, setOtp] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  // Memoized translation function for validation errors
+  const translateError = useMemo(() => createValidationTranslator(tCommon), [tCommon])
 
   // OTP session state
   const [sessionToken, setSessionToken] = useState('')
@@ -58,18 +73,46 @@ export function EmailChangeDialog({
   const [expiresAt, setExpiresAt] = useState<Date | null>(null)
   const [canResend, setCanResend] = useState(false)
   const [remainingResends, setRemainingResends] = useState(3)
+  const [isResending, setIsResending] = useState(false)
+
+  // Email step form
+  const emailForm = useValidatedForm<EmailStepFormData>({
+    schema: createEmailStepSchema(currentEmail),
+    defaultValues: { newEmail: '' },
+    onSubmit: async (data) => {
+      const result = await requestEmailChange(data.newEmail)
+      setSessionToken(result.sessionToken)
+      setMaskedEmail(result.maskedEmail)
+      setExpiresAt(new Date(result.expiresAt))
+      setStep('otp')
+    },
+  })
+
+  // OTP step form
+  const otpForm = useValidatedForm<OtpStepFormData>({
+    schema: otpStepSchema,
+    defaultValues: { otp: '' },
+    onSubmit: async (data) => {
+      await verifyEmailChange(sessionToken, data.otp)
+      setStep('success')
+      // Refresh user data after short delay
+      setTimeout(() => {
+        onSuccess()
+        handleOpenChange(false)
+      }, 2000)
+    },
+  })
 
   const resetDialog = useCallback(() => {
     setStep('email')
-    setNewEmail('')
-    setOtp('')
-    setError('')
+    emailForm.reset()
+    otpForm.reset()
     setSessionToken('')
     setMaskedEmail('')
     setExpiresAt(null)
     setCanResend(false)
     setRemainingResends(3)
-  }, [])
+  }, [emailForm, otpForm])
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen)
@@ -79,63 +122,10 @@ export function EmailChangeDialog({
     }
   }
 
-  const handleRequestEmailChange = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-
-    if (!newEmail || newEmail === currentEmail) {
-      setError(t('profile.email.mustBeDifferent'))
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      const result = await requestEmailChange(newEmail)
-      setSessionToken(result.sessionToken)
-      setMaskedEmail(result.maskedEmail)
-      setExpiresAt(new Date(result.expiresAt))
-      setStep('otp')
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message)
-      } else {
-        setError(t('profile.email.requestFailed'))
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleVerifyOtp = async (code: string) => {
-    setError('')
-    setIsLoading(true)
-
-    try {
-      await verifyEmailChange(sessionToken, code)
-      setStep('success')
-      // Refresh user data after short delay
-      setTimeout(() => {
-        onSuccess()
-        handleOpenChange(false)
-      }, 2000)
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message)
-      } else {
-        setError(t('profile.email.verifyFailed'))
-      }
-      setOtp('')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const handleResendOtp = async () => {
     if (!canResend || remainingResends <= 0) return
 
-    setError('')
-    setIsLoading(true)
+    setIsResending(true)
 
     try {
       const result = await resendEmailChangeOtp(sessionToken)
@@ -143,17 +133,16 @@ export function EmailChangeDialog({
       setCanResend(false)
 
       if (result.nextResendAt) {
-        // Reset timer
         setExpiresAt(new Date(result.nextResendAt))
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message)
+        otpForm.setServerError(err.message)
       } else {
-        setError(t('profile.email.resendFailed'))
+        otpForm.setServerError(t('profile.email.resendFailed'))
       }
     } finally {
-      setIsLoading(false)
+      setIsResending(false)
     }
   }
 
@@ -162,18 +151,18 @@ export function EmailChangeDialog({
   }
 
   const handleOtpChange = (value: string) => {
-    setOtp(value)
-    setError('')
+    otpForm.form.setValue('otp', value)
+    otpForm.clearServerError()
   }
 
   const handleOtpComplete = (value: string) => {
-    handleVerifyOtp(value)
+    otpForm.form.setValue('otp', value)
+    otpForm.handleSubmit()
   }
 
   const handleBack = () => {
     setStep('email')
-    setOtp('')
-    setError('')
+    otpForm.reset()
   }
 
   return (
@@ -203,7 +192,7 @@ export function EmailChangeDialog({
         <div className="mt-4">
           {/* Step 1: Enter new email */}
           {step === 'email' && (
-            <form onSubmit={handleRequestEmailChange} className="space-y-5">
+            <form onSubmit={emailForm.handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="currentEmail" className="text-sm font-medium">
                   {t('profile.email.current')}
@@ -229,28 +218,31 @@ export function EmailChangeDialog({
                   <Input
                     id="newEmail"
                     type="email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
+                    {...emailForm.form.register('newEmail')}
                     placeholder={t('profile.email.newPlaceholder')}
                     className="pl-10"
-                    disabled={isLoading}
+                    disabled={emailForm.isSubmitting}
                     autoFocus
+                    aria-invalid={!!emailForm.form.formState.errors.newEmail}
                   />
                 </div>
+                {emailForm.form.formState.errors.newEmail && (
+                  <p className="text-sm text-destructive">{translateError(emailForm.form.formState.errors.newEmail.message)}</p>
+                )}
               </div>
 
-              {error && (
+              {emailForm.serverError && (
                 <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm text-destructive">{error}</p>
+                  <p className="text-sm text-destructive">{emailForm.serverError}</p>
                 </div>
               )}
 
               <Button
                 type="submit"
-                disabled={isLoading || !newEmail}
+                disabled={emailForm.isSubmitting}
                 className="w-full"
               >
-                {isLoading ? (
+                {emailForm.isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     {t('profile.email.sending')}
@@ -287,16 +279,18 @@ export function EmailChangeDialog({
               </div>
 
               <OtpInput
-                value={otp}
+                value={otpForm.form.watch('otp')}
                 onChange={handleOtpChange}
                 onComplete={handleOtpComplete}
-                disabled={isLoading}
-                error={!!error}
+                disabled={otpForm.isSubmitting}
+                error={!!otpForm.form.formState.errors.otp || !!otpForm.serverError}
               />
 
-              {error && (
+              {(otpForm.form.formState.errors.otp || otpForm.serverError) && (
                 <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm text-destructive text-center">{error}</p>
+                  <p className="text-sm text-destructive text-center">
+                    {otpForm.form.formState.errors.otp?.message ? translateError(otpForm.form.formState.errors.otp.message) : otpForm.serverError}
+                  </p>
                 </div>
               )}
 
@@ -314,9 +308,9 @@ export function EmailChangeDialog({
                     variant="ghost"
                     size="sm"
                     onClick={handleResendOtp}
-                    disabled={isLoading}
+                    disabled={isResending}
                   >
-                    {isLoading ? (
+                    {isResending ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : null}
                     {t('profile.email.resend')} ({remainingResends})

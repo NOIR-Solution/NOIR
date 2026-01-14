@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Send, Mail } from 'lucide-react'
@@ -16,6 +16,17 @@ import { Label } from '@/components/ui/label'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { sendTestEmail, getDefaultSampleData } from '@/services/emailTemplates'
 import { ApiError } from '@/services/apiClient'
+import { useValidatedForm } from '@/hooks/useValidatedForm'
+import { sendTestEmailSchema } from '@/validation/schemas.generated'
+import { createValidationTranslator } from '@/lib/validation-i18n'
+import { z } from 'zod'
+
+// Extended schema to include dynamic sample data fields
+const testEmailFormSchema = sendTestEmailSchema.omit({ templateId: true, sampleData: true }).extend({
+  recipientEmail: z.string().min(1, { message: 'This field is required' }).email({ message: 'Invalid email address' }),
+})
+
+type TestEmailFormData = z.infer<typeof testEmailFormSchema>
 
 interface TestEmailDialogProps {
   open: boolean
@@ -36,55 +47,50 @@ export function TestEmailDialog({
   const { t } = useTranslation('common')
   const { user } = useAuthContext()
 
-  // State
-  const [recipientEmail, setRecipientEmail] = useState('')
-  const [sampleData, setSampleData] = useState<Record<string, string>>({})
-  const [sending, setSending] = useState(false)
+  // Memoized translation function for validation errors
+  const translateError = useMemo(() => createValidationTranslator(t), [t])
 
-  // Initialize with user's email and default sample data
+  // Sample data state (dynamic fields not in schema)
+  const [sampleData, setSampleData] = useState<Record<string, string>>({})
+
+  // Use validated form with Zod schema
+  const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<TestEmailFormData>({
+    schema: testEmailFormSchema,
+    defaultValues: {
+      recipientEmail: '',
+    },
+    onSubmit: async (data) => {
+      await sendTestEmail(templateId, {
+        recipientEmail: data.recipientEmail,
+        sampleData,
+      })
+      toast.success(t('emailTemplates.testEmailSent'))
+      onOpenChange(false)
+    },
+    onError: (error) => {
+      if (!(error instanceof ApiError)) {
+        toast.error(t('messages.operationFailed'))
+      }
+    },
+  })
+
+  // Initialize with user's email and default sample data when dialog opens
   useEffect(() => {
     if (open) {
-      setRecipientEmail(user?.email || '')
+      form.reset({ recipientEmail: user?.email || '' })
       setSampleData(getDefaultSampleData(availableVariables))
     }
-  }, [open, user?.email, availableVariables])
+  }, [open, user?.email, availableVariables, form])
 
   // Update sample data value
   const updateSampleData = (key: string, value: string) => {
     setSampleData((prev) => ({ ...prev, [key]: value }))
   }
 
-  // Handle send
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!recipientEmail) {
-      toast.error('Please enter a recipient email address.')
-      return
-    }
-
-    setSending(true)
-    try {
-      await sendTestEmail(templateId, {
-        recipientEmail,
-        sampleData,
-      })
-      toast.success(t('emailTemplates.testEmailSent'))
-      onOpenChange(false)
-    } catch (error) {
-      if (error instanceof ApiError) {
-        toast.error(error.message)
-      } else {
-        toast.error(t('messages.operationFailed'))
-      }
-    } finally {
-      setSending(false)
-    }
-  }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
-        <form onSubmit={handleSend}>
+        <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Send className="h-5 w-5 text-blue-600" />
@@ -105,10 +111,13 @@ export function TestEmailDialog({
               <Input
                 id="recipient-email"
                 type="email"
-                value={recipientEmail}
-                onChange={(e) => setRecipientEmail(e.target.value)}
+                {...form.register('recipientEmail')}
                 placeholder="Enter email address..."
+                aria-invalid={!!form.formState.errors.recipientEmail}
               />
+              {form.formState.errors.recipientEmail && (
+                <p className="text-sm text-destructive">{translateError(form.formState.errors.recipientEmail.message)}</p>
+              )}
             </div>
 
             {/* Sample Data */}
@@ -133,14 +142,21 @@ export function TestEmailDialog({
                 </div>
               </div>
             )}
+
+            {/* Server Error */}
+            {serverError && (
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <p className="text-sm text-destructive">{serverError}</p>
+              </div>
+            )}
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
               {t('buttons.cancel')}
             </Button>
-            <Button type="submit" disabled={sending}>
-              {sending ? (
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                   Sending...

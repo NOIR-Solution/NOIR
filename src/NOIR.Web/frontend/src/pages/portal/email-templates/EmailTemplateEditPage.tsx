@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Editor } from '@tinymce/tinymce-react'
 import type { Editor as TinyMCEEditor } from 'tinymce'
+import { z } from 'zod'
+import { updateEmailTemplateSchema } from '@/validation/schemas.generated'
 
 // Import TinyMCE 6 for self-hosted usage
 /* eslint-disable import/no-unresolved */
@@ -61,6 +63,18 @@ import { ApiError } from '@/services/apiClient'
 import { PreviewDialog } from './PreviewDialog'
 import { TestEmailDialog } from './TestEmailDialog'
 
+// Extended schema for form validation (includes plainTextBody which is optional)
+const emailTemplateFormSchema = updateEmailTemplateSchema.omit({ id: true }).extend({
+  plainTextBody: z.string().optional().or(z.literal('')),
+})
+
+type EmailTemplateFormErrors = {
+  subject?: string
+  htmlBody?: string
+  plainTextBody?: string
+  description?: string
+}
+
 /**
  * Email Template Edit Page
  * Full editor with TinyMCE, variable insertion, preview and test email functionality.
@@ -97,6 +111,9 @@ export default function EmailTemplateEditPage() {
 
   // Track unsaved changes
   const [hasChanges, setHasChanges] = useState(false)
+
+  // Validation errors
+  const [errors, setErrors] = useState<EmailTemplateFormErrors>({})
 
   // Get template display name
   const getDisplayName = (name: string): string => {
@@ -152,9 +169,33 @@ export default function EmailTemplateEditPage() {
     setHasChanges(changed)
   }, [subject, htmlBody, plainTextBody, description, template])
 
-  // Handle save
+  // Handle save with validation
   const handleSave = async () => {
     if (!id || !template) return
+
+    // Validate form data using Zod schema
+    const result = emailTemplateFormSchema.safeParse({
+      subject,
+      htmlBody,
+      plainTextBody,
+      description,
+    })
+
+    if (!result.success) {
+      // Map Zod errors to form errors
+      const fieldErrors: EmailTemplateFormErrors = {}
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof EmailTemplateFormErrors
+        if (field) {
+          fieldErrors[field] = issue.message
+        }
+      })
+      setErrors(fieldErrors)
+      return
+    }
+
+    // Clear validation errors
+    setErrors({})
 
     setSaving(true)
     try {
@@ -331,9 +372,13 @@ export default function EmailTemplateEditPage() {
                   <Input
                     id="subject-input"
                     value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
+                    onChange={(e) => {
+                      setSubject(e.target.value)
+                      if (errors.subject) setErrors((prev) => ({ ...prev, subject: undefined }))
+                    }}
                     placeholder="Enter email subject..."
-                    className="w-full"
+                    className={`w-full ${errors.subject ? 'border-destructive' : ''}`}
+                    aria-invalid={!!errors.subject}
                   />
                 </div>
                 <DropdownMenu>
@@ -354,6 +399,9 @@ export default function EmailTemplateEditPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
+              {errors.subject && (
+                <p className="text-sm text-destructive">{errors.subject}</p>
+              )}
             </CardContent>
           </Card>
 
@@ -392,7 +440,10 @@ export default function EmailTemplateEditPage() {
                   }, 100)
                 }}
                 value={htmlBody}
-                onEditorChange={(content) => setHtmlBody(content)}
+                onEditorChange={(content) => {
+                  setHtmlBody(content)
+                  if (errors.htmlBody) setErrors((prev) => ({ ...prev, htmlBody: undefined }))
+                }}
                 init={{
                   height: 500,
                   menubar: false,
@@ -487,6 +538,9 @@ export default function EmailTemplateEditPage() {
                   },
                 }}
               />
+              {errors.htmlBody && (
+                <p className="text-sm text-destructive mt-2">{errors.htmlBody}</p>
+              )}
             </CardContent>
           </Card>
 
@@ -610,10 +664,16 @@ export default function EmailTemplateEditPage() {
             <CardContent>
               <textarea
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  setDescription(e.target.value)
+                  if (errors.description) setErrors((prev) => ({ ...prev, description: undefined }))
+                }}
                 placeholder="Template description..."
-                className="w-full h-24 p-3 border rounded-lg resize-none text-sm bg-background text-foreground"
+                className={`w-full h-24 p-3 border rounded-lg resize-none text-sm bg-background text-foreground ${errors.description ? 'border-destructive' : ''}`}
               />
+              {errors.description && (
+                <p className="text-sm text-destructive mt-2">{errors.description}</p>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -66,13 +66,20 @@ export default function EmailTemplatesPage() {
     }
   }
 
+  // Track if initial load has happened
+  const isInitialMount = useRef(true)
+
   // Load templates on mount and when filters change
   useEffect(() => {
     loadTemplates()
   }, [languageFilter])
 
-  // Debounced search
+  // Debounced search - skip initial mount since languageFilter effect handles it
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
     const timer = setTimeout(() => {
       loadTemplates()
     }, 300)

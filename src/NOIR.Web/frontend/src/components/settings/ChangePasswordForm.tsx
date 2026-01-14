@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -15,74 +15,66 @@ import {
 } from '@/components/ui/card'
 import { changePassword, ApiError } from '@/services/settings'
 import { useAuthContext } from '@/contexts/AuthContext'
+import { useValidatedForm } from '@/hooks/useValidatedForm'
+import { changePasswordSchema } from '@/validation/schemas.generated'
+import { createValidationTranslator } from '@/lib/validation-i18n'
+import { z } from 'zod'
 
-// Minimum password length - matches backend (6 chars in dev)
-const MIN_PASSWORD_LENGTH = 6
+// Extended schema with confirm password (client-side only validation)
+const changePasswordFormSchema = changePasswordSchema.extend({
+  confirmPassword: z.string().min(1, { message: 'Please confirm your new password' }),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+}).refine((data) => data.currentPassword !== data.newPassword, {
+  message: "New password must be different from current password",
+  path: ["newPassword"],
+})
+
+type ChangePasswordFormData = z.infer<typeof changePasswordFormSchema>
 
 export function ChangePasswordForm() {
   const { t } = useTranslation('auth')
+  const { t: tCommon } = useTranslation('common')
   const navigate = useNavigate()
   const { logout } = useAuthContext()
 
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  // Memoized translation function for validation errors
+  const translateError = useMemo(() => createValidationTranslator(tCommon), [tCommon])
+
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
 
-  const isPasswordValid = newPassword.length >= MIN_PASSWORD_LENGTH
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-
-    // Validate new password meets minimum length
-    if (!isPasswordValid) {
-      setError(t('changePassword.tooShort', { count: MIN_PASSWORD_LENGTH }))
-      return
-    }
-
-    // Check passwords match
-    if (newPassword !== confirmPassword) {
-      setError(t('forgotPassword.reset.passwordsDoNotMatch'))
-      return
-    }
-
-    // Check new is different from current
-    if (currentPassword === newPassword) {
-      setError(t('changePassword.mustBeDifferent'))
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      await changePassword({ currentPassword, newPassword })
+  // Use validated form with Zod schema
+  const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<ChangePasswordFormData>({
+    schema: changePasswordFormSchema,
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
+    onSubmit: async (data) => {
+      await changePassword({
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      })
 
       toast.success(t('changePassword.success'))
 
       // Log out user since all sessions were revoked
       await logout()
       navigate('/login')
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message)
-      } else {
-        setError(t('changePassword.failed'))
+    },
+    onError: (error) => {
+      if (error instanceof ApiError) {
+        // Error handled by useValidatedForm
       }
-    } finally {
-      setIsLoading(false)
-    }
-  }
+    },
+  })
 
-  const isFormValid =
-    currentPassword.length > 0 &&
-    isPasswordValid &&
-    newPassword === confirmPassword &&
-    currentPassword !== newPassword
+  const newPassword = form.watch('newPassword')
+  const confirmPassword = form.watch('confirmPassword')
 
   return (
     <Card className="max-w-xl">
@@ -109,11 +101,10 @@ export function ChangePasswordForm() {
               <Input
                 id="currentPassword"
                 type={showCurrentPassword ? 'text' : 'password'}
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
+                {...form.register('currentPassword')}
                 className="pl-10 pr-10 focus:border-blue-600 focus:ring-blue-600/20"
-                required
                 autoComplete="current-password"
+                aria-invalid={!!form.formState.errors.currentPassword}
               />
               <button
                 type="button"
@@ -128,6 +119,9 @@ export function ChangePasswordForm() {
                 )}
               </button>
             </div>
+            {form.formState.errors.currentPassword && (
+              <p className="text-sm text-destructive">{translateError(form.formState.errors.currentPassword.message)}</p>
+            )}
           </div>
 
           {/* New Password */}
@@ -138,11 +132,10 @@ export function ChangePasswordForm() {
               <Input
                 id="newPassword"
                 type={showNewPassword ? 'text' : 'password'}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                {...form.register('newPassword')}
                 className="pl-10 pr-10 focus:border-blue-600 focus:ring-blue-600/20"
-                required
                 autoComplete="new-password"
+                aria-invalid={!!form.formState.errors.newPassword}
               />
               <button
                 type="button"
@@ -157,10 +150,8 @@ export function ChangePasswordForm() {
                 )}
               </button>
             </div>
-            {newPassword.length > 0 && newPassword.length < MIN_PASSWORD_LENGTH && (
-              <p className="text-sm text-amber-600 dark:text-amber-500 font-medium">
-                {t('changePassword.minLength', { count: MIN_PASSWORD_LENGTH })}
-              </p>
+            {form.formState.errors.newPassword && (
+              <p className="text-sm text-destructive">{translateError(form.formState.errors.newPassword.message)}</p>
             )}
           </div>
 
@@ -174,11 +165,10 @@ export function ChangePasswordForm() {
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                {...form.register('confirmPassword')}
                 className="pl-10 pr-10 focus:border-blue-600 focus:ring-blue-600/20"
-                required
                 autoComplete="new-password"
+                aria-invalid={!!form.formState.errors.confirmPassword}
               />
               <button
                 type="button"
@@ -193,35 +183,30 @@ export function ChangePasswordForm() {
                 )}
               </button>
             </div>
-            {confirmPassword && (
-              <p
-                className={`text-xs ${
-                  newPassword === confirmPassword
-                    ? 'text-green-600'
-                    : 'text-destructive'
-                }`}
-              >
-                {newPassword === confirmPassword
-                  ? t('forgotPassword.reset.passwordsMatch')
-                  : t('forgotPassword.reset.passwordsDoNotMatch')}
+            {form.formState.errors.confirmPassword && (
+              <p className="text-sm text-destructive">{translateError(form.formState.errors.confirmPassword.message)}</p>
+            )}
+            {confirmPassword && !form.formState.errors.confirmPassword && newPassword === confirmPassword && (
+              <p className="text-xs text-green-600">
+                {t('forgotPassword.reset.passwordsMatch')}
               </p>
             )}
           </div>
 
-          {/* Error */}
-          {error && (
+          {/* Server Error */}
+          {serverError && (
             <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-sm text-destructive font-medium">{error}</p>
+              <p className="text-sm text-destructive font-medium">{serverError}</p>
             </div>
           )}
 
           {/* Submit */}
           <Button
             type="submit"
-            disabled={isLoading || !isFormValid}
+            disabled={isSubmitting}
             className="w-full bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg"
           >
-            {isLoading ? t('changePassword.submitting') : t('changePassword.submit')}
+            {isSubmitting ? t('changePassword.submitting') : t('changePassword.submit')}
           </Button>
         </form>
       </CardContent>

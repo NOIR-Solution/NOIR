@@ -193,5 +193,19 @@
     "today": "Hôm nay",
     "yesterday": "Hôm qua",
     "tomorrow": "Ngày mai"
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "invalidEmail": "Địa chỉ email không hợp lệ",
+    "invalidFormat": "Định dạng không hợp lệ",
+    "minLength": "Tối thiểu {{count}} ký tự",
+    "maxLength": "Tối đa {{count}} ký tự",
+    "exactLength": "Phải đúng {{count}} ký tự",
+    "minValue": "Giá trị tối thiểu là {{value}}",
+    "maxValue": "Giá trị tối đa là {{value}}",
+    "passwordConfirm": "Vui lòng xác nhận mật khẩu mới",
+    "passwordsMismatch": "Mật khẩu không khớp",
+    "passwordSameAsCurrent": "Mật khẩu mới phải khác mật khẩu hiện tại",
+    "emailSameAsCurrent": "Email mới phải khác email hiện tại"
   }
 }

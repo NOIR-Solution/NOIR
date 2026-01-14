@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -11,6 +11,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
 import { PasswordStrengthIndicator } from '@/components/forgot-password/PasswordStrengthIndicator'
 import { getPasswordStrength } from '@/lib/passwordValidation'
+import { resetPasswordSchema } from '@/validation/schemas.generated'
+import { translateValidationError } from '@/lib/validation-i18n'
 import { resetPassword, ApiError } from '@/services/forgotPassword'
 
 interface SessionData {
@@ -27,6 +29,7 @@ interface SessionData {
 export default function ResetPasswordPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
+  const { t: tCommon } = useTranslation('common')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -34,6 +37,9 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [session, setSession] = useState<SessionData | null>(null)
+
+  // Memoized translation function for validation errors
+  const translateError = useMemo(() => (msg: string | undefined) => translateValidationError(msg, tCommon), [tCommon])
 
   // Load session data on mount
   useEffect(() => {
@@ -59,20 +65,31 @@ export default function ResetPasswordPage() {
     e.preventDefault()
     setError('')
 
-    // Validate password
+    if (!session) return
+
+    // Validate using generated Zod schema
+    const validation = resetPasswordSchema.safeParse({
+      resetToken: session.resetToken,
+      newPassword: password,
+    })
+    if (!validation.success) {
+      const firstError = validation.error.issues[0]
+      setError(translateError(firstError?.message) || t('forgotPassword.reset.invalidInput'))
+      return
+    }
+
+    // Additional UX validation: password strength
     const strength = getPasswordStrength(password)
     if (!strength.isValid) {
       setError(t('forgotPassword.reset.passwordTooWeak'))
       return
     }
 
-    // Check passwords match
+    // Additional UX validation: confirm password match
     if (password !== confirmPassword) {
       setError(t('forgotPassword.reset.passwordsDoNotMatch'))
       return
     }
-
-    if (!session) return
 
     setIsLoading(true)
 

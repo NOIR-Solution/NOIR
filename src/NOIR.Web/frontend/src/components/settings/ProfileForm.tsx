@@ -7,7 +7,7 @@
  * - Email change (via dialog with OTP)
  * - Phone number
  */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { User, Mail, Phone, Loader2 } from 'lucide-react'
@@ -30,75 +30,64 @@ import {
   deleteAvatar,
   ApiError,
 } from '@/services/profile'
+import { useValidatedForm } from '@/hooks/useValidatedForm'
+import { updateUserProfileSchema } from '@/validation/schemas.generated'
+import { createValidationTranslator } from '@/lib/validation-i18n'
+import { z } from 'zod'
+
+type ProfileFormData = z.infer<typeof updateUserProfileSchema>
 
 export function ProfileForm() {
   const { t } = useTranslation('auth')
+  const { t: tCommon } = useTranslation('common')
   const { user, checkAuth } = useAuthContext()
 
-  // Form state
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [displayName, setDisplayName] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
+  // Memoized translation function for validation errors
+  const translateError = useMemo(() => createValidationTranslator(tCommon), [tCommon])
 
-  // Loading states
-  const [isSaving, setIsSaving] = useState(false)
+  // Loading states for avatar
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isRemovingAvatar, setIsRemovingAvatar] = useState(false)
 
-  const [error, setError] = useState('')
-  const [hasChanges, setHasChanges] = useState(false)
-
-  // Initialize form with user data
-  useEffect(() => {
-    if (user) {
-      setFirstName(user.firstName ?? '')
-      setLastName(user.lastName ?? '')
-      setDisplayName(user.displayName ?? '')
-      setPhoneNumber(user.phoneNumber ?? '')
-    }
-  }, [user])
-
-  // Track changes
-  useEffect(() => {
-    if (!user) return
-
-    const changed =
-      firstName !== (user.firstName ?? '') ||
-      lastName !== (user.lastName ?? '') ||
-      displayName !== (user.displayName ?? '') ||
-      phoneNumber !== (user.phoneNumber ?? '')
-
-    setHasChanges(changed)
-  }, [user, firstName, lastName, displayName, phoneNumber])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsSaving(true)
-
-    try {
+  // Use validated form with Zod schema
+  const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<ProfileFormData>({
+    schema: updateUserProfileSchema,
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      displayName: '',
+      phoneNumber: '',
+    },
+    onSubmit: async (data) => {
       await updateProfile({
-        firstName: firstName || null,
-        lastName: lastName || null,
-        displayName: displayName || null,
-        phoneNumber: phoneNumber || null,
+        firstName: data.firstName || null,
+        lastName: data.lastName || null,
+        displayName: data.displayName || null,
+        phoneNumber: data.phoneNumber || null,
       })
 
       // Refresh user data
       await checkAuth()
       toast.success(t('profile.saved'))
-      setHasChanges(false)
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message)
-      } else {
-        setError(t('profile.saveFailed'))
+    },
+    onError: (error) => {
+      if (!(error instanceof ApiError)) {
+        toast.error(t('profile.saveFailed'))
       }
-    } finally {
-      setIsSaving(false)
+    },
+  })
+
+  // Initialize form with user data when user loads
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        firstName: user.firstName ?? '',
+        lastName: user.lastName ?? '',
+        displayName: user.displayName ?? '',
+        phoneNumber: user.phoneNumber ?? '',
+      })
     }
-  }
+  }, [user, form])
 
   const handleAvatarUpload = async (file: File) => {
     setIsUploadingAvatar(true)
@@ -185,12 +174,15 @@ export function ProfileForm() {
                 <Input
                   id="firstName"
                   type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  {...form.register('firstName')}
                   placeholder={t('profile.firstNamePlaceholder')}
                   className="focus:border-blue-600 focus:ring-blue-600/20"
-                  disabled={isSaving}
+                  disabled={isSubmitting}
+                  aria-invalid={!!form.formState.errors.firstName}
                 />
+                {form.formState.errors.firstName && (
+                  <p className="text-sm text-destructive">{translateError(form.formState.errors.firstName.message)}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -198,12 +190,15 @@ export function ProfileForm() {
                 <Input
                   id="lastName"
                   type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  {...form.register('lastName')}
                   placeholder={t('profile.lastNamePlaceholder')}
                   className="focus:border-blue-600 focus:ring-blue-600/20"
-                  disabled={isSaving}
+                  disabled={isSubmitting}
+                  aria-invalid={!!form.formState.errors.lastName}
                 />
+                {form.formState.errors.lastName && (
+                  <p className="text-sm text-destructive">{translateError(form.formState.errors.lastName.message)}</p>
+                )}
               </div>
             </div>
 
@@ -213,12 +208,15 @@ export function ProfileForm() {
               <Input
                 id="displayName"
                 type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                {...form.register('displayName')}
                 placeholder={t('profile.displayNamePlaceholder')}
                 className="focus:border-blue-600 focus:ring-blue-600/20"
-                disabled={isSaving}
+                disabled={isSubmitting}
+                aria-invalid={!!form.formState.errors.displayName}
               />
+              {form.formState.errors.displayName && (
+                <p className="text-sm text-destructive">{translateError(form.formState.errors.displayName.message)}</p>
+              )}
               <p className="text-xs text-muted-foreground">
                 {t('profile.displayNameHelp')}
               </p>
@@ -253,30 +251,33 @@ export function ProfileForm() {
                 <Input
                   id="phoneNumber"
                   type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  {...form.register('phoneNumber')}
                   placeholder={t('profile.phonePlaceholder')}
                   className="pl-10 focus:border-blue-600 focus:ring-blue-600/20"
-                  disabled={isSaving}
+                  disabled={isSubmitting}
+                  aria-invalid={!!form.formState.errors.phoneNumber}
                 />
               </div>
+              {form.formState.errors.phoneNumber && (
+                <p className="text-sm text-destructive">{translateError(form.formState.errors.phoneNumber.message)}</p>
+              )}
             </div>
           </div>
 
           {/* Error */}
-          {error && (
+          {serverError && (
             <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-sm text-destructive font-medium">{error}</p>
+              <p className="text-sm text-destructive font-medium">{serverError}</p>
             </div>
           )}
 
           {/* Submit */}
           <Button
             type="submit"
-            disabled={isSaving || !hasChanges}
+            disabled={isSubmitting || !form.formState.isDirty}
             className="w-full bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg disabled:opacity-50"
           >
-            {isSaving ? (
+            {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 {t('profile.saving')}

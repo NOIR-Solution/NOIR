@@ -9,10 +9,10 @@ import {
   CredenzaTitle,
   CredenzaBody,
 } from '@/components/ui/credenza'
-import { TenantForm } from './TenantForm'
+import { TenantFormValidated, type CreateTenantFormData, type UpdateTenantFormData } from './TenantFormValidated'
 import { getTenant, updateTenant } from '@/services/tenants'
 import { ApiError } from '@/services/apiClient'
-import type { TenantListItem, Tenant, UpdateTenantRequest } from '@/types'
+import type { TenantListItem, Tenant } from '@/types'
 
 interface EditTenantDialogProps {
   tenant: TenantListItem | null
@@ -25,15 +25,12 @@ export function EditTenantDialog({ tenant, open, onOpenChange, onSuccess }: Edit
   const { t } = useTranslation('common')
   const [fullTenant, setFullTenant] = useState<Tenant | null>(null)
   const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
 
   // Fetch full tenant data when dialog opens
   useEffect(() => {
     if (open && tenant) {
       const fetchTenant = async () => {
         setLoading(true)
-        setFieldErrors({}) // Clear errors when loading new tenant
         try {
           const data = await getTenant(tenant.id)
           setFullTenant(data)
@@ -48,46 +45,21 @@ export function EditTenantDialog({ tenant, open, onOpenChange, onSuccess }: Edit
       fetchTenant()
     } else {
       setFullTenant(null)
-      setFieldErrors({})
     }
   }, [open, tenant, onOpenChange])
 
-  const handleUpdate = async (data: UpdateTenantRequest) => {
+  const handleSubmit = async (data: CreateTenantFormData | UpdateTenantFormData) => {
     if (!tenant) return
-    setSaving(true)
-    setFieldErrors({}) // Clear previous errors
-    try {
-      await updateTenant(tenant.id, data)
-      toast.success(t('messages.updateSuccess'))
-      onOpenChange(false)
-      onSuccess()
-    } catch (err) {
-      if (err instanceof ApiError) {
-        // Check if we have field-specific validation errors
-        if (err.hasFieldErrors && err.errors) {
-          setFieldErrors(err.errors)
-          // Don't show toast for validation errors - they're displayed inline
-        } else {
-          // For non-validation errors, show toast
-          toast.error(err.message)
-        }
-      } else {
-        toast.error(t('messages.operationFailed'))
-      }
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handleFieldChange = (field: string) => {
-    // Clear error for the modified field
-    setFieldErrors(prev => {
-      const pascalCase = field.charAt(0).toUpperCase() + field.slice(1)
-      const newErrors = { ...prev }
-      delete newErrors[field]
-      delete newErrors[pascalCase]
-      return newErrors
+    // When editing, data will have UpdateTenantFormData shape
+    const updateData = data as UpdateTenantFormData
+    await updateTenant(tenant.id, {
+      identifier: updateData.identifier,
+      name: updateData.name,
+      isActive: updateData.isActive ?? true,
     })
+    toast.success(t('messages.updateSuccess'))
+    onOpenChange(false)
+    onSuccess()
   }
 
   return (
@@ -123,13 +95,10 @@ export function EditTenantDialog({ tenant, open, onOpenChange, onSuccess }: Edit
               </div>
             </div>
           ) : fullTenant ? (
-            <TenantForm
+            <TenantFormValidated
               tenant={fullTenant}
-              onSubmit={handleUpdate}
+              onSubmit={handleSubmit}
               onCancel={() => onOpenChange(false)}
-              loading={saving}
-              errors={fieldErrors}
-              onFieldChange={handleFieldChange}
             />
           ) : null}
         </CredenzaBody>

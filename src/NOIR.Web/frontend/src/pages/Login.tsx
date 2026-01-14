@@ -1,5 +1,4 @@
-import * as React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useNavigate, useSearchParams, Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { Mail, Lock, Eye, EyeOff, ShieldCheck, Sparkles } from "lucide-react"
@@ -9,8 +8,13 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { useLogin } from "@/hooks/useLogin"
 import { useAuthContext } from "@/contexts/AuthContext"
-import { isValidEmail } from "@/lib/validation"
+import { useValidatedForm } from "@/hooks/useValidatedForm"
+import { loginSchema } from "@/validation/schemas.generated"
+import { createValidationTranslator } from "@/lib/validation-i18n"
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher"
+import { z } from "zod"
+
+type LoginFormData = z.infer<typeof loginSchema>
 
 /**
  * Validates the return URL to prevent open redirect attacks (CWE-601).
@@ -37,13 +41,31 @@ export default function LoginPage() {
   const { login } = useLogin()
   const { isAuthenticated, isLoading: isAuthLoading } = useAuthContext()
   const { t } = useTranslation('auth')
+  const { t: tCommon } = useTranslation('common')
 
-  // Auto-fill credentials in development mode for smooth dev experience
-  const [email, setEmail] = useState(import.meta.env.DEV ? "admin@noir.local" : "")
-  const [password, setPassword] = useState(import.meta.env.DEV ? "123qwe" : "")
+  // Memoized translation function for validation errors
+  const translateError = useMemo(() => createValidationTranslator(tCommon), [tCommon])
+
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+
+  // Use validated form with Zod schema
+  const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<LoginFormData>({
+    schema: loginSchema,
+    defaultValues: {
+      email: import.meta.env.DEV ? "admin@noir.local" : "",
+      password: import.meta.env.DEV ? "123qwe" : "",
+    },
+    onSubmit: async (data) => {
+      await login({ email: data.email, password: data.password })
+      // Redirect to validated return URL (prevents open redirect)
+      const safeReturnUrl = validateReturnUrl(returnUrl)
+      navigate(safeReturnUrl)
+    },
+    onError: (error) => {
+      // Error is already handled by useValidatedForm
+      console.error('Login failed:', error)
+    },
+  })
 
   // Redirect to portal if already logged in
   useEffect(() => {
@@ -60,34 +82,6 @@ export default function LoginPage() {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700" />
       </div>
     )
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-
-    if (!email || !password) {
-      setError(t('login.enterBothFields'))
-      return
-    }
-
-    if (!isValidEmail(email)) {
-      setError(t('login.invalidEmail'))
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      await login({ email, password })
-      // Redirect to validated return URL (prevents open redirect)
-      const safeReturnUrl = validateReturnUrl(returnUrl)
-      navigate(safeReturnUrl)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('login.authFailed'))
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   return (
@@ -130,12 +124,14 @@ export default function LoginPage() {
                       id="email"
                       type="email"
                       placeholder={t('login.emailPlaceholder')}
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      {...form.register("email")}
                       className="pl-10 h-12 bg-background border-border focus:border-blue-600 focus:ring-blue-600/20 transition-all"
-                      required
+                      aria-invalid={!!form.formState.errors.email}
                     />
                   </div>
+                  {form.formState.errors.email && (
+                    <p className="text-sm text-destructive">{translateError(form.formState.errors.email.message)}</p>
+                  )}
                 </div>
 
                 {/* Password Field */}
@@ -149,10 +145,9 @@ export default function LoginPage() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder={t('login.passwordPlaceholder')}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      {...form.register("password")}
                       className="pl-10 pr-10 h-12 bg-background border-border focus:border-blue-600 focus:ring-blue-600/20 transition-all"
-                      required
+                      aria-invalid={!!form.formState.errors.password}
                     />
                     <button
                       type="button"
@@ -163,6 +158,9 @@ export default function LoginPage() {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {form.formState.errors.password && (
+                    <p className="text-sm text-destructive">{translateError(form.formState.errors.password.message)}</p>
+                  )}
                   {/* Forgot Password Link */}
                   <div className="flex justify-end mt-1">
                     <Link
@@ -175,19 +173,19 @@ export default function LoginPage() {
                 </div>
 
                 {/* Error Message */}
-                {error && (
+                {serverError && (
                   <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 animate-fade-in">
-                    <p className="text-sm text-destructive font-medium">{error}</p>
+                    <p className="text-sm text-destructive font-medium">{serverError}</p>
                   </div>
                 )}
 
                 {/* Submit Button - Blue-teal gradient */}
                 <Button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
                   className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01]"
                 >
-                  {isLoading ? (
+                  {isSubmitting ? (
                     <span className="flex items-center gap-2">
                       <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />

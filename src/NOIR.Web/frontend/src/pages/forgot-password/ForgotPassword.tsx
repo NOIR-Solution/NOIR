@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
-import { isValidEmail } from '@/lib/validation'
+import { requestPasswordResetSchema } from '@/validation/schemas.generated'
+import { translateValidationError } from '@/lib/validation-i18n'
 import { requestPasswordReset, ApiError } from '@/services/forgotPassword'
 
 /**
@@ -19,21 +20,23 @@ import { requestPasswordReset, ApiError } from '@/services/forgotPassword'
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
+  const { t: tCommon } = useTranslation('common')
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  // Memoized translation function for validation errors
+  const translateError = useMemo(() => (msg: string | undefined) => translateValidationError(msg, tCommon), [tCommon])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    if (!email) {
-      setError(t('forgotPassword.emailRequired'))
-      return
-    }
-
-    if (!isValidEmail(email)) {
-      setError(t('forgotPassword.invalidEmail'))
+    // Validate using generated Zod schema
+    const validation = requestPasswordResetSchema.safeParse({ email })
+    if (!validation.success) {
+      const firstError = validation.error.issues[0]
+      setError(translateError(firstError?.message) || t('forgotPassword.invalidEmail'))
       return
     }
 

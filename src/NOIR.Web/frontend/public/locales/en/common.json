@@ -193,5 +193,19 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "tomorrow": "Tomorrow"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "invalidFormat": "Invalid format",
+    "minLength": "Minimum {{count}} characters required",
+    "maxLength": "Maximum {{count}} characters allowed",
+    "exactLength": "Must be exactly {{count}} characters",
+    "minValue": "Must be at least {{value}}",
+    "maxValue": "Must be at most {{value}}",
+    "passwordConfirm": "Please confirm your new password",
+    "passwordsMismatch": "Passwords don't match",
+    "passwordSameAsCurrent": "New password must be different from current password",
+    "emailSameAsCurrent": "New email must be different from current email"
   }
 }

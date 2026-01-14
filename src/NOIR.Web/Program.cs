@@ -203,6 +203,9 @@ builder.Services.AddAuthorization();
 // Add API documentation
 builder.Services.AddOpenApi(options =>
 {
+    // Add FluentValidation schema transformer to enrich Scalar docs with validation rules
+    options.AddSchemaTransformer<NOIR.Web.OpenApi.FluentValidationSchemaTransformer>();
+
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
         document.Info.Title = "NOIR API";
@@ -238,6 +241,11 @@ builder.Services.AddOpenApi(options =>
             ## Default Credentials
 
             For development: `admin@noir.local` / `123qwe`
+
+            ## Validation
+
+            All request schemas include validation constraints from FluentValidation.
+            Look for `minLength`, `maxLength`, `pattern`, and `required` properties.
             """;
 
         return Task.CompletedTask;
@@ -345,6 +353,7 @@ app.MapTenantEndpoints();
 app.MapUserEndpoints();
 app.MapEmailTemplateEndpoints();
 app.MapNotificationEndpoints();
+app.MapValidationEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<AuditHub>("/hubs/audit")
