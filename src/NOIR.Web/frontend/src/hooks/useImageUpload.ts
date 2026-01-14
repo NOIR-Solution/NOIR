@@ -7,7 +7,7 @@
  * - File validation (type, size)
  * - Clean up on unmount
  */
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, type RefObject } from 'react'
 
 interface UseImageUploadOptions {
   /** Maximum file size in bytes (default: 2MB) */
@@ -22,7 +22,7 @@ interface UseImageUploadReturn {
   /** Currently selected file (null if none selected) */
   selectedFile: File | null
   /** Reference to hidden file input */
-  fileInputRef: React.RefObject<HTMLInputElement | null>
+  fileInputRef: RefObject<HTMLInputElement | null>
   /** Trigger file picker dialog */
   openFilePicker: () => void
   /** Handle file selection from input */
@@ -53,11 +53,24 @@ export function useImageUpload(options: UseImageUploadOptions = {}): UseImageUpl
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Cleanup blob URLs on unmount or when preview changes
+  // Cleanup blob URLs on unmount only
+  // Note: We track the URL to revoke separately to avoid revoking the current preview
+  const previousBlobUrl = useRef<string | null>(null)
+
   useEffect(() => {
+    // If we have a new blob URL and there was a previous one, revoke the old one
+    if (previewUrl?.startsWith('blob:') && previousBlobUrl.current && previousBlobUrl.current !== previewUrl) {
+      URL.revokeObjectURL(previousBlobUrl.current)
+    }
+    // Track current blob URL for cleanup
+    if (previewUrl?.startsWith('blob:')) {
+      previousBlobUrl.current = previewUrl
+    }
+
+    // Cleanup on unmount
     return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl)
+      if (previousBlobUrl.current) {
+        URL.revokeObjectURL(previousBlobUrl.current)
       }
     }
   }, [previewUrl])
@@ -102,8 +115,10 @@ export function useImageUpload(options: UseImageUploadOptions = {}): UseImageUpl
   )
 
   const clearSelection = useCallback(() => {
-    if (previewUrl && previewUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(previewUrl)
+    // Revoke current blob URL if exists
+    if (previousBlobUrl.current) {
+      URL.revokeObjectURL(previousBlobUrl.current)
+      previousBlobUrl.current = null
     }
 
     setPreviewUrl(existingUrl) // Revert to existing URL
@@ -114,7 +129,7 @@ export function useImageUpload(options: UseImageUploadOptions = {}): UseImageUpl
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
-  }, [existingUrl, previewUrl])
+  }, [existingUrl])
 
   const setExistingUrl = useCallback((url: string | null) => {
     setExistingUrlState(url)

@@ -93,11 +93,19 @@ export function ProfileAvatar({
       {/* Avatar Display */}
       <div className="relative group">
         <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-background shadow-xl">
-          {showPreview && (
+          {showPreview && previewUrl && (
             <img
-              src={previewUrl!}
+              src={previewUrl}
               alt={t('profile.avatar.preview')}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error('Preview image failed to load:', previewUrl)
+                // Fallback: try to re-read the file
+                if (selectedFile) {
+                  const newUrl = URL.createObjectURL(selectedFile)
+                  e.currentTarget.src = newUrl
+                }
+              }}
             />
           )}
           {showCustomAvatar && (
