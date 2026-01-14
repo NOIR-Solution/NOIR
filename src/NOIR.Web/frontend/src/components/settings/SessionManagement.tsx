@@ -213,7 +213,7 @@ export function SessionManagement() {
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleRevoke}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="border border-destructive bg-transparent text-destructive hover:bg-destructive hover:text-white"
             >
               {t('sessions.revoke')}
             </AlertDialogAction>
