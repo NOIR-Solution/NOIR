@@ -41,7 +41,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<HttpRequestAuditLog> HttpRequestAuditLogs => Set<HttpRequestAuditLog>();
     public DbSet<HandlerAuditLog> HandlerAuditLogs => Set<HandlerAuditLog>();
     public DbSet<EntityAuditLog> EntityAuditLogs => Set<EntityAuditLog>();
-    public DbSet<AuditRetentionPolicy> AuditRetentionPolicies => Set<AuditRetentionPolicy>();
 
     /// <summary>
     /// Configures global type conventions.
@@ -105,8 +104,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         {
             typeof(HttpRequestAuditLog),
             typeof(HandlerAuditLog),
-            typeof(EntityAuditLog),
-            typeof(AuditRetentionPolicy) // Allows null TenantId for system defaults
+            typeof(EntityAuditLog)
         };
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())

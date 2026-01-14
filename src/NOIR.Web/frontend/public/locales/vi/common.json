@@ -57,10 +57,6 @@
       "timestamps": "Thời gian"
     }
   },
-  "audit": {
-    "title": "Nhật ký Kiểm toán",
-    "description": "Giám sát và theo dõi sự kiện kiểm toán theo thời gian thực"
-  },
   "auth": {
     "signIn": "Đăng nhập",
     "signOut": "Đăng xuất"

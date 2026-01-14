@@ -356,8 +356,6 @@ app.MapNotificationEndpoints();
 app.MapValidationEndpoints();
 
 // Map SignalR Hubs
-app.MapHub<AuditHub>("/hubs/audit")
-    .RequireAuthorization(Permissions.AuditStream);
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");
 
 // Hangfire Dashboard (requires Admin role in production, skip in Testing)

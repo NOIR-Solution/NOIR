@@ -57,10 +57,6 @@
       "timestamps": "Timestamps"
     }
   },
-  "audit": {
-    "title": "Audit Logs",
-    "description": "Real-time audit event monitoring and tracking"
-  },
   "auth": {
     "signIn": "Sign In",
     "signOut": "Sign Out"

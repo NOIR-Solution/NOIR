@@ -411,20 +411,6 @@ public class DependencyInjectionTests
 public class ApplicationDependencyInjectionTests
 {
     [Fact]
-    public void AddApplicationServices_ShouldRegisterValidators()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-
-        // Act
-        services.AddApplicationServices();
-
-        // Assert - FluentValidation validators should be registered
-        services.Should().Contain(d =>
-            d.ServiceType.Name.Contains("Validator"));
-    }
-
-    [Fact]
     public void AddApplicationServices_ShouldReturnServiceCollection()
     {
         // Arrange

@@ -9,7 +9,6 @@
     "users": "Users",
     "roles": "Roles",
     "permissions": "Permissions",
-    "audit": "Audit Log",
     "profile": "Profile",
     "logout": "Logout"
   },
