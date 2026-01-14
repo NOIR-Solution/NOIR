@@ -13,6 +13,7 @@ global using System.Reflection;
 global using System.Security.Claims;
 global using System.Security.Cryptography;
 global using System.Text;
+global using System.Text.Json;
 global using System.Threading;
 global using System.Threading.Tasks;
 
@@ -107,6 +108,8 @@ global using NOIR.Application.Specifications.Notifications;
 global using NOIR.Application.Specifications.RefreshTokens;
 global using NOIR.Application.Specifications.ResourceShares;
 global using NOIR.Application.Specifications.PasswordResetOtps;
+global using NOIR.Application.Specifications.TenantSettings;
+global using NOIR.Application.Specifications.UserTenantMemberships;
 
 // NOIR Domain
 global using NOIR.Domain.Common;

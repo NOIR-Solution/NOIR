@@ -48,7 +48,6 @@ public class UserIdentityService : IUserIdentityService, IScopedService
                 (u.FirstName ?? "") + " " + (u.LastName ?? ""),
                 u.PhoneNumber,
                 u.AvatarUrl,
-                u.TenantId,
                 u.IsActive,
                 u.IsDeleted,
                 u.CreatedAt,
@@ -91,7 +90,6 @@ public class UserIdentityService : IUserIdentityService, IScopedService
                 (u.FirstName ?? "") + " " + (u.LastName ?? ""),
                 u.PhoneNumber,
                 u.AvatarUrl,
-                u.TenantId,
                 u.IsActive,
                 u.IsDeleted,
                 u.CreatedAt,
@@ -146,7 +144,6 @@ public class UserIdentityService : IUserIdentityService, IScopedService
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             DisplayName = dto.DisplayName,
-            TenantId = dto.TenantId,
             IsActive = true
         };
 
@@ -454,7 +451,6 @@ public class UserIdentityService : IUserIdentityService, IScopedService
             user.FullName,
             user.PhoneNumber,
             user.AvatarUrl,
-            user.TenantId,
             user.IsActive,
             user.IsDeleted,
             user.CreatedAt,

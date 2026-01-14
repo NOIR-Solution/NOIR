@@ -14,7 +14,9 @@ public class RegisterCommandHandlerTests
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly Mock<ICookieAuthService> _cookieAuthServiceMock;
+    private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly RegisterCommandHandler _handler;
+    private const string TestTenantId = "tenant-abc";
 
     public RegisterCommandHandlerTests()
     {
@@ -22,6 +24,10 @@ public class RegisterCommandHandlerTests
         _tokenServiceMock = new Mock<ITokenService>();
         _refreshTokenServiceMock = new Mock<IRefreshTokenService>();
         _cookieAuthServiceMock = new Mock<ICookieAuthService>();
+        _currentUserMock = new Mock<ICurrentUser>();
+
+        // Setup current user with default tenant
+        _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
 
         var jwtSettings = Options.Create(new JwtSettings
         {
@@ -37,6 +43,7 @@ public class RegisterCommandHandlerTests
             _tokenServiceMock.Object,
             _refreshTokenServiceMock.Object,
             _cookieAuthServiceMock.Object,
+            _currentUserMock.Object,
             jwtSettings);
     }
 
@@ -59,7 +66,6 @@ public class RegisterCommandHandlerTests
             FullName: "John Doe",
             PhoneNumber: null,
             AvatarUrl: null,
-            TenantId: null,
             IsActive: true,
             IsDeleted: false,
             CreatedAt: DateTimeOffset.UtcNow,

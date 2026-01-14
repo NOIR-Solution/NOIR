@@ -37,6 +37,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<ResourceShare> ResourceShares => Set<ResourceShare>();
 
+    // Multi-tenant platform entities (platform-level, not tenant-scoped)
+    public DbSet<UserTenantMembership> UserTenantMemberships => Set<UserTenantMembership>();
+    public DbSet<TenantDomain> TenantDomains => Set<TenantDomain>();
+    public DbSet<TenantBranding> TenantBrandings => Set<TenantBranding>();
+    public DbSet<TenantSetting> TenantSettings => Set<TenantSetting>();
+
+    // Notification entities
+    public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
+
     // Hierarchical Audit Logging entities
     public DbSet<HttpRequestAuditLog> HttpRequestAuditLogs => Set<HttpRequestAuditLog>();
     public DbSet<HandlerAuditLog> HandlerAuditLogs => Set<HandlerAuditLog>();

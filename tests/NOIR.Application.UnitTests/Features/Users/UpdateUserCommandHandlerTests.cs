@@ -44,7 +44,6 @@ public class UpdateUserCommandHandlerTests
             FullName: $"{firstName} {lastName}",
             PhoneNumber: null,
             AvatarUrl: null,
-            TenantId: null,
             IsActive: isActive,
             IsDeleted: false,
             CreatedAt: DateTimeOffset.UtcNow,

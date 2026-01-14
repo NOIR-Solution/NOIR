@@ -97,7 +97,7 @@ public class UpdateUserProfileCommandHandler
             user.PhoneNumber,
             user.AvatarUrl,
             roles,
-            user.TenantId,
+            _currentUser.TenantId,
             user.IsActive,
             user.CreatedAt,
             user.ModifiedAt);

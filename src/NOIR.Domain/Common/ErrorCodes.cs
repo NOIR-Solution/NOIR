@@ -134,6 +134,39 @@ public static class ErrorCodes
     }
 
     /// <summary>
+    /// Tenant-related errors (15xx)
+    /// </summary>
+    public static class Tenant
+    {
+        /// <summary>Tenant not found</summary>
+        public const string NotFound = "NOIR-AUTH-1500";
+
+        /// <summary>Tenant is inactive</summary>
+        public const string Inactive = "NOIR-AUTH-1501";
+
+        /// <summary>User tenant membership not found</summary>
+        public const string MembershipNotFound = "NOIR-AUTH-1502";
+
+        /// <summary>User is already a member of the tenant</summary>
+        public const string AlreadyMember = "NOIR-AUTH-1503";
+
+        /// <summary>Cannot remove owner from tenant</summary>
+        public const string CannotRemoveOwner = "NOIR-AUTH-1504";
+
+        /// <summary>Tenant domain not found</summary>
+        public const string DomainNotFound = "NOIR-AUTH-1505";
+
+        /// <summary>Tenant domain already exists</summary>
+        public const string DomainAlreadyExists = "NOIR-AUTH-1506";
+
+        /// <summary>Tenant setting not found</summary>
+        public const string SettingNotFound = "NOIR-AUTH-1507";
+
+        /// <summary>Invalid tenant role</summary>
+        public const string InvalidRole = "NOIR-AUTH-1508";
+    }
+
+    /// <summary>
     /// Business logic errors (3xxx)
     /// </summary>
     public static class Business

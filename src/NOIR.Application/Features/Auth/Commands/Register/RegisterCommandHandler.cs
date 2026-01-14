@@ -11,6 +11,7 @@ public class RegisterCommandHandler
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly ICookieAuthService _cookieAuthService;
+    private readonly ICurrentUser _currentUser;
     private readonly JwtSettings _jwtSettings;
 
     public RegisterCommandHandler(
@@ -18,12 +19,14 @@ public class RegisterCommandHandler
         ITokenService tokenService,
         IRefreshTokenService refreshTokenService,
         ICookieAuthService cookieAuthService,
+        ICurrentUser currentUser,
         IOptions<JwtSettings> jwtSettings)
     {
         _userIdentityService = userIdentityService;
         _tokenService = tokenService;
         _refreshTokenService = refreshTokenService;
         _cookieAuthService = cookieAuthService;
+        _currentUser = currentUser;
         _jwtSettings = jwtSettings.Value;
     }
 
@@ -35,8 +38,7 @@ public class RegisterCommandHandler
             command.Email,
             command.FirstName,
             command.LastName,
-            null, // DisplayName
-            null  // TenantId
+            null  // DisplayName
         );
 
         var createResult = await _userIdentityService.CreateUserAsync(createUserDto, command.Password, cancellationToken);
@@ -61,13 +63,13 @@ public class RegisterCommandHandler
         }
 
         // Generate access token (minimal JWT - roles/permissions checked on each request)
-        var accessToken = _tokenService.GenerateAccessToken(userId, user.Email, user.TenantId);
+        var accessToken = _tokenService.GenerateAccessToken(userId, user.Email, _currentUser.TenantId);
         var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Create refresh token in database (proper token rotation support)
         var refreshToken = await _refreshTokenService.CreateTokenAsync(
             userId,
-            user.TenantId,
+            _currentUser.TenantId,
             cancellationToken: cancellationToken);
 
         // Set cookies if requested (for browser-based auth)

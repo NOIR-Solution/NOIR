@@ -2,6 +2,59 @@
 
 > Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).
 
+---
+
+## SuperClaude Auto-Routing (MUST FOLLOW)
+
+**When the user's intent matches these patterns, AUTOMATICALLY invoke the corresponding skill using the Skill tool BEFORE responding or asking clarifying questions:**
+
+| User Intent Pattern | Auto-Invoke | Description |
+|---------------------|-------------|-------------|
+| "fix bug", "debug", "error", "not working", "broken", "fails", "exception" | `/sc:troubleshoot` | Systematic diagnosis and root cause analysis |
+| "add feature", "implement", "create new", "build", "develop" | `/sc:brainstorm` | Requirements discovery before implementation |
+| "plan", "design", "architect", "how should we", "structure", "approach" | `/sc:design` | System architecture and design planning |
+| "investigate", "research", "look into", "find out", "what is", "best practice" | `/sc:research` | Autonomous web research with depth control |
+| "improve", "enhance", "better", "quality", "optimize performance" | `/sc:improve` | Code quality and performance enhancement |
+| "refactor", "clean up", "simplify", "reorganize" | `/sc:cleanup` | Refactoring and code cleanup |
+| "estimate", "how long", "complexity", "effort", "time" | `/sc:estimate` | Resource and effort forecasting |
+| "test", "write tests", "coverage", "unit test", "integration test" | `/sc:test` | Test suite generation and execution |
+| "explain", "what does this do", "understand", "how does", "walk me through" | `/sc:explain` | Code comprehension assistance |
+| "document", "add docs", "README", "comments", "docstring" | `/sc:document` | Documentation generation |
+| "review requirements", "spec", "requirements", "acceptance criteria" | `/sc:spec-panel` | Multi-expert requirements analysis |
+| "analyze", "inspect", "metrics", "code review", "audit" | `/sc:analyze` | Code inspection and quality metrics |
+| "commit", "git commit", "save changes" | `/sc:git` | Git operations with smart commit messages |
+| "workflow", "process", "steps to", "guide me through" | `/sc:workflow` | Structured workflow guidance |
+
+**Priority Order for Ambiguous Requests:**
+1. **Process skills first** (`/sc:brainstorm`, `/sc:troubleshoot`, `/sc:research`) - determines HOW to approach
+2. **Implementation skills second** (`/sc:implement`, `/sc:design`, `/sc:cleanup`) - guides execution
+
+**Chained Workflows (invoke in sequence):**
+- **Feature Development:** `/sc:brainstorm` → `/sc:design` → `/sc:implement` → `/sc:test`
+- **Bug Fixing:** `/sc:troubleshoot` → `/sc:test` → `/sc:document`
+- **Investigation:** `/sc:research` → `/sc:analyze` → `/sc:document`
+
+**Example Auto-Triggers:**
+- User: "The login is broken" → Auto-invoke `/sc:troubleshoot`
+- User: "Add multi-tenant support" → Auto-invoke `/sc:brainstorm`
+- User: "How should we structure the notification system?" → Auto-invoke `/sc:design`
+- User: "What's the best practice for vertical slice architecture?" → Auto-invoke `/sc:research`
+- User: "Clean up the repository layer" → Auto-invoke `/sc:cleanup`
+- User: "How long would it take to add SSO?" → Auto-invoke `/sc:estimate`
+
+**Quick Command Reference:**
+| Category | Commands |
+|----------|----------|
+| Planning | `/sc:brainstorm`, `/sc:design`, `/sc:estimate`, `/sc:spec-panel`, `/sc:workflow` |
+| Development | `/sc:implement`, `/sc:build`, `/sc:improve`, `/sc:cleanup` |
+| Testing | `/sc:test`, `/sc:analyze`, `/sc:troubleshoot` |
+| Documentation | `/sc:document`, `/sc:explain`, `/sc:index` |
+| Git/Project | `/sc:git`, `/sc:pm`, `/sc:task` |
+| Research | `/sc:research`, `/sc:business-panel` |
+| Utilities | `/sc:recommend`, `/sc:help`, `/sc:load`, `/sc:save` |
+
+---
+
 ## Critical Rules
 
 1. **Check existing patterns first** - Look at similar files before writing new code

@@ -14,6 +14,7 @@ public class LoginCommandHandler
     private readonly IDeviceFingerprintService _deviceFingerprintService;
     private readonly ICookieAuthService _cookieAuthService;
     private readonly ILocalizationService _localization;
+    private readonly ICurrentUser _currentUser;
     private readonly JwtSettings _jwtSettings;
 
     public LoginCommandHandler(
@@ -23,6 +24,7 @@ public class LoginCommandHandler
         IDeviceFingerprintService deviceFingerprintService,
         ICookieAuthService cookieAuthService,
         ILocalizationService localization,
+        ICurrentUser currentUser,
         IOptions<JwtSettings> jwtSettings)
     {
         _userIdentityService = userIdentityService;
@@ -31,6 +33,7 @@ public class LoginCommandHandler
         _deviceFingerprintService = deviceFingerprintService;
         _cookieAuthService = cookieAuthService;
         _localization = localization;
+        _currentUser = currentUser;
         _jwtSettings = jwtSettings.Value;
     }
 
@@ -69,14 +72,14 @@ public class LoginCommandHandler
                 Error.Unauthorized(_localization["auth.login.invalidCredentials"], ErrorCodes.Auth.InvalidCredentials));
         }
 
-        // Generate access token
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email, user.TenantId);
+        // Generate access token (tenant context comes from request)
+        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email, _currentUser.TenantId);
         var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Create refresh token with device tracking
         var refreshToken = await _refreshTokenService.CreateTokenAsync(
             user.Id,
-            user.TenantId,
+            _currentUser.TenantId,
             _deviceFingerprintService.GetClientIpAddress(),
             _deviceFingerprintService.GenerateFingerprint(),
             _deviceFingerprintService.GetUserAgent(),

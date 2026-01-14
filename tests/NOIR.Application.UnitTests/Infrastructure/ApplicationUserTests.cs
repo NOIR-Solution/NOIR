@@ -19,7 +19,6 @@ public class ApplicationUserTests
         user.IsDeleted.Should().BeFalse();
         user.FirstName.Should().BeNull();
         user.LastName.Should().BeNull();
-        user.TenantId.Should().BeNull();
         user.RefreshToken.Should().BeNull();
         user.RefreshTokenExpiryTime.Should().BeNull();
     }
@@ -234,29 +233,16 @@ public class ApplicationUserTests
 
     #endregion
 
-    #region TenantId Tests
+    #region TenantMemberships Tests
 
     [Fact]
-    public void TenantId_ShouldBeSettable()
+    public void TenantMemberships_ShouldBeEmptyByDefault()
     {
         // Arrange
         var user = new ApplicationUser();
 
-        // Act
-        user.TenantId = "tenant-123";
-
-        // Assert
-        user.TenantId.Should().Be("tenant-123");
-    }
-
-    [Fact]
-    public void TenantId_NullValue_RepresentsHostUser()
-    {
-        // Arrange
-        var user = new ApplicationUser();
-
-        // Assert - Null tenant means host/root level user
-        user.TenantId.Should().BeNull();
+        // Assert - Users can belong to multiple tenants via memberships
+        user.TenantMemberships.Should().BeEmpty();
     }
 
     #endregion

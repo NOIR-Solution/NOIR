@@ -159,6 +159,7 @@ public interface IUserIdentityService
 /// <summary>
 /// DTO representing user identity information.
 /// Decouples Application layer from ApplicationUser entity.
+/// Note: User is platform-level, tenant access managed via UserTenantMembership.
 /// </summary>
 public record UserIdentityDto(
     string Id,
@@ -169,7 +170,6 @@ public record UserIdentityDto(
     string FullName,
     string? PhoneNumber,
     string? AvatarUrl,
-    string? TenantId,
     bool IsActive,
     bool IsDeleted,
     DateTimeOffset CreatedAt,
@@ -177,13 +177,13 @@ public record UserIdentityDto(
 
 /// <summary>
 /// DTO for creating a new user.
+/// Note: User is platform-level, tenant membership is created separately.
 /// </summary>
 public record CreateUserDto(
     string Email,
     string? FirstName,
     string? LastName,
-    string? DisplayName,
-    string? TenantId);
+    string? DisplayName);
 
 /// <summary>
 /// DTO for updating user information.

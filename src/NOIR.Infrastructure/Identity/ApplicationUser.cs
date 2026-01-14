@@ -3,7 +3,7 @@ namespace NOIR.Infrastructure.Identity;
 /// <summary>
 /// Application user entity extending ASP.NET Core Identity.
 /// Implements IAuditableEntity for consistent audit tracking.
-/// Implements ITenantEntity for multi-tenant data isolation.
+/// Users are platform-level (not tenant-scoped) - tenant access is managed via UserTenantMembership.
 /// </summary>
 public class ApplicationUser : IdentityUser, IAuditableEntity
 {
@@ -26,9 +26,11 @@ public class ApplicationUser : IdentityUser, IAuditableEntity
     /// </summary>
     public DateTimeOffset? PasswordLastChangedAt { get; set; }
 
-    // ITenantEntity implementation
-    // Null means host/root level user (super admin, can access all tenants)
-    public string? TenantId { get; set; }
+    /// <summary>
+    /// The tenant memberships for this user.
+    /// A user can belong to multiple tenants with different roles.
+    /// </summary>
+    public virtual ICollection<UserTenantMembership> TenantMemberships { get; set; } = [];
 
     // IAuditableEntity implementation
     public DateTimeOffset CreatedAt { get; set; }

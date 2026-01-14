@@ -26,28 +26,28 @@ public class GetCurrentUserQueryHandlerTests
             _localizationServiceMock.Object);
     }
 
+    private const string TestTenantId = "tenant-123";
+
     private UserIdentityDto CreateTestUserDto(
         string id = "user-123",
         string email = "test@example.com",
         string? firstName = "John",
         string? lastName = "Doe",
-        bool isActive = true,
-        string? tenantId = null)
+        bool isActive = true)
     {
         return new UserIdentityDto(
-            id,
-            email,
-            firstName,
-            lastName,
-            null,
-            $"{firstName ?? ""} {lastName ?? ""}".Trim(),
-            null,
-            null,
-            tenantId,
-            isActive,
-            false,
-            DateTimeOffset.UtcNow.AddDays(-30),
-            null);
+            Id: id,
+            Email: email,
+            FirstName: firstName,
+            LastName: lastName,
+            DisplayName: null,
+            FullName: $"{firstName ?? ""} {lastName ?? ""}".Trim(),
+            PhoneNumber: null,
+            AvatarUrl: null,
+            IsActive: isActive,
+            IsDeleted: false,
+            CreatedAt: DateTimeOffset.UtcNow.AddDays(-30),
+            ModifiedAt: null);
     }
 
     private void SetupAuthenticatedUser(string userId)
@@ -109,11 +109,11 @@ public class GetCurrentUserQueryHandlerTests
         // Arrange
         var user = CreateTestUserDto(
             firstName: "Jane",
-            lastName: "Smith",
-            tenantId: "tenant-123");
+            lastName: "Smith");
         var query = new GetCurrentUserQuery();
 
         SetupAuthenticatedUser(user.Id);
+        _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
 
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
@@ -131,7 +131,7 @@ public class GetCurrentUserQueryHandlerTests
         result.Value.FirstName.Should().Be("Jane");
         result.Value.LastName.Should().Be("Smith");
         result.Value.FullName.Should().Be("Jane Smith");
-        result.Value.TenantId.Should().Be("tenant-123");
+        result.Value.TenantId.Should().Be(TestTenantId);
         result.Value.IsActive.Should().BeTrue();
         result.Value.CreatedAt.Should().BeCloseTo(user.CreatedAt, TimeSpan.FromSeconds(1));
     }
@@ -396,10 +396,11 @@ public class GetCurrentUserQueryHandlerTests
     public async Task Handle_UserWithNoTenant_ShouldReturnNullTenantId()
     {
         // Arrange
-        var user = CreateTestUserDto(tenantId: null);
+        var user = CreateTestUserDto();
         var query = new GetCurrentUserQuery();
 
         SetupAuthenticatedUser(user.Id);
+        _currentUserMock.Setup(x => x.TenantId).Returns((string?)null);
 
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))

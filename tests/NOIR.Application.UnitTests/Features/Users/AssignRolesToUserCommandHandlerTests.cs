@@ -44,7 +44,6 @@ public class AssignRolesToUserCommandHandlerTests
             FullName: "Test User",
             PhoneNumber: null,
             AvatarUrl: null,
-            TenantId: null,
             IsActive: isActive,
             IsDeleted: false,
             CreatedAt: DateTimeOffset.UtcNow,

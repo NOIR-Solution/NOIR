@@ -16,7 +16,9 @@ public class LoginCommandHandlerTests
     private readonly Mock<IDeviceFingerprintService> _deviceFingerprintServiceMock;
     private readonly Mock<ICookieAuthService> _cookieAuthServiceMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly LoginCommandHandler _handler;
+    private const string TestTenantId = "tenant-abc";
 
     public LoginCommandHandlerTests()
     {
@@ -26,11 +28,15 @@ public class LoginCommandHandlerTests
         _deviceFingerprintServiceMock = new Mock<IDeviceFingerprintService>();
         _cookieAuthServiceMock = new Mock<ICookieAuthService>();
         _localizationServiceMock = new Mock<ILocalizationService>();
+        _currentUserMock = new Mock<ICurrentUser>();
 
         // Setup localization to return the key (pass-through for testing)
         _localizationServiceMock
             .Setup(x => x[It.IsAny<string>()])
             .Returns<string>(key => key);
+
+        // Setup current user with default tenant
+        _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
 
         var jwtSettings = Options.Create(new JwtSettings
         {
@@ -48,14 +54,14 @@ public class LoginCommandHandlerTests
             _deviceFingerprintServiceMock.Object,
             _cookieAuthServiceMock.Object,
             _localizationServiceMock.Object,
+            _currentUserMock.Object,
             jwtSettings);
     }
 
     private UserIdentityDto CreateTestUserDto(
         string id = "user-123",
         string email = "test@example.com",
-        bool isActive = true,
-        string? tenantId = null)
+        bool isActive = true)
     {
         return new UserIdentityDto(
             Id: id,
@@ -66,7 +72,6 @@ public class LoginCommandHandlerTests
             FullName: "Test User",
             PhoneNumber: null,
             AvatarUrl: null,
-            TenantId: tenantId,
             IsActive: isActive,
             IsDeleted: false,
             CreatedAt: DateTimeOffset.UtcNow,
@@ -84,14 +89,14 @@ public class LoginCommandHandlerTests
             .ReturnsAsync(new PasswordSignInResult(Succeeded: true, IsLockedOut: false, IsNotAllowed: false, RequiresTwoFactor: false));
 
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId))
+            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, TestTenantId))
             .Returns("test-access-token");
 
-        var refreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, user.TenantId);
+        var refreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, TestTenantId);
         _refreshTokenServiceMock
             .Setup(x => x.CreateTokenAsync(
                 user.Id,
-                user.TenantId,
+                TestTenantId,
                 It.IsAny<string?>(),
                 It.IsAny<string?>(),
                 It.IsAny<string?>(),
@@ -169,13 +174,13 @@ public class LoginCommandHandlerTests
 
         // Assert
         _tokenServiceMock.Verify(
-            x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId),
+            x => x.GenerateAccessToken(user.Id, user.Email, TestTenantId),
             Times.Once);
 
         _refreshTokenServiceMock.Verify(
             x => x.CreateTokenAsync(
                 user.Id,
-                user.TenantId,
+                TestTenantId,
                 It.IsAny<string?>(),
                 It.IsAny<string?>(),
                 It.IsAny<string?>(),
@@ -188,7 +193,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_ValidCredentials_WithTenant_ShouldIncludeTenantId()
     {
         // Arrange
-        var user = CreateTestUserDto(tenantId: "tenant-abc");
+        var user = CreateTestUserDto();
         var command = new LoginCommand("test@example.com", "validPassword123");
         SetupSuccessfulLogin(user);
 
@@ -198,8 +203,9 @@ public class LoginCommandHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
 
+        // TenantId comes from ICurrentUser context, not from user entity
         _tokenServiceMock.Verify(
-            x => x.GenerateAccessToken(user.Id, user.Email, "tenant-abc"),
+            x => x.GenerateAccessToken(user.Id, user.Email, TestTenantId),
             Times.Once);
     }
 

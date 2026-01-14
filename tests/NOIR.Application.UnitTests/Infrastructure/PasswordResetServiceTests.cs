@@ -65,7 +65,6 @@ public class PasswordResetServiceTests
             FullName: $"{firstName} User",
             PhoneNumber: null,
             AvatarUrl: null,
-            TenantId: null,
             IsActive: true,
             IsDeleted: false,
             CreatedAt: DateTimeOffset.UtcNow,

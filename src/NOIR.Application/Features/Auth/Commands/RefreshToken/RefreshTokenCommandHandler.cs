@@ -14,6 +14,7 @@ public class RefreshTokenCommandHandler
     private readonly IDeviceFingerprintService _deviceFingerprintService;
     private readonly ICookieAuthService _cookieAuthService;
     private readonly ILocalizationService _localization;
+    private readonly ICurrentUser _currentUser;
     private readonly JwtSettings _jwtSettings;
     private readonly ILogger<RefreshTokenCommandHandler> _logger;
 
@@ -24,6 +25,7 @@ public class RefreshTokenCommandHandler
         IDeviceFingerprintService deviceFingerprintService,
         ICookieAuthService cookieAuthService,
         ILocalizationService localization,
+        ICurrentUser currentUser,
         IOptions<JwtSettings> jwtSettings,
         ILogger<RefreshTokenCommandHandler> logger)
     {
@@ -33,6 +35,7 @@ public class RefreshTokenCommandHandler
         _deviceFingerprintService = deviceFingerprintService;
         _cookieAuthService = cookieAuthService;
         _localization = localization;
+        _currentUser = currentUser;
         _jwtSettings = jwtSettings.Value;
         _logger = logger;
     }
@@ -97,7 +100,7 @@ public class RefreshTokenCommandHandler
         }
 
         // Generate new access token
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email, user.TenantId);
+        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email, _currentUser.TenantId);
         var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Set cookies if requested (for browser-based auth)

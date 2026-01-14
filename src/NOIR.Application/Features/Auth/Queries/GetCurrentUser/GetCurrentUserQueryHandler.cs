@@ -50,7 +50,7 @@ public class GetCurrentUserQueryHandler
             user.PhoneNumber,
             user.AvatarUrl,
             roles,
-            user.TenantId,
+            _currentUser.TenantId,
             user.IsActive,
             user.CreatedAt);
 

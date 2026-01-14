@@ -43,7 +43,6 @@ public class UploadAvatarCommandHandlerTests
             FullName: "Test User",
             PhoneNumber: null,
             AvatarUrl: avatarUrl,
-            TenantId: null,
             IsActive: true,
             IsDeleted: false,
             CreatedAt: DateTimeOffset.UtcNow,

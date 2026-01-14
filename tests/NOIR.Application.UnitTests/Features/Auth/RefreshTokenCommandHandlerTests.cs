@@ -16,8 +16,10 @@ public class RefreshTokenCommandHandlerTests
     private readonly Mock<IDeviceFingerprintService> _deviceFingerprintServiceMock;
     private readonly Mock<ICookieAuthService> _cookieAuthServiceMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly Mock<ILogger<RefreshTokenCommandHandler>> _loggerMock;
     private readonly RefreshTokenCommandHandler _handler;
+    private const string TestTenantId = "tenant-abc";
 
     public RefreshTokenCommandHandlerTests()
     {
@@ -27,12 +29,16 @@ public class RefreshTokenCommandHandlerTests
         _deviceFingerprintServiceMock = new Mock<IDeviceFingerprintService>();
         _cookieAuthServiceMock = new Mock<ICookieAuthService>();
         _localizationServiceMock = new Mock<ILocalizationService>();
+        _currentUserMock = new Mock<ICurrentUser>();
         _loggerMock = new Mock<ILogger<RefreshTokenCommandHandler>>();
 
         // Setup localization to return the key (pass-through for testing)
         _localizationServiceMock
             .Setup(x => x[It.IsAny<string>()])
             .Returns<string>(key => key);
+
+        // Setup current user with default tenant
+        _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
 
         var jwtSettings = Options.Create(new JwtSettings
         {
@@ -50,6 +56,7 @@ public class RefreshTokenCommandHandlerTests
             _deviceFingerprintServiceMock.Object,
             _cookieAuthServiceMock.Object,
             _localizationServiceMock.Object,
+            _currentUserMock.Object,
             jwtSettings,
             _loggerMock.Object);
     }
@@ -57,8 +64,7 @@ public class RefreshTokenCommandHandlerTests
     private UserIdentityDto CreateTestUserDto(
         string id = "user-123",
         string email = "test@example.com",
-        bool isActive = true,
-        string? tenantId = null)
+        bool isActive = true)
     {
         return new UserIdentityDto(
             Id: id,
@@ -69,7 +75,6 @@ public class RefreshTokenCommandHandlerTests
             FullName: "Test User",
             PhoneNumber: null,
             AvatarUrl: null,
-            TenantId: tenantId,
             IsActive: isActive,
             IsDeleted: false,
             CreatedAt: DateTimeOffset.UtcNow,
@@ -98,7 +103,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var newRefreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, user.TenantId);
+        var newRefreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, TestTenantId);
         _refreshTokenServiceMock
             .Setup(x => x.RotateTokenAsync(
                 It.IsAny<string>(),
@@ -108,7 +113,7 @@ public class RefreshTokenCommandHandlerTests
             .ReturnsAsync(newRefreshToken);
 
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId))
+            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, TestTenantId))
             .Returns("new-access-token");
 
         _deviceFingerprintServiceMock
@@ -185,7 +190,7 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_ValidTokens_WithTenant_ShouldGenerateTokenWithTenant()
     {
         // Arrange
-        var user = CreateTestUserDto(tenantId: "tenant-abc");
+        var user = CreateTestUserDto();
         var command = new RefreshTokenCommand("valid-access-token", "valid-refresh-token");
         SetupSuccessfulTokenRotation(user);
 
@@ -578,7 +583,7 @@ public class RefreshTokenCommandHandlerTests
             .ReturnsAsync(newRefreshToken);
 
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId))
+            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, TestTenantId))
             .Returns("new-access-token");
 
         _deviceFingerprintServiceMock

@@ -8,13 +8,16 @@ namespace NOIR.Application.Features.Auth.Queries.GetUserById;
 public class GetUserByIdQueryHandler
 {
     private readonly IUserIdentityService _userIdentityService;
+    private readonly ICurrentUser _currentUser;
     private readonly ILocalizationService _localization;
 
     public GetUserByIdQueryHandler(
         IUserIdentityService userIdentityService,
+        ICurrentUser currentUser,
         ILocalizationService localization)
     {
         _userIdentityService = userIdentityService;
+        _currentUser = currentUser;
         _localization = localization;
     }
 
@@ -45,7 +48,7 @@ public class GetUserByIdQueryHandler
             user.PhoneNumber,
             user.AvatarUrl,
             roles,
-            user.TenantId,
+            _currentUser.TenantId,
             user.IsActive,
             user.CreatedAt,
             user.ModifiedAt);

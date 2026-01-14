@@ -18,6 +18,14 @@ public class TenantStoreDbContext : EFCoreStoreDbContext<Tenant>
     {
         base.OnModelCreating(modelBuilder);
 
+        // Ignore entities that are managed by ApplicationDbContext
+        // These are related to Tenant via navigation properties but should only
+        // be configured in ApplicationDbContext to avoid duplicate table creation
+        modelBuilder.Ignore<UserTenantMembership>();
+        modelBuilder.Ignore<TenantDomain>();
+        modelBuilder.Ignore<TenantBranding>();
+        modelBuilder.Ignore<TenantSetting>();
+
         // Apply the same configuration as in ApplicationDbContext for Tenant
         modelBuilder.Entity<Tenant>(entity =>
         {
