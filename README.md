@@ -5,7 +5,7 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-1739+-green.svg)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-2100+-green.svg)](tests/)
 
 ## Quick Start
 
@@ -59,7 +59,7 @@ NOIR/
 │   ├── NOIR.Infrastructure/   # EF Core, handlers, services
 │   └── NOIR.Web/              # API endpoints, middleware
 │       └── frontend/          # React SPA
-├── tests/                     # 1,739+ tests
+├── tests/                     # 2,100+ tests
 ├── docs/                      # Documentation
 │   ├── backend/               # Backend patterns & guides
 │   ├── frontend/              # Frontend architecture
@@ -71,7 +71,7 @@ NOIR/
 
 | Document | Purpose |
 |----------|---------|
-| **[SETUP.md](SETUP.md)** | Development environment setup (Windows/macOS/Linux) |
+| **[docs/KNOWLEDGE_BASE.md](docs/KNOWLEDGE_BASE.md)** | Comprehensive cross-referenced codebase guide |
 | **[docs/](docs/README.md)** | Complete documentation index |
 | **[CONTRIBUTING.md](CONTRIBUTING.md)** | How to contribute |
 | **[CLAUDE.md](CLAUDE.md)** | AI assistant instructions (Claude Code) |

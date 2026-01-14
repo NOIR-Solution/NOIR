@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-04
-**Version:** 1.0
+**Last Updated:** 2026-01-14
+**Version:** 1.1
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -192,6 +192,42 @@ Domain ← Application ← Infrastructure ← Web
 
 **Related:** [AuditEndpoints](#audit-endpoints), [Audit Pattern](backend/patterns/hierarchical-audit-logging.md)
 
+#### EmailTemplates Feature
+**Path:** `Features/EmailTemplates/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `UpdateEmailTemplateCommand` | `Commands/Update/` |
+| Query | `GetEmailTemplatesQuery` | `Queries/GetAll/` |
+| Query | `GetEmailTemplateByIdQuery` | `Queries/GetById/` |
+
+**Related:** [EmailTemplateEndpoints](#email-template-endpoints)
+
+#### Notifications Feature
+**Path:** `Features/Notifications/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `MarkNotificationReadCommand` | `Commands/MarkRead/` |
+| Command | `UpdateNotificationPreferencesCommand` | `Commands/UpdatePreferences/` |
+| Query | `GetNotificationsQuery` | `Queries/GetAll/` |
+| Query | `GetUnreadCountQuery` | `Queries/GetUnreadCount/` |
+
+**Related:** [NotificationEndpoints](#notification-endpoints)
+
+#### Tenants Feature
+**Path:** `Features/Tenants/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreateTenantCommand` | `Commands/Create/` |
+| Command | `UpdateTenantCommand` | `Commands/Update/` |
+| Command | `DeleteTenantCommand` | `Commands/Delete/` |
+| Query | `GetTenantsQuery` | `Queries/GetAll/` |
+| Query | `GetTenantByIdQuery` | `Queries/GetById/` |
+
+**Related:** [TenantEndpoints](#tenant-endpoints)
+
 ### Specifications
 
 **Path:** `Specifications/`
@@ -277,18 +313,28 @@ Auto-discovered via `ApplyConfigurationsFromAssembly`.
 | `RefreshTokenService` | `Identity/RefreshTokenService.cs` | Refresh token management |
 | `CookieAuthService` | `Identity/CookieAuthService.cs` | Cookie-based auth |
 
-#### Handlers (Wolverine)
+#### Handlers (Co-located with Commands)
 
-**Path:** `Identity/Handlers/`
+**Path:** `Application/Features/{Feature}/Commands/{Action}/` or `Queries/{Action}/`
 
-All CQRS handlers implement static `Handle` method:
+Handlers are co-located with their Commands/Queries and use constructor injection:
 ```csharp
-public static class LoginHandler
+// Application/Features/Auth/Commands/Login/LoginCommandHandler.cs
+public class LoginCommandHandler
 {
-    public static async Task<Result<AuthResponse>> Handle(
-        LoginCommand cmd,
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ITokenService _tokenService;
+
+    public LoginCommandHandler(
         UserManager<ApplicationUser> userManager,
-        ITokenService tokenService,
+        ITokenService tokenService)
+    {
+        _userManager = userManager;
+        _tokenService = tokenService;
+    }
+
+    public async Task<Result<AuthResponse>> Handle(
+        LoginCommand cmd,
         CancellationToken ct) { ... }
 }
 ```
@@ -480,12 +526,13 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 ### Critical Rules
 
 1. **Use Specifications** for all database queries - never raw `DbSet`
-2. **Tag all specifications** with `TagWith("MethodName")`
-3. **Use IUnitOfWork** for persistence - repos don't auto-save
-4. **Use AsTracking** for mutation specs
-5. **Soft delete only** - never hard delete (except GDPR)
-6. **Marker interfaces** for DI auto-registration
-7. **No using statements** in files - add to `GlobalUsings.cs`
+2. **Tag all specifications** with `TagWith("MethodName")` for SQL debugging
+3. **Use IUnitOfWork** for persistence - repository methods do NOT auto-save
+4. **Use AsTracking** for mutation specs - default is `AsNoTracking`
+5. **Co-locate Command + Handler + Validator** - all in `Application/Features/{Feature}/Commands/{Action}/`
+6. **Soft delete only** - never hard delete (except GDPR)
+7. **Marker interfaces** for DI auto-registration
+8. **No using statements** in files - add to `GlobalUsings.cs`
 
 ### Performance Rules
 
@@ -505,11 +552,11 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 
 | Project | Tests | Purpose |
 |---------|-------|---------|
-| `NOIR.Domain.UnitTests` | 488 | Domain entity tests |
-| `NOIR.Application.UnitTests` | 993 | Handler, specification tests |
-| `NOIR.ArchitectureTests` | 25 | Dependency constraints |
-| `NOIR.IntegrationTests` | 302 | API integration tests |
-| **Total** | **1,808** | |
+| `NOIR.Domain.UnitTests` | 550+ | Domain entity tests |
+| `NOIR.Application.UnitTests` | 1,100+ | Handler, specification tests |
+| `NOIR.ArchitectureTests` | 30+ | Dependency constraints |
+| `NOIR.IntegrationTests` | 420+ | API integration tests |
+| **Total** | **2,100+** | |
 
 ### Test Patterns
 
@@ -634,4 +681,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Generated: 2026-01-04 | Total Tests: 1,808 | C# Files: 327 | TS/TSX Files: 36 | Docs: 46*
+*Updated: 2026-01-14 | Total Tests: 2,100+ | Features: 8 | Endpoints: 9*

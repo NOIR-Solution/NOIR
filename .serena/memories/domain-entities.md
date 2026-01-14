@@ -47,6 +47,30 @@ JWT refresh token tracking:
 ### ResourceShare
 Multi-user resource sharing support.
 
+### Notification
+User notification system:
+- Title, message, type (info, success, warning, error)
+- Read/unread status tracking
+- Optional action URL for navigation
+- Soft delete support
+
+### NotificationPreference
+User notification preferences by category:
+- Email and in-app channel toggles
+- Category-based configuration
+
+### EmailTemplate
+Customizable email templates:
+- Subject and HTML body with placeholders
+- Template key for lookup
+- System flag for protected templates
+
+### Tenant
+Multi-tenant configuration (Finbuckle):
+- Identifier and name
+- Connection string (optional)
+- Active/inactive status
+
 ## Entity Base Classes
 
 ### Entity<TId>

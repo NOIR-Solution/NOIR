@@ -23,7 +23,7 @@ dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 dotnet watch --project src/NOIR.Web
 
-# Tests (1,808 tests)
+# Tests (2,100+ tests)
 dotnet test src/NOIR.sln
 
 # Migrations
@@ -178,7 +178,7 @@ For detailed documentation, see the `docs/` folder:
 | Backend research | `docs/backend/research/` |
 | Frontend guide | `docs/frontend/` |
 | Architecture decisions | `docs/decisions/` |
-| Setup guide | `SETUP.md` |
+| Knowledge base | `docs/KNOWLEDGE_BASE.md` |
 
 **When creating documentation:**
 - Research reports go to `docs/backend/research/` or `docs/frontend/research/`

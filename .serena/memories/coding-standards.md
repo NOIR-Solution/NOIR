@@ -40,7 +40,37 @@ global using NOIR.Domain.Entities;
 global using NOIR.Domain.Common;
 ```
 
-### 5. Marker Interfaces for DI
+### 5. IUnitOfWork for Persistence
+Repository methods do NOT auto-save. Always inject `IUnitOfWork` and call `SaveChangesAsync()`:
+```csharp
+public class CustomerService : ICustomerService, IScopedService
+{
+    private readonly IRepository<Customer, Guid> _repository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public async Task UpdateAsync(Customer customer, CancellationToken ct)
+    {
+        customer.UpdateName("New Name");
+        await _unitOfWork.SaveChangesAsync(ct);  // REQUIRED
+    }
+}
+```
+
+### 6. AsTracking for Mutations
+Specifications default to `AsNoTracking`. For specs that retrieve entities for modification, add `.AsTracking()`:
+```csharp
+public class CustomerByIdForUpdateSpec : Specification<Customer>
+{
+    public CustomerByIdForUpdateSpec(Guid id)
+    {
+        Query.Where(c => c.Id == id)
+             .AsTracking()  // REQUIRED for modification!
+             .TagWith("CustomerByIdForUpdate");
+    }
+}
+```
+
+### 7. Marker Interfaces for DI
 Services MUST implement marker interface:
 ```csharp
 public class CustomerService : ICustomerService, IScopedService { }

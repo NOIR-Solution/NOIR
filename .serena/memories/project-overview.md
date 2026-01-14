@@ -44,7 +44,7 @@ Enterprise .NET web application with React SPA frontend.
 
 ## File Locations
 - Source: `src/`
-- Tests: `tests/` (1,739+ tests)
+- Tests: `tests/` (2,100+ tests)
 - Documentation: `docs/`
 - AI instructions: `CLAUDE.md`, `AGENTS.md`
 

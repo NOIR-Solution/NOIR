@@ -1,7 +1,7 @@
 # NOIR Testing Strategy
 
 ## Test Count
-1,739+ tests across all projects
+2,100+ tests across all projects
 
 ## Test Location
 `tests/`

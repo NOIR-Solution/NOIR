@@ -11,12 +11,13 @@ npm run dev
 
 ## Documentation
 
-For comprehensive documentation, see:
+All frontend documentation is in `docs/frontend/`:
 
 - **[Frontend Overview](../../../docs/frontend/README.md)** - Quick start and conventions
 - **[Architecture](../../../docs/frontend/architecture.md)** - Project structure and patterns
 - **[Theme](../../../docs/frontend/theme.md)** - Theme customization guide
 - **[API Types](../../../docs/frontend/api-types.md)** - Type generation from backend
+- **[Localization](../../../docs/frontend/localization-guide.md)** - i18n setup and languages
 
 ## Tech Stack
 

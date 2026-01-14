@@ -24,16 +24,40 @@ public class ActiveCustomersSpec : Specification<Customer>
 ## CQRS with Wolverine
 
 ### Handler Convention
-Handlers are static classes with `Handle` method:
+Handlers are co-located with Commands/Queries in `Application/Features/{Feature}/Commands/{Action}/` or `Queries/{Action}/`:
+```
+Features/
+└── Orders/
+    └── Commands/
+        └── Create/
+            ├── CreateOrderCommand.cs
+            ├── CreateOrderCommandHandler.cs
+            └── CreateOrderCommandValidator.cs
+```
+
+Handlers use constructor injection:
 ```csharp
-public static class CreateOrderHandler
+public class CreateOrderCommandHandler
 {
-    public static async Task<OrderResponse> Handle(
+    private readonly IRepository<Order, Guid> _repository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateOrderCommandHandler(
+        IRepository<Order, Guid> repository,
+        IUnitOfWork unitOfWork)
+    {
+        _repository = repository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<Result<OrderDto>> Handle(
         CreateOrderCommand cmd,
-        IRepository<Order, Guid> repo,
         CancellationToken ct)
     {
-        // Implementation
+        var order = Order.Create(cmd.CustomerId, cmd.Items);
+        await _repository.AddAsync(order, ct);
+        await _unitOfWork.SaveChangesAsync(ct);  // REQUIRED
+        return Result.Success(order.ToDto());
     }
 }
 ```

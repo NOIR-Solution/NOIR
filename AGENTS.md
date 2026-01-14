@@ -23,7 +23,7 @@ dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 dotnet watch --project src/NOIR.Web
 
-# Tests (1,808+)
+# Tests (2,100+)
 dotnet test src/NOIR.sln
 
 # Database Migrations
@@ -40,10 +40,13 @@ npm run generate:api          # Sync types from backend
 
 1. **Use Specifications for all queries** - Never raw `DbSet` queries in services
 2. **Tag all specifications** - Include `TagWith("MethodName")` for SQL debugging
-3. **Soft delete only** - Never hard delete unless explicitly GDPR-required
-4. **No using statements** - Add to `GlobalUsings.cs` in each project
-5. **Marker interfaces for DI** - Use `IScopedService`, `ITransientService`, `ISingletonService`
-6. **Run tests before committing** - `dotnet test src/NOIR.sln`
+3. **Use IUnitOfWork for persistence** - Repository methods do NOT auto-save. Call `SaveChangesAsync()` after mutations
+4. **Use AsTracking for mutations** - Specifications default to `AsNoTracking`. Add `.AsTracking()` for entities you'll modify
+5. **Co-locate Command + Handler + Validator** - All CQRS components in `Application/Features/{Feature}/Commands/{Action}/`
+6. **Soft delete only** - Never hard delete unless explicitly GDPR-required
+7. **No using statements** - Add to `GlobalUsings.cs` in each project
+8. **Marker interfaces for DI** - Use `IScopedService`, `ITransientService`, `ISingletonService`
+9. **Run tests before committing** - `dotnet test src/NOIR.sln`
 
 ## Code Patterns
 
@@ -59,16 +62,30 @@ public class ActiveCustomersSpec : Specification<Customer>
 }
 ```
 
-### Wolverine Handlers
+### Handlers (Co-located with Commands)
 ```csharp
-public static class CreateOrderHandler
+// Application/Features/Orders/Commands/Create/CreateOrderCommandHandler.cs
+public class CreateOrderCommandHandler
 {
-    public static async Task<OrderResponse> Handle(
+    private readonly IRepository<Order, Guid> _repository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateOrderCommandHandler(
+        IRepository<Order, Guid> repository,
+        IUnitOfWork unitOfWork)
+    {
+        _repository = repository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<Result<OrderDto>> Handle(
         CreateOrderCommand cmd,
-        IRepository<Order, Guid> repo,
         CancellationToken ct)
     {
-        // Implementation
+        var order = Order.Create(cmd.CustomerId, cmd.Items);
+        await _repository.AddAsync(order, ct);
+        await _unitOfWork.SaveChangesAsync(ct);  // REQUIRED
+        return Result.Success(order.ToDto());
     }
 }
 ```
@@ -86,7 +103,7 @@ public class CustomerService : ICustomerService, IScopedService { }
 | Specification | `[Entity][Filter]Spec` | `ActiveCustomersSpec` |
 | Command | `[Action][Entity]Command` | `CreateOrderCommand` |
 | Query | `Get[Entity][Filter]Query` | `GetActiveUsersQuery` |
-| Handler | `[Command]Handler` | `CreateOrderHandler` |
+| Handler | `[Command]Handler` | `CreateOrderCommandHandler` |
 | Configuration | `[Entity]Configuration` | `CustomerConfiguration` |
 
 ## File Boundaries
@@ -107,7 +124,7 @@ public class CustomerService : ICustomerService, IScopedService { }
 | Backend patterns | `docs/backend/patterns/` |
 | Frontend guide | `docs/frontend/` |
 | Architecture decisions | `docs/decisions/` |
-| Setup guide | `SETUP.md` |
+| Knowledge base | `docs/KNOWLEDGE_BASE.md` |
 
 ## Admin Credentials
 

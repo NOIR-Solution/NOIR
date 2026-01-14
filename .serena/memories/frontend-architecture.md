@@ -17,12 +17,17 @@
 ```
 frontend/
 ├── src/
-│   ├── components/    # Reusable UI components
-│   ├── features/      # Feature modules
-│   ├── hooks/         # Custom React hooks
+│   ├── components/    # Reusable UI components (ui/, notifications/, settings/, etc.)
+│   ├── config/        # App configuration (theme, etc.)
+│   ├── contexts/      # React contexts (Auth, Notification)
+│   ├── hooks/         # Custom React hooks (useLogin, useSignalR, etc.)
+│   ├── i18n/          # Internationalization (i18next)
+│   ├── layouts/       # Layout components (PortalLayout)
 │   ├── lib/           # Utilities and helpers
-│   ├── pages/         # Route pages
-│   └── api/           # API client and types
+│   ├── pages/         # Route pages (portal/, forgot-password/, etc.)
+│   ├── services/      # API client functions
+│   ├── types/         # TypeScript types (including generated API types)
+│   └── validation/    # Generated Zod schemas from backend
 ├── public/            # Static assets
 └── index.html         # Entry point
 ```

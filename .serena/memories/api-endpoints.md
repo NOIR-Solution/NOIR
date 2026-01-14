@@ -8,6 +8,11 @@ Located in `src/NOIR.Web/Endpoints/`
 - `UserEndpoints.cs` - User management
 - `RoleEndpoints.cs` - Role management
 - `AuditEndpoints.cs` - Audit log queries
+- `EmailTemplateEndpoints.cs` - Email template CRUD and testing
+- `NotificationEndpoints.cs` - User notifications and preferences
+- `TenantEndpoints.cs` - Multi-tenant management (admin)
+- `FileEndpoints.cs` - File upload/download operations
+- `ValidationEndpoints.cs` - Form validation schemas
 
 ## Endpoint Pattern
 

@@ -6,9 +6,12 @@
 ## Feature Modules
 - `Auth/` - Authentication (login, register, refresh, logout)
 - `Users/` - User management
-- `Roles/` - Role management
+- `Roles/` - Role management  
 - `Permissions/` - Permission management
 - `Audit/` - Audit log queries
+- `EmailTemplates/` - Email template management
+- `Notifications/` - User notification system
+- `Tenants/` - Multi-tenant management
 
 ## Feature Structure
 Each feature contains:
