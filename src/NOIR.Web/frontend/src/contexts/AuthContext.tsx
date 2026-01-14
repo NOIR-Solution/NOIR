@@ -7,6 +7,7 @@ interface AuthContextValue {
   isLoading: boolean
   isAuthenticated: boolean
   checkAuth: () => Promise<void>
+  refreshUser: () => Promise<void>
   logout: () => Promise<void>
 }
 
@@ -28,6 +29,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  /**
+   * Silently refresh user data without triggering loading state.
+   * Use this after local mutations (profile update, avatar change) to avoid UI flash.
+   */
+  const refreshUser = useCallback(async () => {
+    try {
+      const currentUser = await getCurrentUser()
+      setUser(currentUser)
+    } catch {
+      // Keep existing user data on refresh failure
+      // Don't set to null - this is a background refresh
+    }
+  }, [])
+
   useEffect(() => {
     checkAuth()
   }, [checkAuth])
@@ -38,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user, checkAuth, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user, checkAuth, refreshUser, logout }}>
       {children}
     </AuthContext.Provider>
   )

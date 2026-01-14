@@ -40,7 +40,7 @@ type ProfileFormData = z.infer<typeof updateUserProfileSchema>
 export function ProfileForm() {
   const { t } = useTranslation('auth')
   const { t: tCommon } = useTranslation('common')
-  const { user, checkAuth } = useAuthContext()
+  const { user, refreshUser } = useAuthContext()
 
   // Memoized translation function for validation errors
   const translateError = useMemo(() => createValidationTranslator(tCommon), [tCommon])
@@ -67,7 +67,7 @@ export function ProfileForm() {
       })
 
       // Refresh user data
-      await checkAuth()
+      await refreshUser()
       toast.success(t('profile.saved'))
     },
     onError: (error) => {
@@ -93,7 +93,7 @@ export function ProfileForm() {
     setIsUploadingAvatar(true)
     try {
       await uploadAvatar(file)
-      await checkAuth()
+      await refreshUser()
       // Notify other components (like Sidebar) about avatar change
       window.dispatchEvent(new Event('avatar-updated'))
       toast.success(t('profile.avatar.uploadSuccess'))
@@ -112,7 +112,7 @@ export function ProfileForm() {
     setIsRemovingAvatar(true)
     try {
       await deleteAvatar()
-      await checkAuth()
+      await refreshUser()
       // Notify other components (like Sidebar) about avatar change
       window.dispatchEvent(new Event('avatar-updated'))
       toast.success(t('profile.avatar.deleteSuccess'))
@@ -128,7 +128,7 @@ export function ProfileForm() {
   }
 
   const handleEmailChangeSuccess = async () => {
-    await checkAuth()
+    await refreshUser()
     toast.success(t('profile.email.success'))
   }
 
