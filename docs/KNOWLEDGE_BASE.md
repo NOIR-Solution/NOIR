@@ -89,14 +89,46 @@ Domain ← Application ← Infrastructure ← Web
 
 ### Entities
 
+#### Core Entities
+
 | Entity | Path | Related To |
 |--------|------|------------|
 | `Permission` | `Entities/Permission.cs` | [RBAC Authorization](#authorization) |
 | `RefreshToken` | `Entities/RefreshToken.cs` | [JWT Pattern](backend/patterns/jwt-refresh-token.md) |
 | `ResourceShare` | `Entities/ResourceShare.cs` | Multi-user sharing |
+
+#### Audit Entities
+
+| Entity | Path | Related To |
+|--------|------|------------|
 | `EntityAuditLog` | `Entities/EntityAuditLog.cs` | [Audit Logging](backend/patterns/hierarchical-audit-logging.md) |
 | `HandlerAuditLog` | `Entities/HandlerAuditLog.cs` | [Audit Logging](backend/patterns/hierarchical-audit-logging.md) |
 | `HttpRequestAuditLog` | `Entities/HttpRequestAuditLog.cs` | [Audit Logging](backend/patterns/hierarchical-audit-logging.md) |
+
+#### Multi-Tenancy Entities
+
+| Entity | Path | Related To |
+|--------|------|------------|
+| `Tenant` | `Entities/Tenant.cs` | [Multi-Tenancy](#multi-tenancy) |
+| `TenantBranding` | `Entities/TenantBranding.cs` | Tenant customization |
+| `TenantDomain` | `Entities/TenantDomain.cs` | Custom tenant domains |
+| `TenantSetting` | `Entities/TenantSetting.cs` | Tenant configuration |
+| `UserTenantMembership` | `Entities/UserTenantMembership.cs` | [Multi-Tenant User Access](#multi-tenancy) |
+
+#### Notification Entities
+
+| Entity | Path | Related To |
+|--------|------|------------|
+| `Notification` | `Entities/Notification.cs` | [Notifications Feature](#notifications-feature) |
+| `NotificationPreference` | `Entities/NotificationPreference.cs` | User notification settings |
+| `EmailTemplate` | `Entities/EmailTemplate.cs` | [Email Templates Feature](#emailtemplates-feature) |
+
+#### Authentication Entities
+
+| Entity | Path | Related To |
+|--------|------|------------|
+| `EmailChangeOtp` | `Entities/EmailChangeOtp.cs` | Email change verification |
+| `PasswordResetOtp` | `Entities/PasswordResetOtp.cs` | Password reset flow |
 
 ### Interfaces
 
@@ -208,10 +240,13 @@ Domain ← Application ← Infrastructure ← Web
 
 | Type | Name | Path |
 |------|------|------|
-| Command | `MarkNotificationReadCommand` | `Commands/MarkRead/` |
-| Command | `UpdateNotificationPreferencesCommand` | `Commands/UpdatePreferences/` |
-| Query | `GetNotificationsQuery` | `Queries/GetAll/` |
+| Command | `MarkAsReadCommand` | `Commands/MarkAsRead/` |
+| Command | `MarkAllAsReadCommand` | `Commands/MarkAllAsRead/` |
+| Command | `DeleteNotificationCommand` | `Commands/DeleteNotification/` |
+| Command | `UpdatePreferencesCommand` | `Commands/UpdatePreferences/` |
+| Query | `GetNotificationsQuery` | `Queries/GetNotifications/` |
 | Query | `GetUnreadCountQuery` | `Queries/GetUnreadCount/` |
+| Query | `GetPreferencesQuery` | `Queries/GetPreferences/` |
 
 **Related:** [NotificationEndpoints](#notification-endpoints)
 
@@ -435,6 +470,26 @@ public class LoginCommandHandler
 | GET | `/entities/{type}/{id}` | `GetEntityHistoryQuery` |
 | GET | `/export` | `ExportAuditLogsQuery` |
 
+#### File Endpoints
+**Path:** `Endpoints/FileEndpoints.cs`
+**Prefix:** `/api/files`
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| POST | `/upload` | Upload file |
+| GET | `/{id}` | Download file |
+| DELETE | `/{id}` | Delete file |
+
+#### Validation Endpoints
+**Path:** `Endpoints/ValidationEndpoints.cs`
+**Prefix:** `/api/validation`
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/schemas/{commandType}` | Get Zod validation schema for command |
+
+**Note:** Validation schemas are auto-generated from FluentValidation validators.
+
 ### Middleware
 
 **Path:** `Middleware/`
@@ -489,7 +544,34 @@ Three-level audit system:
 **Package:** Finbuckle.MultiTenant
 **Interceptor:** `TenantIdSetterInterceptor`
 
-All tenant-specific entities automatically get `TenantId` set.
+NOIR implements a multi-tenant architecture where:
+- Users can belong to **multiple tenants** via `UserTenantMembership`
+- Each membership has a **role** (Owner, Admin, Member, Viewer)
+- One membership can be marked as **default** for the user
+- Tenant-specific entities automatically get `TenantId` set via interceptor
+
+#### User-Tenant Membership Model
+
+```csharp
+// UserTenantMembership - Platform-level entity (NOT tenant-scoped)
+public class UserTenantMembership : Entity<Guid>
+{
+    public Guid UserId { get; }         // User reference
+    public Guid TenantId { get; }       // Tenant reference
+    public TenantRole Role { get; }     // Owner, Admin, Member, Viewer
+    public bool IsDefault { get; }      // User's default tenant
+    public DateTimeOffset JoinedAt { get; }
+}
+```
+
+#### Tenant Roles
+
+| Role | Permissions |
+|------|-------------|
+| Owner | Full control, can delete tenant |
+| Admin | Manage users and settings |
+| Member | Standard access |
+| Viewer | Read-only access |
 
 ### Validation
 
@@ -552,11 +634,11 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 
 | Project | Tests | Purpose |
 |---------|-------|---------|
-| `NOIR.Domain.UnitTests` | 550+ | Domain entity tests |
-| `NOIR.Application.UnitTests` | 1,100+ | Handler, specification tests |
+| `NOIR.Domain.UnitTests` | 400+ | Domain entity tests |
+| `NOIR.Application.UnitTests` | 900+ | Handler, specification tests |
 | `NOIR.ArchitectureTests` | 30+ | Dependency constraints |
-| `NOIR.IntegrationTests` | 420+ | API integration tests |
-| **Total** | **2,100+** | |
+| `NOIR.IntegrationTests` | 400+ | API integration tests |
+| **Total** | **1,800+** | |
 
 ### Test Patterns
 
@@ -681,4 +763,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-01-14 | Total Tests: 2,100+ | Features: 8 | Endpoints: 9*
+*Updated: 2026-01-14 | Total Tests: 1,800+ | Features: 8 | Endpoints: 11 | Entities: 16*

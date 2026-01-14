@@ -71,6 +71,45 @@ Multi-tenant configuration (Finbuckle):
 - Connection string (optional)
 - Active/inactive status
 
+### Multi-Tenancy Entities
+
+#### UserTenantMembership
+Platform-level entity enabling users to belong to multiple tenants:
+```csharp
+public class UserTenantMembership : Entity<Guid>
+{
+    public Guid UserId { get; }         // User reference
+    public Guid TenantId { get; }       // Tenant reference
+    public TenantRole Role { get; }     // Owner, Admin, Member, Viewer
+    public bool IsDefault { get; }      // User's default tenant
+    public DateTimeOffset JoinedAt { get; }
+}
+```
+
+| Role | Permissions |
+|------|-------------|
+| Owner | Full control, can delete tenant |
+| Admin | Manage users and settings |
+| Member | Standard access |
+| Viewer | Read-only access |
+
+#### TenantBranding
+Tenant customization (logo, colors, etc.)
+
+#### TenantDomain
+Custom domains for tenant access.
+
+#### TenantSetting
+Tenant-specific configuration settings.
+
+### Authentication Entities
+
+#### EmailChangeOtp
+OTP verification for email change requests.
+
+#### PasswordResetOtp
+OTP verification for password reset flow.
+
 ## Entity Base Classes
 
 ### Entity<TId>
