@@ -74,60 +74,64 @@ public class HandlerAuditMiddleware
             return;
         }
 
+        // Only audit IAuditableCommand handlers (Create, Update, Delete operations)
+        // Skip queries and other non-mutating operations to save database space
+        if (message is not IAuditableCommand auditableCommand)
+        {
+            return;
+        }
+
         var messageType = message.GetType();
         var handlerName = messageType.Name;
 
-        // Determine operation type from IAuditableCommand or default to Query
-        var operationType = AuditOperationType.Query;
-        object? targetId = null;
-
-        if (message is IAuditableCommand auditableCommand)
-        {
-            operationType = auditableCommand.OperationType;
-            targetId = auditableCommand.GetTargetId();
-        }
+        var operationType = auditableCommand.OperationType;
+        var targetId = auditableCommand.GetTargetId();
+        var actionDescription = auditableCommand.GetActionDescription();
+        var targetDisplayName = auditableCommand.GetTargetDisplayName();
 
         // Create the handler audit log
         _correlationId = AuditContext.Current?.CorrelationId ?? envelope.CorrelationId ?? Guid.NewGuid().ToString();
         var httpRequestAuditLogId = AuditContext.Current?.HttpRequestAuditLogId;
+        var pageContext = AuditContext.Current?.PageContext;
 
         _auditLog = HandlerAuditLog.Create(
             correlationId: _correlationId,
             handlerName: handlerName,
             operationType: operationType,
             tenantId: tenantContextAccessor.MultiTenantContext?.TenantInfo?.Id,
-            httpRequestAuditLogId: httpRequestAuditLogId);
+            httpRequestAuditLogId: httpRequestAuditLogId,
+            pageContext: pageContext);
 
-        // Set target DTO info and fetch before state for auditable commands
-        if (message is IAuditableCommand auditableCmd)
+        // Set activity context for timeline display
+        _auditLog.SetActivityContext(targetDisplayName, actionDescription);
+
+        // Set target DTO info and fetch before state
+        _dtoType = GetTargetDtoTypeFromInterface(messageType);
+        var dtoTypeName = _dtoType?.Name ?? GetTargetDtoType(messageType);
+        _auditLog.SetTargetDto(dtoTypeName ?? handlerName, targetId?.ToString());
+
+        // Fetch before state for update operations
+        if (operationType == AuditOperationType.Update && _dtoType is not null && targetId is not null)
         {
-            _dtoType = GetTargetDtoTypeFromInterface(messageType);
-            var dtoTypeName = _dtoType?.Name ?? GetTargetDtoType(messageType);
-            _auditLog.SetTargetDto(dtoTypeName ?? handlerName, targetId?.ToString());
-
-            // Fetch before state for update operations
-            if (operationType == AuditOperationType.Update && _dtoType is not null && targetId is not null)
+            try
             {
-                try
+                var beforeStateProvider = serviceProvider.GetService<IBeforeStateProvider>();
+                if (beforeStateProvider is not null)
                 {
-                    var beforeStateProvider = serviceProvider.GetService<IBeforeStateProvider>();
-                    if (beforeStateProvider is not null)
-                    {
-                        // Use synchronous wrapper since Wolverine middleware is synchronous
-                        _beforeState = beforeStateProvider
-                            .GetBeforeStateAsync(_dtoType, targetId, CancellationToken.None)
-                            .ConfigureAwait(false)
-                            .GetAwaiter()
-                            .GetResult();
-                    }
+                    // Use synchronous wrapper since Wolverine middleware is synchronous
+                    _beforeState = beforeStateProvider
+                        .GetBeforeStateAsync(_dtoType, targetId, CancellationToken.None)
+                        .ConfigureAwait(false)
+                        .GetAwaiter()
+                        .GetResult();
                 }
-                catch (Exception ex)
-                {
-                    // Log but don't fail - before state is optional
-                    var logger = serviceProvider.GetService<ILogger<HandlerAuditMiddleware>>();
-                    logger?.LogDebug(ex, "Failed to fetch before state for {DtoType} with ID {TargetId}",
-                        _dtoType.Name, targetId);
-                }
+            }
+            catch (Exception ex)
+            {
+                // Log but don't fail - before state is optional
+                var logger = serviceProvider.GetService<ILogger<HandlerAuditMiddleware>>();
+                logger?.LogDebug(ex, "Failed to fetch before state for {DtoType} with ID {TargetId}",
+                    _dtoType.Name, targetId);
             }
         }
 
@@ -136,6 +140,9 @@ public class HandlerAuditMiddleware
 
         // Add to context but don't save yet - will be saved in After method
         dbContext.HandlerAuditLogs.Add(_auditLog);
+
+        // Set the handler ID in audit context so EntityAuditLogInterceptor can link entity changes
+        AuditContext.SetCurrentHandler(_auditLog.Id);
     }
 
     /// <summary>

@@ -8,8 +8,11 @@ public sealed record UpdateEmailTemplateCommand(
     string Subject,
     string HtmlBody,
     string? PlainTextBody,
-    string? Description) : IAuditableCommand
+    string? Description,
+    string? TemplateName = null) : IAuditableCommand
 {
     public AuditOperationType OperationType => AuditOperationType.Update;
     public object? GetTargetId() => Id;
+    public string? GetTargetDisplayName() => TemplateName ?? Subject;
+    public string? GetActionDescription() => $"Updated email template '{GetTargetDisplayName()}'";
 }

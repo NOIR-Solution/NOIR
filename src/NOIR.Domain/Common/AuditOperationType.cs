@@ -19,12 +19,7 @@ public enum AuditOperationType
     /// <summary>
     /// Deleting an entity. Before state captured.
     /// </summary>
-    Delete,
-
-    /// <summary>
-    /// Query operation. Optional logging.
-    /// </summary>
-    Query
+    Delete
 }
 
 /// <summary>

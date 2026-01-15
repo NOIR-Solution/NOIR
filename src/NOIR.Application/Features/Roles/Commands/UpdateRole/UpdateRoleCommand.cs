@@ -14,4 +14,6 @@ public sealed record UpdateRoleCommand(
 {
     public AuditOperationType OperationType => AuditOperationType.Update;
     public object? GetTargetId() => RoleId;
+    public string? GetTargetDisplayName() => Name;
+    public string? GetActionDescription() => $"Updated role '{Name}'";
 }

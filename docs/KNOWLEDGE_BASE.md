@@ -676,6 +676,7 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 6. **Soft delete only** - never hard delete (except GDPR)
 7. **Marker interfaces** for DI auto-registration
 8. **No using statements** in files - add to `GlobalUsings.cs`
+9. **Audit logging for user actions** - Commands that create/update/delete via frontend MUST implement `IAuditableCommand`. Requires: (a) Command implements `IAuditableCommand<TResult>`, (b) Endpoint sets `UserId`, (c) Frontend calls `usePageContext()`. See [Audit Logging](backend/patterns/hierarchical-audit-logging.md)
 
 ### Performance Rules
 

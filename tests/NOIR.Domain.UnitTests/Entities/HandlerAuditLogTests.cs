@@ -129,7 +129,6 @@ public class HandlerAuditLogTests
     [InlineData(AuditOperationType.Create, "Create")]
     [InlineData(AuditOperationType.Update, "Update")]
     [InlineData(AuditOperationType.Delete, "Delete")]
-    [InlineData(AuditOperationType.Query, "Query")]
     public void Create_AllOperationTypes_ShouldSetCorrectString(AuditOperationType operationType, string expected)
     {
         // Act

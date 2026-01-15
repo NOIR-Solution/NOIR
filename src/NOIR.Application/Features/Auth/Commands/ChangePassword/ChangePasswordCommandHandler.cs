@@ -23,12 +23,12 @@ public class ChangePasswordCommandHandler
         _localization = localization;
     }
 
-    public async Task<Result> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
+    public async Task<Result<ChangePasswordResult>> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
     {
         // Verify user is authenticated
         if (!_currentUser.IsAuthenticated || string.IsNullOrEmpty(_currentUser.UserId))
         {
-            return Result.Failure(
+            return Result.Failure<ChangePasswordResult>(
                 Error.Unauthorized(
                     _localization["auth.user.notAuthenticated"],
                     ErrorCodes.Auth.Unauthorized));
@@ -52,13 +52,13 @@ public class ChangePasswordCommandHandler
             // ASP.NET Identity returns "Incorrect password." for wrong current password
             if (errorMessage.Contains("Incorrect password", StringComparison.OrdinalIgnoreCase))
             {
-                return Result.Failure(
+                return Result.Failure<ChangePasswordResult>(
                     Error.Unauthorized(
                         _localization["auth.changePassword.incorrectCurrentPassword"],
                         ErrorCodes.Auth.InvalidPassword));
             }
 
-            return Result.Failure(
+            return Result.Failure<ChangePasswordResult>(
                 Error.ValidationErrors(errors, ErrorCodes.Validation.General));
         }
 
@@ -68,6 +68,6 @@ public class ChangePasswordCommandHandler
             reason: "Password changed - all sessions revoked for security",
             cancellationToken: cancellationToken);
 
-        return Result.Success();
+        return Result.Success(new ChangePasswordResult(true, _localization["auth.changePassword.success"]));
     }
 }

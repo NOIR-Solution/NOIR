@@ -67,6 +67,7 @@
 8. **Use IUnitOfWork for persistence** - Repository methods do NOT auto-save. Always inject `IUnitOfWork` and call `SaveChangesAsync()` after mutations. Never inject `ApplicationDbContext` directly into services.
 9. **Use AsTracking for mutations** - Specifications default to `AsNoTracking`. For specs that retrieve entities for modification, add `.AsTracking()` to enable change detection.
 10. **Co-locate Command + Handler + Validator** - All CQRS components live in the same folder under `Application/Features/{Feature}/Commands/{Action}/` or `Application/Features/{Feature}/Queries/{Action}/`
+11. **Audit logging for user actions** - Commands that create, update, or delete data via frontend MUST implement `IAuditableCommand`. See `docs/backend/patterns/hierarchical-audit-logging.md` for the checklist and pattern. Requires: (a) Command implements `IAuditableCommand<TResult>`, (b) Endpoint sets `UserId` on command, (c) Frontend page calls `usePageContext('PageName')`.
 
 ## Quick Reference
 
@@ -199,6 +200,38 @@ public class CustomerByIdSpec : Specification<Customer>
              .TagWith("CustomerById");
     }
 }
+```
+
+### Auditable Commands (CRITICAL for Activity Timeline)
+```csharp
+// Commands that mutate data via frontend MUST implement IAuditableCommand
+public sealed record UpdateCustomerCommand(
+    Guid Id,
+    string Name) : IAuditableCommand<CustomerDto>
+{
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }  // Set by endpoint
+
+    public object? GetTargetId() => UserId;
+    public AuditOperationType OperationType => AuditOperationType.Update;
+    public string? GetTargetDisplayName() => Name;
+    public string? GetActionDescription() => $"Updated customer '{Name}'";
+}
+
+// Endpoint must set UserId:
+group.MapPut("/customers/{id}", async (
+    Guid id,
+    UpdateCustomerCommand command,
+    [FromServices] ICurrentUser currentUser,
+    IMessageBus bus) =>
+{
+    var auditableCommand = command with { UserId = currentUser.UserId };
+    var result = await bus.InvokeAsync<Result<CustomerDto>>(auditableCommand);
+    return result.ToHttpResult();
+});
+
+// Frontend page must set context:
+usePageContext('Customers')  // Required for Activity Timeline
 ```
 
 ## Naming Conventions

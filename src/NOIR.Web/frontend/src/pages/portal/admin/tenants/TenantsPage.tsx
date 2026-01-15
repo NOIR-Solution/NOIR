@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Building } from 'lucide-react'
+import { usePageContext } from '@/hooks/usePageContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import type { TenantListItem } from '@/types'
 
 export default function TenantsPage() {
   const { t } = useTranslation('common')
+  usePageContext('Tenants')
   const { data, loading, error, refresh, setPage, setSearch, handleDelete, params } = useTenants()
 
   const [searchInput, setSearchInput] = useState('')

@@ -33,6 +33,13 @@ public class HandlerAuditLogConfiguration : IEntityTypeConfiguration<HandlerAudi
             .HasMaxLength(20)
             .IsRequired();
 
+        // Activity Context - for timeline display
+        builder.Property(e => e.PageContext).HasMaxLength(50);
+        builder.HasIndex(e => e.PageContext);
+
+        builder.Property(e => e.ActionDescription).HasMaxLength(500);
+        builder.Property(e => e.TargetDisplayName).HasMaxLength(200);
+
         // Target DTO
         builder.Property(e => e.TargetDtoType).HasMaxLength(200);
         builder.Property(e => e.TargetDtoId).HasMaxLength(100);

@@ -14,4 +14,6 @@ public sealed record CreateUserCommand(
 {
     public AuditOperationType OperationType => AuditOperationType.Create;
     public object? GetTargetId() => Email; // Use email as target before ID is created
+    public string? GetTargetDisplayName() => DisplayName ?? Email;
+    public string? GetActionDescription() => $"Created user '{GetTargetDisplayName()}'";
 }

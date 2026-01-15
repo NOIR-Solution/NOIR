@@ -15,4 +15,6 @@ public sealed record CreateRoleCommand(
 {
     public AuditOperationType OperationType => AuditOperationType.Create;
     public object? GetTargetId() => Name;
+    public string? GetTargetDisplayName() => Name;
+    public string? GetActionDescription() => $"Created role '{Name}'";
 }

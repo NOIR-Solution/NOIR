@@ -28,4 +28,7 @@ public sealed record RequestEmailChangeCommand(
     public object? GetTargetId() => UserId;
 
     public AuditOperationType OperationType => AuditOperationType.Update;
+
+    public string? GetTargetDisplayName() => NewEmail;
+    public string? GetActionDescription() => $"Requested email change to '{NewEmail}'";
 }

@@ -137,6 +137,10 @@ export const Permissions = {
   TenantsCreate: 'tenants:create',
   TenantsUpdate: 'tenants:update',
   TenantsDelete: 'tenants:delete',
+  // Audit
+  AuditRead: 'audit:read',
+  AuditExport: 'audit:export',
+  AuditEntityHistory: 'audit:entity-history',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

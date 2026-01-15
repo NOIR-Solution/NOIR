@@ -15,4 +15,6 @@ public sealed record ResendEmailChangeOtpCommand(
     public object? GetTargetId() => UserId;
 
     public AuditOperationType OperationType => AuditOperationType.Update;
+
+    public string? GetActionDescription() => "Resent email change OTP";
 }

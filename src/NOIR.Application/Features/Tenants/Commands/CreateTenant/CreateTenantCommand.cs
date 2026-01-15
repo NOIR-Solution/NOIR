@@ -10,4 +10,6 @@ public sealed record CreateTenantCommand(
 {
     public AuditOperationType OperationType => AuditOperationType.Create;
     public object? GetTargetId() => Identifier;
+    public string? GetTargetDisplayName() => Name;
+    public string? GetActionDescription() => $"Created tenant '{Name}'";
 }

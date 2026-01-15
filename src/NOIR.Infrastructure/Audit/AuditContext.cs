@@ -22,13 +22,15 @@ public class AuditContext
     /// </summary>
     /// <param name="httpRequestAuditLogId">The ID of the HttpRequestAuditLog.</param>
     /// <param name="correlationId">The correlation ID for the request.</param>
+    /// <param name="pageContext">Optional page context from the frontend (e.g., "Users", "Tenants").</param>
     /// <returns>A disposable scope that clears the context on dispose.</returns>
-    public static IDisposable BeginRequestScope(Guid httpRequestAuditLogId, string correlationId)
+    public static IDisposable BeginRequestScope(Guid httpRequestAuditLogId, string correlationId, string? pageContext = null)
     {
         Current = new AuditContextData
         {
             HttpRequestAuditLogId = httpRequestAuditLogId,
-            CorrelationId = correlationId
+            CorrelationId = correlationId,
+            PageContext = pageContext
         };
 
         return new AuditContextScope();
@@ -95,4 +97,10 @@ public class AuditContextData
     /// The ID of the currently executing HandlerAuditLog (if any).
     /// </summary>
     public Guid? CurrentHandlerAuditLogId { get; set; }
+
+    /// <summary>
+    /// The page context from the frontend (e.g., "Users", "Tenants").
+    /// Used to display user-friendly context in the activity timeline.
+    /// </summary>
+    public string? PageContext { get; set; }
 }

@@ -25,4 +25,6 @@ public sealed record UploadAvatarCommand(
     public object? GetTargetId() => UserId;
 
     public AuditOperationType OperationType => AuditOperationType.Update;
+
+    public string? GetActionDescription() => "Uploaded avatar";
 }

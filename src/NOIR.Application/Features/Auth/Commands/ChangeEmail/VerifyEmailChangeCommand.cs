@@ -16,4 +16,6 @@ public sealed record VerifyEmailChangeCommand(
     public object? GetTargetId() => UserId;
 
     public AuditOperationType OperationType => AuditOperationType.Update;
+
+    public string? GetActionDescription() => "Verified email change";
 }

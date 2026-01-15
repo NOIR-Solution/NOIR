@@ -312,7 +312,7 @@ export default function EmailTemplateEditPage() {
           <div>
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
               {getDisplayName(template.name)}
-              <Badge variant="secondary">{template.language.toUpperCase()}</Badge>
+              <Badge variant="secondary">HTML</Badge>
             </h1>
             <p className="text-muted-foreground">
               {template.description || t('emailTemplates.editTemplate')}
@@ -595,7 +595,7 @@ export default function EmailTemplateEditPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Language:</span>
-                <Badge variant="secondary">{template.language.toUpperCase()}</Badge>
+                <Badge variant="secondary">HTML</Badge>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t('emailTemplates.version')}:</span>

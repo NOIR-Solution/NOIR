@@ -10,6 +10,36 @@ namespace NOIR.Infrastructure.Services;
 public class JsonDiffService : IDiffService
 {
     /// <summary>
+    /// System fields that should be excluded from diff comparison.
+    /// These are auto-managed fields that change on every update but don't represent
+    /// meaningful user-initiated changes.
+    /// </summary>
+    private static readonly HashSet<string> ExcludedFields = new(StringComparer.OrdinalIgnoreCase)
+    {
+        // Common audit fields
+        "modifiedAt",
+        "modifiedBy",
+        "createdAt",
+        "createdBy",
+        "lastModifiedAt",
+        "lastModifiedBy",
+        "updatedAt",
+        "updatedBy",
+
+        // Version/concurrency fields
+        "rowVersion",
+        "version",
+        "concurrencyStamp",
+        "securityStamp",
+
+        // Identity timestamps
+        "lockoutEnd",
+        "lastLoginAt",
+        "lastActivityAt",
+        "passwordChangedAt"
+    };
+
+    /// <summary>
     /// Options for serializing input objects (ignores nulls for cleaner comparison).
     /// </summary>
     private static readonly JsonSerializerOptions InputSerializerOptions = new()
@@ -76,6 +106,10 @@ public class JsonDiffService : IDiffService
 
         foreach (var key in allKeys)
         {
+            // Skip system/audit fields that are auto-managed
+            if (ExcludedFields.Contains(key))
+                continue;
+
             object? beforeValue = null;
             object? afterValue = null;
             var hadBefore = before?.TryGetValue(key, out beforeValue) ?? false;
@@ -116,11 +150,15 @@ public class JsonDiffService : IDiffService
 
         if (before is null && after is not null)
         {
-            // Full create - show all fields as added
+            // Full create - show all fields as added (except system fields)
             if (after is JsonObject afterObj)
             {
                 foreach (var prop in afterObj)
                 {
+                    // Skip system/audit fields
+                    if (ExcludedFields.Contains(prop.Key))
+                        continue;
+
                     changes[prop.Key] = new FieldChange
                     {
                         From = null,
@@ -133,11 +171,15 @@ public class JsonDiffService : IDiffService
 
         if (before is not null && after is null)
         {
-            // Full delete - show all fields as removed
+            // Full delete - show all fields as removed (except system fields)
             if (before is JsonObject beforeObj)
             {
                 foreach (var prop in beforeObj)
                 {
+                    // Skip system/audit fields
+                    if (ExcludedFields.Contains(prop.Key))
+                        continue;
+
                     changes[prop.Key] = new FieldChange
                     {
                         From = ConvertNodeToObject(prop.Value),
@@ -194,6 +236,10 @@ public class JsonDiffService : IDiffService
 
         foreach (var key in allKeys)
         {
+            // Skip system/audit fields that are auto-managed
+            if (ExcludedFields.Contains(key))
+                continue;
+
             // Use dot notation for nested paths
             var fieldName = string.IsNullOrEmpty(basePath) ? key : $"{basePath}.{key}";
             var hasBefore = before.TryGetPropertyValue(key, out var beforeValue);

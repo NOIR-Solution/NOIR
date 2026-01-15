@@ -17,6 +17,7 @@
  * - All requests include credentials to send/receive cookies
  */
 import { getAccessToken, getRefreshToken, storeTokens, clearTokens } from './tokenStorage'
+import { getPageContext } from './pageContext'
 import type { AuthResponse, ApiError as ApiErrorType } from '@/types'
 import i18n from '@/i18n'
 
@@ -170,8 +171,9 @@ export async function apiClient<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token = getAccessToken()
+  const pageContext = getPageContext()
 
-  // Merge headers with Authorization and Accept-Language
+  // Merge headers with Authorization, Accept-Language, and Page Context
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     'Accept-Language': i18n.language,
@@ -180,6 +182,11 @@ export async function apiClient<T>(
 
   if (token) {
     (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`
+  }
+
+  // Add page context for audit logging (Activity Timeline display)
+  if (pageContext) {
+    (headers as Record<string, string>)['X-Page-Context'] = pageContext
   }
 
   let response = await fetch(`${API_BASE}${endpoint}`, {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Shield } from 'lucide-react'
+import { usePageContext } from '@/hooks/usePageContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,7 @@ import type { RoleListItem } from '@/types'
 
 export default function RolesPage() {
   const { t } = useTranslation('common')
+  usePageContext('Roles')
   const { data, loading, error, refresh, setPage, setSearch, handleDelete, params } = useRoles()
 
   const [searchInput, setSearchInput] = useState('')

@@ -20,4 +20,7 @@ public sealed record UpdateUserProfileCommand(
     public object? GetTargetId() => UserId;
 
     public AuditOperationType OperationType => AuditOperationType.Update;
+
+    public string? GetTargetDisplayName() => DisplayName ?? $"{FirstName} {LastName}".Trim();
+    public string? GetActionDescription() => "Updated profile";
 }

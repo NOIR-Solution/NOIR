@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Users, Filter, UserPlus } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
+import { usePageContext } from '@/hooks/usePageContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -24,6 +25,7 @@ import type { UserListItem } from '@/types'
 export default function UsersPage() {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
+  usePageContext('Users')
   const {
     data,
     loading,

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { ChangePasswordForm } from '@/components/settings/ChangePasswordForm'
 import { ProfileForm } from '@/components/settings/ProfileForm'
 import { SessionManagement } from '@/components/settings/SessionManagement'
+import { usePageContext } from '@/hooks/usePageContext'
 
 type SettingsSection = 'profile' | 'security'
 
@@ -22,6 +23,9 @@ const navItems: NavItem[] = [
 export default function SettingsPage() {
   const { t } = useTranslation('auth')
   const [activeSection, setActiveSection] = useState<SettingsSection>('profile')
+
+  // Set page context for audit logging (Activity Timeline)
+  usePageContext('Profile')
 
   return (
     <div className="container max-w-6xl py-6">

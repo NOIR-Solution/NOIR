@@ -20,12 +20,12 @@ public class RevokeSessionCommandHandler
         _localization = localization;
     }
 
-    public async Task<Result> Handle(RevokeSessionCommand command, CancellationToken cancellationToken)
+    public async Task<Result<RevokeSessionResult>> Handle(RevokeSessionCommand command, CancellationToken cancellationToken)
     {
         // Check if user is authenticated
         if (!_currentUser.IsAuthenticated || string.IsNullOrEmpty(_currentUser.UserId))
         {
-            return Result.Failure(
+            return Result.Failure<RevokeSessionResult>(
                 Error.Unauthorized(_localization["auth.user.notAuthenticated"], ErrorCodes.Auth.Unauthorized));
         }
 
@@ -38,7 +38,7 @@ public class RevokeSessionCommandHandler
         var session = sessions.FirstOrDefault(s => s.Id == command.SessionId);
         if (session is null)
         {
-            return Result.Failure(
+            return Result.Failure<RevokeSessionResult>(
                 Error.NotFound(_localization["auth.session.notFound"], "Session.NotFound"));
         }
 
@@ -49,6 +49,6 @@ public class RevokeSessionCommandHandler
             "User requested session revocation",
             cancellationToken);
 
-        return Result.Success();
+        return Result.Success(new RevokeSessionResult(true, _localization["auth.session.revoked"]));
     }
 }

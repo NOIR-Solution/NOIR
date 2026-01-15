@@ -16,6 +16,20 @@ public interface IAuditableCommand
     /// Gets the type of operation being performed.
     /// </summary>
     AuditOperationType OperationType { get; }
+
+    /// <summary>
+    /// Gets a human-readable description of the action being performed.
+    /// Example: "Create User", "Update Role Permissions", "Delete Tenant".
+    /// Returns null to use a default description based on handler name.
+    /// </summary>
+    string? GetActionDescription() => null;
+
+    /// <summary>
+    /// Gets a display-friendly name for the target entity.
+    /// Example: User's email, Role name, Tenant name.
+    /// Returns null if no meaningful display name is available.
+    /// </summary>
+    string? GetTargetDisplayName() => null;
 }
 
 /// <summary>

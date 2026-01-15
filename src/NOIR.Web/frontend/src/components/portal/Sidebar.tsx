@@ -16,6 +16,7 @@ import {
   Building2,
   Shield,
   Users,
+  Activity,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -67,6 +68,7 @@ const adminNavItems: NavItem[] = [
   { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants', permission: Permissions.TenantsRead },
   { titleKey: 'roles.title', icon: Shield, path: '/portal/admin/roles', permission: Permissions.RolesRead },
   { titleKey: 'users.title', icon: Users, path: '/portal/admin/users', permission: Permissions.UsersRead },
+  { titleKey: 'activityTimeline.title', icon: Activity, path: '/portal/admin/activity-timeline', permission: Permissions.AuditRead },
 ]
 
 /**

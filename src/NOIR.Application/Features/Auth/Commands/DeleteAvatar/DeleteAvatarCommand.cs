@@ -21,4 +21,6 @@ public sealed record DeleteAvatarCommand : IAuditableCommand<AvatarDeleteResultD
     public object? GetTargetId() => UserId;
 
     public AuditOperationType OperationType => AuditOperationType.Update;
+
+    public string? GetActionDescription() => "Deleted avatar";
 }

@@ -328,12 +328,6 @@ namespace NOIR.Infrastructure.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(10)");
-
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -374,11 +368,11 @@ namespace NOIR.Infrastructure.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.HasIndex("Name", "Language", "TenantId")
+                    b.HasIndex("Name", "TenantId")
                         .IsUnique()
-                        .HasDatabaseName("IX_EmailTemplates_Name_Language_TenantId");
+                        .HasDatabaseName("IX_EmailTemplates_Name_TenantId");
 
-                    b.HasIndex("Name", "Language", "IsActive", "IsDeleted");
+                    b.HasIndex("Name", "IsActive", "IsDeleted");
 
                     b.ToTable("EmailTemplates", (string)null);
 
@@ -478,6 +472,11 @@ namespace NOIR.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ActionDescription")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTimeOffset?>("ArchivedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -544,8 +543,18 @@ namespace NOIR.Infrastructure.Migrations
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PageContext")
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<DateTimeOffset>("StartTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TargetDisplayName")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("TargetDtoId")
                         .HasMaxLength(100)
@@ -571,6 +580,8 @@ namespace NOIR.Infrastructure.Migrations
                     b.HasIndex("HttpRequestAuditLogId");
 
                     b.HasIndex("IsArchived");
+
+                    b.HasIndex("PageContext");
 
                     b.HasIndex("TenantId");
 

@@ -98,6 +98,8 @@ global using NOIR.Application.Features.Users.Commands.AssignRoles;
 global using NOIR.Application.Features.Users.Queries.GetUsers;
 global using NOIR.Application.Features.Users.Queries.GetUserRoles;
 global using NOIR.Application.Features.Users.DTOs;
+global using NOIR.Application.Features.Tenants.DTOs;
+global using NOIR.Application.Features.Tenants.Queries.GetTenantById;
 global using NOIR.Application.Features.Permissions.Commands.AssignToRole;
 global using NOIR.Application.Features.Permissions.Commands.RemoveFromRole;
 global using NOIR.Application.Features.Permissions.Queries.GetRolePermissions;

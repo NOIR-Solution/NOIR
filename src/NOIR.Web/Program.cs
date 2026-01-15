@@ -353,6 +353,7 @@ app.MapTenantEndpoints();
 app.MapUserEndpoints();
 app.MapEmailTemplateEndpoints();
 app.MapNotificationEndpoints();
+app.MapAuditEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");

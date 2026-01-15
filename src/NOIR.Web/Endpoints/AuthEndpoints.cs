@@ -192,9 +192,12 @@ public static class AuthEndpoints
         // Change Password (for authenticated users)
         group.MapPost("/change-password", async (
             ChangePasswordCommand command,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result>(command);
+            // Set UserId for audit tracking
+            var auditableCommand = command with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<ChangePasswordResult>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization()
@@ -368,11 +371,14 @@ public static class AuthEndpoints
 
         group.MapDelete("/me/sessions/{sessionId:guid}", async (
             Guid sessionId,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus,
             HttpContext httpContext) =>
         {
             var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString();
-            var result = await bus.InvokeAsync<Result>(new RevokeSessionCommand(sessionId, ipAddress));
+            // Set UserId for audit tracking
+            var command = new RevokeSessionCommand(sessionId, ipAddress) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<RevokeSessionResult>>(command);
             return result.ToHttpResult();
         })
         .RequireAuthorization()

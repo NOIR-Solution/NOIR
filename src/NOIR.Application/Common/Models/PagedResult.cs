@@ -23,6 +23,11 @@ public sealed class PagedResult<T>
     public int PageIndex { get; }
 
     /// <summary>
+    /// Current page number (1-based, for display/API compatibility).
+    /// </summary>
+    public int PageNumber => PageIndex + 1;
+
+    /// <summary>
     /// Number of items per page.
     /// </summary>
     public int PageSize { get; }

@@ -36,6 +36,27 @@ public class HandlerAuditLog : Entity<Guid>, ITenantEntity
 
     #endregion
 
+    #region Activity Context
+
+    /// <summary>
+    /// UI page context that triggered this action (e.g., "Users", "Tenants", "Roles").
+    /// Null for API calls without UI context. Falls back to HandlerName for display.
+    /// </summary>
+    public string? PageContext { get; set; }
+
+    /// <summary>
+    /// Human-readable description of the action (e.g., "edited User John Doe").
+    /// </summary>
+    public string? ActionDescription { get; set; }
+
+    /// <summary>
+    /// Display name of the target entity (e.g., "John Doe", "Test Corp").
+    /// Stored at write time for historical accuracy.
+    /// </summary>
+    public string? TargetDisplayName { get; set; }
+
+    #endregion
+
     #region Target DTO
 
     /// <summary>
@@ -135,7 +156,8 @@ public class HandlerAuditLog : Entity<Guid>, ITenantEntity
         string handlerName,
         AuditOperationType operationType,
         string? tenantId,
-        Guid? httpRequestAuditLogId = null)
+        Guid? httpRequestAuditLogId = null,
+        string? pageContext = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(correlationId);
         ArgumentException.ThrowIfNullOrWhiteSpace(handlerName);
@@ -151,6 +173,7 @@ public class HandlerAuditLog : Entity<Guid>, ITenantEntity
             OperationType = operationType.ToString(),
             TenantId = tenantId,
             HttpRequestAuditLogId = httpRequestAuditLogId,
+            PageContext = pageContext,
             StartTime = DateTimeOffset.UtcNow
         };
     }
@@ -180,4 +203,21 @@ public class HandlerAuditLog : Entity<Guid>, ITenantEntity
         TargetDtoType = dtoType;
         TargetDtoId = dtoId;
     }
+
+    /// <summary>
+    /// Sets the activity context for timeline display.
+    /// </summary>
+    /// <param name="displayName">Display name of the target entity (e.g., "John Doe").</param>
+    /// <param name="actionDescription">Human-readable description (e.g., "edited User John Doe").</param>
+    public void SetActivityContext(string? displayName, string? actionDescription)
+    {
+        TargetDisplayName = displayName;
+        ActionDescription = actionDescription;
+    }
+
+    /// <summary>
+    /// Gets the display context for the timeline.
+    /// Returns PageContext if set, otherwise falls back to HandlerName.
+    /// </summary>
+    public string GetDisplayContext() => PageContext ?? HandlerName;
 }

@@ -99,7 +99,10 @@ public class HttpRequestAuditMiddleware
         dbContext.HttpRequestAuditLogs.Add(httpAuditLog);
         await dbContext.SaveChangesAsync();
 
-        using var scope = AuditContext.BeginRequestScope(httpAuditLog.Id, correlationId);
+        // Extract page context from frontend header for activity timeline display
+        var pageContext = context.Request.Headers["X-Page-Context"].FirstOrDefault();
+
+        using var scope = AuditContext.BeginRequestScope(httpAuditLog.Id, correlationId, pageContext);
 
         var originalBodyStream = context.Response.Body;
         using var responseBodyStream = new MemoryStream();

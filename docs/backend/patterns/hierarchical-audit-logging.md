@@ -1,7 +1,7 @@
 # Hierarchical Audit Logging Pattern
 
 **Created:** 2026-01-01
-**Updated:** 2026-01-02
+**Updated:** 2026-01-15
 **Status:** Implemented
 **Based on:** Simple field-level diff format, ABP Framework Audit Logging, Wolverine Middleware
 
@@ -620,8 +620,146 @@ function DiffTable({ diff }: { diff: DiffData }) {
 - [x] **Navigation Property Tracking** - Collection add/remove tracking
 
 ### Pending
-- [ ] Update existing commands to implement IAuditableCommand
+- [x] Update existing commands to implement IAuditableCommand (see checklist below)
 - [ ] Implement React diff viewer component
+
+---
+
+## Activity Timeline: IAuditableCommand Checklist
+
+The Activity Timeline feature displays user actions grouped by page context. For actions to appear in the timeline, commands must:
+
+1. **Implement `IAuditableCommand` or `IAuditableCommand<TResult>`**
+2. **Set UserId in the endpoint** for audit tracking
+3. **Add `usePageContext('PageName')` hook** in the frontend page component
+
+### Pattern for Adding Audit Logging
+
+**Step 1: Update Command**
+```csharp
+public sealed record MyCommand(
+    string SomeProperty) : IAuditableCommand<MyResult>  // or just IAuditableCommand
+{
+    // UserId for audit tracking - set by endpoint
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
+    public object? GetTargetId() => UserId;
+    public AuditOperationType OperationType => AuditOperationType.Update; // or Create/Delete
+    public string? GetTargetDisplayName() => SomeProperty; // Human-readable identifier
+    public string? GetActionDescription() => $"Did something with '{SomeProperty}'";
+}
+```
+
+**Step 2: Update Handler (if returning typed result)**
+```csharp
+public async Task<Result<MyResult>> Handle(MyCommand command, CancellationToken ct)
+{
+    // ... logic ...
+    return Result.Success(new MyResult(true, "Success message"));
+    // For failures: return Result.Failure<MyResult>(Error.xxx(...));
+}
+```
+
+**Step 3: Update Endpoint**
+```csharp
+group.MapPost("/my-endpoint", async (
+    MyCommand command,
+    [FromServices] ICurrentUser currentUser,
+    IMessageBus bus) =>
+{
+    // Set UserId for audit tracking
+    var auditableCommand = command with { UserId = currentUser.UserId };
+    var result = await bus.InvokeAsync<Result<MyResult>>(auditableCommand);
+    return result.ToHttpResult();
+});
+```
+
+**Step 4: Add Page Context in Frontend**
+```tsx
+import { usePageContext } from '@/hooks/usePageContext'
+
+export default function MyPage() {
+  usePageContext('MyPageName')  // This sets X-Page-Context header
+  // ...
+}
+```
+
+### Commands with IAuditableCommand (Complete Checklist)
+
+#### Admin - User Management
+| Command | Audited | Action Description |
+|---------|---------|-------------------|
+| `CreateUserCommand` | ✅ | "Created user '{DisplayName}'" |
+| `UpdateUserCommand` | ✅ | "Updated user '{DisplayName}'" |
+| `DeleteUserCommand` | ✅ | "Deleted user '{Email}'" |
+| `LockUserCommand` | ✅ | "Locked/Unlocked user '{Email}'" |
+| `AssignRolesToUserCommand` | ✅ | "Assigned {count} roles to user '{Email}'" |
+
+#### Admin - Role Management
+| Command | Audited | Action Description |
+|---------|---------|-------------------|
+| `CreateRoleCommand` | ✅ | "Created role '{Name}'" |
+| `UpdateRoleCommand` | ✅ | "Updated role '{Name}'" |
+| `DeleteRoleCommand` | ✅ | "Deleted role '{Name}'" |
+| `AssignPermissionToRoleCommand` | ✅ | "Assigned {count} permissions to role '{Name}'" |
+| `RemovePermissionFromRoleCommand` | ✅ | "Removed {count} permissions from role '{Name}'" |
+
+#### Admin - Tenant Management
+| Command | Audited | Action Description |
+|---------|---------|-------------------|
+| `CreateTenantCommand` | ✅ | "Created tenant '{Name}'" |
+| `UpdateTenantCommand` | ✅ | "Updated tenant '{Name}'" |
+| `DeleteTenantCommand` | ✅ | "Deleted tenant '{Name}'" |
+
+#### Admin - Email Templates
+| Command | Audited | Action Description |
+|---------|---------|-------------------|
+| `UpdateEmailTemplateCommand` | ✅ | "Updated email template '{TemplateName}'" |
+| `SendTestEmailCommand` | ❌ | Not audited (test action) |
+
+#### Profile/Settings (User's Own Data)
+| Command | Audited | Action Description |
+|---------|---------|-------------------|
+| `UpdateUserProfileCommand` | ✅ | "Updated profile" |
+| `ChangePasswordCommand` | ✅ | "Changed password" |
+| `UploadAvatarCommand` | ✅ | "Uploaded avatar" |
+| `DeleteAvatarCommand` | ✅ | "Deleted avatar" |
+| `RequestEmailChangeCommand` | ✅ | "Requested email change to '{NewEmail}'" |
+| `VerifyEmailChangeCommand` | ✅ | "Verified email change" |
+| `ResendEmailChangeOtpCommand` | ✅ | "Resent email change OTP" |
+| `RevokeSessionCommand` | ✅ | "Revoked session" |
+
+#### Commands NOT Requiring Audit (Intentional)
+| Command | Reason |
+|---------|--------|
+| `LoginCommand` | Already in HTTP audit logs |
+| `LogoutCommand` | User's own action, tracked in HTTP audit |
+| `RefreshTokenCommand` | Automatic token refresh |
+| `MarkAsReadCommand` | Notification read, trivial action |
+| `MarkAllAsReadCommand` | Notification read, trivial action |
+| `DeleteNotificationCommand` | User's own notifications |
+| `UpdatePreferencesCommand` | Notification preferences, trivial |
+| Password Reset Commands | Anonymous/public, no user context |
+
+### Frontend Page Context Mapping
+
+For Activity Timeline to work, each page must call `usePageContext()`:
+
+| Page | Context Value | Hook Call |
+|------|--------------|-----------|
+| Settings/Profile | `'Profile'` | `usePageContext('Profile')` |
+| Users Management | `'Users'` | `usePageContext('Users')` |
+| Roles Management | `'Roles'` | `usePageContext('Roles')` |
+| Tenants Management | `'Tenants'` | `usePageContext('Tenants')` |
+| Email Templates | `'EmailTemplates'` | `usePageContext('EmailTemplates')` |
+
+### Activity Timeline Query Filter
+
+The Activity Timeline only shows entries where `PageContext IS NOT NULL`. This ensures:
+- Only user-initiated actions from the UI are shown
+- API calls without page context (automated, scripts) are excluded
+- Each entry links to a specific UI page for context
 
 ---
 
