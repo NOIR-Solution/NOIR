@@ -33,14 +33,12 @@ public class SendTestEmailCommandHandlerTests
         string name = "TestTemplate",
         string subject = "Test Subject {{UserName}}",
         string htmlBody = "<p>Hello, {{UserName}}!</p>",
-        string? plainTextBody = "Hello, {{UserName}}!",
-        string language = "en")
+        string? plainTextBody = "Hello, {{UserName}}!")
     {
         return EmailTemplate.Create(
             name,
             subject,
             htmlBody,
-            language,
             plainTextBody,
             description: "Test Description",
             availableVariables: "[\"UserName\"]");

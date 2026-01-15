@@ -14,18 +14,17 @@ public static class EmailTemplateEndpoints
 
         // Get all email templates
         group.MapGet("/", async (
-            [FromQuery] string? language,
             [FromQuery] string? search,
             IMessageBus bus) =>
         {
-            var query = new GetEmailTemplatesQuery(language, search);
+            var query = new GetEmailTemplatesQuery(search);
             var result = await bus.InvokeAsync<Result<List<EmailTemplateListDto>>>(query);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.EmailTemplatesRead)
         .WithName("GetEmailTemplates")
         .WithSummary("Get list of email templates")
-        .WithDescription("Returns all email templates with optional language and search filtering.")
+        .WithDescription("Returns all email templates with optional search filtering.")
         .Produces<List<EmailTemplateListDto>>(StatusCodes.Status200OK);
 
         // Get single email template by ID

@@ -2,7 +2,7 @@ namespace NOIR.Domain.Entities;
 
 /// <summary>
 /// Email template entity for storing customizable email templates.
-/// Supports multi-language templates with versioning for admin portal editing.
+/// Supports template variables for admin portal editing.
 /// </summary>
 public class EmailTemplate : TenantAggregateRoot<Guid>
 {
@@ -13,12 +13,12 @@ public class EmailTemplate : TenantAggregateRoot<Guid>
     public string Name { get; private set; } = default!;
 
     /// <summary>
-    /// Email subject line. Supports template variables like {UserName}, {OtpCode}.
+    /// Email subject line. Supports template variables like {{UserName}}, {{OtpCode}}.
     /// </summary>
     public string Subject { get; private set; } = default!;
 
     /// <summary>
-    /// HTML body content. Supports template variables and Razor-like syntax.
+    /// HTML body content. Supports template variables.
     /// </summary>
     public string HtmlBody { get; private set; } = default!;
 
@@ -26,11 +26,6 @@ public class EmailTemplate : TenantAggregateRoot<Guid>
     /// Plain text body for email clients that don't support HTML.
     /// </summary>
     public string? PlainTextBody { get; private set; }
-
-    /// <summary>
-    /// Language code (e.g., "en", "vi") for multi-language support.
-    /// </summary>
-    public string Language { get; private set; } = default!;
 
     /// <summary>
     /// Whether this template is active and should be used.
@@ -64,7 +59,6 @@ public class EmailTemplate : TenantAggregateRoot<Guid>
         string name,
         string subject,
         string htmlBody,
-        string language,
         string? plainTextBody = null,
         string? description = null,
         string? availableVariables = null,
@@ -77,7 +71,6 @@ public class EmailTemplate : TenantAggregateRoot<Guid>
             Subject = subject,
             HtmlBody = htmlBody,
             PlainTextBody = plainTextBody,
-            Language = language.ToLowerInvariant(),
             IsActive = true,
             Version = 1,
             Description = description,
@@ -118,26 +111,5 @@ public class EmailTemplate : TenantAggregateRoot<Guid>
     public void Deactivate()
     {
         IsActive = false;
-    }
-
-    /// <summary>
-    /// Creates a copy of this template for a different language.
-    /// </summary>
-    public EmailTemplate CloneForLanguage(string newLanguage, string? tenantId = null)
-    {
-        return new EmailTemplate
-        {
-            Id = Guid.NewGuid(),
-            Name = Name,
-            Subject = Subject,
-            HtmlBody = HtmlBody,
-            PlainTextBody = PlainTextBody,
-            Language = newLanguage.ToLowerInvariant(),
-            IsActive = true,
-            Version = 1,
-            Description = Description,
-            AvailableVariables = AvailableVariables,
-            TenantId = tenantId ?? TenantId
-        };
     }
 }

@@ -10,12 +10,14 @@ public class RemovePermissionFromRoleCommandHandlerTests
 
     private readonly Mock<IRoleIdentityService> _roleIdentityServiceMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<IPermissionCacheInvalidator> _cacheInvalidatorMock;
     private readonly RemovePermissionFromRoleCommandHandler _handler;
 
     public RemovePermissionFromRoleCommandHandlerTests()
     {
         _roleIdentityServiceMock = new Mock<IRoleIdentityService>();
         _localizationServiceMock = new Mock<ILocalizationService>();
+        _cacheInvalidatorMock = new Mock<IPermissionCacheInvalidator>();
 
         // Setup localization to return the key (pass-through for testing)
         _localizationServiceMock
@@ -24,7 +26,8 @@ public class RemovePermissionFromRoleCommandHandlerTests
 
         _handler = new RemovePermissionFromRoleCommandHandler(
             _roleIdentityServiceMock.Object,
-            _localizationServiceMock.Object);
+            _localizationServiceMock.Object,
+            _cacheInvalidatorMock.Object);
     }
 
     private static RoleIdentityDto CreateTestRoleDto(

@@ -67,6 +67,7 @@ public class PasswordResetServiceTests
             AvatarUrl: null,
             IsActive: true,
             IsDeleted: false,
+            IsSystemUser: false,
             CreatedAt: DateTimeOffset.UtcNow,
             ModifiedAt: null);
     }

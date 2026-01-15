@@ -25,7 +25,6 @@ public class GetEmailTemplatesQueryHandlerTests
         string name = "TestTemplate",
         string subject = "Test Subject",
         string htmlBody = "<p>Test Body</p>",
-        string language = "en",
         bool isActive = true,
         string? availableVariables = null)
     {
@@ -33,7 +32,6 @@ public class GetEmailTemplatesQueryHandlerTests
             name,
             subject,
             htmlBody,
-            language,
             plainTextBody: null,
             description: "Test Description",
             availableVariables: availableVariables);
@@ -71,12 +69,12 @@ public class GetEmailTemplatesQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WithLanguageFilter_ShouldPassFilterToSpec()
+    public async Task Handle_WithSearchFilter_ShouldFilterTemplates()
     {
         // Arrange
         var templates = new List<EmailTemplate>
         {
-            CreateTestEmailTemplate(name: "WelcomeEmail", language: "vi")
+            CreateTestEmailTemplate(name: "WelcomeEmail")
         };
 
         _repositoryMock
@@ -85,7 +83,7 @@ public class GetEmailTemplatesQueryHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(templates);
 
-        var query = new GetEmailTemplatesQuery(Language: "vi");
+        var query = new GetEmailTemplatesQuery(Search: "welcome");
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -93,7 +91,6 @@ public class GetEmailTemplatesQueryHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().HaveCount(1);
-        result.Value[0].Language.Should().Be("vi");
     }
 
     [Fact]
@@ -129,7 +126,6 @@ public class GetEmailTemplatesQueryHandlerTests
             CreateTestEmailTemplate(
                 name: "WelcomeEmail",
                 subject: "Welcome",
-                language: "en",
                 isActive: true,
                 availableVariables: "[\"UserName\"]")
         };
@@ -150,7 +146,6 @@ public class GetEmailTemplatesQueryHandlerTests
         var dto = result.Value[0];
         dto.Name.Should().Be("WelcomeEmail");
         dto.Subject.Should().Be("Welcome");
-        dto.Language.Should().Be("en");
         dto.IsActive.Should().BeTrue();
         dto.Version.Should().Be(1);
         dto.AvailableVariables.Should().Contain("UserName");

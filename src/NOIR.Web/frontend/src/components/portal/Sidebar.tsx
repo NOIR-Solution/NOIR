@@ -44,6 +44,7 @@ import {
   DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu'
 import { useAuthContext } from '@/contexts/AuthContext'
+import { usePermissions, Permissions, type PermissionKey } from '@/hooks/usePermissions'
 import { useLanguage } from '@/i18n/useLanguage'
 import { languageFlags } from '@/i18n/languageFlags'
 import type { SupportedLanguage } from '@/i18n'
@@ -52,18 +53,20 @@ interface NavItem {
   titleKey: string
   icon: React.ElementType
   path: string
+  /** Permission required to view this menu item (optional - always shown if not specified) */
+  permission?: PermissionKey
 }
 
 // Navigation items - Settings is accessed via profile dropdown, with admin section
 const navItems: NavItem[] = [
   { titleKey: 'dashboard.title', icon: LayoutDashboard, path: '/portal' },
-  { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates' },
+  { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates', permission: Permissions.EmailTemplatesRead },
 ]
 
 const adminNavItems: NavItem[] = [
-  { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants' },
-  { titleKey: 'roles.title', icon: Shield, path: '/portal/admin/roles' },
-  { titleKey: 'users.title', icon: Users, path: '/portal/admin/users' },
+  { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants', permission: Permissions.TenantsRead },
+  { titleKey: 'roles.title', icon: Shield, path: '/portal/admin/roles', permission: Permissions.RolesRead },
+  { titleKey: 'users.title', icon: Users, path: '/portal/admin/users', permission: Permissions.UsersRead },
 ]
 
 /**
@@ -236,7 +239,18 @@ function SidebarContent({
   user,
 }: SidebarContentProps) {
   const isActive = (path: string) => isActivePath(pathname, path)
-  const isAdmin = user?.roles?.includes('Admin') ?? false
+  const { hasPermission } = usePermissions()
+
+  // Filter nav items based on permissions
+  const visibleNavItems = navItems.filter(
+    item => !item.permission || hasPermission(item.permission)
+  )
+
+  // Filter admin nav items - show admin section if user has any admin permissions
+  const visibleAdminItems = adminNavItems.filter(
+    item => !item.permission || hasPermission(item.permission)
+  )
+  const showAdminSection = visibleAdminItems.length > 0
 
   const renderNavItem = (item: NavItem) => {
     const Icon = item.icon
@@ -319,11 +333,11 @@ function SidebarContent({
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4">
         <div className="space-y-1 px-2">
-          {navItems.map(renderNavItem)}
+          {visibleNavItems.map(renderNavItem)}
         </div>
 
         {/* Admin Section */}
-        {isAdmin && (
+        {showAdminSection && (
           <div className="mt-6">
             {isExpanded && (
               <div className="px-4 mb-2">
@@ -333,7 +347,7 @@ function SidebarContent({
               </div>
             )}
             <div className="space-y-1 px-2">
-              {adminNavItems.map(renderNavItem)}
+              {visibleAdminItems.map(renderNavItem)}
             </div>
           </div>
         )}
@@ -392,7 +406,18 @@ export function MobileSidebarTrigger({
   const { t } = useTranslation('common')
   const location = useLocation()
   const { user } = useAuthContext()
-  const isAdmin = user?.roles?.includes('Admin') ?? false
+  const { hasPermission } = usePermissions()
+
+  // Filter nav items based on permissions
+  const visibleNavItems = navItems.filter(
+    item => !item.permission || hasPermission(item.permission)
+  )
+
+  // Filter admin nav items
+  const visibleAdminItems = adminNavItems.filter(
+    item => !item.permission || hasPermission(item.permission)
+  )
+  const showAdminSection = visibleAdminItems.length > 0
 
   const renderMobileNavItem = (item: NavItem) => {
     const Icon = item.icon
@@ -443,11 +468,11 @@ export function MobileSidebarTrigger({
           {/* Mobile Navigation */}
           <nav className="flex-1 overflow-y-auto py-4">
             <div className="space-y-1 px-2">
-              {navItems.map(renderMobileNavItem)}
+              {visibleNavItems.map(renderMobileNavItem)}
             </div>
 
             {/* Admin Section */}
-            {isAdmin && (
+            {showAdminSection && (
               <div className="mt-6">
                 <div className="px-4 mb-2">
                   <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
@@ -455,7 +480,7 @@ export function MobileSidebarTrigger({
                   </p>
                 </div>
                 <div className="space-y-1 px-2">
-                  {adminNavItems.map(renderMobileNavItem)}
+                  {visibleAdminItems.map(renderMobileNavItem)}
                 </div>
               </div>
             )}

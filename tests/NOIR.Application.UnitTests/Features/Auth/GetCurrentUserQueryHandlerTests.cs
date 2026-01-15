@@ -46,6 +46,7 @@ public class GetCurrentUserQueryHandlerTests
             AvatarUrl: null,
             IsActive: isActive,
             IsDeleted: false,
+            IsSystemUser: false,
             CreatedAt: DateTimeOffset.UtcNow.AddDays(-30),
             ModifiedAt: null);
     }

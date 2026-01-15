@@ -18,15 +18,10 @@ public class EmailTemplateConfiguration : IEntityTypeConfiguration<EmailTemplate
             .HasMaxLength(100)
             .IsRequired();
 
-        // Language
-        builder.Property(e => e.Language)
-            .HasMaxLength(10)
-            .IsRequired();
-
-        // Unique constraint on Name + Language + TenantId (one template per language per tenant)
-        builder.HasIndex(e => new { e.Name, e.Language, e.TenantId })
+        // Unique constraint on Name + TenantId (one template per tenant)
+        builder.HasIndex(e => new { e.Name, e.TenantId })
             .IsUnique()
-            .HasDatabaseName("IX_EmailTemplates_Name_Language_TenantId");
+            .HasDatabaseName("IX_EmailTemplates_Name_TenantId");
 
         // Subject
         builder.Property(e => e.Subject)
@@ -55,7 +50,7 @@ public class EmailTemplateConfiguration : IEntityTypeConfiguration<EmailTemplate
         builder.Property(e => e.Version).HasDefaultValue(1);
 
         // Index for active template lookup
-        builder.HasIndex(e => new { e.Name, e.Language, e.IsActive, e.IsDeleted });
+        builder.HasIndex(e => new { e.Name, e.IsActive, e.IsDeleted });
 
         // Tenant ID
         builder.Property(e => e.TenantId).HasMaxLength(64);

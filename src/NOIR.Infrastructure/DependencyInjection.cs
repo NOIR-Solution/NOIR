@@ -178,6 +178,10 @@ public static class DependencyInjection
         services.Configure<PasswordResetSettings>(
             configuration.GetSection(PasswordResetSettings.SectionName));
 
+        // Configure Application settings (base URL, app name, etc.)
+        services.Configure<ApplicationSettings>(
+            configuration.GetSection(ApplicationSettings.SectionName));
+
         // Register localization startup validator to validate resources at startup
         services.AddHostedService<LocalizationStartupValidator>();
 

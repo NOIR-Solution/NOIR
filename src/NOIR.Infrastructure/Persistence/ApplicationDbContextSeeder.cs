@@ -247,6 +247,7 @@ public static class ApplicationDbContextSeeder
                 LastName = "Administrator",
                 EmailConfirmed = true,
                 IsActive = true,
+                IsSystemUser = true,
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
@@ -265,6 +266,14 @@ public static class ApplicationDbContextSeeder
         }
         else
         {
+            // Ensure admin is marked as system user (for upgrades from older versions)
+            if (!adminUser.IsSystemUser)
+            {
+                adminUser.IsSystemUser = true;
+                await userManager.UpdateAsync(adminUser);
+                logger.LogInformation("Marked admin user as system user: {Email}", adminEmail);
+            }
+
             // Ensure admin password matches expected value (useful after password policy changes)
             var passwordValid = await userManager.CheckPasswordAsync(adminUser, adminPassword);
             if (!passwordValid)
@@ -286,8 +295,30 @@ public static class ApplicationDbContextSeeder
             .IgnoreQueryFilters()
             .ToListAsync();
 
-        var existingByKey = existingTemplates
-            .ToDictionary(t => $"{t.Name}:{t.Language}");
+        // Group by Name - keep the first one, delete duplicates (handles migration from language-based to single template)
+        // This handles the case where old Language-based templates exist with duplicate names
+        var groupedTemplates = existingTemplates.GroupBy(t => t.Name).ToList();
+        var existingByKey = new Dictionary<string, EmailTemplate>();
+        var duplicatesToDelete = new List<EmailTemplate>();
+
+        foreach (var group in groupedTemplates)
+        {
+            var templates = group.ToList();
+            existingByKey[group.Key] = templates[0];
+            
+            // Mark duplicates for deletion
+            if (templates.Count > 1)
+            {
+                duplicatesToDelete.AddRange(templates.Skip(1));
+            }
+        }
+
+        // Delete duplicate templates (cleanup from Language-based system migration)
+        if (duplicatesToDelete.Count > 0)
+        {
+            context.Set<EmailTemplate>().RemoveRange(duplicatesToDelete);
+            logger.LogInformation("Removing {Count} duplicate email templates from old Language-based system", duplicatesToDelete.Count);
+        }
 
         var templatesToSeed = GetEmailTemplateDefinitions();
         var newTemplates = new List<EmailTemplate>();
@@ -299,7 +330,7 @@ public static class ApplicationDbContextSeeder
 
         foreach (var template in templatesToSeed)
         {
-            var key = $"{template.Name}:{template.Language}";
+            var key = template.Name;
             if (existingByKey.TryGetValue(key, out var existing))
             {
                 var entry = context.Entry(existing);
@@ -310,7 +341,7 @@ public static class ApplicationDbContextSeeder
                     entry.Property(nameof(ITenantEntity.TenantId)).CurrentValue = currentTenantId;
                     entry.Property(e => e.ModifiedAt).CurrentValue = DateTimeOffset.UtcNow;
                     tenantFixedCount++;
-                    logger.LogInformation("Fixed TenantId for email template: {Name} ({Language})", template.Name, template.Language);
+                    logger.LogInformation("Fixed TenantId for email template: {Name}", template.Name);
                 }
 
                 // Restore soft-deleted template using EF Core Entry API
@@ -322,13 +353,13 @@ public static class ApplicationDbContextSeeder
                     entry.Property(e => e.ModifiedAt).CurrentValue = DateTimeOffset.UtcNow;
                     existing.Activate(); // Use domain method for IsActive
                     restoredCount++;
-                    logger.LogInformation("Restored soft-deleted email template: {Name} ({Language})", template.Name, template.Language);
+                    logger.LogInformation("Restored soft-deleted email template: {Name}", template.Name);
                 }
             }
             else
             {
                 newTemplates.Add(template);
-                logger.LogInformation("Seeding email template: {Name} ({Language})", template.Name, template.Language);
+                logger.LogInformation("Seeding email template: {Name}", template.Name);
             }
         }
 
@@ -337,9 +368,13 @@ public static class ApplicationDbContextSeeder
             await context.Set<EmailTemplate>().AddRangeAsync(newTemplates);
         }
 
-        if (newTemplates.Count > 0 || restoredCount > 0 || tenantFixedCount > 0)
+        if (newTemplates.Count > 0 || restoredCount > 0 || tenantFixedCount > 0 || duplicatesToDelete.Count > 0)
         {
             await context.SaveChangesAsync();
+            if (duplicatesToDelete.Count > 0)
+            {
+                logger.LogInformation("Deleted {Count} duplicate email templates from old Language-based system", duplicatesToDelete.Count);
+            }
             if (newTemplates.Count > 0)
             {
                 logger.LogInformation("Seeded {Count} email templates", newTemplates.Count);
@@ -626,336 +661,126 @@ public static class ApplicationDbContextSeeder
     {
         var templates = new List<EmailTemplate>();
 
-        // Password Reset OTP - English
+        // Password Reset OTP
         templates.Add(EmailTemplate.Create(
             name: "PasswordResetOtp",
             subject: "Password Reset Code: {{OtpCode}}",
-            htmlBody: GetPasswordResetOtpHtmlBody("en"),
-            language: "en",
-            plainTextBody: GetPasswordResetOtpPlainTextBody("en"),
+            htmlBody: GetPasswordResetOtpHtmlBody(),
+            plainTextBody: GetPasswordResetOtpPlainTextBody(),
             description: "Email sent when user requests password reset with OTP code.",
             availableVariables: "[\"UserName\", \"OtpCode\", \"ExpiryMinutes\"]"));
 
-        // Password Reset OTP - Vietnamese
-        templates.Add(EmailTemplate.Create(
-            name: "PasswordResetOtp",
-            subject: "Mã đặt lại mật khẩu: {{OtpCode}}",
-            htmlBody: GetPasswordResetOtpHtmlBody("vi"),
-            language: "vi",
-            plainTextBody: GetPasswordResetOtpPlainTextBody("vi"),
-            description: "Email gửi khi người dùng yêu cầu đặt lại mật khẩu với mã OTP.",
-            availableVariables: "[\"UserName\", \"OtpCode\", \"ExpiryMinutes\"]"));
-
-        // Welcome Email - English
+        // Welcome Email (used when admin creates user)
         templates.Add(EmailTemplate.Create(
             name: "WelcomeEmail",
-            subject: "Welcome to NOIR, {{UserName}}!",
-            htmlBody: GetWelcomeEmailHtmlBody("en"),
-            language: "en",
-            plainTextBody: GetWelcomeEmailPlainTextBody("en"),
-            description: "Email sent to new users after registration.",
-            availableVariables: "[\"UserName\", \"LoginUrl\"]"));
-
-        // Welcome Email - Vietnamese
-        templates.Add(EmailTemplate.Create(
-            name: "WelcomeEmail",
-            subject: "Chào mừng đến với NOIR, {{UserName}}!",
-            htmlBody: GetWelcomeEmailHtmlBody("vi"),
-            language: "vi",
-            plainTextBody: GetWelcomeEmailPlainTextBody("vi"),
-            description: "Email gửi đến người dùng mới sau khi đăng ký.",
-            availableVariables: "[\"UserName\", \"LoginUrl\"]"));
-
-        // Account Activation - English
-        templates.Add(EmailTemplate.Create(
-            name: "AccountActivation",
-            subject: "Activate Your Account",
-            htmlBody: GetAccountActivationHtmlBody("en"),
-            language: "en",
-            plainTextBody: GetAccountActivationPlainTextBody("en"),
-            description: "Email sent for account email verification.",
-            availableVariables: "[\"UserName\", \"ActivationLink\", \"ExpiryHours\"]"));
-
-        // Account Activation - Vietnamese
-        templates.Add(EmailTemplate.Create(
-            name: "AccountActivation",
-            subject: "Kích hoạt tài khoản của bạn",
-            htmlBody: GetAccountActivationHtmlBody("vi"),
-            language: "vi",
-            plainTextBody: GetAccountActivationPlainTextBody("vi"),
-            description: "Email gửi để xác minh email tài khoản.",
-            availableVariables: "[\"UserName\", \"ActivationLink\", \"ExpiryHours\"]"));
+            subject: "Welcome to NOIR - Your Account Has Been Created",
+            htmlBody: GetWelcomeEmailHtmlBody(),
+            plainTextBody: GetWelcomeEmailPlainTextBody(),
+            description: "Email sent to users when their account is created by an administrator.",
+            availableVariables: "[\"UserName\", \"Email\", \"TemporaryPassword\", \"LoginUrl\", \"ApplicationName\"]"));
 
         return templates;
     }
 
     #region Email Template Content
 
-    private static string GetPasswordResetOtpHtmlBody(string language) => language switch
-    {
-        "vi" => """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Đặt lại mật khẩu</title>
-            </head>
-            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="color: white; margin: 0;">NOIR</h1>
+    private static string GetPasswordResetOtpHtmlBody() => """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Password Reset</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="color: white; margin: 0;">NOIR</h1>
+            </div>
+            <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
+                <h2 style="color: #1e40af;">Hello {{UserName}},</h2>
+                <p>You have requested to reset your password. Use the OTP code below to continue:</p>
+                <div style="background: #1e40af; color: white; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 8px; border-radius: 8px; margin: 20px 0;">
+                    {{OtpCode}}
                 </div>
-                <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #1e40af;">Xin chào {{UserName}},</h2>
-                    <p>Bạn đã yêu cầu đặt lại mật khẩu. Sử dụng mã OTP dưới đây để tiếp tục:</p>
-                    <div style="background: #1e40af; color: white; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 8px; border-radius: 8px; margin: 20px 0;">
-                        {{OtpCode}}
-                    </div>
-                    <p style="color: #6b7280; font-size: 14px;">Mã này sẽ hết hạn sau <strong>{{ExpiryMinutes}} phút</strong>.</p>
-                    <p style="color: #6b7280; font-size: 14px;">Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
-                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                    <p style="color: #9ca3af; font-size: 12px; text-align: center;">© 2024 NOIR. Tất cả các quyền được bảo lưu.</p>
+                <p style="color: #6b7280; font-size: 14px;">This code will expire in <strong>{{ExpiryMinutes}} minutes</strong>.</p>
+                <p style="color: #6b7280; font-size: 14px;">If you did not request a password reset, please ignore this email.</p>
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+                <p style="color: #9ca3af; font-size: 12px; text-align: center;">© 2024 NOIR. All rights reserved.</p>
+            </div>
+        </body>
+        </html>
+        """;
+
+    private static string GetPasswordResetOtpPlainTextBody() => """
+        NOIR - Password Reset
+
+        Hello {{UserName}},
+
+        You have requested to reset your password. Use the OTP code below:
+
+        OTP Code: {{OtpCode}}
+
+        This code will expire in {{ExpiryMinutes}} minutes.
+
+        If you did not request a password reset, please ignore this email.
+
+        © 2024 NOIR
+        """;
+
+    private static string GetWelcomeEmailHtmlBody() => """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Welcome to NOIR</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="color: white; margin: 0;">NOIR</h1>
+            </div>
+            <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
+                <h2 style="color: #1e40af;">Welcome, {{UserName}}!</h2>
+                <p>An administrator has created an account for you in <strong>{{ApplicationName}}</strong>.</p>
+                <p>Here are your login credentials:</p>
+                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p style="margin: 5px 0;"><strong>Email:</strong> {{Email}}</p>
                 </div>
-            </body>
-            </html>
-            """,
-        _ => """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Password Reset</title>
-            </head>
-            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="color: white; margin: 0;">NOIR</h1>
+                <p style="margin-bottom: 5px;"><strong>Your temporary password:</strong></p>
+                <div style="background: #1e40af; color: white; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 4px; border-radius: 8px; margin: 10px 0 20px 0; font-family: monospace;">
+                    {{TemporaryPassword}}
                 </div>
-                <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #1e40af;">Hello {{UserName}},</h2>
-                    <p>You have requested to reset your password. Use the OTP code below to continue:</p>
-                    <div style="background: #1e40af; color: white; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 8px; border-radius: 8px; margin: 20px 0;">
-                        {{OtpCode}}
-                    </div>
-                    <p style="color: #6b7280; font-size: 14px;">This code will expire in <strong>{{ExpiryMinutes}} minutes</strong>.</p>
-                    <p style="color: #6b7280; font-size: 14px;">If you did not request a password reset, please ignore this email.</p>
-                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                    <p style="color: #9ca3af; font-size: 12px; text-align: center;">© 2024 NOIR. All rights reserved.</p>
+                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 15px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+                    <p style="margin: 0; color: #92400e; font-size: 14px;"><strong>⚠ Important:</strong> Please change your password immediately after your first login.</p>
                 </div>
-            </body>
-            </html>
-            """
-    };
-
-    private static string GetPasswordResetOtpPlainTextBody(string language) => language switch
-    {
-        "vi" => """
-            NOIR - Đặt lại mật khẩu
-
-            Xin chào {{UserName}},
-
-            Bạn đã yêu cầu đặt lại mật khẩu. Sử dụng mã OTP dưới đây:
-
-            Mã OTP: {{OtpCode}}
-
-            Mã này sẽ hết hạn sau {{ExpiryMinutes}} phút.
-
-            Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.
-
-            © 2024 NOIR
-            """,
-        _ => """
-            NOIR - Password Reset
-
-            Hello {{UserName}},
-
-            You have requested to reset your password. Use the OTP code below:
-
-            OTP Code: {{OtpCode}}
-
-            This code will expire in {{ExpiryMinutes}} minutes.
-
-            If you did not request a password reset, please ignore this email.
-
-            © 2024 NOIR
-            """
-    };
-
-    private static string GetWelcomeEmailHtmlBody(string language) => language switch
-    {
-        "vi" => """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Chào mừng đến với NOIR</title>
-            </head>
-            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="color: white; margin: 0;">NOIR</h1>
+                <div style="text-align: center; margin: 25px 0;">
+                    <a href="{{LoginUrl}}" style="display: inline-block; background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); color: white; text-decoration: none; padding: 14px 35px; border-radius: 8px; font-weight: bold;">Log In Now</a>
                 </div>
-                <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #1e40af;">Chào mừng, {{UserName}}!</h2>
-                    <p>Cảm ơn bạn đã đăng ký tài khoản NOIR. Chúng tôi rất vui khi có bạn đồng hành!</p>
-                    <p>Bạn có thể đăng nhập vào tài khoản của mình bằng nút dưới đây:</p>
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="{{LoginUrl}}" style="background: #1e40af; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Đăng nhập ngay</a>
-                    </div>
-                    <p style="color: #6b7280; font-size: 14px;">Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với đội hỗ trợ của chúng tôi.</p>
-                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                    <p style="color: #9ca3af; font-size: 12px; text-align: center;">© 2024 NOIR. Tất cả các quyền được bảo lưu.</p>
-                </div>
-            </body>
-            </html>
-            """,
-        _ => """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Welcome to NOIR</title>
-            </head>
-            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="color: white; margin: 0;">NOIR</h1>
-                </div>
-                <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #1e40af;">Welcome, {{UserName}}!</h2>
-                    <p>Thank you for creating your NOIR account. We're excited to have you on board!</p>
-                    <p>You can log in to your account using the button below:</p>
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="{{LoginUrl}}" style="background: #1e40af; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Log In Now</a>
-                    </div>
-                    <p style="color: #6b7280; font-size: 14px;">If you have any questions, don't hesitate to reach out to our support team.</p>
-                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                    <p style="color: #9ca3af; font-size: 12px; text-align: center;">© 2024 NOIR. All rights reserved.</p>
-                </div>
-            </body>
-            </html>
-            """
-    };
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+                <p style="color: #9ca3af; font-size: 12px; text-align: center;">© 2024 {{ApplicationName}}. All rights reserved.</p>
+            </div>
+        </body>
+        </html>
+        """;
 
-    private static string GetWelcomeEmailPlainTextBody(string language) => language switch
-    {
-        "vi" => """
-            NOIR - Chào mừng!
+    private static string GetWelcomeEmailPlainTextBody() => """
+        {{ApplicationName}} - Welcome!
 
-            Chào mừng, {{UserName}}!
+        Hello {{UserName}},
 
-            Cảm ơn bạn đã đăng ký tài khoản NOIR. Chúng tôi rất vui khi có bạn đồng hành!
+        An administrator has created an account for you in {{ApplicationName}}.
 
-            Đăng nhập tại: {{LoginUrl}}
+        Email: {{Email}}
+        Temporary Password: {{TemporaryPassword}}
 
-            Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với đội hỗ trợ của chúng tôi.
+        ⚠️ IMPORTANT: Please change your password immediately after your first login.
 
-            © 2024 NOIR
-            """,
-        _ => """
-            NOIR - Welcome!
+        Log in at: {{LoginUrl}}
 
-            Welcome, {{UserName}}!
+        If you have any questions, please contact your administrator.
 
-            Thank you for creating your NOIR account. We're excited to have you on board!
-
-            Log in at: {{LoginUrl}}
-
-            If you have any questions, don't hesitate to reach out to our support team.
-
-            © 2024 NOIR
-            """
-    };
-
-    private static string GetAccountActivationHtmlBody(string language) => language switch
-    {
-        "vi" => """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Kích hoạt tài khoản</title>
-            </head>
-            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="color: white; margin: 0; font-family: Arial, sans-serif;">NOIR</h1>
-                </div>
-                <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #1e40af; font-family: Arial, sans-serif;">Xin chào {{UserName}},</h2>
-                    <p style="font-family: Arial, sans-serif;">Vui lòng nhấp vào nút dưới đây để xác minh địa chỉ email và kích hoạt tài khoản của bạn:</p>
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="{{ActivationLink}}" style="background: #1e40af; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-family: Arial, sans-serif;">Kích hoạt tài khoản</a>
-                    </div>
-                    <p style="color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">Liên kết này sẽ hết hạn sau <strong>{{ExpiryHours}} giờ</strong>.</p>
-                    <p style="color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này.</p>
-                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                    <p style="color: #9ca3af; font-size: 12px; text-align: center; font-family: Arial, sans-serif;">© 2024 NOIR. Tất cả các quyền được bảo lưu.</p>
-                </div>
-            </body>
-            </html>
-            """,
-        _ => """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Activate Your Account</title>
-            </head>
-            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="color: white; margin: 0; font-family: Arial, sans-serif;">NOIR</h1>
-                </div>
-                <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #1e40af; font-family: Arial, sans-serif;">Hello {{UserName}},</h2>
-                    <p style="font-family: Arial, sans-serif;">Please click the button below to verify your email address and activate your account:</p>
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="{{ActivationLink}}" style="background: #1e40af; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-family: Arial, sans-serif;">Activate Account</a>
-                    </div>
-                    <p style="color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">This link will expire in <strong>{{ExpiryHours}} hours</strong>.</p>
-                    <p style="color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">If you did not create this account, please ignore this email.</p>
-                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                    <p style="color: #9ca3af; font-size: 12px; text-align: center; font-family: Arial, sans-serif;">© 2024 NOIR. All rights reserved.</p>
-                </div>
-            </body>
-            </html>
-            """
-    };
-
-    private static string GetAccountActivationPlainTextBody(string language) => language switch
-    {
-        "vi" => """
-            NOIR - Kích hoạt tài khoản
-
-            Xin chào {{UserName}},
-
-            Vui lòng truy cập liên kết dưới đây để xác minh địa chỉ email và kích hoạt tài khoản của bạn:
-
-            {{ActivationLink}}
-
-            Liên kết này sẽ hết hạn sau {{ExpiryHours}} giờ.
-
-            Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này.
-
-            © 2024 NOIR
-            """,
-        _ => """
-            NOIR - Account Activation
-
-            Hello {{UserName}},
-
-            Please visit the link below to verify your email address and activate your account:
-
-            {{ActivationLink}}
-
-            This link will expire in {{ExpiryHours}} hours.
-
-            If you did not create this account, please ignore this email.
-
-            © 2024 NOIR
-            """
-    };
+        © 2024 {{ApplicationName}}
+        """;
 
     #endregion
 }

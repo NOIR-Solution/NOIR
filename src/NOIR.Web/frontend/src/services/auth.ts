@@ -107,3 +107,22 @@ export async function getActiveSessions(): Promise<ActiveSession[]> {
 export async function revokeSession(sessionId: string): Promise<void> {
   await apiClient(`/auth/me/sessions/${sessionId}`, { method: 'DELETE' })
 }
+
+/**
+ * User permissions response from /auth/me/permissions
+ */
+export interface UserPermissions {
+  userId: string
+  email: string
+  roles: string[]
+  permissions: string[]
+}
+
+/**
+ * Get the current user's effective permissions
+ * @returns UserPermissions with roles and permissions arrays
+ * @throws ApiError on network/server errors
+ */
+export async function getUserPermissions(): Promise<UserPermissions> {
+  return await apiClient<UserPermissions>('/auth/me/permissions')
+}

@@ -37,6 +37,12 @@ public class ApplicationUser : IdentityUser, IAuditableEntity
     public DateTimeOffset? PasswordLastChangedAt { get; set; }
 
     /// <summary>
+    /// Indicates if this is a protected system user (e.g., admin@noir.local).
+    /// System users cannot be deleted, locked, or have all their roles removed.
+    /// </summary>
+    public bool IsSystemUser { get; set; }
+
+    /// <summary>
     /// The tenant memberships for this user.
     /// A user can belong to multiple tenants with different roles.
     /// </summary>

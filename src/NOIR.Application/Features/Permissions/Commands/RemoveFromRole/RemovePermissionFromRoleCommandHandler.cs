@@ -7,13 +7,16 @@ public class RemovePermissionFromRoleCommandHandler
 {
     private readonly IRoleIdentityService _roleIdentityService;
     private readonly ILocalizationService _localization;
+    private readonly IPermissionCacheInvalidator _cacheInvalidator;
 
     public RemovePermissionFromRoleCommandHandler(
         IRoleIdentityService roleIdentityService,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        IPermissionCacheInvalidator cacheInvalidator)
     {
         _roleIdentityService = roleIdentityService;
         _localization = localization;
+        _cacheInvalidator = cacheInvalidator;
     }
 
     public async Task<Result<IReadOnlyList<string>>> Handle(RemovePermissionFromRoleCommand command, CancellationToken cancellationToken)
@@ -37,6 +40,9 @@ public class RemovePermissionFromRoleCommandHandler
             return Result.Failure<IReadOnlyList<string>>(
                 Error.ValidationErrors(result.Errors!, ErrorCodes.Validation.General));
         }
+
+        // Invalidate permission cache for all users in this role
+        await _cacheInvalidator.InvalidateRoleAsync(role.Name);
 
         // Return updated permissions
         var updatedPermissions = await _roleIdentityService.GetPermissionsAsync(command.RoleId, cancellationToken);

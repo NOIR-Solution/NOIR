@@ -29,6 +29,7 @@ export interface UserListItem {
   email: string
   displayName: string | null
   isLocked: boolean
+  isSystemUser: boolean
   roles: string[]
 }
 

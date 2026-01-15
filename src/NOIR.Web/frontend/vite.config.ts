@@ -28,11 +28,12 @@ export default defineConfig({
     // Dev server port (3000 for Vibe Kanban compatibility)
     port: 3000,
     strictPort: true, // Fail if port 3000 is in use (don't auto-switch)
-    // Proxy API requests to .NET backend
+    // Proxy API requests to .NET backend (HTTPS to avoid redirect header loss)
     proxy: {
       '/api': {
         target: 'http://localhost:4000',
         changeOrigin: true,
+        secure: false,
         // Enable WebSocket proxy for any real-time features
         ws: true,
         // Configure proxy to handle Scalar API docs and security headers
@@ -51,11 +52,13 @@ export default defineConfig({
       '/hangfire': {
         target: 'http://localhost:4000',
         changeOrigin: true,
+        secure: false,
         ws: true,
       },
       '/hubs': {
         target: 'http://localhost:4000',
         changeOrigin: true,
+        secure: false,
         ws: true,
       },
     },

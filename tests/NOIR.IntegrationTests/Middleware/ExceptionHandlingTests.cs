@@ -75,18 +75,16 @@ public class ExceptionHandlingTests
     }
 
     [Fact]
-    public async Task Register_WithEmptyFields_ShouldReturn400WithMultipleErrors()
+    public async Task Login_WithEmptyFields_ShouldReturn400WithMultipleErrors()
     {
         // Arrange
         using var client = _factory.CreateTestClient();
 
-        // Act
-        var response = await client.PostAsJsonAsync("/api/auth/register", new
+        // Act - Test validation on login endpoint with multiple empty fields
+        var response = await client.PostAsJsonAsync("/api/auth/login", new
         {
             Email = "",
-            Password = "",
-            FirstName = "",
-            LastName = ""
+            Password = ""
         });
 
         // Assert

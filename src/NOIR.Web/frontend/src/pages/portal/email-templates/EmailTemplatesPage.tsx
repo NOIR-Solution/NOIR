@@ -2,17 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Mail, Edit, Eye, Search, Globe, RefreshCw } from 'lucide-react'
+import { Mail, Edit, Eye, Search, RefreshCw } from 'lucide-react'
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import {
   getEmailTemplates,
   previewEmailTemplate,
@@ -30,30 +25,24 @@ import { PreviewDialog } from './PreviewDialog'
 export default function EmailTemplatesPage() {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
+  const { hasPermission } = usePermissions()
+  const canEdit = hasPermission(Permissions.EmailTemplatesUpdate)
 
   // State
   const [templates, setTemplates] = useState<EmailTemplateListDto[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [languageFilter, setLanguageFilter] = useState<string | undefined>(undefined)
 
   // Preview dialog state
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewData, setPreviewData] = useState<EmailPreviewResponse | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
 
-  // Language options
-  const languages = [
-    { code: undefined, label: t('labels.all') },
-    { code: 'en', label: 'English' },
-    { code: 'vi', label: 'Tieng Viet' },
-  ]
-
   // Load templates
   const loadTemplates = async () => {
     setLoading(true)
     try {
-      const data = await getEmailTemplates(languageFilter, searchQuery || undefined)
+      const data = await getEmailTemplates(searchQuery || undefined)
       setTemplates(data)
     } catch (error) {
       if (error instanceof ApiError) {
@@ -69,12 +58,12 @@ export default function EmailTemplatesPage() {
   // Track if initial load has happened
   const isInitialMount = useRef(true)
 
-  // Load templates on mount and when filters change
+  // Load templates on mount
   useEffect(() => {
     loadTemplates()
-  }, [languageFilter])
+  }, [])
 
-  // Debounced search - skip initial mount since languageFilter effect handles it
+  // Debounced search - skip initial mount
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false
@@ -119,11 +108,6 @@ export default function EmailTemplatesPage() {
       .trim()
   }
 
-  // Get language badge color
-  const getLanguageBadgeVariant = (language: string): 'default' | 'secondary' | 'outline' => {
-    return language === 'en' ? 'default' : 'secondary'
-  }
-
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -151,26 +135,6 @@ export default function EmailTemplatesPage() {
             className="pl-10"
           />
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full sm:w-auto">
-              <Globe className="h-4 w-4 mr-2" />
-              {languageFilter
-                ? languages.find((l) => l.code === languageFilter)?.label
-                : t('labels.all')}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {languages.map((lang) => (
-              <DropdownMenuItem
-                key={lang.code ?? 'all'}
-                onClick={() => setLanguageFilter(lang.code)}
-              >
-                {lang.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
       {/* Loading State */}
@@ -212,9 +176,6 @@ export default function EmailTemplatesPage() {
                         {getDisplayName(template.name)}
                       </CardTitle>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant={getLanguageBadgeVariant(template.language)}>
-                          {template.language.toUpperCase()}
-                        </Badge>
                         {template.isActive ? (
                           <Badge variant="outline" className="text-green-600 border-green-600/30">
                             Active
@@ -259,16 +220,18 @@ export default function EmailTemplatesPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className={canEdit ? 'flex-1' : 'w-full'}
                     onClick={() => handlePreview(template)}
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     Preview
                   </Button>
-                  <Button size="sm" className="flex-1" onClick={() => handleEdit(template.id)}>
-                    <Edit className="h-4 w-4 mr-2" />
-                    {t('buttons.edit')}
-                  </Button>
+                  {canEdit && (
+                    <Button size="sm" className="flex-1" onClick={() => handleEdit(template.id)}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      {t('buttons.edit')}
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -283,8 +246,8 @@ export default function EmailTemplatesPage() {
             <Mail className="mx-auto h-12 w-12 text-muted-foreground/50" />
             <h3 className="mt-4 text-lg font-semibold text-foreground">{t('labels.noResults')}</h3>
             <p className="mt-2 text-muted-foreground">
-              {searchQuery || languageFilter
-                ? 'Try adjusting your filters to find what you are looking for.'
+              {searchQuery
+                ? 'Try adjusting your search to find what you are looking for.'
                 : 'No email templates have been created yet.'}
             </p>
           </div>

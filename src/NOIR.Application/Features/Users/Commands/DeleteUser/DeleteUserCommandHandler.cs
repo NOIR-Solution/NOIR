@@ -30,6 +30,13 @@ public class DeleteUserCommandHandler
                 Error.NotFound(_localization["users.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
+        // Prevent deleting system users
+        if (user.IsSystemUser)
+        {
+            return Result.Failure<bool>(
+                Error.Validation("userId", _localization["users.cannotModifySystemUser"], ErrorCodes.Business.CannotDelete));
+        }
+
         // Prevent self-deletion
         if (_currentUser.UserId == command.UserId)
         {

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit, Trash2, Building } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -9,6 +9,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState } from '@/components/ui/empty-state'
 import { TenantStatusBadge } from './TenantStatusBadge'
 import type { TenantListItem } from '@/types'
 
@@ -24,64 +26,76 @@ export function TenantTable({ tenants, onEdit, onDelete, loading }: TenantTableP
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <p className="text-muted-foreground">{t('labels.loading')}</p>
+      <div className="space-y-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex items-center space-x-4">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-3 w-[150px]" />
+            </div>
+          </div>
+        ))}
       </div>
     )
   }
 
   if (tenants.length === 0) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <p className="text-muted-foreground">{t('labels.noData')}</p>
-      </div>
+      <EmptyState
+        icon={Building}
+        title={t('tenants.noTenants', 'No tenants found')}
+        description={t('tenants.noTenantsDescription', 'Create a new tenant to get started.')}
+      />
     )
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>{t('tenants.table.identifier')}</TableHead>
-          <TableHead>{t('tenants.table.name')}</TableHead>
-          <TableHead>{t('labels.status')}</TableHead>
-          <TableHead>{t('labels.createdAt')}</TableHead>
-          <TableHead className="text-right">{t('labels.actions')}</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {tenants.map((tenant) => (
-          <TableRow key={tenant.id}>
-            <TableCell className="font-mono text-sm">{tenant.identifier}</TableCell>
-            <TableCell>{tenant.name || '-'}</TableCell>
-            <TableCell>
-              <TenantStatusBadge isActive={tenant.isActive} />
-            </TableCell>
-            <TableCell className="text-sm text-muted-foreground">
-              {new Date(tenant.createdAt).toLocaleDateString()}
-            </TableCell>
-            <TableCell className="text-right">
-              <div className="flex items-center justify-end space-x-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEdit(tenant)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onDelete(tenant)}
-                  className="text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </TableCell>
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('tenants.table.identifier')}</TableHead>
+            <TableHead>{t('tenants.table.name')}</TableHead>
+            <TableHead>{t('labels.status')}</TableHead>
+            <TableHead>{t('labels.createdAt')}</TableHead>
+            <TableHead className="text-right">{t('labels.actions')}</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {tenants.map((tenant) => (
+            <TableRow key={tenant.id}>
+              <TableCell className="font-mono text-sm">{tenant.identifier}</TableCell>
+              <TableCell>{tenant.name || '-'}</TableCell>
+              <TableCell>
+                <TenantStatusBadge isActive={tenant.isActive} />
+              </TableCell>
+              <TableCell className="text-sm text-muted-foreground">
+                {new Date(tenant.createdAt).toLocaleDateString()}
+              </TableCell>
+              <TableCell className="text-right">
+                <div className="flex items-center justify-end space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(tenant)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete(tenant)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   )
 }

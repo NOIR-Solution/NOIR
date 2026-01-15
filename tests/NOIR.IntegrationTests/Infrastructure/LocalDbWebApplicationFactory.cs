@@ -184,6 +184,9 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
             {
                 "__EFMigrationsHistory",
                 "AspNetRoles", // Keep roles as they're seeded
+                "AspNetRoleClaims", // Keep role permissions as they're seeded (admin needs permissions)
+                "AspNetUsers", // Keep users as they're seeded (admin user required for tests)
+                "AspNetUserRoles", // Keep user-role assignments
                 "Tenants" // Keep tenants as they're seeded and required for multi-tenant resolution
             }
         });

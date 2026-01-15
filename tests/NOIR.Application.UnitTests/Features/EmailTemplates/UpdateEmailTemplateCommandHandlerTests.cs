@@ -30,14 +30,12 @@ public class UpdateEmailTemplateCommandHandlerTests
         string name = "TestTemplate",
         string subject = "Test Subject",
         string htmlBody = "<p>Test Body</p>",
-        string language = "en",
         string? availableVariables = null)
     {
         return EmailTemplate.Create(
             name,
             subject,
             htmlBody,
-            language,
             plainTextBody: null,
             description: "Test Description",
             availableVariables: availableVariables);

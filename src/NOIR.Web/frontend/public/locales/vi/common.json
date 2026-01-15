@@ -108,6 +108,8 @@
     "locked": "Đã khóa",
     "lock": "Khóa",
     "unlock": "Mở khóa",
+    "systemUser": "Hệ thống",
+    "protectedSystemUser": "Được bảo vệ (Người dùng hệ thống)",
     "lockTitle": "Khóa Người dùng",
     "unlockTitle": "Mở khóa Người dùng",
     "lockDescription": "Bạn có chắc chắn muốn khóa \"{{email}}\"? Họ sẽ không thể đăng nhập cho đến khi được mở khóa.",
@@ -262,6 +264,8 @@
     "unsavedChanges": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn rời đi không?",
     "noChanges": "Không có thay đổi để lưu",
     "operationFailed": "Thao tác thất bại. Vui lòng thử lại.",
+    "permissionDenied": "Bạn không có quyền thực hiện thao tác này.",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
     "pleaseWait": "Vui lòng chờ..."
   },
   "time": {

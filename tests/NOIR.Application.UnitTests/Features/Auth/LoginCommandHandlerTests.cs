@@ -74,6 +74,7 @@ public class LoginCommandHandlerTests
             AvatarUrl: null,
             IsActive: isActive,
             IsDeleted: false,
+            IsSystemUser: false,
             CreatedAt: DateTimeOffset.UtcNow,
             ModifiedAt: null);
     }

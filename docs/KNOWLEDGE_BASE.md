@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
 **Last Updated:** 2026-01-15
-**Version:** 1.2
+**Version:** 1.3
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -495,7 +495,7 @@ public class LoginCommandHandler
 |-----------|---------|
 | `src/components/` | Reusable UI components (shadcn/ui + 21st.dev) |
 | `src/pages/` | Route pages |
-| `src/hooks/` | Custom React hooks |
+| `src/hooks/` | Custom React hooks (usePermissions, etc.) |
 | `src/services/` | API client and services |
 | `src/contexts/` | React contexts (Auth, Theme) |
 | `src/i18n/` | Internationalization |
@@ -509,6 +509,39 @@ public class LoginCommandHandler
 | `EmptyState` | `components/ui/empty-state.tsx` | Tables with no data |
 | `Pagination` | `components/ui/pagination.tsx` | Data table pagination |
 | `ColorPicker` | `components/ui/color-picker.tsx` | Role color selection |
+
+#### Permission-Based UI Rendering
+
+The frontend uses `usePermissions` hook to conditionally render UI elements based on user permissions:
+
+```tsx
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
+
+function UserActions() {
+  const { hasPermission } = usePermissions()
+  const canEdit = hasPermission(Permissions.UsersUpdate)
+  const canDelete = hasPermission(Permissions.UsersDelete)
+
+  return (
+    <>
+      {canEdit && <Button onClick={handleEdit}>Edit</Button>}
+      {canDelete && <Button onClick={handleDelete}>Delete</Button>}
+    </>
+  )
+}
+```
+
+**Key components using permission-based rendering:**
+- `UsersPage` - Create, Edit, Delete, Assign Roles buttons
+- `UserTable` - Action menu items per permission
+- `EmailTemplatesPage` - Edit button visibility
+- `RolesPage` - CRUD actions based on role permissions
+
+#### API Error Handling
+
+The `apiClient.ts` provides user-friendly error messages for HTTP status codes:
+- **403 Forbidden**: Shows "You don't have permission to perform this action." (i18n: `messages.permissionDenied`)
+- **401 Unauthorized**: Shows "Your session has expired. Please sign in again." (i18n: `messages.sessionExpired`)
 
 ---
 
@@ -758,4 +791,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-01-14 | Total Tests: 1,800+ | Features: 8 | Endpoints: 11 | Entities: 16*
+*Updated: 2026-01-15 | Total Tests: 1,800+ | Features: 8 | Endpoints: 11 | Entities: 16*

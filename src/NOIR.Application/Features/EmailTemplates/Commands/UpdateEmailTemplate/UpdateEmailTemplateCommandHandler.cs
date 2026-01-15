@@ -47,7 +47,6 @@ public class UpdateEmailTemplateCommandHandler
             template.Subject,
             template.HtmlBody,
             template.PlainTextBody,
-            template.Language,
             template.IsActive,
             template.Version,
             template.Description,

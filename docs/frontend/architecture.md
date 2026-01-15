@@ -24,6 +24,8 @@ frontend/
 │   │
 │   ├── components/          # Reusable UI components
 │   │   ├── ui/              # shadcn/ui primitives (button, input, etc.)
+│   │   ├── PermissionGate.tsx  # Permission-based rendering
+│   │   ├── ProtectedRoute.tsx  # Route-level protection
 │   │   └── *.tsx            # App-level shared components
 │   │
 │   ├── config/              # App configuration
@@ -31,6 +33,9 @@ frontend/
 │   │
 │   ├── contexts/            # React Context providers
 │   │   └── AuthContext.tsx  # Authentication state
+│   │
+│   ├── hooks/               # Custom React hooks
+│   │   └── usePermissions.ts  # Permission checking utilities
 │   │
 │   ├── lib/                 # Utility libraries
 │   │   └── utils.ts         # Helper functions (cn, etc.)
@@ -40,6 +45,7 @@ frontend/
 │   │   └── Home.tsx
 │   │
 │   ├── services/            # API service functions
+│   │   ├── apiClient.ts     # Centralized API client with auth
 │   │   └── auth.ts          # Authentication API calls
 │   │
 │   └── types/               # TypeScript type definitions
@@ -124,6 +130,34 @@ import type { CurrentUser } from '@/types/auth'
 - Export both Provider and useContext hook
 - Keep contexts focused on a single concern
 - Name hook with `use` prefix + context name
+
+### `/hooks`
+
+**Purpose:** Custom React hooks for shared logic.
+
+**Key Hooks:**
+- `usePermissions` - Permission checking with `hasPermission()`, `hasAllPermissions()`, `hasAnyPermission()`
+
+**Guidelines:**
+- Export typed permission constants from `usePermissions.ts`
+- Use hooks to check permissions in components before rendering actions
+
+**Example:**
+```tsx
+// Using permission hooks
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
+
+function UserActions() {
+  const { hasPermission } = usePermissions()
+  const canEdit = hasPermission(Permissions.UsersUpdate)
+
+  return (
+    <>
+      {canEdit && <Button onClick={handleEdit}>Edit</Button>}
+    </>
+  )
+}
+```
 
 ### `/config`
 

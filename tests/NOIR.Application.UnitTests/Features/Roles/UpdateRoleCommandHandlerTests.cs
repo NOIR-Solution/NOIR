@@ -31,7 +31,17 @@ public class UpdateRoleCommandHandlerTests
         string id = "role-123",
         string name = "TestRole")
     {
-        return new RoleIdentityDto(id, name, name.ToUpperInvariant());
+        return new RoleIdentityDto(
+            id,
+            name,
+            name.ToUpperInvariant(),
+            Description: null,
+            ParentRoleId: null,
+            TenantId: null,
+            IsSystemRole: false,
+            SortOrder: 0,
+            IconName: null,
+            Color: null);
     }
 
     #endregion
@@ -55,7 +65,15 @@ public class UpdateRoleCommandHandlerTests
             .ReturnsAsync((RoleIdentityDto?)null);
 
         _roleIdentityServiceMock
-            .Setup(x => x.UpdateRoleAsync(roleId, newName, It.IsAny<CancellationToken>()))
+            .Setup(x => x.UpdateRoleAsync(
+                roleId,
+                newName,
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<int>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Success());
 
         _roleIdentityServiceMock
@@ -65,6 +83,10 @@ public class UpdateRoleCommandHandlerTests
 
         _roleIdentityServiceMock
             .Setup(x => x.GetPermissionsAsync(roleId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<string> { "permissions.read" });
+
+        _roleIdentityServiceMock
+            .Setup(x => x.GetEffectivePermissionsAsync(roleId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string> { "permissions.read" });
 
         _roleIdentityServiceMock
@@ -101,11 +123,23 @@ public class UpdateRoleCommandHandlerTests
             .ReturnsAsync(CreateTestRoleDto(roleId, roleName));
 
         _roleIdentityServiceMock
-            .Setup(x => x.UpdateRoleAsync(roleId, roleName, It.IsAny<CancellationToken>()))
+            .Setup(x => x.UpdateRoleAsync(
+                roleId,
+                roleName,
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<int>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Success());
 
         _roleIdentityServiceMock
             .Setup(x => x.GetPermissionsAsync(roleId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<string>());
+
+        _roleIdentityServiceMock
+            .Setup(x => x.GetEffectivePermissionsAsync(roleId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string>());
 
         _roleIdentityServiceMock
@@ -145,7 +179,15 @@ public class UpdateRoleCommandHandlerTests
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
         _roleIdentityServiceMock.Verify(
-            x => x.UpdateRoleAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            x => x.UpdateRoleAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<int>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -179,7 +221,15 @@ public class UpdateRoleCommandHandlerTests
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be(ErrorCodes.Business.AlreadyExists);
         _roleIdentityServiceMock.Verify(
-            x => x.UpdateRoleAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            x => x.UpdateRoleAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<int>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -203,7 +253,15 @@ public class UpdateRoleCommandHandlerTests
             .ReturnsAsync((RoleIdentityDto?)null);
 
         _roleIdentityServiceMock
-            .Setup(x => x.UpdateRoleAsync(roleId, newName, It.IsAny<CancellationToken>()))
+            .Setup(x => x.UpdateRoleAsync(
+                roleId,
+                newName,
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<int>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Failure("Update failed"));
 
         var command = new UpdateRoleCommand(roleId, newName);
@@ -233,7 +291,15 @@ public class UpdateRoleCommandHandlerTests
             .ReturnsAsync((RoleIdentityDto?)null);
 
         _roleIdentityServiceMock
-            .Setup(x => x.UpdateRoleAsync(roleId, newName, It.IsAny<CancellationToken>()))
+            .Setup(x => x.UpdateRoleAsync(
+                roleId,
+                newName,
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<int>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Success());
 
         var command = new UpdateRoleCommand(roleId, newName);
@@ -267,11 +333,23 @@ public class UpdateRoleCommandHandlerTests
             .ReturnsAsync((RoleIdentityDto?)null);
 
         _roleIdentityServiceMock
-            .Setup(x => x.UpdateRoleAsync(roleId, newName, It.IsAny<CancellationToken>()))
+            .Setup(x => x.UpdateRoleAsync(
+                roleId,
+                newName,
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<int>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Success());
 
         _roleIdentityServiceMock
             .Setup(x => x.GetPermissionsAsync(roleId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<string>());
+
+        _roleIdentityServiceMock
+            .Setup(x => x.GetEffectivePermissionsAsync(roleId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string>());
 
         _roleIdentityServiceMock
@@ -287,8 +365,19 @@ public class UpdateRoleCommandHandlerTests
 
         // Assert
         _roleIdentityServiceMock.Verify(x => x.FindByIdAsync(roleId, token), Times.AtLeastOnce);
-        _roleIdentityServiceMock.Verify(x => x.UpdateRoleAsync(roleId, newName, token), Times.Once);
+        _roleIdentityServiceMock.Verify(
+            x => x.UpdateRoleAsync(
+                roleId,
+                newName,
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                It.IsAny<int>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>(),
+                token),
+            Times.Once);
         _roleIdentityServiceMock.Verify(x => x.GetPermissionsAsync(roleId, token), Times.Once);
+        _roleIdentityServiceMock.Verify(x => x.GetEffectivePermissionsAsync(roleId, token), Times.Once);
         _roleIdentityServiceMock.Verify(x => x.GetUserCountAsync(roleId, token), Times.Once);
     }
 

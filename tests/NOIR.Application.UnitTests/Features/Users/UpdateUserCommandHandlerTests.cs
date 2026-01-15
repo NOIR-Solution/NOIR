@@ -46,6 +46,7 @@ public class UpdateUserCommandHandlerTests
             AvatarUrl: null,
             IsActive: isActive,
             IsDeleted: false,
+            IsSystemUser: false,
             CreatedAt: DateTimeOffset.UtcNow,
             ModifiedAt: null);
     }

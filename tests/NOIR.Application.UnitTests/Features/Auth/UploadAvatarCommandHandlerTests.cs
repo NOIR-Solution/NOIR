@@ -45,6 +45,7 @@ public class UploadAvatarCommandHandlerTests
             AvatarUrl: avatarUrl,
             IsActive: true,
             IsDeleted: false,
+            IsSystemUser: false,
             CreatedAt: DateTimeOffset.UtcNow,
             ModifiedAt: null);
     }

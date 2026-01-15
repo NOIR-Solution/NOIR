@@ -23,6 +23,7 @@ public sealed record UserListDto(
     string Email,
     string? DisplayName,
     bool IsLocked,
+    bool IsSystemUser,
     IReadOnlyList<string> Roles);
 
 /// <summary>

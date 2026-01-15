@@ -27,6 +27,13 @@ public class UpdateUserCommandHandler
                 Error.NotFound(_localization["users.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
+        // Prevent locking system users (LockoutEnabled = true means IsActive = false)
+        if (existingUser.IsSystemUser && command.LockoutEnabled.HasValue && command.LockoutEnabled.Value)
+        {
+            return Result.Failure<UserDto>(
+                Error.Validation("lockoutEnabled", _localization["users.cannotLockSystemUser"], ErrorCodes.Business.CannotModify));
+        }
+
         // Prepare update DTO
         var updateDto = new UpdateUserDto(
             FirstName: command.FirstName,

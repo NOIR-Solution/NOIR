@@ -9,15 +9,18 @@ public class AssignRolesToUserCommandHandler
     private readonly IUserIdentityService _userIdentityService;
     private readonly IRoleIdentityService _roleIdentityService;
     private readonly ILocalizationService _localization;
+    private readonly IPermissionCacheInvalidator _cacheInvalidator;
 
     public AssignRolesToUserCommandHandler(
         IUserIdentityService userIdentityService,
         IRoleIdentityService roleIdentityService,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        IPermissionCacheInvalidator cacheInvalidator)
     {
         _userIdentityService = userIdentityService;
         _roleIdentityService = roleIdentityService;
         _localization = localization;
+        _cacheInvalidator = cacheInvalidator;
     }
 
     public async Task<Result<UserDto>> Handle(AssignRolesToUserCommand command, CancellationToken cancellationToken)
@@ -28,6 +31,13 @@ public class AssignRolesToUserCommandHandler
         {
             return Result.Failure<UserDto>(
                 Error.NotFound(_localization["users.notFound"], ErrorCodes.Auth.UserNotFound));
+        }
+
+        // Prevent removing all roles from system users
+        if (user.IsSystemUser && (!command.RoleNames.Any()))
+        {
+            return Result.Failure<UserDto>(
+                Error.Validation("roleNames", _localization["users.cannotRemoveAllRolesFromSystemUser"], ErrorCodes.Business.CannotModify));
         }
 
         // Verify all roles exist
@@ -55,6 +65,9 @@ public class AssignRolesToUserCommandHandler
             return Result.Failure<UserDto>(
                 Error.ValidationErrors(result.Errors!, ErrorCodes.Validation.General));
         }
+
+        // Invalidate permission cache for this user
+        _cacheInvalidator.InvalidateUser(command.UserId);
 
         // Return updated user with roles
         var updatedRoles = await _userIdentityService.GetRolesAsync(command.UserId, cancellationToken);

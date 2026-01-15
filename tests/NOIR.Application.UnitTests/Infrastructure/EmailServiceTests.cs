@@ -7,6 +7,7 @@ namespace NOIR.Application.UnitTests.Infrastructure;
 public class EmailServiceTests
 {
     private readonly Mock<IFluentEmail> _fluentEmailMock;
+    private readonly Mock<IReadRepository<EmailTemplate, Guid>> _templateRepositoryMock;
     private readonly Mock<IOptions<EmailSettings>> _emailSettingsMock;
     private readonly Mock<ILogger<EmailService>> _loggerMock;
     private readonly EmailService _sut;
@@ -14,10 +15,15 @@ public class EmailServiceTests
     public EmailServiceTests()
     {
         _fluentEmailMock = new Mock<IFluentEmail>();
+        _templateRepositoryMock = new Mock<IReadRepository<EmailTemplate, Guid>>();
         _emailSettingsMock = new Mock<IOptions<EmailSettings>>();
         _emailSettingsMock.Setup(x => x.Value).Returns(new EmailSettings { TemplatesPath = "EmailTemplates" });
         _loggerMock = new Mock<ILogger<EmailService>>();
-        _sut = new EmailService(_fluentEmailMock.Object, _emailSettingsMock.Object, _loggerMock.Object);
+        _sut = new EmailService(
+            _fluentEmailMock.Object,
+            _templateRepositoryMock.Object,
+            _emailSettingsMock.Object,
+            _loggerMock.Object);
     }
 
     #region SendAsync Single Recipient Tests
@@ -197,36 +203,101 @@ public class EmailServiceTests
     public async Task SendTemplateAsync_WithValidTemplate_ShouldReturnTrue()
     {
         // Arrange
+        var template = EmailTemplate.Create(
+            name: "TestTemplate",
+            subject: "Test Subject",
+            htmlBody: "<p>Hello {{Name}}</p>",
+            plainTextBody: "Hello {{Name}}",
+            description: "Test template",
+            availableVariables: "[\"Name\"]");
+
+        _templateRepositoryMock.Setup(x => x.FirstOrDefaultAsync(
+            It.IsAny<ISpecification<EmailTemplate>>(),
+            It.IsAny<CancellationToken>()))
+            .ReturnsAsync(template);
+
         var response = new SendResponse { MessageId = "123" };
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.Subject(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
-        _fluentEmailMock.Setup(x => x.UsingTemplateFromFile(It.IsAny<string>(), It.IsAny<object>(), true))
-            .Returns(_fluentEmailMock.Object);
+        _fluentEmailMock.Setup(x => x.Body(It.IsAny<string>(), true)).Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.SendAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
         // Act
-        var result = await _sut.SendTemplateAsync("test@example.com", "Subject", "template.html", new { Name = "Test" });
+        var result = await _sut.SendTemplateAsync("test@example.com", "Subject", "TestTemplate", new { Name = "Test" });
 
         // Assert
         result.Should().BeTrue();
     }
 
     [Fact]
-    public async Task SendTemplateAsync_WhenFails_ShouldReturnFalse()
+    public async Task SendTemplateAsync_WhenTemplateNotFound_ShouldReturnFalse()
     {
         // Arrange
+        _templateRepositoryMock.Setup(x => x.FirstOrDefaultAsync(
+            It.IsAny<ISpecification<EmailTemplate>>(),
+            It.IsAny<CancellationToken>()))
+            .ReturnsAsync((EmailTemplate?)null);
+
+        // Act
+        var result = await _sut.SendTemplateAsync("test@example.com", "Subject", "NonExistentTemplate", new { Name = "Test" });
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SendTemplateAsync_WhenTemplateNotActive_ShouldReturnFalse()
+    {
+        // Arrange
+        var template = EmailTemplate.Create(
+            name: "TestTemplate",
+            subject: "Test Subject",
+            htmlBody: "<p>Hello {{Name}}</p>",
+            plainTextBody: "Hello {{Name}}",
+            description: "Test template",
+            availableVariables: "[\"Name\"]");
+        template.Deactivate();
+
+        _templateRepositoryMock.Setup(x => x.FirstOrDefaultAsync(
+            It.IsAny<ISpecification<EmailTemplate>>(),
+            It.IsAny<CancellationToken>()))
+            .ReturnsAsync(template);
+
+        // Act
+        var result = await _sut.SendTemplateAsync("test@example.com", "Subject", "TestTemplate", new { Name = "Test" });
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SendTemplateAsync_WhenSendFails_ShouldReturnFalse()
+    {
+        // Arrange
+        var template = EmailTemplate.Create(
+            name: "TestTemplate",
+            subject: "Test Subject",
+            htmlBody: "<p>Hello {{Name}}</p>",
+            plainTextBody: "Hello {{Name}}",
+            description: "Test template",
+            availableVariables: "[\"Name\"]");
+
+        _templateRepositoryMock.Setup(x => x.FirstOrDefaultAsync(
+            It.IsAny<ISpecification<EmailTemplate>>(),
+            It.IsAny<CancellationToken>()))
+            .ReturnsAsync(template);
+
         var response = new SendResponse();
-        response.ErrorMessages.Add("Template not found");
+        response.ErrorMessages.Add("SMTP error");
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.Subject(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
-        _fluentEmailMock.Setup(x => x.UsingTemplateFromFile(It.IsAny<string>(), It.IsAny<object>(), true))
-            .Returns(_fluentEmailMock.Object);
+        _fluentEmailMock.Setup(x => x.Body(It.IsAny<string>(), true)).Returns(_fluentEmailMock.Object);
         _fluentEmailMock.Setup(x => x.SendAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
         // Act
-        var result = await _sut.SendTemplateAsync("test@example.com", "Subject", "template.html", new { Name = "Test" });
+        var result = await _sut.SendTemplateAsync("test@example.com", "Subject", "TestTemplate", new { Name = "Test" });
 
         // Assert
         result.Should().BeFalse();
@@ -236,13 +307,50 @@ public class EmailServiceTests
     public async Task SendTemplateAsync_WhenExceptionThrown_ShouldReturnFalse()
     {
         // Arrange
-        _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Throws(new Exception("Template error"));
+        _templateRepositoryMock.Setup(x => x.FirstOrDefaultAsync(
+            It.IsAny<ISpecification<EmailTemplate>>(),
+            It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Database error"));
 
         // Act
-        var result = await _sut.SendTemplateAsync("test@example.com", "Subject", "template.html", new { Name = "Test" });
+        var result = await _sut.SendTemplateAsync("test@example.com", "Subject", "TestTemplate", new { Name = "Test" });
 
         // Assert
         result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SendTemplateAsync_ShouldReplacePlaceholders()
+    {
+        // Arrange
+        var template = EmailTemplate.Create(
+            name: "TestTemplate",
+            subject: "Hello {{Name}}",
+            htmlBody: "<p>Hello {{Name}}, your email is {{Email}}</p>",
+            plainTextBody: "Hello {{Name}}",
+            description: "Test template",
+            availableVariables: "[\"Name\", \"Email\"]");
+
+        _templateRepositoryMock.Setup(x => x.FirstOrDefaultAsync(
+            It.IsAny<ISpecification<EmailTemplate>>(),
+            It.IsAny<CancellationToken>()))
+            .ReturnsAsync(template);
+
+        var response = new SendResponse { MessageId = "123" };
+        string? capturedBody = null;
+        _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
+        _fluentEmailMock.Setup(x => x.Subject(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
+        _fluentEmailMock.Setup(x => x.Body(It.IsAny<string>(), true))
+            .Callback<string, bool>((body, _) => capturedBody = body)
+            .Returns(_fluentEmailMock.Object);
+        _fluentEmailMock.Setup(x => x.SendAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(response);
+
+        // Act
+        await _sut.SendTemplateAsync("test@example.com", "", "TestTemplate", new { Name = "John", Email = "john@test.com" });
+
+        // Assert
+        capturedBody.Should().Be("<p>Hello John, your email is john@test.com</p>");
     }
 
     #endregion

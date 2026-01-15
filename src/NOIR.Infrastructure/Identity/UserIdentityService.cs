@@ -50,6 +50,7 @@ public class UserIdentityService : IUserIdentityService, IScopedService
                 u.AvatarUrl,
                 u.IsActive,
                 u.IsDeleted,
+                u.IsSystemUser,
                 u.CreatedAt,
                 u.ModifiedAt));
     }
@@ -92,6 +93,7 @@ public class UserIdentityService : IUserIdentityService, IScopedService
                 u.AvatarUrl,
                 u.IsActive,
                 u.IsDeleted,
+                u.IsSystemUser,
                 u.CreatedAt,
                 u.ModifiedAt))
             .ToListAsync(ct);
@@ -492,6 +494,7 @@ public class UserIdentityService : IUserIdentityService, IScopedService
             user.AvatarUrl,
             user.IsActive,
             user.IsDeleted,
+            user.IsSystemUser,
             user.CreatedAt,
             user.ModifiedAt);
     }

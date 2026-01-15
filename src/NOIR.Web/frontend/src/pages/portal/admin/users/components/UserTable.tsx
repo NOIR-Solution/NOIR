@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { MoreHorizontal, Edit, Trash2, Shield, Users, Lock, LockOpen } from 'lucide-react'
+import { MoreHorizontal, Edit, Trash2, Shield, Users, Lock, LockOpen, ShieldCheck } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -27,9 +27,22 @@ interface UserTableProps {
   onDelete: (user: UserListItem) => void
   onAssignRoles: (user: UserListItem) => void
   loading?: boolean
+  /** Permission flags to control which actions are shown */
+  canEdit?: boolean
+  canDelete?: boolean
+  canAssignRoles?: boolean
 }
 
-export function UserTable({ users, onEdit, onDelete, onAssignRoles, loading }: UserTableProps) {
+export function UserTable({
+  users,
+  onEdit,
+  onDelete,
+  onAssignRoles,
+  loading,
+  canEdit = true,
+  canDelete = true,
+  canAssignRoles = true,
+}: UserTableProps) {
   const { t } = useTranslation('common')
 
   if (loading) {
@@ -74,7 +87,9 @@ export function UserTable({ users, onEdit, onDelete, onAssignRoles, loading }: U
             <TableHead>{t('users.columns.email', 'Email')}</TableHead>
             <TableHead>{t('users.columns.roles', 'Roles')}</TableHead>
             <TableHead className="text-center">{t('users.columns.status', 'Status')}</TableHead>
-            <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
+            {(canEdit || canDelete || canAssignRoles) && (
+              <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -87,10 +102,16 @@ export function UserTable({ users, onEdit, onDelete, onAssignRoles, loading }: U
                       {getInitials(user)}
                     </span>
                   </div>
-                  <div>
+                  <div className="flex items-center gap-2">
                     <p className="font-medium">
                       {user.displayName || user.email.split('@')[0]}
                     </p>
+                    {user.isSystemUser && (
+                      <Badge variant="secondary" className="gap-1 text-xs">
+                        <ShieldCheck className="h-3 w-3" />
+                        {t('users.systemUser', 'System')}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </TableCell>
@@ -128,34 +149,49 @@ export function UserTable({ users, onEdit, onDelete, onAssignRoles, loading }: U
                   </Badge>
                 )}
               </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">{t('labels.openMenu', 'Open menu')}</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onAssignRoles(user)}>
-                      <Shield className="mr-2 h-4 w-4" />
-                      {t('users.assignRoles', 'Assign Roles')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEdit(user)}>
-                      <Edit className="mr-2 h-4 w-4" />
-                      {t('buttons.edit', 'Edit')}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => onDelete(user)}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      {user.isLocked ? t('users.unlock', 'Unlock') : t('users.lock', 'Lock')}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+              {(canEdit || canDelete || canAssignRoles) && (
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">{t('labels.openMenu', 'Open menu')}</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {canAssignRoles && (
+                        <DropdownMenuItem onClick={() => onAssignRoles(user)}>
+                          <Shield className="mr-2 h-4 w-4" />
+                          {t('users.assignRoles', 'Assign Roles')}
+                        </DropdownMenuItem>
+                      )}
+                      {canEdit && (
+                        <DropdownMenuItem onClick={() => onEdit(user)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          {t('buttons.edit', 'Edit')}
+                        </DropdownMenuItem>
+                      )}
+                      {canDelete && (canAssignRoles || canEdit) && <DropdownMenuSeparator />}
+                      {canDelete && (
+                        user.isSystemUser ? (
+                          <DropdownMenuItem disabled className="text-muted-foreground">
+                            <ShieldCheck className="mr-2 h-4 w-4" />
+                            {t('users.protectedSystemUser', 'Protected (System User)')}
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => onDelete(user)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            {user.isLocked ? t('users.unlock', 'Unlock') : t('users.lock', 'Lock')}
+                          </DropdownMenuItem>
+                        )
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

@@ -16,14 +16,13 @@ public class GetEmailTemplatesQueryHandler
         GetEmailTemplatesQuery query,
         CancellationToken cancellationToken)
     {
-        var spec = new EmailTemplatesSpec(query.Language, query.Search);
+        var spec = new EmailTemplatesSpec(query.Search);
         var templates = await _repository.ListAsync(spec, cancellationToken);
 
         var result = templates.Select(t => new EmailTemplateListDto(
             t.Id,
             t.Name,
             t.Subject,
-            t.Language,
             t.IsActive,
             t.Version,
             t.Description,

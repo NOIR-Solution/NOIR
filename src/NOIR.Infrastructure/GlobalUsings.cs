@@ -110,6 +110,7 @@ global using NOIR.Application.Specifications.ResourceShares;
 global using NOIR.Application.Specifications.PasswordResetOtps;
 global using NOIR.Application.Specifications.TenantSettings;
 global using NOIR.Application.Specifications.UserTenantMemberships;
+global using NOIR.Application.Features.EmailTemplates.Specifications;
 
 // NOIR Domain
 global using NOIR.Domain.Common;

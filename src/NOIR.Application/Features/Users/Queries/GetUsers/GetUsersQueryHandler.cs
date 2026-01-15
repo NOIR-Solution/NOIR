@@ -46,6 +46,7 @@ public class GetUsersQueryHandler
                 user.Email,
                 user.DisplayName ?? user.FullName,
                 isLocked,
+                user.IsSystemUser,
                 roles));
         }
 

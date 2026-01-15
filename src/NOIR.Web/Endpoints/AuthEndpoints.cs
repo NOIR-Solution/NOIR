@@ -75,6 +75,26 @@ public static class AuthEndpoints
         .Produces<CurrentUserDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
+        // Get current user's effective permissions
+        group.MapGet("/me/permissions", async (IMessageBus bus, ICurrentUser currentUser) =>
+        {
+            if (string.IsNullOrEmpty(currentUser.UserId))
+            {
+                return Results.Unauthorized();
+            }
+
+            var result = await bus.InvokeAsync<Result<UserPermissionsDto>>(
+                new GetUserPermissionsQuery(currentUser.UserId));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization()
+        .RequireRateLimiting("fixed")
+        .WithName("GetCurrentUserPermissions")
+        .WithSummary("Get effective permissions for current user")
+        .WithDescription("Returns the current user's roles and effective permissions for client-side UI authorization.")
+        .Produces<UserPermissionsDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
+
         // Update profile endpoint with DTO-level audit tracking
         group.MapPut("/me", async (
             UpdateUserProfileCommand command,

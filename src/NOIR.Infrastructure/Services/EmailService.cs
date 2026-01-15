@@ -2,19 +2,23 @@ namespace NOIR.Infrastructure.Services;
 
 /// <summary>
 /// FluentEmail implementation of email service.
+/// Uses database templates for email content.
 /// </summary>
 public class EmailService : IEmailService, IScopedService
 {
     private readonly IFluentEmail _fluentEmail;
+    private readonly IReadRepository<EmailTemplate, Guid> _templateRepository;
     private readonly EmailSettings _emailSettings;
     private readonly ILogger<EmailService> _logger;
 
     public EmailService(
         IFluentEmail fluentEmail,
+        IReadRepository<EmailTemplate, Guid> templateRepository,
         IOptions<EmailSettings> emailSettings,
         ILogger<EmailService> logger)
     {
         _fluentEmail = fluentEmail;
+        _templateRepository = templateRepository;
         _emailSettings = emailSettings.Value;
         _logger = logger;
     }
@@ -81,22 +85,33 @@ public class EmailService : IEmailService, IScopedService
     {
         try
         {
-            // Build full template path - ensure it ends with .cshtml
-            var templatePath = templateName.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase)
-                ? templateName
-                : $"{templateName}.cshtml";
+            // Load template from database by name
+            var template = await _templateRepository.FirstOrDefaultAsync(
+                new EmailTemplateByNameSpec(templateName),
+                cancellationToken);
 
-            // Get the absolute templates path
-            var templatesPath = Path.IsPathRooted(_emailSettings.TemplatesPath)
-                ? _emailSettings.TemplatesPath
-                : Path.Combine(Directory.GetCurrentDirectory(), _emailSettings.TemplatesPath);
+            if (template == null)
+            {
+                _logger.LogError("Email template '{TemplateName}' not found", templateName);
+                return false;
+            }
 
-            var fullTemplatePath = Path.Combine(templatesPath, templatePath);
+            if (!template.IsActive)
+            {
+                _logger.LogWarning("Email template '{TemplateName}' is not active", templateName);
+                return false;
+            }
+
+            // Replace placeholders with model values
+            var htmlBody = ReplacePlaceholders(template.HtmlBody, model);
+            var emailSubject = string.IsNullOrWhiteSpace(subject)
+                ? ReplacePlaceholders(template.Subject, model)
+                : subject;
 
             var response = await _fluentEmail
                 .To(to)
-                .Subject(subject)
-                .UsingTemplateFromFile(fullTemplatePath, model)
+                .Subject(emailSubject)
+                .Body(htmlBody, isHtml: true)
                 .SendAsync(cancellationToken);
 
             if (!response.Successful)
@@ -111,5 +126,26 @@ public class EmailService : IEmailService, IScopedService
             _logger.LogError(ex, "Exception while sending template email to {To}", to);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Replaces {{placeholder}} tokens with values from the model.
+    /// </summary>
+    private static string ReplacePlaceholders<T>(string template, T model)
+    {
+        if (string.IsNullOrEmpty(template) || model == null)
+            return template;
+
+        var result = template;
+        var properties = typeof(T).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+        foreach (var prop in properties)
+        {
+            var placeholder = $"{{{{{prop.Name}}}}}"; // {{PropertyName}}
+            var value = prop.GetValue(model)?.ToString() ?? string.Empty;
+            result = result.Replace(placeholder, value);
+        }
+
+        return result;
     }
 }

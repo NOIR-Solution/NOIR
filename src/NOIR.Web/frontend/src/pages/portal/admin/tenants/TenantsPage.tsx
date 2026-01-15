@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search } from 'lucide-react'
+import { Search, Building } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -36,9 +36,14 @@ export default function TenantsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('tenants.title')}</h1>
-          <p className="text-muted-foreground">{t('tenants.description')}</p>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Building className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">{t('tenants.title')}</h1>
+            <p className="text-muted-foreground">{t('tenants.description')}</p>
+          </div>
         </div>
         <CreateTenantDialog onSuccess={refresh} />
       </div>

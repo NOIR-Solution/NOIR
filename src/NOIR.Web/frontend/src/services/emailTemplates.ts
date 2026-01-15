@@ -15,7 +15,6 @@ export interface EmailTemplateDto {
   subject: string
   htmlBody: string
   plainTextBody?: string | null
-  language: string
   isActive: boolean
   version: number
   description?: string | null
@@ -31,7 +30,6 @@ export interface EmailTemplateListDto {
   id: string
   name: string
   subject: string
-  language: string
   isActive: boolean
   version: number
   description?: string | null
@@ -75,12 +73,8 @@ export interface EmailPreviewResponse {
 /**
  * Get all email templates with optional filtering.
  */
-export async function getEmailTemplates(
-  language?: string,
-  search?: string
-): Promise<EmailTemplateListDto[]> {
+export async function getEmailTemplates(search?: string): Promise<EmailTemplateListDto[]> {
   const params = new URLSearchParams()
-  if (language) params.append('language', language)
   if (search) params.append('search', search)
 
   const queryString = params.toString()

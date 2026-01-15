@@ -108,6 +108,8 @@
     "locked": "Locked",
     "lock": "Lock",
     "unlock": "Unlock",
+    "systemUser": "System",
+    "protectedSystemUser": "Protected (System User)",
     "lockTitle": "Lock User",
     "unlockTitle": "Unlock User",
     "lockDescription": "Are you sure you want to lock \"{{email}}\"? They will not be able to sign in until unlocked.",
@@ -262,6 +264,8 @@
     "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?",
     "noChanges": "No changes to save",
     "operationFailed": "Operation failed. Please try again.",
+    "permissionDenied": "You don't have permission to perform this action.",
+    "sessionExpired": "Your session has expired. Please sign in again.",
     "pleaseWait": "Please wait..."
   },
   "time": {

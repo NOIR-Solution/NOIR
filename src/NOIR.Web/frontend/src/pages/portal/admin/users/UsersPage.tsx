@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Users, Filter, UserPlus } from 'lucide-react'
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,7 @@ import type { UserListItem } from '@/types'
 
 export default function UsersPage() {
   const { t } = useTranslation('common')
+  const { hasPermission } = usePermissions()
   const {
     data,
     loading,
@@ -36,6 +38,12 @@ export default function UsersPage() {
     params
   } = useUsers()
   const { roles: availableRoles } = useAvailableRoles()
+
+  // Permission checks
+  const canCreateUsers = hasPermission(Permissions.UsersCreate)
+  const canEditUsers = hasPermission(Permissions.UsersUpdate)
+  const canDeleteUsers = hasPermission(Permissions.UsersDelete)
+  const canAssignRoles = hasPermission(Permissions.PermissionsAssign)
 
   const [searchInput, setSearchInput] = useState('')
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -72,10 +80,12 @@ export default function UsersPage() {
             <p className="text-muted-foreground">{t('users.description', 'Manage platform users and their roles')}</p>
           </div>
         </div>
-        <Button onClick={() => setCreateDialogOpen(true)}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          {t('users.createUser', 'Create User')}
-        </Button>
+        {canCreateUsers && (
+          <Button onClick={() => setCreateDialogOpen(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            {t('users.createUser', 'Create User')}
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -157,6 +167,9 @@ export default function UsersPage() {
             onDelete={handleDeleteClick}
             onAssignRoles={handleRolesClick}
             loading={loading}
+            canEdit={canEditUsers}
+            canDelete={canDeleteUsers}
+            canAssignRoles={canAssignRoles}
           />
 
           {/* Pagination */}

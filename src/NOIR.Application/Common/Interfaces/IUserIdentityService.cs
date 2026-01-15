@@ -182,6 +182,7 @@ public record UserIdentityDto(
     string? AvatarUrl,
     bool IsActive,
     bool IsDeleted,
+    bool IsSystemUser,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt);
 
