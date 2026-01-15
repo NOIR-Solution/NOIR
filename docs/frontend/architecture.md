@@ -79,6 +79,7 @@ frontend/
 | `popover.tsx` | Popover menus | @radix-ui/react-popover |
 | `calendar.tsx` | Date picker calendar | react-day-picker v9 |
 | `date-range-picker.tsx` | Date range selection | calendar, popover, date-fns |
+| `tippy-tooltip.tsx` | Rich tooltips with headers | @tippyjs/react, tippy.js |
 
 **Example:**
 ```tsx

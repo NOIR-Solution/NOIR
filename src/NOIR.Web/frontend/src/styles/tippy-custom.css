@@ -1,0 +1,84 @@
+/* Custom Tippy.js theme for NOIR */
+/* Inspired by Linear, Vercel, and modern design systems */
+
+.tippy-box[data-theme~='custom'] {
+  background-color: #ffffff;
+  color: #1f2937;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  /* Layered shadows for depth (Vercel pattern) */
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.08);
+  font-size: 13px;
+  line-height: 1.5;
+  /* Note: no overflow:hidden - it clips the arrow! */
+}
+
+.tippy-box[data-theme~='custom'] .tippy-content {
+  padding: 0;
+  color: #1f2937;
+  /* Clip content at rounded corners without hiding arrow */
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* Arrow styling - matches the blue header for seamless connection */
+.tippy-box[data-theme~='custom'] > .tippy-arrow::before {
+  color: #3b82f6;
+}
+
+.tippy-box[data-theme~='custom'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: #ffffff;
+}
+
+/* Bottom placement: arrow at top connects to blue header */
+.tippy-box[data-theme~='custom'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: #3b82f6;
+}
+
+.tippy-box[data-theme~='custom'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: #3b82f6;
+}
+
+/* Right placement: arrow at left connects to blue header */
+.tippy-box[data-theme~='custom'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: #3b82f6;
+}
+
+/* Dark mode */
+.dark .tippy-box[data-theme~='custom'] {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+.dark .tippy-box[data-theme~='custom'] .tippy-content {
+  color: #e2e8f0;
+}
+
+.dark .tippy-box[data-theme~='custom'] > .tippy-arrow::before {
+  color: #3b82f6;
+}
+
+.dark .tippy-box[data-theme~='custom'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: #1e293b;
+}
+
+/* Dark mode: arrow matches blue header */
+.dark .tippy-box[data-theme~='custom'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: #3b82f6;
+}
+
+.dark .tippy-box[data-theme~='custom'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: #3b82f6;
+}
+
+.dark .tippy-box[data-theme~='custom'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: #3b82f6;
+}

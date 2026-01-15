@@ -143,3 +143,40 @@ import { ColorPicker } from '@/components/ui/color-picker'
   showCustomInput={true}  // Shows hex input and native picker
 />
 ```
+
+### TippyTooltip
+
+Modern tooltip component powered by Tippy.js with smooth animations and custom styling.
+
+```tsx
+import { TippyTooltip, RichTooltip } from '@/components/ui/tippy-tooltip'
+
+// Simple tooltip
+<TippyTooltip content="This is a tooltip">
+  <button>Hover me</button>
+</TippyTooltip>
+
+// Rich tooltip with header and list
+<RichTooltip
+  title="Search across:"
+  items={[
+    'Entity ID, Correlation ID',
+    'User email',
+    'Handler name, HTTP path',
+  ]}
+>
+  <HelpCircle className="h-4 w-4" />
+</RichTooltip>
+```
+
+**Features:**
+- Smooth `shift-away-subtle` animation
+- Blue gradient header matching theme primary color
+- Arrow pointing to trigger element
+- Dark mode support
+- Interactive tooltips for clickable content
+
+**Custom Theme:** Styles defined in `src/styles/tippy-custom.css` with:
+- Layered shadows (Vercel-style)
+- Rounded corners with proper overflow handling
+- Blue arrow matching header color

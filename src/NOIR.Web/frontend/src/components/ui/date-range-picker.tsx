@@ -35,7 +35,7 @@ export function DateRangePicker({
   onChange,
   placeholder = 'Pick a date range',
   className,
-  align = 'start',
+  align = 'end', // Default to 'end' so popover extends left, avoiding right viewport overflow
   showClear = true,
   disabled = false,
   numberOfMonths = 2,
@@ -85,7 +85,7 @@ export function DateRangePicker({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align={align}>
+      <PopoverContent className="w-auto p-0" align={align} sideOffset={4} collisionPadding={16}>
         <Calendar
           initialFocus
           mode="range"

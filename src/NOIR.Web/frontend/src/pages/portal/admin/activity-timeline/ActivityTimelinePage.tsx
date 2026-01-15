@@ -18,6 +18,7 @@ import {
   Fingerprint,
   X,
   User,
+  HelpCircle,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -36,6 +37,7 @@ import {
 } from '@/components/ui/select'
 import { Pagination } from '@/components/ui/pagination'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
+import { RichTooltip } from '@/components/ui/tippy-tooltip'
 import { cn } from '@/lib/utils'
 import {
   searchActivityTimeline,
@@ -320,20 +322,47 @@ export default function ActivityTimelinePage() {
             )}
 
             {/* Filter Bar - Clean unified search */}
-            <form onSubmit={handleSearchSubmit} className="space-y-2">
-              {/* Main filter row */}
+            <form onSubmit={handleSearchSubmit}>
               <div className="flex flex-wrap items-center gap-2">
-                {/* Unified search input */}
+                {/* Unified search input with info tooltip */}
                 <div className="relative flex-1 min-w-[280px]">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Search by ID, user, handler, field name, value..."
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    className="pl-9 h-9"
-                    title="Search across: Entity ID, Correlation ID, user email, handler name, HTTP path, field names, values, and more"
+                    className="pl-9 pr-9 h-9"
                   />
+                  <RichTooltip
+                    title="Search across:"
+                    items={[
+                      'Entity ID, Correlation ID',
+                      'User email',
+                      'Handler name, HTTP path',
+                      'Field names and values',
+                    ]}
+                    placement="bottom"
+                  >
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <HelpCircle className="h-4 w-4" />
+                    </button>
+                  </RichTooltip>
                 </div>
+
+                {/* Date Range Picker - beside search */}
+                <DateRangePicker
+                  value={dateRange}
+                  onChange={(range) => {
+                    setDateRange(range)
+                    setCurrentPage(1)
+                  }}
+                  placeholder="Date range"
+                  className="h-9 w-[220px]"
+                  numberOfMonths={2}
+                />
 
                 {/* Context dropdown */}
                 <Select
@@ -406,18 +435,6 @@ export default function ActivityTimelinePage() {
                   </Label>
                 </div>
 
-                {/* Date Range Picker */}
-                <DateRangePicker
-                  value={dateRange}
-                  onChange={(range) => {
-                    setDateRange(range)
-                    setCurrentPage(1)
-                  }}
-                  placeholder="Date range"
-                  className="h-9 w-[240px]"
-                  numberOfMonths={2}
-                />
-
                 {/* Actions */}
                 <div className="flex items-center gap-2">
                   {/* Clear button - only show when filters are active */}
@@ -450,20 +467,6 @@ export default function ActivityTimelinePage() {
                     {t('buttons.search', 'Search')}
                   </Button>
                 </div>
-              </div>
-
-              {/* Search help text - more visible */}
-              <div className="flex items-center gap-2 text-sm text-foreground/70 bg-muted/50 px-3 py-1.5 rounded-md border border-border/50">
-                <Search className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                <span>
-                  Search by <span className="font-medium text-primary">entity ID</span>,{' '}
-                  <span className="font-medium text-primary">correlation ID</span>,{' '}
-                  <span className="font-medium text-primary">user email</span>,{' '}
-                  <span className="font-medium text-primary">handler name</span>,{' '}
-                  <span className="font-medium text-primary">HTTP path</span>,{' '}
-                  <span className="font-medium text-primary">field names</span>, or{' '}
-                  <span className="font-medium text-primary">values</span>
-                </span>
               </div>
             </form>
           </div>

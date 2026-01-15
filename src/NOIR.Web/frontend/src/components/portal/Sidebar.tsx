@@ -20,12 +20,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { TippyTooltip } from '@/components/ui/tippy-tooltip'
 import {
   Sheet,
   SheetContent,
@@ -286,16 +281,14 @@ function SidebarContent({
 
     if (!isExpanded) {
       return (
-        <TooltipProvider key={item.path} delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {buttonContent}
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              {t(item.titleKey)}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <TippyTooltip
+          key={item.path}
+          content={t(item.titleKey)}
+          placement="right"
+          delay={[0, 0]}
+        >
+          {buttonContent}
+        </TippyTooltip>
       )
     }
 

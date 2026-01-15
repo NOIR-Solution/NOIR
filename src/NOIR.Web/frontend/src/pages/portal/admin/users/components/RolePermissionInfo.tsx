@@ -1,11 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Info, Loader2 } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { TippyTooltip } from '@/components/ui/tippy-tooltip'
 import { getEffectivePermissions, getAllPermissions } from '@/services/roles'
 import type { Permission, RoleListItem } from '@/types'
 
@@ -71,61 +67,96 @@ export function RolePermissionInfo({ role, permissionsCache, onPermissionsLoaded
 
   const totalCount = permissions?.length || 0
 
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          className="p-1 rounded hover:bg-accent/50 transition-colors"
-          onClick={(e) => e.stopPropagation()}
-          onMouseEnter={loadPermissions}
-          onFocus={loadPermissions}
-        >
-          <Info className="h-4 w-4 text-muted-foreground" />
-        </button>
-      </TooltipTrigger>
-      <TooltipContent
-        side="right"
-        className="max-w-[280px] p-3 bg-popover text-popover-foreground border shadow-md"
+  const tooltipContent = (
+    <div style={{ minWidth: '220px' }}>
+      {/* Header - Primary theme color */}
+      <div
+        style={{
+          padding: '10px 14px',
+          background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+          fontWeight: 600,
+          fontSize: '13px',
+          color: '#ffffff',
+          letterSpacing: '-0.01em',
+        }}
       >
-        <div className="space-y-2">
-          <div className="font-medium text-sm border-b pb-1">
-            {t('roles.permissions', 'Permissions')} ({totalCount})
+        {t('roles.permissions', 'Permissions')} ({totalCount})
+      </div>
+      {/* Content */}
+      <div style={{ padding: '10px 14px' }}>
+        {loading ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 0' }}>
+            <Loader2 className="h-4 w-4 animate-spin" style={{ color: '#6b7280' }} />
           </div>
-          {loading ? (
-            <div className="flex items-center justify-center py-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-            </div>
-          ) : totalCount === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              {t('roles.noPermissions', 'No permissions assigned')}
-            </p>
-          ) : (
-            <div className="space-y-2 max-h-[200px] overflow-y-auto text-xs">
-              {groupedPermissions &&
-                Object.entries(groupedPermissions).map(([category, perms]) => (
-                  <div key={category}>
-                    <div className="font-medium text-muted-foreground mb-1">
-                      {category} ({perms.length})
-                    </div>
-                    <ul className="space-y-0.5 pl-2">
-                      {perms.slice(0, 5).map((perm) => (
-                        <li key={perm.name} className="truncate">
-                          • {perm.displayName}
-                        </li>
-                      ))}
-                      {perms.length > 5 && (
-                        <li className="text-muted-foreground">
-                          + {perms.length - 5} {t('labels.more', 'more')}...
-                        </li>
-                      )}
-                    </ul>
+        ) : totalCount === 0 ? (
+          <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>
+            {t('roles.noPermissions', 'No permissions assigned')}
+          </p>
+        ) : (
+          <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            {groupedPermissions &&
+              Object.entries(groupedPermissions).map(([category, perms], idx) => (
+                <div key={category} style={{ marginTop: idx > 0 ? '12px' : 0 }}>
+                  <div style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    marginBottom: '6px',
+                  }}>
+                    {category} ({perms.length})
                   </div>
-                ))}
-            </div>
-          )}
-        </div>
-      </TooltipContent>
-    </Tooltip>
+                  <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                    {perms.slice(0, 5).map((perm) => (
+                      <li
+                        key={perm.name}
+                        style={{
+                          fontSize: '13px',
+                          color: '#374151',
+                          paddingLeft: '12px',
+                          position: 'relative',
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        <span style={{ position: 'absolute', left: 0, color: '#9ca3af' }}>•</span>
+                        {perm.displayName}
+                      </li>
+                    ))}
+                    {perms.length > 5 && (
+                      <li style={{
+                        fontSize: '12px',
+                        color: '#9ca3af',
+                        paddingLeft: '12px',
+                        fontStyle: 'italic',
+                      }}>
+                        + {perms.length - 5} {t('labels.more', 'more')}...
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <TippyTooltip
+      content={tooltipContent}
+      placement="right"
+      interactive={true}
+      onShow={() => { loadPermissions() }}
+      delay={[100, 0]}
+    >
+      <button
+        type="button"
+        className="p-1 rounded hover:bg-accent/50 transition-colors"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Info className="h-4 w-4 text-muted-foreground" />
+      </button>
+    </TippyTooltip>
   )
 }

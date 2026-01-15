@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./styles/tippy-custom.css";
 
 /* Custom dark variant for targeting dark mode elements */
 @custom-variant dark (&:is(.dark *));
