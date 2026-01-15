@@ -86,3 +86,60 @@ Use 21st.dev Magic MCP for component generation:
 /ui create an admin dashboard sidebar
 /ui create a data table with pagination
 ```
+
+## Custom 21st.dev Components
+
+The following components were created using 21st.dev for consistent, high-quality UI:
+
+| Component | Path | Description |
+|-----------|------|-------------|
+| `EmptyState` | `components/ui/empty-state.tsx` | Empty state display with icon, title, description, and optional action button |
+| `Pagination` | `components/ui/pagination.tsx` | Full-featured pagination with first/prev/next/last navigation and page numbers |
+| `ColorPicker` | `components/ui/color-picker.tsx` | Color selector with preset swatches and custom color picker |
+
+### EmptyState
+
+Used in tables when no data is available.
+
+```tsx
+import { EmptyState } from '@/components/ui/empty-state'
+import { Users } from 'lucide-react'
+
+<EmptyState
+  icon={Users}
+  title="No users found"
+  description="Create a new user to get started."
+  action={{ label: "Create User", onClick: () => {} }}
+/>
+```
+
+### Pagination
+
+Used for paginated data tables.
+
+```tsx
+import { Pagination } from '@/components/ui/pagination'
+
+<Pagination
+  currentPage={1}
+  totalPages={10}
+  totalItems={100}
+  pageSize={10}
+  onPageChange={(page) => setPage(page)}
+  showPageSizeSelector={true}
+/>
+```
+
+### ColorPicker
+
+Used for selecting colors (e.g., role colors).
+
+```tsx
+import { ColorPicker } from '@/components/ui/color-picker'
+
+<ColorPicker
+  value="#3B82F6"
+  onChange={(color) => setColor(color)}
+  showCustomInput={true}  // Shows hex input and native picker
+/>
+```

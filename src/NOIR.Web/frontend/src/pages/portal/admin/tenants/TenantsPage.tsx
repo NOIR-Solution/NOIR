@@ -4,6 +4,7 @@ import { Search } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Pagination } from '@/components/ui/pagination'
 import { TenantTable } from './components/TenantTable'
 import { CreateTenantDialog } from './components/CreateTenantDialog'
 import { EditTenantDialog } from './components/EditTenantDialog'
@@ -83,29 +84,15 @@ export default function TenantsPage() {
 
           {/* Pagination */}
           {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-muted-foreground">
-                {t('labels.page')} {data.pageNumber} {t('labels.of')} {data.totalPages}
-              </p>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(params.pageNumber! - 1)}
-                  disabled={!data.hasPreviousPage}
-                >
-                  {t('buttons.previous')}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(params.pageNumber! + 1)}
-                  disabled={!data.hasNextPage}
-                >
-                  {t('buttons.next')}
-                </Button>
-              </div>
-            </div>
+            <Pagination
+              currentPage={data.pageNumber}
+              totalPages={data.totalPages}
+              totalItems={data.totalCount}
+              pageSize={params.pageSize || 10}
+              onPageChange={setPage}
+              showPageSizeSelector={false}
+              className="mt-4"
+            />
           )}
         </CardContent>
       </Card>

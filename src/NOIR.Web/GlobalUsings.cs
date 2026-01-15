@@ -70,8 +70,6 @@ global using NOIR.Application.Features.Auth.Queries.GetActiveSessions;
 global using NOIR.Application.Features.Auth.Queries.GetUserById;
 global using NOIR.Application.Features.Auth.DTOs;
 global using NOIR.Application.Features.Auth.Queries.GetCurrentUser;
-global using NOIR.Application.Features.Audit.DTOs;
-global using NOIR.Application.Features.Audit.Queries;
 
 // NOIR Domain
 global using NOIR.Domain.Common;

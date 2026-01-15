@@ -34,8 +34,6 @@ global using NOIR.Application.Common.Models;
 global using NOIR.Application.Common.Settings;
 global using NOIR.Application.Features.Auth.DTOs;
 global using NOIR.Application.Features.Auth.Queries.GetUserById;
-global using NOIR.Application.Features.Audit.DTOs;
-global using NOIR.Application.Features.Audit.Queries;
 global using NOIR.Application.Features.Users.DTOs;
 global using NOIR.Application.Features.Roles.DTOs;
 global using NOIR.Application.Features.EmailTemplates.DTOs;

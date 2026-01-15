@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ColorPicker } from '@/components/ui/color-picker'
 import { toast } from 'sonner'
 import { updateRole, getRoles } from '@/services/roles'
 import { ApiError } from '@/services/apiClient'
@@ -53,16 +54,6 @@ interface EditRoleDialogProps {
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
 }
-
-const colorOptions = [
-  { value: '#dc2626', label: 'Red' },
-  { value: '#f59e0b', label: 'Amber' },
-  { value: '#10b981', label: 'Emerald' },
-  { value: '#2563eb', label: 'Blue' },
-  { value: '#7c3aed', label: 'Violet' },
-  { value: '#ec4899', label: 'Pink' },
-  { value: '#6b7280', label: 'Gray' },
-]
 
 export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRoleDialogProps) {
   const { t } = useTranslation('common')
@@ -229,34 +220,12 @@ export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRole
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('roles.fields.color', 'Color')}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue>
-                          <div className="flex items-center gap-2">
-                            <div
-                              className="w-4 h-4 rounded-full"
-                              style={{ backgroundColor: field.value }}
-                            />
-                            {colorOptions.find(c => c.value === field.value)?.label || 'Select color'}
-                          </div>
-                        </SelectValue>
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {colorOptions.map((color) => (
-                        <SelectItem key={color.value} value={color.value}>
-                          <div className="flex items-center gap-2">
-                            <div
-                              className="w-4 h-4 rounded-full"
-                              style={{ backgroundColor: color.value }}
-                            />
-                            {color.label}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <ColorPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

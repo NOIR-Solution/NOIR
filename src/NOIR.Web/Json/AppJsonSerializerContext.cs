@@ -18,21 +18,6 @@ namespace NOIR.Web.Json;
 // User DTOs
 [JsonSerializable(typeof(UserProfileDto))]
 [JsonSerializable(typeof(Result<UserProfileDto>))]
-// Audit DTOs
-[JsonSerializable(typeof(HttpRequestAuditDto))]
-[JsonSerializable(typeof(HttpRequestAuditDetailDto))]
-[JsonSerializable(typeof(HandlerAuditDto))]
-[JsonSerializable(typeof(EntityAuditDto))]
-[JsonSerializable(typeof(AuditTrailDto))]
-[JsonSerializable(typeof(EntityHistoryDto))]
-[JsonSerializable(typeof(EntityHistoryEntryDto))]
-// Audit Result types
-[JsonSerializable(typeof(Result<AuditTrailDto>))]
-[JsonSerializable(typeof(Result<EntityHistoryDto>))]
-[JsonSerializable(typeof(Result<PaginatedList<HttpRequestAuditDto>>))]
-[JsonSerializable(typeof(Result<PaginatedList<HandlerAuditDto>>))]
-[JsonSerializable(typeof(PaginatedList<HttpRequestAuditDto>))]
-[JsonSerializable(typeof(PaginatedList<HandlerAuditDto>))]
 // Result types
 [JsonSerializable(typeof(Result<AuthResponse>))]
 [JsonSerializable(typeof(Result<CurrentUserDto>))]

@@ -221,20 +221,6 @@ Domain ← Application ← Infrastructure ← Web
 
 **Related:** [Authorization](#authorization), [PermissionEndpoints](#permission-endpoints)
 
-#### Audit Feature
-**Path:** `Features/Audit/`
-
-| Type | Name | Path |
-|------|------|------|
-| Query | `GetAuditTrailQuery` | `Queries/` |
-| Query | `GetEntityHistoryQuery` | `Queries/` |
-| Query | `GetHttpRequestAuditLogsQuery` | `Queries/` |
-| Query | `GetHandlerAuditLogsQuery` | `Queries/` |
-| Query | `ExportAuditLogsQuery` | `Queries/` |
-| DTO | `AuditDtos` | `DTOs/AuditDtos.cs` |
-
-**Related:** [AuditEndpoints](#audit-endpoints), [Audit Pattern](backend/patterns/hierarchical-audit-logging.md)
-
 #### EmailTemplates Feature
 **Path:** `Features/EmailTemplates/`
 
@@ -481,18 +467,6 @@ public class LoginCommandHandler
 | GET | `/` | `GetAllPermissionsQuery` |
 | GET | `/templates` | `GetPermissionTemplatesQuery` |
 
-#### Audit Endpoints
-**Path:** `Endpoints/AuditEndpoints.cs`
-**Prefix:** `/api/audit`
-
-| Method | Route | Handler |
-|--------|-------|---------|
-| GET | `/http` | `GetHttpRequestAuditLogsQuery` |
-| GET | `/handlers` | `GetHandlerAuditLogsQuery` |
-| GET | `/entities` | `GetAuditTrailQuery` |
-| GET | `/entities/{type}/{id}` | `GetEntityHistoryQuery` |
-| GET | `/export` | `ExportAuditLogsQuery` |
-
 #### File Endpoints
 **Path:** `Endpoints/FileEndpoints.cs`
 **Prefix:** `/api/files`
@@ -502,16 +476,6 @@ public class LoginCommandHandler
 | POST | `/upload` | Upload file |
 | GET | `/{id}` | Download file |
 | DELETE | `/{id}` | Delete file |
-
-#### Validation Endpoints
-**Path:** `Endpoints/ValidationEndpoints.cs`
-**Prefix:** `/api/validation`
-
-| Method | Route | Purpose |
-|--------|-------|---------|
-| GET | `/schemas/{commandType}` | Get Zod validation schema for command |
-
-**Note:** Validation schemas are auto-generated from FluentValidation validators.
 
 ### Middleware
 
@@ -529,7 +493,7 @@ public class LoginCommandHandler
 
 | Directory | Purpose |
 |-----------|---------|
-| `src/components/` | Reusable UI components (shadcn/ui) |
+| `src/components/` | Reusable UI components (shadcn/ui + 21st.dev) |
 | `src/pages/` | Route pages |
 | `src/hooks/` | Custom React hooks |
 | `src/services/` | API client and services |
@@ -537,6 +501,14 @@ public class LoginCommandHandler
 | `src/i18n/` | Internationalization |
 | `src/lib/` | Utilities |
 | `src/types/` | TypeScript types (auto-generated) |
+
+#### Custom 21st.dev Components
+
+| Component | Path | Usage |
+|-----------|------|-------|
+| `EmptyState` | `components/ui/empty-state.tsx` | Tables with no data |
+| `Pagination` | `components/ui/pagination.tsx` | Data table pagination |
+| `ColorPicker` | `components/ui/color-picker.tsx` | Role color selection |
 
 ---
 

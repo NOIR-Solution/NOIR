@@ -4,6 +4,7 @@ import { Search, Shield } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Pagination } from '@/components/ui/pagination'
 import { RoleTable } from './components/RoleTable'
 import { CreateRoleDialog } from './components/CreateRoleDialog'
 import { EditRoleDialog } from './components/EditRoleDialog'
@@ -95,29 +96,15 @@ export default function RolesPage() {
 
           {/* Pagination */}
           {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-muted-foreground">
-                {t('labels.page', 'Page')} {data.pageNumber} {t('labels.of', 'of')} {data.totalPages}
-              </p>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(params.page! - 1)}
-                  disabled={!data.hasPreviousPage}
-                >
-                  {t('buttons.previous', 'Previous')}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(params.page! + 1)}
-                  disabled={!data.hasNextPage}
-                >
-                  {t('buttons.next', 'Next')}
-                </Button>
-              </div>
-            </div>
+            <Pagination
+              currentPage={data.pageNumber}
+              totalPages={data.totalPages}
+              totalItems={data.totalCount}
+              pageSize={params.pageSize || 10}
+              onPageChange={setPage}
+              showPageSizeSelector={false}
+              className="mt-4"
+            />
           )}
         </CardContent>
       </Card>

@@ -219,6 +219,70 @@ public class CustomerByIdSpec : Specification<Customer>
 
 ## Frontend Rules (React/TypeScript)
 
+### 21st.dev Component Standard (MANDATORY)
+**All frontend UI components and pages MUST use 21st.dev for consistency and best UI/UX.**
+
+```typescript
+// When building new UI components, use 21st.dev MCP tool:
+// Claude Code: Use the mcp__magic__21st_magic_component_builder tool
+// This ensures consistent, production-quality UI with:
+// - Modern design patterns (glassmorphism, animations, micro-interactions)
+// - Accessible components (WCAG compliant)
+// - Responsive layouts (mobile-first)
+// - Consistent spacing, typography, and color schemes
+```
+
+**Do NOT:**
+- Hand-build pagination, page headers, empty states, or other common UI patterns
+- Create custom form validation state management (use react-hook-form + FormField)
+- Write inline gradient/focus styling (extract to design tokens)
+
+**Components requiring 21st.dev rebuild (existing debt):**
+- Pagination in TenantsPage, RolesPage
+- Page headers across admin pages
+- CreateUserDialog form validation
+- Empty state components in tables
+
+### Validation Consistency (CRITICAL)
+
+**Backend:** FluentValidation for all Commands/Queries
+**Frontend:** Real-time validation with smooth UI/UX
+
+```typescript
+// CORRECT: Use react-hook-form + Zod + FormField pattern (like CreateRoleDialog)
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+
+const form = useForm<FormData>({
+  resolver: zodResolver(schema),
+  mode: 'onBlur', // Real-time validation on blur
+})
+
+// In JSX:
+<Form {...form}>
+  <FormField
+    control={form.control}
+    name="email"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Email</FormLabel>
+        <FormControl>
+          <Input {...field} />
+        </FormControl>
+        <FormMessage /> {/* Auto-displays validation errors */}
+      </FormItem>
+    )}
+  />
+</Form>
+
+// WRONG: Manual error state management (like CreateUserDialog)
+const [errors, setErrors] = useState({})  // ❌ Don't do this
+const [touched, setTouched] = useState({}) // ❌ Don't do this
+```
+
+**Validation rules must match between FluentValidation and Zod schemas.**
+
 ### Zod Validation
 ```typescript
 // CORRECT: Zod uses `.issues` not `.errors`

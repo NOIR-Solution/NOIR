@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState } from '@/components/ui/empty-state'
 import type { UserListItem } from '@/types'
 
 interface UserTableProps {
@@ -49,11 +50,11 @@ export function UserTable({ users, onEdit, onDelete, onAssignRoles, loading }: U
 
   if (users.length === 0) {
     return (
-      <div className="text-center py-12">
-        <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
-        <h3 className="mt-4 text-lg font-semibold">{t('users.noUsers', 'No users found')}</h3>
-        <p className="text-muted-foreground">{t('users.noUsersDescription', 'No users match your current filters.')}</p>
-      </div>
+      <EmptyState
+        icon={Users}
+        title={t('users.noUsers', 'No users found')}
+        description={t('users.noUsersDescription', 'No users match your current filters.')}
+      />
     )
   }
 

@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState } from '@/components/ui/empty-state'
 import type { RoleListItem } from '@/types'
 
 interface RoleTableProps {
@@ -49,11 +50,11 @@ export function RoleTable({ roles, onEdit, onDelete, onPermissions, loading }: R
 
   if (roles.length === 0) {
     return (
-      <div className="text-center py-12">
-        <Shield className="mx-auto h-12 w-12 text-muted-foreground/50" />
-        <h3 className="mt-4 text-lg font-semibold">{t('roles.noRoles', 'No roles found')}</h3>
-        <p className="text-muted-foreground">{t('roles.noRolesDescription', 'Create a new role to get started.')}</p>
-      </div>
+      <EmptyState
+        icon={Shield}
+        title={t('roles.noRoles', 'No roles found')}
+        description={t('roles.noRolesDescription', 'Create a new role to get started.')}
+      />
     )
   }
 
