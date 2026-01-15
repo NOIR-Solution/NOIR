@@ -7,18 +7,18 @@ namespace NOIR.Infrastructure.Services;
 public class EmailService : IEmailService, IScopedService
 {
     private readonly IFluentEmail _fluentEmail;
-    private readonly IReadRepository<EmailTemplate, Guid> _templateRepository;
+    private readonly ApplicationDbContext _dbContext;
     private readonly EmailSettings _emailSettings;
     private readonly ILogger<EmailService> _logger;
 
     public EmailService(
         IFluentEmail fluentEmail,
-        IReadRepository<EmailTemplate, Guid> templateRepository,
+        ApplicationDbContext dbContext,
         IOptions<EmailSettings> emailSettings,
         ILogger<EmailService> logger)
     {
         _fluentEmail = fluentEmail;
-        _templateRepository = templateRepository;
+        _dbContext = dbContext;
         _emailSettings = emailSettings.Value;
         _logger = logger;
     }
@@ -85,14 +85,12 @@ public class EmailService : IEmailService, IScopedService
     {
         try
         {
-            // Load template from database by name
-            var template = await _templateRepository.FirstOrDefaultAsync(
-                new EmailTemplateByNameSpec(templateName),
-                cancellationToken);
+            // Load template with fallback: tenant-specific first, then platform-level (TenantId = null)
+            var template = await GetTemplateWithFallbackAsync(templateName, cancellationToken);
 
             if (template == null)
             {
-                _logger.LogError("Email template '{TemplateName}' not found", templateName);
+                _logger.LogError("Email template '{TemplateName}' not found (checked tenant and platform level)", templateName);
                 return false;
             }
 
@@ -126,6 +124,45 @@ public class EmailService : IEmailService, IScopedService
             _logger.LogError(ex, "Exception while sending template email to {To}", to);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Gets an email template with fallback logic:
+    /// 1. First tries to find tenant-specific template (TenantId = current tenant)
+    /// 2. Falls back to platform-level template (TenantId = null)
+    /// This allows tenants to override platform defaults while sharing common templates.
+    /// </summary>
+    private async Task<EmailTemplate?> GetTemplateWithFallbackAsync(string templateName, CancellationToken cancellationToken)
+    {
+        var currentTenantId = _dbContext.TenantInfo?.Id;
+
+        // Query all templates with this name, ignoring tenant filter and soft delete filter
+        var templates = await _dbContext.Set<EmailTemplate>()
+            .IgnoreQueryFilters()
+            .Where(t => t.Name == templateName && t.IsActive && !t.IsDeleted)
+            .ToListAsync(cancellationToken);
+
+        if (templates.Count == 0)
+            return null;
+
+        // Prefer tenant-specific template, fall back to platform template (TenantId = null)
+        var tenantTemplate = templates.FirstOrDefault(t => t.TenantId == currentTenantId);
+        if (tenantTemplate != null)
+        {
+            _logger.LogDebug("Using tenant-specific email template '{TemplateName}' for tenant '{TenantId}'", templateName, currentTenantId);
+            return tenantTemplate;
+        }
+
+        var platformTemplate = templates.FirstOrDefault(t => t.TenantId == null);
+        if (platformTemplate != null)
+        {
+            _logger.LogDebug("Using platform-level email template '{TemplateName}' (no tenant-specific override)", templateName);
+            return platformTemplate;
+        }
+
+        // If we have templates but none match current tenant or platform, log warning
+        _logger.LogWarning("Email template '{TemplateName}' exists but not for tenant '{TenantId}' or platform level", templateName, currentTenantId);
+        return null;
     }
 
     /// <summary>

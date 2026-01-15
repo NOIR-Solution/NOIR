@@ -290,112 +290,22 @@ public static class ApplicationDbContextSeeder
 
     internal static async Task SeedEmailTemplatesAsync(ApplicationDbContext context, ILogger logger)
     {
-        // Check if templates already exist (bypass soft delete filter)
-        var existingTemplates = await context.Set<EmailTemplate>()
+        // Email templates are platform-level (TenantId = null) shared across all tenants.
+        // Tenants can create their own templates to override platform defaults.
+        var existingNames = await context.Set<EmailTemplate>()
             .IgnoreQueryFilters()
+            .Select(t => t.Name)
             .ToListAsync();
 
-        // Group by Name - keep the first one, delete duplicates (handles migration from language-based to single template)
-        // This handles the case where old Language-based templates exist with duplicate names
-        var groupedTemplates = existingTemplates.GroupBy(t => t.Name).ToList();
-        var existingByKey = new Dictionary<string, EmailTemplate>();
-        var duplicatesToDelete = new List<EmailTemplate>();
+        var templatesToSeed = GetEmailTemplateDefinitions()
+            .Where(t => !existingNames.Contains(t.Name))
+            .ToList();
 
-        foreach (var group in groupedTemplates)
+        if (templatesToSeed.Count > 0)
         {
-            var templates = group.ToList();
-            existingByKey[group.Key] = templates[0];
-            
-            // Mark duplicates for deletion
-            if (templates.Count > 1)
-            {
-                duplicatesToDelete.AddRange(templates.Skip(1));
-            }
-        }
-
-        // Delete duplicate templates (cleanup from Language-based system migration)
-        if (duplicatesToDelete.Count > 0)
-        {
-            context.Set<EmailTemplate>().RemoveRange(duplicatesToDelete);
-            logger.LogInformation("Removing {Count} duplicate email templates from old Language-based system", duplicatesToDelete.Count);
-        }
-
-        var templatesToSeed = GetEmailTemplateDefinitions();
-        var newTemplates = new List<EmailTemplate>();
-        var restoredCount = 0;
-        var tenantFixedCount = 0;
-
-        // Get current tenant ID from context for fixing templates with incorrect tenant
-        var currentTenantId = context.TenantInfo?.Id;
-
-        foreach (var template in templatesToSeed)
-        {
-            var key = template.Name;
-            if (existingByKey.TryGetValue(key, out var existing))
-            {
-                var entry = context.Entry(existing);
-
-                // Fix TenantId if it's missing or incorrect (from old seeding without tenant context)
-                if (!string.IsNullOrEmpty(currentTenantId) && existing.TenantId != currentTenantId)
-                {
-                    entry.Property(nameof(ITenantEntity.TenantId)).CurrentValue = currentTenantId;
-                    entry.Property(e => e.ModifiedAt).CurrentValue = DateTimeOffset.UtcNow;
-                    tenantFixedCount++;
-                    logger.LogInformation("Fixed TenantId for email template: {Name}", template.Name);
-                }
-
-                // Restore soft-deleted template using EF Core Entry API
-                if (existing.IsDeleted)
-                {
-                    entry.Property(e => e.IsDeleted).CurrentValue = false;
-                    entry.Property(e => e.DeletedAt).CurrentValue = null;
-                    entry.Property(e => e.DeletedBy).CurrentValue = null;
-                    entry.Property(e => e.ModifiedAt).CurrentValue = DateTimeOffset.UtcNow;
-                    existing.Activate(); // Use domain method for IsActive
-                    restoredCount++;
-                    logger.LogInformation("Restored soft-deleted email template: {Name}", template.Name);
-                }
-            }
-            else
-            {
-                newTemplates.Add(template);
-                logger.LogInformation("Seeding email template: {Name}", template.Name);
-            }
-        }
-
-        if (newTemplates.Count > 0)
-        {
-            await context.Set<EmailTemplate>().AddRangeAsync(newTemplates);
-
-            // Set TenantId on new templates using Entry API (TenantId has protected setter)
-            if (!string.IsNullOrEmpty(currentTenantId))
-            {
-                foreach (var template in newTemplates)
-                {
-                    context.Entry(template).Property(nameof(ITenantEntity.TenantId)).CurrentValue = currentTenantId;
-                }
-            }
-        }
-
-        if (newTemplates.Count > 0 || restoredCount > 0 || tenantFixedCount > 0 || duplicatesToDelete.Count > 0)
-        {
+            await context.Set<EmailTemplate>().AddRangeAsync(templatesToSeed);
             await context.SaveChangesAsync();
-            if (duplicatesToDelete.Count > 0)
-            {
-                logger.LogInformation("Deleted {Count} duplicate email templates from old Language-based system", duplicatesToDelete.Count);
-            }
-            if (newTemplates.Count > 0)
-            {
-                logger.LogInformation("Seeded {Count} email templates", newTemplates.Count);
-            }
-            if (restoredCount > 0)
-            {
-                logger.LogInformation("Restored {Count} soft-deleted email templates", restoredCount);
-            }
-            if (tenantFixedCount > 0)
-            {
-                logger.LogInformation("Fixed TenantId for {Count} existing email templates", tenantFixedCount);
-            }
+            logger.LogInformation("Seeded {Count} email templates", templatesToSeed.Count);
         }
     }
 
