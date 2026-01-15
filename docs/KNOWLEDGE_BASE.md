@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
 **Last Updated:** 2026-01-15
-**Version:** 1.3
+**Version:** 1.4
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -230,7 +230,12 @@ Domain ← Application ← Infrastructure ← Web
 | Query | `GetEmailTemplatesQuery` | `Queries/GetAll/` |
 | Query | `GetEmailTemplateByIdQuery` | `Queries/GetById/` |
 
-**Related:** [EmailTemplateEndpoints](#email-template-endpoints)
+**Service:** `EmailService` (`Infrastructure/Services/EmailService.cs`)
+- Uses **platform-level fallback**: tenant-specific template → platform template (TenantId = null)
+- Templates seeded as platform-level by default via `ApplicationDbContextSeeder`
+- Supports variable replacement: `{{DisplayName}}`, `{{Email}}`, `{{Password}}`, etc.
+
+**Related:** [EmailTemplateEndpoints](#email-template-endpoints), [Platform-Level Data](#platform-level-vs-tenant-level-data)
 
 #### Notifications Feature
 **Path:** `Features/Notifications/`
@@ -600,6 +605,34 @@ public class UserTenantMembership : Entity<Guid>
 | Admin | Manage users and settings |
 | Member | Standard access |
 | Viewer | Read-only access |
+
+#### Platform-Level vs Tenant-Level Data
+
+NOIR supports a **fallback pattern** where data can exist at two levels:
+
+| Level | TenantId Value | Scope | Example |
+|-------|----------------|-------|---------|
+| Platform | `null` | Shared across all tenants | Default email templates |
+| Tenant | `Guid` | Specific to one tenant | Custom email templates |
+
+**Query Pattern for Fallback:**
+```csharp
+// First check tenant-specific, then fallback to platform
+var templates = await _dbContext.Set<EmailTemplate>()
+    .IgnoreQueryFilters()  // Bypass tenant filter
+    .Where(t => t.Name == templateName && t.IsActive && !t.IsDeleted)
+    .ToListAsync();
+
+// Prefer tenant-specific, fallback to platform (TenantId = null)
+var template = templates.FirstOrDefault(t => t.TenantId == currentTenantId)
+    ?? templates.FirstOrDefault(t => t.TenantId == null);
+```
+
+**Key Points:**
+- Platform-level data serves as **defaults** for all tenants
+- Tenants can **override** platform defaults with their own data
+- Use `IgnoreQueryFilters()` when querying both levels
+- Seeder creates platform-level data with `TenantId = null`
 
 ### Validation
 
