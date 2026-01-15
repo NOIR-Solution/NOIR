@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
+import type { DateRange } from 'react-day-picker'
 import { usePageContext } from '@/hooks/usePageContext'
 import {
   Activity,
@@ -15,6 +17,7 @@ import {
   Database,
   Fingerprint,
   X,
+  User,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -32,6 +35,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Pagination } from '@/components/ui/pagination'
+import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { cn } from '@/lib/utils'
 import {
   searchActivityTimeline,
@@ -178,7 +182,12 @@ function TimelineEntry({
 
 export default function ActivityTimelinePage() {
   const { t } = useTranslation('common')
+  const [searchParams, setSearchParams] = useSearchParams()
   usePageContext('Activity Timeline')
+
+  // Read userId from URL params (for "View user activity" link from Users page)
+  const userIdParam = searchParams.get('userId')
+  const userEmailParam = searchParams.get('userEmail')
 
   // State
   const [entries, setEntries] = useState<ActivityTimelineEntry[]>([])
@@ -195,6 +204,7 @@ export default function ActivityTimelinePage() {
   const [pageContext, setPageContext] = useState<string>('')
   const [operationType, setOperationType] = useState<string>('')
   const [onlyFailed, setOnlyFailed] = useState(false)
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [selectedEntry, setSelectedEntry] = useState<ActivityTimelineEntry | null>(null)
 
   const pageSize = 20
@@ -216,6 +226,9 @@ export default function ActivityTimelinePage() {
         operationType: operationType || undefined,
         searchTerm: searchTerm || undefined,
         onlyFailed: onlyFailed || undefined,
+        userId: userIdParam || undefined,
+        fromDate: dateRange?.from?.toISOString(),
+        toDate: dateRange?.to?.toISOString(),
         page: currentPage,
         pageSize,
       })
@@ -227,7 +240,7 @@ export default function ActivityTimelinePage() {
     } finally {
       setLoading(false)
     }
-  }, [pageContext, operationType, searchTerm, onlyFailed, currentPage])
+  }, [pageContext, operationType, searchTerm, onlyFailed, userIdParam, dateRange, currentPage])
 
   useEffect(() => {
     fetchData()
@@ -285,6 +298,26 @@ export default function ActivityTimelinePage() {
                 </CardDescription>
               </div>
             </div>
+
+            {/* User Filter Banner - shown when filtering by user from Users page */}
+            {userIdParam && (
+              <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <User className="h-4 w-4 text-blue-600" />
+                <span className="text-sm text-blue-700 dark:text-blue-300">
+                  Showing activity for user:{' '}
+                  <span className="font-medium">{userEmailParam || userIdParam}</span>
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="ml-auto h-7 text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900"
+                  onClick={() => setSearchParams({})}
+                >
+                  <X className="h-3.5 w-3.5 mr-1" />
+                  Clear user filter
+                </Button>
+              </div>
+            )}
 
             {/* Filter Bar - Clean unified search */}
             <form onSubmit={handleSearchSubmit} className="space-y-2">
@@ -373,10 +406,22 @@ export default function ActivityTimelinePage() {
                   </Label>
                 </div>
 
+                {/* Date Range Picker */}
+                <DateRangePicker
+                  value={dateRange}
+                  onChange={(range) => {
+                    setDateRange(range)
+                    setCurrentPage(1)
+                  }}
+                  placeholder="Date range"
+                  className="h-9 w-[240px]"
+                  numberOfMonths={2}
+                />
+
                 {/* Actions */}
                 <div className="flex items-center gap-2">
                   {/* Clear button - only show when filters are active */}
-                  {(searchInput || pageContext || operationType || onlyFailed) && (
+                  {(searchInput || pageContext || operationType || onlyFailed || dateRange || userIdParam) && (
                     <Button
                       type="button"
                       variant="ghost"
@@ -388,7 +433,12 @@ export default function ActivityTimelinePage() {
                         setPageContext('')
                         setOperationType('')
                         setOnlyFailed(false)
+                        setDateRange(undefined)
                         setCurrentPage(1)
+                        // Clear URL params
+                        if (userIdParam) {
+                          setSearchParams({})
+                        }
                       }}
                     >
                       <X className="h-3.5 w-3.5" />

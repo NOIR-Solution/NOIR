@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { MoreHorizontal, Edit, Trash2, Shield, Users, Lock, LockOpen, ShieldCheck } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { MoreHorizontal, Edit, Trash2, Shield, Users, Lock, LockOpen, ShieldCheck, Activity } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -44,6 +45,11 @@ export function UserTable({
   canAssignRoles = true,
 }: UserTableProps) {
   const { t } = useTranslation('common')
+  const navigate = useNavigate()
+
+  const handleViewActivity = (user: UserListItem) => {
+    navigate(`/portal/admin/activity-timeline?userId=${encodeURIComponent(user.id)}&userEmail=${encodeURIComponent(user.email)}`)
+  }
 
   if (loading) {
     return (
@@ -171,6 +177,10 @@ export function UserTable({
                           {t('buttons.edit', 'Edit')}
                         </DropdownMenuItem>
                       )}
+                      <DropdownMenuItem onClick={() => handleViewActivity(user)}>
+                        <Activity className="mr-2 h-4 w-4" />
+                        {t('users.viewActivity', 'View Activity')}
+                      </DropdownMenuItem>
                       {canDelete && (canAssignRoles || canEdit) && <DropdownMenuSeparator />}
                       {canDelete && (
                         user.isSystemUser ? (

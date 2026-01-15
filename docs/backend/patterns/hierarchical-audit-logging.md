@@ -502,6 +502,26 @@ public async Task<List<EntityAuditDto>> GetEntityHistory(string entityType, stri
 
 ## UI Visualization
 
+### Activity Timeline Page
+
+The Activity Timeline UI (`/portal/admin/activity-timeline`) provides a comprehensive view of all audited user actions.
+
+**Features:**
+- **Search**: Filter by correlation ID, user email, or handler name
+- **Context Filter**: Filter by page context (Users, Roles, Tenants, etc.)
+- **Action Filter**: Filter by operation type (Create, Update, Delete)
+- **Date Range Picker**: Filter entries by date range (uses react-day-picker v9)
+- **Failed Only Toggle**: Show only failed operations
+- **User Filter**: Filter by specific user (via URL params or "View Activity" from Users page)
+- **Entry Details Dialog**: Expandable entries showing HTTP, Handler, Database, and Raw tabs
+
+**Navigation from Users Page:**
+The Users page includes a "View Activity" option in each user's action menu. Clicking this navigates to the Activity Timeline with the user's ID pre-filtered, showing all audit entries for that specific user.
+
+```
+Users Page → Action Menu → "View Activity" → Activity Timeline?userId=xxx&userEmail=xxx
+```
+
 ### React Components
 
 Recommended libraries:

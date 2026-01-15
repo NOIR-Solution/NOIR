@@ -70,10 +70,29 @@ frontend/
 - Other components should be self-contained and reusable
 - Name files in PascalCase matching component name
 
+**Key UI Components:**
+| Component | Purpose | Dependencies |
+|-----------|---------|--------------|
+| `button.tsx` | Button with variants | - |
+| `input.tsx` | Form input | - |
+| `dialog.tsx` | Modal dialogs | @radix-ui/react-dialog |
+| `popover.tsx` | Popover menus | @radix-ui/react-popover |
+| `calendar.tsx` | Date picker calendar | react-day-picker v9 |
+| `date-range-picker.tsx` | Date range selection | calendar, popover, date-fns |
+
 **Example:**
 ```tsx
 // components/ProtectedRoute.tsx
 export function ProtectedRoute({ children }) { ... }
+
+// components/ui/date-range-picker.tsx
+import { DateRange } from 'react-day-picker'
+
+export function DateRangePicker({
+  value,
+  onChange,
+  numberOfMonths = 2,
+}: DateRangePickerProps) { ... }
 ```
 
 ### `/pages`
