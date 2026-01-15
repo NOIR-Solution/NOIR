@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-15
-**Version:** 1.4
+**Last Updated:** 2025-01-16
+**Version:** 1.5
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -265,6 +265,24 @@ Domain ← Application ← Infrastructure ← Web
 
 **Related:** [TenantEndpoints](#tenant-endpoints)
 
+#### Audit Feature
+**Path:** `Features/Audit/`
+
+| Type | Name | Path |
+|------|------|------|
+| Query | `GetAuditLogsQuery` | `Queries/GetAuditLogs/` |
+| Query | `GetUserActivityQuery` | `Queries/GetUserActivity/` |
+| DTO | `AuditLogDto` | `DTOs/AuditLogDto.cs` |
+
+**Related:** [AuditEndpoints](#audit-endpoints), [Activity Timeline](#activity-timeline-page)
+
+**Activity Timeline Page:** `frontend/src/pages/portal/admin/activity-timeline/`
+- Hierarchical audit log viewer with correlation tracking
+- Date range filtering with `DateRangePicker`
+- User activity navigation (click user → filter by user)
+- Search across entity ID, user email, handler name, field values
+- Expandable rows showing entity changes (before/after diff)
+
 ### Specifications
 
 **Path:** `Specifications/`
@@ -507,13 +525,15 @@ public class LoginCommandHandler
 | `src/lib/` | Utilities |
 | `src/types/` | TypeScript types (auto-generated) |
 
-#### Custom 21st.dev Components
+#### Custom UI Components
 
 | Component | Path | Usage |
 |-----------|------|-------|
 | `EmptyState` | `components/ui/empty-state.tsx` | Tables with no data |
 | `Pagination` | `components/ui/pagination.tsx` | Data table pagination |
 | `ColorPicker` | `components/ui/color-picker.tsx` | Role color selection |
+| `TippyTooltip` | `components/ui/tippy-tooltip.tsx` | Rich tooltips with headers |
+| `DateRangePicker` | `components/ui/date-range-picker.tsx` | Date range selection |
 
 #### Permission-Based UI Rendering
 
@@ -755,7 +775,7 @@ dotnet test --collect:"XPlat Code Coverage"
 |----------|------|-------------|
 | Audit Logging Comparison | `docs/backend/research/hierarchical-audit-logging-comparison-2025.md` | Technology comparison |
 | Role & Permission Systems | `docs/backend/research/role-permission-best-practices-2025.md` | Best practices |
-| IUnitOfWork & EF Core | `docs/backend/research/research_iunitofwork_efcore_best_practices_20260103.md` | Persistence patterns |
+| IUnitOfWork & EF Core | `docs/backend/research/research_iunitofwork_efcore_best_practices_20250103.md` | Persistence patterns |
 
 ### Frontend Documentation
 
@@ -825,4 +845,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-01-15 | Total Tests: 1,800+ | Features: 8 | Endpoints: 11 | Entities: 16*
+*Updated: 2025-01-16 | Total Tests: 1,800+ | Features: 9 | Endpoints: 12 | Entities: 16*
