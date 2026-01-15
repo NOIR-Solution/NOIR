@@ -366,6 +366,15 @@ public static class ApplicationDbContextSeeder
         if (newTemplates.Count > 0)
         {
             await context.Set<EmailTemplate>().AddRangeAsync(newTemplates);
+
+            // Set TenantId on new templates using Entry API (TenantId has protected setter)
+            if (!string.IsNullOrEmpty(currentTenantId))
+            {
+                foreach (var template in newTemplates)
+                {
+                    context.Entry(template).Property(nameof(ITenantEntity.TenantId)).CurrentValue = currentTenantId;
+                }
+            }
         }
 
         if (newTemplates.Count > 0 || restoredCount > 0 || tenantFixedCount > 0 || duplicatesToDelete.Count > 0)
