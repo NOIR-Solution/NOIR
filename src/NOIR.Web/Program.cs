@@ -295,7 +295,16 @@ app.UseStaticFiles(new StaticFileOptions
 {
     OnPrepareResponse = ctx =>
     {
-        // Cache static assets for 1 year (they have content hashes)
+        // Development: Disable all caching for easier testing
+        if (app.Environment.IsDevelopment())
+        {
+            ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+            ctx.Context.Response.Headers.Append("Expires", "0");
+            return;
+        }
+
+        // Production: Cache static assets for 1 year (they have content hashes)
         if (ctx.File.Name.Contains('.') && !ctx.File.Name.EndsWith(".html"))
         {
             ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=31536000, immutable");
