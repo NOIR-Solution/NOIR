@@ -153,6 +153,11 @@ test-results/
 playwright/.cache/
 **/e2e/.auth/
 **/e2e/test-results/
+**/e2e/html-report/
+blob-report/
+
+# User uploads (runtime data)
+**/uploads/
 
 # -----------------------------------------------------------------------------
 # Publishing / Deployment
