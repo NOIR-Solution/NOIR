@@ -169,11 +169,11 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         }
 
         if (updates.FirstName is not null)
-            user.FirstName = updates.FirstName;
+            user.FirstName = string.IsNullOrWhiteSpace(updates.FirstName) ? null : updates.FirstName;
         if (updates.LastName is not null)
-            user.LastName = updates.LastName;
+            user.LastName = string.IsNullOrWhiteSpace(updates.LastName) ? null : updates.LastName;
         if (updates.DisplayName is not null)
-            user.DisplayName = updates.DisplayName;
+            user.DisplayName = string.IsNullOrWhiteSpace(updates.DisplayName) ? null : updates.DisplayName;
         if (updates.PhoneNumber is not null)
             user.PhoneNumber = updates.PhoneNumber;
         if (updates.AvatarUrl is not null)
@@ -206,6 +206,45 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         user.DeletedAt = _dateTime.UtcNow;
         user.DeletedBy = deletedBy;
         user.IsActive = false;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            return IdentityOperationResult.Failure(
+                result.Errors.Select(e => e.Description).ToArray());
+        }
+
+        return IdentityOperationResult.Success(user.Id);
+    }
+
+    public async Task<IdentityOperationResult> SetUserLockoutAsync(
+        string userId,
+        bool locked,
+        string? lockedBy = null,
+        CancellationToken ct = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            return IdentityOperationResult.Failure("User not found.");
+        }
+
+        user.IsActive = !locked;
+        
+        if (locked)
+        {
+            // Set lockout end to far future to prevent login
+            user.LockoutEnd = DateTimeOffset.MaxValue;
+            user.LockedAt = _dateTime.UtcNow;
+            user.LockedBy = lockedBy;
+        }
+        else
+        {
+            // Clear lockout to allow login
+            user.LockoutEnd = null;
+            user.LockedAt = null;
+            user.LockedBy = null;
+        }
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)

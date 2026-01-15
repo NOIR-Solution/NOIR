@@ -24,6 +24,19 @@ public static class UserEndpoints
         .WithSummary("Get paginated list of users")
         .Produces<PaginatedList<UserListDto>>(StatusCodes.Status200OK);
 
+        // Create user
+        group.MapPost("/", async (CreateUserCommand command, IMessageBus bus) =>
+        {
+            var result = await bus.InvokeAsync<Result<UserDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.UsersCreate)
+        .WithName("CreateUser")
+        .WithSummary("Create a new user")
+        .Produces<UserDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
+
         // Get user by ID
         group.MapGet("/{userId}", async (string userId, IMessageBus bus) =>
         {
@@ -58,7 +71,33 @@ public static class UserEndpoints
         })
         .RequireAuthorization(Permissions.UsersDelete)
         .WithName("DeleteUser")
-        .WithSummary("Soft-delete a user (locks account)")
+        .WithSummary("Soft-delete a user (removes from system)")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Lock user
+        group.MapPost("/{userId}/lock", async (string userId, IMessageBus bus) =>
+        {
+            var result = await bus.InvokeAsync<Result<bool>>(new LockUserCommand(userId, Lock: true));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.UsersUpdate)
+        .WithName("LockUser")
+        .WithSummary("Lock a user account (prevents login)")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Unlock user
+        group.MapPost("/{userId}/unlock", async (string userId, IMessageBus bus) =>
+        {
+            var result = await bus.InvokeAsync<Result<bool>>(new LockUserCommand(userId, Lock: false));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.UsersUpdate)
+        .WithName("UnlockUser")
+        .WithSummary("Unlock a user account (allows login)")
         .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);

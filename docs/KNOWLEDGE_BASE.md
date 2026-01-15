@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-14
-**Version:** 1.1
+**Last Updated:** 2026-01-15
+**Version:** 1.2
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -94,6 +94,7 @@ Domain ← Application ← Infrastructure ← Web
 | Entity | Path | Related To |
 |--------|------|------------|
 | `Permission` | `Entities/Permission.cs` | [RBAC Authorization](#authorization) |
+| `PermissionTemplate` | `Entities/PermissionTemplate.cs` | Role permission presets |
 | `RefreshToken` | `Entities/RefreshToken.cs` | [JWT Pattern](backend/patterns/jwt-refresh-token.md) |
 | `ResourceShare` | `Entities/ResourceShare.cs` | Multi-user sharing |
 
@@ -130,6 +131,13 @@ Domain ← Application ← Infrastructure ← Web
 | `EmailChangeOtp` | `Entities/EmailChangeOtp.cs` | Email change verification |
 | `PasswordResetOtp` | `Entities/PasswordResetOtp.cs` | Password reset flow |
 
+#### Identity Entities (Infrastructure Layer)
+
+| Entity | Path | Related To |
+|--------|------|------------|
+| `ApplicationUser` | `Infrastructure/Identity/ApplicationUser.cs` | User with extended properties (LockedAt, LockedBy) |
+| `ApplicationRole` | `Infrastructure/Identity/ApplicationRole.cs` | Role with hierarchy (ParentRoleId, IconName, Color) |
+
 ### Interfaces
 
 | Interface | Path | Implementation |
@@ -160,7 +168,6 @@ Domain ← Application ← Infrastructure ← Web
 | Type | Name | Path |
 |------|------|------|
 | Command | `LoginCommand` | `Commands/Login/` |
-| Command | `RegisterCommand` | `Commands/Register/` |
 | Command | `RefreshTokenCommand` | `Commands/RefreshToken/` |
 | Command | `LogoutCommand` | `Commands/Logout/` |
 | Command | `UpdateUserProfileCommand` | `Commands/UpdateUserProfile/` |
@@ -175,9 +182,11 @@ Domain ← Application ← Infrastructure ← Web
 
 | Type | Name | Path |
 |------|------|------|
+| Command | `CreateUserCommand` | `Commands/CreateUser/` |
 | Command | `UpdateUserCommand` | `Commands/UpdateUser/` |
 | Command | `DeleteUserCommand` | `Commands/DeleteUser/` |
 | Command | `AssignRolesToUserCommand` | `Commands/AssignRoles/` |
+| Command | `LockUserCommand` | `Commands/LockUser/` |
 | Query | `GetUsersQuery` | `Queries/GetUsers/` |
 | Query | `GetUserRolesQuery` | `Queries/GetUserRoles/` |
 | DTO | `UserDtos` | `DTOs/UserDtos.cs` |
@@ -207,8 +216,10 @@ Domain ← Application ← Infrastructure ← Web
 | Command | `RemovePermissionFromRoleCommand` | `Commands/RemoveFromRole/` |
 | Query | `GetRolePermissionsQuery` | `Queries/GetRolePermissions/` |
 | Query | `GetUserPermissionsQuery` | `Queries/GetUserPermissions/` |
+| Query | `GetAllPermissionsQuery` | `Queries/GetAllPermissions/` |
+| Query | `GetPermissionTemplatesQuery` | `Queries/GetPermissionTemplates/` |
 
-**Related:** [Authorization](#authorization)
+**Related:** [Authorization](#authorization), [PermissionEndpoints](#permission-endpoints)
 
 #### Audit Feature
 **Path:** `Features/Audit/`
@@ -424,7 +435,6 @@ public class LoginCommandHandler
 | Method | Route | Handler |
 |--------|-------|---------|
 | POST | `/login` | `LoginCommand` |
-| POST | `/register` | `RegisterCommand` |
 | POST | `/refresh` | `RefreshTokenCommand` |
 | POST | `/logout` | `LogoutCommand` |
 | GET | `/me` | `GetCurrentUserQuery` |
@@ -437,10 +447,13 @@ public class LoginCommandHandler
 | Method | Route | Handler |
 |--------|-------|---------|
 | GET | `/` | `GetUsersQuery` |
+| POST | `/` | `CreateUserCommand` |
 | GET | `/{id}` | `GetUserByIdQuery` |
 | PUT | `/{id}` | `UpdateUserCommand` |
 | DELETE | `/{id}` | `DeleteUserCommand` |
 | GET | `/{id}/roles` | `GetUserRolesQuery` |
+| POST | `/{id}/lock` | `LockUserCommand` |
+| POST | `/{id}/unlock` | Unlocks user |
 | POST | `/{id}/roles` | `AssignRolesToUserCommand` |
 
 #### Role Endpoints
@@ -455,8 +468,18 @@ public class LoginCommandHandler
 | PUT | `/{id}` | `UpdateRoleCommand` |
 | DELETE | `/{id}` | `DeleteRoleCommand` |
 | GET | `/{id}/permissions` | `GetRolePermissionsQuery` |
-| POST | `/{id}/permissions` | `AssignPermissionToRoleCommand` |
+| GET | `/{id}/effective-permissions` | Gets inherited permissions |
+| PUT | `/{id}/permissions` | `AssignPermissionToRoleCommand` |
 | DELETE | `/{id}/permissions/{permissionId}` | `RemovePermissionFromRoleCommand` |
+
+#### Permission Endpoints
+**Path:** `Endpoints/PermissionEndpoints.cs`
+**Prefix:** `/api/permissions`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/` | `GetAllPermissionsQuery` |
+| GET | `/templates` | `GetPermissionTemplatesQuery` |
 
 #### Audit Endpoints
 **Path:** `Endpoints/AuditEndpoints.cs`

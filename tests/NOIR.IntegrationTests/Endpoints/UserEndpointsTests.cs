@@ -28,9 +28,17 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     {
         var email = $"test_{Guid.NewGuid():N}@example.com";
         var password = "TestPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Test", "User");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var auth = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        
+        // Create user via admin endpoint
+        var adminClient = await GetAdminClientAsync();
+        var createCommand = new CreateUserCommand(email, password, "Test", "User", null, null);
+        var createResponse = await adminClient.PostAsJsonAsync("/api/users", createCommand);
+        createResponse.EnsureSuccessStatusCode();
+        
+        // Login as the new user
+        var loginCommand = new LoginCommand(email, password);
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
         var userClient = _factory.CreateAuthenticatedClient(auth!.AccessToken);
         return (userClient, auth);
     }

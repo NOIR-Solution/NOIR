@@ -16,16 +16,35 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
         _client = factory.CreateTestClient();
     }
 
+    private async Task<HttpClient> GetAdminClientAsync()
+    {
+        var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
+        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+    }
+
+    private async Task<(string email, string password)> CreateTestUserAsync(string? firstName = "Test", string? lastName = "User")
+    {
+        var email = $"test_{Guid.NewGuid():N}@example.com";
+        var password = "ValidPassword123!";
+
+        // Create user via admin endpoint
+        var adminClient = await GetAdminClientAsync();
+        var createCommand = new CreateUserCommand(email, password, firstName, lastName, null, null);
+        var createResponse = await adminClient.PostAsJsonAsync("/api/users", createCommand);
+        createResponse.EnsureSuccessStatusCode();
+
+        return (email, password);
+    }
+
     #region Login with Cookies Tests
 
     [Fact]
     public async Task Login_WithUseCookies_ShouldSetAuthCookies()
     {
-        // Arrange - First register a user
-        var email = $"cookie_login_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Test", "User");
-        await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
+        // Arrange - Create a user
+        var (email, password) = await CreateTestUserAsync();
 
         // Act - Login with useCookies=true
         var loginCommand = new LoginCommand(email, password, UseCookies: true);
@@ -47,11 +66,8 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Login_WithoutUseCookies_ShouldNotSetCookies()
     {
-        // Arrange - First register a user
-        var email = $"no_cookie_login_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Test", "User");
-        await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
+        // Arrange - Create a user
+        var (email, password) = await CreateTestUserAsync();
 
         // Act - Login without useCookies
         var loginCommand = new LoginCommand(email, password);
@@ -71,39 +87,13 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
 
     #endregion
 
-    #region Register with Cookies Tests
-
-    [Fact]
-    public async Task Register_WithUseCookies_ShouldSetAuthCookies()
-    {
-        // Arrange
-        var email = $"cookie_register_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "ValidPassword123!", "Cookie", "User");
-
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register?useCookies=true", registerCommand);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        // Check Set-Cookie headers
-        var setCookieHeaders = response.Headers.GetValues("Set-Cookie").ToList();
-        setCookieHeaders.Should().Contain(h => h.Contains("noir.access="));
-        setCookieHeaders.Should().Contain(h => h.Contains("noir.refresh="));
-    }
-
-    #endregion
-
     #region Cookie-Based Authentication Tests
 
     [Fact]
     public async Task GetCurrentUser_WithCookieAuth_ShouldSucceed()
     {
-        // Arrange - Register and login with cookies
-        var email = $"cookie_auth_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Cookie", "Auth");
-        await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
+        // Arrange - Create user and login with cookies
+        var (email, password) = await CreateTestUserAsync("Cookie", "Auth");
 
         // Create a new client with cookie handling
         var cookieClient = _factory.CreateTestClient();
@@ -127,20 +117,16 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task GetCurrentUser_AuthorizationHeaderTakesPrecedence_OverCookies()
     {
-        // Arrange - Register two different users
-        var email1 = $"cookie_user_{Guid.NewGuid():N}@example.com";
-        var email2 = $"header_user_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterCommand(email1, password, "Cookie", "User"));
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterCommand(email2, password, "Header", "User"));
+        // Arrange - Create two different users
+        var (email1, password1) = await CreateTestUserAsync("Cookie", "User");
+        var (email2, password2) = await CreateTestUserAsync("Header", "User");
 
         // Login first user with cookies
         var cookieClient = _factory.CreateTestClient();
-        await cookieClient.PostAsJsonAsync("/api/auth/login?useCookies=true", new LoginCommand(email1, password, true));
+        await cookieClient.PostAsJsonAsync("/api/auth/login?useCookies=true", new LoginCommand(email1, password1, true));
 
         // Login second user and get token
-        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new LoginCommand(email2, password));
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new LoginCommand(email2, password2));
         var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
 
         // Act - Add Authorization header to cookie client (should override cookies)
@@ -162,10 +148,8 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Logout_ShouldClearCookies()
     {
-        // Arrange - Register and login with cookies
-        var email = $"logout_test_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterCommand(email, password, "Logout", "Test"));
+        // Arrange - Create user and login with cookies
+        var (email, password) = await CreateTestUserAsync("Logout", "Test");
 
         var cookieClient = _factory.CreateTestClient();
         await cookieClient.PostAsJsonAsync("/api/auth/login?useCookies=true", new LoginCommand(email, password, true));
@@ -185,10 +169,8 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Logout_WithRevokeAllSessions_ShouldSucceed()
     {
-        // Arrange - Register and login
-        var email = $"logout_all_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterCommand(email, password, "Test", "User"));
+        // Arrange - Create user and login
+        var (email, password) = await CreateTestUserAsync();
 
         var cookieClient = _factory.CreateTestClient();
         var loginResponse = await cookieClient.PostAsJsonAsync("/api/auth/login?useCookies=true", new LoginCommand(email, password, true));
@@ -205,10 +187,8 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Logout_AfterLogout_ProtectedEndpointsShouldFail()
     {
-        // Arrange - Register and login with cookies
-        var email = $"logout_verify_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterCommand(email, password, "Test", "User"));
+        // Arrange - Create user and login with cookies
+        var (email, password) = await CreateTestUserAsync();
 
         var cookieClient = _factory.CreateTestClient();
         await cookieClient.PostAsJsonAsync("/api/auth/login?useCookies=true", new LoginCommand(email, password, true));
@@ -236,9 +216,7 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
     public async Task Login_WithCookies_CookiesShouldBeHttpOnly()
     {
         // Arrange
-        var email = $"httponly_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterCommand(email, password, "Test", "User"));
+        var (email, password) = await CreateTestUserAsync();
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/auth/login?useCookies=true", new LoginCommand(email, password, true));
@@ -255,9 +233,7 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
     public async Task Login_WithCookies_CookiesShouldHaveSameSiteStrict()
     {
         // Arrange
-        var email = $"samesite_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        await _client.PostAsJsonAsync("/api/auth/register", new RegisterCommand(email, password, "Test", "User"));
+        var (email, password) = await CreateTestUserAsync();
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/auth/login?useCookies=true", new LoginCommand(email, password, true));

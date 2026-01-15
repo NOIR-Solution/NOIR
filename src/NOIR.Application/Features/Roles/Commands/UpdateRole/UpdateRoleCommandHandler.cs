@@ -37,8 +37,52 @@ public class UpdateRoleCommandHandler
                     ErrorCodes.Business.AlreadyExists));
         }
 
-        // Update role
-        var result = await _roleIdentityService.UpdateRoleAsync(command.RoleId, command.Name, cancellationToken);
+        // Validate parent role if specified (prevent circular hierarchy)
+        string? parentRoleName = null;
+        if (!string.IsNullOrEmpty(command.ParentRoleId))
+        {
+            if (command.ParentRoleId == command.RoleId)
+            {
+                return Result.Failure<RoleDto>(
+                    Error.Validation(
+                        "parentRoleId",
+                        _localization["roles.cannotBeOwnParent"],
+                        ErrorCodes.Business.InvalidState));
+            }
+
+            var parentRole = await _roleIdentityService.FindByIdAsync(command.ParentRoleId, cancellationToken);
+            if (parentRole is null)
+            {
+                return Result.Failure<RoleDto>(
+                    Error.NotFound(
+                        _localization["roles.parentNotFound"],
+                        ErrorCodes.Auth.RoleNotFound));
+            }
+            parentRoleName = parentRole.Name;
+
+            // Check for circular reference by traversing up the hierarchy
+            var hierarchy = await _roleIdentityService.GetRoleHierarchyAsync(command.ParentRoleId, cancellationToken);
+            if (hierarchy.Any(r => r.Id == command.RoleId))
+            {
+                return Result.Failure<RoleDto>(
+                    Error.Validation(
+                        "parentRoleId",
+                        _localization["roles.circularHierarchy"],
+                        ErrorCodes.Business.InvalidState));
+            }
+        }
+
+        // Update role with all properties
+        var result = await _roleIdentityService.UpdateRoleAsync(
+            command.RoleId,
+            command.Name,
+            command.Description,
+            command.ParentRoleId,
+            command.SortOrder,
+            command.IconName,
+            command.Color,
+            cancellationToken);
+
         if (!result.Succeeded)
         {
             return Result.Failure<RoleDto>(
@@ -54,14 +98,24 @@ public class UpdateRoleCommandHandler
         }
 
         var permissions = await _roleIdentityService.GetPermissionsAsync(command.RoleId, cancellationToken);
+        var effectivePermissions = await _roleIdentityService.GetEffectivePermissionsAsync(command.RoleId, cancellationToken);
         var userCount = await _roleIdentityService.GetUserCountAsync(command.RoleId, cancellationToken);
 
         var roleDto = new RoleDto(
             updatedRole.Id,
             updatedRole.Name,
             updatedRole.NormalizedName,
+            updatedRole.Description,
+            updatedRole.ParentRoleId,
+            parentRoleName,
+            updatedRole.TenantId,
+            updatedRole.IsSystemRole,
+            updatedRole.SortOrder,
+            updatedRole.IconName,
+            updatedRole.Color,
             userCount,
-            permissions);
+            permissions,
+            effectivePermissions);
 
         return Result.Success(roleDto);
     }

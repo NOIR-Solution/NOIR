@@ -15,6 +15,16 @@ public class ApplicationUser : IdentityUser, IAuditableEntity
     public bool IsActive { get; set; } = true;
 
     /// <summary>
+    /// When the user was locked (IsActive set to false).
+    /// </summary>
+    public DateTimeOffset? LockedAt { get; set; }
+
+    /// <summary>
+    /// User ID who locked this user.
+    /// </summary>
+    public string? LockedBy { get; set; }
+
+    /// <summary>
     /// Path to the user's uploaded avatar in storage.
     /// When null, Gravatar or initials fallback is used.
     /// </summary>
@@ -43,5 +53,7 @@ public class ApplicationUser : IdentityUser, IAuditableEntity
     public DateTimeOffset? DeletedAt { get; set; }
     public string? DeletedBy { get; set; }
 
-    public string FullName => $"{FirstName} {LastName}".Trim();
+    public string FullName => !string.IsNullOrWhiteSpace(DisplayName)
+        ? DisplayName
+        : $"{FirstName} {LastName}".Trim();
 }

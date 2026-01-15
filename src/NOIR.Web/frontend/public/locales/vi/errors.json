@@ -84,5 +84,9 @@
     "alreadyExists": "{{entity}} đã tồn tại",
     "cannotDelete": "Không thể xóa {{entity}} vì đang được sử dụng",
     "invalidReference": "Tham chiếu không hợp lệ đến {{entity}}"
+  },
+  "permissions": {
+    "invalidForTenant": "Các quyền sau không thể gán cho vai trò cụ thể của đối tác: {{permissions}}",
+    "systemOnlyPermission": "Quyền này chỉ dành cho vai trò hệ thống"
   }
 }

@@ -94,7 +94,7 @@ public static class DependencyInjection
             .GetSection(IdentitySettings.SectionName)
             .Get<IdentitySettings>() ?? new IdentitySettings();
 
-        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
         {
             // Password settings from configuration
             options.Password.RequireDigit = identitySettings.Password.RequireDigit;

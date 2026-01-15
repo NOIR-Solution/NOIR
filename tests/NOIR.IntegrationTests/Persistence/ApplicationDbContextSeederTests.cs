@@ -41,7 +41,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
             // Assert - Default roles should exist
             foreach (var roleName in Roles.Defaults)
@@ -91,7 +91,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
             // Arrange
             var adminRole = await roleManager.FindByNameAsync(Roles.Admin);
@@ -115,7 +115,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
             // Arrange
             var userRole = await roleManager.FindByNameAsync(Roles.User);
@@ -143,7 +143,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(services =>
         {
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
             // Assert - Should have exactly the default roles, no duplicates
             var roles = roleManager.Roles.ToList();
@@ -165,7 +165,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
             // Arrange
             var adminRole = await roleManager.FindByNameAsync(Roles.Admin);
@@ -269,7 +269,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
             // Assert - Should have exactly 2 roles (Admin, User)
@@ -293,7 +293,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
     {
         await _factory.ExecuteWithTenantAsync(async services =>
         {
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
             // Assert - Both roles should have permissions configured
             foreach (var roleName in Roles.Defaults)

@@ -21,6 +21,8 @@ const Notifications = lazy(() => import('@/pages/portal/Notifications'))
 const NotificationPreferences = lazy(() => import('@/pages/portal/NotificationPreferences'))
 const TenantsPage = lazy(() => import('@/pages/portal/admin/tenants/TenantsPage'))
 const TenantDetailPage = lazy(() => import('@/pages/portal/admin/tenants/TenantDetailPage'))
+const RolesPage = lazy(() => import('@/pages/portal/admin/roles/RolesPage'))
+const UsersPage = lazy(() => import('@/pages/portal/admin/users/UsersPage'))
 // Email templates - keep named exports as eager load (smaller components)
 import { EmailTemplatesPage, EmailTemplateEditPage } from '@/pages/portal/email-templates'
 
@@ -75,6 +77,8 @@ function App() {
             {/* Admin Routes */}
             <Route path="admin/tenants" element={<Suspense fallback={<LazyFallback />}><TenantsPage /></Suspense>} />
             <Route path="admin/tenants/:id" element={<Suspense fallback={<LazyFallback />}><TenantDetailPage /></Suspense>} />
+            <Route path="admin/roles" element={<Suspense fallback={<LazyFallback />}><RolesPage /></Suspense>} />
+            <Route path="admin/users" element={<Suspense fallback={<LazyFallback />}><UsersPage /></Suspense>} />
           </Route>
 
           {/* Catch-all redirect to landing */}

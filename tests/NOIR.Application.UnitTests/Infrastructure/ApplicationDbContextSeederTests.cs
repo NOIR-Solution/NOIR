@@ -19,13 +19,13 @@ public class ApplicationDbContextSeederTests
     public async Task SeedRolesAsync_WhenRolesDoNotExist_ShouldCreateRoles()
     {
         // Arrange
-        var roleStore = new Mock<IRoleStore<IdentityRole>>();
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
         var roleManager = CreateRoleManager(roleStore);
 
         roleStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((IdentityRole?)null);
+            .ReturnsAsync((ApplicationRole?)null);
 
-        roleStore.Setup(x => x.CreateAsync(It.IsAny<IdentityRole>(), It.IsAny<CancellationToken>()))
+        roleStore.Setup(x => x.CreateAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityResult.Success);
 
         // Need to setup claims store for permission seeding
@@ -36,7 +36,7 @@ public class ApplicationDbContextSeederTests
 
         // Assert - Should create each default role
         roleStore.Verify(
-            x => x.CreateAsync(It.IsAny<IdentityRole>(), It.IsAny<CancellationToken>()),
+            x => x.CreateAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()),
             Times.Exactly(Roles.Defaults.Count()));
     }
 
@@ -44,12 +44,12 @@ public class ApplicationDbContextSeederTests
     public async Task SeedRolesAsync_WhenRolesExist_ShouldNotCreateRoles()
     {
         // Arrange
-        var roleStore = new Mock<IRoleStore<IdentityRole>>();
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
         var roleManager = CreateRoleManager(roleStore);
 
         // Return existing role for each lookup
         roleStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string name, CancellationToken _) => new IdentityRole(name));
+            .ReturnsAsync((string name, CancellationToken _) => ApplicationRole.Create(name));
 
         SetupRoleClaimsStore(roleStore, []);
 
@@ -58,7 +58,7 @@ public class ApplicationDbContextSeederTests
 
         // Assert - Should not create any roles
         roleStore.Verify(
-            x => x.CreateAsync(It.IsAny<IdentityRole>(), It.IsAny<CancellationToken>()),
+            x => x.CreateAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -70,9 +70,9 @@ public class ApplicationDbContextSeederTests
     public async Task SeedRolePermissionsAsync_WhenPermissionsDoNotExist_ShouldAddPermissions()
     {
         // Arrange
-        var roleStore = new Mock<IRoleStore<IdentityRole>>();
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
         var roleManager = CreateRoleManager(roleStore);
-        var role = new IdentityRole(Roles.Admin);
+        var role = ApplicationRole.Create(Roles.Admin);
         var permissions = new List<string> { "Users.View", "Users.Create" };
 
         SetupRoleClaimsStore(roleStore, []);
@@ -82,7 +82,7 @@ public class ApplicationDbContextSeederTests
             roleManager, role, permissions, _loggerMock.Object);
 
         // Assert - Should add each permission
-        var claimsStore = roleStore.As<IRoleClaimStore<IdentityRole>>();
+        var claimsStore = roleStore.As<IRoleClaimStore<ApplicationRole>>();
         claimsStore.Verify(
             x => x.AddClaimAsync(role, It.Is<Claim>(c => c.Type == Permissions.ClaimType), It.IsAny<CancellationToken>()),
             Times.Exactly(permissions.Count));
@@ -92,9 +92,9 @@ public class ApplicationDbContextSeederTests
     public async Task SeedRolePermissionsAsync_WhenPermissionsExist_ShouldNotDuplicate()
     {
         // Arrange
-        var roleStore = new Mock<IRoleStore<IdentityRole>>();
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
         var roleManager = CreateRoleManager(roleStore);
-        var role = new IdentityRole(Roles.Admin);
+        var role = ApplicationRole.Create(Roles.Admin);
         var permissions = new List<string> { "Users.View", "Users.Create" };
 
         // Setup existing claims that match the permissions
@@ -108,9 +108,9 @@ public class ApplicationDbContextSeederTests
             roleManager, role, permissions, _loggerMock.Object);
 
         // Assert - Should not add any claims
-        var claimsStore = roleStore.As<IRoleClaimStore<IdentityRole>>();
+        var claimsStore = roleStore.As<IRoleClaimStore<ApplicationRole>>();
         claimsStore.Verify(
-            x => x.AddClaimAsync(It.IsAny<IdentityRole>(), It.IsAny<Claim>(), It.IsAny<CancellationToken>()),
+            x => x.AddClaimAsync(It.IsAny<ApplicationRole>(), It.IsAny<Claim>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -118,9 +118,9 @@ public class ApplicationDbContextSeederTests
     public async Task SeedRolePermissionsAsync_WithPartialExisting_ShouldAddOnlyNew()
     {
         // Arrange
-        var roleStore = new Mock<IRoleStore<IdentityRole>>();
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
         var roleManager = CreateRoleManager(roleStore);
-        var role = new IdentityRole(Roles.Admin);
+        var role = ApplicationRole.Create(Roles.Admin);
         var permissions = new List<string> { "Users.View", "Users.Create", "Users.Delete" };
 
         // Only first permission exists
@@ -135,7 +135,7 @@ public class ApplicationDbContextSeederTests
             roleManager, role, permissions, _loggerMock.Object);
 
         // Assert - Should add only 2 new permissions
-        var claimsStore = roleStore.As<IRoleClaimStore<IdentityRole>>();
+        var claimsStore = roleStore.As<IRoleClaimStore<ApplicationRole>>();
         claimsStore.Verify(
             x => x.AddClaimAsync(role, It.Is<Claim>(c => c.Type == Permissions.ClaimType), It.IsAny<CancellationToken>()),
             Times.Exactly(2));
@@ -350,15 +350,15 @@ public class ApplicationDbContextSeederTests
     public async Task SeedRolesAsync_WhenRoleCreationFails_ShouldContinueWithNextRole()
     {
         // Arrange
-        var roleStore = new Mock<IRoleStore<IdentityRole>>();
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
         var roleManager = CreateRoleManager(roleStore);
 
         roleStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((IdentityRole?)null);
+            .ReturnsAsync((ApplicationRole?)null);
 
         // First role fails, second succeeds
         var callCount = 0;
-        roleStore.Setup(x => x.CreateAsync(It.IsAny<IdentityRole>(), It.IsAny<CancellationToken>()))
+        roleStore.Setup(x => x.CreateAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() =>
             {
                 callCount++;
@@ -374,7 +374,7 @@ public class ApplicationDbContextSeederTests
 
         // Assert - Should attempt to create both roles
         roleStore.Verify(
-            x => x.CreateAsync(It.IsAny<IdentityRole>(), It.IsAny<CancellationToken>()),
+            x => x.CreateAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()),
             Times.Exactly(Roles.Defaults.Count()));
     }
 
@@ -382,18 +382,18 @@ public class ApplicationDbContextSeederTests
     public async Task SeedRolePermissionsAsync_WhenAddClaimFails_ShouldContinueWithNextPermission()
     {
         // Arrange
-        var roleStore = new Mock<IRoleStore<IdentityRole>>();
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
         var roleManager = CreateRoleManager(roleStore);
-        var role = new IdentityRole(Roles.Admin);
+        var role = ApplicationRole.Create(Roles.Admin);
         var permissions = new List<string> { "Perm1", "Perm2", "Perm3" };
 
-        var claimsStore = roleStore.As<IRoleClaimStore<IdentityRole>>();
-        claimsStore.Setup(x => x.GetClaimsAsync(It.IsAny<IdentityRole>(), It.IsAny<CancellationToken>()))
+        var claimsStore = roleStore.As<IRoleClaimStore<ApplicationRole>>();
+        claimsStore.Setup(x => x.GetClaimsAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Claim>());
 
         // First add fails, rest succeed
         var addCallCount = 0;
-        claimsStore.Setup(x => x.AddClaimAsync(It.IsAny<IdentityRole>(), It.IsAny<Claim>(), It.IsAny<CancellationToken>()))
+        claimsStore.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationRole>(), It.IsAny<Claim>(), It.IsAny<CancellationToken>()))
             .Returns(() =>
             {
                 addCallCount++;
@@ -483,26 +483,26 @@ public class ApplicationDbContextSeederTests
 
     #region Helper Methods
 
-    private static RoleManager<IdentityRole> CreateRoleManager(Mock<IRoleStore<IdentityRole>> store)
+    private static RoleManager<ApplicationRole> CreateRoleManager(Mock<IRoleStore<ApplicationRole>> store)
     {
-        store.As<IRoleClaimStore<IdentityRole>>();
+        store.As<IRoleClaimStore<ApplicationRole>>();
 
-        return new RoleManager<IdentityRole>(
+        return new RoleManager<ApplicationRole>(
             store.Object,
-            Array.Empty<IRoleValidator<IdentityRole>>(),
+            Array.Empty<IRoleValidator<ApplicationRole>>(),
             new UpperInvariantLookupNormalizer(),
             new IdentityErrorDescriber(),
-            new Mock<ILogger<RoleManager<IdentityRole>>>().Object);
+            new Mock<ILogger<RoleManager<ApplicationRole>>>().Object);
     }
 
-    private static void SetupRoleClaimsStore(Mock<IRoleStore<IdentityRole>> store, List<Claim> existingClaims)
+    private static void SetupRoleClaimsStore(Mock<IRoleStore<ApplicationRole>> store, List<Claim> existingClaims)
     {
-        var claimsStore = store.As<IRoleClaimStore<IdentityRole>>();
+        var claimsStore = store.As<IRoleClaimStore<ApplicationRole>>();
 
-        claimsStore.Setup(x => x.GetClaimsAsync(It.IsAny<IdentityRole>(), It.IsAny<CancellationToken>()))
+        claimsStore.Setup(x => x.GetClaimsAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingClaims);
 
-        claimsStore.Setup(x => x.AddClaimAsync(It.IsAny<IdentityRole>(), It.IsAny<Claim>(), It.IsAny<CancellationToken>()))
+        claimsStore.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationRole>(), It.IsAny<Claim>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
     }
 

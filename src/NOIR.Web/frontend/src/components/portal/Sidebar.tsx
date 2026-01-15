@@ -14,6 +14,8 @@ import {
   Check,
   Mail,
   Building2,
+  Shield,
+  Users,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -60,6 +62,8 @@ const navItems: NavItem[] = [
 
 const adminNavItems: NavItem[] = [
   { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants' },
+  { titleKey: 'roles.title', icon: Shield, path: '/portal/admin/roles' },
+  { titleKey: 'users.title', icon: Users, path: '/portal/admin/users' },
 ]
 
 /**

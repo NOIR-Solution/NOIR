@@ -41,22 +41,62 @@ public interface IRoleIdentityService
         int pageSize,
         CancellationToken ct = default);
 
+    /// <summary>
+    /// Gets paginated roles with optional search and tenant filter.
+    /// When tenantId is specified, returns only system roles (TenantId = null) and tenant-specific roles.
+    /// When tenantId is null, returns only system roles.
+    /// </summary>
+    Task<(IReadOnlyList<RoleIdentityDto> Roles, int TotalCount)> GetRolesPaginatedAsync(
+        string? search,
+        int page,
+        int pageSize,
+        Guid? tenantId,
+        bool includeSystemRoles,
+        CancellationToken ct = default);
+
     #endregion
 
     #region Role CRUD
 
     /// <summary>
-    /// Creates a new role.
+    /// Creates a new role with basic name only.
     /// </summary>
     Task<IdentityOperationResult> CreateRoleAsync(string roleName, CancellationToken ct = default);
 
     /// <summary>
-    /// Updates a role's name.
+    /// Creates a new role with all properties.
+    /// </summary>
+    Task<IdentityOperationResult> CreateRoleAsync(
+        string roleName,
+        string? description,
+        string? parentRoleId,
+        Guid? tenantId,
+        bool isSystemRole,
+        int sortOrder,
+        string? iconName,
+        string? color,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Updates a role's name only.
     /// </summary>
     Task<IdentityOperationResult> UpdateRoleAsync(string roleId, string newName, CancellationToken ct = default);
 
     /// <summary>
-    /// Deletes a role.
+    /// Updates a role with all properties.
+    /// </summary>
+    Task<IdentityOperationResult> UpdateRoleAsync(
+        string roleId,
+        string newName,
+        string? description,
+        string? parentRoleId,
+        int sortOrder,
+        string? iconName,
+        string? color,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Deletes a role (soft delete).
     /// </summary>
     Task<IdentityOperationResult> DeleteRoleAsync(string roleId, CancellationToken ct = default);
 
@@ -110,13 +150,35 @@ public interface IRoleIdentityService
         CancellationToken ct = default);
 
     #endregion
+
+    #region Effective Permissions (with Hierarchy)
+
+    /// <summary>
+    /// Gets effective permissions for a role including inherited permissions from parent roles.
+    /// </summary>
+    Task<IReadOnlyList<string>> GetEffectivePermissionsAsync(string roleId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets the role hierarchy chain (from child to root).
+    /// </summary>
+    Task<IReadOnlyList<RoleIdentityDto>> GetRoleHierarchyAsync(string roleId, CancellationToken ct = default);
+
+    #endregion
 }
 
 /// <summary>
 /// DTO representing role identity information.
 /// Decouples Application layer from IdentityRole entity.
+/// Includes hierarchy, tenant scoping, and display properties.
 /// </summary>
 public record RoleIdentityDto(
     string Id,
     string Name,
-    string? NormalizedName);
+    string? NormalizedName,
+    string? Description = null,
+    string? ParentRoleId = null,
+    Guid? TenantId = null,
+    bool IsSystemRole = false,
+    int SortOrder = 0,
+    string? IconName = null,
+    string? Color = null);

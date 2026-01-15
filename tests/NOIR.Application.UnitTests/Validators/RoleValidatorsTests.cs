@@ -47,7 +47,7 @@ public class RoleValidatorsTests
         public void Validate_ValidCommand_ShouldPass()
         {
             // Arrange
-            var command = new CreateRoleCommand("TestRole", []);
+            var command = new CreateRoleCommand("TestRole");
 
             // Act
             var result = _validator.TestValidate(command);
@@ -60,7 +60,7 @@ public class RoleValidatorsTests
         public void Validate_ValidCommandWithPermissions_ShouldPass()
         {
             // Arrange
-            var command = new CreateRoleCommand("TestRole", [Permissions.UsersRead, Permissions.RolesRead]);
+            var command = new CreateRoleCommand("TestRole", Permissions: [Permissions.UsersRead, Permissions.RolesRead]);
 
             // Act
             var result = _validator.TestValidate(command);
@@ -73,7 +73,7 @@ public class RoleValidatorsTests
         public void Validate_EmptyName_ShouldFail()
         {
             // Arrange
-            var command = new CreateRoleCommand("", []);
+            var command = new CreateRoleCommand("");
 
             // Act
             var result = _validator.TestValidate(command);
@@ -88,7 +88,7 @@ public class RoleValidatorsTests
         public void Validate_NameTooShort_ShouldFail(string name)
         {
             // Arrange
-            var command = new CreateRoleCommand(name, []);
+            var command = new CreateRoleCommand(name);
 
             // Act
             var result = _validator.TestValidate(command);
@@ -103,7 +103,7 @@ public class RoleValidatorsTests
         {
             // Arrange
             var longName = new string('a', 51);
-            var command = new CreateRoleCommand(longName, []);
+            var command = new CreateRoleCommand(longName);
 
             // Act
             var result = _validator.TestValidate(command);
@@ -122,7 +122,7 @@ public class RoleValidatorsTests
         public void Validate_InvalidNameFormat_ShouldFail(string name)
         {
             // Arrange
-            var command = new CreateRoleCommand(name, []);
+            var command = new CreateRoleCommand(name);
 
             // Act
             var result = _validator.TestValidate(command);
@@ -141,7 +141,7 @@ public class RoleValidatorsTests
         public void Validate_ValidNameFormats_ShouldPass(string name)
         {
             // Arrange
-            var command = new CreateRoleCommand(name, []);
+            var command = new CreateRoleCommand(name);
 
             // Act
             var result = _validator.TestValidate(command);
@@ -154,7 +154,7 @@ public class RoleValidatorsTests
         public void Validate_InvalidPermission_ShouldFail()
         {
             // Arrange
-            var command = new CreateRoleCommand("TestRole", ["invalid.permission"]);
+            var command = new CreateRoleCommand("TestRole", Permissions: ["invalid.permission"]);
 
             // Act
             var result = _validator.TestValidate(command);
@@ -167,7 +167,7 @@ public class RoleValidatorsTests
         public void Validate_EmptyPermissionInList_ShouldFail()
         {
             // Arrange
-            var command = new CreateRoleCommand("TestRole", [""]);
+            var command = new CreateRoleCommand("TestRole", Permissions: [""]);
 
             // Act
             var result = _validator.TestValidate(command);

@@ -98,7 +98,7 @@ public class CreateRoleCommandHandlerTests
             .Setup(x => x.GetPermissionsAsync(roleId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(permissions);
 
-        var command = new CreateRoleCommand(roleName, permissions);
+        var command = new CreateRoleCommand(roleName, Permissions: permissions);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -162,7 +162,7 @@ public class CreateRoleCommandHandlerTests
             .Setup(x => x.GetPermissionsAsync(roleId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string>());
 
-        var command = new CreateRoleCommand(roleName, new List<string>());
+        var command = new CreateRoleCommand(roleName, Permissions: new List<string>());
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
@@ -274,7 +274,7 @@ public class CreateRoleCommandHandlerTests
             .Setup(x => x.AddPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Failure("Invalid permission"));
 
-        var command = new CreateRoleCommand(roleName, permissions);
+        var command = new CreateRoleCommand(roleName, Permissions: permissions);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

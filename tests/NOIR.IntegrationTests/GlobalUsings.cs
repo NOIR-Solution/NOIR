@@ -56,7 +56,6 @@ global using NOIR.Application.Common.Settings;
 global using NOIR.Application.Features.Auth.Commands.Login;
 global using NOIR.Application.Features.Auth.Commands.Logout;
 global using NOIR.Application.Features.Auth.Commands.RefreshToken;
-global using NOIR.Application.Features.Auth.Commands.Register;
 global using NOIR.Application.Features.Auth.DTOs;
 global using NOIR.Application.Features.Auth.Queries.GetCurrentUser;
 global using NOIR.Application.Features.Auth.Queries.GetUserById;
@@ -91,6 +90,7 @@ global using NOIR.Application.Features.Roles.Queries.GetRoleById;
 global using NOIR.Application.Features.Roles.DTOs;
 
 // NOIR Application - Users
+global using NOIR.Application.Features.Users.Commands.CreateUser;
 global using NOIR.Application.Features.Users.Commands.UpdateUser;
 global using NOIR.Application.Features.Users.Commands.DeleteUser;
 global using NOIR.Application.Features.Users.Commands.AssignRoles;

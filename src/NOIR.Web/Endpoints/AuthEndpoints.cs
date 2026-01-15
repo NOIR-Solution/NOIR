@@ -13,25 +13,8 @@ public static class AuthEndpoints
             .WithTags("Authentication")
             .CacheOutput("NoCache"); // Never cache auth responses
 
-        // Login/Register/Refresh use stricter "auth" rate limit (Sliding Window, 5 req/min)
+        // Login/Refresh use stricter "auth" rate limit (Sliding Window, 5 req/min)
         // to prevent brute force attacks
-        group.MapPost("/register", async (
-            RegisterCommand command,
-            IMessageBus bus,
-            bool useCookies = false) =>
-        {
-            // Apply useCookies from query parameter
-            var commandWithCookies = command with { UseCookies = useCookies };
-            var result = await bus.InvokeAsync<Result<AuthResponse>>(commandWithCookies);
-            return result.ToHttpResult();
-        })
-        .RequireRateLimiting("auth")
-        .WithName("Register")
-        .WithSummary("Register a new user account")
-        .WithDescription("Creates a new user account. Use ?useCookies=true to set HttpOnly auth cookies for browser clients.")
-        .Produces<AuthResponse>(StatusCodes.Status200OK)
-        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
-
         group.MapPost("/login", async (
             LoginCommand command,
             IMessageBus bus,

@@ -16,7 +16,7 @@ public static class ApplicationDbContextSeeder
             var context = services.GetRequiredService<ApplicationDbContext>();
             var tenantStoreContext = services.GetRequiredService<TenantStoreDbContext>();
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
             var logger = services.GetRequiredService<ILogger<ApplicationDbContext>>();
 
             // Ensure database is created and migrations are applied FIRST
@@ -88,6 +88,12 @@ public static class ApplicationDbContextSeeder
 
             // Fix notification preferences TenantId (for preferences created before proper tenant context)
             await FixNotificationPreferencesTenantAsync(context, logger);
+
+            // Seed permissions (database-backed Permission entities)
+            await SeedPermissionsAsync(context, logger);
+
+            // Seed permission templates
+            await SeedPermissionTemplatesAsync(context, logger);
         }
         catch (Exception ex)
         {
@@ -146,17 +152,52 @@ public static class ApplicationDbContextSeeder
         return existingTenant;
     }
 
-    internal static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager, ILogger logger)
+    internal static async Task SeedRolesAsync(RoleManager<ApplicationRole> roleManager, ILogger logger)
     {
+        // Define role hierarchy and properties
+        var roleDefinitions = new Dictionary<string, (string? Description, string? ParentRoleId, int SortOrder, string? IconName, string? Color)>
+        {
+            [Roles.Admin] = ("Full system access with all permissions", null, 0, "shield", "red"),
+            [Roles.User] = ("Standard user access", null, 10, "user", "blue")
+        };
+
         foreach (var roleName in Roles.Defaults)
         {
             var role = await roleManager.FindByNameAsync(roleName);
+            var definition = roleDefinitions.GetValueOrDefault(roleName);
 
             if (role is null)
             {
-                role = new IdentityRole(roleName);
+                role = ApplicationRole.Create(
+                    roleName,
+                    definition.Description,
+                    definition.ParentRoleId,
+                    tenantId: null,
+                    isSystemRole: true,
+                    definition.SortOrder,
+                    definition.IconName,
+                    definition.Color);
                 await roleManager.CreateAsync(role);
                 logger.LogInformation("Created role: {Role}", roleName);
+            }
+            else
+            {
+                // Update existing role to be a system role with proper properties
+                if (!role.IsSystemRole)
+                {
+                    role.Update(
+                        roleName,
+                        definition.Description,
+                        definition.ParentRoleId,
+                        definition.SortOrder,
+                        definition.IconName,
+                        definition.Color);
+                    // Mark as system role directly
+                    var isSystemRoleProp = typeof(ApplicationRole).GetProperty(nameof(ApplicationRole.IsSystemRole));
+                    isSystemRoleProp?.SetValue(role, true);
+                    await roleManager.UpdateAsync(role);
+                    logger.LogInformation("Updated role {Role} to system role", roleName);
+                }
             }
 
             // Seed permissions for this role
@@ -168,8 +209,8 @@ public static class ApplicationDbContextSeeder
     }
 
     internal static async Task SeedRolePermissionsAsync(
-        RoleManager<IdentityRole> roleManager,
-        IdentityRole role,
+        RoleManager<ApplicationRole> roleManager,
+        ApplicationRole role,
         IReadOnlyList<string> permissions,
         ILogger logger)
     {
@@ -349,6 +390,236 @@ public static class ApplicationDbContextSeeder
             await context.SaveChangesAsync();
             logger.LogInformation("Fixed TenantId for {Count} existing notification preferences", fixedCount);
         }
+    }
+
+    /// <summary>
+    /// Seeds Permission entities based on the Permissions constants.
+    /// These enable database-backed permission management alongside claims.
+    /// </summary>
+    internal static async Task SeedPermissionsAsync(ApplicationDbContext context, ILogger logger)
+    {
+        var existingPermissions = await context.Set<Permission>()
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        var existingByName = existingPermissions.ToDictionary(p => p.Name);
+        var permissionsToSeed = GetPermissionDefinitions();
+        var newPermissions = new List<Permission>();
+
+        foreach (var permission in permissionsToSeed)
+        {
+            if (!existingByName.ContainsKey(permission.Name))
+            {
+                newPermissions.Add(permission);
+                logger.LogInformation("Seeding permission: {Permission}", permission.Name);
+            }
+        }
+
+        if (newPermissions.Count > 0)
+        {
+            await context.Set<Permission>().AddRangeAsync(newPermissions);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded {Count} permissions", newPermissions.Count);
+        }
+    }
+
+    /// <summary>
+    /// Builds a list of Permission entities from the Permissions constants.
+    /// </summary>
+    private static List<Permission> GetPermissionDefinitions()
+    {
+        var permissions = new List<Permission>();
+        var sortOrder = 0;
+
+        // Users category
+        permissions.Add(Permission.Create("users", "read", "View Users", null, "View user profiles and list users", "User Management", true, sortOrder++));
+        permissions.Add(Permission.Create("users", "create", "Create Users", null, "Create new user accounts", "User Management", true, sortOrder++));
+        permissions.Add(Permission.Create("users", "update", "Update Users", null, "Edit user profiles and settings", "User Management", true, sortOrder++));
+        permissions.Add(Permission.Create("users", "delete", "Delete Users", null, "Delete user accounts", "User Management", true, sortOrder++));
+        permissions.Add(Permission.Create("users", "manage-roles", "Manage User Roles", null, "Assign and remove roles from users", "User Management", true, sortOrder++));
+
+        // Roles category
+        permissions.Add(Permission.Create("roles", "read", "View Roles", null, "View roles and their permissions", "Role Management", true, sortOrder++));
+        permissions.Add(Permission.Create("roles", "create", "Create Roles", null, "Create new roles", "Role Management", true, sortOrder++));
+        permissions.Add(Permission.Create("roles", "update", "Update Roles", null, "Edit role details", "Role Management", true, sortOrder++));
+        permissions.Add(Permission.Create("roles", "delete", "Delete Roles", null, "Delete roles", "Role Management", true, sortOrder++));
+        permissions.Add(Permission.Create("roles", "manage-permissions", "Manage Role Permissions", null, "Assign and remove permissions from roles", "Role Management", true, sortOrder++));
+
+        // Tenants category
+        permissions.Add(Permission.Create("tenants", "read", "View Tenants", null, "View tenant information", "Tenant Management", true, sortOrder++));
+        permissions.Add(Permission.Create("tenants", "create", "Create Tenants", null, "Create new tenants", "Tenant Management", true, sortOrder++));
+        permissions.Add(Permission.Create("tenants", "update", "Update Tenants", null, "Edit tenant settings", "Tenant Management", true, sortOrder++));
+        permissions.Add(Permission.Create("tenants", "delete", "Delete Tenants", null, "Delete tenants", "Tenant Management", true, sortOrder++));
+
+        // System category
+        permissions.Add(Permission.Create("system", "admin", "System Admin", null, "Full system administration access", "System", true, sortOrder++));
+        permissions.Add(Permission.Create("system", "audit-logs", "View Audit Logs", null, "Access system audit logs", "System", true, sortOrder++));
+        permissions.Add(Permission.Create("system", "settings", "Manage System Settings", null, "Configure system settings", "System", true, sortOrder++));
+        permissions.Add(Permission.Create("system", "hangfire", "Hangfire Dashboard", null, "Access Hangfire background job dashboard", "System", true, sortOrder++));
+
+        // Audit category
+        permissions.Add(Permission.Create("audit", "read", "View Audit Data", null, "View audit records", "Audit", true, sortOrder++));
+        permissions.Add(Permission.Create("audit", "export", "Export Audit Data", null, "Export audit logs to files", "Audit", true, sortOrder++));
+        permissions.Add(Permission.Create("audit", "entity-history", "View Entity History", null, "View change history for entities", "Audit", true, sortOrder++));
+        permissions.Add(Permission.Create("audit", "policy-read", "Read Audit Policies", null, "View audit policy configurations", "Audit", true, sortOrder++));
+        permissions.Add(Permission.Create("audit", "policy-write", "Write Audit Policies", null, "Create and edit audit policies", "Audit", true, sortOrder++));
+        permissions.Add(Permission.Create("audit", "policy-delete", "Delete Audit Policies", null, "Delete audit policies", "Audit", true, sortOrder++));
+        permissions.Add(Permission.Create("audit", "stream", "Stream Audit Events", null, "Access real-time audit event stream", "Audit", true, sortOrder++));
+
+        // Email Templates category
+        permissions.Add(Permission.Create("email-templates", "read", "View Email Templates", null, "View email templates", "Email Templates", true, sortOrder++));
+        permissions.Add(Permission.Create("email-templates", "update", "Update Email Templates", null, "Edit email template content", "Email Templates", true, sortOrder++));
+
+        return permissions;
+    }
+
+    /// <summary>
+    /// Seeds PermissionTemplate entities with predefined role permission sets.
+    /// </summary>
+    internal static async Task SeedPermissionTemplatesAsync(ApplicationDbContext context, ILogger logger)
+    {
+        var existingTemplates = await context.Set<PermissionTemplate>()
+            .IgnoreQueryFilters()
+            .Include(t => t.Items)
+            .ToListAsync();
+
+        var existingByName = existingTemplates.ToDictionary(t => t.Name);
+
+        // Get all permissions from DB for linking
+        var allPermissions = await context.Set<Permission>()
+            .IgnoreQueryFilters()
+            .ToListAsync();
+        var permissionsByName = allPermissions.ToDictionary(p => p.Name);
+
+        var templatesToSeed = GetPermissionTemplateDefinitions();
+        var newTemplates = new List<PermissionTemplate>();
+
+        foreach (var (templateName, templateDef) in templatesToSeed)
+        {
+            if (!existingByName.ContainsKey(templateName))
+            {
+                var template = PermissionTemplate.Create(
+                    templateName,
+                    templateDef.Description,
+                    tenantId: null,
+                    isSystem: true,
+                    templateDef.IconName,
+                    templateDef.Color,
+                    templateDef.SortOrder);
+
+                // Add permission items
+                foreach (var permissionName in templateDef.Permissions)
+                {
+                    if (permissionsByName.TryGetValue(permissionName, out var permission))
+                    {
+                        template.AddPermission(permission.Id);
+                    }
+                    else
+                    {
+                        logger.LogWarning("Permission {Permission} not found for template {Template}", permissionName, templateName);
+                    }
+                }
+
+                newTemplates.Add(template);
+                logger.LogInformation("Seeding permission template: {Template} with {Count} permissions", templateName, templateDef.Permissions.Count);
+            }
+        }
+
+        if (newTemplates.Count > 0)
+        {
+            await context.Set<PermissionTemplate>().AddRangeAsync(newTemplates);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded {Count} permission templates", newTemplates.Count);
+        }
+    }
+
+    /// <summary>
+    /// Defines permission templates with their permission sets.
+    /// </summary>
+    private static Dictionary<string, (string Description, string? IconName, string? Color, int SortOrder, IReadOnlyList<string> Permissions)> GetPermissionTemplateDefinitions()
+    {
+        return new Dictionary<string, (string, string?, string?, int, IReadOnlyList<string>)>
+        {
+            ["Full Admin"] = (
+                "Complete system access - all permissions across all modules",
+                "shield-check",
+                "#dc2626",
+                0,
+                Permissions.All
+            ),
+            ["User Manager"] = (
+                "Manage users and their role assignments",
+                "users",
+                "#2563eb",
+                10,
+                [
+                    Permissions.UsersRead,
+                    Permissions.UsersCreate,
+                    Permissions.UsersUpdate,
+                    Permissions.UsersDelete,
+                    Permissions.UsersManageRoles,
+                    Permissions.RolesRead
+                ]
+            ),
+            ["Role Administrator"] = (
+                "Create and manage roles with full permission assignment",
+                "key",
+                "#7c3aed",
+                20,
+                [
+                    Permissions.RolesRead,
+                    Permissions.RolesCreate,
+                    Permissions.RolesUpdate,
+                    Permissions.RolesDelete,
+                    Permissions.RolesManagePermissions
+                ]
+            ),
+            ["Tenant Administrator"] = (
+                "Manage tenant settings and configurations",
+                "building",
+                "#059669",
+                30,
+                [
+                    Permissions.TenantsRead,
+                    Permissions.TenantsUpdate,
+                    Permissions.UsersRead,
+                    Permissions.RolesRead
+                ]
+            ),
+            ["Auditor"] = (
+                "Read-only access to audit logs and system monitoring",
+                "eye",
+                "#0891b2",
+                40,
+                [
+                    Permissions.AuditRead,
+                    Permissions.AuditExport,
+                    Permissions.AuditEntityHistory,
+                    Permissions.AuditPolicyRead,
+                    Permissions.UsersRead,
+                    Permissions.RolesRead
+                ]
+            ),
+            ["Content Editor"] = (
+                "Manage email templates and content",
+                "file-text",
+                "#f59e0b",
+                50,
+                [
+                    Permissions.EmailTemplatesRead,
+                    Permissions.EmailTemplatesUpdate
+                ]
+            ),
+            ["Basic User"] = (
+                "Standard read-only access for regular users",
+                "user",
+                "#6b7280",
+                100,
+                [
+                    Permissions.UsersRead
+                ]
+            )
+        };
     }
 
     private static List<EmailTemplate> GetEmailTemplateDefinitions()

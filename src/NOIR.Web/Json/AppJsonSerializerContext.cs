@@ -12,7 +12,6 @@ namespace NOIR.Web.Json;
 [JsonSerializable(typeof(AuthResponse))]
 [JsonSerializable(typeof(CurrentUserDto))]
 // Auth Commands
-[JsonSerializable(typeof(RegisterCommand))]
 [JsonSerializable(typeof(LoginCommand))]
 [JsonSerializable(typeof(RefreshTokenCommand))]
 [JsonSerializable(typeof(UpdateUserProfileCommand))]

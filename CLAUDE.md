@@ -217,6 +217,90 @@ public class CustomerByIdSpec : Specification<Customer>
 | Read-only queries | `AsNoTracking` (default) |
 | Multiple collections | `.AsSplitQuery()` |
 
+## Frontend Rules (React/TypeScript)
+
+### Zod Validation
+```typescript
+// CORRECT: Zod uses `.issues` not `.errors`
+const result = schema.safeParse(data)
+if (!result.success) {
+  result.error.issues.forEach((issue) => {  // ✅ .issues
+    console.log(issue.message)
+  })
+}
+
+// WRONG: This will throw "Cannot read properties of undefined"
+result.error.errors.forEach(...)  // ❌ .errors does not exist
+```
+
+### Real-Time Form Validation
+```typescript
+// Use onBlur + touched state for inline validation (not browser tooltips)
+const [errors, setErrors] = useState<Record<string, string>>({})
+const [touched, setTouched] = useState<Record<string, boolean>>({})
+
+const handleBlur = (field: string, value: string) => {
+  setTouched(prev => ({ ...prev, [field]: true }))
+  const error = validateField(field, value)
+  setErrors(prev => ({ ...prev, [field]: error }))
+}
+
+// In JSX:
+<form noValidate>  {/* Disable browser validation */}
+  <Input
+    type="text"  {/* Use text, not email - avoids browser popup */}
+    onBlur={(e) => handleBlur('email', e.target.value)}
+    className={touched.email && errors.email ? 'border-destructive' : ''}
+  />
+  {touched.email && errors.email && (
+    <p className="text-sm text-destructive">{errors.email}</p>
+  )}
+</form>
+```
+
+### Dialog Form Layout (Focus Ring Clipping)
+```typescript
+// CORRECT: Simple DialogContent without scroll containers (like CreateRoleDialog)
+<DialogContent className="sm:max-w-[500px]">
+  <DialogHeader>...</DialogHeader>
+  <form className="space-y-4">
+    <div className="grid gap-4">
+      {/* Form fields - focus rings won't be clipped */}
+    </div>
+    <DialogFooter>...</DialogFooter>
+  </form>
+</DialogContent>
+
+// WRONG: These all clip focus rings
+<DialogContent className="... overflow-hidden">     {/* ❌ overflow-hidden */}
+<DialogContent className="... max-h-[90vh] flex flex-col">  {/* ❌ flex container */}
+<ScrollArea>...</ScrollArea>                         {/* ❌ ScrollArea has overflow-hidden */}
+<div className="overflow-y-auto">...</div>           {/* ❌ Any overflow container */}
+```
+
+**Key insight:** Never wrap form inputs in any overflow container. Let the dialog grow naturally - the browser handles tall dialogs.
+
+### Multi-Select Role Pattern
+```typescript
+// Use Set<string> for role selection
+const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set())
+
+const handleToggleRole = (roleName: string) => {
+  setSelectedRoles(prev => {
+    const next = new Set(prev)
+    if (next.has(roleName)) {
+      next.delete(roleName)
+    } else {
+      next.add(roleName)
+    }
+    return next
+  })
+}
+
+// Convert to array for API
+roleNames: selectedRoles.size > 0 ? Array.from(selectedRoles) : null
+```
+
 ## Task Management
 
 This project uses **Vibe Kanban** for task tracking and sprint management. Check the kanban board for current tasks, priorities, and sprint goals before starting work.

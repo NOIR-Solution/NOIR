@@ -8,13 +8,13 @@ namespace NOIR.Infrastructure.Identity.Authorization;
 public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly IMemoryCache _cache;
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(5);
 
     public PermissionAuthorizationHandler(
         UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager,
+        RoleManager<ApplicationRole> roleManager,
         IMemoryCache cache)
     {
         _userManager = userManager;
@@ -64,11 +64,9 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
             var role = await _roleManager.FindByNameAsync(roleName);
             if (role is null) continue;
 
-            var claims = await _roleManager.GetClaimsAsync(role);
-            foreach (var claim in claims.Where(c => c.Type == Permissions.ClaimType))
-            {
-                permissions.Add(claim.Value);
-            }
+            // Get effective permissions including inherited from parent roles
+            var effectivePermissions = await GetEffectiveRolePermissionsAsync(role);
+            permissions.UnionWith(effectivePermissions);
         }
 
         // Cache permissions with sliding expiration
@@ -82,5 +80,44 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         PermissionCacheInvalidator.RegisterCachedUser(userId);
 
         return permissions;
+    }
+
+    /// <summary>
+    /// Gets effective permissions for a role, including inherited permissions from parent roles.
+    /// </summary>
+    private async Task<HashSet<string>> GetEffectiveRolePermissionsAsync(ApplicationRole role)
+    {
+        var permissions = new HashSet<string>();
+        var visited = new HashSet<string>();
+
+        await CollectPermissionsRecursiveAsync(role, permissions, visited);
+
+        return permissions;
+    }
+
+    private async Task CollectPermissionsRecursiveAsync(
+        ApplicationRole role,
+        HashSet<string> permissions,
+        HashSet<string> visited)
+    {
+        // Prevent infinite loops in case of circular references
+        if (!visited.Add(role.Id)) return;
+
+        // Get direct permissions for this role
+        var claims = await _roleManager.GetClaimsAsync(role);
+        foreach (var claim in claims.Where(c => c.Type == Permissions.ClaimType))
+        {
+            permissions.Add(claim.Value);
+        }
+
+        // Recurse to parent role if exists
+        if (!string.IsNullOrEmpty(role.ParentRoleId))
+        {
+            var parentRole = await _roleManager.FindByIdAsync(role.ParentRoleId);
+            if (parentRole != null && !parentRole.IsDeleted)
+            {
+                await CollectPermissionsRecursiveAsync(parentRole, permissions, visited);
+            }
+        }
     }
 }

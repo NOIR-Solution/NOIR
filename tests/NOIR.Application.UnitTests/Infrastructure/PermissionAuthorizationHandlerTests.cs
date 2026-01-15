@@ -7,7 +7,7 @@ namespace NOIR.Application.UnitTests.Infrastructure;
 public class PermissionAuthorizationHandlerTests
 {
     private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
-    private readonly Mock<RoleManager<IdentityRole>> _roleManagerMock;
+    private readonly Mock<RoleManager<ApplicationRole>> _roleManagerMock;
     private readonly IMemoryCache _cache;
     private readonly PermissionAuthorizationHandler _sut;
 
@@ -19,8 +19,8 @@ public class PermissionAuthorizationHandlerTests
             userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!);
 
         // Setup RoleManager mock
-        var roleStore = new Mock<IRoleStore<IdentityRole>>();
-        _roleManagerMock = new Mock<RoleManager<IdentityRole>>(
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
+        _roleManagerMock = new Mock<RoleManager<ApplicationRole>>(
             roleStore.Object, null!, null!, null!, null!);
 
         // Use real MemoryCache for testing
@@ -133,7 +133,7 @@ public class PermissionAuthorizationHandlerTests
         var context = CreateContext(user, permission);
 
         var appUser = new ApplicationUser { Id = userId, Email = "test@example.com", UserName = "test" };
-        var role = new IdentityRole { Id = "role1", Name = "Admin" };
+        var role = new ApplicationRole { Id = "role1", Name = "Admin" };
 
         _userManagerMock.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.GetRolesAsync(appUser)).ReturnsAsync(new List<string> { "Admin" });
@@ -157,7 +157,7 @@ public class PermissionAuthorizationHandlerTests
         var context = CreateContext(user, "users.delete");
 
         var appUser = new ApplicationUser { Id = userId, Email = "test@example.com", UserName = "test" };
-        var role = new IdentityRole { Id = "role1", Name = "Viewer" };
+        var role = new ApplicationRole { Id = "role1", Name = "Viewer" };
 
         _userManagerMock.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.GetRolesAsync(appUser)).ReturnsAsync(new List<string> { "Viewer" });
@@ -184,7 +184,7 @@ public class PermissionAuthorizationHandlerTests
 
         _userManagerMock.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.GetRolesAsync(appUser)).ReturnsAsync(new List<string> { "NonExistentRole" });
-        _roleManagerMock.Setup(x => x.FindByNameAsync("NonExistentRole")).ReturnsAsync((IdentityRole?)null);
+        _roleManagerMock.Setup(x => x.FindByNameAsync("NonExistentRole")).ReturnsAsync((ApplicationRole?)null);
 
         // Act
         await _sut.HandleAsync(context);
@@ -203,8 +203,8 @@ public class PermissionAuthorizationHandlerTests
         var context = CreateContext(user, permission);
 
         var appUser = new ApplicationUser { Id = userId, Email = "test@example.com", UserName = "test" };
-        var viewerRole = new IdentityRole { Id = "role1", Name = "Viewer" };
-        var adminRole = new IdentityRole { Id = "role2", Name = "Admin" };
+        var viewerRole = new ApplicationRole { Id = "role1", Name = "Viewer" };
+        var adminRole = new ApplicationRole { Id = "role2", Name = "Admin" };
 
         _userManagerMock.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.GetRolesAsync(appUser)).ReturnsAsync(new List<string> { "Viewer", "Admin" });
@@ -237,7 +237,7 @@ public class PermissionAuthorizationHandlerTests
         var context2 = CreateContext(user, permission);
 
         var appUser = new ApplicationUser { Id = userId, Email = "test@example.com", UserName = "test" };
-        var role = new IdentityRole { Id = "role1", Name = "Admin" };
+        var role = new ApplicationRole { Id = "role1", Name = "Admin" };
 
         _userManagerMock.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.GetRolesAsync(appUser)).ReturnsAsync(new List<string> { "Admin" });
@@ -304,7 +304,7 @@ public class PermissionAuthorizationHandlerTests
         var context = CreateContext(user, permission);
 
         var appUser = new ApplicationUser { Id = userId, Email = "test@example.com", UserName = "test" };
-        var role = new IdentityRole { Id = "role1", Name = "Admin" };
+        var role = new ApplicationRole { Id = "role1", Name = "Admin" };
 
         _userManagerMock.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.GetRolesAsync(appUser)).ReturnsAsync(new List<string> { "Admin" });
@@ -335,7 +335,7 @@ public class PermissionAuthorizationHandlerTests
         var context = CreateContext(user, permission);
 
         var appUser = new ApplicationUser { Id = userId, Email = "test@example.com", UserName = "test" };
-        var role = new IdentityRole { Id = "role1", Name = "Admin" };
+        var role = new ApplicationRole { Id = "role1", Name = "Admin" };
 
         _userManagerMock.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.GetRolesAsync(appUser)).ReturnsAsync(new List<string> { "Admin" });
@@ -403,7 +403,7 @@ public class PermissionAuthorizationHandlerTests
         var context = CreateContext(user, "test.permission");
 
         var appUser = new ApplicationUser { Id = userId, Email = "test@example.com", UserName = "test" };
-        var role = new IdentityRole { Id = "role1", Name = "EmptyRole" };
+        var role = new ApplicationRole { Id = "role1", Name = "EmptyRole" };
 
         _userManagerMock.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(appUser);
         _userManagerMock.Setup(x => x.GetRolesAsync(appUser)).ReturnsAsync(new List<string> { "EmptyRole" });

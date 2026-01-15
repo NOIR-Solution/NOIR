@@ -1,0 +1,149 @@
+import { useTranslation } from 'react-i18next'
+import { MoreHorizontal, Edit, Trash2, Key, Shield, Users } from 'lucide-react'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import type { RoleListItem } from '@/types'
+
+interface RoleTableProps {
+  roles: RoleListItem[]
+  onEdit: (role: RoleListItem) => void
+  onDelete: (role: RoleListItem) => void
+  onPermissions: (role: RoleListItem) => void
+  loading?: boolean
+}
+
+export function RoleTable({ roles, onEdit, onDelete, onPermissions, loading }: RoleTableProps) {
+  const { t } = useTranslation('common')
+
+  if (loading) {
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex items-center space-x-4">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-3 w-[150px]" />
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (roles.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <Shield className="mx-auto h-12 w-12 text-muted-foreground/50" />
+        <h3 className="mt-4 text-lg font-semibold">{t('roles.noRoles', 'No roles found')}</h3>
+        <p className="text-muted-foreground">{t('roles.noRolesDescription', 'Create a new role to get started.')}</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('roles.columns.name', 'Name')}</TableHead>
+            <TableHead>{t('roles.columns.description', 'Description')}</TableHead>
+            <TableHead className="text-center">{t('roles.columns.users', 'Users')}</TableHead>
+            <TableHead className="text-center">{t('roles.columns.type', 'Type')}</TableHead>
+            <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {roles.map((role) => (
+            <TableRow key={role.id}>
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: role.color || '#6b7280' }}
+                  >
+                    <Shield className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-medium">{role.name}</p>
+                    {role.parentRoleId && (
+                      <p className="text-xs text-muted-foreground">
+                        {t('roles.inheritsFrom', 'Inherits permissions')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <span className="text-muted-foreground line-clamp-2">
+                  {role.description || '-'}
+                </span>
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="flex items-center justify-center gap-1">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span>{role.userCount}</span>
+                </div>
+              </TableCell>
+              <TableCell className="text-center">
+                {role.isSystemRole ? (
+                  <Badge variant="secondary">{t('roles.system', 'System')}</Badge>
+                ) : (
+                  <Badge variant="outline">{t('roles.custom', 'Custom')}</Badge>
+                )}
+              </TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">{t('labels.openMenu', 'Open menu')}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onPermissions(role)}>
+                      <Key className="mr-2 h-4 w-4" />
+                      {t('roles.managePermissions', 'Manage Permissions')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onEdit(role)}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      {t('buttons.edit', 'Edit')}
+                    </DropdownMenuItem>
+                    {!role.isSystemRole && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => onDelete(role)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          {t('buttons.delete', 'Delete')}
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}

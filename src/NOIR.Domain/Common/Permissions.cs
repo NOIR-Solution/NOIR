@@ -103,4 +103,81 @@ public static class Permissions
     /// </summary>
     public static IReadOnlyList<string> UserDefaults =>
         [UsersRead];
+
+    /// <summary>
+    /// Permission scope definitions for multi-tenant validation.
+    /// </summary>
+    public static class Scopes
+    {
+        /// <summary>
+        /// Permissions that can ONLY be assigned to system roles (TenantId = null).
+        /// These permissions affect cross-tenant or platform-level operations.
+        /// </summary>
+        public static IReadOnlySet<string> SystemOnly { get; } = new HashSet<string>
+        {
+            // Tenant management is system-only
+            TenantsRead,
+            TenantsCreate,
+            TenantsUpdate,
+            TenantsDelete,
+            // System administration is system-only
+            SystemAdmin,
+            SystemAuditLogs,
+            SystemSettings,
+            HangfireDashboard,
+            // Email templates are system-only
+            EmailTemplatesRead,
+            EmailTemplatesUpdate
+        };
+
+        /// <summary>
+        /// Permissions that can be assigned to tenant-specific roles.
+        /// These permissions are scoped to within-tenant operations.
+        /// </summary>
+        public static IReadOnlySet<string> TenantAllowed { get; } = new HashSet<string>
+        {
+            // Users within tenant
+            UsersRead,
+            UsersCreate,
+            UsersUpdate,
+            UsersDelete,
+            UsersManageRoles,
+            // Roles within tenant
+            RolesRead,
+            RolesCreate,
+            RolesUpdate,
+            RolesDelete,
+            RolesManagePermissions,
+            // Audit within tenant (read and export only)
+            AuditRead,
+            AuditExport,
+            AuditEntityHistory
+        };
+
+        /// <summary>
+        /// Checks if a permission is allowed for tenant-scoped roles.
+        /// </summary>
+        public static bool IsTenantAllowed(string permission) => TenantAllowed.Contains(permission);
+
+        /// <summary>
+        /// Checks if a permission is system-only.
+        /// </summary>
+        public static bool IsSystemOnly(string permission) => SystemOnly.Contains(permission);
+
+        /// <summary>
+        /// Validates that all permissions are valid for the given tenant context.
+        /// Returns the list of invalid permissions if any.
+        /// </summary>
+        public static IReadOnlyList<string> ValidateForTenant(IEnumerable<string> permissions, Guid? tenantId)
+        {
+            if (!tenantId.HasValue)
+            {
+                // System roles can have any permission
+                return [];
+            }
+
+            // Tenant-specific roles can only have tenant-allowed permissions
+            return permissions.Where(p => !TenantAllowed.Contains(p)).ToList();
+        }
+    }
 }

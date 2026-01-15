@@ -27,72 +27,69 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    #region Registration Tests
+    private async Task<HttpClient> GetAdminClientAsync()
+    {
+        var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
+        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+    }
+
+    private async Task<(string email, string password, AuthResponse auth)> CreateTestUserAsync(string? firstName = "Test", string? lastName = "User")
+    {
+        var email = $"localdb_test_{Guid.NewGuid():N}@example.com";
+        var password = "ValidPassword123!";
+
+        // Create user via admin endpoint
+        var adminClient = await GetAdminClientAsync();
+        var createCommand = new CreateUserCommand(email, password, firstName, lastName, null, null);
+        var createResponse = await adminClient.PostAsJsonAsync("/api/users", createCommand);
+        createResponse.EnsureSuccessStatusCode();
+
+        // Login as the new user
+        var loginCommand = new LoginCommand(email, password);
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+
+        return (email, password, auth!);
+    }
+
+    #region Admin Create User Tests
 
     [Fact]
-    public async Task Register_ValidUser_ShouldReturnSuccessAndPersistToDatabase()
+    public async Task CreateUser_AsAdmin_ShouldSucceed()
     {
         // Arrange
-        var email = $"localdb_test_{Guid.NewGuid():N}@example.com";
-        var command = new RegisterCommand(email, "ValidPassword123!", "John", "Doe");
+        var adminClient = await GetAdminClientAsync();
+        var email = $"localdb_admin_create_{Guid.NewGuid():N}@example.com";
+        var createCommand = new CreateUserCommand(email, "ValidPassword123!", "John", "Doe", null, null);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
+        var response = await adminClient.PostAsJsonAsync("/api/users", createCommand);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        authResponse.Should().NotBeNull();
-        authResponse!.Email.Should().Be(email);
-        authResponse.AccessToken.Should().NotBeNullOrEmpty();
-        authResponse.RefreshToken.Should().NotBeNullOrEmpty();
+        var userDto = await response.Content.ReadFromJsonAsync<UserDto>();
+        userDto.Should().NotBeNull();
+        userDto!.Email.Should().Be(email);
     }
 
     [Fact]
-    public async Task Register_DuplicateEmail_ShouldReturnBadRequest()
+    public async Task CreateUser_DuplicateEmail_ShouldReturnConflict()
     {
         // Arrange
+        var adminClient = await GetAdminClientAsync();
         var email = $"duplicate_localdb_{Guid.NewGuid():N}@example.com";
-        var firstCommand = new RegisterCommand(email, "ValidPassword123!", "First", "User");
-        await _client.PostAsJsonAsync("/api/auth/register", firstCommand);
+        var firstCommand = new CreateUserCommand(email, "ValidPassword123!", "First", "User", null, null);
+        await adminClient.PostAsJsonAsync("/api/users", firstCommand);
 
         // Act
-        var secondCommand = new RegisterCommand(email, "AnotherPassword123!", "Second", "User");
-        var response = await _client.PostAsJsonAsync("/api/auth/register", secondCommand);
+        var secondCommand = new CreateUserCommand(email, "AnotherPassword123!", "Second", "User", null, null);
+        var response = await adminClient.PostAsJsonAsync("/api/users", secondCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task Register_InvalidEmail_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var command = new RegisterCommand("invalid-email", "ValidPassword123!", null, null);
-
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task Register_WeakPassword_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var command = new RegisterCommand(
-            $"test_{Guid.NewGuid():N}@example.com",
-            "weak",
-            null,
-            null);
-
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 
     #endregion
@@ -103,10 +100,7 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
     public async Task Login_ValidCredentials_ShouldReturnSuccess()
     {
         // Arrange
-        var email = $"login_localdb_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Test", "User");
-        await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
+        var (email, password, _) = await CreateTestUserAsync();
 
         // Act
         var loginCommand = new LoginCommand(email, password);
@@ -139,9 +133,7 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
     public async Task Login_WrongPassword_ShouldReturnUnauthorized()
     {
         // Arrange
-        var email = $"wrongpass_localdb_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "CorrectPassword123!", "Test", "User");
-        await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
+        var (email, _, _) = await CreateTestUserAsync();
 
         // Act
         var loginCommand = new LoginCommand(email, "WrongPassword123!");
@@ -159,14 +151,10 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
     public async Task RefreshToken_ValidTokens_ShouldReturnNewTokens()
     {
         // Arrange
-        var email = $"refresh_localdb_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Test", "User");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var initialAuth = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var (_, _, initialAuth) = await CreateTestUserAsync();
 
         // Act
-        var refreshCommand = new RefreshTokenCommand(initialAuth!.AccessToken, initialAuth.RefreshToken);
+        var refreshCommand = new RefreshTokenCommand(initialAuth.AccessToken, initialAuth.RefreshToken);
         var response = await _client.PostAsJsonAsync("/api/auth/refresh", refreshCommand);
 
         // Assert
@@ -196,14 +184,11 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
     [Fact]
     public async Task RefreshToken_RevokedToken_ShouldReturnForbidden()
     {
-        // Arrange - Register and get tokens
-        var email = $"revoked_localdb_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "ValidPassword123!", "Test", "User");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var initialAuth = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        // Arrange - Create user and get tokens
+        var (_, _, initialAuth) = await CreateTestUserAsync();
 
         // Use the refresh token once (this will rotate it)
-        var firstRefresh = new RefreshTokenCommand(initialAuth!.AccessToken, initialAuth.RefreshToken);
+        var firstRefresh = new RefreshTokenCommand(initialAuth.AccessToken, initialAuth.RefreshToken);
         await _client.PostAsJsonAsync("/api/auth/refresh", firstRefresh);
 
         // Act - Try to use the original (now invalidated) refresh token
@@ -221,13 +206,8 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
     public async Task GetCurrentUser_Authenticated_ShouldReturnUserProfile()
     {
         // Arrange
-        var email = $"me_localdb_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "John", "Doe");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (email, _, auth) = await CreateTestUserAsync("John", "Doe");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act
         var response = await authenticatedClient.GetAsync("/api/auth/me");
@@ -260,10 +240,7 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
     public async Task MultipleLogins_ShouldCreateMultipleRefreshTokens()
     {
         // Arrange
-        var email = $"multisession_localdb_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Test", "User");
-        await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
+        var (email, password, _) = await CreateTestUserAsync();
 
         // Act - Login from multiple "devices"
         var loginCommand = new LoginCommand(email, password);
@@ -292,11 +269,11 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
     [Fact]
     public async Task Response_ShouldContainSecurityHeaders()
     {
-        // Arrange
-        var command = new RegisterCommand($"security_localdb_{Guid.NewGuid():N}@example.com", "ValidPassword123!", null, null);
+        // Arrange - Login with admin
+        var command = new LoginCommand("admin@noir.local", "123qwe");
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
+        var response = await _client.PostAsJsonAsync("/api/auth/login", command);
 
         // Assert
         response.Headers.Should().ContainKey("X-Frame-Options");

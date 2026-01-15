@@ -1,8 +1,11 @@
+using DomainPermissions = NOIR.Domain.Common.Permissions;
+
 namespace NOIR.Application.Features.Permissions.Commands.AssignToRole;
 
 /// <summary>
 /// Wolverine handler for assigning permissions to a role.
 /// Adds permissions to the role's existing permissions.
+/// Validates that permissions are appropriate for the role's tenant scope.
 /// </summary>
 public class AssignPermissionToRoleCommandHandler
 {
@@ -25,6 +28,17 @@ public class AssignPermissionToRoleCommandHandler
         {
             return Result.Failure<IReadOnlyList<string>>(
                 Error.NotFound(_localization["roles.notFound"], ErrorCodes.Auth.RoleNotFound));
+        }
+
+        // Validate permission scope for tenant-specific roles
+        var invalidPermissions = DomainPermissions.Scopes.ValidateForTenant(command.Permissions, role.TenantId);
+        if (invalidPermissions.Count > 0)
+        {
+            var invalidList = string.Join(", ", invalidPermissions);
+            return Result.Failure<IReadOnlyList<string>>(
+                Error.Validation(
+                    _localization.Get("validation.permissions.invalidForTenant", invalidList),
+                    ErrorCodes.Validation.General));
         }
 
         // Add permissions

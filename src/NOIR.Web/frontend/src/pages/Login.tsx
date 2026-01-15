@@ -261,12 +261,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Dots Indicator */}
-            <div className="flex justify-center gap-2 pt-4">
-              <div className="w-2 h-2 rounded-full bg-white" />
-              <div className="w-2 h-2 rounded-full bg-white/60" />
-              <div className="w-2 h-2 rounded-full bg-white/30" />
-            </div>
           </div>
         </div>
       </div>

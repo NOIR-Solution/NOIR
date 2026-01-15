@@ -75,7 +75,7 @@ public static class RoleEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
-        // Get role permissions
+        // Get role permissions (direct assignments only)
         group.MapGet("/{roleId}/permissions", async (string roleId, IMessageBus bus) =>
         {
             var result = await bus.InvokeAsync<Result<IReadOnlyList<string>>>(new GetRolePermissionsQuery(roleId));
@@ -83,7 +83,26 @@ public static class RoleEndpoints
         })
         .RequireAuthorization(Permissions.RolesRead)
         .WithName("GetRolePermissions")
-        .WithSummary("Get permissions assigned to a role")
+        .WithSummary("Get permissions directly assigned to a role")
+        .Produces<IReadOnlyList<string>>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Get effective permissions (including inherited from parent roles)
+        group.MapGet("/{roleId}/effective-permissions", async (
+            string roleId, 
+            IRoleIdentityService roleService) =>
+        {
+            var role = await roleService.FindByIdAsync(roleId);
+            if (role is null)
+            {
+                return Results.NotFound(new ProblemDetails { Title = "Role not found" });
+            }
+            var permissions = await roleService.GetEffectivePermissionsAsync(roleId);
+            return Results.Ok(permissions);
+        })
+        .RequireAuthorization(Permissions.RolesRead)
+        .WithName("GetEffectivePermissions")
+        .WithSummary("Get effective permissions for a role (including inherited)")
         .Produces<IReadOnlyList<string>>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 

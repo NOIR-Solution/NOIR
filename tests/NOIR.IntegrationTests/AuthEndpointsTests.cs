@@ -16,104 +16,42 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         _client = factory.CreateTestClient();
     }
 
-    #region Registration Tests
-
-    [Fact]
-    public async Task Register_ValidUser_ShouldReturnSuccess()
+    private async Task<HttpClient> GetAdminClientAsync()
     {
-        // Arrange
-        var command = new RegisterCommand(
-            $"test_{Guid.NewGuid():N}@example.com",
-            "ValidPassword123!",
-            "John",
-            "Doe");
-
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        authResponse.Should().NotBeNull();
-        authResponse!.Email.Should().Be(command.Email);
-        authResponse.AccessToken.Should().NotBeNullOrEmpty();
-        authResponse.RefreshToken.Should().NotBeNullOrEmpty();
+        var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
+        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
     }
 
-    [Fact]
-    public async Task Register_DuplicateEmail_ShouldReturnBadRequest()
+    private async Task<(string email, string password, AuthResponse auth)> CreateTestUserAsync()
     {
-        // Arrange - Register first user
-        var email = $"duplicate_{Guid.NewGuid():N}@example.com";
-        var firstCommand = new RegisterCommand(email, "ValidPassword123!", "First", "User");
-        await _client.PostAsJsonAsync("/api/auth/register", firstCommand);
+        var email = $"test_{Guid.NewGuid():N}@example.com";
+        var password = "ValidPassword123!";
 
-        // Act - Try to register with same email
-        var secondCommand = new RegisterCommand(email, "AnotherPassword123!", "Second", "User");
-        var response = await _client.PostAsJsonAsync("/api/auth/register", secondCommand);
+        // Create user via admin endpoint
+        var adminClient = await GetAdminClientAsync();
+        var createCommand = new CreateUserCommand(email, password, "Test", "User", null, null);
+        var createResponse = await adminClient.PostAsJsonAsync("/api/users", createCommand);
+        createResponse.EnsureSuccessStatusCode();
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        // Login as the new user
+        var loginCommand = new LoginCommand(email, password);
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+
+        return (email, password, auth!);
     }
-
-    [Fact]
-    public async Task Register_InvalidEmail_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var command = new RegisterCommand("invalid-email", "ValidPassword123!", null, null);
-
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task Register_WeakPassword_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var command = new RegisterCommand(
-            $"test_{Guid.NewGuid():N}@example.com",
-            "weak", // Too short
-            null,
-            null);
-
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task Register_EmptyEmail_ShouldReturnBadRequest()
-    {
-        // Arrange
-        var command = new RegisterCommand("", "ValidPassword123!", null, null);
-
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-    }
-
-    #endregion
 
     #region Login Tests
 
     [Fact]
     public async Task Login_ValidCredentials_ShouldReturnSuccess()
     {
-        // Arrange - First register a user
-        var email = $"login_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Test", "User");
-        await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
+        // Arrange - Create a user via admin endpoint
+        var (email, password, _) = await CreateTestUserAsync();
 
-        // Act - Login with registered credentials
+        // Act - Login with the credentials
         var loginCommand = new LoginCommand(email, password);
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
 
@@ -143,10 +81,8 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Login_WrongPassword_ShouldReturnUnauthorized()
     {
-        // Arrange - First register a user
-        var email = $"wrongpass_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "CorrectPassword123!", "Test", "User");
-        await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
+        // Arrange - Create a user via admin endpoint
+        var (email, _, _) = await CreateTestUserAsync();
 
         // Act - Login with wrong password
         var loginCommand = new LoginCommand(email, "WrongPassword123!");
@@ -176,16 +112,12 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task RefreshToken_ValidTokens_ShouldReturnNewTokens()
     {
-        // Arrange - Register and get initial tokens
-        var email = $"refresh_{Guid.NewGuid():N}@example.com";
-        var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Test", "User");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var initialAuth = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        // Arrange - Create user and get initial tokens
+        var (_, _, initialAuth) = await CreateTestUserAsync();
 
         // Act - Refresh tokens
         var refreshCommand = new RefreshTokenCommand(
-            initialAuth!.AccessToken,
+            initialAuth.AccessToken,
             initialAuth.RefreshToken);
         var response = await _client.PostAsJsonAsync("/api/auth/refresh", refreshCommand);
 
@@ -233,12 +165,16 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task GetCurrentUser_Authenticated_ShouldReturnUserProfile()
     {
-        // Arrange - Register and login
+        // Arrange - Create user and login
+        var adminClient = await GetAdminClientAsync();
         var email = $"me_{Guid.NewGuid():N}@example.com";
         var password = "ValidPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "John", "Doe");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var createCommand = new CreateUserCommand(email, password, "John", "Doe", null, null);
+        await adminClient.PostAsJsonAsync("/api/users", createCommand);
+
+        var loginCommand = new LoginCommand(email, password);
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
 
         // Create authenticated client
         var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
@@ -286,15 +222,11 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Auth_ShouldReturnProperContentType()
     {
-        // Arrange
-        var command = new RegisterCommand(
-            $"content_{Guid.NewGuid():N}@example.com",
-            "ValidPassword123!",
-            null,
-            null);
+        // Arrange - Login with admin credentials
+        var command = new LoginCommand("admin@noir.local", "123qwe");
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
+        var response = await _client.PostAsJsonAsync("/api/auth/login", command);
 
         // Assert
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");

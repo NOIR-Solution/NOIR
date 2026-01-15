@@ -29,6 +29,14 @@ public class InterceptorTests : IAsyncLifetime
 
     private static string GenerateTestToken() => Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
 
+    private async Task<HttpClient> GetAdminClientAsync()
+    {
+        var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
+        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+    }
+
     #region AuditableEntityInterceptor Tests
 
     [Fact]
@@ -87,14 +95,21 @@ public class InterceptorTests : IAsyncLifetime
     #region EntityAuditLogInterceptor Tests
 
     [Fact]
-    public async Task EntityAuditLog_OnUserRegistration_ShouldCreateAuditLog()
+    public async Task EntityAuditLog_OnUserCreation_ShouldCreateAuditLog()
     {
-        // Arrange
+        // Arrange - Create user via admin API
+        var adminClient = await GetAdminClientAsync();
         var email = $"audit_log_{Guid.NewGuid():N}@example.com";
-        var command = new RegisterCommand(email, "ValidPassword123!", "Test", "User");
+        var command = new CreateUserCommand(
+            Email: email,
+            Password: "ValidPassword123!",
+            FirstName: "Test",
+            LastName: "User",
+            DisplayName: null,
+            RoleNames: null);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", command);
+        var response = await adminClient.PostAsJsonAsync("/api/users", command);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Assert - Check for entity audit logs

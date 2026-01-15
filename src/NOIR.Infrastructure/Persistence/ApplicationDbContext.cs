@@ -5,7 +5,7 @@ namespace NOIR.Infrastructure.Persistence;
 /// Uses convention-based configuration for consistent entity setup.
 /// Implements IMultiTenantDbContext for Finbuckle multi-tenant query filter support.
 /// </summary>
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext, IUnitOfWork, IMultiTenantDbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>, IApplicationDbContext, IUnitOfWork, IMultiTenantDbContext
 {
     private readonly IMultiTenantContextAccessor<Tenant>? _tenantContextAccessor;
 
@@ -36,6 +36,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<ResourceShare> ResourceShares => Set<ResourceShare>();
+    public DbSet<PermissionTemplate> PermissionTemplates => Set<PermissionTemplate>();
+    public DbSet<PermissionTemplateItem> PermissionTemplateItems => Set<PermissionTemplateItem>();
 
     // Multi-tenant platform entities (platform-level, not tenant-scoped)
     public DbSet<UserTenantMembership> UserTenantMemberships => Set<UserTenantMembership>();

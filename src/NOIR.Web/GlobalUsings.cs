@@ -63,7 +63,6 @@ global using NOIR.Application.Features.Auth.Commands.DeleteAvatar;
 global using NOIR.Application.Features.Auth.Commands.Login;
 global using NOIR.Application.Features.Auth.Commands.Logout;
 global using NOIR.Application.Features.Auth.Commands.RefreshToken;
-global using NOIR.Application.Features.Auth.Commands.Register;
 global using NOIR.Application.Features.Auth.Commands.RevokeSession;
 global using NOIR.Application.Features.Auth.Commands.UpdateUserProfile;
 global using NOIR.Application.Features.Auth.Commands.UploadAvatar;
@@ -104,8 +103,10 @@ global using NOIR.Application.Features.Roles.Queries.GetRoleById;
 global using NOIR.Application.Features.Roles.DTOs;
 
 // NOIR Application - Users
+global using NOIR.Application.Features.Users.Commands.CreateUser;
 global using NOIR.Application.Features.Users.Commands.UpdateUser;
 global using NOIR.Application.Features.Users.Commands.DeleteUser;
+global using NOIR.Application.Features.Users.Commands.LockUser;
 global using NOIR.Application.Features.Users.Commands.AssignRoles;
 global using NOIR.Application.Features.Users.Queries.GetUsers;
 global using NOIR.Application.Features.Users.Queries.GetUserRoles;

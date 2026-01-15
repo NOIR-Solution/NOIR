@@ -1,5 +1,6 @@
 using NOIR.Application.Features.Auth.Commands.UpdateUserProfile;
 using NOIR.Application.Features.Auth.Queries.GetUserById;
+using NOIR.Application.Features.Users.Commands.CreateUser;
 
 namespace NOIR.IntegrationTests.Auth;
 
@@ -19,18 +20,49 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
         _client = factory.CreateTestClient();
     }
 
+    private async Task<HttpClient> GetAdminClientAsync()
+    {
+        var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
+        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+    }
+
+    private async Task<(string Email, string Password, AuthResponse Auth)> CreateTestUserAsync(
+        string? firstName = null,
+        string? lastName = null)
+    {
+        var adminClient = await GetAdminClientAsync();
+        var email = $"test_{Guid.NewGuid():N}@example.com";
+        var password = "TestPassword123!";
+
+        var createCommand = new CreateUserCommand(
+            Email: email,
+            Password: password,
+            FirstName: firstName,
+            LastName: lastName,
+            DisplayName: null,
+            RoleNames: null);
+
+        var createResponse = await adminClient.PostAsJsonAsync("/api/users", createCommand);
+        createResponse.EnsureSuccessStatusCode();
+
+        // Login as the created user
+        var loginCommand = new LoginCommand(email, password);
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+
+        return (email, password, auth!);
+    }
+
     #region Endpoint Tests
 
     [Fact]
     public async Task UpdateUserProfile_ValidRequest_ShouldUpdateProfile()
     {
-        // Arrange - Register and login
-        var email = $"update_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "Original", "Name");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        // Arrange - Create user and login
+        var (email, _, auth) = await CreateTestUserAsync("Original", "Name");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act - Update profile
         var updateCommand = new { FirstName = "Updated", LastName = "User" };
@@ -50,12 +82,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateUserProfile_OnlyFirstName_ShouldUpdateOnlyFirstName()
     {
         // Arrange
-        var email = $"firstname_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "Original", "Lastname");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (_, _, auth) = await CreateTestUserAsync("Original", "Lastname");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act - Update only first name
         var updateCommand = new { FirstName = "NewFirst", LastName = (string?)null };
@@ -84,12 +112,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateUserProfile_TooLongFirstName_ShouldReturnBadRequest()
     {
         // Arrange
-        var email = $"toolong_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "First", "Last");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (_, _, auth) = await CreateTestUserAsync("First", "Last");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act - Try to update with too long first name
         var updateCommand = new { FirstName = new string('A', 101), LastName = "User" };
@@ -106,13 +130,9 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task UpdateUserProfile_ShouldCreateEntityAuditLog()
     {
-        // Arrange - Register and get user ID
-        var email = $"audit_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "Original", "Name");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        // Arrange - Create user and get user ID
+        var (email, _, auth) = await CreateTestUserAsync("Original", "Name");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act - Update profile
         var updateCommand = new { FirstName = "Audited", LastName = "Change" };
@@ -149,12 +169,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateUserProfile_ShouldCaptureBeforeAndAfterValues()
     {
         // Arrange
-        var email = $"diff_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "Before", "Test");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (email, _, auth) = await CreateTestUserAsync("Before", "Test");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act - Update profile
         var updateCommand = new { FirstName = "After", LastName = (string?)null };
@@ -193,12 +209,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateUserProfile_NoChanges_ShouldNotCreateAuditLog()
     {
         // Arrange
-        var email = $"nochange_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "Same", "Name");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (email, _, auth) = await CreateTestUserAsync("Same", "Name");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Get current audit log count
         var initialCount = await _factory.ExecuteWithTenantAsync(async services =>
@@ -231,12 +243,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateUserProfile_ShouldHaveCorrelationId()
     {
         // Arrange
-        var email = $"corr_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "First", "Last");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (email, _, auth) = await CreateTestUserAsync("First", "Last");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act
         var updateCommand = new { FirstName = "Correlated", LastName = "User" };
@@ -262,12 +270,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateUserProfile_ShouldCreateHandlerAuditLogWithDtoDiff()
     {
         // Arrange
-        var email = $"handler_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "Original", "Name");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (_, _, auth) = await CreateTestUserAsync("Original", "Name");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act - Update profile
         var updateCommand = new { FirstName = "Changed", LastName = "User" };
@@ -310,12 +314,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateUserProfile_NoChanges_HandlerAuditLogShouldHaveNullDiff()
     {
         // Arrange
-        var email = $"nochangehandler_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "Same", "Name");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (_, _, auth) = await CreateTestUserAsync("Same", "Name");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act - Update with same values (no actual changes)
         var updateCommand = new { FirstName = "Same", LastName = "Name" };
@@ -348,12 +348,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateUserProfile_ShouldCreateHandlerAuditLogWithCorrelationId()
     {
         // Arrange
-        var email = $"corr_handler_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "First", "Last");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (_, _, auth) = await CreateTestUserAsync("First", "Last");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act
         var updateCommand = new { FirstName = "Handler", LastName = "Test" };
@@ -386,12 +382,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateUserProfile_ShouldNotAuditSensitiveFields()
     {
         // Arrange - This test verifies that password and security stamps are NOT in audit logs
-        var email = $"secure_{Guid.NewGuid():N}@example.com";
-        var registerCommand = new RegisterCommand(email, "Password123!", "Test", "User");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var (email, _, auth) = await CreateTestUserAsync("Test", "User");
+        var authenticatedClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act
         var updateCommand = new { FirstName = "Secure", LastName = "User" };

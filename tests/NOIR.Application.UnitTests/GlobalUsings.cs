@@ -79,7 +79,6 @@ global using NOIR.Application.Common.Utilities;
 global using NOIR.Application.Features.Auth.Commands.Login;
 global using NOIR.Application.Features.Auth.Commands.Logout;
 global using NOIR.Application.Features.Auth.Commands.RefreshToken;
-global using NOIR.Application.Features.Auth.Commands.Register;
 global using NOIR.Application.Features.Auth.Commands.ChangePassword;
 global using NOIR.Application.Features.Auth.Commands.RevokeSession;
 global using NOIR.Application.Features.Auth.Commands.UploadAvatar;

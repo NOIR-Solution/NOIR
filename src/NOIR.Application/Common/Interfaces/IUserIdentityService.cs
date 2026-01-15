@@ -85,6 +85,16 @@ public interface IUserIdentityService
         CancellationToken ct = default);
 
     /// <summary>
+    /// Locks or unlocks a user account.
+    /// When locked, the user cannot sign in.
+    /// </summary>
+    Task<IdentityOperationResult> SetUserLockoutAsync(
+        string userId,
+        bool locked,
+        string? lockedBy = null,
+        CancellationToken ct = default);
+
+    /// <summary>
     /// Resets a user's password without requiring the old password.
     /// Used for password reset flow after OTP verification.
     /// </summary>

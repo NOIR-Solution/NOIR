@@ -84,5 +84,9 @@
     "alreadyExists": "{{entity}} already exists",
     "cannotDelete": "Cannot delete {{entity}} because it is in use",
     "invalidReference": "Invalid reference to {{entity}}"
+  },
+  "permissions": {
+    "invalidForTenant": "The following permissions cannot be assigned to tenant-specific roles: {{permissions}}",
+    "systemOnlyPermission": "This permission is restricted to system roles only"
   }
 }

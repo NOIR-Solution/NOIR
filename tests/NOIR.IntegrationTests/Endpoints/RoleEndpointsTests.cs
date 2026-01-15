@@ -1,3 +1,5 @@
+using NOIR.Application.Features.Users.Commands.CreateUser;
+
 namespace NOIR.IntegrationTests.Endpoints;
 
 /// <summary>
@@ -22,6 +24,31 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
         var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
         return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+    }
+
+    private async Task<(string Email, string Password, AuthResponse Auth)> CreateTestUserAsync()
+    {
+        var adminClient = await GetAdminClientAsync();
+        var email = $"test_{Guid.NewGuid():N}@example.com";
+        var password = "TestPassword123!";
+
+        var createCommand = new CreateUserCommand(
+            Email: email,
+            Password: password,
+            FirstName: "Test",
+            LastName: "User",
+            DisplayName: null,
+            RoleNames: null); // No roles - regular user without admin permissions
+
+        var createResponse = await adminClient.PostAsJsonAsync("/api/users", createCommand);
+        createResponse.EnsureSuccessStatusCode();
+
+        // Login as the created user
+        var loginCommand = new LoginCommand(email, password);
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+
+        return (email, password, auth!);
     }
 
     #region GetRoles Tests
@@ -137,7 +164,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var adminClient = await GetAdminClientAsync();
         var roleName = $"TestRole_{Guid.NewGuid():N}";
         var permissions = new[] { Permissions.UsersRead, Permissions.RolesRead };
-        var command = new CreateRoleCommand(roleName, permissions);
+        var command = new CreateRoleCommand(roleName, Permissions: permissions);
 
         // Act
         var response = await adminClient.PostAsJsonAsync("/api/roles", command);
@@ -336,7 +363,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Create a role with permissions
         var roleName = $"TestRole_{Guid.NewGuid():N}";
         var permissions = new[] { Permissions.UsersRead, Permissions.RolesRead };
-        var createCommand = new CreateRoleCommand(roleName, permissions);
+        var createCommand = new CreateRoleCommand(roleName, Permissions: permissions);
         var createResponse = await adminClient.PostAsJsonAsync("/api/roles", createCommand);
         var createdRole = await createResponse.Content.ReadFromJsonAsync<RoleDto>();
 
@@ -384,7 +411,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Create a role with permissions
         var roleName = $"TestRole_{Guid.NewGuid():N}";
         var permissions = new[] { Permissions.UsersRead, Permissions.UsersUpdate, Permissions.RolesRead };
-        var createCommand = new CreateRoleCommand(roleName, permissions);
+        var createCommand = new CreateRoleCommand(roleName, Permissions: permissions);
         var createResponse = await adminClient.PostAsJsonAsync("/api/roles", createCommand);
         var createdRole = await createResponse.Content.ReadFromJsonAsync<RoleDto>();
 
@@ -413,13 +440,9 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task RoleEndpoints_WithoutRequiredPermission_ShouldReturnForbidden()
     {
-        // Arrange - Create a user without admin permissions
-        var email = $"test_{Guid.NewGuid():N}@example.com";
-        var password = "TestPassword123!";
-        var registerCommand = new RegisterCommand(email, password, "Test", "User");
-        var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerCommand);
-        var auth = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
-        var userClient = _factory.CreateAuthenticatedClient(auth!.AccessToken);
+        // Arrange - Create a user without admin permissions via admin API
+        var (_, _, auth) = await CreateTestUserAsync();
+        var userClient = _factory.CreateAuthenticatedClient(auth.AccessToken);
 
         // Act
         var response = await userClient.GetAsync("/api/roles");
