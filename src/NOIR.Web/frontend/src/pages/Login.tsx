@@ -12,6 +12,7 @@ import { useValidatedForm } from "@/hooks/useValidatedForm"
 import { loginSchema } from "@/validation/schemas.generated"
 import { createValidationTranslator } from "@/lib/validation-i18n"
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher"
+import { ThemeToggleCompact } from "@/components/ui/theme-toggle"
 import { z } from "zod"
 
 type LoginFormData = z.infer<typeof loginSchema>
@@ -88,9 +89,10 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col lg:flex-row w-full bg-background">
       {/* Left Side - Login Form */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative">
-        {/* Language Switcher - Top Right */}
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
+        {/* Language & Theme Switcher - Top Right */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 flex items-center gap-2">
           <LanguageSwitcher variant="dropdown" />
+          <ThemeToggleCompact />
         </div>
 
         <div className="w-full max-w-md space-y-8 animate-fade-in">

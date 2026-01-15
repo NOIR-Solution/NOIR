@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2025-01-16
-**Version:** 1.5
+**Last Updated:** 2026-01-16
+**Version:** 1.6
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -520,7 +520,7 @@ public class LoginCommandHandler
 | `src/pages/` | Route pages |
 | `src/hooks/` | Custom React hooks (usePermissions, etc.) |
 | `src/services/` | API client and services |
-| `src/contexts/` | React contexts (Auth, Theme) |
+| `src/contexts/` | React contexts (Auth, Theme, Notification) |
 | `src/i18n/` | Internationalization |
 | `src/lib/` | Utilities |
 | `src/types/` | TypeScript types (auto-generated) |
@@ -534,6 +534,8 @@ public class LoginCommandHandler
 | `ColorPicker` | `components/ui/color-picker.tsx` | Role color selection |
 | `TippyTooltip` | `components/ui/tippy-tooltip.tsx` | Rich tooltips with headers |
 | `DateRangePicker` | `components/ui/date-range-picker.tsx` | Date range selection |
+| `ThemeToggle` | `components/ui/theme-toggle.tsx` | Segmented Light/Dark toggle with animated indicator |
+| `ThemeToggleCompact` | `components/ui/theme-toggle.tsx` | Compact icon button for theme switching |
 
 #### Permission-Based UI Rendering
 
@@ -845,4 +847,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2025-01-16 | Total Tests: 1,800+ | Features: 9 | Endpoints: 12 | Entities: 16*
+*Updated: 2026-01-16 | Total Tests: 1,800+ | Features: 9 | Endpoints: 12 | Entities: 16*

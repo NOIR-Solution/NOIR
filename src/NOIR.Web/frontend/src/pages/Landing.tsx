@@ -4,6 +4,7 @@ import { ShieldCheck, ArrowRight, Sparkles, Zap, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
+import { ThemeToggleCompact } from '@/components/ui/theme-toggle'
 
 /**
  * Landing Page - Professional hero section with blue-teal color scheme
@@ -37,6 +38,7 @@ export default function LandingPage() {
             {/* Right Section */}
             <div className="flex items-center gap-3">
               <LanguageSwitcher variant="dropdown" />
+              <ThemeToggleCompact />
               <Link to="/portal">
                 <Button className="px-6 h-10 text-[15px] font-medium rounded-full bg-foreground text-background hover:bg-foreground/90 shadow-lg hover:shadow-xl transition-all duration-200">
                   {t('nav.portal')}

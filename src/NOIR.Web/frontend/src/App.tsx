@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { PortalLayout } from '@/layouts/PortalLayout'
 import { PageLoader } from '@/components/ui/page-loader'
@@ -35,9 +36,10 @@ import SuccessPage from '@/pages/forgot-password/Success'
 
 function App() {
   return (
-    <AuthProvider>
-      <NotificationProvider>
-        <BrowserRouter>
+    <ThemeProvider defaultTheme="system">
+      <AuthProvider>
+        <NotificationProvider>
+          <BrowserRouter>
         <Toaster
           position="top-center"
           richColors
@@ -85,10 +87,11 @@ function App() {
 
           {/* Catch-all redirect to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        </BrowserRouter>
-      </NotificationProvider>
-    </AuthProvider>
+          </Routes>
+          </BrowserRouter>
+        </NotificationProvider>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }
 

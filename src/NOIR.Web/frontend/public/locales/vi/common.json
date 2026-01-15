@@ -255,7 +255,8 @@
     "perPage": "Số mục mỗi trang",
     "language": "Ngôn ngữ",
     "selectLanguage": "Chọn ngôn ngữ",
-    "switchToLanguage": "Chuyển sang {{language}}"
+    "switchToLanguage": "Chuyển sang {{language}}",
+    "appearance": "Giao diện"
   },
   "messages": {
     "saveSuccess": "Lưu thành công",

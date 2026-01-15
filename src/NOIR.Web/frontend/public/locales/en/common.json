@@ -255,7 +255,8 @@
     "perPage": "Per page",
     "language": "Language",
     "selectLanguage": "Select language",
-    "switchToLanguage": "Switch to {{language}}"
+    "switchToLanguage": "Switch to {{language}}",
+    "appearance": "Appearance"
   },
   "messages": {
     "saveSuccess": "Saved successfully",

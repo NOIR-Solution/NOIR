@@ -44,6 +44,7 @@ import { usePermissions, Permissions, type PermissionKey } from '@/hooks/usePerm
 import { useLanguage } from '@/i18n/useLanguage'
 import { languageFlags } from '@/i18n/languageFlags'
 import type { SupportedLanguage } from '@/i18n'
+import { ThemeToggle, ThemeToggleCompact } from '@/components/ui/theme-toggle'
 
 interface NavItem {
   titleKey: string
@@ -348,8 +349,24 @@ function SidebarContent({
         )}
       </nav>
 
-      {/* User Profile Section */}
-      <div className="p-4 border-t border-sidebar-border">
+      {/* Theme Toggle */}
+      <div className={cn(
+        'p-3 border-t border-sidebar-border',
+        !isExpanded && 'flex justify-center'
+      )}>
+        {isExpanded ? (
+          <ThemeToggle className="w-full" />
+        ) : (
+          <TippyTooltip content={t('labels.appearance')} placement="right" delay={[0, 0]}>
+            <div>
+              <ThemeToggleCompact />
+            </div>
+          </TippyTooltip>
+        )}
+      </div>
+
+      {/* User Profile */}
+      <div className="p-3 border-t border-sidebar-border">
         <UserProfileDropdown isExpanded={isExpanded} t={t} user={user} />
       </div>
     </div>
@@ -481,8 +498,13 @@ export function MobileSidebarTrigger({
             )}
           </nav>
 
+          {/* Mobile Theme Toggle */}
+          <div className="p-3 border-t border-sidebar-border">
+            <ThemeToggle className="w-full" />
+          </div>
+
           {/* Mobile User Profile */}
-          <div className="p-4 border-t border-sidebar-border">
+          <div className="p-3 border-t border-sidebar-border">
             <UserProfileDropdown isExpanded={true} t={t} user={user} />
           </div>
         </div>
