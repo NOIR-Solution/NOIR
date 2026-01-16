@@ -4,54 +4,169 @@
 
 ---
 
+## SuperClaude Framework - Quick Guide
+
+**Don't remember commands? Just say what you want in natural language!**
+
+| You Say... | Claude Uses |
+|------------|-------------|
+| "fix this bug" / "why isn't this working" | `/sc:troubleshoot` |
+| "add a new feature" / "implement X" | `/sc:brainstorm` → `/sc:implement` |
+| "how should we design this" | `/sc:design` |
+| "clean up this code" / "refactor" | `/sc:cleanup` |
+| "write tests for this" | `/sc:test` |
+| "explain this code" | `/sc:explain` |
+| "commit my changes" | `/sc:git` |
+| "how long will this take" | `/sc:estimate` |
+| "research best practices for X" | `/sc:research` |
+
+**Helpful Commands:**
+```
+/sc:help      - Show all available commands
+/sc:recommend - Get command suggestions for your task
+```
+
+**Pro Tips:**
+1. **Natural language works** - Just describe what you need, Claude auto-routes to the right command
+2. **Use `/sc:help`** - When you forget, this shows everything
+3. **Use `/sc:recommend`** - Describes your task, gets the right command suggested
+
+---
+
 ## SuperClaude Auto-Routing (MUST FOLLOW)
 
-**When the user's intent matches these patterns, AUTOMATICALLY invoke the corresponding skill using the Skill tool BEFORE responding or asking clarifying questions:**
+**CRITICAL: When user's message matches ANY pattern below, IMMEDIATELY invoke the skill using the Skill tool BEFORE responding. Do NOT ask clarifying questions first - let the skill handle that.**
 
-| User Intent Pattern | Auto-Invoke | Description |
-|---------------------|-------------|-------------|
-| "fix bug", "debug", "error", "not working", "broken", "fails", "exception" | `/sc:troubleshoot` | Systematic diagnosis and root cause analysis |
-| "add feature", "implement", "create new", "build", "develop" | `/sc:brainstorm` | Requirements discovery before implementation |
-| "plan", "design", "architect", "how should we", "structure", "approach" | `/sc:design` | System architecture and design planning |
-| "investigate", "research", "look into", "find out", "what is", "best practice" | `/sc:research` | Autonomous web research with depth control |
-| "improve", "enhance", "better", "quality", "optimize performance" | `/sc:improve` | Code quality and performance enhancement |
-| "refactor", "clean up", "simplify", "reorganize" | `/sc:cleanup` | Refactoring and code cleanup |
-| "estimate", "how long", "complexity", "effort", "time" | `/sc:estimate` | Resource and effort forecasting |
-| "test", "write tests", "coverage", "unit test", "integration test" | `/sc:test` | Test suite generation and execution |
-| "explain", "what does this do", "understand", "how does", "walk me through" | `/sc:explain` | Code comprehension assistance |
-| "document", "add docs", "README", "comments", "docstring" | `/sc:document` | Documentation generation |
-| "review requirements", "spec", "requirements", "acceptance criteria" | `/sc:spec-panel` | Multi-expert requirements analysis |
-| "analyze", "inspect", "metrics", "code review", "audit" | `/sc:analyze` | Code inspection and quality metrics |
-| "commit", "git commit", "save changes" | `/sc:git` | Git operations with smart commit messages |
-| "workflow", "process", "steps to", "guide me through" | `/sc:workflow` | Structured workflow guidance |
+### Routing Rules by Priority (Check in Order)
 
-**Priority Order for Ambiguous Requests:**
-1. **Process skills first** (`/sc:brainstorm`, `/sc:troubleshoot`, `/sc:research`) - determines HOW to approach
-2. **Implementation skills second** (`/sc:implement`, `/sc:design`, `/sc:cleanup`) - guides execution
+#### 🔴 PRIORITY 1: Problem/Error Detection → `/sc:troubleshoot`
+**Trigger immediately when user mentions ANY of these:**
+- Error words: `error`, `exception`, `fail`, `crash`, `bug`, `issue`, `problem`
+- Broken state: `not working`, `doesn't work`, `broken`, `stuck`, `hang`, `freeze`
+- Unexpected behavior: `wrong`, `incorrect`, `unexpected`, `weird`, `strange`
+- Questions about failures: `why is`, `why does`, `why isn't`, `what's wrong`
 
-**Chained Workflows (invoke in sequence):**
-- **Feature Development:** `/sc:brainstorm` → `/sc:design` → `/sc:implement` → `/sc:test`
-- **Bug Fixing:** `/sc:troubleshoot` → `/sc:test` → `/sc:document`
-- **Investigation:** `/sc:research` → `/sc:analyze` → `/sc:document`
+**Examples:**
+- "The API returns 500 error" → `/sc:troubleshoot`
+- "Login doesn't work anymore" → `/sc:troubleshoot`
+- "Why is this test failing?" → `/sc:troubleshoot`
+- "Something's wrong with the database" → `/sc:troubleshoot`
 
-**Example Auto-Triggers:**
-- User: "The login is broken" → Auto-invoke `/sc:troubleshoot`
-- User: "Add multi-tenant support" → Auto-invoke `/sc:brainstorm`
-- User: "How should we structure the notification system?" → Auto-invoke `/sc:design`
-- User: "What's the best practice for vertical slice architecture?" → Auto-invoke `/sc:research`
-- User: "Clean up the repository layer" → Auto-invoke `/sc:cleanup`
-- User: "How long would it take to add SSO?" → Auto-invoke `/sc:estimate`
+#### 🟠 PRIORITY 2: New Feature/Implementation → `/sc:brainstorm`
+**Trigger when user wants to ADD something new:**
+- Creation words: `add`, `create`, `new`, `implement`, `build`, `develop`, `make`
+- Feature requests: `feature`, `functionality`, `capability`, `support for`
+- Integration: `integrate`, `connect`, `hook up`, `add support`
 
-**Quick Command Reference:**
-| Category | Commands |
-|----------|----------|
-| Planning | `/sc:brainstorm`, `/sc:design`, `/sc:estimate`, `/sc:spec-panel`, `/sc:workflow` |
-| Development | `/sc:implement`, `/sc:build`, `/sc:improve`, `/sc:cleanup` |
-| Testing | `/sc:test`, `/sc:analyze`, `/sc:troubleshoot` |
-| Documentation | `/sc:document`, `/sc:explain`, `/sc:index` |
-| Git/Project | `/sc:git`, `/sc:pm`, `/sc:task` |
-| Research | `/sc:research`, `/sc:business-panel` |
-| Utilities | `/sc:recommend`, `/sc:help`, `/sc:load`, `/sc:save` |
+**Examples:**
+- "Add user notifications" → `/sc:brainstorm`
+- "I want to implement SSO" → `/sc:brainstorm`
+- "Create a new dashboard" → `/sc:brainstorm`
+- "Build export functionality" → `/sc:brainstorm`
+
+#### 🟡 PRIORITY 3: Architecture/Design → `/sc:design`
+**Trigger when user asks HOW to structure something:**
+- Design words: `design`, `architect`, `structure`, `organize`, `pattern`
+- Planning: `how should`, `what's the best way`, `approach`, `strategy`
+- System design: `system`, `architecture`, `layer`, `module`, `component`
+
+**Examples:**
+- "How should we structure the API?" → `/sc:design`
+- "What's the best pattern for this?" → `/sc:design`
+- "Design the notification system" → `/sc:design`
+
+#### 🟢 PRIORITY 4: Code Quality → `/sc:cleanup` or `/sc:improve`
+**Use `/sc:cleanup` for:**
+- Refactoring: `refactor`, `clean up`, `simplify`, `reorganize`, `restructure`
+- Code smell: `messy`, `ugly`, `duplicate`, `DRY`, `dead code`
+
+**Use `/sc:improve` for:**
+- Optimization: `optimize`, `faster`, `performance`, `efficient`, `speed up`
+- Quality: `improve`, `enhance`, `better`, `quality`, `maintainable`
+
+**Examples:**
+- "Clean up this service class" → `/sc:cleanup`
+- "Refactor the repository layer" → `/sc:cleanup`
+- "Make this query faster" → `/sc:improve`
+- "Improve the code quality" → `/sc:improve`
+
+#### 🔵 PRIORITY 5: Testing → `/sc:test`
+**Trigger for test-related requests:**
+- Test words: `test`, `spec`, `coverage`, `TDD`, `unit test`, `integration test`
+- Verification: `verify`, `validate`, `check`, `ensure`
+
+**Examples:**
+- "Write tests for this handler" → `/sc:test`
+- "Add unit tests" → `/sc:test`
+- "Increase test coverage" → `/sc:test`
+
+#### 🟣 PRIORITY 6: Research/Learning → `/sc:research` or `/sc:explain`
+**Use `/sc:research` for:**
+- External knowledge: `best practice`, `how do others`, `industry standard`
+- Technology research: `compare`, `alternatives`, `which library`, `latest`
+
+**Use `/sc:explain` for:**
+- Code understanding: `explain`, `what does`, `how does`, `walk me through`
+- Internal code: asking about THIS codebase
+
+**Examples:**
+- "What's the best practice for CQRS?" → `/sc:research`
+- "Explain how the auth flow works" → `/sc:explain`
+- "What does this specification do?" → `/sc:explain`
+
+#### ⚫ PRIORITY 7: Documentation → `/sc:document`
+**Trigger for documentation requests:**
+- Doc words: `document`, `docs`, `README`, `comment`, `docstring`, `JSDoc`
+- Writing: `write docs`, `add documentation`, `update README`
+
+#### ⚪ PRIORITY 8: Estimation → `/sc:estimate`
+**Trigger for time/effort questions:**
+- Time: `how long`, `time`, `duration`, `deadline`
+- Effort: `effort`, `complexity`, `estimate`, `scope`
+
+#### 🔘 PRIORITY 9: Git Operations → `/sc:git`
+**Trigger for version control:**
+- Git words: `commit`, `push`, `branch`, `merge`, `PR`, `pull request`
+- Save: `save changes`, `check in`
+
+### Chained Workflows (Auto-Sequence)
+
+When a task requires multiple steps, chain these commands:
+
+| Workflow | Sequence | When to Use |
+|----------|----------|-------------|
+| **Feature Dev** | `/sc:brainstorm` → `/sc:design` → `/sc:implement` → `/sc:test` | Building new features |
+| **Bug Fix** | `/sc:troubleshoot` → fix → `/sc:test` | Fixing issues |
+| **Refactor** | `/sc:analyze` → `/sc:cleanup` → `/sc:test` | Code improvement |
+| **Research** | `/sc:research` → `/sc:design` → `/sc:document` | Learning + planning |
+
+### DO NOT Auto-Route When:
+
+1. **User explicitly names a command** - Just run what they asked
+2. **Simple file operations** - "read file X", "show me Y" - just do it
+3. **Direct questions about this conversation** - "what did we do?"
+4. **Run/start commands** - "run tests", "start website", "build" - execute directly
+
+### Disambiguation Rules
+
+When multiple patterns match:
+1. **Error/problem keywords ALWAYS win** → `/sc:troubleshoot`
+2. **"Add/create/new" + feature description** → `/sc:brainstorm`
+3. **"How should/what's best" + architecture** → `/sc:design`
+4. **"Clean/refactor" existing code** → `/sc:cleanup`
+5. **"Make better/faster"** → `/sc:improve`
+
+### Quick Command Reference
+
+| Category | Commands | Use For |
+|----------|----------|---------|
+| **Discovery** | `/sc:brainstorm`, `/sc:research` | Understanding requirements, exploring options |
+| **Planning** | `/sc:design`, `/sc:estimate`, `/sc:workflow` | Architecture, estimates, process |
+| **Development** | `/sc:implement`, `/sc:build`, `/sc:improve`, `/sc:cleanup` | Writing and improving code |
+| **Quality** | `/sc:test`, `/sc:analyze`, `/sc:troubleshoot` | Testing, analysis, debugging |
+| **Documentation** | `/sc:document`, `/sc:explain`, `/sc:index` | Docs, explanations, indexing |
+| **Project** | `/sc:git`, `/sc:pm`, `/sc:task`, `/sc:spec-panel` | Git, project management, specs |
+| **Utilities** | `/sc:recommend`, `/sc:help`, `/sc:load`, `/sc:save` | Help, session management |
 
 ---
 
@@ -77,7 +192,7 @@ dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 dotnet watch --project src/NOIR.Web
 
-# Tests (1,800+ tests)
+# Tests (2,000+ tests)
 dotnet test src/NOIR.sln
 
 # Migrations
@@ -85,6 +200,38 @@ dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-projec
 ```
 
 **Admin Login:** `admin@noir.local` / `123qwe`
+
+## Running the Website (IMPORTANT)
+
+**When user says "run website" or "start the app", use the startup scripts:**
+
+```bash
+# macOS/Linux - Run from project root:
+./start-dev.sh
+
+# Windows - Run from project root:
+start-dev.bat
+```
+
+**What the scripts do:**
+1. Kill any processes on ports 3000 and 4000
+2. Install frontend npm dependencies (prevents missing package errors)
+3. Start backend on port 4000
+4. Start frontend on port 3000
+5. Display URLs and login credentials
+
+**Manual startup (if scripts fail):**
+```bash
+# Terminal 1 - Backend
+cd src/NOIR.Web && dotnet run
+
+# Terminal 2 - Frontend (MUST run npm install first!)
+cd src/NOIR.Web/frontend && npm install && npm run dev
+```
+
+**URLs:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:4000
 
 ## Project Structure
 

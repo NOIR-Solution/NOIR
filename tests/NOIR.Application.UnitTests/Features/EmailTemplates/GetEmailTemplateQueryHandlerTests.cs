@@ -22,14 +22,10 @@ public class GetEmailTemplateQueryHandlerTests
     }
 
     private static EmailTemplate CreateTestEmailTemplate(
-        Guid? id = null,
         string name = "TestTemplate",
         string subject = "Test Subject",
         string htmlBody = "<p>Test Body</p>",
         string? plainTextBody = "Test Body",
-        string language = "en",
-        bool isActive = true,
-        int version = 1,
         string? description = "Test Description",
         string? availableVariables = null)
     {
@@ -37,7 +33,6 @@ public class GetEmailTemplateQueryHandlerTests
             name,
             subject,
             htmlBody,
-            language,
             plainTextBody,
             description,
             availableVariables);

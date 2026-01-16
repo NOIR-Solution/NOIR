@@ -25,7 +25,6 @@ public class GetEmailTemplatesQueryHandlerTests
         string name = "TestTemplate",
         string subject = "Test Subject",
         string htmlBody = "<p>Test Body</p>",
-        bool isActive = true,
         string? availableVariables = null)
     {
         return EmailTemplate.Create(
@@ -126,7 +125,6 @@ public class GetEmailTemplatesQueryHandlerTests
             CreateTestEmailTemplate(
                 name: "WelcomeEmail",
                 subject: "Welcome",
-                isActive: true,
                 availableVariables: "[\"UserName\"]")
         };
 

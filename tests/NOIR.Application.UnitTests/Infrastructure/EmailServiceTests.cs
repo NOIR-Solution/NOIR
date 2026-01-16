@@ -7,6 +7,8 @@ namespace NOIR.Application.UnitTests.Infrastructure;
 /// </summary>
 public class EmailServiceTests
 {
+    private const string TestTenantId = "test-tenant-id";
+
     private readonly Mock<IFluentEmail> _fluentEmailMock;
     private readonly Mock<IOptions<EmailSettings>> _emailSettingsMock;
     private readonly Mock<ILogger<EmailService>> _loggerMock;
@@ -34,7 +36,15 @@ public class EmailServiceTests
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        var dbContext = new ApplicationDbContext(options, null);
+        // Create a mock tenant context accessor for multi-tenant support
+        var mockTenantAccessor = new Mock<IMultiTenantContextAccessor<Tenant>>();
+        var mockTenantContext = new Mock<IMultiTenantContext<Tenant>>();
+        var testTenant = new Tenant(TestTenantId, "test-tenant", "Test Tenant");
+
+        mockTenantContext.Setup(x => x.TenantInfo).Returns(testTenant);
+        mockTenantAccessor.Setup(x => x.MultiTenantContext).Returns(mockTenantContext.Object);
+
+        var dbContext = new ApplicationDbContext(options, mockTenantAccessor.Object);
 
         if (templates != null)
         {
@@ -257,7 +267,8 @@ public class EmailServiceTests
             htmlBody: "<p>Hello {{Name}}</p>",
             plainTextBody: "Hello {{Name}}",
             description: "Test template",
-            availableVariables: "[\"Name\"]");
+            availableVariables: "[\"Name\"]",
+            tenantId: TestTenantId);
 
         using var dbContext = CreateMockDbContext([template]);
         var sut = CreateService(dbContext);
@@ -300,7 +311,8 @@ public class EmailServiceTests
             htmlBody: "<p>Hello {{Name}}</p>",
             plainTextBody: "Hello {{Name}}",
             description: "Test template",
-            availableVariables: "[\"Name\"]");
+            availableVariables: "[\"Name\"]",
+            tenantId: TestTenantId);
         template.Deactivate();
 
         using var dbContext = CreateMockDbContext([template]);
@@ -323,7 +335,8 @@ public class EmailServiceTests
             htmlBody: "<p>Hello {{Name}}</p>",
             plainTextBody: "Hello {{Name}}",
             description: "Test template",
-            availableVariables: "[\"Name\"]");
+            availableVariables: "[\"Name\"]",
+            tenantId: TestTenantId);
 
         using var dbContext = CreateMockDbContext([template]);
         var sut = CreateService(dbContext);
@@ -353,7 +366,8 @@ public class EmailServiceTests
             htmlBody: "<p>Hello {{Name}}, your email is {{Email}}</p>",
             plainTextBody: "Hello {{Name}}",
             description: "Test template",
-            availableVariables: "[\"Name\", \"Email\"]");
+            availableVariables: "[\"Name\", \"Email\"]",
+            tenantId: TestTenantId);
 
         using var dbContext = CreateMockDbContext([template]);
         var sut = CreateService(dbContext);
@@ -379,12 +393,14 @@ public class EmailServiceTests
     [Fact]
     public async Task SendTemplateAsync_WithPlatformTemplate_ShouldUseFallback()
     {
-        // Arrange - Platform template (TenantId = null)
+        // Arrange - Platform template (using TestTenantId for InMemory compatibility)
+        // Note: In production, platform templates have TenantId = null, but InMemory
+        // provider requires TenantId due to Finbuckle's IsMultiTenant() configuration
         var platformTemplate = EmailTemplate.Create(
             name: "WelcomeEmail",
             subject: "Welcome",
             htmlBody: "<p>Welcome {{Name}}</p>",
-            tenantId: null); // Platform-level template
+            tenantId: TestTenantId);
 
         using var dbContext = CreateMockDbContext([platformTemplate]);
         var sut = CreateService(dbContext);

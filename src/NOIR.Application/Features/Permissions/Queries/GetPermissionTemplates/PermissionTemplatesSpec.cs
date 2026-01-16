@@ -20,7 +20,7 @@ public sealed class PermissionTemplatesSpec : Specification<PermissionTemplate>
         }
 
         Query.Where(t => !t.IsDeleted)
-             .Include("Items.Permission")
+             .Include("Items.Permission") // String required for nested navigation property
              .OrderBy(t => t.SortOrder)
              .ThenBy(t => t.Name)
              .TagWith("PermissionTemplates");
