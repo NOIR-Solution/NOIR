@@ -1,3 +1,5 @@
+using NOIR.Infrastructure.Audit;
+
 namespace NOIR.Web.Middleware;
 
 /// <summary>
@@ -28,7 +30,20 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception exception)
         {
-            await HandleExceptionAsync(context, exception);
+            // Capture exception for audit middleware to access in Finally()
+            // This enables HandlerAuditMiddleware to mark audit logs as failed
+            // when exceptions occur during handler execution
+            AuditExceptionContext.SetException(exception, context.TraceIdentifier);
+
+            try
+            {
+                await HandleExceptionAsync(context, exception);
+            }
+            finally
+            {
+                // Clear the context after exception is handled
+                AuditExceptionContext.Clear();
+            }
         }
     }
 

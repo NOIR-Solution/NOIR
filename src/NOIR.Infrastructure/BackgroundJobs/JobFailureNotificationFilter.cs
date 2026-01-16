@@ -1,3 +1,5 @@
+using NOIR.Infrastructure.Persistence;
+
 namespace NOIR.Infrastructure.BackgroundJobs;
 
 /// <summary>
@@ -28,7 +30,7 @@ public class JobFailureNotificationFilter : JobFilterAttribute, IElectStateFilte
 
     /// <summary>
     /// Called when a job's state is about to change.
-    /// We intercept transitions to FailedState to log and optionally notify.
+    /// We intercept transitions to FailedState to log, create audit entry, and optionally notify.
     /// </summary>
     public void OnStateElection(ElectStateContext context)
     {
@@ -50,6 +52,9 @@ public class JobFailureNotificationFilter : JobFilterAttribute, IElectStateFilte
             jobMethod,
             failedState.Reason);
 
+        // Create audit log entry for the failure so it appears in Activity Timeline
+        CreateBackgroundJobAuditLog(jobId, jobType, jobMethod, exception);
+
         // Send email notification if enabled
         if (_settings.Value.SendEmailOnFailure)
         {
@@ -67,6 +72,55 @@ public class JobFailureNotificationFilter : JobFilterAttribute, IElectStateFilte
                     _logger.LogError(ex, "Unexpected error in background email notification for JobId: {JobId}", jobId);
                 }
             });
+        }
+    }
+
+    /// <summary>
+    /// Creates an audit log entry for the background job failure.
+    /// This makes job failures visible in the Activity Timeline.
+    /// </summary>
+    private void CreateBackgroundJobAuditLog(
+        string jobId,
+        string jobType,
+        string jobMethod,
+        Exception? exception)
+    {
+        try
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var correlationId = $"hangfire-{jobId}";
+            var errorMessage = exception is not null
+                ? $"{exception.GetType().Name}: {exception.Message}"
+                : "Job failed";
+
+            // Truncate error message to prevent database issues
+            if (errorMessage.Length > 2000)
+            {
+                errorMessage = errorMessage[..2000] + "... [TRUNCATED]";
+            }
+
+            var auditLog = HandlerAuditLog.Create(
+                correlationId: correlationId,
+                handlerName: $"{jobType}.{jobMethod}",
+                operationType: AuditOperationType.Update, // Background jobs are typically data processing
+                tenantId: null, // Background jobs may not have tenant context
+                httpRequestAuditLogId: null, // No HTTP request for background jobs
+                pageContext: "Background Jobs");
+
+            auditLog.Complete(isSuccess: false, errorMessage: errorMessage);
+            auditLog.SetActivityContext(
+                displayName: $"Background Job {jobId}",
+                actionDescription: $"Background job '{jobType}.{jobMethod}' failed");
+
+            dbContext.HandlerAuditLogs.Add(auditLog);
+            dbContext.SaveChanges(); // Sync since we're in Hangfire filter context
+        }
+        catch (Exception ex)
+        {
+            // Don't let audit failures break the job pipeline
+            _logger.LogWarning(ex, "Failed to create audit log for job failure: {JobId}", jobId);
         }
     }
 

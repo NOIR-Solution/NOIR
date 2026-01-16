@@ -270,11 +270,33 @@ public class HandlerAuditMiddleware
 
     /// <summary>
     /// Cleanup method called at the end of handler execution.
-    /// Cleans up context state.
+    /// Checks for uncaught exceptions and marks audit log as failed if needed.
     /// </summary>
-    public void Finally(Envelope envelope)
+    /// <remarks>
+    /// Wolverine's middleware pipeline doesn't pass exception info to Finally(),
+    /// so we use AuditExceptionContext (set by ExceptionHandlingMiddleware) to detect failures.
+    /// </remarks>
+    public void Finally(
+        Envelope envelope,
+        ApplicationDbContext dbContext,
+        IServiceProvider serviceProvider)
     {
         _stopwatch.Stop();
+
+        // Check if an exception occurred that wasn't handled by After() methods
+        // This catches cases where handlers throw exceptions instead of returning Result.Failure()
+        if (_auditLog is not null && _auditLog.IsSuccess)
+        {
+            var exceptionContext = AuditExceptionContext.Current;
+            if (exceptionContext?.Exception is not null)
+            {
+                var sanitizedMessage = SanitizeExceptionMessage(exceptionContext.Exception);
+                _auditLog.Complete(isSuccess: false, errorMessage: sanitizedMessage);
+
+                TrySaveAuditLog(dbContext, serviceProvider);
+            }
+        }
+
         // Always clear handler from context
         AuditContext.ClearCurrentHandler();
     }
