@@ -433,7 +433,7 @@ function renderSegment(segment: FormattedSegment, index: number): React.ReactNod
         <Badge
           key={index}
           variant="outline"
-          className={cn('px-1.5 py-0 h-5 text-[10px] font-bold', style)}
+          className={cn('px-1.5 py-0 h-5 text-[10px] font-bold align-middle', style)}
         >
           {segment.content}
         </Badge>
@@ -447,7 +447,7 @@ function renderSegment(segment: FormattedSegment, index: number): React.ReactNod
         <Badge
           key={index}
           variant="outline"
-          className={cn('px-1.5 py-0 h-5 text-[10px] font-bold', style)}
+          className={cn('px-1.5 py-0 h-5 text-[10px] font-bold align-middle', style)}
         >
           {segment.content}
         </Badge>
@@ -458,9 +458,9 @@ function renderSegment(segment: FormattedSegment, index: number): React.ReactNod
       const ms = segment.metadata?.durationMs || 0
       const { className, icon: Icon } = getResponseTimeStyle(ms)
       return (
-        <span key={index} className={cn('inline-flex items-center gap-0.5', className)}>
-          {Icon && <Icon className="h-3 w-3" />}
-          <span className="tabular-nums">{segment.content}</span>
+        <span key={index} className={cn('inline-flex items-center gap-0.5 align-middle', className)}>
+          {Icon && <Icon className="h-3 w-3 inline-block align-middle" />}
+          <span className="tabular-nums align-middle">{segment.content}</span>
         </span>
       )
     }
@@ -527,7 +527,7 @@ function renderSegment(segment: FormattedSegment, index: number): React.ReactNod
         <Badge
           key={index}
           variant="outline"
-          className="px-1.5 py-0 h-5 text-[10px] font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 gap-1"
+          className="px-1.5 py-0 h-5 text-[10px] font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 gap-1 align-middle"
         >
           <Play className="h-2.5 w-2.5" />
           {segment.content}
@@ -543,7 +543,7 @@ function renderSegment(segment: FormattedSegment, index: number): React.ReactNod
           key={index}
           variant="outline"
           className={cn(
-            'px-1.5 py-0 h-5 text-[10px] font-semibold gap-1',
+            'px-1.5 py-0 h-5 text-[10px] font-semibold gap-1 align-middle',
             isSuccess === true
               ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300'
               : isFailure

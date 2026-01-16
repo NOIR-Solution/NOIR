@@ -426,15 +426,15 @@ function LogEntry({
       )}
       onClick={onViewDetail}
     >
-      <div className="flex items-start gap-2">
-        {/* Expand button for entries with exceptions */}
+      <div className="flex items-center gap-2">
+        {/* Expand button for entries with exceptions - fixed width */}
         {hasException ? (
           <button
             onClick={(e) => {
               e.stopPropagation()
               onToggleExpand()
             }}
-            className="flex-shrink-0 mt-0.5 p-0.5 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground"
+            className="w-4 flex-shrink-0 p-0.5 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground"
           >
             {isExpanded ? (
               <ChevronDown className="h-3 w-3" />
@@ -446,16 +446,16 @@ function LogEntry({
           <span className="w-4 flex-shrink-0" />
         )}
 
-        {/* Timestamp */}
-        <span className="flex-shrink-0 text-muted-foreground tabular-nums">
+        {/* Timestamp - fixed width for consistent alignment */}
+        <span className="w-[85px] flex-shrink-0 text-muted-foreground tabular-nums leading-5">
           {formatTimestamp(entry.timestamp)}
         </span>
 
-        {/* Level badge */}
+        {/* Level badge - fixed width for consistent alignment */}
         <Badge
           variant="outline"
           className={cn(
-            'flex-shrink-0 px-1.5 py-0 h-5 text-[10px] font-bold',
+            'w-10 flex-shrink-0 justify-center px-1.5 py-0 h-5 text-[10px] font-bold',
             config.bgColor,
             config.textColor
           )}
@@ -463,15 +463,13 @@ function LogEntry({
           {config.label}
         </Badge>
 
-        {/* Source context */}
-        {entry.sourceContext && (
-          <span className="flex-shrink-0 text-muted-foreground/70 truncate max-w-[200px]">
-            [{entry.sourceContext.split('.').pop()}]
-          </span>
-        )}
+        {/* Source context - fixed width for consistent alignment */}
+        <span className="w-[140px] flex-shrink-0 text-muted-foreground/70 truncate leading-5">
+          {entry.sourceContext ? `[${entry.sourceContext.split('.').pop()}]` : ''}
+        </span>
 
         {/* Message - ALWAYS visible with syntax highlighting */}
-        <span className="flex-1 text-foreground">
+        <span className="flex-1 min-w-0 text-foreground truncate leading-5">
           <LogMessageFormatter message={getDisplayMessage(entry)} />
         </span>
 
