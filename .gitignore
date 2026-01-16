@@ -243,6 +243,11 @@ $RECYCLE.BIN/
 *.orig
 *.rej
 
+# Test artifacts (accidentally committed)
+test-*.png
+test-*.jpg
+test-*.jpeg
+
 # -----------------------------------------------------------------------------
 # Static Analysis & Linting
 # -----------------------------------------------------------------------------
