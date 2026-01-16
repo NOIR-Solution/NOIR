@@ -196,6 +196,20 @@ public class HandlerAuditLog : Entity<Guid>, ITenantEntity
     }
 
     /// <summary>
+    /// Marks the audit log as failed (e.g., when HTTP response indicates failure).
+    /// </summary>
+    public void MarkAsFailed(string? errorMessage = null)
+    {
+        IsSuccess = false;
+        if (!string.IsNullOrEmpty(errorMessage))
+        {
+            ErrorMessage = string.IsNullOrEmpty(ErrorMessage)
+                ? errorMessage
+                : $"{ErrorMessage}; {errorMessage}";
+        }
+    }
+
+    /// <summary>
     /// Sets the target DTO information.
     /// </summary>
     public void SetTargetDto(string dtoType, string? dtoId)

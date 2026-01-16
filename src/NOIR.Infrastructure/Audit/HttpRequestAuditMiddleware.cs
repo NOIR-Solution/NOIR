@@ -130,6 +130,22 @@ public class HttpRequestAuditMiddleware
 
             httpAuditLog.Complete(context.Response.StatusCode, httpAuditLog.ResponseBody);
 
+            // If HTTP response indicates failure (4xx or 5xx), update all linked handler audit logs
+            // This ensures that validation failures (400), authorization errors (401/403), etc.
+            // are correctly marked as failures in the Activity Timeline
+            var statusCode = context.Response.StatusCode;
+            if (statusCode >= 400)
+            {
+                var linkedHandlerLogs = await dbContext.HandlerAuditLogs
+                    .Where(h => h.HttpRequestAuditLogId == httpAuditLog.Id && h.IsSuccess)
+                    .ToListAsync();
+
+                foreach (var handlerLog in linkedHandlerLogs)
+                {
+                    handlerLog.MarkAsFailed($"HTTP {statusCode} response");
+                }
+            }
+
             try
             {
                 await dbContext.SaveChangesAsync();

@@ -183,7 +183,7 @@ test.describe('View User Activity Link', () => {
       await usersPage.clickViewActivity(0)
 
       // Should navigate to activity timeline with userId param
-      await expect(page).toHaveURL(/\/portal\/admin\/activity-timeline\?userId=/)
+      await expect(page).toHaveURL(/\/portal\/activity-timeline\?userId=/)
     }
   })
 

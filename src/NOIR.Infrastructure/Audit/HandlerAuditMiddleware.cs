@@ -163,50 +163,97 @@ public class HandlerAuditMiddleware
 
         _stopwatch.Stop();
 
-        string? dtoDiff = null;
+        var dtoDiff = TryComputeDtoDiff(serviceProvider);
+        _auditLog.Complete(isSuccess: true, outputResult: null, dtoDiff: dtoDiff);
 
-        // Compute DTO diff if we have before state
-        if (_beforeState is not null && _dtoType is not null && _auditLog.TargetDtoId is not null)
+        TrySaveAuditLog(dbContext, serviceProvider);
+        AuditContext.ClearCurrentHandler();
+    }
+
+    /// <summary>
+    /// Called after the handler executes when returning a Result type.
+    /// Detects Result.Failure() and marks the audit accordingly.
+    /// </summary>
+    public void After(
+        Envelope envelope,
+        Result result,
+        ApplicationDbContext dbContext,
+        IServiceProvider serviceProvider)
+    {
+        if (_auditLog is null) return;
+
+        _stopwatch.Stop();
+
+        if (result.IsFailure)
         {
-            try
-            {
-                // Fetch the after state (entity should be updated now)
-                var beforeStateProvider = serviceProvider.GetService<IBeforeStateProvider>();
-                var afterState = beforeStateProvider?
-                    .GetBeforeStateAsync(_dtoType, _auditLog.TargetDtoId, CancellationToken.None)
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
-
-                if (afterState is not null)
-                {
-                    // Compute the diff
-                    var diffService = serviceProvider.GetService<IDiffService>();
-                    if (diffService is not null)
-                    {
-                        dtoDiff = ComputeDtoDiff(diffService, _beforeState, afterState);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log but don't fail - diff is optional
-                var logger = serviceProvider.GetService<ILogger<HandlerAuditMiddleware>>();
-                logger?.LogDebug(ex, "Failed to compute DTO diff for {DtoType}", _dtoType?.Name);
-            }
+            _auditLog.Complete(isSuccess: false, errorMessage: result.Error.Message);
+        }
+        else
+        {
+            var dtoDiff = TryComputeDtoDiff(serviceProvider);
+            _auditLog.Complete(isSuccess: true, outputResult: null, dtoDiff: dtoDiff);
         }
 
-        // Mark as successful
-        _auditLog.Complete(
-            isSuccess: true,
-            outputResult: null,
-            dtoDiff: dtoDiff);
+        TrySaveAuditLog(dbContext, serviceProvider);
+        AuditContext.ClearCurrentHandler();
+    }
 
-        // Save the audit log - the handler may have already called SaveChanges
-        // but that was before DtoDiff was set. We need to save again to persist the diff.
-        // Note: Using async wrapper since DomainEventInterceptor enforces async-only SaveChanges.
+    #region Private Helper Methods
+
+    /// <summary>
+    /// Attempts to compute the DTO diff if before state was captured.
+    /// Returns null if diff cannot be computed (missing state, services, or on error).
+    /// </summary>
+    private string? TryComputeDtoDiff(IServiceProvider serviceProvider)
+    {
+        if (_beforeState is null || _dtoType is null || _auditLog?.TargetDtoId is null)
+            return null;
+
         try
         {
+            var beforeStateProvider = serviceProvider.GetService<IBeforeStateProvider>();
+            var afterState = beforeStateProvider?
+                .GetBeforeStateAsync(_dtoType, _auditLog.TargetDtoId, CancellationToken.None)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            if (afterState is null)
+                return null;
+
+            var diffService = serviceProvider.GetService<IDiffService>();
+            return diffService is not null
+                ? ComputeDtoDiff(diffService, _beforeState, afterState)
+                : null;
+        }
+        catch (Exception ex)
+        {
+            var logger = serviceProvider.GetService<ILogger<HandlerAuditMiddleware>>();
+            logger?.LogDebug(ex, "Failed to compute DTO diff for {DtoType}", _dtoType?.Name);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Computes the DTO diff using JSON comparison.
+    /// </summary>
+    private static string? ComputeDtoDiff(IDiffService diffService, object before, object after)
+    {
+        var beforeJson = SanitizeAndSerialize(before);
+        var afterJson = SanitizeAndSerialize(after);
+        return diffService.CreateDiffFromJson(beforeJson, afterJson);
+    }
+
+    /// <summary>
+    /// Saves the audit log with error handling.
+    /// The handler may have already called SaveChanges, but we need to save again
+    /// to persist the DtoDiff that was computed after handler execution.
+    /// </summary>
+    private static void TrySaveAuditLog(ApplicationDbContext dbContext, IServiceProvider serviceProvider)
+    {
+        try
+        {
+            // Note: Using async wrapper since DomainEventInterceptor enforces async-only SaveChanges.
             dbContext.SaveChangesAsync(CancellationToken.None)
                 .ConfigureAwait(false)
                 .GetAwaiter()
@@ -215,24 +262,11 @@ public class HandlerAuditMiddleware
         catch (Exception ex)
         {
             var logger = serviceProvider.GetService<ILogger<HandlerAuditMiddleware>>();
-            logger?.LogDebug(ex, "Failed to save audit log with DTO diff");
+            logger?.LogDebug(ex, "Failed to save audit log");
         }
-
-        // Clear handler from context
-        AuditContext.ClearCurrentHandler();
     }
 
-    /// <summary>
-    /// Computes the DTO diff using reflection to call the generic method.
-    /// </summary>
-    private static string? ComputeDtoDiff(IDiffService diffService, object before, object after)
-    {
-        // Use CreateDiffFromJson for flexibility (works with any DTO type)
-        var beforeJson = SanitizeAndSerialize(before);
-        var afterJson = SanitizeAndSerialize(after);
-
-        return diffService.CreateDiffFromJson(beforeJson, afterJson);
-    }
+    #endregion
 
     /// <summary>
     /// Cleanup method called at the end of handler execution.

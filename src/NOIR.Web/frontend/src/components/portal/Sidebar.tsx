@@ -65,8 +65,8 @@ const adminNavItems: NavItem[] = [
   { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants', permission: Permissions.TenantsRead },
   { titleKey: 'roles.title', icon: Shield, path: '/portal/admin/roles', permission: Permissions.RolesRead },
   { titleKey: 'users.title', icon: Users, path: '/portal/admin/users', permission: Permissions.UsersRead },
-  { titleKey: 'activityTimeline.title', icon: Activity, path: '/portal/admin/activity-timeline', permission: Permissions.AuditRead },
-  { titleKey: 'developerLogs.title', icon: Terminal, path: '/portal/admin/developer-logs', permission: Permissions.AuditRead },
+  { titleKey: 'activityTimeline.title', icon: Activity, path: '/portal/activity-timeline', permission: Permissions.AuditRead },
+  { titleKey: 'developerLogs.title', icon: Terminal, path: '/portal/developer-logs', permission: Permissions.AuditRead },
 ]
 
 /**

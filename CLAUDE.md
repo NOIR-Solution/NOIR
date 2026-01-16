@@ -424,6 +424,32 @@ usePageContext('Customers')  // Required for Activity Timeline
 - CreateUserDialog form validation
 - Empty state components in tables
 
+### Interactive Elements Must Have cursor-pointer
+
+**All clickable/interactive elements MUST have `cursor-pointer` class.** This includes:
+- Tabs (`TabsTrigger`)
+- Checkboxes (`Checkbox`)
+- Select dropdowns (`SelectTrigger`, `SelectItem`)
+- Dropdown menu items (`DropdownMenuItem`, `DropdownMenuCheckboxItem`)
+- Switches (`Switch`)
+- Any custom clickable elements
+
+When creating or modifying UI components in `src/components/ui/`, always verify `cursor-pointer` is included in the className for interactive elements.
+
+### Multi-Select Dropdowns Must Stay Open
+
+For dropdown menus that allow multi-selection (checkboxes), add `onSelect={(e) => e.preventDefault()}` to prevent the dropdown from closing on each click:
+
+```typescript
+<DropdownMenuCheckboxItem
+  checked={selected}
+  onSelect={(e) => e.preventDefault()}  // Keeps dropdown open
+  onCheckedChange={handleChange}
+>
+  {label}
+</DropdownMenuCheckboxItem>
+```
+
 ### Validation Consistency (CRITICAL)
 
 **Backend:** FluentValidation for all Commands/Queries

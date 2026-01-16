@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { DateRange } from 'react-day-picker'
 import { usePageContext } from '@/hooks/usePageContext'
-import { useLogStream, type LogStreamFilter } from '@/hooks/useLogStream'
+import { useLogStream } from '@/hooks/useLogStream'
 import {
   Terminal,
   Play,
@@ -71,6 +71,7 @@ import { Pagination } from '@/components/ui/pagination'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { JsonViewer } from '@/components/ui/json-viewer'
+import { LogMessageFormatter } from '@/components/ui/log-message-formatter'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -290,8 +291,8 @@ function LogDetailDialog({
                 Copy
               </Button>
             </div>
-            <div className="p-3 bg-muted rounded-lg font-mono text-sm break-all">
-              {getDisplayMessage(entry)}
+            <div className="p-3 bg-muted rounded-lg font-mono text-sm">
+              <LogMessageFormatter message={getDisplayMessage(entry)} />
             </div>
           </div>
 
@@ -469,9 +470,9 @@ function LogEntry({
           </span>
         )}
 
-        {/* Message - ALWAYS visible */}
-        <span className="flex-1 break-all text-foreground">
-          {getDisplayMessage(entry)}
+        {/* Message - ALWAYS visible with syntax highlighting */}
+        <span className="flex-1 text-foreground">
+          <LogMessageFormatter message={getDisplayMessage(entry)} />
         </span>
 
         {/* Action buttons - always visible */}
@@ -923,6 +924,7 @@ function HistoryFileViewer({
               <DropdownMenuCheckboxItem
                 key={level.value}
                 checked={selectedLevels.has(level.value)}
+                onSelect={(e) => e.preventDefault()}
                 onCheckedChange={(checked) => {
                   setSelectedLevels(prev => {
                     const next = new Set(prev)
@@ -947,7 +949,8 @@ function HistoryFileViewer({
                   variant="ghost"
                   size="sm"
                   className="w-full h-7 text-xs"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
                     setSelectedLevels(new Set())
                     setPage(1)
                   }}
@@ -1159,10 +1162,8 @@ export default function DeveloperLogsPage() {
     isConnected,
     setPaused,
     clearEntries,
-    setFilter,
     requestErrorSummary,
     requestBufferStats,
-    filter,
   } = useLogStream({
     autoConnect: LOG_STREAM_CONFIG.AUTO_CONNECT,
     maxEntries: LOG_STREAM_CONFIG.MAX_ENTRIES,
@@ -1233,14 +1234,6 @@ export default function DeveloperLogsPage() {
     requestBufferStats()
     requestErrorSummary()
   }, [requestBufferStats, requestErrorSummary])
-
-  // Handle filter change
-  const handleFilterChange = useCallback((newFilter: Partial<LogStreamFilter>) => {
-    setFilter({
-      ...filter,
-      ...newFilter,
-    })
-  }, [filter, setFilter])
 
   // Toggle entry expansion
   const toggleEntryExpanded = useCallback((id: number) => {
@@ -1456,6 +1449,7 @@ export default function DeveloperLogsPage() {
                       <DropdownMenuCheckboxItem
                         key={level.value}
                         checked={liveSelectedLevels.has(level.value)}
+                        onSelect={(e) => e.preventDefault()}
                         onCheckedChange={(checked) => {
                           setLiveSelectedLevels(prev => {
                             const next = new Set(prev)
@@ -1479,7 +1473,10 @@ export default function DeveloperLogsPage() {
                           variant="ghost"
                           size="sm"
                           className="w-full h-7 text-xs"
-                          onClick={() => setLiveSelectedLevels(new Set())}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            setLiveSelectedLevels(new Set())
+                          }}
                         >
                           Clear filters
                         </Button>
@@ -1592,13 +1589,13 @@ export default function DeveloperLogsPage() {
                 </Button>
               </div>
             </div>
-            {/* Log content - height fits available space */}
+            {/* Log content - taller height since live logs don't have paging */}
             <ScrollArea
               ref={scrollAreaRef}
-              className="h-[350px] bg-card dark:bg-slate-950"
+              className="h-[calc(100vh-400px)] min-h-[400px] bg-card dark:bg-slate-950"
             >
               {filteredEntries.length === 0 ? (
-                <div className="flex flex-col items-center justify-center min-h-[350px] text-muted-foreground py-12">
+                <div className="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground py-12">
                   <Terminal className="h-12 w-12 mb-4 opacity-40" />
                   <p className="text-base font-medium">No log entries</p>
                   <p className="text-sm mt-1 opacity-70">

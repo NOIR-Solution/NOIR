@@ -58,12 +58,12 @@ export class ActivityTimelinePage {
   }
 
   async goto() {
-    await this.page.goto('/portal/admin/activity-timeline')
+    await this.page.goto('/portal/activity-timeline')
     await this.page.waitForLoadState('networkidle')
   }
 
   async gotoWithUserId(userId: string, userEmail?: string) {
-    let url = `/portal/admin/activity-timeline?userId=${encodeURIComponent(userId)}`
+    let url = `/portal/activity-timeline?userId=${encodeURIComponent(userId)}`
     if (userEmail) {
       url += `&userEmail=${encodeURIComponent(userEmail)}`
     }

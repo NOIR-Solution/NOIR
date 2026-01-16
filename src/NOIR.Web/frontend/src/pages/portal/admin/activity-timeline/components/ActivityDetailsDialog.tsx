@@ -217,7 +217,15 @@ export function ActivityDetailsDialog({
                   <Clock className="h-4 w-4" />
                   {formatTimestamp(entry.timestamp)}
                 </span>
-                <Badge variant={entry.isSuccess ? 'default' : 'destructive'}>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    'text-xs',
+                    entry.operationType === 'Create' && 'text-green-700 dark:text-green-400',
+                    entry.operationType === 'Update' && 'text-blue-700 dark:text-blue-400',
+                    entry.operationType === 'Delete' && 'text-red-700 dark:text-red-400'
+                  )}
+                >
                   {entry.operationType}
                 </Badge>
               </div>

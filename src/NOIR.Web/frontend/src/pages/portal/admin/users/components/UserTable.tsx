@@ -48,7 +48,7 @@ export function UserTable({
   const navigate = useNavigate()
 
   const handleViewActivity = (user: UserListItem) => {
-    navigate(`/portal/admin/activity-timeline?userId=${encodeURIComponent(user.id)}&userEmail=${encodeURIComponent(user.email)}`)
+    navigate(`/portal/activity-timeline?userId=${encodeURIComponent(user.id)}&userEmail=${encodeURIComponent(user.email)}`)
   }
 
   if (loading) {
