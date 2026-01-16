@@ -275,7 +275,7 @@ export default function ActivityTimelinePage() {
               {t('activityTimeline.title', 'Activity Timeline')}
             </h1>
             <p className="text-muted-foreground">
-              {t('activityTimeline.description', 'Monitor all user actions in real-time')}
+              {t('activityTimeline.description', 'Track and audit all user actions')}
             </p>
           </div>
         </div>

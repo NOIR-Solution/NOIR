@@ -7,7 +7,8 @@ namespace NOIR.Web.Json;
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    WriteIndented = false)]
+    WriteIndented = false,
+    UseStringEnumConverter = true)]
 // Auth DTOs
 [JsonSerializable(typeof(AuthResponse))]
 [JsonSerializable(typeof(CurrentUserDto))]

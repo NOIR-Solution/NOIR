@@ -79,6 +79,7 @@ global using NOIR.Infrastructure;
 global using NOIR.Infrastructure.Audit;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Localization;
+global using NOIR.Infrastructure.Logging;
 global using NOIR.Infrastructure.Persistence;
 
 // NOIR Web
@@ -131,3 +132,6 @@ global using NOIR.Application.Features.Tenants.Commands.UpdateTenant;
 global using NOIR.Application.Features.Tenants.Commands.DeleteTenant;
 global using NOIR.Application.Features.Tenants.Queries.GetTenants;
 global using NOIR.Application.Features.Tenants.Queries.GetTenantById;
+
+// NOIR Application - Developer Logs
+global using NOIR.Application.Features.DeveloperLogs.DTOs;

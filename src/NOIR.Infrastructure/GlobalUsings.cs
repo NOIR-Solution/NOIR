@@ -7,6 +7,7 @@ global using System.Collections.Generic;
 global using System.ComponentModel.DataAnnotations;
 global using System.Diagnostics;
 global using System.IdentityModel.Tokens.Jwt;
+global using System.IO.Compression;
 global using System.Linq;
 global using System.Linq.Expressions;
 global using System.Reflection;
@@ -14,6 +15,7 @@ global using System.Security.Claims;
 global using System.Security.Cryptography;
 global using System.Text;
 global using System.Text.Json;
+global using System.Text.RegularExpressions;
 global using System.Threading;
 global using System.Threading.Tasks;
 
@@ -113,6 +115,7 @@ global using NOIR.Application.Specifications.PasswordResetOtps;
 global using NOIR.Application.Specifications.TenantSettings;
 global using NOIR.Application.Specifications.UserTenantMemberships;
 global using NOIR.Application.Features.EmailTemplates.Specifications;
+global using NOIR.Application.Features.DeveloperLogs.DTOs;
 
 // NOIR Domain
 global using NOIR.Domain.Common;
@@ -131,6 +134,7 @@ global using NOIR.Infrastructure.Email;
 global using NOIR.Infrastructure.Hubs;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Identity.Authorization;
+global using NOIR.Infrastructure.Logging;
 global using NOIR.Infrastructure.Persistence;
 global using NOIR.Infrastructure.Persistence.Configurations;
 global using NOIR.Infrastructure.Persistence.Interceptors;

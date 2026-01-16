@@ -23,14 +23,61 @@ builder.WebHost.ConfigureKestrel(options =>
     });
 });
 
-// Configure Serilog
-builder.Host.UseSerilog((context, configuration) =>
+// Create LoggingLevelSwitch for dynamic log level control
+var loggingLevelSwitch = new Serilog.Core.LoggingLevelSwitch(Serilog.Events.LogEventLevel.Information);
+
+// Create deferred SignalR sink (configured now, initialized after app.Build())
+var deferredSignalRSink = new DeferredSignalRLogSink();
+
+// Configure Serilog with dynamic level control, file logging, and deferred SignalR streaming
+builder.Host.UseSerilog((context, services, configuration) =>
 {
+    var devLogSettings = context.Configuration
+        .GetSection(DeveloperLogSettings.SectionName)
+        .Get<DeveloperLogSettings>()
+        ?? new DeveloperLogSettings();
+
+    // Set initial level from configuration
+    if (Enum.TryParse<Serilog.Events.LogEventLevel>(devLogSettings.DefaultMinimumLevel, true, out var initialLevel))
+    {
+        loggingLevelSwitch.MinimumLevel = initialLevel;
+    }
+
     configuration
-        .ReadFrom.Configuration(context.Configuration)
+        .MinimumLevel.ControlledBy(loggingLevelSwitch)
+        .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
+        .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Warning)
+        .MinimumLevel.Override("Hangfire", Serilog.Events.LogEventLevel.Warning)
+        .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
         .Enrich.FromLogContext()
+        .Enrich.WithProperty("MachineName", Environment.MachineName)
+        .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
         .WriteTo.Console();
+
+    // Add SignalR streaming sink (deferred - initialized after app.Build())
+    if (devLogSettings.Enabled && devLogSettings.EnableRealTimeStreaming)
+    {
+        configuration.WriteTo.DeferredSignalRLogStream(deferredSignalRSink);
+    }
+
+    // Add file logging if enabled
+    if (devLogSettings.EnableFileLogging)
+    {
+        var logPath = Path.Combine(context.HostingEnvironment.ContentRootPath, devLogSettings.LogFilePath);
+        configuration.WriteTo.File(
+            new Serilog.Formatting.Json.JsonFormatter(),
+            logPath,
+            rollingInterval: Serilog.RollingInterval.Day,
+            retainedFileCountLimit: devLogSettings.RetainedFileCountLimit,
+            fileSizeLimitBytes: devLogSettings.FileSizeLimitMb * 1024 * 1024,
+            rollOnFileSizeLimit: true,
+            shared: true);
+    }
 });
+
+// Register LoggingLevelSwitch as singleton for runtime level control
+builder.Services.AddSingleton(loggingLevelSwitch);
 
 // Add services to the container
 builder.Services.AddHttpContextAccessor();
@@ -75,6 +122,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    // Serialize enums as strings for JavaScript compatibility (consistent with SignalR)
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
 // Configure Rate Limiting
@@ -121,6 +170,10 @@ builder.Services.AddSignalR(options =>
     options.MaximumReceiveMessageSize = 64 * 1024; // 64 KB
     options.KeepAliveInterval = TimeSpan.FromSeconds(15);
     options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+}).AddJsonProtocol(options =>
+{
+    // Serialize enums as strings for JavaScript compatibility
+    options.PayloadSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 });
 
 // Add Application and Infrastructure services
@@ -129,6 +182,10 @@ builder.Services.AddInfrastructureServices(builder.Configuration, builder.Enviro
 
 // Configure AuditRetention settings
 builder.Services.Configure<AuditRetentionSettings>(builder.Configuration.GetSection(AuditRetentionSettings.SectionName));
+
+// Configure DeveloperLog settings
+builder.Services.Configure<NOIR.Infrastructure.Logging.DeveloperLogSettings>(
+    builder.Configuration.GetSection(NOIR.Infrastructure.Logging.DeveloperLogSettings.SectionName));
 
 // Configure Wolverine for CQRS
 builder.Host.UseWolverine(opts =>
@@ -264,6 +321,10 @@ if (!builder.Environment.EnvironmentName.Equals("Testing", StringComparison.Ordi
 
 var app = builder.Build();
 
+// Initialize deferred SignalR log sink now that service provider is available
+// This enables real-time log streaming to the Developer Logs UI
+deferredSignalRSink.Initialize(app.Services);
+
 // Seed database
 await ApplicationDbContextSeeder.SeedDatabaseAsync(app.Services);
 
@@ -363,9 +424,11 @@ app.MapUserEndpoints();
 app.MapEmailTemplateEndpoints();
 app.MapNotificationEndpoints();
 app.MapAuditEndpoints();
+app.MapDeveloperLogEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");
+app.MapHub<NOIR.Infrastructure.Hubs.LogStreamHub>("/hubs/logstream");
 
 // Hangfire Dashboard (requires Admin role in production, skip in Testing)
 if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
