@@ -757,7 +757,74 @@ services.Configure<LogStreamOptions>(options =>
 
 ---
 
-## 9. Appendix: Comparison Matrix
+## 9. Log Level Philosophy
+
+### HTTP Response Code to Log Level Mapping
+
+NOIR uses a deliberate log level strategy that distinguishes between **user/business logic failures** and **system failures**:
+
+| HTTP Status Code | Log Level | Rationale |
+|------------------|-----------|-----------|
+| **2xx** (Success) | INFO | Normal successful operations |
+| **4xx** (Client Error) | **WARNING** | Business logic failures (validation, not found, forbidden, conflict). The system is working correctly - it correctly rejected an invalid request. |
+| **5xx** (Server Error) | **ERROR** | System failures (exceptions, infrastructure issues). Something is broken and needs attention. |
+
+### Why 4xx = WARNING (Not ERROR)
+
+This is an intentional design decision based on industry best practices:
+
+1. **Semantic Meaning**: 4xx responses indicate the *client* made a mistake (bad input, unauthorized access, resource not found). The server correctly identified and rejected the request - this is *expected behavior*.
+
+2. **Noise Reduction**: If 4xx responses logged as ERROR, common scenarios like "user tried to delete a protected tenant" would flood error dashboards with false alarms.
+
+3. **Alerting Strategy**: Only 5xx (ERROR level) should trigger production alerts. 4xx are normal business operations.
+
+### Examples
+
+| Scenario | HTTP Code | Log Level | Why |
+|----------|-----------|-----------|-----|
+| User deletes protected tenant | 400 Bad Request | **WARNING** | Business rule correctly enforced |
+| User access denied | 403 Forbidden | **WARNING** | Auth system working correctly |
+| User tries to access deleted entity | 404 Not Found | **WARNING** | Expected behavior for invalid ID |
+| Database connection failed | 500 Internal Server Error | **ERROR** | System failure - needs investigation |
+| Unhandled exception | 500 Internal Server Error | **ERROR** | Bug - needs fixing |
+
+### Implementation Details
+
+Serilog request logging is configured in `Program.cs` to map status codes to log levels:
+
+```csharp
+app.UseSerilogRequestLogging(options =>
+{
+    options.GetLevel = (context, elapsed, ex) =>
+    {
+        if (ex != null) return LogEventLevel.Error;
+
+        var statusCode = context.Response.StatusCode;
+        return statusCode switch
+        {
+            >= 500 => LogEventLevel.Error,   // System failure
+            >= 400 => LogEventLevel.Warning, // Business logic failure
+            _ => LogEventLevel.Information   // Success
+        };
+    };
+});
+```
+
+### Activity Log vs Developer Log Display
+
+| Log Type | What Shows as "Error" |
+|----------|----------------------|
+| **Activity Log** | Both WARNING and ERROR (shows all failures) |
+| **Developer Log "Errors only" filter** | WARNING + ERROR level logs (captures all failures) |
+
+The Activity Log uses red "Error" badges for any failed operation (Result.Failure), regardless of whether it's a business logic failure (4xx/WARNING) or system failure (5xx/ERROR), because from the user's perspective, the action failed.
+
+The Developer Log filter "Errors only" includes WARNING level to capture business logic failures that resulted in failed operations, even though they're not system errors.
+
+---
+
+## 10. Appendix: Comparison Matrix
 
 | Feature | Seq | Dozzle | lnav | Grafana | NOIR (Proposed) |
 |---------|-----|--------|------|---------|-----------------|

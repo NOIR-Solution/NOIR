@@ -33,6 +33,10 @@ public class HandlerAuditMiddleware
     private object? _beforeState;
     private Type? _dtoType;
 
+    // Stored references for Finally() - Wolverine only passes Envelope to Finally methods
+    private ApplicationDbContext? _dbContext;
+    private IServiceProvider? _serviceProvider;
+
     // Sensitive properties to redact from input/output
     private static readonly HashSet<string> SensitiveProperties = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -64,6 +68,10 @@ public class HandlerAuditMiddleware
         IServiceProvider serviceProvider)
     {
         _stopwatch.Restart();
+
+        // Store references for Finally() - Wolverine only passes Envelope to Finally methods
+        _dbContext = dbContext;
+        _serviceProvider = serviceProvider;
 
         var message = envelope.Message;
         if (message is null) return;
@@ -170,33 +178,6 @@ public class HandlerAuditMiddleware
         AuditContext.ClearCurrentHandler();
     }
 
-    /// <summary>
-    /// Called after the handler executes when returning a Result type.
-    /// Detects Result.Failure() and marks the audit accordingly.
-    /// </summary>
-    public void After(
-        Envelope envelope,
-        Result result,
-        ApplicationDbContext dbContext,
-        IServiceProvider serviceProvider)
-    {
-        if (_auditLog is null) return;
-
-        _stopwatch.Stop();
-
-        if (result.IsFailure)
-        {
-            _auditLog.Complete(isSuccess: false, errorMessage: result.Error.Message);
-        }
-        else
-        {
-            var dtoDiff = TryComputeDtoDiff(serviceProvider);
-            _auditLog.Complete(isSuccess: true, outputResult: null, dtoDiff: dtoDiff);
-        }
-
-        TrySaveAuditLog(dbContext, serviceProvider);
-        AuditContext.ClearCurrentHandler();
-    }
 
     #region Private Helper Methods
 
@@ -276,10 +257,7 @@ public class HandlerAuditMiddleware
     /// Wolverine's middleware pipeline doesn't pass exception info to Finally(),
     /// so we use AuditExceptionContext (set by ExceptionHandlingMiddleware) to detect failures.
     /// </remarks>
-    public void Finally(
-        Envelope envelope,
-        ApplicationDbContext dbContext,
-        IServiceProvider serviceProvider)
+    public void Finally(Envelope envelope)
     {
         _stopwatch.Stop();
 
@@ -293,7 +271,11 @@ public class HandlerAuditMiddleware
                 var sanitizedMessage = SanitizeExceptionMessage(exceptionContext.Exception);
                 _auditLog.Complete(isSuccess: false, errorMessage: sanitizedMessage);
 
-                TrySaveAuditLog(dbContext, serviceProvider);
+                // Use stored references - Wolverine only passes Envelope to Finally methods
+                if (_dbContext is not null && _serviceProvider is not null)
+                {
+                    TrySaveAuditLog(_dbContext, _serviceProvider);
+                }
             }
         }
 

@@ -329,7 +329,17 @@ deferredSignalRSink.Initialize(app.Services);
 await ApplicationDbContextSeeder.SeedDatabaseAsync(app.Services);
 
 // Configure the HTTP request pipeline
-app.UseSerilogRequestLogging();
+// Log 4xx/5xx responses at ERROR level so they appear in "Errors only" filter
+app.UseSerilogRequestLogging(options =>
+{
+    options.GetLevel = (httpContext, elapsed, ex) =>
+    {
+        if (ex is not null) return Serilog.Events.LogEventLevel.Error;
+        if (httpContext.Response.StatusCode >= 500) return Serilog.Events.LogEventLevel.Error;
+        if (httpContext.Response.StatusCode >= 400) return Serilog.Events.LogEventLevel.Warning;
+        return Serilog.Events.LogEventLevel.Information;
+    };
+});
 
 // Custom exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();

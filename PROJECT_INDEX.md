@@ -378,19 +378,40 @@ Available memories for quick context:
 
 ---
 
+## Log Level Philosophy
+
+NOIR uses a deliberate log level strategy for HTTP responses:
+
+| HTTP Status | Log Level | Meaning |
+|-------------|-----------|---------|
+| 2xx | INFO | Success |
+| 4xx | **WARNING** | Business logic failure (system working correctly) |
+| 5xx | **ERROR** | System failure (needs investigation) |
+
+**Key insight:** 4xx responses are WARNING, not ERROR, because the system correctly identified and rejected an invalid request. Only 5xx (system failures) should trigger production alerts.
+
+**Examples:**
+- User tries to delete protected tenant → 400 → WARNING
+- User access denied → 403 → WARNING
+- Database connection failed → 500 → ERROR
+
+---
+
+## Recent Changes (2026-01-17)
+
+- **Log Level Philosophy**: Implemented 4xx = WARNING, 5xx = ERROR strategy
+- **Developer Logs**: "Errors only" filter now includes WARNING + ERROR to capture all failures
+- **AuditResultContext**: Added ambient context for capturing Result.Failure in Wolverine middleware
+- **GetPermissionTemplatesQueryHandler**: Fixed by using IApplicationDbContext instead of IReadRepository (PermissionTemplate is Entity, not AggregateRoot)
+- **HandlerAuditMiddleware**: Fixed Wolverine constructor resolution issue
+
+---
+
 ## Recent Changes (2026-01-12)
 
 - Test coverage increased from 1,808 to 2,050 tests (+13%)
 - Added 21 new handler test files covering all major features
-- Fixed Error.Validation/Error.Failure/Error.NotFound parameter order bugs in:
-  - UploadAvatarCommandHandler
-  - DeleteAvatarCommandHandler
-  - DeleteRoleCommandHandler
-  - UpdateRoleCommandHandler
-  - DeleteUserCommandHandler
-  - GetEmailTemplateQueryHandler
-  - UpdateEmailTemplateCommandHandler
-  - SendTestEmailCommandHandler
+- Fixed Error.Validation/Error.Failure/Error.NotFound parameter order bugs
 
 ---
 

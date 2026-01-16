@@ -1267,9 +1267,13 @@ export default function DeveloperLogsPage() {
         }
       }
 
-      // Exceptions only filter
-      if (exceptionsOnly && !entry.exception) {
-        return false
+      // Errors only filter - includes exceptions AND error/warning level logs
+      // This catches both thrown exceptions and business logic failures (Result.Failure)
+      if (exceptionsOnly) {
+        const isError = entry.level === 'Error' || entry.level === 'Warning' || entry.exception
+        if (!isError) {
+          return false
+        }
       }
 
       return true

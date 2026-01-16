@@ -1,3 +1,5 @@
+using NOIR.Infrastructure.Audit;
+
 namespace NOIR.Web.Extensions;
 
 /// <summary>
@@ -47,9 +49,13 @@ public static class ResultExtensions
     /// <summary>
     /// Maps an Error to a Problem Details HTTP response.
     /// Includes error code, correlation ID, and timestamp for debugging.
+    /// Also sets AuditResultContext to capture the failure for logging middleware.
     /// </summary>
     private static IResult ToProblemResult(Error error, HttpContext? context = null)
     {
+        // Set the result context so middleware can detect this business logic failure
+        AuditResultContext.SetFailure(error.Message, error.Code);
+
         var extensions = CreateErrorExtensions(error, context);
 
         return error.Type switch
