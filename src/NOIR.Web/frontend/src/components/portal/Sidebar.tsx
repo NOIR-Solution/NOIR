@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -18,6 +18,10 @@ import {
   Users,
   Activity,
   Terminal,
+  Bell,
+  Sun,
+  Moon,
+  Monitor,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -45,7 +49,9 @@ import { usePermissions, Permissions, type PermissionKey } from '@/hooks/usePerm
 import { useLanguage } from '@/i18n/useLanguage'
 import { languageFlags } from '@/i18n/languageFlags'
 import type { SupportedLanguage } from '@/i18n'
-import { ThemeToggle, ThemeToggleCompact } from '@/components/ui/theme-toggle'
+import { useTheme } from '@/contexts/ThemeContext'
+import { useNotificationContext } from '@/contexts/NotificationContext'
+import { Badge } from '@/components/ui/badge'
 
 interface NavItem {
   titleKey: string
@@ -55,18 +61,44 @@ interface NavItem {
   permission?: PermissionKey
 }
 
-// Navigation items - Settings is accessed via profile dropdown, with admin section
-const navItems: NavItem[] = [
-  { titleKey: 'dashboard.title', icon: LayoutDashboard, path: '/portal' },
-  { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates', permission: Permissions.EmailTemplatesRead },
-]
+interface NavSection {
+  labelKey?: string // undefined means no section header (primary items)
+  items: NavItem[]
+}
 
-const adminNavItems: NavItem[] = [
-  { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants', permission: Permissions.TenantsRead },
-  { titleKey: 'roles.title', icon: Shield, path: '/portal/admin/roles', permission: Permissions.RolesRead },
-  { titleKey: 'users.title', icon: Users, path: '/portal/admin/users', permission: Permissions.UsersRead },
-  { titleKey: 'activityTimeline.title', icon: Activity, path: '/portal/activity-timeline', permission: Permissions.AuditRead },
-  { titleKey: 'developerLogs.title', icon: Terminal, path: '/portal/developer-logs', permission: Permissions.AuditRead },
+// Task-based navigation structure
+// Primary: Dashboard (always visible, no section label)
+// Configuration: Things you SET UP
+// Access Control: WHO can do WHAT
+// Monitoring: Things you WATCH
+const navSections: NavSection[] = [
+  {
+    // Primary - no section label
+    items: [
+      { titleKey: 'dashboard.title', icon: LayoutDashboard, path: '/portal' },
+    ],
+  },
+  {
+    labelKey: 'nav.configuration',
+    items: [
+      { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates', permission: Permissions.EmailTemplatesRead },
+      { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants', permission: Permissions.TenantsRead },
+    ],
+  },
+  {
+    labelKey: 'nav.accessControl',
+    items: [
+      { titleKey: 'users.title', icon: Users, path: '/portal/admin/users', permission: Permissions.UsersRead },
+      { titleKey: 'roles.title', icon: Shield, path: '/portal/admin/roles', permission: Permissions.RolesRead },
+    ],
+  },
+  {
+    labelKey: 'nav.monitoring',
+    items: [
+      { titleKey: 'activityTimeline.title', icon: Activity, path: '/portal/activity-timeline', permission: Permissions.AuditRead },
+      { titleKey: 'developerLogs.title', icon: Terminal, path: '/portal/developer-logs', permission: Permissions.AuditRead },
+    ],
+  },
 ]
 
 /**
@@ -104,6 +136,7 @@ function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) 
   const { currentLanguage, languages, changeLanguage } = useLanguage()
   const { logout, checkAuth } = useAuthContext()
   const navigate = useNavigate()
+  const { theme, setTheme } = useTheme()
 
   const handleLogout = async () => {
     await logout()
@@ -207,6 +240,59 @@ function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) 
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
+        {/* Theme Switcher Sub-menu */}
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            {theme === 'dark' ? (
+              <Moon className="mr-2 h-4 w-4" />
+            ) : theme === 'light' ? (
+              <Sun className="mr-2 h-4 w-4" />
+            ) : (
+              <Monitor className="mr-2 h-4 w-4" />
+            )}
+            <span>{t('labels.theme')}</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent className="min-w-[140px]">
+              <DropdownMenuItem
+                onClick={() => setTheme('light')}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Sun className="h-4 w-4" />
+                  <span>{t('theme.light')}</span>
+                </div>
+                {theme === 'light' && (
+                  <Check className="h-4 w-4 text-sidebar-primary" />
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setTheme('dark')}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Moon className="h-4 w-4" />
+                  <span>{t('theme.dark')}</span>
+                </div>
+                {theme === 'dark' && (
+                  <Check className="h-4 w-4 text-sidebar-primary" />
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setTheme('system')}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Monitor className="h-4 w-4" />
+                  <span>{t('theme.system')}</span>
+                </div>
+                {theme === 'system' && (
+                  <Check className="h-4 w-4 text-sidebar-primary" />
+                )}
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
           <LogOut className="mr-2 h-4 w-4" />
@@ -227,8 +313,178 @@ interface SidebarContentProps {
   user?: UserData | null
 }
 
+
 /**
- * SidebarContent - With Dashboard and Admin sections
+ * Notification Sidebar Item with Dropdown
+ */
+function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: boolean; t: (key: string) => string; onItemClick?: (path: string) => void }) {
+  const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead, connectionState } = useNotificationContext()
+  const location = useLocation()
+  const isActive = location.pathname === '/portal/notifications'
+  const [open, setOpen] = useState(false)
+
+  const displayCount = unreadCount > 99 ? '99+' : unreadCount.toString()
+  const recentNotifications = notifications.slice(0, 5)
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead()
+    } catch (error) {
+      console.error('Failed to mark all as read:', error)
+    }
+  }
+
+  const bellButton = (
+    <Button
+      variant="ghost"
+      className={cn(
+        'w-full justify-start relative overflow-hidden transition-all duration-200',
+        isExpanded ? 'px-3' : 'px-0 justify-center',
+        isActive && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
+        !isActive && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+      )}
+    >
+      {isActive && (
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
+      )}
+      <div className="relative">
+        <Bell className={cn('h-5 w-5 flex-shrink-0', isExpanded && 'mr-3')} />
+        {unreadCount > 0 && !isExpanded && (
+          <Badge
+            variant="destructive"
+            className="absolute -top-2 -right-2 h-4 min-w-4 p-0 text-[9px] flex items-center justify-center"
+          >
+            {displayCount}
+          </Badge>
+        )}
+        {/* Connection state indicator */}
+        {connectionState === 'connecting' || connectionState === 'reconnecting' ? (
+          <span className="absolute bottom-0 right-0 size-2 rounded-full bg-amber-500 animate-pulse" />
+        ) : connectionState === 'disconnected' ? (
+          <span className="absolute bottom-0 right-0 size-2 rounded-full bg-red-500" />
+        ) : null}
+      </div>
+      {isExpanded && (
+        <>
+          <span className="flex-1 text-left">{t('notifications.title')}</span>
+          {unreadCount > 0 && (
+            <Badge variant="destructive" className="ml-auto h-5 min-w-5 p-0 px-1.5 text-[10px]">
+              {displayCount}
+            </Badge>
+          )}
+        </>
+      )}
+    </Button>
+  )
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        {!isExpanded ? (
+          <TippyTooltip
+            content={unreadCount > 0 ? `${t('notifications.title')} (${unreadCount})` : t('notifications.title')}
+            placement="right"
+            delay={[0, 0]}
+          >
+            {bellButton}
+          </TippyTooltip>
+        ) : (
+          bellButton
+        )}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        side="top"
+        sideOffset={8}
+        className="w-72"
+      >
+        {/* Header */}
+        <DropdownMenuLabel className="flex items-center justify-between">
+          <span>{t('notifications.title')}</span>
+          {unreadCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-auto py-1 px-2 text-xs -mr-2"
+              onClick={handleMarkAllAsRead}
+            >
+              <Check className="size-3 mr-1" />
+              {t('notifications.markAllRead')}
+            </Button>
+          )}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        {/* Notification list */}
+        <div className="max-h-80 overflow-y-auto">
+          {isLoading && notifications.length === 0 ? (
+            <div className="flex items-center justify-center py-6">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary" />
+            </div>
+          ) : recentNotifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
+              <Bell className="h-6 w-6 mb-2 opacity-50" />
+              <p className="text-sm">{t('notifications.noNotifications')}</p>
+            </div>
+          ) : (
+            <>
+              {recentNotifications.map((notification) => (
+                <DropdownMenuItem
+                  key={notification.id}
+                  className={cn(
+                    'flex items-start gap-2 cursor-pointer py-2',
+                    !notification.isRead && 'bg-primary/5'
+                  )}
+                  onClick={() => {
+                    if (!notification.isRead) {
+                      markAsRead(notification.id)
+                    }
+                  }}
+                >
+                  <div className={cn(
+                    'mt-1.5 h-2 w-2 rounded-full flex-shrink-0',
+                    notification.isRead ? 'bg-transparent' : 'bg-primary'
+                  )} />
+                  <div className="flex-1 min-w-0">
+                    <p className={cn(
+                      'text-sm truncate',
+                      !notification.isRead && 'font-medium'
+                    )}>
+                      {notification.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {notification.message}
+                    </p>
+                    <p className="text-xs text-muted-foreground/70 mt-1">
+                      {new Date(notification.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild className="justify-center">
+          <Link
+            to="/portal/notifications"
+            onClick={() => {
+              setOpen(false)
+              onItemClick?.('/portal/notifications')
+            }}
+          >
+            {t('notifications.viewAll')}
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+/**
+ * SidebarContent - Task-based navigation with sections
  */
 function SidebarContent({
   isExpanded,
@@ -241,16 +497,13 @@ function SidebarContent({
   const isActive = (path: string) => isActivePath(pathname, path)
   const { hasPermission } = usePermissions()
 
-  // Filter nav items based on permissions
-  const visibleNavItems = navItems.filter(
-    item => !item.permission || hasPermission(item.permission)
-  )
-
-  // Filter admin nav items - show admin section if user has any admin permissions
-  const visibleAdminItems = adminNavItems.filter(
-    item => !item.permission || hasPermission(item.permission)
-  )
-  const showAdminSection = visibleAdminItems.length > 0
+  // Filter sections and items based on permissions
+  const visibleSections = navSections
+    .map(section => ({
+      ...section,
+      items: section.items.filter(item => !item.permission || hasPermission(item.permission)),
+    }))
+    .filter(section => section.items.length > 0)
 
   const renderNavItem = (item: NavItem) => {
     const Icon = item.icon
@@ -328,48 +581,40 @@ function SidebarContent({
         </Button>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation - Task-based sections */}
       <nav className="flex-1 overflow-y-auto py-4">
-        <div className="space-y-1 px-2">
-          {visibleNavItems.map(renderNavItem)}
-        </div>
-
-        {/* Admin Section */}
-        {showAdminSection && (
-          <div className="mt-6">
-            {isExpanded && (
+        {visibleSections.map((section, index) => (
+          <div key={section.labelKey || 'primary'} className={cn(index > 0 && 'mt-4')}>
+            {/* Section label (only if defined and expanded) */}
+            {section.labelKey && isExpanded && (
               <div className="px-4 mb-2">
                 <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
-                  {t('nav.admin')}
+                  {t(section.labelKey)}
                 </p>
               </div>
             )}
+            {/* Section divider when collapsed (except for first section) */}
+            {section.labelKey && !isExpanded && index > 0 && (
+              <div className="mx-3 mb-2 border-t border-sidebar-border" />
+            )}
             <div className="space-y-1 px-2">
-              {visibleAdminItems.map(renderNavItem)}
+              {section.items.map(renderNavItem)}
             </div>
           </div>
-        )}
+        ))}
       </nav>
 
-      {/* Theme Toggle */}
-      <div className={cn(
-        'p-3 border-t border-sidebar-border',
-        !isExpanded && 'flex justify-center'
-      )}>
-        {isExpanded ? (
-          <ThemeToggle className="w-full" />
-        ) : (
-          <TippyTooltip content={t('labels.appearance')} placement="right" delay={[0, 0]}>
-            <div>
-              <ThemeToggleCompact />
-            </div>
-          </TippyTooltip>
-        )}
-      </div>
+      {/* Footer Section */}
+      <div className="border-t border-sidebar-border">
+        {/* Notifications */}
+        <div className={cn('px-2 pt-3', isExpanded ? 'pb-2' : 'pb-3')}>
+          <NotificationSidebarItem isExpanded={isExpanded} t={t} onItemClick={onItemClick} />
+        </div>
 
-      {/* User Profile */}
-      <div className="p-3 border-t border-sidebar-border">
-        <UserProfileDropdown isExpanded={isExpanded} t={t} user={user} />
+        {/* User Profile (includes theme toggle in dropdown) */}
+        <div className="p-3 pt-1 border-t border-sidebar-border">
+          <UserProfileDropdown isExpanded={isExpanded} t={t} user={user} />
+        </div>
       </div>
     </div>
   )
@@ -408,7 +653,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
 }
 
 /**
- * Mobile Sidebar Trigger - With Dashboard and Admin sections
+ * Mobile Sidebar Trigger - Task-based navigation sections
  */
 export function MobileSidebarTrigger({
   open,
@@ -421,17 +666,15 @@ export function MobileSidebarTrigger({
   const location = useLocation()
   const { user } = useAuthContext()
   const { hasPermission } = usePermissions()
+  const { unreadCount } = useNotificationContext()
 
-  // Filter nav items based on permissions
-  const visibleNavItems = navItems.filter(
-    item => !item.permission || hasPermission(item.permission)
-  )
-
-  // Filter admin nav items
-  const visibleAdminItems = adminNavItems.filter(
-    item => !item.permission || hasPermission(item.permission)
-  )
-  const showAdminSection = visibleAdminItems.length > 0
+  // Filter sections and items based on permissions
+  const visibleSections = navSections
+    .map(section => ({
+      ...section,
+      items: section.items.filter(item => !item.permission || hasPermission(item.permission)),
+    }))
+    .filter(section => section.items.length > 0)
 
   const renderMobileNavItem = (item: NavItem) => {
     const Icon = item.icon
@@ -459,6 +702,9 @@ export function MobileSidebarTrigger({
     )
   }
 
+  const notificationActive = location.pathname === '/portal/notifications'
+  const displayCount = unreadCount > 99 ? '99+' : unreadCount.toString()
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
@@ -479,35 +725,56 @@ export function MobileSidebarTrigger({
             </Link>
           </div>
 
-          {/* Mobile Navigation */}
+          {/* Mobile Navigation - Task-based sections */}
           <nav className="flex-1 overflow-y-auto py-4">
-            <div className="space-y-1 px-2">
-              {visibleNavItems.map(renderMobileNavItem)}
-            </div>
-
-            {/* Admin Section */}
-            {showAdminSection && (
-              <div className="mt-6">
-                <div className="px-4 mb-2">
-                  <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
-                    {t('nav.admin')}
-                  </p>
-                </div>
+            {visibleSections.map((section, index) => (
+              <div key={section.labelKey || 'primary'} className={cn(index > 0 && 'mt-4')}>
+                {section.labelKey && (
+                  <div className="px-4 mb-2">
+                    <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                      {t(section.labelKey)}
+                    </p>
+                  </div>
+                )}
                 <div className="space-y-1 px-2">
-                  {visibleAdminItems.map(renderMobileNavItem)}
+                  {section.items.map(renderMobileNavItem)}
                 </div>
               </div>
-            )}
+            ))}
           </nav>
 
-          {/* Mobile Theme Toggle */}
-          <div className="p-3 border-t border-sidebar-border">
-            <ThemeToggle className="w-full" />
-          </div>
+          {/* Footer Section */}
+          <div className="border-t border-sidebar-border">
+            {/* Notifications */}
+            <div className="px-2 pt-3 pb-2">
+              <Button
+                variant="ghost"
+                asChild
+                className={cn(
+                  'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
+                  notificationActive && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
+                  !notificationActive && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                )}
+              >
+                <Link to="/portal/notifications" onClick={() => onOpenChange(false)}>
+                  {notificationActive && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
+                  )}
+                  <Bell className="h-5 w-5 flex-shrink-0 mr-3" />
+                  <span className="flex-1 text-left">{t('notifications.title')}</span>
+                  {unreadCount > 0 && (
+                    <Badge variant="destructive" className="ml-auto h-5 min-w-5 p-0 px-1.5 text-[10px]">
+                      {displayCount}
+                    </Badge>
+                  )}
+                </Link>
+              </Button>
+            </div>
 
-          {/* Mobile User Profile */}
-          <div className="p-3 border-t border-sidebar-border">
-            <UserProfileDropdown isExpanded={true} t={t} user={user} />
+            {/* Mobile User Profile (includes theme toggle in dropdown) */}
+            <div className="p-3 pt-1 border-t border-sidebar-border">
+              <UserProfileDropdown isExpanded={true} t={t} user={user} />
+            </div>
           </div>
         </div>
       </SheetContent>

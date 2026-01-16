@@ -21,7 +21,10 @@
     "profile": "Hồ sơ",
     "accountSettings": "Cài đặt tài khoản",
     "menu": "Thực đơn",
-    "admin": "Quản trị"
+    "admin": "Quản trị",
+    "configuration": "Cấu hình",
+    "accessControl": "Kiểm soát truy cập",
+    "monitoring": "Giám sát"
   },
   "tenants": {
     "title": "Tổ chức",
@@ -158,6 +161,12 @@
   "settings": {
     "title": "Cài đặt"
   },
+  "notifications": {
+    "title": "Thông báo",
+    "markAllRead": "Đánh dấu đã đọc",
+    "viewAll": "Xem tất cả thông báo",
+    "noNotifications": "Không có thông báo"
+  },
   "emailTemplates": {
     "title": "Mẫu Email",
     "description": "Quản lý các mẫu email hệ thống cho thông báo và liên lạc.",
@@ -256,7 +265,15 @@
     "language": "Ngôn ngữ",
     "selectLanguage": "Chọn ngôn ngữ",
     "switchToLanguage": "Chuyển sang {{language}}",
-    "appearance": "Giao diện"
+    "appearance": "Giao diện",
+    "darkMode": "Chế độ tối",
+    "lightMode": "Chế độ sáng",
+    "theme": "Giao diện"
+  },
+  "theme": {
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
   },
   "messages": {
     "saveSuccess": "Lưu thành công",

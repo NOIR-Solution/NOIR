@@ -21,7 +21,10 @@
     "profile": "Profile",
     "accountSettings": "Account Settings",
     "menu": "Menu",
-    "admin": "Administration"
+    "admin": "Administration",
+    "configuration": "Configuration",
+    "accessControl": "Access Control",
+    "monitoring": "Monitoring"
   },
   "tenants": {
     "title": "Tenants",
@@ -158,6 +161,12 @@
   "settings": {
     "title": "Settings"
   },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "viewAll": "View all notifications",
+    "noNotifications": "No notifications"
+  },
   "emailTemplates": {
     "title": "Email Templates",
     "description": "Manage your system email templates for notifications and communications.",
@@ -256,7 +265,15 @@
     "language": "Language",
     "selectLanguage": "Select language",
     "switchToLanguage": "Switch to {{language}}",
-    "appearance": "Appearance"
+    "appearance": "Appearance",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "theme": "Theme"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "messages": {
     "saveSuccess": "Saved successfully",

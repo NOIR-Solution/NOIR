@@ -1286,7 +1286,7 @@ export default function DeveloperLogsPage() {
   }, [entries, searchTerm, exceptionsOnly, sortOrder, liveSelectedLevels])
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)] overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-48px)] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -1594,7 +1594,7 @@ export default function DeveloperLogsPage() {
             {/* Log content - taller height since live logs don't have paging */}
             <ScrollArea
               ref={scrollAreaRef}
-              className="h-[calc(100vh-400px)] min-h-[400px] bg-card dark:bg-slate-950"
+              className="h-[calc(100vh-330px)] min-h-[400px] bg-card dark:bg-slate-950"
             >
               {filteredEntries.length === 0 ? (
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground py-12">
