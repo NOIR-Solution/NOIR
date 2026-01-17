@@ -138,7 +138,7 @@ public class HandlerAuditMiddleware
             {
                 // Log but don't fail - before state is optional
                 var logger = serviceProvider.GetService<ILogger<HandlerAuditMiddleware>>();
-                logger?.LogDebug(ex, "Failed to fetch before state for {DtoType} with ID {TargetId}",
+                logger?.LogWarning(ex, "Failed to fetch before state for {DtoType} with ID {TargetId}",
                     _dtoType.Name, targetId);
             }
         }
@@ -210,7 +210,7 @@ public class HandlerAuditMiddleware
         catch (Exception ex)
         {
             var logger = serviceProvider.GetService<ILogger<HandlerAuditMiddleware>>();
-            logger?.LogDebug(ex, "Failed to compute DTO diff for {DtoType}", _dtoType?.Name);
+            logger?.LogWarning(ex, "Failed to compute DTO diff for {DtoType}", _dtoType?.Name);
             return null;
         }
     }
@@ -243,7 +243,7 @@ public class HandlerAuditMiddleware
         catch (Exception ex)
         {
             var logger = serviceProvider.GetService<ILogger<HandlerAuditMiddleware>>();
-            logger?.LogDebug(ex, "Failed to save audit log");
+            logger?.LogWarning(ex, "Failed to save audit log");
         }
     }
 
