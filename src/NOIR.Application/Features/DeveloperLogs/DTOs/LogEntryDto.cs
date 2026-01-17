@@ -218,6 +218,28 @@ public sealed record LogSearchQuery
     /// Page size.
     /// </summary>
     public int PageSize { get; init; } = 100;
+
+    /// <summary>
+    /// Sort order for log entries (default: Newest first).
+    /// </summary>
+    public LogSortOrder SortOrder { get; init; } = LogSortOrder.Newest;
+}
+
+
+/// <summary>
+/// Sort order for log entries.
+/// </summary>
+public enum LogSortOrder
+{
+    /// <summary>
+    /// Newest entries first (default).
+    /// </summary>
+    Newest,
+
+    /// <summary>
+    /// Oldest entries first.
+    /// </summary>
+    Oldest
 }
 
 /// <summary>

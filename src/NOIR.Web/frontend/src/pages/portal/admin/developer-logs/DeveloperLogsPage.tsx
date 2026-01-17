@@ -73,6 +73,11 @@ import { Label } from '@/components/ui/label'
 import { JsonViewer } from '@/components/ui/json-viewer'
 import { LogMessageFormatter } from '@/components/ui/log-message-formatter'
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -188,6 +193,23 @@ function formatFullTimestamp(timestamp: string): string {
     minute: '2-digit',
     second: '2-digit',
   })
+}
+
+// Format relative time (e.g., "2m ago")
+function formatRelativeTime(timestamp: string): string {
+  const date = new Date(timestamp)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffSecs = Math.floor(diffMs / 1000)
+  const diffMins = Math.floor(diffSecs / 60)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
+
+  if (diffSecs < 5) return 'now'
+  if (diffSecs < 60) return `${diffSecs}s ago`
+  if (diffMins < 60) return `${diffMins}m ago`
+  if (diffHours < 24) return `${diffHours}h ago`
+  return `${diffDays}d ago`
 }
 
 // Format bytes to human-readable
@@ -447,9 +469,20 @@ function LogEntry({
         )}
 
         {/* Timestamp - fixed width for consistent alignment */}
-        <span className="w-[85px] flex-shrink-0 text-muted-foreground tabular-nums leading-5">
-          {formatTimestamp(entry.timestamp)}
-        </span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="w-[155px] flex-shrink-0 text-muted-foreground tabular-nums leading-5 cursor-default">
+              <span className="text-muted-foreground/70">
+                {formatRelativeTime(entry.timestamp)}
+              </span>
+              <span className="mx-1">·</span>
+              {formatTimestamp(entry.timestamp)}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="font-mono text-xs">
+            {formatFullTimestamp(entry.timestamp)}
+          </TooltipContent>
+        </Tooltip>
 
         {/* Level badge - fixed width for consistent alignment */}
         <Badge
@@ -783,6 +816,7 @@ function HistoryFileViewer({
   const [totalCount, setTotalCount] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedLevels, setSelectedLevels] = useState<Set<DevLogLevel>>(new Set())
+  const [errorsOnly, setErrorsOnly] = useState(false)
   const [expandedEntries, setExpandedEntries] = useState<Set<number>>(new Set())
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const [detailEntry, setDetailEntry] = useState<LogEntryDto | null>(null)
@@ -791,11 +825,21 @@ function HistoryFileViewer({
   const fetchLogs = useCallback(async () => {
     setIsLoading(true)
     try {
+      // Determine levels to filter
+      let levelsToFilter: DevLogLevel[] | undefined
+      if (errorsOnly) {
+        // Errors only: show Error, Warning, Fatal
+        levelsToFilter = ['Error', 'Warning', 'Fatal']
+      } else if (selectedLevels.size > 0) {
+        levelsToFilter = Array.from(selectedLevels)
+      }
+
       const response: LogEntriesPagedResponse = await getHistoricalLogs(date, {
         page,
         pageSize: LOG_STREAM_CONFIG.HISTORY_PAGE_SIZE,
         search: searchTerm || undefined,
-        levels: selectedLevels.size > 0 ? Array.from(selectedLevels) : undefined,
+        levels: levelsToFilter,
+        sortOrder,
       })
       setEntries(response.items)
       setTotalPages(response.totalPages)
@@ -805,7 +849,7 @@ function HistoryFileViewer({
     } finally {
       setIsLoading(false)
     }
-  }, [date, page, searchTerm, selectedLevels])
+  }, [date, page, searchTerm, selectedLevels, errorsOnly, sortOrder])
 
   useEffect(() => {
     fetchLogs()
@@ -822,13 +866,6 @@ function HistoryFileViewer({
       return next
     })
   }, [])
-
-  const sortedEntries = useMemo(() => {
-    if (sortOrder === 'oldest') {
-      return [...entries].reverse()
-    }
-    return entries
-  }, [entries, sortOrder])
 
   return (
     <div className="flex flex-col h-full min-h-[400px]">
@@ -847,7 +884,10 @@ function HistoryFileViewer({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
+          onClick={() => {
+            setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')
+            setPage(1) // Reset to first page when sort order changes
+          }}
           className="gap-1"
         >
           {sortOrder === 'newest' ? (
@@ -889,9 +929,28 @@ function HistoryFileViewer({
             </button>
           )}
         </div>
+        {/* Errors only toggle */}
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-md">
+          <Switch
+            id="history-errors-only"
+            checked={errorsOnly}
+            onCheckedChange={(checked) => {
+              setErrorsOnly(checked)
+              if (checked) {
+                setSelectedLevels(new Set()) // Clear manual level selection
+              }
+              setPage(1)
+            }}
+            className={cn(errorsOnly && 'data-[state=checked]:bg-destructive')}
+          />
+          <Label htmlFor="history-errors-only" className="text-sm cursor-pointer whitespace-nowrap">
+            Errors only
+          </Label>
+        </div>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-2">
+            <Button variant="outline" size="sm" className="h-8 gap-2" disabled={errorsOnly}>
               <span className="text-muted-foreground">Levels:</span>
               {selectedLevels.size === 0 ? (
                 <span>All</span>
@@ -972,7 +1031,7 @@ function HistoryFileViewer({
               <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
             </div>
             <span className="text-xs font-mono text-muted-foreground">
-              {sortedEntries.length} entries on this page
+              {entries.length} entries on this page
             </span>
           </div>
           <Button
@@ -991,14 +1050,14 @@ function HistoryFileViewer({
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
-          ) : sortedEntries.length === 0 ? (
+          ) : entries.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <FileText className="h-10 w-10 mb-3 opacity-50" />
               <p className="text-sm">No log entries found</p>
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {sortedEntries.map(entry => (
+              {entries.map(entry => (
                 <LogEntry
                   key={entry.id}
                   entry={entry}
@@ -1028,7 +1087,7 @@ function HistoryFileViewer({
 
       {/* Fullscreen Log Dialog */}
       <FullscreenLogDialog
-        entries={sortedEntries}
+        entries={entries}
         title={`noir-${date}.json`}
         open={isFullscreen}
         onOpenChange={setIsFullscreen}

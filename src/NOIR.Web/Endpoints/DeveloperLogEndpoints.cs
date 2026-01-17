@@ -197,6 +197,7 @@ public static class DeveloperLogEndpoints
             [FromQuery] string? sources,
             [FromQuery] bool? hasException,
             [FromQuery] string? requestId,
+            [FromQuery] string? sortOrder,
             [FromQuery] int page,
             [FromQuery] int pageSize,
             IHistoricalLogService historicalLogService,
@@ -225,6 +226,13 @@ public static class DeveloperLogEndpoints
                     .ToArray();
             }
 
+            // Parse sort order (default to Newest)
+            var parsedSortOrder = LogSortOrder.Newest;
+            if (!string.IsNullOrEmpty(sortOrder) && Enum.TryParse<LogSortOrder>(sortOrder, true, out var so))
+            {
+                parsedSortOrder = so;
+            }
+
             var query = new LogSearchQuery
             {
                 Search = search,
@@ -234,7 +242,8 @@ public static class DeveloperLogEndpoints
                 HasException = hasException,
                 RequestId = requestId,
                 Page = page > 0 ? page : 1,
-                PageSize = pageSize > 0 ? Math.Min(pageSize, 500) : 100
+                PageSize = pageSize > 0 ? Math.Min(pageSize, 500) : 100,
+                SortOrder = parsedSortOrder
             };
 
             var result = await historicalLogService.GetLogsAsync(parsedDate, query, ct);

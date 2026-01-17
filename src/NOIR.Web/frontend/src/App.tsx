@@ -6,14 +6,14 @@ import { NotificationProvider } from '@/contexts/NotificationContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { PortalLayout } from '@/layouts/PortalLayout'
-import { PageLoader } from '@/components/ui/page-loader'
+import { PageSkeleton } from '@/components/ui/page-loader'
 
 import LoginPage from '@/pages/Login'
 import LandingPage from '@/pages/Landing'
 import './index.css'
 
-// Loading fallback for lazy-loaded routes
-const LazyFallback = () => <PageLoader />
+// Loading fallback for lazy-loaded routes - uses skeleton for better UX
+const LazyFallback = () => <PageSkeleton />
 
 // Lazy load portal pages for better loading experience
 const Dashboard = lazy(() => import('@/pages/portal/Dashboard'))

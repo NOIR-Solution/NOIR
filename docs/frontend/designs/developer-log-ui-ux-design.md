@@ -433,6 +433,40 @@ Expanded (click or press Enter):
 .hl-json       { @apply text-violet-300 font-mono text-sm; }
 ```
 
+### 5.3 Log Message Format Compatibility
+
+The `LogMessageFormatter` component handles syntax highlighting for log messages from different sources.
+Both Live Logs (SignalR) and History Files (JSON) are supported with consistent highlighting.
+
+**Supported HTTP Request Formats:**
+```
+# Live Logs format (quoted, lowercase 'responded'):
+HTTP "GET" "/api/users" responded 200 in 15ms
+
+# History Files format (unquoted, capitalized 'Responded'):
+HTTP GET /api/users Responded 200 in 15ms
+```
+
+**Supported Handler Message Formats:**
+```
+# Both formats work:
+Handling "GetUsersQuery"
+Handling GetUsersQuery
+
+Handled "GetUsersQuery" successfully
+Handled GetUsersQuery successfully
+```
+
+**Pattern Matching (Regex):**
+```typescript
+// HTTP request pattern - case-insensitive, optional quotes
+httpRequest: /HTTP\s+"?(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)"?\s+"?([^\s"]+)"?\s+[Rr]esponded\s+(\d{3})\s+in\s+([\d.]+)\s*ms/gi
+
+// Handler patterns - optional quotes
+handlerStart: /\bHandling\s+["']?([^"'\s]+(?:\s+[^"'\s]+)?)["']?/gi
+handlerComplete: /\bHandled\s+["']?([^"'\s]+(?:\s+[^"'\s]+)?)["']?(?:\s+(successfully|failed))?/gi
+```
+
 ---
 
 ## 6. Component Implementation Guide

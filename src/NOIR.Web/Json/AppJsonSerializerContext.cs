@@ -29,6 +29,14 @@ namespace NOIR.Web.Json;
 [JsonSerializable(typeof(Dictionary<string, string[]>))]
 [JsonSerializable(typeof(IEnumerable<string>))]
 [JsonSerializable(typeof(string[]))]
+// Developer Logs DTOs - ensure enums serialize as strings
+[JsonSerializable(typeof(LogEntriesPagedResponse))]
+[JsonSerializable(typeof(LogEntryDto))]
+[JsonSerializable(typeof(IEnumerable<LogEntryDto>))]
+[JsonSerializable(typeof(LogBufferStatsDto))]
+[JsonSerializable(typeof(IEnumerable<ErrorClusterDto>))]
+[JsonSerializable(typeof(LogLevelResponse))]
+[JsonSerializable(typeof(LogLevelOverridesResponse))]
 public partial class AppJsonSerializerContext : JsonSerializerContext
 {
 }

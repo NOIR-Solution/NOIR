@@ -76,6 +76,8 @@ export interface LogEntriesPagedResponse {
   totalPages: number
 }
 
+export type LogSortOrder = 'newest' | 'oldest'
+
 export interface LogSearchParams {
   search?: string
   minLevel?: DevLogLevel
@@ -85,6 +87,7 @@ export interface LogSearchParams {
   requestId?: string
   page?: number
   pageSize?: number
+  sortOrder?: LogSortOrder
 }
 
 // ==================== Log Level Control ====================
@@ -200,6 +203,7 @@ export async function getHistoricalLogs(
   if (params.sources?.length) searchParams.set('sources', params.sources.join(','))
   if (params.hasException !== undefined) searchParams.set('hasException', String(params.hasException))
   if (params.requestId) searchParams.set('requestId', params.requestId)
+  if (params.sortOrder) searchParams.set('sortOrder', params.sortOrder)
   searchParams.set('page', String(params.page ?? 1))
   searchParams.set('pageSize', String(params.pageSize ?? 100))
 

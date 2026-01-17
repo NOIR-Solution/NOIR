@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { ExternalLink, BookOpen, Cpu, User } from 'lucide-react'
+import { ExternalLink, BookOpen, Cpu, User, LayoutDashboard } from 'lucide-react'
 
 export default function Dashboard() {
   const { t } = useTranslation('common')
@@ -10,9 +10,14 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">{t('dashboard.title')}</h1>
-        <p className="text-muted-foreground">{t('dashboard.welcome', { name: user?.fullName || 'User' })}</p>
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <LayoutDashboard className="h-6 w-6 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
+          <p className="text-muted-foreground">{t('dashboard.welcome', { name: user?.fullName || 'User' })}</p>
+        </div>
       </div>
 
       {/* Quick Links - Icon color coding: blue=documentation, cyan=system tools, teal=user info */}

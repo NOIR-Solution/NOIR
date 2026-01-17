@@ -230,6 +230,17 @@ cd src/NOIR.Web && dotnet run
 cd src/NOIR.Web/frontend && npm install && npm run dev
 ```
 
+**Claude Code on Windows (CRITICAL):**
+The bash shell in Claude Code cannot run .bat files directly and background processes (`&`) don't stay alive. Use this approach:
+
+```bash
+# Backend - works with run_in_background
+dotnet run --project src/NOIR.Web
+
+# Frontend - MUST use PowerShell Start-Process to spawn detached process
+powershell -Command "Start-Process cmd -ArgumentList '/c cd /d D:\TOP\GIT\NOIR\src\NOIR.Web\frontend && npm run dev'"
+```
+
 **URLs:**
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:4000

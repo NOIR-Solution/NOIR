@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Mail, Edit, Eye, RefreshCw } from 'lucide-react'
+import { Mail, Edit, Eye } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -94,17 +94,16 @@ export default function EmailTemplatesPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <Mail className="h-6 w-6 text-primary" />
+        </div>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Email Templates</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Email Templates</h1>
           <p className="text-muted-foreground">
             Manage your system email templates for notifications and communications.
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={loadTemplates} disabled={loading}>
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          {t('buttons.refresh')}
-        </Button>
       </div>
 
       {/* Loading State */}

@@ -38,6 +38,11 @@ import {
 import { Pagination } from '@/components/ui/pagination'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { RichTooltip } from '@/components/ui/tippy-tooltip'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import {
   searchActivityTimeline,
@@ -68,6 +73,20 @@ function formatRelativeTime(timestamp: string): string {
   if (diffHours < 24) return `${diffHours}h ago`
   if (diffDays < 7) return `${diffDays}d ago`
   return date.toLocaleDateString()
+}
+
+// Format exact timestamp for tooltip
+function formatExactTime(timestamp: string): string {
+  const date = new Date(timestamp)
+  return date.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
 }
 
 // Timeline Entry Component - clickable card that opens details popup
@@ -154,10 +173,21 @@ function TimelineEntry({
 
             <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
               <span>{entry.userEmail || 'System'}</span>
-              <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {formatRelativeTime(entry.timestamp)}
-              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="flex items-center gap-1 cursor-default tabular-nums">
+                    <Clock className="h-3 w-3" />
+                    <span className="text-muted-foreground/70">
+                      {formatRelativeTime(entry.timestamp)}
+                    </span>
+                    <span>·</span>
+                    {formatExactTime(entry.timestamp).split(', ').pop()}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="font-mono text-xs">
+                  {formatExactTime(entry.timestamp)}
+                </TooltipContent>
+              </Tooltip>
               {entry.durationMs && (
                 <span className="text-muted-foreground/70">
                   {entry.durationMs}ms

@@ -89,11 +89,14 @@ const getResponseTimeStyle = (ms: number): { className: string; icon: typeof Clo
 
 // Regex patterns for log message parsing
 const PATTERNS = {
-  // HTTP request pattern: HTTP "METHOD" "PATH" responded STATUS in DURATION ms
-  httpRequest: /HTTP\s+"(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)"\s+"([^"]+)"\s+responded\s+(\d{3})\s+in\s+([\d.]+)\s*ms/gi,
-  // Handler patterns: Handling "QueryName" or Handled "QueryName" [successfully|failed]
-  handlerStart: /\bHandling\s+"([^"]+)"/gi,
-  handlerComplete: /\bHandled\s+"([^"]+)"(?:\s+(successfully|failed))?/gi,
+  // HTTP request pattern - supports multiple formats:
+  // - HTTP "GET" "/path" responded 200 in 5ms (quoted, lowercase 'responded')
+  // - HTTP GET /path Responded 200 in 5ms (unquoted, capitalized 'Responded')
+  httpRequest: /HTTP\s+"?(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)"?\s+"?([^\s"]+)"?\s+[Rr]esponded\s+(\d{3})\s+in\s+([\d.]+)\s*ms/gi,
+  // Handler patterns - supports both quoted and unquoted names:
+  // - Handling "QueryName" or Handling 'QueryName' or Handling QueryName
+  handlerStart: /\bHandling\s+["']?([^"'\s]+(?:\s+[^"'\s]+)?)["']?/gi,
+  handlerComplete: /\bHandled\s+["']?([^"'\s]+(?:\s+[^"'\s]+)?)["']?(?:\s+(successfully|failed))?/gi,
   // Success/failure keywords (standalone)
   successKeyword: /\b(successfully|completed|success)\b/gi,
   failureKeyword: /\b(failed|error|failure|exception)\b/gi,
@@ -132,6 +135,9 @@ interface FormattedSegment {
 
 /**
  * Parse HTTP request log messages
+ * Supports both formats:
+ * - HTTP "GET" "/path" responded 200 in 5ms (quoted)
+ * - HTTP GET /path Responded 200 in 5ms (unquoted)
  */
 function parseHttpRequest(message: string): FormattedSegment[] | null {
   const match = PATTERNS.httpRequest.exec(message)
@@ -142,6 +148,9 @@ function parseHttpRequest(message: string): FormattedSegment[] | null {
   const [fullMatch, method, path, status, duration] = match
   const startIndex = message.indexOf(fullMatch)
   const segments: FormattedSegment[] = []
+
+  // Check if original format used quotes
+  const hasQuotes = fullMatch.includes(`"${method}"`) || fullMatch.includes(`"${path}"`)
 
   // Add text before the match
   if (startIndex > 0) {
@@ -157,14 +166,16 @@ function parseHttpRequest(message: string): FormattedSegment[] | null {
 
   segments.push({ type: 'text', content: ' ' })
 
-  // Add path
+  // Add path (with or without quotes based on original format)
   segments.push({
     type: 'path',
-    content: `"${path}"`,
+    content: hasQuotes ? `"${path}"` : path,
     metadata: { path },
   })
 
-  segments.push({ type: 'text', content: ' responded ' })
+  // Use the same case for 'responded' as in the original message
+  const respondedText = fullMatch.includes('Responded') ? ' Responded ' : ' responded '
+  segments.push({ type: 'text', content: respondedText })
 
   // Add status code
   segments.push({
@@ -195,8 +206,8 @@ function parseHttpRequest(message: string): FormattedSegment[] | null {
  * Parse Handler log messages (Handling/Handled patterns)
  *
  * Supported formats:
- * - "Handling 'QueryName'"
- * - "Handled 'QueryName' successfully"
+ * - "Handling 'QueryName'" or "Handling QueryName"
+ * - "Handled 'QueryName' successfully" or "Handled QueryName successfully"
  * - "Handled 'QueryName' successfully in 47ms"
  * - "Handled 'QueryName' failed"
  * - "Handled 'QueryName'" (no status indicator - neutral display)
@@ -216,6 +227,9 @@ function parseHandlerMessage(message: string): FormattedSegment[] | null {
     // isSuccess: true = success, false = failed, undefined = no status keyword
     const isSuccess = status ? status.toLowerCase() === 'successfully' : undefined
 
+    // Check if original format used quotes
+    const hasQuotes = fullMatch.includes(`"${handlerName}"`) || fullMatch.includes(`'${handlerName}'`)
+
     // Add text before the match
     if (startIndex > 0) {
       segments.push({ type: 'text', content: message.slice(0, startIndex) })
@@ -230,10 +244,10 @@ function parseHandlerMessage(message: string): FormattedSegment[] | null {
 
     segments.push({ type: 'text', content: ' ' })
 
-    // Add handler name with quotes
+    // Add handler name (with or without quotes based on original format)
     segments.push({
       type: 'handler-name',
-      content: `"${handlerName}"`,
+      content: hasQuotes ? `"${handlerName}"` : handlerName,
       metadata: { handlerName },
     })
 
@@ -267,6 +281,9 @@ function parseHandlerMessage(message: string): FormattedSegment[] | null {
     const startIndex = message.indexOf(fullMatch)
     const segments: FormattedSegment[] = []
 
+    // Check if original format used quotes
+    const hasQuotes = fullMatch.includes(`"${handlerName}"`) || fullMatch.includes(`'${handlerName}'`)
+
     // Add text before the match
     if (startIndex > 0) {
       segments.push({ type: 'text', content: message.slice(0, startIndex) })
@@ -280,10 +297,10 @@ function parseHandlerMessage(message: string): FormattedSegment[] | null {
 
     segments.push({ type: 'text', content: ' ' })
 
-    // Add handler name with quotes
+    // Add handler name (with or without quotes based on original format)
     segments.push({
       type: 'handler-name',
-      content: `"${handlerName}"`,
+      content: hasQuotes ? `"${handlerName}"` : handlerName,
       metadata: { handlerName },
     })
 

@@ -175,7 +175,7 @@ public sealed class HistoricalLogService : IHistoricalLogService, IScopedService
 
         try
         {
-            await using var fileStream = File.OpenRead(filePath);
+            await using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             Stream readStream = fileStream;
 
             // Handle gzipped files
@@ -220,32 +220,97 @@ public sealed class HistoricalLogService : IHistoricalLogService, IScopedService
     {
         try
         {
-            // Serilog JSON format
+            // Serilog JSON format - supports both compact (@l, @t, @m) and full (Level, Timestamp, MessageTemplate) formats
             var json = JsonDocument.Parse(line);
             var root = json.RootElement;
 
-            var level = root.TryGetProperty("@l", out var levelProp)
-                ? ParseLevel(levelProp.GetString())
-                : DevLogLevel.Information;
+            // Level: check @l (compact) then Level (full)
+            DevLogLevel level;
+            if (root.TryGetProperty("@l", out var levelPropCompact))
+            {
+                level = ParseLevel(levelPropCompact.GetString());
+            }
+            else if (root.TryGetProperty("Level", out var levelPropFull))
+            {
+                level = ParseLevel(levelPropFull.GetString());
+            }
+            else
+            {
+                level = DevLogLevel.Information;
+            }
 
-            var timestamp = root.TryGetProperty("@t", out var timeProp)
-                ? DateTimeOffset.Parse(timeProp.GetString()!)
-                : DateTimeOffset.UtcNow;
+            // Timestamp: check @t (compact) then Timestamp (full)
+            DateTimeOffset timestamp;
+            if (root.TryGetProperty("@t", out var timePropCompact))
+            {
+                timestamp = DateTimeOffset.Parse(timePropCompact.GetString()!);
+            }
+            else if (root.TryGetProperty("Timestamp", out var timePropFull))
+            {
+                timestamp = DateTimeOffset.Parse(timePropFull.GetString()!);
+            }
+            else
+            {
+                timestamp = DateTimeOffset.UtcNow;
+            }
 
-            var message = root.TryGetProperty("@m", out var msgProp)
-                ? msgProp.GetString() ?? ""
-                : root.TryGetProperty("@mt", out var mtProp)
-                    ? mtProp.GetString() ?? ""
-                    : "";
+            // Message: check @m (compact rendered), then RenderedMessage (full), then render template from @mt or MessageTemplate
+            var message = "";
+            var hasRenderedMessage = false;
+            if (root.TryGetProperty("@m", out var msgProp))
+            {
+                message = msgProp.GetString() ?? "";
+                hasRenderedMessage = true;
+            }
+            else if (root.TryGetProperty("RenderedMessage", out var renderedProp))
+            {
+                message = renderedProp.GetString() ?? "";
+                hasRenderedMessage = true;
+            }
 
-            var messageTemplate = root.TryGetProperty("@mt", out var templateProp)
-                ? templateProp.GetString()
-                : null;
+            // If no rendered message, render the template by substituting property values
+            if (!hasRenderedMessage)
+            {
+                string? template = null;
+                if (root.TryGetProperty("@mt", out var mtProp))
+                {
+                    template = mtProp.GetString();
+                }
+                else if (root.TryGetProperty("MessageTemplate", out var templateMsgProp))
+                {
+                    template = templateMsgProp.GetString();
+                }
 
-            var sourceContext = root.TryGetProperty("SourceContext", out var srcProp)
-                ? srcProp.GetString()
-                : null;
+                if (!string.IsNullOrEmpty(template))
+                {
+                    message = RenderMessageTemplate(template, root);
+                }
+            }
 
+            // MessageTemplate: check @mt (compact) then MessageTemplate (full)
+            string? messageTemplate = null;
+            if (root.TryGetProperty("@mt", out var templateProp))
+            {
+                messageTemplate = templateProp.GetString();
+            }
+            else if (root.TryGetProperty("MessageTemplate", out var templatePropFull))
+            {
+                messageTemplate = templatePropFull.GetString();
+            }
+
+            // SourceContext: check in Properties object (full format) or root (compact)
+            string? sourceContext = null;
+            if (root.TryGetProperty("SourceContext", out var srcProp))
+            {
+                sourceContext = srcProp.GetString();
+            }
+            else if (root.TryGetProperty("Properties", out var propsProp) &&
+                     propsProp.TryGetProperty("SourceContext", out var nestedSrcProp))
+            {
+                sourceContext = nestedSrcProp.GetString();
+            }
+
+            // Exception: check @x (compact) then Exception (full)
             ExceptionDto? exception = null;
             if (root.TryGetProperty("@x", out var exProp))
             {
@@ -255,20 +320,56 @@ public sealed class HistoricalLogService : IHistoricalLogService, IScopedService
                     exception = ParseExceptionFromText(exceptionText);
                 }
             }
-
-            // Extract other properties
-            var properties = new Dictionary<string, object?>();
-            foreach (var prop in root.EnumerateObject())
+            else if (root.TryGetProperty("Exception", out var exPropFull))
             {
-                if (!prop.Name.StartsWith("@") &&
-                    prop.Name != "SourceContext" &&
-                    prop.Name != "RequestId" &&
-                    prop.Name != "TraceId" &&
-                    prop.Name != "UserId" &&
-                    prop.Name != "TenantId")
+                var exceptionText = exPropFull.GetString();
+                if (!string.IsNullOrEmpty(exceptionText))
                 {
-                    properties[prop.Name] = GetJsonValue(prop.Value);
+                    exception = ParseExceptionFromText(exceptionText);
                 }
+            }
+
+            // Extract other properties - handle both compact (root level) and full format (nested Properties object)
+            var properties = new Dictionary<string, object?>();
+            var excludedProps = new HashSet<string>
+            {
+                "@t", "@l", "@m", "@mt", "@x", "@r", "@i",  // Compact format special props
+                "Timestamp", "Level", "MessageTemplate", "RenderedMessage", "Exception", "Properties",  // Full format special props
+                "SourceContext", "RequestId", "TraceId", "UserId", "TenantId", "MachineName", "Environment"  // Common metadata
+            };
+
+            // Check for nested Properties object (full format)
+            if (root.TryGetProperty("Properties", out var propsObj) && propsObj.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var prop in propsObj.EnumerateObject())
+                {
+                    if (!excludedProps.Contains(prop.Name))
+                    {
+                        properties[prop.Name] = GetJsonValue(prop.Value);
+                    }
+                }
+            }
+            else
+            {
+                // Compact format - properties at root level
+                foreach (var prop in root.EnumerateObject())
+                {
+                    if (!excludedProps.Contains(prop.Name))
+                    {
+                        properties[prop.Name] = GetJsonValue(prop.Value);
+                    }
+                }
+            }
+
+            // Extract special fields - check both root and nested Properties
+            string? GetSpecialField(string name)
+            {
+                if (root.TryGetProperty(name, out var prop))
+                    return prop.GetString();
+                if (root.TryGetProperty("Properties", out var propsElement) &&
+                    propsElement.TryGetProperty(name, out var nestedProp))
+                    return nestedProp.GetString();
+                return null;
             }
 
             return new LogEntryDto
@@ -281,10 +382,10 @@ public sealed class HistoricalLogService : IHistoricalLogService, IScopedService
                 SourceContext = sourceContext,
                 Exception = exception,
                 Properties = properties.Count > 0 ? properties : null,
-                RequestId = root.TryGetProperty("RequestId", out var reqIdProp) ? reqIdProp.GetString() : null,
-                TraceId = root.TryGetProperty("TraceId", out var traceIdProp) ? traceIdProp.GetString() : null,
-                UserId = root.TryGetProperty("UserId", out var userIdProp) ? userIdProp.GetString() : null,
-                TenantId = root.TryGetProperty("TenantId", out var tenantIdProp) ? tenantIdProp.GetString() : null
+                RequestId = GetSpecialField("RequestId"),
+                TraceId = GetSpecialField("TraceId"),
+                UserId = GetSpecialField("UserId"),
+                TenantId = GetSpecialField("TenantId")
             };
         }
         catch
@@ -347,6 +448,78 @@ public sealed class HistoricalLogService : IHistoricalLogService, IScopedService
             JsonValueKind.Object => element.EnumerateObject().ToDictionary(p => p.Name, p => GetJsonValue(p.Value)),
             _ => element.GetRawText()
         };
+    }
+
+    /// <summary>
+    /// Renders a Serilog message template by substituting {PropertyName} placeholders with actual values.
+    /// </summary>
+    private static string RenderMessageTemplate(string template, JsonElement root)
+    {
+        if (string.IsNullOrEmpty(template)) return template;
+
+        // Get the Properties object if it exists
+        JsonElement? propsElement = null;
+        if (root.TryGetProperty("Properties", out var props) && props.ValueKind == JsonValueKind.Object)
+        {
+            propsElement = props;
+        }
+
+        // Replace {PropertyName} patterns with their values
+        // Serilog uses {Name} or {@Name} (destructured) or {$Name} (stringified) or {Name:format}
+        return Regex.Replace(template, @"\{[@$]?(\w+)(?::[^}]*)?\}", match =>
+        {
+            var propName = match.Groups[1].Value;
+
+            // First check in Properties object
+            if (propsElement.HasValue && propsElement.Value.TryGetProperty(propName, out var propValue))
+            {
+                return FormatPropertyValue(propValue);
+            }
+
+            // Then check at root level (for compact format)
+            if (root.TryGetProperty(propName, out var rootPropValue))
+            {
+                return FormatPropertyValue(rootPropValue);
+            }
+
+            // Return original placeholder if not found
+            return match.Value;
+        });
+    }
+
+    /// <summary>
+    /// Formats a JSON property value for display in the rendered message.
+    /// </summary>
+    private static string FormatPropertyValue(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.GetString() ?? "",
+            JsonValueKind.Number => element.GetRawText(),
+            JsonValueKind.True => "True",
+            JsonValueKind.False => "False",
+            JsonValueKind.Null => "null",
+            JsonValueKind.Array => $"[{string.Join(", ", element.EnumerateArray().Select(FormatPropertyValue))}]",
+            JsonValueKind.Object => FormatObjectValue(element),
+            _ => element.GetRawText()
+        };
+    }
+
+    /// <summary>
+    /// Formats a JSON object for display, keeping it concise.
+    /// </summary>
+    private static string FormatObjectValue(JsonElement element)
+    {
+        // For simple objects with a few properties, show them inline
+        var props = element.EnumerateObject().ToList();
+        if (props.Count == 0) return "{}";
+        if (props.Count <= 3)
+        {
+            var items = props.Select(p => $"{p.Name}: {FormatPropertyValue(p.Value)}");
+            return $"{{ {string.Join(", ", items)} }}";
+        }
+        // For complex objects, just show property count
+        return $"{{...{props.Count} properties}}";
     }
 
     private static Regex? CreateSearchRegex(string? search)
@@ -425,7 +598,15 @@ public sealed class HistoricalLogService : IHistoricalLogService, IScopedService
         var totalCount = entries.Count;
         var totalPages = (int)Math.Ceiling((double)totalCount / query.PageSize);
 
-        var pagedItems = entries
+        // Apply sort order before pagination
+        // Entries come from file in chronological order (oldest first)
+        // For Newest: reverse to show newest first
+        // For Oldest: keep as-is
+        IEnumerable<LogEntryDto> sortedEntries = query.SortOrder == LogSortOrder.Newest
+            ? entries.AsEnumerable().Reverse()
+            : entries;
+
+        var pagedItems = sortedEntries
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToList();
