@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Mail, FileText } from 'lucide-react'
+import { Mail, FileText, Loader2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -39,7 +39,7 @@ export function PreviewDialog({ open, onOpenChange, preview, loading }: PreviewD
 
         {loading && (
           <div className="flex-1 flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         )}
 

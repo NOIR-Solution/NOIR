@@ -418,8 +418,17 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
         {/* Notification list */}
         <div className="max-h-80 overflow-y-auto">
           {isLoading && notifications.length === 0 ? (
-            <div className="flex items-center justify-center py-6">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary" />
+            <div className="flex flex-col items-center justify-center py-6 gap-2">
+              {/* Skeleton loading for notifications - better UX than spinner */}
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-start gap-2 w-full px-2">
+                  <div className="mt-1.5 h-2 w-2 rounded-full bg-muted animate-pulse" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3.5 w-3/4 rounded bg-muted animate-pulse" />
+                    <div className="h-3 w-1/2 rounded bg-muted animate-pulse" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : recentNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">

@@ -1,6 +1,7 @@
 import { StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { VibeKanbanWebCompanion } from 'vibe-kanban-web-companion'
+import { Loader2 } from 'lucide-react'
 import './index.css'
 // Initialize i18n before App component
 import './i18n'
@@ -11,9 +12,9 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     {import.meta.env.DEV && <VibeKanbanWebCompanion />}
     <Suspense fallback={
-      <div className="flex items-center justify-center h-screen">
-        {/* Use spinner instead of text - works for all languages */}
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700" />
+      <div className="flex items-center justify-center h-screen bg-background">
+        {/* Standardized spinner using Loader2 for consistency */}
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     }>
       <LanguageProvider>

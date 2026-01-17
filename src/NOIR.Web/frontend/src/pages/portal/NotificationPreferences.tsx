@@ -5,10 +5,11 @@
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Save, Bell, Mail, Shield, Workflow, Users, Settings2 } from 'lucide-react'
+import { ArrowLeft, Save, Bell, Mail, Shield, Workflow, Users, Settings2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
 import { getPreferences, updatePreferences } from '@/services/notifications'
 import type { NotificationPreference, NotificationCategory, EmailFrequency } from '@/types'
@@ -111,8 +112,54 @@ export default function NotificationPreferences() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="container max-w-4xl py-6">
+        {/* Header skeleton */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-8 rounded" />
+              <Skeleton className="h-7 w-[220px]" />
+            </div>
+            <Skeleton className="h-4 w-[320px] ml-11" />
+          </div>
+          <Skeleton className="h-10 w-[130px]" />
+        </div>
+        {/* Cards skeleton - matches actual content structure */}
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-lg" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-[100px]" />
+                    <Skeleton className="h-3 w-[250px]" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-5 pt-0">
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-4 w-4 rounded" />
+                    <Skeleton className="h-4 w-[140px]" />
+                  </div>
+                  <Skeleton className="h-6 w-11 rounded-full" />
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-4 w-4 rounded" />
+                    <Skeleton className="h-4 w-[130px]" />
+                  </div>
+                  <div className="flex gap-2 ml-7">
+                    {Array.from({ length: 4 }).map((_, j) => (
+                      <Skeleton key={j} className="h-8 w-[80px] rounded-md" />
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     )
   }
@@ -135,7 +182,11 @@ export default function NotificationPreferences() {
           </p>
         </div>
         <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
-          <Save className="size-4 mr-2" />
+          {isSaving ? (
+            <Loader2 className="size-4 mr-2 animate-spin" />
+          ) : (
+            <Save className="size-4 mr-2" />
+          )}
           {isSaving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>

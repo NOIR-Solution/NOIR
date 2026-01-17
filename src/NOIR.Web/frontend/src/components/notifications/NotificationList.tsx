@@ -7,8 +7,9 @@
  * - Bulk actions
  */
 import { useState } from 'react'
-import { Check, RefreshCw } from 'lucide-react'
+import { Check, RefreshCw, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { NotificationItem } from './NotificationItem'
 import { NotificationEmpty } from './NotificationEmpty'
 import { useNotificationContext } from '@/contexts/NotificationContext'
@@ -114,8 +115,18 @@ export function NotificationList({ className }: NotificationListProps) {
       {/* List */}
       <div className="rounded-lg border bg-card">
         {isLoading && notifications.length === 0 ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          // Skeleton loading for notifications list - better UX than spinner
+          <div className="divide-y">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-start gap-4 p-4">
+                <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-3 w-1/4" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : filteredNotifications.length === 0 ? (
           <NotificationEmpty />
@@ -143,7 +154,7 @@ export function NotificationList({ className }: NotificationListProps) {
           >
             {isLoading ? (
               <>
-                <RefreshCw className="size-4 mr-2 animate-spin" />
+                <Loader2 className="size-4 mr-2 animate-spin" />
                 Loading...
               </>
             ) : (

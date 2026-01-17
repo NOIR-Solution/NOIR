@@ -2,7 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { usePermissions, type PermissionKey } from '@/hooks/usePermissions'
 import type { ReactNode } from 'react'
-import { themeClasses } from '@/config/theme'
+import { PageSpinner } from '@/components/ui/loading'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -56,7 +56,7 @@ export function ProtectedRoute({
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${themeClasses.borderPrimary}`} />
+        <PageSpinner />
       </div>
     )
   }
@@ -76,7 +76,7 @@ export function ProtectedRoute({
   if (permissionsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${themeClasses.borderPrimary}`} />
+        <PageSpinner />
       </div>
     )
   }
