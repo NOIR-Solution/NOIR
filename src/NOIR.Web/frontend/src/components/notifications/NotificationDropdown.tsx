@@ -101,8 +101,8 @@ export function NotificationDropdown({ className }: NotificationDropdownProps) {
   const handleMarkAllAsRead = async () => {
     try {
       await markAllAsRead()
-    } catch (error) {
-      console.error('Failed to mark all as read:', error)
+    } catch {
+      // Error handled by NotificationContext
     }
   }
 

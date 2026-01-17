@@ -110,8 +110,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       setTotalCount(response.totalCount)
       setHasMore(response.hasNextPage)
       setPage(pageNum)
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error)
+    } catch {
+      // Error visible in network tab
     } finally {
       setIsLoading(false)
     }
@@ -124,8 +124,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     try {
       const count = await getUnreadCount()
       setUnreadCount(count)
-    } catch (error) {
-      console.error('Failed to fetch unread count:', error)
+    } catch {
+      // Error visible in network tab
     }
   }, [isAuthenticated])
 
@@ -152,7 +152,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       )
       setUnreadCount((prev) => Math.max(0, prev - 1))
     } catch (error) {
-      console.error('Failed to mark notification as read:', error)
+      // Error visible in network tab - re-throw for caller handling
       throw error
     }
   }, [])
@@ -166,7 +166,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       )
       setUnreadCount(0)
     } catch (error) {
-      console.error('Failed to mark all as read:', error)
+      // Error visible in network tab - re-throw for caller handling
       throw error
     }
   }, [])
@@ -182,7 +182,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         setUnreadCount((prev) => Math.max(0, prev - 1))
       }
     } catch (error) {
-      console.error('Failed to delete notification:', error)
+      // Error visible in network tab - re-throw for caller handling
       throw error
     }
   }, [notifications])

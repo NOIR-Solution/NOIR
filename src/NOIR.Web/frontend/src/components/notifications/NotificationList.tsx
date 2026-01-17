@@ -46,16 +46,16 @@ export function NotificationList({ className }: NotificationListProps) {
   const handleMarkAllAsRead = async () => {
     try {
       await markAllAsRead()
-    } catch (error) {
-      console.error('Failed to mark all as read:', error)
+    } catch {
+      // Error handled by NotificationContext
     }
   }
 
   const handleRefresh = async () => {
     try {
       await refreshNotifications()
-    } catch (error) {
-      console.error('Failed to refresh notifications:', error)
+    } catch {
+      // Error handled by NotificationContext
     }
   }
 

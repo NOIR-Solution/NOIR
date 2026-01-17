@@ -124,6 +124,36 @@ public string Name { get; private set; } = default!;
 private Customer() { }  // For EF Core
 ```
 
+## Console Logging Standards
+
+### Backend
+- Use `ILogger<T>` for all logging - never `Console.WriteLine`
+- Log levels: Debug for verbose, Information for flow, Warning for recoverable issues, Error for failures
+
+### Frontend
+- **Do NOT use `console.error()` in production code**
+- Errors are visible in browser Network tab - redundant logging clutters console
+- Use toast notifications to inform users of failures
+- Only exception: `console.warn()` for developer warnings (e.g., unsupported language)
+
+**Pattern for error handling:**
+```typescript
+// CORRECT: Silent catch with user feedback
+try {
+  await someAction()
+} catch {
+  toast.error('Operation failed')
+}
+
+// WRONG: Redundant logging
+try {
+  await someAction()
+} catch (error) {
+  console.error('Failed:', error)  // ❌ Remove this
+  toast.error('Operation failed')
+}
+```
+
 ## File Boundaries
 
 ### Read Freely

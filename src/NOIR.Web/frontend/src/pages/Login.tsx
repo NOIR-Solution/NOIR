@@ -62,9 +62,8 @@ export default function LoginPage() {
       const safeReturnUrl = validateReturnUrl(returnUrl)
       navigate(safeReturnUrl)
     },
-    onError: (error) => {
+    onError: () => {
       // Error is already handled by useValidatedForm
-      console.error('Login failed:', error)
     },
   })
 

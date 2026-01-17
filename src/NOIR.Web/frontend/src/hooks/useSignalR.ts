@@ -137,8 +137,8 @@ export function useSignalR(options: UseSignalROptions = {}): UseSignalRReturn {
       updateState('connecting')
       await connectionRef.current.start()
       updateState('connected')
-    } catch (error) {
-      console.error('SignalR connection failed:', error)
+    } catch {
+      // Connection will be retried automatically
       updateState('disconnected')
       // Retry after 5 seconds
       if (mountedRef.current) {
@@ -156,8 +156,8 @@ export function useSignalR(options: UseSignalROptions = {}): UseSignalRReturn {
     if (connectionRef.current) {
       try {
         await connectionRef.current.stop()
-      } catch (error) {
-        console.error('Error disconnecting from SignalR:', error)
+      } catch {
+        // Disconnect error is non-critical
       }
       connectionRef.current = null
       updateState('disconnected')

@@ -3,7 +3,7 @@ namespace NOIR.Infrastructure.Identity.Authorization;
 /// <summary>
 /// Implementation of resource-based authorization with permission inheritance.
 /// </summary>
-public class ResourceAuthorizationService : IResourceAuthorizationService
+public class ResourceAuthorizationService : IResourceAuthorizationService, IScopedService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMemoryCache _cache;

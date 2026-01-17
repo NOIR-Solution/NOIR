@@ -1,13 +1,10 @@
-using System.Text.Json;
-using System.Text.Json.Nodes;
-
 namespace NOIR.Infrastructure.Services;
 
 /// <summary>
 /// Service for creating simple field-level diffs for audit logging.
 /// Output format: { "fieldName": { "from": oldValue, "to": newValue } }
 /// </summary>
-public class JsonDiffService : IDiffService
+public class JsonDiffService : IDiffService, IScopedService
 {
     /// <summary>
     /// System fields that should be excluded from diff comparison.

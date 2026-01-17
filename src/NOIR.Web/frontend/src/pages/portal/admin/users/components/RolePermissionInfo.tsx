@@ -1,12 +1,12 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Info, Loader2 } from 'lucide-react'
 import { TippyTooltip } from '@/components/ui/tippy-tooltip'
 import { getEffectivePermissions, getAllPermissions } from '@/services/roles'
 import type { Permission, RoleListItem } from '@/types'
 
-// Cache for permission details (shared across all tooltip instances)
-let permissionDetailsCache: Permission[] | null = null
+// Shared ref for permission details across instances (avoids module-level mutable state)
+const sharedPermissionDetails = { current: null as Permission[] | null }
 
 interface RolePermissionInfoProps {
   role: RoleListItem
@@ -18,7 +18,9 @@ export function RolePermissionInfo({ role, permissionsCache, onPermissionsLoaded
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const [permissions, setPermissions] = useState<string[] | null>(null)
-  const [allPermissions, setAllPermissions] = useState<Permission[]>(permissionDetailsCache || [])
+  const [allPermissions, setAllPermissions] = useState<Permission[]>(sharedPermissionDetails.current || [])
+  // Track if we're already loading to prevent duplicate requests
+  const loadingRef = useRef(false)
 
   const loadPermissions = useCallback(async () => {
     // Check cache first
@@ -28,28 +30,30 @@ export function RolePermissionInfo({ role, permissionsCache, onPermissionsLoaded
       return
     }
 
-    // Already loading or already have data
-    if (loading || permissions !== null) return
+    // Already loading or already have data - use ref to avoid stale closure
+    if (loadingRef.current || permissions !== null) return
 
+    loadingRef.current = true
     setLoading(true)
     try {
       // Load all permissions details if not cached
-      if (!permissionDetailsCache) {
-        permissionDetailsCache = await getAllPermissions()
-        setAllPermissions(permissionDetailsCache)
+      if (!sharedPermissionDetails.current) {
+        sharedPermissionDetails.current = await getAllPermissions()
+        setAllPermissions(sharedPermissionDetails.current)
       }
 
       // Load role's effective permissions
       const rolePermissions = await getEffectivePermissions(role.id)
       setPermissions(rolePermissions)
       onPermissionsLoaded(role.id, rolePermissions)
-    } catch (err) {
-      console.error('Failed to load permissions:', err)
+    } catch {
+      // Error already visible in network tab - no need to console.error
       setPermissions([])
     } finally {
+      loadingRef.current = false
       setLoading(false)
     }
-  }, [role.id, permissionsCache, onPermissionsLoaded, loading, permissions])
+  }, [role.id, permissionsCache, onPermissionsLoaded, permissions])
 
   // Group permissions by category for display
   const groupedPermissions = permissions?.reduce((groups, permName) => {

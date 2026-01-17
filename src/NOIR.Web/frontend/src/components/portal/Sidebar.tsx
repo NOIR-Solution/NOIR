@@ -432,8 +432,8 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
   const handleMarkAllAsRead = async () => {
     try {
       await markAllAsRead()
-    } catch (error) {
-      console.error('Failed to mark all as read:', error)
+    } catch {
+      // Error handled by NotificationContext
     }
   }
 

@@ -844,8 +844,8 @@ function HistoryFileViewer({
       setEntries(response.items)
       setTotalPages(response.totalPages)
       setTotalCount(response.totalCount)
-    } catch (error) {
-      console.error('Failed to fetch historical logs:', error)
+    } catch {
+      // Error visible in network tab
     } finally {
       setIsLoading(false)
     }
@@ -1118,8 +1118,8 @@ function HistoryTabContent() {
     try {
       const dates = await getAvailableLogDates()
       setAvailableDates(dates)
-    } catch (error) {
-      console.error('Failed to fetch available dates:', error)
+    } catch {
+      // Error visible in network tab
     } finally {
       setIsLoadingDates(false)
     }
@@ -1259,7 +1259,7 @@ export default function DeveloperLogsPage() {
     getLogLevel().then(response => {
       setServerLevel(response.level)
       setAvailableLevels(response.availableLevels)
-    }).catch(console.error)
+    }).catch(() => { /* Error visible in network tab */ })
   }, [])
 
   // Handle log level change
@@ -1268,8 +1268,8 @@ export default function DeveloperLogsPage() {
     try {
       const response = await setLogLevel(level)
       setServerLevel(response.level)
-    } catch (error) {
-      console.error('Failed to set log level:', error)
+    } catch {
+      // Error visible in network tab
     } finally {
       setIsChangingLevel(false)
     }
@@ -1281,8 +1281,8 @@ export default function DeveloperLogsPage() {
       await clearBuffer()
       clearEntries()
       refreshStats()
-    } catch (error) {
-      console.error('Failed to clear buffer:', error)
+    } catch {
+      // Error visible in network tab
     }
   }
 

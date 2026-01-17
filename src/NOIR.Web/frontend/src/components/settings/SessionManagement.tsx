@@ -86,8 +86,7 @@ export function SessionManagement() {
     try {
       const data = await getActiveSessions()
       setSessions(data)
-    } catch (error) {
-      console.error('Failed to load sessions:', error)
+    } catch {
       toast.error(t('sessions.loadError'))
     } finally {
       setIsLoading(false)
@@ -106,8 +105,7 @@ export function SessionManagement() {
       await revokeSession(sessionToRevoke.id)
       setSessions((prev) => prev.filter((s) => s.id !== sessionToRevoke.id))
       toast.success(t('sessions.revokeSuccess'))
-    } catch (error) {
-      console.error('Failed to revoke session:', error)
+    } catch {
       toast.error(t('sessions.revokeError'))
     } finally {
       setIsRevoking(null)

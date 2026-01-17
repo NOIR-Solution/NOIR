@@ -47,8 +47,7 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
           setDisplayName(data.displayName || '')
           setLockoutEnabled(!data.isActive)
         })
-        .catch((err) => {
-          console.error('Failed to load user profile:', err)
+        .catch(() => {
           toast.error(t('users.loadError', 'Failed to load user details'))
         })
         .finally(() => {
@@ -73,8 +72,7 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
       toast.success(t('messages.updateSuccess', 'Updated successfully'))
       onSuccess()
       onOpenChange(false)
-    } catch (err) {
-      console.error('Failed to update user:', err)
+    } catch {
       toast.error(t('messages.operationFailed', 'Operation failed. Please try again.'))
     } finally {
       setLoading(false)

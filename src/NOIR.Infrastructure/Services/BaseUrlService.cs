@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using NOIR.Application.Common.Interfaces;
-
 namespace NOIR.Infrastructure.Services;
 
 /// <summary>

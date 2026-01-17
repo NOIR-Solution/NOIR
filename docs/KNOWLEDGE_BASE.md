@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-16
-**Version:** 1.6
+**Last Updated:** 2026-01-17
+**Version:** 1.7
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -699,6 +699,7 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 7. **Marker interfaces** for DI auto-registration
 8. **No using statements** in files - add to `GlobalUsings.cs`
 9. **Audit logging for user actions** - Commands that create/update/delete via frontend MUST implement `IAuditableCommand`. Requires: (a) Command implements `IAuditableCommand<TResult>`, (b) Endpoint sets `UserId`, (c) Frontend calls `usePageContext()`. See [Audit Logging](backend/patterns/hierarchical-audit-logging.md)
+10. **No console.error in frontend** - Errors are visible in browser Network tab; use toast notifications for user feedback instead
 
 ### Performance Rules
 
@@ -847,4 +848,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-01-16 | Total Tests: 1,800+ | Features: 9 | Endpoints: 12 | Entities: 16*
+*Updated: 2026-01-17 | Total Tests: 1,800+ | Features: 9 | Endpoints: 12 | Entities: 16*

@@ -34,8 +34,8 @@ export function storeTokens(tokens: StoredTokens): boolean {
     localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken)
     localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, tokens.expiresAt)
     return true
-  } catch (error) {
-    console.error('Failed to store tokens:', error)
+  } catch {
+    // Storage unavailable (e.g., Safari private mode)
     return false
   }
 }
@@ -54,8 +54,8 @@ export function getStoredTokens(): StoredTokens | null {
     }
 
     return { accessToken, refreshToken, expiresAt }
-  } catch (error) {
-    console.error('Failed to retrieve tokens:', error)
+  } catch {
+    // Storage unavailable
     return null
   }
 }
@@ -90,8 +90,8 @@ export function clearTokens(): void {
     localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN)
     localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN)
     localStorage.removeItem(STORAGE_KEYS.TOKEN_EXPIRY)
-  } catch (error) {
-    console.error('Failed to clear tokens:', error)
+  } catch {
+    // Storage unavailable - tokens will be cleared on browser close anyway
   }
 }
 

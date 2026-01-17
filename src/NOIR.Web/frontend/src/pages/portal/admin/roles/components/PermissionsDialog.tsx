@@ -60,8 +60,7 @@ export function PermissionsDialog({ role, open, onOpenChange, onSuccess }: Permi
           // Use the role's direct permissions (not inherited)
           setSelectedPermissions(new Set(fullRole.permissions || []))
         })
-        .catch((err) => {
-          console.error('Failed to load role permissions:', err)
+        .catch(() => {
           // Start with empty if we can't load
           setSelectedPermissions(new Set())
         })

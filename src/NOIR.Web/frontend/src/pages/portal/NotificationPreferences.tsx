@@ -62,8 +62,7 @@ export default function NotificationPreferences() {
       try {
         const data = await getPreferences()
         setPreferences(data)
-      } catch (error) {
-        console.error('Failed to fetch preferences:', error)
+      } catch {
         toast.error('Failed to load preferences')
       } finally {
         setIsLoading(false)
@@ -102,8 +101,7 @@ export default function NotificationPreferences() {
       })
       toast.success('Preferences saved successfully')
       setHasChanges(false)
-    } catch (error) {
-      console.error('Failed to save preferences:', error)
+    } catch {
       toast.error('Failed to save preferences')
     } finally {
       setIsSaving(false)

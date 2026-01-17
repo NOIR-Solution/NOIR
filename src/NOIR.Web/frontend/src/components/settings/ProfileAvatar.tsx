@@ -99,8 +99,7 @@ export function ProfileAvatar({
               alt={t('profile.avatar.preview')}
               className="w-full h-full object-cover"
               onError={(e) => {
-                console.error('Preview image failed to load:', previewUrl)
-                // Fallback: try to re-read the file
+                // Fallback: try to re-read the file if preview fails
                 if (selectedFile) {
                   const newUrl = URL.createObjectURL(selectedFile)
                   e.currentTarget.src = newUrl

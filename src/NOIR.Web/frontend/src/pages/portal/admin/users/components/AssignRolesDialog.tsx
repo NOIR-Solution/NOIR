@@ -48,8 +48,7 @@ export function AssignRolesDialog({ user, open, onOpenChange, onSuccess }: Assig
         .then((roles) => {
           setSelectedRoles(new Set(roles))
         })
-        .catch((err) => {
-          console.error('Failed to load user roles:', err)
+        .catch(() => {
           // Fall back to roles from user list item
           setSelectedRoles(new Set(user.roles))
         })
@@ -91,8 +90,7 @@ export function AssignRolesDialog({ user, open, onOpenChange, onSuccess }: Assig
       toast.success(t('users.rolesAssigned', 'Roles assigned successfully'))
       onSuccess()
       onOpenChange(false)
-    } catch (err) {
-      console.error('Failed to assign roles:', err)
+    } catch {
       toast.error(t('messages.operationFailed', 'Operation failed. Please try again.'))
     } finally {
       setLoading(false)
