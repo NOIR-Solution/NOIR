@@ -56,7 +56,7 @@ public class OtpService : IOtpService, IScopedService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Error verifying OTP hash");
+            _logger.LogError(ex, "Error verifying OTP hash");
             return false;
         }
     }

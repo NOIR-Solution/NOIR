@@ -210,7 +210,7 @@ public sealed class HistoricalLogService : IHistoricalLogService, IScopedService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Error reading log file {FilePath}", filePath);
+            _logger.LogError(ex, "Error reading log file {FilePath}", filePath);
         }
 
         return entries;
