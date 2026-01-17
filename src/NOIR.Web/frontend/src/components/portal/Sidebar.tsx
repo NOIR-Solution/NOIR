@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShieldCheck,
   LayoutDashboard,
@@ -19,6 +20,8 @@ import {
   Activity,
   Terminal,
   Bell,
+  BellOff,
+  MessageSquare,
   Sun,
   Moon,
   Monitor,
@@ -315,6 +318,95 @@ interface SidebarContentProps {
 
 
 /**
+ * Get time label for grouping notifications
+ */
+function getNotificationTimeLabel(dateString: string): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffTime = Math.abs(now.getTime() - date.getTime())
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return 'Today'
+  if (diffDays === 1) return 'Yesterday'
+  if (diffDays <= 7) return 'Earlier this week'
+  return 'Older'
+}
+
+/**
+ * Format relative time for display
+ */
+function formatRelativeTime(dateString: string): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffSec = Math.floor(diffMs / 1000)
+  const diffMin = Math.floor(diffSec / 60)
+  const diffHour = Math.floor(diffMin / 60)
+  const diffDay = Math.floor(diffHour / 24)
+
+  if (diffSec < 60) return 'Just now'
+  if (diffMin < 60) return `${diffMin}m ago`
+  if (diffHour < 24) return `${diffHour}h ago`
+  if (diffDay < 7) return `${diffDay}d ago`
+
+  return date.toLocaleDateString()
+}
+
+/**
+ * Animated Empty State for Notifications
+ */
+function NotificationEmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-10 px-4">
+      {/* Animated illustration with 3 icons */}
+      <div className="flex justify-center isolate mb-5">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 30 }}
+          className="bg-background size-10 grid place-items-center rounded-lg relative left-2 top-1 -rotate-6 shadow-md ring-1 ring-border"
+        >
+          <Mail className="size-5 text-muted-foreground" />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 30 }}
+          className="bg-background size-10 grid place-items-center rounded-lg relative z-10 shadow-md ring-1 ring-border"
+        >
+          <BellOff className="size-5 text-muted-foreground" />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, type: 'spring', stiffness: 300, damping: 30 }}
+          className="bg-background size-10 grid place-items-center rounded-lg relative right-2 top-1 rotate-6 shadow-md ring-1 ring-border"
+        >
+          <MessageSquare className="size-5 text-muted-foreground" />
+        </motion.div>
+      </div>
+
+      <motion.h4
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className="text-sm font-semibold text-foreground mb-1"
+      >
+        All caught up!
+      </motion.h4>
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="text-xs text-muted-foreground text-center max-w-[200px]"
+      >
+        No new notifications. We'll let you know when something arrives.
+      </motion.p>
+    </div>
+  )
+}
+
+/**
  * Notification Sidebar Item with Dropdown
  */
 function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: boolean; t: (key: string) => string; onItemClick?: (path: string) => void }) {
@@ -325,6 +417,17 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
 
   const displayCount = unreadCount > 99 ? '99+' : unreadCount.toString()
   const recentNotifications = notifications.slice(0, 5)
+
+  // Group notifications by time
+  const groupedNotifications = recentNotifications.reduce((groups, notification) => {
+    const label = getNotificationTimeLabel(notification.createdAt)
+    if (!groups[label]) groups[label] = []
+    groups[label].push(notification)
+    return groups
+  }, {} as Record<string, typeof notifications>)
+
+  const groupOrder = ['Today', 'Yesterday', 'Earlier this week', 'Older']
+  const sortedGroups = groupOrder.filter(label => groupedNotifications[label]?.length > 0)
 
   const handleMarkAllAsRead = async () => {
     try {
@@ -396,97 +499,123 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
         align="start"
         side="top"
         sideOffset={8}
-        className="w-72"
+        className="w-80 p-0 overflow-hidden"
       >
         {/* Header */}
-        <DropdownMenuLabel className="flex items-center justify-between">
-          <span>{t('notifications.title')}</span>
+        <div className="flex items-center justify-between p-3 border-b">
+          <div>
+            <h3 className="text-sm font-semibold">{t('notifications.title')}</h3>
+            {unreadCount > 0 && (
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {unreadCount} unread
+              </p>
+            )}
+          </div>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
-              className="h-auto py-1 px-2 text-xs -mr-2"
+              className="h-7 text-xs px-2"
               onClick={handleMarkAllAsRead}
             >
               <Check className="size-3 mr-1" />
-              {t('notifications.markAllRead')}
+              Mark all read
             </Button>
           )}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        </div>
 
         {/* Notification list */}
-        <div className="max-h-80 overflow-y-auto">
+        <div className="max-h-[360px] overflow-y-auto">
           {isLoading && notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-6 gap-2">
-              {/* Skeleton loading for notifications - better UX than spinner */}
+            <div className="flex flex-col items-center justify-center py-8 gap-2">
+              {/* Skeleton loading */}
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex items-start gap-2 w-full px-2">
-                  <div className="mt-1.5 h-2 w-2 rounded-full bg-muted animate-pulse" />
+                <div key={i} className="flex items-start gap-3 w-full px-3">
+                  <div className="mt-1 h-2 w-2 rounded-full bg-muted animate-pulse" />
                   <div className="flex-1 space-y-1.5">
-                    <div className="h-3.5 w-3/4 rounded bg-muted animate-pulse" />
-                    <div className="h-3 w-1/2 rounded bg-muted animate-pulse" />
+                    <div className="h-3 w-3/4 rounded bg-muted animate-pulse" />
+                    <div className="h-2.5 w-1/2 rounded bg-muted animate-pulse" />
                   </div>
                 </div>
               ))}
             </div>
           ) : recentNotifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
-              <Bell className="h-6 w-6 mb-2 opacity-50" />
-              <p className="text-sm">{t('notifications.noNotifications')}</p>
-            </div>
+            <NotificationEmptyState />
           ) : (
-            <>
-              {recentNotifications.map((notification) => (
-                <DropdownMenuItem
-                  key={notification.id}
-                  className={cn(
-                    'flex items-start gap-2 cursor-pointer py-2',
-                    !notification.isRead && 'bg-primary/5'
-                  )}
-                  onClick={() => {
-                    if (!notification.isRead) {
-                      markAsRead(notification.id)
-                    }
-                  }}
-                >
-                  <div className={cn(
-                    'mt-1.5 h-2 w-2 rounded-full flex-shrink-0',
-                    notification.isRead ? 'bg-transparent' : 'bg-primary'
-                  )} />
-                  <div className="flex-1 min-w-0">
-                    <p className={cn(
-                      'text-sm truncate',
-                      !notification.isRead && 'font-medium'
-                    )}>
-                      {notification.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">
-                      {notification.message}
-                    </p>
-                    <p className="text-xs text-muted-foreground/70 mt-1">
-                      {new Date(notification.createdAt).toLocaleString()}
-                    </p>
+            <div className="py-1">
+              <AnimatePresence>
+                {sortedGroups.map((groupLabel) => (
+                  <div key={groupLabel} className="mb-1 last:mb-0">
+                    <div className="px-3 py-1.5">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                        {groupLabel}
+                      </span>
+                    </div>
+                    {groupedNotifications[groupLabel].map((notification) => (
+                      <motion.div
+                        key={notification.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 10 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      >
+                        <DropdownMenuItem
+                          className={cn(
+                            'flex items-start gap-2.5 cursor-pointer py-2.5 px-3 mx-1 rounded-md',
+                            !notification.isRead && 'bg-primary/5'
+                          )}
+                          onClick={() => {
+                            if (!notification.isRead) {
+                              markAsRead(notification.id)
+                            }
+                          }}
+                        >
+                          <div className={cn(
+                            'mt-1.5 h-2 w-2 rounded-full flex-shrink-0',
+                            notification.isRead ? 'bg-transparent' : 'bg-primary'
+                          )} />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <p className={cn(
+                                'text-sm truncate',
+                                !notification.isRead && 'font-medium'
+                              )}>
+                                {notification.title}
+                              </p>
+                              <span className="text-[10px] text-muted-foreground shrink-0">
+                                {formatRelativeTime(notification.createdAt)}
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                              {notification.message}
+                            </p>
+                          </div>
+                        </DropdownMenuItem>
+                      </motion.div>
+                    ))}
                   </div>
-                </DropdownMenuItem>
-              ))}
-            </>
+                ))}
+              </AnimatePresence>
+            </div>
           )}
         </div>
 
         {/* Footer */}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="justify-center">
-          <Link
-            to="/portal/notifications"
-            onClick={() => {
-              setOpen(false)
-              onItemClick?.('/portal/notifications')
-            }}
+        <div className="p-2 border-t bg-muted/30">
+          <Button
+            variant="ghost"
+            className="w-full justify-center text-sm h-8"
+            asChild
+            onClick={() => setOpen(false)}
           >
-            {t('notifications.viewAll')}
-          </Link>
-        </DropdownMenuItem>
+            <Link
+              to="/portal/notifications"
+              onClick={() => onItemClick?.('/portal/notifications')}
+            >
+              {t('notifications.viewAll')}
+            </Link>
+          </Button>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )
