@@ -1,12 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Mail, Edit, Eye, Search, RefreshCw } from 'lucide-react'
+import { Mail, Edit, Eye, RefreshCw } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import {
   getEmailTemplates,
@@ -31,7 +30,6 @@ export default function EmailTemplatesPage() {
   // State
   const [templates, setTemplates] = useState<EmailTemplateListDto[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
 
   // Preview dialog state
   const [previewOpen, setPreviewOpen] = useState(false)
@@ -42,7 +40,7 @@ export default function EmailTemplatesPage() {
   const loadTemplates = async () => {
     setLoading(true)
     try {
-      const data = await getEmailTemplates(searchQuery || undefined)
+      const data = await getEmailTemplates()
       setTemplates(data)
     } catch (error) {
       if (error instanceof ApiError) {
@@ -55,25 +53,10 @@ export default function EmailTemplatesPage() {
     }
   }
 
-  // Track if initial load has happened
-  const isInitialMount = useRef(true)
-
   // Load templates on mount
   useEffect(() => {
     loadTemplates()
   }, [])
-
-  // Debounced search - skip initial mount
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false
-      return
-    }
-    const timer = setTimeout(() => {
-      loadTemplates()
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [searchQuery])
 
   // Handle preview
   const handlePreview = async (template: EmailTemplateListDto) => {
@@ -122,19 +105,6 @@ export default function EmailTemplatesPage() {
           <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           {t('buttons.refresh')}
         </Button>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={`${t('buttons.search')}...`}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
       </div>
 
       {/* Loading State */}
@@ -246,9 +216,7 @@ export default function EmailTemplatesPage() {
             <Mail className="mx-auto h-12 w-12 text-muted-foreground/50" />
             <h3 className="mt-4 text-lg font-semibold text-foreground">{t('labels.noResults')}</h3>
             <p className="mt-2 text-muted-foreground">
-              {searchQuery
-                ? 'Try adjusting your search to find what you are looking for.'
-                : 'No email templates have been created yet.'}
+              No email templates have been created yet.
             </p>
           </div>
         </Card>
