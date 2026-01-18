@@ -61,6 +61,12 @@ export default defineConfig({
         secure: false,
         ws: true,
       },
+      // Media files (images, uploads)
+      '/media': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 })

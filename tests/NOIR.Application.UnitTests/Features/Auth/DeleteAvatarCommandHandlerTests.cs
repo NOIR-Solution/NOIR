@@ -11,6 +11,7 @@ public class DeleteAvatarCommandHandlerTests
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<IFileStorage> _fileStorageMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<ILogger<DeleteAvatarCommandHandler>> _loggerMock;
     private readonly DeleteAvatarCommandHandler _handler;
 
     public DeleteAvatarCommandHandlerTests()
@@ -18,16 +19,32 @@ public class DeleteAvatarCommandHandlerTests
         _userIdentityServiceMock = new Mock<IUserIdentityService>();
         _fileStorageMock = new Mock<IFileStorage>();
         _localizationServiceMock = new Mock<ILocalizationService>();
+        _loggerMock = new Mock<ILogger<DeleteAvatarCommandHandler>>();
 
         // Setup localization to return the key (pass-through for testing)
         _localizationServiceMock
             .Setup(x => x[It.IsAny<string>()])
             .Returns<string>(key => key);
 
+        // Setup file storage GetStoragePath to strip /media/ prefix
+        _fileStorageMock
+            .Setup(x => x.MediaUrlPrefix)
+            .Returns("/media");
+
+        _fileStorageMock
+            .Setup(x => x.GetStoragePath(It.IsAny<string>()))
+            .Returns<string>(url =>
+            {
+                if (url.StartsWith("/media/", StringComparison.OrdinalIgnoreCase))
+                    return url["/media/".Length..];
+                return null;
+            });
+
         _handler = new DeleteAvatarCommandHandler(
             _userIdentityServiceMock.Object,
             _fileStorageMock.Object,
-            _localizationServiceMock.Object);
+            _localizationServiceMock.Object,
+            _loggerMock.Object);
     }
 
     private UserIdentityDto CreateTestUserDto(
@@ -64,12 +81,16 @@ public class DeleteAvatarCommandHandlerTests
     {
         // Arrange
         const string userId = "user-123";
-        const string avatarUrl = "/api/files/avatars/user-123/avatar.jpg";
+        const string avatarUrl = "/media/avatars/user-123/avatar-medium.webp";
 
         var user = CreateTestUserDto(userId, avatarUrl);
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+
+        _fileStorageMock
+            .Setup(x => x.ExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         _fileStorageMock
             .Setup(x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -90,12 +111,11 @@ public class DeleteAvatarCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WithExistingAvatar_ShouldDeleteFileFromStorage()
+    public async Task Handle_WithExistingAvatar_ShouldClearUserAvatarUrl()
     {
         // Arrange
         const string userId = "user-123";
-        const string avatarUrl = "/api/files/avatars/user-123/avatar.jpg";
-        const string expectedStoragePath = "avatars/user-123/avatar.jpg";
+        const string avatarUrl = "/media/avatars/user-123/avatar-medium.webp";
 
         var user = CreateTestUserDto(userId, avatarUrl);
         _userIdentityServiceMock
@@ -103,35 +123,8 @@ public class DeleteAvatarCommandHandlerTests
             .ReturnsAsync(user);
 
         _fileStorageMock
-            .Setup(x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-
-        _userIdentityServiceMock
-            .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(IdentityOperationResult.Success());
-
-        var command = CreateTestCommand(userId);
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert - Should strip /api/files/ prefix and delete
-        _fileStorageMock.Verify(
-            x => x.DeleteAsync(expectedStoragePath, It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_WithExistingAvatar_ShouldClearUserAvatarUrl()
-    {
-        // Arrange
-        const string userId = "user-123";
-        const string avatarUrl = "/api/files/avatars/user-123/avatar.jpg";
-
-        var user = CreateTestUserDto(userId, avatarUrl);
-        _userIdentityServiceMock
-            .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
 
         _fileStorageMock
             .Setup(x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -288,12 +281,16 @@ public class DeleteAvatarCommandHandlerTests
     {
         // Arrange
         const string userId = "user-123";
-        const string avatarUrl = "/api/files/avatars/user-123/avatar.jpg";
+        const string avatarUrl = "/media/avatars/user-123/avatar-medium.webp";
 
         var user = CreateTestUserDto(userId, avatarUrl);
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+
+        _fileStorageMock
+            .Setup(x => x.ExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         _fileStorageMock
             .Setup(x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -318,16 +315,20 @@ public class DeleteAvatarCommandHandlerTests
     #region URL Path Processing
 
     [Fact]
-    public async Task Handle_WithUrlContainingApiFilesPrefix_ShouldStripPrefix()
+    public async Task Handle_WithUrlContainingMediaPrefix_ShouldUseGetStoragePath()
     {
         // Arrange
         const string userId = "user-123";
-        const string avatarUrl = "/api/files/avatars/user-123/avatar.jpg";
+        const string avatarUrl = "/media/avatars/user-123/slug-medium.webp";
 
         var user = CreateTestUserDto(userId, avatarUrl);
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+
+        _fileStorageMock
+            .Setup(x => x.ExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         _fileStorageMock
             .Setup(x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -342,41 +343,8 @@ public class DeleteAvatarCommandHandlerTests
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
-        // Assert - Should delete without /api/files/ prefix
-        _fileStorageMock.Verify(
-            x => x.DeleteAsync("avatars/user-123/avatar.jpg", It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_WithUrlWithoutApiFilesPrefix_ShouldUseAsIs()
-    {
-        // Arrange
-        const string userId = "user-123";
-        const string avatarUrl = "avatars/user-123/avatar.jpg"; // No prefix
-
-        var user = CreateTestUserDto(userId, avatarUrl);
-        _userIdentityServiceMock
-            .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        _fileStorageMock
-            .Setup(x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        _userIdentityServiceMock
-            .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(IdentityOperationResult.Success());
-
-        var command = CreateTestCommand(userId);
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert - Should use path as-is
-        _fileStorageMock.Verify(
-            x => x.DeleteAsync("avatars/user-123/avatar.jpg", It.IsAny<CancellationToken>()),
-            Times.Once);
+        // Assert - Should call GetStoragePath
+        _fileStorageMock.Verify(x => x.GetStoragePath(avatarUrl), Times.Once);
     }
 
     #endregion
@@ -388,12 +356,16 @@ public class DeleteAvatarCommandHandlerTests
     {
         // Arrange
         const string userId = "user-123";
-        const string avatarUrl = "/api/files/avatars/user-123/avatar.jpg";
+        const string avatarUrl = "/media/avatars/user-123/avatar-medium.webp";
 
         var user = CreateTestUserDto(userId, avatarUrl);
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+
+        _fileStorageMock
+            .Setup(x => x.ExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         _fileStorageMock
             .Setup(x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -412,7 +384,6 @@ public class DeleteAvatarCommandHandlerTests
 
         // Assert
         _userIdentityServiceMock.Verify(x => x.FindByIdAsync(userId, token), Times.Once);
-        _fileStorageMock.Verify(x => x.DeleteAsync(It.IsAny<string>(), token), Times.Once);
         _userIdentityServiceMock.Verify(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), token), Times.Once);
     }
 

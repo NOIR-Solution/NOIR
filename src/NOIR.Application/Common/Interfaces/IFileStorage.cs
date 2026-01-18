@@ -34,4 +34,15 @@ public interface IFileStorage
     /// Gets a public URL for the file (if supported by the storage provider).
     /// </summary>
     string? GetPublicUrl(string path);
+
+    /// <summary>
+    /// Converts a public URL back to a storage path.
+    /// Returns null if the URL doesn't match the expected prefix.
+    /// </summary>
+    string? GetStoragePath(string publicUrl);
+
+    /// <summary>
+    /// Gets the configured media URL prefix (e.g., "/media").
+    /// </summary>
+    string MediaUrlPrefix { get; }
 }

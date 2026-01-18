@@ -8,11 +8,16 @@ public class FileStorageService : IFileStorage, IScopedService
 {
     private readonly IBlobStorage _storage;
     private readonly ILogger<FileStorageService> _logger;
+    private readonly string _mediaUrlPrefix;
 
-    public FileStorageService(IBlobStorage storage, ILogger<FileStorageService> logger)
+    public FileStorageService(
+        IBlobStorage storage,
+        IOptions<StorageSettings> settings,
+        ILogger<FileStorageService> logger)
     {
         _storage = storage;
         _logger = logger;
+        _mediaUrlPrefix = settings.Value.MediaUrlPrefix.TrimEnd('/');
     }
 
     public async Task<string> UploadAsync(string fileName, Stream content, string? folder = null, CancellationToken cancellationToken = default)
@@ -111,16 +116,34 @@ public class FileStorageService : IFileStorage, IScopedService
         }
     }
 
+    public string MediaUrlPrefix => _mediaUrlPrefix;
+
     public string? GetPublicUrl(string path)
     {
-        // Return API endpoint URL for serving files
-        // The FileEndpoints handles serving files from storage
+        // Return URL for serving files via configured media endpoint
         if (string.IsNullOrEmpty(path))
         {
             return null;
         }
 
-        // Return relative URL that will be handled by FileEndpoints
-        return $"/api/files/{path}";
+        // Return relative URL that will be handled by media endpoint
+        return $"{_mediaUrlPrefix}/{path}";
+    }
+
+    public string? GetStoragePath(string publicUrl)
+    {
+        if (string.IsNullOrEmpty(publicUrl))
+        {
+            return null;
+        }
+
+        // Strip the media URL prefix to get storage path
+        var prefix = $"{_mediaUrlPrefix}/";
+        if (publicUrl.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return publicUrl[prefix.Length..];
+        }
+
+        return null;
     }
 }

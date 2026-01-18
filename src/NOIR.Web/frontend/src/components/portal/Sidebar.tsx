@@ -25,6 +25,9 @@ import {
   Sun,
   Moon,
   Monitor,
+  FileText,
+  FolderTree,
+  Tag,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -79,6 +82,14 @@ const navSections: NavSection[] = [
     // Primary - no section label
     items: [
       { titleKey: 'dashboard.title', icon: LayoutDashboard, path: '/portal' },
+    ],
+  },
+  {
+    labelKey: 'nav.content',
+    items: [
+      { titleKey: 'blog.posts', icon: FileText, path: '/portal/blog/posts', permission: Permissions.BlogPostsRead },
+      { titleKey: 'blog.categories', icon: FolderTree, path: '/portal/blog/categories', permission: Permissions.BlogCategoriesRead },
+      { titleKey: 'blog.tags', icon: Tag, path: '/portal/blog/tags', permission: Permissions.BlogTagsRead },
     ],
   },
   {

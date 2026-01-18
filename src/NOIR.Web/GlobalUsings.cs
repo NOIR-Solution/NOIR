@@ -81,6 +81,7 @@ global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Localization;
 global using NOIR.Infrastructure.Logging;
 global using NOIR.Infrastructure.Persistence;
+global using NOIR.Infrastructure.Storage;
 
 // NOIR Web
 global using NOIR.Web.Endpoints;
@@ -135,3 +136,6 @@ global using NOIR.Application.Features.Tenants.Queries.GetTenantById;
 
 // NOIR Application - Developer Logs
 global using NOIR.Application.Features.DeveloperLogs.DTOs;
+
+// NOIR Application - Media
+global using NOIR.Application.Features.Media.Dtos;

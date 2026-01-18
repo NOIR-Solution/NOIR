@@ -427,6 +427,7 @@ app.UseMiddleware<HttpRequestAuditMiddleware>();
 // Map API Endpoints
 app.MapAuthEndpoints();
 app.MapFileEndpoints();
+app.MapMediaEndpoints();
 app.MapRoleEndpoints();
 app.MapPermissionEndpoints();
 app.MapTenantEndpoints();
@@ -435,6 +436,7 @@ app.MapEmailTemplateEndpoints();
 app.MapNotificationEndpoints();
 app.MapAuditEndpoints();
 app.MapDeveloperLogEndpoints();
+app.MapBlogEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");

@@ -106,6 +106,10 @@ global using NOIR.Infrastructure.Persistence.Conventions;
 global using NOIR.Infrastructure.Persistence.Interceptors;
 global using NOIR.Infrastructure.Services;
 global using NOIR.Infrastructure.Storage;
+global using NOIR.Infrastructure.Caching;
+
+// FusionCache
+global using ZiggyCreatures.Caching.Fusion;
 
 // NOIR Web
 global using NOIR.Web.Filters;

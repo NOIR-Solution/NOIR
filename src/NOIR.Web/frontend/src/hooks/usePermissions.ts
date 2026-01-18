@@ -141,6 +141,22 @@ export const Permissions = {
   AuditRead: 'audit:read',
   AuditExport: 'audit:export',
   AuditEntityHistory: 'audit:entity-history',
+  // Blog Posts
+  BlogPostsRead: 'blog-posts:read',
+  BlogPostsCreate: 'blog-posts:create',
+  BlogPostsUpdate: 'blog-posts:update',
+  BlogPostsDelete: 'blog-posts:delete',
+  BlogPostsPublish: 'blog-posts:publish',
+  // Blog Categories
+  BlogCategoriesRead: 'blog-categories:read',
+  BlogCategoriesCreate: 'blog-categories:create',
+  BlogCategoriesUpdate: 'blog-categories:update',
+  BlogCategoriesDelete: 'blog-categories:delete',
+  // Blog Tags
+  BlogTagsRead: 'blog-tags:read',
+  BlogTagsCreate: 'blog-tags:create',
+  BlogTagsUpdate: 'blog-tags:update',
+  BlogTagsDelete: 'blog-tags:delete',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

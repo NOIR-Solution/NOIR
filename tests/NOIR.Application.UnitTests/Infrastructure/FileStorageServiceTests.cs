@@ -7,6 +7,7 @@ namespace NOIR.Application.UnitTests.Infrastructure;
 public class FileStorageServiceTests
 {
     private readonly Mock<IBlobStorage> _storageMock;
+    private readonly Mock<IOptions<StorageSettings>> _settingsMock;
     private readonly Mock<ILogger<FileStorageService>> _loggerMock;
     private readonly FileStorageService _sut;
 
@@ -14,7 +15,13 @@ public class FileStorageServiceTests
     {
         _storageMock = new Mock<IBlobStorage>();
         _loggerMock = new Mock<ILogger<FileStorageService>>();
-        _sut = new FileStorageService(_storageMock.Object, _loggerMock.Object);
+
+        // Setup default storage settings
+        var settings = new StorageSettings { MediaUrlPrefix = "/media" };
+        _settingsMock = new Mock<IOptions<StorageSettings>>();
+        _settingsMock.Setup(x => x.Value).Returns(settings);
+
+        _sut = new FileStorageService(_storageMock.Object, _settingsMock.Object, _loggerMock.Object);
     }
 
     #region UploadAsync Tests
@@ -435,7 +442,7 @@ public class FileStorageServiceTests
     public void Constructor_ShouldAcceptDependencies()
     {
         // Act
-        var service = new FileStorageService(_storageMock.Object, _loggerMock.Object);
+        var service = new FileStorageService(_storageMock.Object, _settingsMock.Object, _loggerMock.Object);
 
         // Assert
         service.Should().NotBeNull();

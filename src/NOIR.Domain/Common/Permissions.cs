@@ -50,6 +50,25 @@ public static class Permissions
     public const string EmailTemplatesRead = "email-templates:read";
     public const string EmailTemplatesUpdate = "email-templates:update";
 
+    // Blog Posts
+    public const string BlogPostsRead = "blog-posts:read";
+    public const string BlogPostsCreate = "blog-posts:create";
+    public const string BlogPostsUpdate = "blog-posts:update";
+    public const string BlogPostsDelete = "blog-posts:delete";
+    public const string BlogPostsPublish = "blog-posts:publish";
+
+    // Blog Categories
+    public const string BlogCategoriesRead = "blog-categories:read";
+    public const string BlogCategoriesCreate = "blog-categories:create";
+    public const string BlogCategoriesUpdate = "blog-categories:update";
+    public const string BlogCategoriesDelete = "blog-categories:delete";
+
+    // Blog Tags
+    public const string BlogTagsRead = "blog-tags:read";
+    public const string BlogTagsCreate = "blog-tags:create";
+    public const string BlogTagsUpdate = "blog-tags:update";
+    public const string BlogTagsDelete = "blog-tags:delete";
+
     /// <summary>
     /// All permissions grouped by resource.
     /// </summary>
@@ -72,6 +91,15 @@ public static class Permissions
 
         public static readonly IReadOnlyList<string> EmailTemplates =
             [EmailTemplatesRead, EmailTemplatesUpdate];
+
+        public static readonly IReadOnlyList<string> BlogPosts =
+            [BlogPostsRead, BlogPostsCreate, BlogPostsUpdate, BlogPostsDelete, BlogPostsPublish];
+
+        public static readonly IReadOnlyList<string> BlogCategories =
+            [BlogCategoriesRead, BlogCategoriesCreate, BlogCategoriesUpdate, BlogCategoriesDelete];
+
+        public static readonly IReadOnlyList<string> BlogTags =
+            [BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete];
     }
 
     /// <summary>
@@ -90,7 +118,13 @@ public static class Permissions
         // Audit
         AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream,
         // Email Templates
-        EmailTemplatesRead, EmailTemplatesUpdate
+        EmailTemplatesRead, EmailTemplatesUpdate,
+        // Blog Posts
+        BlogPostsRead, BlogPostsCreate, BlogPostsUpdate, BlogPostsDelete, BlogPostsPublish,
+        // Blog Categories
+        BlogCategoriesRead, BlogCategoriesCreate, BlogCategoriesUpdate, BlogCategoriesDelete,
+        // Blog Tags
+        BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete
     ];
 
     /// <summary>
@@ -151,7 +185,21 @@ public static class Permissions
             // Audit within tenant (read and export only)
             AuditRead,
             AuditExport,
-            AuditEntityHistory
+            AuditEntityHistory,
+            // Blog within tenant
+            BlogPostsRead,
+            BlogPostsCreate,
+            BlogPostsUpdate,
+            BlogPostsDelete,
+            BlogPostsPublish,
+            BlogCategoriesRead,
+            BlogCategoriesCreate,
+            BlogCategoriesUpdate,
+            BlogCategoriesDelete,
+            BlogTagsRead,
+            BlogTagsCreate,
+            BlogTagsUpdate,
+            BlogTagsDelete
         };
 
         /// <summary>

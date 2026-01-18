@@ -1,6 +1,6 @@
 # Project Index: NOIR
 
-**Generated:** 2026-01-12 (Updated)
+**Generated:** 2026-01-18 (Updated)
 **Type:** Enterprise .NET 10 + React SaaS Foundation
 **Architecture:** Clean Architecture, CQRS, DDD
 
@@ -71,10 +71,11 @@ NOIR/
 
 | Module | Files | Purpose |
 |--------|-------|---------|
-| `Entities/` | 10 | EntityAuditLog, HandlerAuditLog, HttpRequestAuditLog, Permission, RefreshToken, ResourceShare, EmailTemplate, AuditRetentionPolicy, PasswordResetOtp |
+| `Entities/` | 13 | EntityAuditLog, HandlerAuditLog, HttpRequestAuditLog, Permission, RefreshToken, ResourceShare, EmailTemplate, AuditRetentionPolicy, PasswordResetOtp, Post, PostCategory, PostTag, Notification, NotificationPreference |
 | `Common/` | 18 | Entity, AuditableEntity, AggregateRoot, ValueObject, Result, Permissions, Roles, ErrorCodes |
 | `Interfaces/` | 2 | IRepository, IUnitOfWork |
 | `Specifications/` | 1 | ISpecification base |
+| `Enums/` | 4 | PostStatus, NotificationType, NotificationCategory, TenantRole |
 
 ### Application Layer (`src/NOIR.Application/`)
 
@@ -88,8 +89,10 @@ NOIR/
 | `EmailTemplates/` | 2 | 2 | Update templates, SendTestEmail, Preview |
 | `Tenants/` | 3 | 2 | CRUD, Multi-tenant management |
 | `Notifications/` | 4 | 3 | MarkAsRead, Delete, Preferences, List, UnreadCount |
+| `Blog/` | 10 | 4 | Posts CRUD/Publish, Categories CRUD, Tags CRUD |
+| `DeveloperLogs/` | 0 | 0 | Real-time log streaming via SignalR |
 
-**Totals:** 29 Command Handlers, 21 Query Handlers (50 handlers total)
+**Totals:** 39 Command Handlers, 25 Query Handlers (64 handlers total)
 
 **Supporting Modules:**
 | Module | Purpose |
@@ -108,6 +111,8 @@ NOIR/
 | `Audit/` | 8 | HandlerAuditMiddleware, HttpRequestAuditMiddleware, AuditSearchService |
 | `Email/` | 4 | FluentEmail integration, templating |
 | `Storage/` | 2 | FluentStorage file storage |
+| `Media/` | 5 | ImageProcessorService, ThumbHashGenerator, ColorAnalyzer, SrcsetGenerator, SlugGenerator |
+| `Caching/` | 3 | CacheInvalidationService, CacheKeys, distributed cache utilities |
 | `BackgroundJobs/` | 2 | Hangfire job implementations |
 | `Localization/` | 2 | i18n service implementations |
 
@@ -115,11 +120,11 @@ NOIR/
 
 | Module | Files | Purpose |
 |--------|-------|---------|
-| `Endpoints/` | 7 | Auth, Users, Roles, Audit, EmailTemplates, Tenants, Notifications |
+| `Endpoints/` | 12 | Auth, Users, Roles, Audit, EmailTemplates, Tenants, Notifications, Blog, DeveloperLogs, Files, Permissions, Media |
 | `Middleware/` | 4 | ExceptionHandling, SecurityHeaders, Correlation |
-| `Hubs/` | 3 | SignalR for real-time audit streaming |
+| `Hubs/` | 3 | SignalR for real-time audit and log streaming |
 | `Extensions/` | 5 | Service configuration, result extensions |
-| `frontend/` | 87 | React 19 SPA |
+| `frontend/` | 95+ | React 19 SPA |
 
 ---
 
@@ -204,6 +209,34 @@ NOIR/
 | GET | `/preferences` | Get notification preferences |
 | PUT | `/preferences` | Update preferences |
 
+### Blog (`/api/blog/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/posts` | List posts (paginated) |
+| GET | `/posts/{id}` | Get post by ID |
+| POST | `/posts` | Create post |
+| PUT | `/posts/{id}` | Update post |
+| DELETE | `/posts/{id}` | Delete post |
+| POST | `/posts/{id}/publish` | Publish post |
+| GET | `/categories` | List categories |
+| POST | `/categories` | Create category |
+| PUT | `/categories/{id}` | Update category |
+| DELETE | `/categories/{id}` | Delete category |
+| GET | `/tags` | List tags |
+| POST | `/tags` | Create tag |
+| PUT | `/tags/{id}` | Update tag |
+| DELETE | `/tags/{id}` | Delete tag |
+
+### Media (`/api/media/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| POST | `/upload` | Upload and process image (multi-variant, WebP) |
+
+### Developer Logs (`/api/developer-logs/`)
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/stream` | SignalR hub for real-time logs |
+
 ---
 
 ## Frontend Structure
@@ -227,6 +260,13 @@ frontend/src/
 │   ├── forgot-password/    # Password reset flow
 │   ├── portal/             # Dashboard, Settings, Notifications
 │   │   ├── admin/tenants/  # Tenant management
+│   │   ├── admin/users/    # User management
+│   │   ├── admin/roles/    # Role management
+│   │   ├── admin/activity-timeline/ # Audit timeline
+│   │   ├── admin/developer-logs/    # Real-time log viewer
+│   │   ├── blog/posts/     # Blog posts management
+│   │   ├── blog/categories/# Blog categories
+│   │   ├── blog/tags/      # Blog tags
 │   │   └── email-templates/# Email template editor
 │   ├── Landing.tsx
 │   └── Login.tsx
@@ -394,6 +434,24 @@ NOIR uses a deliberate log level strategy for HTTP responses:
 - User tries to delete protected tenant → 400 → WARNING
 - User access denied → 403 → WARNING
 - Database connection failed → 500 → ERROR
+
+---
+
+## Recent Changes (2026-01-18)
+
+- **Media Upload System**: Unified image upload with processing pipeline
+  - `/api/media/upload` endpoint with image variants (thumb, xl) and WebP output
+  - ImageProcessorService with ThumbHash, parallel processing, configurable formats
+  - Returns absolute URLs to fix image loading in rich text editors
+  - Optimized: 2 variants (Thumb + ExtraLarge), WebP only, ~2-3 seconds per upload
+- **Caching Infrastructure**: Added CacheInvalidationService and CacheKeys
+- **Blog/CMS Feature**: Full blog system with Posts, Categories, Tags
+  - 10 commands: CreatePost, UpdatePost, DeletePost, PublishPost, Create/Update/Delete Category/Tag
+  - 4 queries: GetPosts (paginated), GetPost, GetCategories, GetTags
+  - Frontend pages: BlogPostsPage, BlogCategoriesPage, BlogTagsPage
+  - Permissions: blog-posts:read/create/update/delete/publish, blog-categories:*, blog-tags:*
+  - TinyMCE integration with image upload
+- **Navigation**: Added "Content" section to sidebar with Blog links
 
 ---
 

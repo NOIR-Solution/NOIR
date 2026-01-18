@@ -259,7 +259,10 @@ public class PermissionsTests
             + Permissions.Groups.Tenants.Count
             + Permissions.Groups.System.Count
             + Permissions.Groups.Audit.Count
-            + Permissions.Groups.EmailTemplates.Count;
+            + Permissions.Groups.EmailTemplates.Count
+            + Permissions.Groups.BlogPosts.Count
+            + Permissions.Groups.BlogCategories.Count
+            + Permissions.Groups.BlogTags.Count;
 
         // Assert
         Permissions.All.Should().HaveCount(expectedCount);

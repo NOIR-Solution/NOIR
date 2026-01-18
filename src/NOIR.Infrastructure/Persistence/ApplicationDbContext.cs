@@ -54,6 +54,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<HandlerAuditLog> HandlerAuditLogs => Set<HandlerAuditLog>();
     public DbSet<EntityAuditLog> EntityAuditLogs => Set<EntityAuditLog>();
 
+    // Blog CMS entities
+    public DbSet<Post> Posts => Set<Post>();
+    public DbSet<PostCategory> PostCategories => Set<PostCategory>();
+    public DbSet<PostTag> PostTags => Set<PostTag>();
+
     /// <summary>
     /// Configures global type conventions.
     /// This reduces repetitive configuration and ensures consistency.

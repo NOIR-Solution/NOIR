@@ -26,6 +26,11 @@ const RolesPage = lazy(() => import('@/pages/portal/admin/roles/RolesPage'))
 const UsersPage = lazy(() => import('@/pages/portal/admin/users/UsersPage'))
 const ActivityTimelinePage = lazy(() => import('@/pages/portal/admin/activity-timeline/ActivityTimelinePage'))
 const DeveloperLogsPage = lazy(() => import('@/pages/portal/admin/developer-logs/DeveloperLogsPage'))
+// Blog CMS
+const BlogPostsPage = lazy(() => import('@/pages/portal/blog/posts/BlogPostsPage'))
+const PostEditorPage = lazy(() => import('@/pages/portal/blog/posts/PostEditorPage'))
+const BlogCategoriesPage = lazy(() => import('@/pages/portal/blog/categories/BlogCategoriesPage'))
+const BlogTagsPage = lazy(() => import('@/pages/portal/blog/tags/BlogTagsPage'))
 // Email templates - keep named exports as eager load (smaller components)
 import { EmailTemplatesPage, EmailTemplateEditPage } from '@/pages/portal/email-templates'
 
@@ -85,6 +90,12 @@ function App() {
             <Route path="admin/users" element={<Suspense fallback={<LazyFallback />}><UsersPage /></Suspense>} />
             <Route path="activity-timeline" element={<Suspense fallback={<LazyFallback />}><ActivityTimelinePage /></Suspense>} />
             <Route path="developer-logs" element={<Suspense fallback={<LazyFallback />}><DeveloperLogsPage /></Suspense>} />
+            {/* Blog CMS */}
+            <Route path="blog/posts" element={<Suspense fallback={<LazyFallback />}><BlogPostsPage /></Suspense>} />
+            <Route path="blog/posts/new" element={<Suspense fallback={<LazyFallback />}><PostEditorPage /></Suspense>} />
+            <Route path="blog/posts/:id/edit" element={<Suspense fallback={<LazyFallback />}><PostEditorPage /></Suspense>} />
+            <Route path="blog/categories" element={<Suspense fallback={<LazyFallback />}><BlogCategoriesPage /></Suspense>} />
+            <Route path="blog/tags" element={<Suspense fallback={<LazyFallback />}><BlogTagsPage /></Suspense>} />
           </Route>
 
           {/* Catch-all redirect to landing */}

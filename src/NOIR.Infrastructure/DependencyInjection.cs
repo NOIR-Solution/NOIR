@@ -141,6 +141,10 @@ public static class DependencyInjection
             .AddPolicy("resource:admin", policy =>
                 policy.Requirements.Add(new ResourcePermissionRequirement("admin")));
 
+        // Configure FusionCache (hybrid L1/L2 caching with stampede protection)
+        // Default: In-memory only (L1). Optional: Add Redis for distributed cache (L2).
+        services.AddFusionCaching(configuration);
+
         // Auto-register services using Scrutor via marker interfaces
         // Services implement IScopedService, ITransientService, or ISingletonService
         services.Scan(scan => scan
@@ -181,6 +185,12 @@ public static class DependencyInjection
         // Configure Application settings (base URL, app name, etc.)
         services.Configure<ApplicationSettings>(
             configuration.GetSection(ApplicationSettings.SectionName));
+
+        // Configure Image Processing settings
+        services.AddOptions<ImageProcessingSettings>()
+            .Bind(configuration.GetSection(ImageProcessingSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         // Register localization startup validator to validate resources at startup
         services.AddHostedService<LocalizationStartupValidator>();

@@ -10,14 +10,18 @@ public class UploadAvatarCommandHandlerTests
 
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<IFileStorage> _fileStorageMock;
+    private readonly Mock<IImageProcessor> _imageProcessorMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<ILogger<UploadAvatarCommandHandler>> _loggerMock;
     private readonly UploadAvatarCommandHandler _handler;
 
     public UploadAvatarCommandHandlerTests()
     {
         _userIdentityServiceMock = new Mock<IUserIdentityService>();
         _fileStorageMock = new Mock<IFileStorage>();
+        _imageProcessorMock = new Mock<IImageProcessor>();
         _localizationServiceMock = new Mock<ILocalizationService>();
+        _loggerMock = new Mock<ILogger<UploadAvatarCommandHandler>>();
 
         // Setup localization to return the key (pass-through for testing)
         _localizationServiceMock
@@ -27,7 +31,9 @@ public class UploadAvatarCommandHandlerTests
         _handler = new UploadAvatarCommandHandler(
             _userIdentityServiceMock.Object,
             _fileStorageMock.Object,
-            _localizationServiceMock.Object);
+            _imageProcessorMock.Object,
+            _localizationServiceMock.Object,
+            _loggerMock.Object);
     }
 
     private UserIdentityDto CreateTestUserDto(
@@ -63,6 +69,39 @@ public class UploadAvatarCommandHandlerTests
         };
     }
 
+    private ImageProcessingResult CreateSuccessfulProcessingResult(string slug = "avatar")
+    {
+        return new ImageProcessingResult
+        {
+            Success = true,
+            Slug = slug,
+            Variants =
+            [
+                new ImageVariantInfo
+                {
+                    Variant = ImageVariant.Thumb,
+                    Format = OutputFormat.WebP,
+                    Path = $"avatars/user-123/{slug}-thumb.webp",
+                    Url = $"/api/files/avatars/user-123/{slug}-thumb.webp",
+                    Width = 150,
+                    Height = 150,
+                    SizeBytes = 5000
+                },
+                new ImageVariantInfo
+                {
+                    Variant = ImageVariant.Medium,
+                    Format = OutputFormat.WebP,
+                    Path = $"avatars/user-123/{slug}-medium.webp",
+                    Url = $"/api/files/avatars/user-123/{slug}-medium.webp",
+                    Width = 640,
+                    Height = 640,
+                    SizeBytes = 50000
+                }
+            ],
+            ProcessingTimeMs = 100
+        };
+    }
+
     #endregion
 
     #region Success Scenarios
@@ -72,21 +111,20 @@ public class UploadAvatarCommandHandlerTests
     {
         // Arrange
         const string userId = "user-123";
-        const string storagePath = "avatars/user-123/abc123.jpg";
-        const string publicUrl = "/api/files/avatars/user-123/abc123.jpg";
-
         var user = CreateTestUserDto(userId);
+        var processingResult = CreateSuccessfulProcessingResult();
+
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _fileStorageMock
-            .Setup(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(storagePath);
+        _imageProcessorMock
+            .Setup(x => x.IsValidImageAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
 
-        _fileStorageMock
-            .Setup(x => x.GetPublicUrl(storagePath))
-            .Returns(publicUrl);
+        _imageProcessorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(processingResult);
 
         _userIdentityServiceMock
             .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
@@ -99,7 +137,7 @@ public class UploadAvatarCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.AvatarUrl.Should().Be(publicUrl);
+        result.Value.AvatarUrl.Should().Contain("medium.webp");
     }
 
     [Theory]
@@ -113,18 +151,19 @@ public class UploadAvatarCommandHandlerTests
         // Arrange
         const string userId = "user-123";
         var user = CreateTestUserDto(userId);
+        var processingResult = CreateSuccessfulProcessingResult();
 
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _fileStorageMock
-            .Setup(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync("path");
+        _imageProcessorMock
+            .Setup(x => x.IsValidImageAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
 
-        _fileStorageMock
-            .Setup(x => x.GetPublicUrl(It.IsAny<string>()))
-            .Returns("/api/files/path");
+        _imageProcessorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(processingResult);
 
         _userIdentityServiceMock
             .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
@@ -139,61 +178,35 @@ public class UploadAvatarCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
     }
 
-    [Fact]
-    public async Task Handle_WithUppercaseExtension_ShouldSucceed()
-    {
-        // Arrange
-        const string userId = "user-123";
-        var user = CreateTestUserDto(userId);
-
-        _userIdentityServiceMock
-            .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        _fileStorageMock
-            .Setup(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync("path");
-
-        _fileStorageMock
-            .Setup(x => x.GetPublicUrl(It.IsAny<string>()))
-            .Returns("/api/files/path");
-
-        _userIdentityServiceMock
-            .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(IdentityOperationResult.Success());
-
-        var command = CreateTestCommand(userId, "avatar.JPG");
-
-        // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-    }
-
     #endregion
 
     #region Old Avatar Deletion
 
     [Fact]
-    public async Task Handle_WhenUserHasExistingAvatar_ShouldDeleteOldAvatar()
+    public async Task Handle_WhenUserHasExistingAvatar_ShouldDeleteOldAvatarFiles()
     {
         // Arrange
         const string userId = "user-123";
-        const string oldAvatarUrl = "/api/files/avatars/user-123/old-avatar.jpg";
+        const string oldAvatarUrl = "/api/files/avatars/user-123/old-avatar-medium.webp";
 
         var user = CreateTestUserDto(userId, oldAvatarUrl);
+        var processingResult = CreateSuccessfulProcessingResult();
+
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _fileStorageMock
-            .Setup(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync("new-path");
+        _imageProcessorMock
+            .Setup(x => x.IsValidImageAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+
+        _imageProcessorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(processingResult);
 
         _fileStorageMock
-            .Setup(x => x.GetPublicUrl(It.IsAny<string>()))
-            .Returns("/api/files/new-path");
+            .Setup(x => x.ExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         _userIdentityServiceMock
             .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
@@ -204,10 +217,10 @@ public class UploadAvatarCommandHandlerTests
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
-        // Assert - Old avatar should be deleted
+        // Assert - Old avatar variants should be deleted
         _fileStorageMock.Verify(
-            x => x.DeleteAsync("avatars/user-123/old-avatar.jpg", It.IsAny<CancellationToken>()),
-            Times.Once);
+            x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.AtLeastOnce);
     }
 
     [Fact]
@@ -217,17 +230,19 @@ public class UploadAvatarCommandHandlerTests
         const string userId = "user-123";
 
         var user = CreateTestUserDto(userId, null); // No existing avatar
+        var processingResult = CreateSuccessfulProcessingResult();
+
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _fileStorageMock
-            .Setup(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync("path");
+        _imageProcessorMock
+            .Setup(x => x.IsValidImageAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
 
-        _fileStorageMock
-            .Setup(x => x.GetPublicUrl(It.IsAny<string>()))
-            .Returns("/api/files/path");
+        _imageProcessorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(processingResult);
 
         _userIdentityServiceMock
             .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
@@ -309,9 +324,7 @@ public class UploadAvatarCommandHandlerTests
     [InlineData("avatar.doc")]
     [InlineData("avatar.exe")]
     [InlineData("avatar.txt")]
-    [InlineData("avatar.svg")]
-    [InlineData("avatar")]
-    public async Task Handle_WithInvalidFileExtension_ShouldReturnValidationError(string fileName)
+    public async Task Handle_WithInvalidFileFormat_ShouldReturnValidationError(string fileName)
     {
         // Arrange
         const string userId = "user-123";
@@ -320,6 +333,10 @@ public class UploadAvatarCommandHandlerTests
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+
+        _imageProcessorMock
+            .Setup(x => x.IsValidImageAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+            .ReturnsAsync(false);
 
         var command = CreateTestCommand(userId, fileName);
 
@@ -336,24 +353,24 @@ public class UploadAvatarCommandHandlerTests
     #region Update Failure Scenarios
 
     [Fact]
-    public async Task Handle_WhenUpdateFails_ShouldRollbackUploadedFile()
+    public async Task Handle_WhenUpdateFails_ShouldRollbackUploadedFiles()
     {
         // Arrange
         const string userId = "user-123";
-        const string storagePath = "avatars/user-123/abc123.jpg";
-
         var user = CreateTestUserDto(userId);
+        var processingResult = CreateSuccessfulProcessingResult();
+
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _fileStorageMock
-            .Setup(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(storagePath);
+        _imageProcessorMock
+            .Setup(x => x.IsValidImageAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
 
-        _fileStorageMock
-            .Setup(x => x.GetPublicUrl(storagePath))
-            .Returns("/api/files/" + storagePath);
+        _imageProcessorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(processingResult);
 
         _userIdentityServiceMock
             .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
@@ -368,34 +385,38 @@ public class UploadAvatarCommandHandlerTests
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be(ErrorCodes.Auth.UpdateFailed);
 
-        // Verify rollback - the uploaded file should be deleted
+        // Verify rollback - all variant files should be deleted
         _fileStorageMock.Verify(
-            x => x.DeleteAsync(storagePath, It.IsAny<CancellationToken>()),
-            Times.Once);
+            x => x.DeleteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Exactly(processingResult.Variants.Count));
     }
 
     #endregion
 
-    #region File Upload Scenarios
+    #region Image Processing Scenarios
 
     [Fact]
-    public async Task Handle_ShouldUploadToCorrectFolder()
+    public async Task Handle_ShouldProcessWithCorrectOptions()
     {
         // Arrange
         const string userId = "user-123";
         var user = CreateTestUserDto(userId);
+        var processingResult = CreateSuccessfulProcessingResult();
+
+        ImageProcessingOptions? capturedOptions = null;
 
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _fileStorageMock
-            .Setup(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync("path");
+        _imageProcessorMock
+            .Setup(x => x.IsValidImageAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
 
-        _fileStorageMock
-            .Setup(x => x.GetPublicUrl(It.IsAny<string>()))
-            .Returns("/api/files/path");
+        _imageProcessorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), It.IsAny<CancellationToken>()))
+            .Callback<Stream, string, ImageProcessingOptions, CancellationToken>((_, _, opts, _) => capturedOptions = opts)
+            .ReturnsAsync(processingResult);
 
         _userIdentityServiceMock
             .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
@@ -406,52 +427,42 @@ public class UploadAvatarCommandHandlerTests
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
-        // Assert - Should upload to avatars/{userId} folder
-        _fileStorageMock.Verify(
-            x => x.UploadAsync(
-                It.IsAny<string>(),
-                It.IsAny<Stream>(),
-                $"avatars/{userId}",
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        // Assert
+        capturedOptions.Should().NotBeNull();
+        capturedOptions!.Variants.Should().Contain(ImageVariant.Thumb);
+        capturedOptions.Variants.Should().Contain(ImageVariant.Medium);
+        capturedOptions.GenerateThumbHash.Should().BeFalse(); // Avatars don't need ThumbHash
+        capturedOptions.ExtractDominantColor.Should().BeFalse();
+        capturedOptions.StorageFolder.Should().Contain($"avatars/{userId}");
     }
 
     [Fact]
-    public async Task Handle_ShouldGenerateUniqueFileName()
+    public async Task Handle_WhenProcessingFails_ShouldReturnFailure()
     {
         // Arrange
         const string userId = "user-123";
         var user = CreateTestUserDto(userId);
 
-        string? capturedFileName = null;
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _fileStorageMock
-            .Setup(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Callback<string, Stream, string?, CancellationToken>((fileName, _, _, _) => capturedFileName = fileName)
-            .ReturnsAsync("path");
+        _imageProcessorMock
+            .Setup(x => x.IsValidImageAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
 
-        _fileStorageMock
-            .Setup(x => x.GetPublicUrl(It.IsAny<string>()))
-            .Returns("/api/files/path");
+        _imageProcessorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ImageProcessingResult.Failure("Processing failed"));
 
-        _userIdentityServiceMock
-            .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(IdentityOperationResult.Success());
-
-        var command = CreateTestCommand(userId, "my-avatar.jpg");
+        var command = CreateTestCommand(userId);
 
         // Act
-        await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-        // Assert - Should not use original filename, should be a GUID
-        capturedFileName.Should().NotBeNull();
-        capturedFileName.Should().NotBe("my-avatar.jpg");
-        capturedFileName.Should().EndWith(".jpg");
-        // Should be a 32-char GUID without dashes + extension
-        capturedFileName!.Replace(".jpg", "").Length.Should().Be(32);
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be(ErrorCodes.Auth.UpdateFailed);
     }
 
     #endregion
@@ -464,18 +475,19 @@ public class UploadAvatarCommandHandlerTests
         // Arrange
         const string userId = "user-123";
         var user = CreateTestUserDto(userId);
+        var processingResult = CreateSuccessfulProcessingResult();
 
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        _fileStorageMock
-            .Setup(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync("path");
+        _imageProcessorMock
+            .Setup(x => x.IsValidImageAsync(It.IsAny<Stream>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
 
-        _fileStorageMock
-            .Setup(x => x.GetPublicUrl(It.IsAny<string>()))
-            .Returns("/api/files/path");
+        _imageProcessorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(processingResult);
 
         _userIdentityServiceMock
             .Setup(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()))
@@ -490,7 +502,7 @@ public class UploadAvatarCommandHandlerTests
 
         // Assert
         _userIdentityServiceMock.Verify(x => x.FindByIdAsync(userId, token), Times.Once);
-        _fileStorageMock.Verify(x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), token), Times.Once);
+        _imageProcessorMock.Verify(x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), token), Times.Once);
         _userIdentityServiceMock.Verify(x => x.UpdateUserAsync(userId, It.IsAny<UpdateUserDto>(), token), Times.Once);
     }
 

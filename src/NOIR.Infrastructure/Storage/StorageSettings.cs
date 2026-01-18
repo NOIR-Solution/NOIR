@@ -47,4 +47,11 @@ public class StorageSettings
     /// AWS S3 region (e.g., "us-east-1", "eu-west-1").
     /// </summary>
     public string? S3Region { get; set; }
+
+    /// <summary>
+    /// URL prefix for serving media files (e.g., "/media", "/cdn").
+    /// Used to generate public URLs for uploaded files.
+    /// Default: "/media"
+    /// </summary>
+    public string MediaUrlPrefix { get; set; } = "/media";
 }

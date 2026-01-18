@@ -22,9 +22,27 @@
     "accountSettings": "Account Settings",
     "menu": "Menu",
     "admin": "Administration",
+    "content": "Content",
     "configuration": "Configuration",
     "accessControl": "Access Control",
     "monitoring": "Monitoring"
+  },
+  "blog": {
+    "posts": "Blog Posts",
+    "categories": "Categories",
+    "tags": "Tags",
+    "newPost": "New Post",
+    "newCategory": "New Category",
+    "newTag": "New Tag",
+    "allPosts": "All Posts",
+    "allCategories": "All Categories",
+    "allTags": "All Tags",
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "scheduled": "Scheduled",
+      "archived": "Archived"
+    }
   },
   "tenants": {
     "title": "Tenants",

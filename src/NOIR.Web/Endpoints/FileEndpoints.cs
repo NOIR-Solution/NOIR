@@ -1,14 +1,22 @@
 namespace NOIR.Web.Endpoints;
 
 /// <summary>
-/// Endpoints for serving uploaded files (avatars, etc.)
+/// Endpoints for serving uploaded media files (avatars, blog images, etc.)
+/// Route is configurable via Storage:MediaUrlPrefix setting (default: /media)
 /// </summary>
 public static class FileEndpoints
 {
     public static void MapFileEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/files")
-            .WithTags("Files");
+        // Get media URL prefix from settings (default: /media)
+        var storageSettings = app.Configuration
+            .GetSection(StorageSettings.SectionName)
+            .Get<StorageSettings>() ?? new StorageSettings();
+
+        var mediaPrefix = storageSettings.MediaUrlPrefix.TrimStart('/');
+
+        var group = app.MapGroup($"/{mediaPrefix}")
+            .WithTags("Media Files");
 
         // Serve files from storage (publicly accessible)
         group.MapGet("/{*path}", async (
@@ -18,7 +26,7 @@ public static class FileEndpoints
             CancellationToken cancellationToken) =>
         {
             // Security: Only allow specific folders to be served publicly
-            var allowedPrefixes = new[] { "avatars/" };
+            var allowedPrefixes = new[] { "avatars/", "blog/", "content/", "images/" };
             if (!allowedPrefixes.Any(p => path.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
             {
                 return Results.NotFound();
@@ -45,18 +53,21 @@ public static class FileEndpoints
                 ".png" => "image/png",
                 ".gif" => "image/gif",
                 ".webp" => "image/webp",
+                ".avif" => "image/avif",
                 ".svg" => "image/svg+xml",
+                ".heic" => "image/heic",
+                ".heif" => "image/heif",
                 _ => "application/octet-stream"
             };
 
-            // Set cache headers for images (1 year since avatars have unique GUIDs)
+            // Set cache headers for images (1 year since files have unique slugs/GUIDs)
             context.Response.Headers.Append("Cache-Control", "public, max-age=31536000, immutable");
 
             return Results.File(stream, contentType);
         })
-        .WithName("GetFile")
-        .WithSummary("Get uploaded file")
-        .WithDescription("Serves publicly accessible uploaded files like avatars.")
+        .WithName("GetMediaFile")
+        .WithSummary("Get uploaded media file")
+        .WithDescription("Serves publicly accessible uploaded files like avatars and blog images.")
         .Produces(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
     }

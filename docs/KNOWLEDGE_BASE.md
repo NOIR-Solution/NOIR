@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-17
-**Version:** 1.7
+**Last Updated:** 2026-01-18
+**Version:** 1.8
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -123,6 +123,14 @@ Domain ← Application ← Infrastructure ← Web
 | `Notification` | `Entities/Notification.cs` | [Notifications Feature](#notifications-feature) |
 | `NotificationPreference` | `Entities/NotificationPreference.cs` | User notification settings |
 | `EmailTemplate` | `Entities/EmailTemplate.cs` | [Email Templates Feature](#emailtemplates-feature) |
+
+#### Blog Entities
+
+| Entity | Path | Related To |
+|--------|------|------------|
+| `Post` | `Entities/Post.cs` | [Blog Feature](#blog-feature-cms) |
+| `PostCategory` | `Entities/PostCategory.cs` | [Blog Feature](#blog-feature-cms) |
+| `PostTag` | `Entities/PostTag.cs` | [Blog Feature](#blog-feature-cms) |
 
 #### Authentication Entities
 
@@ -265,6 +273,46 @@ Domain ← Application ← Infrastructure ← Web
 
 **Related:** [TenantEndpoints](#tenant-endpoints)
 
+#### Blog Feature (CMS)
+**Path:** `Features/Blog/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreatePostCommand` | `Commands/CreatePost/` |
+| Command | `UpdatePostCommand` | `Commands/UpdatePost/` |
+| Command | `DeletePostCommand` | `Commands/DeletePost/` |
+| Command | `PublishPostCommand` | `Commands/PublishPost/` |
+| Command | `CreateCategoryCommand` | `Commands/CreateCategory/` |
+| Command | `UpdateCategoryCommand` | `Commands/UpdateCategory/` |
+| Command | `DeleteCategoryCommand` | `Commands/DeleteCategory/` |
+| Command | `CreateTagCommand` | `Commands/CreateTag/` |
+| Command | `UpdateTagCommand` | `Commands/UpdateTag/` |
+| Command | `DeleteTagCommand` | `Commands/DeleteTag/` |
+| Query | `GetPostsQuery` | `Queries/GetPosts/` |
+| Query | `GetPostQuery` | `Queries/GetPost/` |
+| Query | `GetCategoriesQuery` | `Queries/GetCategories/` |
+| Query | `GetTagsQuery` | `Queries/GetTags/` |
+| DTO | `PostListDto`, `PostDetailDto`, `PostCategoryDto`, `PostTagDto` | `DTOs/BlogDtos.cs` |
+| Spec | `PostSpecifications`, `CategorySpecifications`, `TagSpecifications` | `Specifications/` |
+
+**Related:** [BlogEndpoints](#blog-endpoints), [Blog Pages](#blog-pages)
+
+**Domain Entities:**
+- `Post` - Blog post with title, slug, content, excerpt, featured image, SEO metadata
+- `PostCategory` - Hierarchical categories with slug and sort order
+- `PostTag` - Tags with optional color for visual distinction
+
+#### DeveloperLogs Feature
+**Path:** `Features/DeveloperLogs/`
+
+| Type | Name | Path |
+|------|------|------|
+| DTO | `LogEntryDto` | `DTOs/LogEntryDto.cs` |
+
+**Note:** Developer logs are streamed via SignalR hub, not traditional API endpoints.
+
+**Related:** [DeveloperLogEndpoints](#developer-log-endpoints), [Developer Logs Page](#developer-logs-page)
+
 #### Audit Feature
 **Path:** `Features/Audit/`
 
@@ -319,6 +367,7 @@ public class ActiveUsersSpec : Specification<User>
 | `ITokenService` | `TokenService` | JWT generation |
 | `IEmailService` | `EmailService` | Email sending |
 | `IFileStorage` | `FileStorageService` | File operations |
+| `IImageProcessor` | `ImageProcessorService` | Image processing and variants |
 | `IDateTime` | `DateTimeService` | Testable date/time |
 | `IDiffService` | `JsonDiffService` | Entity change diffs |
 
@@ -423,11 +472,35 @@ public class LoginCommandHandler
 |---------|-----------|----------|
 | `EmailService` | `IEmailService` | Scoped |
 | `FileStorageService` | `IFileStorage` | Scoped |
+| `ImageProcessorService` | `IImageProcessor` | Scoped |
 | `DateTimeService` | `IDateTime` | Scoped |
 | `CurrentUserService` | `ICurrentUser` | Scoped |
 | `JsonDiffService` | `IDiffService` | Scoped |
 | `DeviceFingerprintService` | `IDeviceFingerprintService` | Scoped |
 | `BackgroundJobsService` | `IBackgroundJobsService` | Scoped |
+| `CacheInvalidationService` | `ICacheInvalidationService` | Scoped |
+
+### Media Processing
+
+**Path:** `Media/`
+
+| Component | Purpose |
+|-----------|---------|
+| `ImageProcessorService` | Main image processor using ImageSharp |
+| `ThumbHashGenerator` | Generates ThumbHash blur placeholders |
+| `ColorAnalyzer` | Extracts dominant color from images |
+| `SrcsetGenerator` | Generates responsive srcset markup |
+| `SlugGenerator` | Creates SEO-friendly filenames |
+
+**Processing Pipeline:**
+1. Validate image format (JPEG, PNG, GIF, WebP, AVIF, HEIC)
+2. Auto-rotate based on EXIF orientation
+3. Generate variants in parallel (Thumb 150px, ExtraLarge 1920px)
+4. Encode to WebP format
+5. Generate ThumbHash for blur placeholder
+6. Save to storage and return absolute URLs
+
+**Configuration:** `ImageProcessingSettings` in `appsettings.json`
 
 ---
 
@@ -490,6 +563,37 @@ public class LoginCommandHandler
 | GET | `/` | `GetAllPermissionsQuery` |
 | GET | `/templates` | `GetPermissionTemplatesQuery` |
 
+#### Blog Endpoints
+**Path:** `Endpoints/BlogEndpoints.cs`
+**Prefix:** `/api/blog`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/posts` | `GetPostsQuery` |
+| GET | `/posts/{id}` | `GetPostQuery` |
+| POST | `/posts` | `CreatePostCommand` |
+| PUT | `/posts/{id}` | `UpdatePostCommand` |
+| DELETE | `/posts/{id}` | `DeletePostCommand` |
+| POST | `/posts/{id}/publish` | `PublishPostCommand` |
+| GET | `/categories` | `GetCategoriesQuery` |
+| POST | `/categories` | `CreateCategoryCommand` |
+| PUT | `/categories/{id}` | `UpdateCategoryCommand` |
+| DELETE | `/categories/{id}` | `DeleteCategoryCommand` |
+| GET | `/tags` | `GetTagsQuery` |
+| POST | `/tags` | `CreateTagCommand` |
+| PUT | `/tags/{id}` | `UpdateTagCommand` |
+| DELETE | `/tags/{id}` | `DeleteTagCommand` |
+
+#### Developer Log Endpoints
+**Path:** `Endpoints/DeveloperLogEndpoints.cs`
+**Prefix:** `/api/developer-logs`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/stream` | SignalR hub connection for real-time log streaming |
+
+**Note:** Logs are streamed via SignalR for real-time monitoring.
+
 #### File Endpoints
 **Path:** `Endpoints/FileEndpoints.cs`
 **Prefix:** `/api/files`
@@ -499,6 +603,20 @@ public class LoginCommandHandler
 | POST | `/upload` | Upload file |
 | GET | `/{id}` | Download file |
 | DELETE | `/{id}` | Delete file |
+
+#### Media Endpoints
+**Path:** `Endpoints/MediaEndpoints.cs`
+**Prefix:** `/api/media`
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| POST | `/upload` | Upload and process image with variants |
+
+**Query Parameters:**
+- `folder`: Target folder (blog, content, avatars)
+- `entityId`: Optional entity ID for avatar storage
+
+**Response:** `MediaUploadResultDto` with absolute URLs, ThumbHash, variants
 
 ### Middleware
 
@@ -848,4 +966,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-01-17 | Total Tests: 1,800+ | Features: 9 | Endpoints: 12 | Entities: 16*
+*Updated: 2026-01-18 | Total Tests: 2,050+ | Features: 11 | Endpoints: 14 | Entities: 19*

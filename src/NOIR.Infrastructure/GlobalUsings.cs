@@ -76,6 +76,9 @@ global using Wolverine;
 // Scrutor
 global using Scrutor;
 
+// FusionCache (Hybrid L1/L2 Caching)
+global using ZiggyCreatures.Caching.Fusion;
+
 // NOIR Application
 global using NOIR.Application.Common.Interfaces;
 global using NOIR.Application.Common.Models;
@@ -142,6 +145,8 @@ global using NOIR.Infrastructure.Persistence.Interceptors;
 global using NOIR.Infrastructure.Services;
 global using NOIR.Infrastructure.Storage;
 global using NOIR.Infrastructure.Localization;
+global using NOIR.Infrastructure.Caching;
+global using NOIR.Infrastructure.Media;
 
 // NOIR Domain Entities
 global using NOIR.Domain.Entities;

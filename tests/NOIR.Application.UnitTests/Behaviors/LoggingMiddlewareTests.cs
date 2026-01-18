@@ -83,67 +83,30 @@ public class LoggingMiddlewareTests
     #region After Method Tests
 
     [Fact]
-    public void After_ShouldLogInformation()
+    public void After_ShouldNotLog_LoggingMovedToFinally()
     {
-        // Arrange
-        var envelope = CreateEnvelope(new TestCommand("test-value"));
-        _sut.Before(_loggerMock.Object, envelope); // Start stopwatch
+        // After method no longer logs - HTTP response status determines success/failure
+        // All logging now happens in Finally method
 
-        // Act
-        _sut.After(_loggerMock.Object, envelope);
-
-        // Assert
-        _loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Handled")),
-                It.IsAny<Exception?>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public void After_ShouldLogSuccessfully()
-    {
         // Arrange
         var envelope = CreateEnvelope(new TestCommand("test-value"));
         _sut.Before(_loggerMock.Object, envelope);
 
-        // Act
-        _sut.After(_loggerMock.Object, envelope);
-
-        // Assert
-        _loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("successfully")),
-                It.IsAny<Exception?>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public void After_ShouldLogElapsedTime()
-    {
-        // Arrange
-        var envelope = CreateEnvelope(new TestCommand("test-value"));
-        _sut.Before(_loggerMock.Object, envelope);
-        Thread.Sleep(10); // Ensure some time passes
+        // Reset mock to clear Before's log call
+        _loggerMock.Invocations.Clear();
 
         // Act
         _sut.After(_loggerMock.Object, envelope);
 
-        // Assert
+        // Assert - After should NOT log anything
         _loggerMock.Verify(
             x => x.Log(
-                LogLevel.Information,
+                It.IsAny<LogLevel>(),
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("ms")),
+                It.IsAny<It.IsAnyType>(),
                 It.IsAny<Exception?>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+            Times.Never);
     }
 
     #endregion

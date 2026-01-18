@@ -63,6 +63,18 @@
 
         <!-- Password Hashing for OTP -->
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+
+        <!-- Hybrid Caching (L1 in-memory + optional L2 distributed) -->
+        <!-- FusionCache provides stampede protection, fail-safe, soft/hard timeouts -->
+        <PackageReference Include="ZiggyCreatures.FusionCache" Version="2.0.0" />
+        <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.0.0" />
+
+        <!-- Image Processing -->
+        <!-- ImageSharp for resize, crop, optimize. AVIF for modern format. ThumbHash for placeholders -->
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
+        <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.3" />
+        <PackageReference Include="NeoSolve.ImageSharp.AVIF" Version="1.3.0" />
+        <PackageReference Include="ThumbHash" Version="2.1.1" />
     </ItemGroup>
 
     <ItemGroup>

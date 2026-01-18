@@ -2,25 +2,30 @@ namespace NOIR.Application.Features.Auth.Commands.UploadAvatar;
 
 /// <summary>
 /// Handler for uploading user avatar.
-/// Uploads file to storage and updates user's AvatarUrl.
+/// Processes the image (resizes, optimizes) and updates user's AvatarUrl.
 /// </summary>
 public class UploadAvatarCommandHandler : IScopedService
 {
     private readonly IUserIdentityService _userIdentityService;
     private readonly IFileStorage _fileStorage;
+    private readonly IImageProcessor _imageProcessor;
     private readonly ILocalizationService _localization;
+    private readonly ILogger<UploadAvatarCommandHandler> _logger;
 
     private const string AvatarFolder = "avatars";
-    private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
 
     public UploadAvatarCommandHandler(
         IUserIdentityService userIdentityService,
         IFileStorage fileStorage,
-        ILocalizationService localization)
+        IImageProcessor imageProcessor,
+        ILocalizationService localization,
+        ILogger<UploadAvatarCommandHandler> logger)
     {
         _userIdentityService = userIdentityService;
         _fileStorage = fileStorage;
+        _imageProcessor = imageProcessor;
         _localization = localization;
+        _logger = logger;
     }
 
     public async Task<Result<AvatarUploadResultDto>> Handle(
@@ -42,9 +47,8 @@ public class UploadAvatarCommandHandler : IScopedService
                 Error.NotFound(_localization["auth.user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
-        // Validate file extension
-        var extension = Path.GetExtension(command.FileName).ToLowerInvariant();
-        if (!AllowedExtensions.Contains(extension))
+        // Validate it's a valid image
+        if (!await _imageProcessor.IsValidImageAsync(command.FileStream, command.FileName))
         {
             return Result.Failure<AvatarUploadResultDto>(
                 Error.Validation(
@@ -53,31 +57,67 @@ public class UploadAvatarCommandHandler : IScopedService
                     ErrorCodes.Validation.InvalidInput));
         }
 
-        // Delete old avatar if exists
-        if (!string.IsNullOrEmpty(user.AvatarUrl))
+        // Reset stream for processing
+        if (command.FileStream.CanSeek)
         {
-            // Convert public URL back to storage path (strip /api/files/ prefix)
-            var oldStoragePath = user.AvatarUrl.StartsWith("/api/files/", StringComparison.OrdinalIgnoreCase)
-                ? user.AvatarUrl["/api/files/".Length..]
-                : user.AvatarUrl;
-            await _fileStorage.DeleteAsync(oldStoragePath, cancellationToken);
+            command.FileStream.Position = 0;
         }
 
-        // Generate unique filename: avatars/{userId}/{guid}{extension}
-        var uniqueFileName = $"{Guid.NewGuid():N}{extension}";
-        var folder = $"{AvatarFolder}/{command.UserId}";
+        // Delete old avatar files if exists
+        if (!string.IsNullOrEmpty(user.AvatarUrl))
+        {
+            await DeleteOldAvatarFiles(user.AvatarUrl, command.UserId, cancellationToken);
+        }
 
-        // Upload file
-        var storagePath = await _fileStorage.UploadAsync(
-            uniqueFileName,
+        // Configure processing options for avatars
+        var storageFolder = $"{AvatarFolder}/{command.UserId}";
+        var options = new ImageProcessingOptions
+        {
+            // Avatars only need thumb (150px for lists) and medium (640px for profile)
+            Variants = [ImageVariant.Thumb, ImageVariant.Medium],
+            // Generate WebP + JPEG (no AVIF for faster processing)
+            Formats = [OutputFormat.WebP, OutputFormat.Jpeg],
+            // No placeholder needed for avatars
+            GenerateThumbHash = false,
+            ExtractDominantColor = false,
+            PreserveOriginal = false,
+            StorageFolder = storageFolder
+        };
+
+        // Process the image
+        var result = await _imageProcessor.ProcessAsync(
             command.FileStream,
-            folder,
+            command.FileName,
+            options,
             cancellationToken);
 
-        // Get public URL for storage
-        var publicUrl = _fileStorage.GetPublicUrl(storagePath) ?? storagePath;
+        if (!result.Success)
+        {
+            _logger.LogError("Avatar processing failed for user {UserId}: {Error}",
+                command.UserId, result.ErrorMessage);
 
-        // Update user's AvatarUrl with public URL
+            return Result.Failure<AvatarUploadResultDto>(
+                Error.Failure(
+                    ErrorCodes.Auth.UpdateFailed,
+                    result.ErrorMessage ?? _localization["profile.avatar.processingFailed"]));
+        }
+
+        // Get the medium WebP variant as the primary avatar URL
+        var avatarVariant = result.Variants
+            .Where(v => v.Variant == ImageVariant.Medium && v.Format == OutputFormat.WebP)
+            .FirstOrDefault()
+            ?? result.Variants.FirstOrDefault();
+
+        if (avatarVariant is null)
+        {
+            _logger.LogError("No avatar variant generated for user {UserId}", command.UserId);
+            return Result.Failure<AvatarUploadResultDto>(
+                Error.Failure(ErrorCodes.Auth.UpdateFailed, "Failed to generate avatar"));
+        }
+
+        var publicUrl = avatarVariant.Url ?? avatarVariant.Path;
+
+        // Update user's AvatarUrl
         var updateResult = await _userIdentityService.UpdateUserAsync(
             command.UserId,
             new UpdateUserDto(AvatarUrl: publicUrl),
@@ -85,8 +125,11 @@ public class UploadAvatarCommandHandler : IScopedService
 
         if (!updateResult.Succeeded)
         {
-            // Rollback: delete the uploaded file
-            await _fileStorage.DeleteAsync(storagePath, cancellationToken);
+            // Rollback: delete the uploaded files
+            foreach (var variant in result.Variants)
+            {
+                await _fileStorage.DeleteAsync(variant.Path, cancellationToken);
+            }
 
             return Result.Failure<AvatarUploadResultDto>(
                 Error.Failure(
@@ -94,8 +137,61 @@ public class UploadAvatarCommandHandler : IScopedService
                     string.Join(", ", updateResult.Errors ?? [])));
         }
 
+        _logger.LogInformation(
+            "Avatar uploaded for user {UserId}: {Slug} ({VariantCount} variants in {Ms}ms)",
+            command.UserId, result.Slug, result.Variants.Count, result.ProcessingTimeMs);
+
         return Result.Success(new AvatarUploadResultDto(
             publicUrl,
             _localization["profile.avatar.uploadSuccess"]));
+    }
+
+    /// <summary>
+    /// Delete old avatar files (all variants).
+    /// </summary>
+    private async Task DeleteOldAvatarFiles(string oldAvatarUrl, string userId, CancellationToken ct)
+    {
+        try
+        {
+            // Convert public URL back to storage path using file storage service
+            var basePath = _fileStorage.GetStoragePath(oldAvatarUrl) ?? oldAvatarUrl;
+
+            // Extract the slug from the path to find all variants
+            // Path format: avatars/{userId}/{slug}-{variant}.{format}
+            var fileName = Path.GetFileName(basePath);
+            var slugMatch = System.Text.RegularExpressions.Regex.Match(fileName, @"^(.+?)-(thumb|small|medium|large|extralarge|original)\.");
+
+            if (slugMatch.Success)
+            {
+                var slug = slugMatch.Groups[1].Value;
+                var folder = $"{AvatarFolder}/{userId}";
+
+                // Try to delete all possible variant files
+                var variants = new[] { "thumb", "small", "medium", "large", "extralarge", "original" };
+                var formats = new[] { "webp", "jpg", "avif", "png" };
+
+                foreach (var variant in variants)
+                {
+                    foreach (var format in formats)
+                    {
+                        var path = $"{folder}/{slug}-{variant}.{format}";
+                        if (await _fileStorage.ExistsAsync(path, ct))
+                        {
+                            await _fileStorage.DeleteAsync(path, ct);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Fallback: just delete the single file (old format)
+                await _fileStorage.DeleteAsync(basePath, ct);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to delete old avatar files for user {UserId}", userId);
+            // Don't fail the upload if cleanup fails
+        }
     }
 }

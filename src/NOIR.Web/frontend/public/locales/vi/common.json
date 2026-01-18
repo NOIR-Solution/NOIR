@@ -22,9 +22,27 @@
     "accountSettings": "Cài đặt tài khoản",
     "menu": "Thực đơn",
     "admin": "Quản trị",
+    "content": "Nội dung",
     "configuration": "Cấu hình",
     "accessControl": "Kiểm soát truy cập",
     "monitoring": "Giám sát"
+  },
+  "blog": {
+    "posts": "Bài viết Blog",
+    "categories": "Danh mục",
+    "tags": "Thẻ",
+    "newPost": "Bài viết mới",
+    "newCategory": "Danh mục mới",
+    "newTag": "Thẻ mới",
+    "allPosts": "Tất cả bài viết",
+    "allCategories": "Tất cả danh mục",
+    "allTags": "Tất cả thẻ",
+    "status": {
+      "draft": "Bản nháp",
+      "published": "Đã xuất bản",
+      "scheduled": "Đã lên lịch",
+      "archived": "Đã lưu trữ"
+    }
   },
   "tenants": {
     "title": "Tổ chức",
