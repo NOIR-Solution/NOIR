@@ -1,6 +1,6 @@
 # Project Index: NOIR
 
-**Generated:** 2026-01-18 (Updated)
+**Generated:** 2026-01-19
 **Type:** Enterprise .NET 10 + React SaaS Foundation
 **Architecture:** Clean Architecture, CQRS, DDD
 
@@ -16,7 +16,7 @@ dotnet run --project src/NOIR.Web
 # Frontend (separate terminal)
 cd src/NOIR.Web/frontend && npm install && npm run dev
 
-# Tests (2,050 tests)
+# Tests (3,500+ tests)
 dotnet test src/NOIR.sln
 
 # Admin Login: admin@noir.local / 123qwe
