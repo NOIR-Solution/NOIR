@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Tag, Plus, Pencil } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { Tag, Pencil } from 'lucide-react'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
@@ -46,12 +45,11 @@ interface TagDialogProps {
 }
 
 export function TagDialog({ open, onOpenChange, tag, onSuccess }: TagDialogProps) {
-  const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const isEdit = !!tag
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
     defaultValues: {
       name: '',
       slug: '',

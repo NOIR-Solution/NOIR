@@ -51,6 +51,7 @@ import {
   DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu'
 import { useAuthContext } from '@/contexts/AuthContext'
+import { getAvatarColor, getInitials } from '@/lib/gravatar'
 import { usePermissions, Permissions, type PermissionKey } from '@/hooks/usePermissions'
 import { useLanguage } from '@/i18n/useLanguage'
 import { languageFlags } from '@/i18n/languageFlags'
@@ -128,6 +129,8 @@ const isActivePath = (currentPathname: string, itemPath: string): boolean => {
 // User data type
 interface UserData {
   fullName?: string
+  firstName?: string | null
+  lastName?: string | null
   email?: string
   roles?: string[]
   avatarUrl?: string | null
@@ -145,7 +148,10 @@ interface UserProfileDropdownProps {
 function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) {
   const displayName = user?.fullName || 'User'
   const displayEmail = user?.email || 'user@example.com'
-  const initials = displayName.charAt(0).toUpperCase()
+  // Use same initials logic as ProfileAvatar for consistency
+  const initials = getInitials(user?.firstName ?? null, user?.lastName ?? null, displayEmail)
+  // Use email-based color for consistency with ProfileAvatar
+  const avatarColor = getAvatarColor(displayEmail)
   const avatarUrl = user?.avatarUrl
   const { currentLanguage, languages, changeLanguage } = useLanguage()
   const { logout, checkAuth } = useAuthContext()
@@ -180,11 +186,14 @@ function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) 
             'flex items-center gap-3 w-full',
             !isExpanded && 'justify-center'
           )}>
-            <div className={cn(
-              'h-10 w-10 rounded-full flex-shrink-0 transition-all overflow-hidden',
-              !avatarUrl && 'bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center text-sidebar-primary-foreground font-semibold text-sm',
-              isExpanded ? 'ring-2 ring-transparent group-hover:ring-4 group-hover:ring-sidebar-primary/20' : 'group-hover:ring-[6px] group-hover:ring-sidebar-primary/15'
-            )}>
+            <div
+              className={cn(
+                'h-10 w-10 rounded-full flex-shrink-0 transition-all overflow-hidden',
+                !avatarUrl && 'flex items-center justify-center text-white font-semibold text-sm',
+                isExpanded ? 'ring-2 ring-transparent group-hover:ring-4 group-hover:ring-sidebar-primary/20' : 'group-hover:ring-[6px] group-hover:ring-sidebar-primary/15'
+              )}
+              style={!avatarUrl ? { backgroundColor: avatarColor } : undefined}
+            >
               {avatarUrl ? (
                 <img
                   src={avatarUrl}

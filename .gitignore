@@ -267,3 +267,6 @@ test-*.jpeg
 # =============================================================================
 StyleCopReport.xml
 *.StyleCop
+
+# Auto Claude data directory
+.auto-claude/

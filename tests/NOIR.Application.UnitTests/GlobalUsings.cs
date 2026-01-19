@@ -14,8 +14,10 @@ global using System.Linq;
 global using System.Linq.Expressions;
 global using System.Net;
 global using System.Security.Claims;
+global using System.Security.Cryptography;
 global using System.Security.Principal;
 global using System.Text;
+global using System.Text.Json;
 global using System.Threading;
 global using System.Threading.Tasks;
 
@@ -32,6 +34,7 @@ global using Microsoft.EntityFrameworkCore.Diagnostics;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 global using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
+global using Microsoft.EntityFrameworkCore.Query;
 
 // Microsoft - Extensions
 global using Microsoft.Extensions.Caching.Memory;
@@ -83,6 +86,11 @@ global using NOIR.Application.Features.Auth.Commands.ChangePassword;
 global using NOIR.Application.Features.Auth.Commands.RevokeSession;
 global using NOIR.Application.Features.Auth.Commands.UploadAvatar;
 global using NOIR.Application.Features.Auth.Commands.DeleteAvatar;
+global using NOIR.Application.Features.Auth.Commands.ChangeEmail;
+global using NOIR.Application.Features.Auth.Commands.PasswordReset.RequestPasswordReset;
+global using NOIR.Application.Features.Auth.Commands.PasswordReset.VerifyPasswordResetOtp;
+global using NOIR.Application.Features.Auth.Commands.PasswordReset.ResendPasswordResetOtp;
+global using NOIR.Application.Features.Auth.Commands.PasswordReset.ResetPassword;
 global using NOIR.Application.Features.Auth.DTOs;
 global using NOIR.Application.Features.Auth.Queries.GetCurrentUser;
 global using NOIR.Application.Specifications;
@@ -101,6 +109,7 @@ global using NOIR.Infrastructure.Email;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Identity.Authorization;
 global using NOIR.Infrastructure.Localization;
+global using NOIR.Infrastructure.Media;
 global using NOIR.Infrastructure.Persistence;
 global using NOIR.Infrastructure.Persistence.Conventions;
 global using NOIR.Infrastructure.Persistence.Interceptors;
@@ -124,8 +133,10 @@ global using NOIR.Application.Features.Roles.Queries.GetRoleById;
 global using NOIR.Application.Features.Roles.DTOs;
 
 // NOIR Application - Users
+global using NOIR.Application.Features.Users.Commands.CreateUser;
 global using NOIR.Application.Features.Users.Commands.UpdateUser;
 global using NOIR.Application.Features.Users.Commands.DeleteUser;
+global using NOIR.Application.Features.Users.Commands.LockUser;
 global using NOIR.Application.Features.Users.Commands.AssignRoles;
 global using NOIR.Application.Features.Users.Queries.GetUsers;
 global using NOIR.Application.Features.Users.Queries.GetUserRoles;
@@ -134,6 +145,8 @@ global using NOIR.Application.Features.Users.DTOs;
 // NOIR Application - Permissions
 global using NOIR.Application.Features.Permissions.Commands.AssignToRole;
 global using NOIR.Application.Features.Permissions.Commands.RemoveFromRole;
+global using NOIR.Application.Features.Permissions.Queries.GetAllPermissions;
+global using NOIR.Application.Features.Permissions.Queries.GetPermissionTemplates;
 global using NOIR.Application.Features.Permissions.Queries.GetRolePermissions;
 global using NOIR.Application.Features.Permissions.Queries.GetUserPermissions;
 
@@ -146,3 +159,12 @@ global using NOIR.Application.Features.Notifications.DTOs;
 global using NOIR.Application.Features.Notifications.Queries.GetNotifications;
 global using NOIR.Application.Features.Notifications.Queries.GetPreferences;
 global using NOIR.Application.Features.Notifications.Queries.GetUnreadCount;
+
+// NOIR Application - Blog
+global using NOIR.Application.Features.Blog.DTOs;
+
+// NOIR Application - Developer Logs
+global using NOIR.Application.Features.DeveloperLogs.DTOs;
+
+// NOIR Infrastructure - Logging
+global using NOIR.Infrastructure.Logging;

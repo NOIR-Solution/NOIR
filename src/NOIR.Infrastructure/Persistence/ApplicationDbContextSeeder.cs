@@ -290,23 +290,83 @@ public static class ApplicationDbContextSeeder
 
     internal static async Task SeedEmailTemplatesAsync(ApplicationDbContext context, ILogger logger)
     {
-        // Email templates are platform-level (TenantId = null) shared across all tenants.
-        // Tenants can create their own templates to override platform defaults.
-        var existingNames = await context.Set<EmailTemplate>()
+        // Email templates support two levels:
+        // 1. Platform-level (TenantId = null) - shared defaults across all tenants
+        // 2. Tenant-level (TenantId = current) - tenant-specific overrides
+        //
+        // Smart upsert logic per tenant context:
+        // 1. If template doesn't exist for current context → Add it
+        // 2. If template exists AND Version = 1 → Update it (user never modified it)
+        // 3. If template exists AND Version > 1 → Skip it (user customized, respect their changes)
+        //
+        // Note: The seeder runs within the current tenant context, so templates
+        // are created at the tenant level (not platform level) when a tenant is active.
+
+        var currentTenantId = context.TenantInfo?.Id;
+
+        // Get templates for the current context (platform or tenant)
+        var existingTemplates = await context.Set<EmailTemplate>()
             .IgnoreQueryFilters()
-            .Select(t => t.Name)
+            .Where(t => t.TenantId == currentTenantId && !t.IsDeleted)
             .ToListAsync();
 
-        var templatesToSeed = GetEmailTemplateDefinitions()
-            .Where(t => !existingNames.Contains(t.Name))
-            .ToList();
+        var templateDefinitions = GetEmailTemplateDefinitions();
+        var addedCount = 0;
+        var updatedCount = 0;
+        var skippedCount = 0;
 
-        if (templatesToSeed.Count > 0)
+        foreach (var definition in templateDefinitions)
         {
-            await context.Set<EmailTemplate>().AddRangeAsync(templatesToSeed);
-            await context.SaveChangesAsync();
-            logger.LogInformation("Seeded {Count} email templates", templatesToSeed.Count);
+            var existing = existingTemplates.FirstOrDefault(t => t.Name == definition.Name);
+
+            if (existing == null)
+            {
+                // Template doesn't exist for current context - add it
+                // Note: TenantId will be auto-set by EF Core based on current context
+                await context.Set<EmailTemplate>().AddAsync(definition);
+                addedCount++;
+            }
+            else if (existing.Version == 1)
+            {
+                // Template exists but was never modified by user - update it
+                existing.Update(
+                    definition.Subject,
+                    definition.HtmlBody,
+                    definition.PlainTextBody,
+                    definition.Description,
+                    definition.AvailableVariables);
+
+                // Reset version back to 1 since this is a seed update, not a user update
+                ResetTemplateVersion(existing);
+                updatedCount++;
+            }
+            else
+            {
+                // Template was customized by user (Version > 1) - skip it
+                skippedCount++;
+                logger.LogDebug(
+                    "Skipping email template '{TemplateName}' - user customized (Version={Version})",
+                    existing.Name, existing.Version);
+            }
         }
+
+        if (addedCount > 0 || updatedCount > 0)
+        {
+            await context.SaveChangesAsync();
+            logger.LogInformation(
+                "Email templates (TenantId={TenantId}): {Added} added, {Updated} updated, {Skipped} skipped (user customized)",
+                currentTenantId ?? "platform", addedCount, updatedCount, skippedCount);
+        }
+    }
+
+    /// <summary>
+    /// Resets template version back to 1 after a seed update.
+    /// Uses reflection since Version property has private setter.
+    /// </summary>
+    private static void ResetTemplateVersion(EmailTemplate template)
+    {
+        var versionProperty = typeof(EmailTemplate).GetProperty("Version");
+        versionProperty?.SetValue(template, 1);
     }
 
     /// <summary>
@@ -589,6 +649,15 @@ public static class ApplicationDbContextSeeder
             description: "Email sent when user requests password reset with OTP code.",
             availableVariables: "[\"UserName\", \"OtpCode\", \"ExpiryMinutes\"]"));
 
+        // Email Change OTP
+        templates.Add(EmailTemplate.Create(
+            name: "EmailChangeOtp",
+            subject: "Email Change Verification Code: {{OtpCode}}",
+            htmlBody: GetEmailChangeOtpHtmlBody(),
+            plainTextBody: GetEmailChangeOtpPlainTextBody(),
+            description: "Email sent when user requests to change their email address with OTP code.",
+            availableVariables: "[\"UserName\", \"OtpCode\", \"ExpiryMinutes\"]"));
+
         // Welcome Email (used when admin creates user)
         templates.Add(EmailTemplate.Create(
             name: "WelcomeEmail",
@@ -642,6 +711,49 @@ public static class ApplicationDbContextSeeder
         This code will expire in {{ExpiryMinutes}} minutes.
 
         If you did not request a password reset, please ignore this email.
+
+        © 2024 NOIR
+        """;
+
+    private static string GetEmailChangeOtpHtmlBody() => """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Email Change Verification</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="color: white; margin: 0;">NOIR</h1>
+            </div>
+            <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
+                <h2 style="color: #1e40af;">Hello {{UserName}},</h2>
+                <p>You have requested to change your email address. Use the OTP code below to verify your new email:</p>
+                <div style="background: #1e40af; color: white; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 8px; border-radius: 8px; margin: 20px 0;">
+                    {{OtpCode}}
+                </div>
+                <p style="color: #6b7280; font-size: 14px;">This code will expire in <strong>{{ExpiryMinutes}} minutes</strong>.</p>
+                <p style="color: #6b7280; font-size: 14px;">If you did not request an email change, please ignore this email and your email address will remain unchanged.</p>
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+                <p style="color: #9ca3af; font-size: 12px; text-align: center;">© 2024 NOIR. All rights reserved.</p>
+            </div>
+        </body>
+        </html>
+        """;
+
+    private static string GetEmailChangeOtpPlainTextBody() => """
+        NOIR - Email Change Verification
+
+        Hello {{UserName}},
+
+        You have requested to change your email address. Use the OTP code below to verify your new email:
+
+        OTP Code: {{OtpCode}}
+
+        This code will expire in {{ExpiryMinutes}} minutes.
+
+        If you did not request an email change, please ignore this email and your email address will remain unchanged.
 
         © 2024 NOIR
         """;

@@ -39,12 +39,6 @@ public class ImageProcessingSettings
     public int ThumbSize { get; set; } = 150;
 
     /// <summary>
-    /// Maximum dimension for small variant. Default: 320px.
-    /// </summary>
-    [Range(100, 640, ErrorMessage = "SmallSize must be between 100 and 640")]
-    public int SmallSize { get; set; } = 320;
-
-    /// <summary>
     /// Maximum dimension for medium variant. Default: 640px.
     /// </summary>
     [Range(320, 1280, ErrorMessage = "MediumSize must be between 320 and 1280")]
@@ -55,18 +49,6 @@ public class ImageProcessingSettings
     /// </summary>
     [Range(640, 2560, ErrorMessage = "LargeSize must be between 640 and 2560")]
     public int LargeSize { get; set; } = 1280;
-
-    /// <summary>
-    /// Maximum dimension for extra large variant. Default: 1920px.
-    /// </summary>
-    [Range(1280, 3840, ErrorMessage = "ExtraLargeSize must be between 1280 and 3840")]
-    public int ExtraLargeSize { get; set; } = 1920;
-
-    /// <summary>
-    /// Maximum dimension for original preservation. Default: 2560px.
-    /// </summary>
-    [Range(1920, 7680, ErrorMessage = "OriginalMaxSize must be between 1920 and 7680")]
-    public int OriginalMaxSize { get; set; } = 2560;
 
     /// <summary>
     /// Generate AVIF format. Default: false (slow encoding).
@@ -93,10 +75,6 @@ public class ImageProcessingSettings
     /// </summary>
     public bool ExtractDominantColor { get; set; } = false;
 
-    /// <summary>
-    /// Preserve original image (resized to OriginalMaxSize if larger). Default: true.
-    /// </summary>
-    public bool PreserveOriginal { get; set; } = true;
 
     /// <summary>
     /// Strip EXIF metadata for privacy. Default: true.
@@ -153,11 +131,8 @@ public class ImageProcessingSettings
     public int GetVariantSize(ImageVariant variant) => variant switch
     {
         ImageVariant.Thumb => ThumbSize,
-        ImageVariant.Small => SmallSize,
         ImageVariant.Medium => MediumSize,
         ImageVariant.Large => LargeSize,
-        ImageVariant.ExtraLarge => ExtraLargeSize,
-        ImageVariant.Original => OriginalMaxSize,
         _ => MediumSize
     };
 

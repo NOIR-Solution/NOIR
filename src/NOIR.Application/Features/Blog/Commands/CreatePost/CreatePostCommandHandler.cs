@@ -58,8 +58,12 @@ public class CreatePostCommandHandler
             command.ContentJson,
             command.ContentHtml);
 
-        // Update featured image
-        if (!string.IsNullOrWhiteSpace(command.FeaturedImageUrl))
+        // Update featured image (prefer MediaFile reference over URL)
+        if (command.FeaturedImageId.HasValue)
+        {
+            post.SetFeaturedImage(command.FeaturedImageId.Value, command.FeaturedImageAlt);
+        }
+        else if (!string.IsNullOrWhiteSpace(command.FeaturedImageUrl))
         {
             post.UpdateFeaturedImage(command.FeaturedImageUrl, command.FeaturedImageAlt);
         }
@@ -95,12 +99,13 @@ public class CreatePostCommandHandler
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Return DTO
-        return Result.Success(MapToDto(post, null, null, []));
+        // Return DTO (use command.FeaturedImageUrl since FeaturedImage isn't loaded)
+        return Result.Success(MapToDto(post, command.FeaturedImageUrl, null, null, []));
     }
 
     private static PostDto MapToDto(
         Post post,
+        string? featuredImageUrl,
         string? categoryName,
         string? authorName,
         List<PostTagDto> tags)
@@ -112,7 +117,8 @@ public class CreatePostCommandHandler
             post.Excerpt,
             post.ContentJson,
             post.ContentHtml,
-            post.FeaturedImageUrl,
+            post.FeaturedImageId,
+            featuredImageUrl ?? post.FeaturedImageUrl,
             post.FeaturedImageAlt,
             post.Status,
             post.PublishedAt,

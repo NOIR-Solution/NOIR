@@ -120,6 +120,8 @@ global using NOIR.Application.Specifications.TenantSettings;
 global using NOIR.Application.Specifications.UserTenantMemberships;
 global using NOIR.Application.Features.EmailTemplates.Specifications;
 global using NOIR.Application.Features.DeveloperLogs.DTOs;
+global using NOIR.Application.Features.Blog.DTOs;
+global using NOIR.Application.Features.Blog.Queries.GetPost;
 
 // NOIR Domain
 global using NOIR.Domain.Common;

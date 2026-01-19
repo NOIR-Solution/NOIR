@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import { FileText, ArrowLeft, Save, Send } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { FileText, ArrowLeft, Save, Send, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Editor } from '@tinymce/tinymce-react'
@@ -57,6 +56,7 @@ import {
 } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { getPostById, createPost, updatePost, publishPost } from '@/services/blog'
+import { uploadMedia } from '@/services/media'
 import { useCategories, useTags } from '@/hooks/useBlog'
 import { ApiError } from '@/services/apiClient'
 import type { Post, CreatePostRequest } from '@/types'
@@ -71,14 +71,14 @@ const formSchema = z.object({
   metaDescription: z.string().max(160, 'Meta description should be under 160 characters').optional(),
   canonicalUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   allowIndexing: z.boolean().default(true),
+  featuredImageId: z.string().optional(),
   featuredImageUrl: z.string().optional(),
   featuredImageAlt: z.string().max(200, 'Alt text cannot exceed 200 characters').optional(),
 })
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.output<typeof formSchema>
 
 export default function PostEditorPage() {
-  const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const isEdit = !!id
@@ -88,14 +88,16 @@ export default function PostEditorPage() {
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [publishing, setPublishing] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [post, setPost] = useState<Post | null>(null)
   const [contentHtml, setContentHtml] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data: categories } = useCategories()
   const { data: tags } = useTags()
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
     defaultValues: {
       title: '',
       slug: '',
@@ -106,6 +108,7 @@ export default function PostEditorPage() {
       metaDescription: '',
       canonicalUrl: '',
       allowIndexing: true,
+      featuredImageId: '',
       featuredImageUrl: '',
       featuredImageAlt: '',
     },
@@ -128,6 +131,7 @@ export default function PostEditorPage() {
             metaDescription: data.metaDescription || '',
             canonicalUrl: data.canonicalUrl || '',
             allowIndexing: data.allowIndexing,
+            featuredImageId: data.featuredImageId || '',
             featuredImageUrl: data.featuredImageUrl || '',
             featuredImageAlt: data.featuredImageAlt || '',
           })
@@ -177,6 +181,7 @@ export default function PostEditorPage() {
         metaDescription: values.metaDescription || undefined,
         canonicalUrl: values.canonicalUrl || undefined,
         allowIndexing: values.allowIndexing,
+        featuredImageId: values.featuredImageId || undefined,
         featuredImageUrl: values.featuredImageUrl || undefined,
         featuredImageAlt: values.featuredImageAlt || undefined,
       }
@@ -208,6 +213,51 @@ export default function PostEditorPage() {
 
   const onSubmit = (values: FormValues) => handleSave(values, false)
   const onPublish = () => handleSave(form.getValues(), true)
+
+  // Handle featured image upload
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file')
+      return
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image must be less than 10MB')
+      return
+    }
+
+    setUploadingImage(true)
+    try {
+      const result = await uploadMedia(file, 'blog')
+      if (result.success && result.mediaFileId) {
+        form.setValue('featuredImageId', result.mediaFileId)
+        form.setValue('featuredImageUrl', result.defaultUrl || result.location || '')
+        toast.success('Image uploaded successfully')
+      } else {
+        toast.error(result.error || 'Failed to upload image')
+      }
+    } catch (err) {
+      toast.error('Failed to upload image')
+    } finally {
+      setUploadingImage(false)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  // Clear featured image
+  const handleClearImage = () => {
+    form.setValue('featuredImageId', '')
+    form.setValue('featuredImageUrl', '')
+    form.setValue('featuredImageAlt', '')
+  }
 
   if (loading) {
     return (
@@ -510,19 +560,68 @@ export default function PostEditorPage() {
                   <CardTitle>Featured Image</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="featuredImageUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Image URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                  {/* Upload button and preview */}
+                  <div className="space-y-3">
+                    {uploadingImage ? (
+                      <div className="border-2 border-dashed border-primary/50 rounded-lg p-8 text-center bg-primary/5">
+                        <Loader2 className="h-10 w-10 mx-auto text-primary mb-3 animate-spin" />
+                        <p className="text-sm font-medium text-primary">Uploading image...</p>
+                        <p className="text-xs text-muted-foreground mt-1">Please wait while we process your image</p>
+                      </div>
+                    ) : form.watch('featuredImageUrl') ? (
+                      <div className="relative rounded-md overflow-hidden border">
+                        <img
+                          src={form.watch('featuredImageUrl')}
+                          alt={form.watch('featuredImageAlt') || 'Featured image preview'}
+                          className="w-full h-auto"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-8 w-8"
+                          onClick={handleClearImage}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div
+                        className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <ImageIcon className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                        <p className="text-sm font-medium">Click to upload featured image</p>
+                        <p className="text-xs text-muted-foreground mt-1">JPG, PNG, GIF, WebP up to 10MB</p>
+                      </div>
                     )}
-                  />
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                    />
+
+                    {form.watch('featuredImageUrl') && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadingImage}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        {uploadingImage ? 'Uploading...' : 'Replace Image'}
+                      </Button>
+                    )}
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -537,19 +636,6 @@ export default function PostEditorPage() {
                       </FormItem>
                     )}
                   />
-
-                  {form.watch('featuredImageUrl') && (
-                    <div className="mt-2 rounded-md overflow-hidden border">
-                      <img
-                        src={form.watch('featuredImageUrl')}
-                        alt={form.watch('featuredImageAlt') || 'Featured image preview'}
-                        className="w-full h-auto"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none'
-                        }}
-                      />
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 

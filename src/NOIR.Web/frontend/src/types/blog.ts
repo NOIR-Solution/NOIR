@@ -13,6 +13,7 @@ export interface Post {
   excerpt?: string
   contentJson?: string
   contentHtml?: string
+  featuredImageId?: string
   featuredImageUrl?: string
   featuredImageAlt?: string
   status: PostStatus
@@ -39,7 +40,9 @@ export interface PostListItem {
   title: string
   slug: string
   excerpt?: string
+  featuredImageId?: string
   featuredImageUrl?: string
+  featuredImageThumbnailUrl?: string
   status: PostStatus
   publishedAt?: string
   scheduledPublishAt?: string
@@ -121,6 +124,7 @@ export interface CreatePostRequest {
   excerpt?: string
   contentJson?: string
   contentHtml?: string
+  featuredImageId?: string
   featuredImageUrl?: string
   featuredImageAlt?: string
   metaTitle?: string

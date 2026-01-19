@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { AlertTriangle, FileText } from 'lucide-react'
 import {
   AlertDialog,
@@ -30,7 +29,6 @@ interface DeletePostDialogProps {
 }
 
 export function DeletePostDialog({ post, open, onOpenChange, onConfirm }: DeletePostDialogProps) {
-  const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {

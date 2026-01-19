@@ -12,6 +12,7 @@ public sealed record UpdatePostCommand(
     string? Excerpt,
     string? ContentJson,
     string? ContentHtml,
+    Guid? FeaturedImageId,
     string? FeaturedImageUrl,
     string? FeaturedImageAlt,
     string? MetaTitle,

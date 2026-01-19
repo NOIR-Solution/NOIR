@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Search, FileText, Plus, Eye, Pencil, Trash2, Send } from 'lucide-react'
+import { ImageLightbox } from '@/components/ui/image-lightbox'
 import { usePageContext } from '@/hooks/usePageContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -42,10 +42,9 @@ const statusColors: Record<PostStatus, string> = {
 }
 
 export default function BlogPostsPage() {
-  const { t } = useTranslation('common')
   usePageContext('Blog Posts')
 
-  const { data, loading, error, refresh, setPage, setSearch, setStatus, setCategoryId, handleDelete, params } = usePosts()
+  const { data, loading, error, setPage, setSearch, setStatus, setCategoryId, handleDelete, params } = usePosts()
   const { data: categories } = useCategories()
 
   const [searchInput, setSearchInput] = useState('')
@@ -62,15 +61,6 @@ export default function BlogPostsPage() {
 
   const handleCategoryChange = (value: string) => {
     setCategoryId(value === 'all' ? undefined : value)
-  }
-
-  const handleDeleteConfirm = async () => {
-    if (postToDelete) {
-      const result = await handleDelete(postToDelete.id)
-      if (result.success) {
-        setPostToDelete(null)
-      }
-    }
   }
 
   return (
@@ -181,13 +171,23 @@ export default function BlogPostsPage() {
                   data?.items.map((post) => (
                     <TableRow key={post.id}>
                       <TableCell>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{post.title}</span>
-                          {post.excerpt && (
-                            <span className="text-sm text-muted-foreground line-clamp-1">
-                              {post.excerpt}
-                            </span>
-                          )}
+                        <div className="flex items-center gap-3">
+                          {/* Featured Image Thumbnail - Click to view full image */}
+                          <ImageLightbox
+                            src={post.featuredImageUrl ?? ''}
+                            thumbnailSrc={post.featuredImageThumbnailUrl}
+                            alt={post.title}
+                            thumbnailWidth={48}
+                            thumbnailHeight={48}
+                          />
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-medium truncate">{post.title}</span>
+                            {post.excerpt && (
+                              <span className="text-sm text-muted-foreground line-clamp-1">
+                                {post.excerpt}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>

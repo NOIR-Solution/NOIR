@@ -37,6 +37,9 @@ import { z } from 'zod'
 
 type ProfileFormData = z.infer<typeof updateUserProfileSchema>
 
+/** Notify other components (like Sidebar) that user profile data has changed */
+const notifyProfileChanged = () => window.dispatchEvent(new Event('avatar-updated'))
+
 export function ProfileForm() {
   const { t } = useTranslation('auth')
   const { t: tCommon } = useTranslation('common')
@@ -48,6 +51,9 @@ export function ProfileForm() {
   // Loading states for avatar
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isRemovingAvatar, setIsRemovingAvatar] = useState(false)
+
+  // Email change dialog state - controlled externally to keep dialog outside form
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false)
 
   // Use validated form with Zod schema
   const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<ProfileFormData>({
@@ -66,8 +72,9 @@ export function ProfileForm() {
         phoneNumber: data.phoneNumber || null,
       })
 
-      // Refresh user data
+      // Refresh user data and notify other components (Sidebar shows displayName)
       await refreshUser()
+      notifyProfileChanged()
       toast.success(t('profile.saved'))
     },
     onError: (error) => {
@@ -95,7 +102,7 @@ export function ProfileForm() {
       await uploadAvatar(file)
       await refreshUser()
       // Notify other components (like Sidebar) about avatar change
-      window.dispatchEvent(new Event('avatar-updated'))
+      notifyProfileChanged()
       toast.success(t('profile.avatar.uploadSuccess'))
     } catch (err) {
       if (err instanceof ApiError) {
@@ -114,7 +121,7 @@ export function ProfileForm() {
       await deleteAvatar()
       await refreshUser()
       // Notify other components (like Sidebar) about avatar change
-      window.dispatchEvent(new Event('avatar-updated'))
+      notifyProfileChanged()
       toast.success(t('profile.avatar.deleteSuccess'))
     } catch (err) {
       if (err instanceof ApiError) {
@@ -129,6 +136,8 @@ export function ProfileForm() {
 
   const handleEmailChangeSuccess = async () => {
     await refreshUser()
+    // Notify other components (like Sidebar) about email change - avatar color is based on email
+    notifyProfileChanged()
     toast.success(t('profile.email.success'))
   }
 
@@ -222,7 +231,7 @@ export function ProfileForm() {
               </p>
             </div>
 
-            {/* Email with Change Button */}
+            {/* Email with Change Button - trigger opens dialog rendered outside form */}
             <div className="space-y-2">
               <Label htmlFor="email">{t('profile.email.label')}</Label>
               <div className="flex gap-2">
@@ -236,10 +245,15 @@ export function ProfileForm() {
                     className="pl-10 bg-muted"
                   />
                 </div>
-                <EmailChangeDialog
-                  currentEmail={user.email}
-                  onSuccess={handleEmailChangeSuccess}
-                />
+                {/* Trigger button only - dialog is rendered outside form */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEmailDialogOpen(true)}
+                >
+                  {t('profile.email.change')}
+                </Button>
               </div>
             </div>
 
@@ -287,6 +301,14 @@ export function ProfileForm() {
             )}
           </Button>
         </form>
+
+        {/* Email Change Dialog - rendered OUTSIDE form to prevent event leakage */}
+        <EmailChangeDialog
+          currentEmail={user.email}
+          onSuccess={handleEmailChangeSuccess}
+          open={emailDialogOpen}
+          onOpenChange={setEmailDialogOpen}
+        />
       </CardContent>
     </Card>
   )

@@ -31,6 +31,7 @@ public class CreateRoleCommandHandler
                 var invalidList = string.Join(", ", invalidPermissions);
                 return Result.Failure<RoleDto>(
                     Error.Validation(
+                        "permissions",
                         _localization.Get("validation.permissions.invalidForTenant", invalidList),
                         ErrorCodes.Validation.General));
             }

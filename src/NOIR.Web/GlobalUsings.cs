@@ -73,6 +73,8 @@ global using NOIR.Application.Features.Auth.Queries.GetCurrentUser;
 
 // NOIR Domain
 global using NOIR.Domain.Common;
+global using NOIR.Domain.Entities;
+global using NOIR.Domain.Interfaces;
 
 // NOIR Infrastructure
 global using NOIR.Infrastructure;

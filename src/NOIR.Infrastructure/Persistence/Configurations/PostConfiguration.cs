@@ -38,12 +38,21 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(e => e.ContentHtml)
             .HasColumnType("nvarchar(max)");
 
-        // Featured image
+        // Featured image (URL for backward compatibility)
         builder.Property(e => e.FeaturedImageUrl)
             .HasMaxLength(2000);
 
         builder.Property(e => e.FeaturedImageAlt)
             .HasMaxLength(500);
+
+        // Featured image MediaFile relationship
+        builder.HasOne(e => e.FeaturedImage)
+            .WithMany()
+            .HasForeignKey(e => e.FeaturedImageId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(e => e.FeaturedImageId)
+            .HasDatabaseName("IX_Posts_FeaturedImageId");
 
         // Status
         builder.Property(e => e.Status)

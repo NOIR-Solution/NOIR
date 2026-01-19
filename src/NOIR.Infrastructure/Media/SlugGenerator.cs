@@ -95,6 +95,8 @@ public static class SlugGenerator
 
     /// <summary>
     /// Generate a slug with a unique suffix.
+    /// Format: {readable-name}_{shortId} (e.g., "hero-banner_a1b2c3d4")
+    /// The underscore separator makes the short ID easy to extract.
     /// </summary>
     /// <param name="fileName">The original filename.</param>
     /// <param name="uniqueSuffix">Optional unique suffix (e.g., timestamp or GUID).</param>
@@ -103,7 +105,26 @@ public static class SlugGenerator
     {
         var baseSlug = Generate(fileName, 80); // Leave room for suffix
         var suffix = uniqueSuffix ?? GenerateShortId();
-        return $"{baseSlug}-{suffix}";
+        // Use underscore to clearly separate the short ID from the readable name
+        return $"{baseSlug}_{suffix}";
+    }
+
+    /// <summary>
+    /// Extract the short ID from a slug.
+    /// Returns the part after the last underscore.
+    /// </summary>
+    /// <param name="slug">The full slug (e.g., "hero-banner_a1b2c3d4").</param>
+    /// <returns>The short ID (e.g., "a1b2c3d4"), or null if no underscore found.</returns>
+    public static string? ExtractShortId(string slug)
+    {
+        if (string.IsNullOrEmpty(slug))
+            return null;
+
+        var lastUnderscore = slug.LastIndexOf('_');
+        if (lastUnderscore < 0 || lastUnderscore == slug.Length - 1)
+            return null;
+
+        return slug[(lastUnderscore + 1)..];
     }
 
     /// <summary>
@@ -111,13 +132,13 @@ public static class SlugGenerator
     /// </summary>
     private static string GenerateRandomSlug()
     {
-        return $"image-{GenerateShortId()}";
+        return $"image_{GenerateShortId()}";
     }
 
     /// <summary>
-    /// Generate a short unique ID.
+    /// Generate a short unique ID (8 characters, alphanumeric).
     /// </summary>
-    private static string GenerateShortId()
+    public static string GenerateShortId()
     {
         // Use first 8 chars of a GUID (enough for uniqueness in most cases)
         return Guid.NewGuid().ToString("N")[..8];

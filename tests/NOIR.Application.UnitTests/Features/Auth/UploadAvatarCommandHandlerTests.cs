@@ -82,7 +82,7 @@ public class UploadAvatarCommandHandlerTests
                     Variant = ImageVariant.Thumb,
                     Format = OutputFormat.WebP,
                     Path = $"avatars/user-123/{slug}-thumb.webp",
-                    Url = $"/api/files/avatars/user-123/{slug}-thumb.webp",
+                    Url = $"/media/avatars/user-123/{slug}-thumb.webp",
                     Width = 150,
                     Height = 150,
                     SizeBytes = 5000
@@ -92,7 +92,7 @@ public class UploadAvatarCommandHandlerTests
                     Variant = ImageVariant.Medium,
                     Format = OutputFormat.WebP,
                     Path = $"avatars/user-123/{slug}-medium.webp",
-                    Url = $"/api/files/avatars/user-123/{slug}-medium.webp",
+                    Url = $"/media/avatars/user-123/{slug}-medium.webp",
                     Width = 640,
                     Height = 640,
                     SizeBytes = 50000
@@ -187,7 +187,7 @@ public class UploadAvatarCommandHandlerTests
     {
         // Arrange
         const string userId = "user-123";
-        const string oldAvatarUrl = "/api/files/avatars/user-123/old-avatar-medium.webp";
+        const string oldAvatarUrl = "/media/avatars/user-123/old-avatar-medium.webp";
 
         var user = CreateTestUserDto(userId, oldAvatarUrl);
         var processingResult = CreateSuccessfulProcessingResult();

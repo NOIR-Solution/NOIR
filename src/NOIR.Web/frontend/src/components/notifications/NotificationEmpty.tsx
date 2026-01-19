@@ -4,7 +4,7 @@
  * Animated empty state for notification list with engaging illustration
  */
 import { motion } from 'framer-motion'
-import { Bell, BellOff, Mail, MessageSquare } from 'lucide-react'
+import { BellOff, Mail, MessageSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface NotificationEmptyProps {

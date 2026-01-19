@@ -138,7 +138,7 @@ public class UserTenantService : IUserTenantService, IScopedService
         if (user == null)
         {
             return Result.Failure<UserTenantMembershipDto>(
-                Error.NotFound(ErrorCodes.Auth.UserNotFound, _localizer["user.notFound"]));
+                Error.NotFound(_localizer["user.notFound"], ErrorCodes.Auth.UserNotFound));
         }
 
         // Check if tenant exists
@@ -146,7 +146,7 @@ public class UserTenantService : IUserTenantService, IScopedService
         if (tenant == null)
         {
             return Result.Failure<UserTenantMembershipDto>(
-                Error.NotFound(ErrorCodes.Tenant.NotFound, _localizer["tenant.notFound"]));
+                Error.NotFound(_localizer["tenant.notFound"], ErrorCodes.Tenant.NotFound));
         }
 
         // Check if already a member
@@ -158,7 +158,7 @@ public class UserTenantService : IUserTenantService, IScopedService
         if (existing != null)
         {
             return Result.Failure<UserTenantMembershipDto>(
-                Error.Conflict(ErrorCodes.Business.AlreadyExists, _localizer["tenant.membership.alreadyExists"]));
+                Error.Conflict(_localizer["tenant.membership.alreadyExists"], ErrorCodes.Business.AlreadyExists));
         }
 
         // Check if this is the user's first tenant (make it default)
@@ -198,7 +198,7 @@ public class UserTenantService : IUserTenantService, IScopedService
         if (membership == null)
         {
             return Result.Failure<bool>(
-                Error.NotFound(ErrorCodes.Tenant.MembershipNotFound, _localizer["tenant.membership.notFound"]));
+                Error.NotFound(_localizer["tenant.membership.notFound"], ErrorCodes.Tenant.MembershipNotFound));
         }
 
         // If removing default tenant, set another tenant as default
@@ -244,7 +244,7 @@ public class UserTenantService : IUserTenantService, IScopedService
         if (membership == null)
         {
             return Result.Failure<UserTenantMembershipDto>(
-                Error.NotFound(ErrorCodes.Tenant.MembershipNotFound, _localizer["tenant.membership.notFound"]));
+                Error.NotFound(_localizer["tenant.membership.notFound"], ErrorCodes.Tenant.MembershipNotFound));
         }
 
         var tenant = await _tenantStore.GetAsync(tenantId);

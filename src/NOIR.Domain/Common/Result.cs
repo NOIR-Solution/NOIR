@@ -69,7 +69,9 @@ public enum ErrorType
     /// <summary>Authentication required (401 Unauthorized)</summary>
     Unauthorized = 4,
     /// <summary>Permission denied (403 Forbidden)</summary>
-    Forbidden = 5
+    Forbidden = 5,
+    /// <summary>Rate limit exceeded (429 Too Many Requests)</summary>
+    TooManyRequests = 6
 }
 
 /// <summary>
@@ -115,6 +117,10 @@ public sealed record Error(string Code, string Message, ErrorType Type = ErrorTy
     /// <summary>Creates a forbidden error.</summary>
     public static Error Forbidden(string message = "Access forbidden.", string? code = null) =>
         new(code ?? ErrorCodes.Auth.Forbidden, message, ErrorType.Forbidden);
+
+    /// <summary>Creates a rate limiting error (429 Too Many Requests).</summary>
+    public static Error TooManyRequests(string message = "Too many requests. Please try again later.", string? code = null) =>
+        new(code ?? ErrorCodes.Auth.TooManyRequests, message, ErrorType.TooManyRequests);
 
     /// <summary>Creates a generic failure error.</summary>
     public static Error Failure(string code, string message) =>

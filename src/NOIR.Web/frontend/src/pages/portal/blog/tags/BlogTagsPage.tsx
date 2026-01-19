@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Search, Tag, Plus, Pencil, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -26,10 +25,9 @@ import { DeleteTagDialog } from './components/DeleteTagDialog'
 import type { PostTagListItem } from '@/types'
 
 export default function BlogTagsPage() {
-  const { t } = useTranslation('common')
   usePageContext('Blog Tags')
 
-  const { data, loading, error, refresh, setSearch, handleDelete, params } = useTags()
+  const { data, loading, error, refresh, setSearch, handleDelete } = useTags()
 
   const [searchInput, setSearchInput] = useState('')
   const [tagDialogOpen, setTagDialogOpen] = useState(false)

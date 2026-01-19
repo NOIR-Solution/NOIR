@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace NOIR.Application.Common.Models;
 
 /// <summary>
@@ -56,6 +58,19 @@ public sealed class PagedResult<T>
     /// The last item number on this page (1-based, for display).
     /// </summary>
     public int LastItemOnPage => Math.Min((PageIndex + 1) * PageSize, TotalCount);
+
+    /// <summary>
+    /// JSON deserialization constructor.
+    /// </summary>
+    [JsonConstructor]
+    public PagedResult(IReadOnlyList<T> items, int totalCount, int pageIndex, int pageSize, int totalPages)
+    {
+        Items = items;
+        TotalCount = totalCount;
+        PageIndex = pageIndex;
+        PageSize = pageSize;
+        TotalPages = totalPages;
+    }
 
     private PagedResult(IReadOnlyList<T> items, int totalCount, int pageIndex, int pageSize)
     {

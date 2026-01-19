@@ -11,6 +11,7 @@ public sealed record CreatePostCommand(
     string? Excerpt,
     string? ContentJson,
     string? ContentHtml,
+    Guid? FeaturedImageId,
     string? FeaturedImageUrl,
     string? FeaturedImageAlt,
     string? MetaTitle,

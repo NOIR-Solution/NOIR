@@ -82,6 +82,9 @@ public class PublishPostCommandHandler
         string? authorName,
         List<PostTagDto> tags)
     {
+        // Resolve featured image URL: prefer MediaFile.DefaultUrl, fallback to direct URL
+        var featuredImageUrl = post.FeaturedImage?.DefaultUrl ?? post.FeaturedImageUrl;
+
         return new PostDto(
             post.Id,
             post.Title,
@@ -89,7 +92,8 @@ public class PublishPostCommandHandler
             post.Excerpt,
             post.ContentJson,
             post.ContentHtml,
-            post.FeaturedImageUrl,
+            post.FeaturedImageId,
+            featuredImageUrl,
             post.FeaturedImageAlt,
             post.Status,
             post.PublishedAt,

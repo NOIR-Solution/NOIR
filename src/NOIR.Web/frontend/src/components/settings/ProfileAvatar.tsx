@@ -53,9 +53,10 @@ export function ProfileAvatar({
     setExistingUrl(avatarUrl)
   }, [avatarUrl, setExistingUrl])
 
-  // Load Gravatar URL
+  // Load Gravatar URL and reset state when email changes
   useEffect(() => {
     if (!avatarUrl && email) {
+      setGravatarFailed(false) // Reset for new email
       getGravatarUrl(email, 160).then(setGravatarUrl)
     }
   }, [email, avatarUrl])

@@ -256,6 +256,9 @@ public static class DependencyInjection
         services.AddBeforeStateResolver<TenantDto, GetTenantByIdQuery>(
             targetId => new GetTenantByIdQuery(Guid.Parse(targetId.ToString()!)));
 
+        services.AddBeforeStateResolver<PostDto, GetPostQuery>(
+            targetId => new GetPostQuery(Id: Guid.Parse(targetId.ToString()!)));
+
         // Configure FluentStorage (Local, Azure, or S3)
         var storageSettings = configuration.GetSection(StorageSettings.SectionName).Get<StorageSettings>() ?? new StorageSettings();
         services.Configure<StorageSettings>(configuration.GetSection(StorageSettings.SectionName));

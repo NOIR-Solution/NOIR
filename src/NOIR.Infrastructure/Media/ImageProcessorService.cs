@@ -97,8 +97,8 @@ public class ImageProcessorService : IImageProcessor, IScopedService
             {
                 var variantSize = _settings.GetVariantSize(variant);
 
-                // Skip if variant is larger than original
-                if (variantSize > Math.Max(originalWidth, originalHeight) && variant != ImageVariant.Original)
+                // Skip if variant is larger than original (no upscaling)
+                if (variantSize > Math.Max(originalWidth, originalHeight))
                     continue;
 
                 // Calculate dimensions maintaining aspect ratio
@@ -371,20 +371,21 @@ public class ImageProcessorService : IImageProcessor, IScopedService
 
     /// <summary>
     /// Get default variants based on original image size.
+    /// SEO-optimized: 3 variants (Thumb 150px, Medium 640px, Large 1280px)
+    /// - Thumb: avatars, list thumbnails
+    /// - Medium: cards, mobile, content images
+    /// - Large: hero images, desktop full display
     /// </summary>
     private List<ImageVariant> GetDefaultVariants(int width, int height)
     {
         var maxDimension = Math.Max(width, height);
-        var variants = new List<ImageVariant> { ImageVariant.Thumb, ImageVariant.Small, ImageVariant.Medium };
 
+        // Always generate Thumb and Medium
+        var variants = new List<ImageVariant> { ImageVariant.Thumb, ImageVariant.Medium };
+
+        // Only add Large if image is big enough (no upscaling)
         if (maxDimension >= _settings.LargeSize)
             variants.Add(ImageVariant.Large);
-
-        if (maxDimension >= _settings.ExtraLargeSize)
-            variants.Add(ImageVariant.ExtraLarge);
-
-        if (_settings.PreserveOriginal)
-            variants.Add(ImageVariant.Original);
 
         return variants;
     }

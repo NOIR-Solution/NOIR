@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { AlertTriangle, FolderTree } from 'lucide-react'
 import {
   AlertDialog,
@@ -22,7 +21,6 @@ interface DeleteCategoryDialogProps {
 }
 
 export function DeleteCategoryDialog({ category, open, onOpenChange, onConfirm }: DeleteCategoryDialogProps) {
-  const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {

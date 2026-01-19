@@ -68,7 +68,7 @@ public class EmailChangeService : IEmailChangeService, IScopedService
         if (user.Email.Equals(normalizedEmail, StringComparison.OrdinalIgnoreCase))
         {
             return Result.Failure<EmailChangeRequestResult>(
-                Error.Validation("New email must be different from current email.", ErrorCodes.Validation.InvalidInput));
+                Error.Validation("newEmail", "New email must be different from current email.", ErrorCodes.Validation.InvalidInput));
         }
 
         // Check if new email is already in use
@@ -76,7 +76,7 @@ public class EmailChangeService : IEmailChangeService, IScopedService
         if (existingUser is not null)
         {
             return Result.Failure<EmailChangeRequestResult>(
-                Error.Validation("This email address is already in use.", ErrorCodes.Auth.DuplicateEmail));
+                Error.Validation("newEmail", "This email address is already in use.", ErrorCodes.Auth.DuplicateEmail));
         }
 
         // Check if there's an active OTP for this user
@@ -93,6 +93,7 @@ public class EmailChangeService : IEmailChangeService, IScopedService
                     "Email change requested but cooldown active for user {UserId}, {Seconds}s remaining",
                     userId, remainingCooldown);
 
+                // Return the existing session instead of creating a new one (bypass prevention)
                 return Result<EmailChangeRequestResult>.Success(new EmailChangeRequestResult(
                     existingOtp.SessionToken,
                     _otpService.MaskEmail(existingOtp.NewEmail),
@@ -100,7 +101,14 @@ public class EmailChangeService : IEmailChangeService, IScopedService
                     OtpLength));
             }
 
-            // Cooldown passed - mark existing OTP as used and create new one
+            // Cooldown passed - check if email changed
+            if (existingOtp.NewEmail.Equals(normalizedEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                // Same email - resend using existing session (keeps same sessionToken)
+                return await ResendOtpInternalAsync(existingOtp, user, cancellationToken);
+            }
+
+            // Different email - mark existing OTP as used and create new one
             existingOtp.MarkAsUsed();
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
@@ -118,7 +126,8 @@ public class EmailChangeService : IEmailChangeService, IScopedService
             otpHash,
             sessionToken,
             OtpExpiryMinutes,
-            ipAddress);
+            tenantId: tenantId,
+            ipAddress: ipAddress);
 
         await _otpRepository.AddAsync(otp, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -280,6 +289,43 @@ public class EmailChangeService : IEmailChangeService, IScopedService
         return count >= MaxRequestsPerUserPerHour;
     }
 
+    /// <summary>
+    /// Internal method to resend OTP using an existing session (keeps the same sessionToken).
+    /// Called when user requests email change again with the same email after cooldown passes.
+    /// </summary>
+    private async Task<Result<EmailChangeRequestResult>> ResendOtpInternalAsync(
+        EmailChangeOtp existingOtp,
+        UserIdentityDto user,
+        CancellationToken cancellationToken)
+    {
+        // Check resend limits
+        if (!existingOtp.CanResend(ResendCooldownSeconds, MaxResendCount))
+        {
+            return Result.Failure<EmailChangeRequestResult>(
+                Error.Failure(ErrorCodes.Auth.MaxResendsReached, "Maximum resend attempts reached. Please try again later."));
+        }
+
+        // Generate new OTP
+        var newOtpCode = _otpService.GenerateOtp();
+        var newOtpHash = _otpService.HashOtp(newOtpCode);
+
+        existingOtp.Resend(newOtpHash, OtpExpiryMinutes);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Send email
+        await SendOtpEmailAsync(existingOtp.NewEmail, newOtpCode, user.FirstName ?? user.DisplayName, cancellationToken);
+
+        _logger.LogInformation(
+            "Email change OTP resent via request flow for user {UserId}",
+            existingOtp.UserId);
+
+        return Result<EmailChangeRequestResult>.Success(new EmailChangeRequestResult(
+            existingOtp.SessionToken,
+            _otpService.MaskEmail(existingOtp.NewEmail),
+            existingOtp.ExpiresAt,
+            OtpLength));
+    }
+
     private async Task SendOtpEmailAsync(
         string email,
         string otpCode,
@@ -290,8 +336,8 @@ public class EmailChangeService : IEmailChangeService, IScopedService
         {
             await _emailService.SendTemplateAsync(
                 email,
-                "email-change-otp",
                 "Verify your new email address",
+                "EmailChangeOtp",
                 new { OtpCode = otpCode, UserName = userName ?? "User", ExpiryMinutes = OtpExpiryMinutes },
                 cancellationToken);
         }

@@ -282,26 +282,18 @@ public sealed record ImageMetadata
 
 /// <summary>
 /// Image variant sizes.
+/// SEO-optimized: 3 variants for optimal performance and storage.
 /// </summary>
 public enum ImageVariant
 {
-    /// <summary>Thumbnail: 150px</summary>
+    /// <summary>Thumbnail: 150px - avatars, list thumbnails</summary>
     Thumb = 150,
 
-    /// <summary>Small: 320px</summary>
-    Small = 320,
-
-    /// <summary>Medium: 640px</summary>
+    /// <summary>Medium: 640px - cards, mobile, content images</summary>
     Medium = 640,
 
-    /// <summary>Large: 1280px</summary>
-    Large = 1280,
-
-    /// <summary>Extra Large: 1920px</summary>
-    ExtraLarge = 1920,
-
-    /// <summary>Original: 2560px max</summary>
-    Original = 2560
+    /// <summary>Large: 1280px - hero images, desktop full display</summary>
+    Large = 1280
 }
 
 /// <summary>

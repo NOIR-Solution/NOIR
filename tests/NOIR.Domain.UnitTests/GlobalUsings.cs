@@ -12,3 +12,4 @@ global using System.Linq;
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Enums;

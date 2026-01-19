@@ -184,6 +184,16 @@ When multiple patterns match:
 10. **Co-locate Command + Handler + Validator** - All CQRS components live in the same folder under `Application/Features/{Feature}/Commands/{Action}/` or `Application/Features/{Feature}/Queries/{Action}/`
 11. **Audit logging for user actions** - Commands that create, update, or delete data via frontend MUST implement `IAuditableCommand`. See `docs/backend/patterns/hierarchical-audit-logging.md` for the checklist and pattern. Requires: (a) Command implements `IAuditableCommand<TResult>`, (b) Endpoint sets `UserId` on command, (c) Frontend page calls `usePageContext('PageName')`.
 12. **Enums serialize as strings** - All C# enums are serialized as strings (not integers) for JavaScript compatibility. This is configured in HTTP JSON, SignalR, and Source Generator. See `docs/backend/patterns/json-enum-serialization.md`.
+13. **Register before-state resolvers for Update commands** - Commands implementing `IAuditableCommand<TDto>` with `OperationType.Update` MUST have a before-state resolver registered in `DependencyInjection.cs`. Without this, the Activity Timeline's Handler tab shows "No handler diff available". See `docs/backend/patterns/before-state-resolver.md`. Add: `services.AddBeforeStateResolver<YourDto, GetYourEntityQuery>(targetId => new GetYourEntityQuery(...));`
+14. **OTP flow consistency** - All OTP-based features (Password Reset, Email Change, etc.) MUST follow these patterns to prevent bypass attacks and ensure consistent UX:
+    - **Backend bypass prevention**: When user requests OTP again with same target (email/userId), if an active OTP exists:
+      - If cooldown still active → Return existing session (no new OTP, no email)
+      - If cooldown passed but same target → Use `ResendOtpInternalAsync` (keeps same sessionToken, generates new OTP)
+      - If cooldown passed but different target → Mark old OTP as used, create new session
+    - **Frontend error handling**: Always clear OTP input on verification error (use `useEffect` to watch `serverError`)
+    - **Session token stability**: Use refs (`sessionTokenRef`) to avoid stale closure issues in callbacks
+    - Reference: `PasswordResetService.cs` is the canonical implementation pattern
+15. **Error factory method parameter order** - `Error.Validation(propertyName, message, code?)` - The first parameter is the property/field name, second is the human-readable message, third is the optional error code. WRONG: `Error.Validation("message", errorCode)` causes error codes to display instead of messages! CORRECT: `Error.Validation("fieldName", "Message to user", ErrorCodes.SomeCode)`. See `docs/KNOWLEDGE_BASE.md#error-factory-methods` for all factory methods.
 
 ## Quick Reference
 

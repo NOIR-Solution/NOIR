@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-18
-**Version:** 1.8
+**Last Updated:** 2026-01-19
+**Version:** 1.9
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -594,15 +594,16 @@ public class LoginCommandHandler
 
 **Note:** Logs are streamed via SignalR for real-time monitoring.
 
-#### File Endpoints
+#### File Endpoints (Static File Serving)
 **Path:** `Endpoints/FileEndpoints.cs`
-**Prefix:** `/api/files`
+**Prefix:** `/media` (configurable via `Storage:MediaUrlPrefix`)
 
 | Method | Route | Purpose |
 |--------|-------|---------|
-| POST | `/upload` | Upload file |
-| GET | `/{id}` | Download file |
-| DELETE | `/{id}` | Delete file |
+| GET | `/{*path}` | Serve uploaded media files (avatars, blog images) |
+
+**Allowed Folders:** `avatars/`, `blog/`, `content/`, `images/`
+**Caching:** 1 year (immutable, files have unique slugs/GUIDs)
 
 #### Media Endpoints
 **Path:** `Endpoints/MediaEndpoints.cs`
@@ -681,6 +682,34 @@ function UserActions() {
 - `UserTable` - Action menu items per permission
 - `EmailTemplatesPage` - Edit button visibility
 - `RolesPage` - CRUD actions based on role permissions
+
+#### Cross-Component Communication (Profile Changes)
+
+When user profile data changes (avatar, email, name), other components like Sidebar need to refresh. Use the `avatar-updated` custom event pattern:
+
+```tsx
+// ProfileForm.tsx - Dispatch event after profile changes
+const notifyProfileChanged = () => window.dispatchEvent(new Event('avatar-updated'))
+
+// After any profile update:
+await refreshUser()
+notifyProfileChanged()
+toast.success('Profile updated')
+```
+
+```tsx
+// Sidebar.tsx - Listen for profile changes
+useEffect(() => {
+  const handleAvatarUpdate = () => { checkAuth() }
+  window.addEventListener('avatar-updated', handleAvatarUpdate)
+  return () => window.removeEventListener('avatar-updated', handleAvatarUpdate)
+}, [checkAuth])
+```
+
+**When to dispatch `avatar-updated`:**
+- Avatar upload/remove
+- Email change (avatar color is email-based via `getAvatarColor()`)
+- Profile name change (Sidebar shows displayName)
 
 #### API Error Handling
 
@@ -818,6 +847,7 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 8. **No using statements** in files - add to `GlobalUsings.cs`
 9. **Audit logging for user actions** - Commands that create/update/delete via frontend MUST implement `IAuditableCommand`. Requires: (a) Command implements `IAuditableCommand<TResult>`, (b) Endpoint sets `UserId`, (c) Frontend calls `usePageContext()`. See [Audit Logging](backend/patterns/hierarchical-audit-logging.md)
 10. **No console.error in frontend** - Errors are visible in browser Network tab; use toast notifications for user feedback instead
+11. **Correct Error factory method usage** - See [Error Factory Methods](#error-factory-methods) for correct parameter order
 
 ### Performance Rules
 
@@ -826,6 +856,38 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 | Read-only queries | `AsNoTracking` (default) |
 | Multiple collections | `.AsSplitQuery()` |
 | Bulk operations (1000+) | [Bulk extension methods](backend/patterns/bulk-operations.md) |
+
+### Error Factory Methods
+
+**Location:** `Domain/Common/Result.cs`
+
+The `Error` record provides factory methods for creating typed errors. **Be careful with parameter order** - incorrect usage causes error codes to display instead of user-friendly messages!
+
+| Method | Signature | Use Case |
+|--------|-----------|----------|
+| `Validation` | `(propertyName, message, code?)` | Field-specific validation errors |
+| `NotFound` | `(message, code?)` | Resource not found |
+| `Conflict` | `(message, code?)` | Resource conflicts |
+| `Unauthorized` | `(message?, code?)` | Authentication required |
+| `Forbidden` | `(message?, code?)` | Permission denied |
+| `TooManyRequests` | `(message?, code?)` | Rate limiting |
+| `Failure` | `(code, message)` | Generic failures |
+
+**CRITICAL: `Error.Validation` requires `propertyName` as first parameter!**
+
+```csharp
+// ✅ CORRECT - property name first, then message, then code
+Error.Validation("newEmail", "This email address is already in use.", ErrorCodes.Auth.DuplicateEmail)
+
+// ❌ WRONG - missing property name causes error code to become the message!
+Error.Validation("This email address is already in use.", ErrorCodes.Auth.DuplicateEmail)
+// Results in: Code=NOIR-VAL-0001, Message="NOIR-AUTH-1011" (swapped!)
+```
+
+**For errors without a specific field**, use the Error constructor directly:
+```csharp
+new Error(ErrorCodes.Auth.DuplicateEmail, "This email address is already in use.", ErrorType.Validation)
+```
 
 ---
 
@@ -966,4 +1028,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-01-18 | Total Tests: 2,050+ | Features: 11 | Endpoints: 14 | Entities: 19*
+*Updated: 2026-01-19 | Total Tests: 2,050+ | Features: 11 | Endpoints: 14 | Entities: 19*

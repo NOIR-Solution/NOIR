@@ -5,8 +5,11 @@
  * 1. Enter new email address
  * 2. Enter OTP sent to new email
  * 3. Success message
+ *
+ * OTP step uses direct state management (matching Password Reset flow)
+ * to avoid infinite loops from react-hook-form integration with OtpInput.
  */
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Mail, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -29,7 +32,7 @@ import {
   ApiError,
 } from '@/services/profile'
 import { useValidatedForm } from '@/hooks/useValidatedForm'
-import { requestEmailChangeSchema, verifyEmailChangeSchema } from '@/validation/schemas.generated'
+import { requestEmailChangeSchema } from '@/validation/schemas.generated'
 import { createValidationTranslator } from '@/lib/validation-i18n'
 import { z } from 'zod'
 
@@ -44,24 +47,30 @@ const createEmailStepSchema = (currentEmail: string) =>
 
 type EmailStepFormData = z.infer<typeof requestEmailChangeSchema>
 
-// OTP step schema - sessionToken is managed in state, not form
-const otpStepSchema = verifyEmailChangeSchema.pick({ otp: true })
-type OtpStepFormData = z.infer<typeof otpStepSchema>
-
 interface EmailChangeDialogProps {
   currentEmail: string
   onSuccess: () => void
   trigger?: React.ReactNode
+  /** Controlled mode: external open state */
+  open?: boolean
+  /** Controlled mode: external open state setter */
+  onOpenChange?: (open: boolean) => void
 }
 
 export function EmailChangeDialog({
   currentEmail,
   onSuccess,
   trigger,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: EmailChangeDialogProps) {
   const { t } = useTranslation('auth')
   const { t: tCommon } = useTranslation('common')
-  const [open, setOpen] = useState(false)
+  // Support both controlled and uncontrolled modes
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlled = controlledOpen !== undefined
+  const open = isControlled ? controlledOpen : internalOpen
+  const setOpen = isControlled ? (controlledOnOpenChange ?? (() => {})) : setInternalOpen
   const [step, setStep] = useState<Step>('email')
 
   // Memoized translation function for validation errors
@@ -69,11 +78,18 @@ export function EmailChangeDialog({
 
   // OTP session state
   const [sessionToken, setSessionToken] = useState('')
+  const sessionTokenRef = useRef(sessionToken) // Ref to avoid stale closure
   const [maskedEmail, setMaskedEmail] = useState('')
   const [expiresAt, setExpiresAt] = useState<Date | null>(null)
   const [canResend, setCanResend] = useState(false)
   const [remainingResends, setRemainingResends] = useState(3)
   const [isResending, setIsResending] = useState(false)
+
+  // OTP step - direct state management (matching Password Reset flow)
+  // This avoids infinite loops from react-hook-form integration with OtpInput
+  const [otp, setOtp] = useState('')
+  const [otpError, setOtpError] = useState('')
+  const [isVerifying, setIsVerifying] = useState(false)
 
   // Email step form
   const emailForm = useValidatedForm<EmailStepFormData>({
@@ -82,37 +98,27 @@ export function EmailChangeDialog({
     onSubmit: async (data) => {
       const result = await requestEmailChange(data.newEmail)
       setSessionToken(result.sessionToken)
+      sessionTokenRef.current = result.sessionToken // Keep ref in sync
       setMaskedEmail(result.maskedEmail)
       setExpiresAt(new Date(result.expiresAt))
       setStep('otp')
     },
   })
 
-  // OTP step form
-  const otpForm = useValidatedForm<OtpStepFormData>({
-    schema: otpStepSchema,
-    defaultValues: { otp: '' },
-    onSubmit: async (data) => {
-      await verifyEmailChange(sessionToken, data.otp)
-      setStep('success')
-      // Refresh user data after short delay
-      setTimeout(() => {
-        onSuccess()
-        handleOpenChange(false)
-      }, 2000)
-    },
-  })
-
   const resetDialog = useCallback(() => {
     setStep('email')
     emailForm.reset()
-    otpForm.reset()
+    // Reset OTP step state
+    setOtp('')
+    setOtpError('')
+    setIsVerifying(false)
     setSessionToken('')
+    sessionTokenRef.current = '' // Keep ref in sync
     setMaskedEmail('')
     setExpiresAt(null)
     setCanResend(false)
     setRemainingResends(3)
-  }, [emailForm, otpForm])
+  }, [emailForm])
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen)
@@ -126,20 +132,22 @@ export function EmailChangeDialog({
     if (!canResend || remainingResends <= 0) return
 
     setIsResending(true)
+    setOtpError('')
 
     try {
       const result = await resendEmailChangeOtp(sessionToken)
       setRemainingResends(result.remainingResends)
       setCanResend(false)
+      setOtp('')
 
       if (result.nextResendAt) {
         setExpiresAt(new Date(result.nextResendAt))
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        otpForm.setServerError(err.message)
+        setOtpError(err.message)
       } else {
-        otpForm.setServerError(t('profile.email.resendFailed'))
+        setOtpError(t('profile.email.resendFailed'))
       }
     } finally {
       setIsResending(false)
@@ -151,29 +159,57 @@ export function EmailChangeDialog({
   }
 
   const handleOtpChange = (value: string) => {
-    otpForm.form.setValue('otp', value)
-    otpForm.clearServerError()
+    setOtp(value)
+    setOtpError('')
   }
 
-  const handleOtpComplete = (value: string) => {
-    otpForm.form.setValue('otp', value)
-    otpForm.handleSubmit()
-  }
+  // OTP verification handler with guard (matching Password Reset flow)
+  const handleOtpComplete = useCallback(async (value: string) => {
+    // Guard against duplicate calls while verifying
+    if (isVerifying) return
+
+    setOtpError('')
+    setIsVerifying(true)
+
+    try {
+      await verifyEmailChange(sessionTokenRef.current, value)
+      setStep('success')
+      // Refresh user data immediately so UI updates while success message shows
+      await onSuccess()
+      // Close dialog after short delay so user can see success message
+      setTimeout(() => {
+        handleOpenChange(false)
+      }, 2000)
+    } catch (err) {
+      setOtp('') // Clear OTP on error (matching Password Reset flow)
+      if (err instanceof ApiError) {
+        setOtpError(err.message)
+      } else {
+        setOtpError(t('profile.email.verifyFailed'))
+      }
+    } finally {
+      setIsVerifying(false)
+    }
+  }, [isVerifying, onSuccess, t])
 
   const handleBack = () => {
     setStep('email')
-    otpForm.reset()
+    setOtp('')
+    setOtpError('')
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button type="button" variant="outline" size="sm">
-            {t('profile.email.change')}
-          </Button>
-        )}
-      </DialogTrigger>
+      {/* Only render trigger when not in controlled mode */}
+      {!isControlled && (
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button type="button" variant="outline" size="sm">
+              {t('profile.email.change')}
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-1">
@@ -192,7 +228,13 @@ export function EmailChangeDialog({
         <div className="mt-4">
           {/* Step 1: Enter new email */}
           {step === 'email' && (
-            <form onSubmit={emailForm.handleSubmit} className="space-y-5">
+            <form
+              onSubmit={(e) => {
+                e.stopPropagation() // Prevent any bubbling to parent forms
+                emailForm.handleSubmit(e)
+              }}
+              className="space-y-5"
+            >
               <div className="space-y-2">
                 <Label htmlFor="currentEmail" className="text-sm font-medium">
                   {t('profile.email.current')}
@@ -224,6 +266,11 @@ export function EmailChangeDialog({
                     disabled={emailForm.isSubmitting}
                     autoFocus
                     aria-invalid={!!emailForm.form.formState.errors.newEmail}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.stopPropagation() // Prevent Enter from escaping to parent forms
+                      }
+                    }}
                   />
                 </div>
                 {emailForm.form.formState.errors.newEmail && (
@@ -241,6 +288,7 @@ export function EmailChangeDialog({
                 type="submit"
                 disabled={emailForm.isSubmitting}
                 className="w-full"
+                onClick={(e) => e.stopPropagation()}
               >
                 {emailForm.isSubmitting ? (
                   <>
@@ -279,18 +327,28 @@ export function EmailChangeDialog({
               </div>
 
               <OtpInput
-                value={otpForm.form.watch('otp')}
+                value={otp}
                 onChange={handleOtpChange}
                 onComplete={handleOtpComplete}
-                disabled={otpForm.isSubmitting}
-                error={!!otpForm.form.formState.errors.otp || !!otpForm.serverError}
+                disabled={isVerifying}
+                error={!!otpError}
               />
 
-              {(otpForm.form.formState.errors.otp || otpForm.serverError) && (
+              {otpError && (
                 <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
                   <p className="text-sm text-destructive text-center">
-                    {otpForm.form.formState.errors.otp?.message ? translateError(otpForm.form.formState.errors.otp.message) : otpForm.serverError}
+                    {otpError}
                   </p>
+                </div>
+              )}
+
+              {/* Loading State */}
+              {isVerifying && (
+                <div className="flex justify-center">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>{t('profile.email.verifying')}</span>
+                  </div>
                 </div>
               )}
 

@@ -27,6 +27,8 @@ export function OtpInput({
 }: OtpInputProps) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
+  // Track the last value for which onComplete was called to prevent duplicate calls
+  const lastCompletedValueRef = useRef<string | null>(null)
 
   // Split value into individual digits
   const digits = value.split('').slice(0, length)
@@ -41,12 +43,27 @@ export function OtpInput({
     }
   }, [autoFocus, disabled])
 
-  // Notify on complete
+  // Track completion state and prevent duplicate onComplete calls
+  // The ref ensures we only call onComplete once per unique OTP value,
+  // preventing infinite loops when parent components re-render on error.
+  // The ref resets when value is incomplete, allowing re-entry of the same OTP.
+  // Also respects disabled state to prevent calls during submission.
   useEffect(() => {
-    if (value.length === length && onComplete) {
+    if (value.length < length) {
+      lastCompletedValueRef.current = null
+      return
+    }
+
+    // Don't trigger completion if disabled (e.g., during form submission)
+    if (disabled) {
+      return
+    }
+
+    if (onComplete && value !== lastCompletedValueRef.current) {
+      lastCompletedValueRef.current = value
       onComplete(value)
     }
-  }, [value, length, onComplete])
+  }, [value, length, onComplete, disabled])
 
   const focusInput = useCallback((index: number) => {
     const input = inputRefs.current[index]

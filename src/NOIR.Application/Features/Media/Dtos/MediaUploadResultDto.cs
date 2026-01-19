@@ -17,7 +17,20 @@ public sealed record MediaUploadResultDto
     public string? ErrorMessage { get; init; }
 
     /// <summary>
-    /// SEO-friendly slug identifier for the image.
+    /// ID of the created MediaFile entity in the database.
+    /// Use this to reference the file from other entities (e.g., Post.FeaturedImageId).
+    /// </summary>
+    public Guid? MediaFileId { get; init; }
+
+    /// <summary>
+    /// Short unique identifier (8 chars) for quick lookups.
+    /// Can be used with /api/media/by-short-id/{shortId} endpoint.
+    /// Example: "a1b2c3d4"
+    /// </summary>
+    public string? ShortId { get; init; }
+
+    /// <summary>
+    /// SEO-friendly slug identifier with unique suffix (e.g., "hero-banner_a1b2c3d4").
     /// </summary>
     public string Slug { get; init; } = string.Empty;
 
@@ -69,7 +82,9 @@ public sealed record MediaUploadResultDto
     /// </summary>
     public static MediaUploadResultDto FromProcessingResult(
         ImageProcessingResult result,
-        string defaultUrl)
+        string defaultUrl,
+        Guid? mediaFileId = null,
+        string? shortId = null)
     {
         // Group variants by format for srcset generation
         var srcsets = new Dictionary<string, string>();
@@ -87,6 +102,8 @@ public sealed record MediaUploadResultDto
         return new MediaUploadResultDto
         {
             Success = true,
+            MediaFileId = mediaFileId,
+            ShortId = shortId,
             Slug = result.Slug,
             ThumbHash = result.ThumbHash,
             DominantColor = result.DominantColor,

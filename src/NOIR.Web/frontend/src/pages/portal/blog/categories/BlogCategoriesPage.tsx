@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Search, FolderTree, Plus, Pencil, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -26,10 +25,9 @@ import { DeleteCategoryDialog } from './components/DeleteCategoryDialog'
 import type { PostCategoryListItem } from '@/types'
 
 export default function BlogCategoriesPage() {
-  const { t } = useTranslation('common')
   usePageContext('Blog Categories')
 
-  const { data, loading, error, refresh, setSearch, handleDelete, params } = useCategories()
+  const { data, loading, error, refresh, setSearch, handleDelete } = useCategories()
 
   const [searchInput, setSearchInput] = useState('')
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false)

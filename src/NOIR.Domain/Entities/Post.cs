@@ -35,6 +35,7 @@ public class Post : TenantAggregateRoot<Guid>
 
     /// <summary>
     /// Featured image URL for post cards and headers.
+    /// Kept for backward compatibility - prefer using FeaturedImageId.
     /// </summary>
     public string? FeaturedImageUrl { get; private set; }
 
@@ -42,6 +43,17 @@ public class Post : TenantAggregateRoot<Guid>
     /// Alt text for featured image (accessibility and SEO).
     /// </summary>
     public string? FeaturedImageAlt { get; private set; }
+
+    /// <summary>
+    /// Reference to the MediaFile entity for the featured image.
+    /// Provides access to responsive variants, placeholders, and metadata.
+    /// </summary>
+    public Guid? FeaturedImageId { get; private set; }
+
+    /// <summary>
+    /// Navigation property to the featured image MediaFile.
+    /// </summary>
+    public MediaFile? FeaturedImage { get; private set; }
 
     /// <summary>
     /// Publication status of the post.
@@ -150,12 +162,27 @@ public class Post : TenantAggregateRoot<Guid>
     }
 
     /// <summary>
-    /// Updates the post's featured image.
+    /// Updates the post's featured image using a MediaFile reference.
+    /// This is the preferred method as it provides access to all image metadata.
+    /// </summary>
+    public void SetFeaturedImage(Guid? mediaFileId, string? altText = null)
+    {
+        FeaturedImageId = mediaFileId;
+        FeaturedImageAlt = altText;
+        // Clear the URL - it will be populated from the MediaFile when needed
+        FeaturedImageUrl = null;
+    }
+
+    /// <summary>
+    /// Updates the post's featured image using a URL directly.
+    /// For backward compatibility - prefer SetFeaturedImage with MediaFile.
     /// </summary>
     public void UpdateFeaturedImage(string? imageUrl, string? altText = null)
     {
         FeaturedImageUrl = imageUrl;
         FeaturedImageAlt = altText;
+        // Clear the MediaFile reference when using direct URL
+        FeaturedImageId = null;
     }
 
     /// <summary>

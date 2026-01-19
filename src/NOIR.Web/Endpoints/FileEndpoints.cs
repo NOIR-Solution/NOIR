@@ -65,8 +65,8 @@ public static class FileEndpoints
 
             return Results.File(stream, contentType);
         })
-        .WithName("GetMediaFile")
-        .WithSummary("Get uploaded media file")
+        .WithName("ServeMediaFile")
+        .WithSummary("Serve uploaded media file")
         .WithDescription("Serves publicly accessible uploaded files like avatars and blog images.")
         .Produces(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);

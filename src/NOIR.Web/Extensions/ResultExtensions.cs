@@ -95,6 +95,23 @@ public static class ResultExtensions
                 type: $"https://api.noir.local/errors/{error.Code}",
                 extensions: extensions),
 
+            ErrorType.TooManyRequests => Results.Problem(
+                statusCode: StatusCodes.Status429TooManyRequests,
+                title: "Too Many Requests",
+                detail: error.Message,
+                type: $"https://api.noir.local/errors/{error.Code}",
+                extensions: extensions),
+
+            // ErrorType.Failure is for expected business logic failures (invalid OTP, session expired, etc.)
+            // These are client errors (4xx), not server errors.
+            // True server errors throw exceptions and are caught by ExceptionHandlingMiddleware.
+            ErrorType.Failure => Results.Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Bad Request",
+                detail: error.Message,
+                type: $"https://api.noir.local/errors/{error.Code}",
+                extensions: extensions),
+
             _ => Results.Problem(
                 statusCode: StatusCodes.Status500InternalServerError,
                 title: "Internal Server Error",

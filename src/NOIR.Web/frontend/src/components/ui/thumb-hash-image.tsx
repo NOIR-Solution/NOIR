@@ -185,8 +185,6 @@ export function useThumbHashColor(thumbHash: string | null | undefined): string 
       const l = (bytes[0] & 63) / 63.0
       const p = ((bytes[0] >> 6) | ((bytes[1] & 3) << 2)) / 31.0 - 0.5
       const q = ((bytes[1] >> 2) & 31) / 31.0 - 0.5
-      const hasAlpha = bytes[1] >> 7
-
       // Convert from LPQ to RGB (simplified)
       const b = l - 2.0 / 3.0 * p
       const r = (3.0 * l - b + q) / 2.0

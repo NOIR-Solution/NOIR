@@ -401,7 +401,7 @@ public class FileStorageServiceTests
         var result = _sut.GetPublicUrl("test.txt");
 
         // Assert
-        result.Should().Be("/api/files/test.txt");
+        result.Should().Be("/media/test.txt");
     }
 
     [Fact]
@@ -411,7 +411,7 @@ public class FileStorageServiceTests
         var result = _sut.GetPublicUrl("folder/subfolder/file.txt");
 
         // Assert
-        result.Should().Be("/api/files/folder/subfolder/file.txt");
+        result.Should().Be("/media/folder/subfolder/file.txt");
     }
 
     [Fact]

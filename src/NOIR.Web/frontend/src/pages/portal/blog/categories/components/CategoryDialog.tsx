@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
-import { FolderTree, Plus, Pencil } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { FolderTree, Pencil } from 'lucide-react'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
@@ -39,11 +38,14 @@ const formSchema = z.object({
   name: z.string().min(2, 'Category name must be at least 2 characters').max(100, 'Category name cannot exceed 100 characters'),
   slug: z.string().min(2, 'Slug must be at least 2 characters').max(100, 'Slug cannot exceed 100 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
   description: z.string().max(500, 'Description cannot exceed 500 characters').optional(),
-  sortOrder: z.coerce.number().int().min(0, 'Sort order must be a positive number').default(0),
+  sortOrder: z.preprocess(
+    (val) => (val === '' || val === undefined || val === null ? 0 : Number(val)),
+    z.number().int().min(0, 'Sort order must be a positive number')
+  ),
   parentId: z.string().optional(),
 })
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.output<typeof formSchema>
 
 interface CategoryDialogProps {
   open: boolean
@@ -53,13 +55,12 @@ interface CategoryDialogProps {
 }
 
 export function CategoryDialog({ open, onOpenChange, category, onSuccess }: CategoryDialogProps) {
-  const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const [existingCategories, setExistingCategories] = useState<PostCategoryListItem[]>([])
   const isEdit = !!category
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
     defaultValues: {
       name: '',
       slug: '',

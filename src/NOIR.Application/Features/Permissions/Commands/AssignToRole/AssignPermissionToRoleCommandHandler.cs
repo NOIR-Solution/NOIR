@@ -40,6 +40,7 @@ public class AssignPermissionToRoleCommandHandler
             var invalidList = string.Join(", ", invalidPermissions);
             return Result.Failure<IReadOnlyList<string>>(
                 Error.Validation(
+                    "permissions",
                     _localization.Get("validation.permissions.invalidForTenant", invalidList),
                     ErrorCodes.Validation.General));
         }

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using NOIR.Application.Features.Blog.DTOs;
 using NOIR.Application.Features.Blog.Specifications;
 
@@ -70,12 +71,24 @@ public class GetPostsQueryHandler
 
     private static PostListDto MapToListDto(Post post)
     {
+        // Resolve featured image URL: prefer MediaFile.DefaultUrl, fallback to direct URL
+        var featuredImageUrl = post.FeaturedImage?.DefaultUrl ?? post.FeaturedImageUrl;
+
+        // Extract thumbnail URL from variants (prefer small webp, fallback to thumb webp)
+        string? thumbnailUrl = null;
+        if (post.FeaturedImage?.VariantsJson is { Length: > 2 })
+        {
+            thumbnailUrl = ExtractThumbnailUrl(post.FeaturedImage.VariantsJson);
+        }
+
         return new PostListDto(
             post.Id,
             post.Title,
             post.Slug,
             post.Excerpt,
-            post.FeaturedImageUrl,
+            post.FeaturedImageId,
+            featuredImageUrl,
+            thumbnailUrl ?? featuredImageUrl, // Fallback to full URL if no thumbnail
             post.Status,
             post.PublishedAt,
             post.ScheduledPublishAt,
@@ -84,6 +97,58 @@ public class GetPostsQueryHandler
             post.ViewCount,
             post.ReadingTimeMinutes,
             post.CreatedAt);
+    }
+
+    /// <summary>
+    /// Extracts a thumbnail URL from variants JSON.
+    /// Prefers: thumb/webp -> medium/webp -> thumb/jpeg -> medium/jpeg -> first available
+    /// (SEO-optimized: only thumb, medium, large variants are generated)
+    /// </summary>
+    private static string? ExtractThumbnailUrl(string variantsJson)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(variantsJson);
+            var variants = doc.RootElement;
+
+            if (variants.ValueKind != JsonValueKind.Array)
+                return null;
+
+            string? thumbWebp = null;
+            string? mediumWebp = null;
+            string? thumbJpeg = null;
+            string? mediumJpeg = null;
+            string? firstUrl = null;
+
+            foreach (var variant in variants.EnumerateArray())
+            {
+                // JSON uses lowercase property names: variant, format, url
+                var variantName = variant.GetProperty("variant").GetString();
+                var format = variant.GetProperty("format").GetString();
+                var url = variant.GetProperty("url").GetString();
+
+                if (string.IsNullOrEmpty(url))
+                    continue;
+
+                firstUrl ??= url;
+
+                if (variantName == "thumb" && format == "webp")
+                    thumbWebp = url;
+                else if (variantName == "medium" && format == "webp")
+                    mediumWebp = url;
+                else if (variantName == "thumb" && format == "jpeg")
+                    thumbJpeg = url;
+                else if (variantName == "medium" && format == "jpeg")
+                    mediumJpeg = url;
+            }
+
+            // Prefer thumb (150px) for list thumbnails, fallback to medium (640px)
+            return thumbWebp ?? thumbJpeg ?? mediumWebp ?? mediumJpeg ?? firstUrl;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
 

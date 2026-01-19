@@ -62,3 +62,28 @@ Frontend builds to `src/NOIR.Web/wwwroot/` for embedding in .NET app.
 - shadcn/ui for base components
 - 21st.dev for additional components
 - Tailwind for custom styling
+
+## Cross-Component Communication
+Use custom events for profile data changes that affect multiple components:
+
+```tsx
+// ProfileForm.tsx - Notify after profile changes
+const notifyProfileChanged = () => window.dispatchEvent(new Event('avatar-updated'))
+
+await refreshUser()
+notifyProfileChanged()  // Sidebar will refresh
+```
+
+```tsx
+// Sidebar.tsx - Listen for changes
+useEffect(() => {
+  const handleAvatarUpdate = () => { checkAuth() }
+  window.addEventListener('avatar-updated', handleAvatarUpdate)
+  return () => window.removeEventListener('avatar-updated', handleAvatarUpdate)
+}, [checkAuth])
+```
+
+**Dispatch `avatar-updated` when:**
+- Avatar upload/remove
+- Email change (avatar color uses `getAvatarColor(email)`)
+- Name change (Sidebar shows displayName)

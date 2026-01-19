@@ -64,8 +64,15 @@ public class UpdatePostCommandHandler
             command.ContentJson,
             command.ContentHtml);
 
-        // Update featured image
-        post.UpdateFeaturedImage(command.FeaturedImageUrl, command.FeaturedImageAlt);
+        // Update featured image (prefer MediaFile reference over URL)
+        if (command.FeaturedImageId.HasValue)
+        {
+            post.SetFeaturedImage(command.FeaturedImageId.Value, command.FeaturedImageAlt);
+        }
+        else
+        {
+            post.UpdateFeaturedImage(command.FeaturedImageUrl, command.FeaturedImageAlt);
+        }
 
         // Update SEO
         post.UpdateSeo(
@@ -99,7 +106,8 @@ public class UpdatePostCommandHandler
                 ta.Tag.Color, ta.Tag.PostCount, ta.Tag.CreatedAt, ta.Tag.ModifiedAt))
             .ToList();
 
-        return Result.Success(MapToDto(post, categoryName, null, tagDtos));
+        // Use command.FeaturedImageUrl since FeaturedImage navigation isn't loaded
+        return Result.Success(MapToDto(post, command.FeaturedImageUrl, categoryName, null, tagDtos));
     }
 
     private async Task UpdateTagAssignmentsAsync(
@@ -142,6 +150,7 @@ public class UpdatePostCommandHandler
 
     private static PostDto MapToDto(
         Post post,
+        string? featuredImageUrl,
         string? categoryName,
         string? authorName,
         List<PostTagDto> tags)
@@ -153,7 +162,8 @@ public class UpdatePostCommandHandler
             post.Excerpt,
             post.ContentJson,
             post.ContentHtml,
-            post.FeaturedImageUrl,
+            post.FeaturedImageId,
+            featuredImageUrl ?? post.FeaturedImageUrl,
             post.FeaturedImageAlt,
             post.Status,
             post.PublishedAt,
