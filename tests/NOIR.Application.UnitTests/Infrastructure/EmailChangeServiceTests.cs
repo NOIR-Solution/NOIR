@@ -486,7 +486,8 @@ public class EmailChangeServiceTests
         // Arrange
         var sessionToken = "session-token";
         var userId = Guid.NewGuid().ToString();
-        var otp = CreateEmailChangeOtp(userId, "old@example.com", "new@example.com", sessionToken);
+        // Use helper that sets CreatedAt in the past so cooldown has passed
+        var otp = CreateEmailChangeOtpWithCooldownPassed(userId, "old@example.com", "new@example.com", sessionToken);
         var newOtpCode = "654321";
         var user = CreateUserDto(userId, "old@example.com");
 
@@ -608,7 +609,8 @@ public class EmailChangeServiceTests
         var sessionToken = "session-token";
         var userId = Guid.NewGuid().ToString();
         var newEmail = "new@example.com";
-        var otp = CreateEmailChangeOtp(userId, "old@example.com", newEmail, sessionToken);
+        // Use helper that sets CreatedAt in the past so cooldown has passed
+        var otp = CreateEmailChangeOtpWithCooldownPassed(userId, "old@example.com", newEmail, sessionToken);
         var newOtpCode = "654321";
         var user = CreateUserDto(userId, "old@example.com");
 
@@ -847,6 +849,34 @@ public class EmailChangeServiceTests
             "otp-hash",
             sessionToken,
             expiryMinutes);
+    }
+
+    /// <summary>
+    /// Creates an OTP with CreatedAt set in the past so cooldown has passed.
+    /// This is needed for resend tests since cooldown now considers CreatedAt.
+    /// </summary>
+    private static EmailChangeOtp CreateEmailChangeOtpWithCooldownPassed(
+        string userId,
+        string currentEmail,
+        string newEmail,
+        string sessionToken,
+        int expiryMinutes = 15,
+        int cooldownSeconds = 60)
+    {
+        var otp = EmailChangeOtp.Create(
+            userId,
+            currentEmail,
+            newEmail,
+            "otp-hash",
+            sessionToken,
+            expiryMinutes);
+
+        // Set CreatedAt to past using reflection (cooldown + 1 second ago)
+        // EmailChangeOtp -> TenantAggregateRoot -> AggregateRoot -> Entity (has CreatedAt)
+        var createdAtProperty = typeof(EmailChangeOtp).BaseType?.BaseType?.BaseType?.GetProperty("CreatedAt");
+        createdAtProperty?.SetValue(otp, DateTimeOffset.UtcNow.AddSeconds(-(cooldownSeconds + 1)));
+
+        return otp;
     }
 
     #endregion

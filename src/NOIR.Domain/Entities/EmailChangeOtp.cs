@@ -154,10 +154,10 @@ public class EmailChangeOtp : TenantAggregateRoot<Guid>
         if (ResendCount >= maxResendCount)
             return false;
 
-        if (!LastResendAt.HasValue)
-            return true;
-
-        var cooldownEnd = LastResendAt.Value.AddSeconds(cooldownSeconds);
+        // Use LastResendAt if available, otherwise fall back to CreatedAt
+        // This ensures cooldown is enforced even for freshly created OTPs
+        var referenceTime = LastResendAt ?? CreatedAt;
+        var cooldownEnd = referenceTime.AddSeconds(cooldownSeconds);
         return DateTimeOffset.UtcNow >= cooldownEnd;
     }
 
@@ -168,10 +168,10 @@ public class EmailChangeOtp : TenantAggregateRoot<Guid>
     /// <returns>Remaining seconds, or 0 if cooldown has passed.</returns>
     public int GetRemainingCooldownSeconds(int cooldownSeconds)
     {
-        if (!LastResendAt.HasValue)
-            return 0;
-
-        var cooldownEnd = LastResendAt.Value.AddSeconds(cooldownSeconds);
+        // Use LastResendAt if available, otherwise fall back to CreatedAt
+        // This ensures cooldown is enforced even for freshly created OTPs
+        var referenceTime = LastResendAt ?? CreatedAt;
+        var cooldownEnd = referenceTime.AddSeconds(cooldownSeconds);
         var remaining = (cooldownEnd - DateTimeOffset.UtcNow).TotalSeconds;
         return remaining > 0 ? (int)Math.Ceiling(remaining) : 0;
     }

@@ -434,7 +434,7 @@ public class EmailChangeOtpTests
     #region CanResend Tests
 
     [Fact]
-    public void CanResend_FreshOtp_ShouldReturnTrue()
+    public void CanResend_FreshOtp_ShouldReturnFalse_WhenWithinCooldown()
     {
         // Arrange
         var otp = EmailChangeOtp.Create(
@@ -446,7 +446,29 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Act
+        // Fresh OTP should be in cooldown based on CreatedAt
         var canResend = otp.CanResend(cooldownSeconds: 60, maxResendCount: 3);
+
+        // Assert
+        // Cannot resend immediately after creation - must wait for cooldown
+        canResend.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CanResend_FreshOtp_ShouldReturnTrue_WhenCooldownIsZero()
+    {
+        // Arrange
+        var otp = EmailChangeOtp.Create(
+            ValidUserId,
+            ValidCurrentEmail,
+            ValidNewEmail,
+            ValidOtpHash,
+            ValidSessionToken,
+            DefaultExpiryMinutes);
+
+        // Act
+        // With 0 cooldown, should be able to resend immediately
+        var canResend = otp.CanResend(cooldownSeconds: 0, maxResendCount: 3);
 
         // Assert
         canResend.Should().BeTrue();
@@ -521,7 +543,7 @@ public class EmailChangeOtpTests
     #region GetRemainingCooldownSeconds Tests
 
     [Fact]
-    public void GetRemainingCooldownSeconds_FreshOtp_ShouldReturnZero()
+    public void GetRemainingCooldownSeconds_FreshOtp_ShouldReturnApproximateCooldown()
     {
         // Arrange
         var otp = EmailChangeOtp.Create(
@@ -533,10 +555,12 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Act
+        // Fresh OTP uses CreatedAt as reference time, so cooldown should be near the full value
         var remaining = otp.GetRemainingCooldownSeconds(cooldownSeconds: 60);
 
         // Assert
-        remaining.Should().Be(0);
+        // Should return approximately 60 seconds (allow 2 seconds tolerance for test execution time)
+        remaining.Should().BeCloseTo(60, 2);
     }
 
     [Fact]

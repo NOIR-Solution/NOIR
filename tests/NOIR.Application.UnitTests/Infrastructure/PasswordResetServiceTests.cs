@@ -342,17 +342,15 @@ public class PasswordResetServiceTests
     {
         // Arrange
         var sessionToken = "session_token";
-        var otpRecord = PasswordResetOtp.Create(
+        // Use helper that sets CreatedAt in the past so cooldown has passed
+        var otpRecord = CreatePasswordResetOtpWithCooldownPassed(
             "test@example.com",
             "old_hash",
             sessionToken,
             5,
             "user-id",
-            null,
-            null);
+            _settings.ResendCooldownSeconds);
 
-        // Simulate cooldown passed by setting LastResendAt to past
-        // Since we can't modify LastResendAt directly, we'll mock the CanResend check behavior
         _otpRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<ISpecification<PasswordResetOtp>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(otpRecord);
@@ -556,6 +554,39 @@ public class PasswordResetServiceTests
 
         // Assert
         result.Should().BeTrue();
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    /// <summary>
+    /// Creates an OTP with CreatedAt set in the past so cooldown has passed.
+    /// This is needed for resend tests since cooldown now considers CreatedAt.
+    /// </summary>
+    private static PasswordResetOtp CreatePasswordResetOtpWithCooldownPassed(
+        string email,
+        string otpHash,
+        string sessionToken,
+        int expiryMinutes,
+        string? userId = null,
+        int cooldownSeconds = 60)
+    {
+        var otp = PasswordResetOtp.Create(
+            email,
+            otpHash,
+            sessionToken,
+            expiryMinutes,
+            userId,
+            null,
+            null);
+
+        // Set CreatedAt to past using reflection (cooldown + 1 second ago)
+        // PasswordResetOtp -> TenantAggregateRoot -> AggregateRoot -> Entity (has CreatedAt)
+        var createdAtProperty = typeof(PasswordResetOtp).BaseType?.BaseType?.BaseType?.GetProperty("CreatedAt");
+        createdAtProperty?.SetValue(otp, DateTimeOffset.UtcNow.AddSeconds(-(cooldownSeconds + 1)));
+
+        return otp;
     }
 
     #endregion

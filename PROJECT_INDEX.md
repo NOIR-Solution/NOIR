@@ -1,8 +1,9 @@
 # Project Index: NOIR
 
-**Generated:** 2026-01-19
+**Generated:** 2026-01-19 (Updated)
 **Type:** Enterprise .NET 10 + React SaaS Foundation
 **Architecture:** Clean Architecture, CQRS, DDD
+**Tests:** 4,448 passing (925 Domain + 2,983 Application + 25 Architecture + 515 Integration)
 
 ---
 
@@ -16,7 +17,7 @@ dotnet run --project src/NOIR.Web
 # Frontend (separate terminal)
 cd src/NOIR.Web/frontend && npm install && npm run dev
 
-# Tests (3,500+ tests)
+# Tests (4,448 tests)
 dotnet test src/NOIR.sln
 
 # Admin Login: admin@noir.local / 123qwe
@@ -335,10 +336,10 @@ frontend/src/
 
 | Category | Count |
 |----------|-------|
-| C# Source Files | 377 |
-| C# Test Files | 112 |
-| Frontend TS/TSX | 87 |
-| Documentation (MD) | 24 |
+| C# Source Files | 537 |
+| C# Test Files | 225 |
+| Frontend TS/TSX | 162 |
+| Documentation (MD) | 36 |
 | Projects (csproj) | 8 |
 
 ---
@@ -347,11 +348,11 @@ frontend/src/
 
 | Project | Tests | Duration |
 |---------|-------|----------|
-| Domain.UnitTests | 488 | ~120ms |
-| Application.UnitTests | 1,235 | ~1s |
-| ArchitectureTests | 25 | ~960ms |
-| IntegrationTests | 302 | ~26s |
-| **Total** | **2,050** | ~28s |
+| Domain.UnitTests | 925 | ~189ms |
+| Application.UnitTests | 2,983 | ~2s |
+| ArchitectureTests | 25 | ~1s |
+| IntegrationTests | 515 | ~76s |
+| **Total** | **4,448** | ~80s |
 
 ### Handler Test Coverage (31 test files)
 
@@ -437,6 +438,16 @@ NOIR uses a deliberate log level strategy for HTTP responses:
 
 ---
 
+## Recent Changes (2026-01-19)
+
+- **OTP Cooldown Bypass Fix**: Fixed security vulnerability where users could bypass 15-minute cooldown
+  - Root cause: `GetRemainingCooldownSeconds` and `CanResend` returned 0/true when `LastResendAt` was null
+  - Fix: Now falls back to `CreatedAt` when `LastResendAt` is null
+  - Applied to both `EmailChangeOtp` and `PasswordResetOtp` entities
+  - Validated with 4,448 passing tests and manual browser testing
+
+---
+
 ## Recent Changes (2026-01-18)
 
 - **Media Upload System**: Unified image upload with processing pipeline
@@ -473,4 +484,4 @@ NOIR uses a deliberate log level strategy for HTTP responses:
 
 ---
 
-*Index size: ~8KB | Full codebase context: ~100KB+ tokens*
+*Index size: ~10KB | Full codebase context: ~100KB+ tokens | Last updated: 2026-01-19*
