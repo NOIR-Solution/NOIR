@@ -80,8 +80,8 @@ public class PasswordResetService : IPasswordResetService, IScopedService
             return await ResendOtpInternalAsync(existingOtp, cancellationToken);
         }
 
-        // Look up user (we still send success response even if user doesn't exist for security)
-        var user = await _userIdentityService.FindByEmailAsync(normalizedEmail, cancellationToken);
+        // Look up user within tenant (we still send success response even if user doesn't exist for security)
+        var user = await _userIdentityService.FindByEmailAsync(normalizedEmail, tenantId, cancellationToken);
 
         // Generate OTP, hash, and session token
         var otpCode = _otpService.GenerateOtp();

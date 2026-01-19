@@ -12,6 +12,17 @@ public interface IApplicationDbContext
     DbSet<PermissionTemplate> PermissionTemplates { get; }
 
     /// <summary>
+    /// Email templates DbSet for direct access.
+    /// Used by Copy-on-Write pattern to query across tenant boundaries.
+    /// </summary>
+    DbSet<EmailTemplate> EmailTemplates { get; }
+
+    /// <summary>
+    /// Attaches an entity to the context for tracking.
+    /// </summary>
+    EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
+
+    /// <summary>
     /// Saves all changes to the database.
     /// </summary>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

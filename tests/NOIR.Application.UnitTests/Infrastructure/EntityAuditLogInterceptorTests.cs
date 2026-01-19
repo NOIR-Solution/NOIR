@@ -480,7 +480,7 @@ public class EntityAuditLogInterceptorTests
     public void TenantContext_WithNullMultiTenantContext_ShouldNotThrow()
     {
         // Arrange
-        _tenantContextMock.Setup(x => x.MultiTenantContext).Returns((IMultiTenantContext<Tenant>?)null);
+        _tenantContextMock.Setup(x => x.MultiTenantContext).Returns((IMultiTenantContext<Tenant>)null!);
 
         // Act
         var context = _tenantContextMock.Object.MultiTenantContext;

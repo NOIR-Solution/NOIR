@@ -318,7 +318,7 @@ public class NotificationServiceTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 1000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 1000, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users.AsReadOnly(), 3));
 
         _userIdentityServiceMock
@@ -352,7 +352,7 @@ public class NotificationServiceTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 1000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 1000, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users.AsReadOnly(), 2));
 
         _userIdentityServiceMock
@@ -377,7 +377,7 @@ public class NotificationServiceTests
     {
         // Arrange
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 1000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 1000, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Service error"));
 
         // Act
@@ -410,7 +410,7 @@ public class NotificationServiceTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 10000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 10000, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users.AsReadOnly(), 4));
 
         SetupSuccessfulNotificationSend();
@@ -438,7 +438,7 @@ public class NotificationServiceTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 10000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 10000, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users.AsReadOnly(), 2));
 
         // Act
@@ -458,7 +458,7 @@ public class NotificationServiceTests
     {
         // Arrange
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 10000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 10000, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Service error"));
 
         // Act

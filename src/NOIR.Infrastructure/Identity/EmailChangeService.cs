@@ -71,8 +71,8 @@ public class EmailChangeService : IEmailChangeService, IScopedService
                 Error.Validation("newEmail", "New email must be different from current email.", ErrorCodes.Validation.InvalidInput));
         }
 
-        // Check if new email is already in use
-        var existingUser = await _userIdentityService.FindByEmailAsync(normalizedEmail, cancellationToken);
+        // Check if new email is already in use within this tenant
+        var existingUser = await _userIdentityService.FindByEmailAsync(normalizedEmail, tenantId, cancellationToken);
         if (existingUser is not null)
         {
             return Result.Failure<EmailChangeRequestResult>(

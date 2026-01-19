@@ -3,7 +3,8 @@ namespace NOIR.Infrastructure.Identity;
 /// <summary>
 /// Application user entity extending ASP.NET Core Identity.
 /// Implements IAuditableEntity for consistent audit tracking.
-/// Users are platform-level (not tenant-scoped) - tenant access is managed via UserTenantMembership.
+/// Each user belongs to exactly one tenant (single-tenant-per-user model).
+/// Email is unique within a tenant, not globally.
 /// </summary>
 public class ApplicationUser : IdentityUser, IAuditableEntity
 {
@@ -13,6 +14,13 @@ public class ApplicationUser : IdentityUser, IAuditableEntity
     public string? RefreshToken { get; set; }
     public DateTimeOffset? RefreshTokenExpiryTime { get; set; }
     public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// The tenant this user belongs to.
+    /// Each user belongs to exactly one tenant.
+    /// Email uniqueness is scoped to tenant (same email can exist in different tenants).
+    /// </summary>
+    public string? TenantId { get; set; }
 
     /// <summary>
     /// When the user was locked (IsActive set to false).
@@ -41,12 +49,6 @@ public class ApplicationUser : IdentityUser, IAuditableEntity
     /// System users cannot be deleted, locked, or have all their roles removed.
     /// </summary>
     public bool IsSystemUser { get; set; }
-
-    /// <summary>
-    /// The tenant memberships for this user.
-    /// A user can belong to multiple tenants with different roles.
-    /// </summary>
-    public virtual ICollection<UserTenantMembership> TenantMemberships { get; set; } = [];
 
     // IAuditableEntity implementation
     public DateTimeOffset CreatedAt { get; set; }

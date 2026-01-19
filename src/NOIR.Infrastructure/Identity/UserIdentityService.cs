@@ -28,10 +28,13 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         return user is null ? null : MapToDto(user);
     }
 
-    public async Task<UserIdentityDto?> FindByEmailAsync(string email, CancellationToken ct = default)
+    public async Task<UserIdentityDto?> FindByEmailAsync(string email, string? tenantId, CancellationToken ct = default)
     {
         var normalizedEmail = _userManager.NormalizeEmail(email);
-        var user = await _userManager.FindByEmailAsync(normalizedEmail);
+        // Email uniqueness is scoped to tenant
+        var user = await _userManager.Users
+            .Where(u => u.NormalizedEmail == normalizedEmail && u.TenantId == tenantId && !u.IsDeleted)
+            .FirstOrDefaultAsync(ct);
         return user is null ? null : MapToDto(user);
     }
 
@@ -56,13 +59,14 @@ public class UserIdentityService : IUserIdentityService, IScopedService
     }
 
     public async Task<(IReadOnlyList<UserIdentityDto> Users, int TotalCount)> GetUsersPaginatedAsync(
+        string? tenantId,
         string? search,
         int page,
         int pageSize,
         CancellationToken ct = default)
     {
         var query = _userManager.Users
-            .Where(u => !u.IsDeleted);
+            .Where(u => !u.IsDeleted && u.TenantId == tenantId);
 
         // Apply search filter on raw entity (before projection)
         if (!string.IsNullOrWhiteSpace(search))
@@ -146,6 +150,7 @@ public class UserIdentityService : IUserIdentityService, IScopedService
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             DisplayName = dto.DisplayName,
+            TenantId = dto.TenantId,
             IsActive = true
         };
 

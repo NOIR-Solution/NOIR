@@ -9,19 +9,25 @@ public class CreateUserCommandHandlerTests
     #region Test Setup
 
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
+    private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
     private readonly Mock<IEmailService> _emailServiceMock;
     private readonly Mock<IBaseUrlService> _baseUrlServiceMock;
     private readonly Mock<ILogger<CreateUserCommandHandler>> _loggerMock;
     private readonly CreateUserCommandHandler _handler;
+    private const string TestTenantId = "test-tenant-id";
 
     public CreateUserCommandHandlerTests()
     {
         _userIdentityServiceMock = new Mock<IUserIdentityService>();
+        _currentUserMock = new Mock<ICurrentUser>();
         _localizationServiceMock = new Mock<ILocalizationService>();
         _emailServiceMock = new Mock<IEmailService>();
         _baseUrlServiceMock = new Mock<IBaseUrlService>();
         _loggerMock = new Mock<ILogger<CreateUserCommandHandler>>();
+
+        // Setup current user with test tenant
+        _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
 
         // Setup localization to return the key (pass-through for testing)
         _localizationServiceMock
@@ -30,6 +36,7 @@ public class CreateUserCommandHandlerTests
 
         _handler = new CreateUserCommandHandler(
             _userIdentityServiceMock.Object,
+            _currentUserMock.Object,
             _localizationServiceMock.Object,
             _emailServiceMock.Object,
             _baseUrlServiceMock.Object,
@@ -76,7 +83,7 @@ public class CreateUserCommandHandlerTests
         const string userId = "new-user-id";
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         _userIdentityServiceMock
@@ -119,7 +126,7 @@ public class CreateUserCommandHandlerTests
         var roles = new List<string> { "Admin", "User" };
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         _userIdentityServiceMock
@@ -161,7 +168,7 @@ public class CreateUserCommandHandlerTests
         const string loginUrl = "https://example.com/login";
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         _userIdentityServiceMock
@@ -199,7 +206,7 @@ public class CreateUserCommandHandlerTests
         var roles = new List<string> { "Admin" };
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         _userIdentityServiceMock
@@ -240,7 +247,7 @@ public class CreateUserCommandHandlerTests
         const string password = "Password123!";
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateTestUserDto(email: email));
 
         var command = new CreateUserCommand(email, password, null, null, null, null, false);
@@ -268,7 +275,7 @@ public class CreateUserCommandHandlerTests
         const string password = "weak";
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         _userIdentityServiceMock
@@ -294,7 +301,7 @@ public class CreateUserCommandHandlerTests
         const string userId = "new-user-id";
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         _userIdentityServiceMock
@@ -328,7 +335,7 @@ public class CreateUserCommandHandlerTests
         const string userId = "new-user-id";
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         _userIdentityServiceMock
@@ -351,7 +358,7 @@ public class CreateUserCommandHandlerTests
         await _handler.Handle(command, token);
 
         // Assert
-        _userIdentityServiceMock.Verify(x => x.FindByEmailAsync(email, token), Times.Once);
+        _userIdentityServiceMock.Verify(x => x.FindByEmailAsync(email, TestTenantId, token), Times.Once);
         _userIdentityServiceMock.Verify(x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), password, token), Times.Once);
         _userIdentityServiceMock.Verify(x => x.FindByIdAsync(userId, token), Times.Once);
         _userIdentityServiceMock.Verify(x => x.GetRolesAsync(userId, token), Times.Once);
@@ -366,7 +373,7 @@ public class CreateUserCommandHandlerTests
         const string userId = "new-user-id";
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         _userIdentityServiceMock
@@ -406,7 +413,7 @@ public class CreateUserCommandHandlerTests
         const string userId = "new-user-id";
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         _userIdentityServiceMock

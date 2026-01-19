@@ -40,9 +40,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<PermissionTemplateItem> PermissionTemplateItems => Set<PermissionTemplateItem>();
 
     // Multi-tenant platform entities (platform-level, not tenant-scoped)
-    public DbSet<UserTenantMembership> UserTenantMemberships => Set<UserTenantMembership>();
-    public DbSet<TenantDomain> TenantDomains => Set<TenantDomain>();
-    public DbSet<TenantBranding> TenantBrandings => Set<TenantBranding>();
     public DbSet<TenantSetting> TenantSettings => Set<TenantSetting>();
 
     // Notification entities

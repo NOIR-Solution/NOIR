@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Mail, Edit, Eye } from 'lucide-react'
+import { Mail, Edit, Eye, GitFork, Pencil } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -154,6 +154,12 @@ export default function EmailTemplatesPage() {
                             Inactive
                           </Badge>
                         )}
+                        {template.isInherited && (
+                          <Badge variant="outline" className="text-purple-600 border-purple-600/30">
+                            <GitFork className="h-3 w-3 mr-1" />
+                            Platform
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -196,9 +202,23 @@ export default function EmailTemplatesPage() {
                     Preview
                   </Button>
                   {canEdit && (
-                    <Button size="sm" className="flex-1" onClick={() => handleEdit(template.id)}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      {t('buttons.edit')}
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      variant={template.isInherited ? 'outline' : 'default'}
+                      onClick={() => handleEdit(template.id)}
+                    >
+                      {template.isInherited ? (
+                        <>
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Customize
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="h-4 w-4 mr-2" />
+                          {t('buttons.edit')}
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>

@@ -59,24 +59,6 @@ public record Tenant : TenantInfo, IAuditableEntity
 
     #endregion
 
-    #region Navigation Properties
-
-    /// <summary>
-    /// The tenant's branding configuration (one-to-one).
-    /// </summary>
-    public virtual TenantBranding? Branding { get; init; }
-
-    /// <summary>
-    /// The domains associated with this tenant.
-    /// </summary>
-    public virtual ICollection<TenantDomain> Domains { get; init; } = [];
-
-    /// <summary>
-    /// The user memberships for this tenant.
-    /// </summary>
-    public virtual ICollection<UserTenantMembership> UserMemberships { get; init; } = [];
-
-    #endregion
 
     /// <summary>
     /// Creates a new tenant.

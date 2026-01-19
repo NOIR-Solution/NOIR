@@ -92,7 +92,7 @@ public class PasswordResetServiceTests
             .ReturnsAsync((PasswordResetOtp?)null); // No existing OTP
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateTestUser("user-id", email, "Test"));
 
         _otpServiceMock.Setup(x => x.GenerateOtp()).Returns(otpCode);
@@ -159,7 +159,7 @@ public class PasswordResetServiceTests
             .ReturnsAsync((PasswordResetOtp?)null);
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(email, It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null); // User doesn't exist
 
         _otpServiceMock.Setup(x => x.GenerateOtp()).Returns(otpCode);

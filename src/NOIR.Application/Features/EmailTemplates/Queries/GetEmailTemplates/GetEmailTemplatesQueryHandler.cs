@@ -2,48 +2,84 @@ namespace NOIR.Application.Features.EmailTemplates.Queries.GetEmailTemplates;
 
 /// <summary>
 /// Wolverine handler for getting list of email templates.
+/// Implements Copy-on-Write pattern by showing:
+/// - Tenant's own templates (TenantId = current tenant)
+/// - Platform templates not yet customized (TenantId = null, no tenant override)
 /// </summary>
 public class GetEmailTemplatesQueryHandler
 {
-    private readonly IRepository<EmailTemplate, Guid> _repository;
+    private readonly IApplicationDbContext _dbContext;
+    private readonly ICurrentUser _currentUser;
 
-    public GetEmailTemplatesQueryHandler(IRepository<EmailTemplate, Guid> repository)
+    public GetEmailTemplatesQueryHandler(
+        IApplicationDbContext dbContext,
+        ICurrentUser currentUser)
     {
-        _repository = repository;
+        _dbContext = dbContext;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<List<EmailTemplateListDto>>> Handle(
         GetEmailTemplatesQuery query,
         CancellationToken cancellationToken)
     {
-        var spec = new EmailTemplatesSpec(query.Search);
-        var templates = await _repository.ListAsync(spec, cancellationToken);
+        var currentTenantId = _currentUser.TenantId;
 
-        var result = templates.Select(t => new EmailTemplateListDto(
-            t.Id,
-            t.Name,
-            t.Subject,
-            t.IsActive,
-            t.Version,
-            t.Description,
-            ParseVariables(t.AvailableVariables)
-        )).ToList();
+        // Query all templates ignoring tenant filter to get both tenant and platform templates
+        var allTemplates = await _dbContext.EmailTemplates
+            .IgnoreQueryFilters()
+            .Where(t => !t.IsDeleted)
+            .Where(t => string.IsNullOrEmpty(query.Search) ||
+                        t.Name.Contains(query.Search) ||
+                        (t.Subject != null && t.Subject.Contains(query.Search)))
+            .OrderBy(t => t.Name)
+            .TagWith("EmailTemplates_CopyOnWrite")
+            .ToListAsync(cancellationToken);
 
-        return Result.Success(result);
-    }
+        // Group by template name to handle inheritance
+        var templatesByName = allTemplates.GroupBy(t => t.Name);
 
-    private static List<string> ParseVariables(string? availableVariables)
-    {
-        if (string.IsNullOrWhiteSpace(availableVariables))
-            return [];
+        var result = new List<EmailTemplateListDto>();
 
-        try
+        foreach (var group in templatesByName)
         {
-            return JsonSerializer.Deserialize<List<string>>(availableVariables) ?? [];
+            // Check if tenant has customized this template
+            var tenantTemplate = group.FirstOrDefault(t => t.TenantId == currentTenantId);
+            var platformTemplate = group.FirstOrDefault(t => t.TenantId == null);
+
+            if (tenantTemplate != null)
+            {
+                // Tenant has customized - show their version (not inherited)
+                result.Add(new EmailTemplateListDto(
+                    tenantTemplate.Id,
+                    tenantTemplate.Name,
+                    tenantTemplate.Subject,
+                    tenantTemplate.IsActive,
+                    tenantTemplate.Version,
+                    tenantTemplate.Description,
+                    EmailTemplateHelpers.ParseAvailableVariables(tenantTemplate.AvailableVariables),
+                    IsInherited: false));
+            }
+            else if (platformTemplate != null)
+            {
+                // No tenant customization - show platform template as inherited
+                // Use helper to determine inherited status based on user context
+                var isInherited = EmailTemplateHelpers.IsTemplateInherited(
+                    platformTemplate.TenantId,
+                    currentTenantId);
+
+                result.Add(new EmailTemplateListDto(
+                    platformTemplate.Id,
+                    platformTemplate.Name,
+                    platformTemplate.Subject,
+                    platformTemplate.IsActive,
+                    platformTemplate.Version,
+                    platformTemplate.Description,
+                    EmailTemplateHelpers.ParseAvailableVariables(platformTemplate.AvailableVariables),
+                    isInherited));
+            }
         }
-        catch
-        {
-            return [];
-        }
+
+        return Result.Success(result.OrderBy(t => t.Name).ToList());
     }
 }

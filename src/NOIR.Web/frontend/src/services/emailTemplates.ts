@@ -21,6 +21,8 @@ export interface EmailTemplateDto {
   availableVariables: string[]
   createdAt: string
   modifiedAt?: string | null
+  /** True if this is a platform template viewed by a tenant user (can be customized via Copy-on-Write) */
+  isInherited: boolean
 }
 
 /**
@@ -34,6 +36,8 @@ export interface EmailTemplateListDto {
   version: number
   description?: string | null
   availableVariables: string[]
+  /** True if this is a platform template viewed by a tenant user (can be customized via Copy-on-Write) */
+  isInherited: boolean
 }
 
 /**

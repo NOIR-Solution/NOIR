@@ -891,7 +891,8 @@ public class LogRingBufferTests
         // Assert - No exceptions should occur
         foreach (var task in tasks)
         {
-            task.Result.Should().NotBeNull();
+            var result = await task;
+            result.Should().NotBeNull();
         }
     }
 

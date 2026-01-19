@@ -42,8 +42,9 @@ public class LoginCommandHandler
         // Validation is handled by Wolverine FluentValidation middleware
 
         // Normalize email for consistent lookup
+        // User lookup is scoped to the current tenant context
         var normalizedEmail = _userIdentityService.NormalizeEmail(command.Email);
-        var user = await _userIdentityService.FindByEmailAsync(normalizedEmail, cancellationToken);
+        var user = await _userIdentityService.FindByEmailAsync(normalizedEmail, _currentUser.TenantId, cancellationToken);
 
         if (user is null)
         {

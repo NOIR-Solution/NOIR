@@ -363,41 +363,6 @@ public class TenantTests
 
     #endregion
 
-    #region Navigation Properties Tests
-
-    [Fact]
-    public void Create_Domains_ShouldBeEmpty()
-    {
-        // Act
-        var tenant = Tenant.Create("acme", "Acme");
-
-        // Assert
-        tenant.Domains.Should().NotBeNull();
-        tenant.Domains.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void Create_UserMemberships_ShouldBeEmpty()
-    {
-        // Act
-        var tenant = Tenant.Create("acme", "Acme");
-
-        // Assert
-        tenant.UserMemberships.Should().NotBeNull();
-        tenant.UserMemberships.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void Create_Branding_ShouldBeNull()
-    {
-        // Act
-        var tenant = Tenant.Create("acme", "Acme");
-
-        // Assert
-        tenant.Branding.Should().BeNull();
-    }
-
-    #endregion
 
     #region Record Equality Tests
 

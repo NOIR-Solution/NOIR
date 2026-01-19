@@ -94,19 +94,48 @@ public class UserIdentityServiceTests
 
     #region FindByEmailAsync Tests
 
+    private void SetupUserManagerWithUsers(params ApplicationUser[] users)
+    {
+        var queryable = users.AsQueryable();
+        var mockDbSet = new Mock<DbSet<ApplicationUser>>();
+
+        mockDbSet.As<IAsyncEnumerable<ApplicationUser>>()
+            .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+            .Returns(new TestAsyncEnumerator<ApplicationUser>(queryable.GetEnumerator()));
+
+        mockDbSet.As<IQueryable<ApplicationUser>>()
+            .Setup(m => m.Provider)
+            .Returns(new TestAsyncQueryProvider<ApplicationUser>(queryable.Provider));
+
+        mockDbSet.As<IQueryable<ApplicationUser>>()
+            .Setup(m => m.Expression)
+            .Returns(queryable.Expression);
+
+        mockDbSet.As<IQueryable<ApplicationUser>>()
+            .Setup(m => m.ElementType)
+            .Returns(queryable.ElementType);
+
+        mockDbSet.As<IQueryable<ApplicationUser>>()
+            .Setup(m => m.GetEnumerator())
+            .Returns(queryable.GetEnumerator());
+
+        _userManagerMock.Setup(x => x.Users).Returns(mockDbSet.Object);
+    }
+
     [Fact]
     public async Task FindByEmailAsync_WithExistingUser_ShouldReturnUserDto()
     {
         // Arrange
         var email = "test@example.com";
-        var user = CreateTestUser(email: email);
+        var user = CreateTestUser(email: email, tenantId: null);
+        user.NormalizedEmail = email.ToUpperInvariant();
+
+        SetupUserManagerWithUsers(user);
         _userManagerMock.Setup(x => x.NormalizeEmail(email))
             .Returns(email.ToUpperInvariant());
-        _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync(user);
 
         // Act
-        var result = await _sut.FindByEmailAsync(email);
+        var result = await _sut.FindByEmailAsync(email, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -118,13 +147,13 @@ public class UserIdentityServiceTests
     {
         // Arrange
         var email = "nonexistent@example.com";
+
+        SetupUserManagerWithUsers(); // Empty user list
         _userManagerMock.Setup(x => x.NormalizeEmail(email))
             .Returns(email.ToUpperInvariant());
-        _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync((ApplicationUser?)null);
 
         // Act
-        var result = await _sut.FindByEmailAsync(email);
+        var result = await _sut.FindByEmailAsync(email, null);
 
         // Assert
         result.Should().BeNull();
@@ -135,16 +164,39 @@ public class UserIdentityServiceTests
     {
         // Arrange
         var email = "Test@Example.COM";
+
+        SetupUserManagerWithUsers(); // Empty user list
         _userManagerMock.Setup(x => x.NormalizeEmail(email))
             .Returns(email.ToUpperInvariant());
-        _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync((ApplicationUser?)null);
 
         // Act
-        await _sut.FindByEmailAsync(email);
+        await _sut.FindByEmailAsync(email, null);
 
         // Assert
         _userManagerMock.Verify(x => x.NormalizeEmail(email), Times.Once);
+    }
+
+    [Fact]
+    public async Task FindByEmailAsync_WithTenantId_ShouldFilterByTenant()
+    {
+        // Arrange
+        var email = "test@example.com";
+        var tenantId = "tenant-1";
+        var userInTenant = CreateTestUser(email: email, tenantId: tenantId);
+        userInTenant.NormalizedEmail = email.ToUpperInvariant();
+        var userInOtherTenant = CreateTestUser(email: email, tenantId: "other-tenant");
+        userInOtherTenant.NormalizedEmail = email.ToUpperInvariant();
+
+        SetupUserManagerWithUsers(userInTenant, userInOtherTenant);
+        _userManagerMock.Setup(x => x.NormalizeEmail(email))
+            .Returns(email.ToUpperInvariant());
+
+        // Act
+        var result = await _sut.FindByEmailAsync(email, tenantId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.Email.Should().Be(email);
     }
 
     #endregion
@@ -317,7 +369,7 @@ public class UserIdentityServiceTests
     public async Task CreateUserAsync_WithValidData_ShouldReturnSuccessWithUserId()
     {
         // Arrange
-        var dto = new CreateUserDto("test@example.com", "John", "Doe", "JohnDoe");
+        var dto = new CreateUserDto("test@example.com", "John", "Doe", "JohnDoe", null);
         var password = "Password123!";
 
         _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), password))
@@ -335,7 +387,7 @@ public class UserIdentityServiceTests
     public async Task CreateUserAsync_WithInvalidPassword_ShouldReturnFailure()
     {
         // Arrange
-        var dto = new CreateUserDto("test@example.com", "John", "Doe", null);
+        var dto = new CreateUserDto("test@example.com", "John", "Doe", null, null);
         var password = "weak";
         var errors = new[] { new IdentityError { Description = "Password too weak" } };
 
@@ -354,7 +406,7 @@ public class UserIdentityServiceTests
     public async Task CreateUserAsync_ShouldSetCorrectUserProperties()
     {
         // Arrange
-        var dto = new CreateUserDto("test@example.com", "John", "Doe", "JohnDoe");
+        var dto = new CreateUserDto("test@example.com", "John", "Doe", "JohnDoe", null);
         var password = "Password123!";
         ApplicationUser? capturedUser = null;
 
@@ -1105,7 +1157,8 @@ public class UserIdentityServiceTests
 
     private static ApplicationUser CreateTestUser(
         string? userId = null,
-        string? email = null)
+        string? email = null,
+        string? tenantId = null)
     {
         var id = userId ?? Guid.NewGuid().ToString();
         var userEmail = email ?? $"user{id[..8]}@example.com";
@@ -1121,6 +1174,7 @@ public class UserIdentityServiceTests
             LastName = "User",
             DisplayName = "Test User",
             IsActive = true,
+            TenantId = tenantId,
             CreatedAt = DateTimeOffset.UtcNow
         };
     }

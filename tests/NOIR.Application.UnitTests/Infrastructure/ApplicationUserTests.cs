@@ -233,16 +233,30 @@ public class ApplicationUserTests
 
     #endregion
 
-    #region TenantMemberships Tests
+    #region TenantId Tests
 
     [Fact]
-    public void TenantMemberships_ShouldBeEmptyByDefault()
+    public void TenantId_ShouldBeNullByDefault()
     {
         // Arrange
         var user = new ApplicationUser();
 
-        // Assert - Users can belong to multiple tenants via memberships
-        user.TenantMemberships.Should().BeEmpty();
+        // Assert - Each user belongs to exactly one tenant
+        user.TenantId.Should().BeNull();
+    }
+
+    [Fact]
+    public void TenantId_ShouldBeSettable()
+    {
+        // Arrange
+        var user = new ApplicationUser();
+        var tenantId = Guid.NewGuid().ToString();
+
+        // Act
+        user.TenantId = tenantId;
+
+        // Assert
+        user.TenantId.Should().Be(tenantId);
     }
 
     #endregion

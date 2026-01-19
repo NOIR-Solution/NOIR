@@ -16,16 +16,10 @@ public interface ICurrentUser
     string? Email { get; }
 
     /// <summary>
-    /// The current active tenant ID (from JWT claim or session).
+    /// The current active tenant ID (from JWT claim).
     /// Null if user is not in a tenant context.
     /// </summary>
     string? TenantId { get; }
-
-    /// <summary>
-    /// The user's role in the current tenant.
-    /// Null if TenantId is null or user has no role in the tenant.
-    /// </summary>
-    TenantRole? TenantRole { get; }
 
     /// <summary>
     /// Whether the user is authenticated.
@@ -33,24 +27,16 @@ public interface ICurrentUser
     bool IsAuthenticated { get; }
 
     /// <summary>
-    /// The user's platform-level roles (e.g., Admin, User).
-    /// These are distinct from tenant roles.
+    /// The user's roles (e.g., Admin, User).
     /// </summary>
     IEnumerable<string> Roles { get; }
 
     /// <summary>
-    /// Checks if the user has a specific platform-level role.
+    /// Checks if the user has a specific role.
     /// </summary>
     /// <param name="role">The role name to check.</param>
     /// <returns>True if the user has the role.</returns>
     bool IsInRole(string role);
-
-    /// <summary>
-    /// Checks if the user has at least the specified tenant role level in the current tenant.
-    /// </summary>
-    /// <param name="minimumRole">The minimum required role.</param>
-    /// <returns>True if the user has at least the specified role level.</returns>
-    bool HasTenantRole(TenantRole minimumRole);
 
     /// <summary>
     /// Checks if the user is a platform administrator.

@@ -9,13 +9,21 @@ public class GetUsersQueryHandlerTests
     #region Test Setup
 
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
+    private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly GetUsersQueryHandler _handler;
+    private const string TestTenantId = "test-tenant-id";
 
     public GetUsersQueryHandlerTests()
     {
         _userIdentityServiceMock = new Mock<IUserIdentityService>();
+        _currentUserMock = new Mock<ICurrentUser>();
 
-        _handler = new GetUsersQueryHandler(_userIdentityServiceMock.Object);
+        // Setup current user with test tenant
+        _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
+
+        _handler = new GetUsersQueryHandler(
+            _userIdentityServiceMock.Object,
+            _currentUserMock.Object);
     }
 
     private static UserIdentityDto CreateTestUserDto(
@@ -77,7 +85,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
         foreach (var user in users)
@@ -110,7 +118,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(searchTerm, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, searchTerm, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
         _userIdentityServiceMock
@@ -126,7 +134,7 @@ public class GetUsersQueryHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Items.Should().HaveCount(1);
         _userIdentityServiceMock.Verify(
-            x => x.GetUsersPaginatedAsync(searchTerm, 1, 20, It.IsAny<CancellationToken>()),
+            x => x.GetUsersPaginatedAsync(TestTenantId, searchTerm, 1, 20, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -137,7 +145,7 @@ public class GetUsersQueryHandlerTests
         var users = CreateTestUsers(3);
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
         _userIdentityServiceMock
@@ -176,7 +184,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
         foreach (var user in users)
@@ -210,7 +218,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
         foreach (var user in users)
@@ -244,7 +252,7 @@ public class GetUsersQueryHandlerTests
         var users = CreateTestUsers(10);
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, pageSize, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, pageSize, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 25)); // Total count is 25
 
         foreach (var user in users)
@@ -275,7 +283,7 @@ public class GetUsersQueryHandlerTests
         var users = CreateTestUsers(5);
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, page, pageSize, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, page, pageSize, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 15)); // Total count is 15
 
         foreach (var user in users)
@@ -294,7 +302,7 @@ public class GetUsersQueryHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.PageNumber.Should().Be(2);
         _userIdentityServiceMock.Verify(
-            x => x.GetUsersPaginatedAsync(null, page, pageSize, It.IsAny<CancellationToken>()),
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, page, pageSize, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -303,7 +311,7 @@ public class GetUsersQueryHandlerTests
     {
         // Arrange
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, It.IsAny<string?>(), 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((new List<UserIdentityDto>(), 0));
 
         var query = new GetUsersQuery(Search: "nonexistent");
@@ -335,7 +343,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
         _userIdentityServiceMock
@@ -374,7 +382,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 1));
 
         _userIdentityServiceMock
@@ -407,7 +415,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
         foreach (var user in users)
@@ -439,7 +447,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
         foreach (var user in users)
@@ -471,7 +479,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
         foreach (var user in users)
@@ -507,7 +515,7 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 1));
 
         _userIdentityServiceMock
@@ -523,7 +531,7 @@ public class GetUsersQueryHandlerTests
 
         // Assert
         _userIdentityServiceMock.Verify(
-            x => x.GetUsersPaginatedAsync(null, 1, 20, token),
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, token),
             Times.Once);
         _userIdentityServiceMock.Verify(
             x => x.GetRolesAsync("user-1", token),
@@ -535,7 +543,7 @@ public class GetUsersQueryHandlerTests
     {
         // Arrange
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((new List<UserIdentityDto>(), 0));
 
         var query = new GetUsersQuery(); // Using all defaults
@@ -545,7 +553,7 @@ public class GetUsersQueryHandlerTests
 
         // Assert
         _userIdentityServiceMock.Verify(
-            x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()),
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -556,7 +564,7 @@ public class GetUsersQueryHandlerTests
         var users = CreateTestUsers(10);
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 50)); // Service returns total of 50, but only 10 on this page
 
         foreach (var user in users)

@@ -11,6 +11,7 @@ global using System.Threading.Tasks;
 
 // Microsoft - Entity Framework Core
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 // Microsoft - Extensions
 global using Microsoft.Extensions.Configuration;

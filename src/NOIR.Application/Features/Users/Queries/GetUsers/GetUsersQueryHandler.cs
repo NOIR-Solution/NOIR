@@ -3,20 +3,27 @@ namespace NOIR.Application.Features.Users.Queries.GetUsers;
 /// <summary>
 /// Wolverine handler for getting a paginated list of users.
 /// Supports search, role filtering, and lockout status filtering.
+/// Users are filtered by the current tenant context.
 /// </summary>
 public class GetUsersQueryHandler
 {
     private readonly IUserIdentityService _userIdentityService;
+    private readonly ICurrentUser _currentUser;
 
-    public GetUsersQueryHandler(IUserIdentityService userIdentityService)
+    public GetUsersQueryHandler(
+        IUserIdentityService userIdentityService,
+        ICurrentUser currentUser)
     {
         _userIdentityService = userIdentityService;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<PaginatedList<UserListDto>>> Handle(GetUsersQuery query, CancellationToken cancellationToken)
     {
         // Use the paginated method which handles EF Core translation properly
+        // Users are scoped to the current tenant context
         var (users, totalCount) = await _userIdentityService.GetUsersPaginatedAsync(
+            _currentUser.TenantId,
             query.Search,
             query.Page,
             query.PageSize,

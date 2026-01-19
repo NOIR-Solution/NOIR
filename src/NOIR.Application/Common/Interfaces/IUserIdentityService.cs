@@ -16,9 +16,10 @@ public interface IUserIdentityService
     Task<UserIdentityDto?> FindByIdAsync(string userId, CancellationToken ct = default);
 
     /// <summary>
-    /// Finds a user by their email address.
+    /// Finds a user by their email address within a specific tenant.
+    /// Email uniqueness is scoped to tenant (same email can exist in different tenants).
     /// </summary>
-    Task<UserIdentityDto?> FindByEmailAsync(string email, CancellationToken ct = default);
+    Task<UserIdentityDto?> FindByEmailAsync(string email, string? tenantId, CancellationToken ct = default);
 
     /// <summary>
     /// Gets a queryable for paginated user listing.
@@ -28,10 +29,11 @@ public interface IUserIdentityService
     IQueryable<UserIdentityDto> GetUsersQueryable();
 
     /// <summary>
-    /// Gets paginated users with optional search filter.
+    /// Gets paginated users within a tenant with optional search filter.
     /// Handles EF Core translation properly by doing projection after ordering.
     /// </summary>
     Task<(IReadOnlyList<UserIdentityDto> Users, int TotalCount)> GetUsersPaginatedAsync(
+        string? tenantId,
         string? search,
         int page,
         int pageSize,
@@ -169,7 +171,7 @@ public interface IUserIdentityService
 /// <summary>
 /// DTO representing user identity information.
 /// Decouples Application layer from ApplicationUser entity.
-/// Note: User is platform-level, tenant access managed via UserTenantMembership.
+/// Each user belongs to exactly one tenant (single-tenant-per-user model).
 /// </summary>
 public record UserIdentityDto(
     string Id,
@@ -188,13 +190,14 @@ public record UserIdentityDto(
 
 /// <summary>
 /// DTO for creating a new user.
-/// Note: User is platform-level, tenant membership is created separately.
+/// Each user belongs to exactly one tenant (single-tenant-per-user model).
 /// </summary>
 public record CreateUserDto(
     string Email,
     string? FirstName,
     string? LastName,
-    string? DisplayName);
+    string? DisplayName,
+    string? TenantId);
 
 /// <summary>
 /// DTO for updating user information.

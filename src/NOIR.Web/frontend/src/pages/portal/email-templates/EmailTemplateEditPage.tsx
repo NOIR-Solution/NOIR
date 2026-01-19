@@ -40,6 +40,8 @@ import {
   FileText,
   ChevronUp,
   GripVertical,
+  GitFork,
+  Info,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -335,6 +337,20 @@ export default function EmailTemplateEditPage() {
         </div>
       </div>
 
+      {/* Inherited template notice */}
+      {template.isInherited && (
+        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 text-sm text-purple-800 dark:text-purple-200 flex items-start gap-3">
+          <Info className="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium">Customizing Platform Template</p>
+            <p className="text-purple-600 dark:text-purple-300 mt-1">
+              This is a default platform template. When you save changes, a customized copy will be created for your tenant.
+              The original platform template will remain unchanged.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Unsaved changes warning */}
       {hasChanges && (
         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-sm text-yellow-800 dark:text-yellow-200">
@@ -610,6 +626,19 @@ export default function EmailTemplateEditPage() {
                 ) : (
                   <Badge variant="outline" className="text-muted-foreground">
                     Inactive
+                  </Badge>
+                )}
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Source:</span>
+                {template.isInherited ? (
+                  <Badge variant="outline" className="text-purple-600 border-purple-600/30">
+                    <GitFork className="h-3 w-3 mr-1" />
+                    Platform
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="text-blue-600 border-blue-600/30">
+                    Custom
                   </Badge>
                 )}
               </div>

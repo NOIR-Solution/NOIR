@@ -44,7 +44,7 @@ public sealed class CategoryByIdSpec : Specification<PostCategory>
     public CategoryByIdSpec(Guid id)
     {
         Query.Where(c => c.Id == id)
-             .Include(c => c.Parent)
+             .Include(c => c.Parent!)
              .Include(c => c.Children)
              .TagWith("GetCategoryById");
     }
@@ -72,7 +72,7 @@ public sealed class CategoryBySlugSpec : Specification<PostCategory>
     {
         Query.Where(c => c.Slug == slug.ToLowerInvariant())
              .Where(c => tenantId == null || c.TenantId == tenantId)
-             .Include(c => c.Parent)
+             .Include(c => c.Parent!)
              .Include(c => c.Children)
              .TagWith("GetCategoryBySlug");
     }

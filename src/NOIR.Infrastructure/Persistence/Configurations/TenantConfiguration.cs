@@ -3,10 +3,7 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for Tenant entity in ApplicationDbContext.
 /// Maps to the same "Tenants" table managed by TenantStoreDbContext.
-/// This allows ApplicationDbContext to have navigation properties to Tenant
-/// without creating a separate table.
-/// Note: Relationships are configured in their respective entity configurations
-/// (UserTenantMembershipConfiguration, TenantDomainConfiguration, TenantBrandingConfiguration).
+/// This allows ApplicationDbContext to reference tenants without creating a separate table.
 /// </summary>
 public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 {
@@ -35,8 +32,5 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 
         // Soft delete filter - exclude deleted tenants from queries
         builder.HasQueryFilter(t => !t.IsDeleted);
-
-        // Note: Navigation properties (UserMemberships, Domains, Branding)
-        // are configured in their respective entity configurations
     }
 }

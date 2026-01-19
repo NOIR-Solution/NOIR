@@ -19,8 +19,8 @@ public sealed class PostsSpec : Specification<Post>
              .Where(p => status == null || p.Status == status)
              .Where(p => categoryId == null || p.CategoryId == categoryId)
              .Where(p => authorId == null || p.AuthorId == authorId)
-             .Include(p => p.Category)
-             .Include(p => p.FeaturedImage)
+             .Include(p => p.Category!)
+             .Include(p => p.FeaturedImage!)
              .Include("TagAssignments.Tag")
              .OrderByDescending(p => p.CreatedAt)
              .TagWith("GetPosts");
@@ -50,10 +50,10 @@ public sealed class PublishedPostsSpec : Specification<Post>
                          p.Title.Contains(search) ||
                          (p.Excerpt != null && p.Excerpt.Contains(search)))
              .Where(p => categoryId == null || p.CategoryId == categoryId)
-             .Include(p => p.Category)
-             .Include(p => p.FeaturedImage)
+             .Include(p => p.Category!)
+             .Include(p => p.FeaturedImage!)
              .Include("TagAssignments.Tag")
-             .OrderByDescending(p => p.PublishedAt)
+             .OrderByDescending(p => p.PublishedAt!)
              .TagWith("GetPublishedPosts");
 
         if (tagId.HasValue)
@@ -76,8 +76,8 @@ public sealed class PostByIdSpec : Specification<Post>
     public PostByIdSpec(Guid id)
     {
         Query.Where(p => p.Id == id)
-             .Include(p => p.Category)
-             .Include(p => p.FeaturedImage)
+             .Include(p => p.Category!)
+             .Include(p => p.FeaturedImage!)
              .Include("TagAssignments.Tag")
              .TagWith("GetPostById");
     }
@@ -92,7 +92,7 @@ public sealed class PostByIdForUpdateSpec : Specification<Post>
     {
         Query.Where(p => p.Id == id)
              .Include(p => p.TagAssignments)
-             .Include(p => p.FeaturedImage)
+             .Include(p => p.FeaturedImage!)
              .AsTracking()
              .TagWith("GetPostByIdForUpdate");
     }
@@ -107,8 +107,8 @@ public sealed class PostBySlugSpec : Specification<Post>
     {
         Query.Where(p => p.Slug == slug.ToLowerInvariant())
              .Where(p => tenantId == null || p.TenantId == tenantId)
-             .Include(p => p.Category)
-             .Include(p => p.FeaturedImage)
+             .Include(p => p.Category!)
+             .Include(p => p.FeaturedImage!)
              .Include("TagAssignments.Tag")
              .TagWith("GetPostBySlug");
     }

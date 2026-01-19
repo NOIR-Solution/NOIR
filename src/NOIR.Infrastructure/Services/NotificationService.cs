@@ -165,9 +165,9 @@ public class NotificationService : INotificationService, IScopedService
     {
         try
         {
-            // Get users from queryable and filter by role
+            // Get users from current tenant and filter by role
             // This is a simplified approach - for large user bases, consider a dedicated endpoint
-            var (users, _) = await _userIdentityService.GetUsersPaginatedAsync(null, 1, 1000, ct);
+            var (users, _) = await _userIdentityService.GetUsersPaginatedAsync(_currentUser.TenantId, null, 1, 1000, ct);
             var count = 0;
 
             foreach (var user in users)
@@ -217,8 +217,8 @@ public class NotificationService : INotificationService, IScopedService
     {
         try
         {
-            // Get all users via pagination - for large user bases, consider background job batching
-            var (users, _) = await _userIdentityService.GetUsersPaginatedAsync(null, 1, 10000, ct);
+            // Get all users in current tenant - for large user bases, consider background job batching
+            var (users, _) = await _userIdentityService.GetUsersPaginatedAsync(_currentUser.TenantId, null, 1, 10000, ct);
             var count = 0;
 
             foreach (var user in users)

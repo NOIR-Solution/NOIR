@@ -168,3 +168,6 @@ global using NOIR.Application.Features.DeveloperLogs.DTOs;
 
 // NOIR Infrastructure - Logging
 global using NOIR.Infrastructure.Logging;
+
+// NOIR Test Helpers
+global using NOIR.Application.UnitTests.Common;

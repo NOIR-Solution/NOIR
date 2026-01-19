@@ -139,7 +139,7 @@ public class EmailChangeServiceTests
 
         SetupNoRateLimit(userId);
         SetupUserExists(userId, user);
-        _userIdentityServiceMock.Setup(x => x.FindByEmailAsync(newEmail.ToLowerInvariant(), It.IsAny<CancellationToken>()))
+        _userIdentityServiceMock.Setup(x => x.FindByEmailAsync(newEmail.ToLowerInvariant(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingUser);
 
         // Act
@@ -817,7 +817,7 @@ public class EmailChangeServiceTests
 
     private void SetupEmailNotInUse(string email)
     {
-        _userIdentityServiceMock.Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
+        _userIdentityServiceMock.Setup(x => x.FindByEmailAsync(email, It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
     }
 

@@ -82,7 +82,7 @@ public class LoginCommandHandlerTests
     private void SetupSuccessfulLogin(UserIdentityDto user)
     {
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _userIdentityServiceMock
@@ -221,7 +221,7 @@ public class LoginCommandHandlerTests
         var command = new LoginCommand("nonexistent@example.com", "password");
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         // Act
@@ -240,7 +240,7 @@ public class LoginCommandHandlerTests
         var command = new LoginCommand("nonexistent@example.com", "password");
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserIdentityDto?)null);
 
         // Act
@@ -264,7 +264,7 @@ public class LoginCommandHandlerTests
         var command = new LoginCommand("test@example.com", "validPassword123");
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
@@ -284,7 +284,7 @@ public class LoginCommandHandlerTests
         var command = new LoginCommand("test@example.com", "validPassword123");
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
@@ -308,7 +308,7 @@ public class LoginCommandHandlerTests
         var command = new LoginCommand("test@example.com", "wrongPassword");
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _userIdentityServiceMock
@@ -336,7 +336,7 @@ public class LoginCommandHandlerTests
         var command = new LoginCommand("test@example.com", "password");
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _userIdentityServiceMock
@@ -450,7 +450,7 @@ public class LoginCommandHandlerTests
         var command = new LoginCommand("test@example.com", "wrongPassword", UseCookies: true);
 
         _userIdentityServiceMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _userIdentityServiceMock
