@@ -10,6 +10,7 @@ import { TenantTable } from './components/TenantTable'
 import { CreateTenantDialog } from './components/CreateTenantDialog'
 import { EditTenantDialog } from './components/EditTenantDialog'
 import { DeleteTenantDialog } from './components/DeleteTenantDialog'
+import { ResetAdminPasswordDialog } from './components/ResetAdminPasswordDialog'
 import { useTenants } from '@/hooks/useTenants'
 import type { TenantListItem } from '@/types'
 
@@ -21,6 +22,7 @@ export default function TenantsPage() {
   const [searchInput, setSearchInput] = useState('')
   const [tenantToEdit, setTenantToEdit] = useState<TenantListItem | null>(null)
   const [tenantToDelete, setTenantToDelete] = useState<TenantListItem | null>(null)
+  const [tenantToResetPassword, setTenantToResetPassword] = useState<TenantListItem | null>(null)
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,6 +35,10 @@ export default function TenantsPage() {
 
   const handleDeleteClick = (tenant: TenantListItem) => {
     setTenantToDelete(tenant)
+  }
+
+  const handleResetPasswordClick = (tenant: TenantListItem) => {
+    setTenantToResetPassword(tenant)
   }
 
   return (
@@ -86,6 +92,7 @@ export default function TenantsPage() {
             tenants={data?.items || []}
             onEdit={handleEditClick}
             onDelete={handleDeleteClick}
+            onResetPassword={handleResetPasswordClick}
             loading={loading}
           />
 
@@ -116,6 +123,13 @@ export default function TenantsPage() {
         open={!!tenantToDelete}
         onOpenChange={(open) => !open && setTenantToDelete(null)}
         onConfirm={handleDelete}
+      />
+
+      <ResetAdminPasswordDialog
+        tenant={tenantToResetPassword}
+        open={!!tenantToResetPassword}
+        onOpenChange={(open) => !open && setTenantToResetPassword(null)}
+        onSuccess={refresh}
       />
     </div>
   )

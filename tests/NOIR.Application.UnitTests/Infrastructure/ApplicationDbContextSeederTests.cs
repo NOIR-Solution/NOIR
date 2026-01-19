@@ -13,10 +13,10 @@ public class ApplicationDbContextSeederTests
         _loggerMock = new Mock<ILogger<ApplicationDbContext>>();
     }
 
-    #region SeedRolesAsync Tests
+    #region SeedSystemRolesAsync Tests
 
     [Fact]
-    public async Task SeedRolesAsync_WhenRolesDoNotExist_ShouldCreateRoles()
+    public async Task SeedSystemRolesAsync_WhenRolesDoNotExist_ShouldCreateRoles()
     {
         // Arrange
         var roleStore = new Mock<IRoleStore<ApplicationRole>>();
@@ -32,16 +32,41 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, []);
 
         // Act
-        await ApplicationDbContextSeeder.SeedRolesAsync(roleManager, _loggerMock.Object);
+        await ApplicationDbContextSeeder.SeedSystemRolesAsync(roleManager, _loggerMock.Object);
 
-        // Assert - Should create each default role
+        // Assert - Should create each system role
         roleStore.Verify(
             x => x.CreateAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()),
-            Times.Exactly(Roles.Defaults.Count()));
+            Times.Exactly(Roles.SystemRoles.Count));
     }
 
     [Fact]
-    public async Task SeedRolesAsync_WhenRolesExist_ShouldNotCreateRoles()
+    public async Task SeedTenantRolesAsync_WhenRolesDoNotExist_ShouldCreateRoles()
+    {
+        // Arrange
+        var roleStore = new Mock<IRoleStore<ApplicationRole>>();
+        var roleManager = CreateRoleManager(roleStore);
+
+        roleStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ApplicationRole?)null);
+
+        roleStore.Setup(x => x.CreateAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(IdentityResult.Success);
+
+        // Need to setup claims store for permission seeding
+        SetupRoleClaimsStore(roleStore, []);
+
+        // Act
+        await ApplicationDbContextSeeder.SeedTenantRolesAsync(roleManager, _loggerMock.Object);
+
+        // Assert - Should create each tenant role
+        roleStore.Verify(
+            x => x.CreateAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()),
+            Times.Exactly(Roles.TenantRoles.Count));
+    }
+
+    [Fact]
+    public async Task SeedTenantRolesAsync_WhenRolesExist_ShouldNotCreateRoles()
     {
         // Arrange
         var roleStore = new Mock<IRoleStore<ApplicationRole>>();
@@ -54,7 +79,7 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, []);
 
         // Act
-        await ApplicationDbContextSeeder.SeedRolesAsync(roleManager, _loggerMock.Object);
+        await ApplicationDbContextSeeder.SeedTenantRolesAsync(roleManager, _loggerMock.Object);
 
         // Assert - Should not create any roles
         roleStore.Verify(
@@ -143,14 +168,21 @@ public class ApplicationDbContextSeederTests
 
     #endregion
 
-    #region SeedAdminUserAsync Tests
+    #region SeedTenantAdminUserAsync Tests
 
     [Fact]
-    public async Task SeedAdminUserAsync_WhenAdminDoesNotExist_ShouldCreateAdmin()
+    public async Task SeedTenantAdminUserAsync_WhenAdminDoesNotExist_ShouldCreateAdmin()
     {
         // Arrange
         var userStore = new Mock<IUserStore<ApplicationUser>>();
         var userManager = CreateUserManager(userStore);
+        var settings = new TenantAdminSettings
+        {
+            Email = "admin@noir.local",
+            Password = "Admin123!",
+            FirstName = "Tenant",
+            LastName = "Administrator"
+        };
 
         userStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ApplicationUser?)null);
@@ -169,7 +201,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync("admin@noir.local");
 
         // Act
-        await ApplicationDbContextSeeder.SeedAdminUserAsync(userManager, _loggerMock.Object);
+        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should create admin user
         userStore.Verify(
@@ -180,27 +212,36 @@ public class ApplicationDbContextSeederTests
     }
 
     [Fact]
-    public async Task SeedAdminUserAsync_WhenAdminExists_WithCorrectPassword_ShouldDoNothing()
+    public async Task SeedTenantAdminUserAsync_WhenAdminExists_WithCorrectPassword_ShouldDoNothing()
     {
         // Arrange
         var userStore = new Mock<IUserStore<ApplicationUser>>();
         var userManager = CreateUserManager(userStore);
+        var settings = new TenantAdminSettings
+        {
+            Email = "admin@noir.local",
+            Password = "Admin123!",
+            FirstName = "Tenant",
+            LastName = "Administrator"
+        };
 
         var existingUser = new ApplicationUser
         {
             Id = Guid.NewGuid().ToString(),
             Email = "admin@noir.local",
-            UserName = "admin@noir.local"
+            UserName = "admin@noir.local",
+            TenantId = "test-tenant-id"
         };
 
         SetupUserEmailStore(userStore, existingUser);
-        SetupUserPasswordStore(userStore, hasCorrectPassword: true);
+        SetupUserPasswordStore(userStore, hasCorrectPassword: true, correctPassword: settings.Password);
+        SetupUserRoleStore(userStore, new List<string> { Roles.Admin });
 
         userStore.Setup(x => x.GetUserIdAsync(existingUser, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingUser.Id);
 
         // Act
-        await ApplicationDbContextSeeder.SeedAdminUserAsync(userManager, _loggerMock.Object);
+        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should not create or modify user
         userStore.Verify(
@@ -209,22 +250,31 @@ public class ApplicationDbContextSeederTests
     }
 
     [Fact]
-    public async Task SeedAdminUserAsync_WhenAdminExists_WithWrongPassword_ShouldResetPassword()
+    public async Task SeedTenantAdminUserAsync_WhenAdminExists_WithWrongPassword_ShouldResetPassword()
     {
         // Arrange
         var userStore = new Mock<IUserStore<ApplicationUser>>();
         var userManager = CreateUserManager(userStore, withTokenProvider: true);
+        var settings = new TenantAdminSettings
+        {
+            Email = "admin@noir.local",
+            Password = "Admin123!",
+            FirstName = "Tenant",
+            LastName = "Administrator"
+        };
 
         var existingUser = new ApplicationUser
         {
             Id = Guid.NewGuid().ToString(),
             Email = "admin@noir.local",
-            UserName = "admin@noir.local"
+            UserName = "admin@noir.local",
+            TenantId = "test-tenant-id"
         };
 
         SetupUserEmailStore(userStore, existingUser);
         SetupUserPasswordStoreWithDifferentPassword(userStore);
         SetupUserTwoFactorStore(userStore);
+        SetupUserRoleStore(userStore, new List<string> { Roles.Admin });
 
         userStore.Setup(x => x.GetUserIdAsync(existingUser, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingUser.Id);
@@ -236,7 +286,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync(IdentityResult.Success);
 
         // Act
-        await ApplicationDbContextSeeder.SeedAdminUserAsync(userManager, _loggerMock.Object);
+        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should update user (password reset)
         userStore.Verify(
@@ -245,11 +295,18 @@ public class ApplicationDbContextSeederTests
     }
 
     [Fact]
-    public async Task SeedAdminUserAsync_WhenCreationFails_ShouldLogError()
+    public async Task SeedTenantAdminUserAsync_WhenCreationFails_ShouldLogError()
     {
         // Arrange
         var userStore = new Mock<IUserStore<ApplicationUser>>();
         var userManager = CreateUserManager(userStore);
+        var settings = new TenantAdminSettings
+        {
+            Email = "admin@noir.local",
+            Password = "Admin123!",
+            FirstName = "Tenant",
+            LastName = "Administrator"
+        };
 
         userStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ApplicationUser?)null);
@@ -261,25 +318,32 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Test error" }));
 
         // Act
-        await ApplicationDbContextSeeder.SeedAdminUserAsync(userManager, _loggerMock.Object);
+        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should log error
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Error,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Failed to create admin user")),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Failed to create tenant admin user")),
                 It.IsAny<Exception?>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Once);
     }
 
     [Fact]
-    public async Task SeedAdminUserAsync_WhenCreated_ShouldAddToAdminRole()
+    public async Task SeedTenantAdminUserAsync_WhenCreated_ShouldAddToAdminRole()
     {
         // Arrange
         var userStore = new Mock<IUserStore<ApplicationUser>>();
         var userManager = CreateUserManager(userStore);
+        var settings = new TenantAdminSettings
+        {
+            Email = "admin@noir.local",
+            Password = "Admin123!",
+            FirstName = "Tenant",
+            LastName = "Administrator"
+        };
 
         userStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ApplicationUser?)null);
@@ -298,7 +362,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync("admin@noir.local");
 
         // Act
-        await ApplicationDbContextSeeder.SeedAdminUserAsync(userManager, _loggerMock.Object);
+        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should add to Admin role (normalized to uppercase)
         var roleStore = userStore.As<IUserRoleStore<ApplicationUser>>();
@@ -312,22 +376,31 @@ public class ApplicationDbContextSeederTests
     #region Error Path Tests
 
     [Fact]
-    public async Task SeedAdminUserAsync_WhenPasswordResetFails_ShouldNotThrow()
+    public async Task SeedTenantAdminUserAsync_WhenPasswordResetFails_ShouldNotThrow()
     {
         // Arrange
         var userStore = new Mock<IUserStore<ApplicationUser>>();
         var userManager = CreateUserManager(userStore, withTokenProvider: true);
+        var settings = new TenantAdminSettings
+        {
+            Email = "admin@noir.local",
+            Password = "Admin123!",
+            FirstName = "Tenant",
+            LastName = "Administrator"
+        };
 
         var existingUser = new ApplicationUser
         {
             Id = Guid.NewGuid().ToString(),
             Email = "admin@noir.local",
-            UserName = "admin@noir.local"
+            UserName = "admin@noir.local",
+            TenantId = "test-tenant-id"
         };
 
         SetupUserEmailStore(userStore, existingUser);
         SetupUserPasswordStoreWithDifferentPassword(userStore);
         SetupUserTwoFactorStore(userStore);
+        SetupUserRoleStore(userStore, new List<string> { Roles.Admin });
 
         userStore.Setup(x => x.GetUserIdAsync(existingUser, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingUser.Id);
@@ -340,14 +413,14 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Reset failed" }));
 
         // Act - Should not throw even if reset fails
-        var act = () => ApplicationDbContextSeeder.SeedAdminUserAsync(userManager, _loggerMock.Object);
+        var act = () => ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert
         await act.Should().NotThrowAsync();
     }
 
     [Fact]
-    public async Task SeedRolesAsync_WhenRoleCreationFails_ShouldContinueWithNextRole()
+    public async Task SeedTenantRolesAsync_WhenRoleCreationFails_ShouldContinueWithNextRole()
     {
         // Arrange
         var roleStore = new Mock<IRoleStore<ApplicationRole>>();
@@ -370,12 +443,12 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, []);
 
         // Act - Should not throw, should continue to next role
-        await ApplicationDbContextSeeder.SeedRolesAsync(roleManager, _loggerMock.Object);
+        await ApplicationDbContextSeeder.SeedTenantRolesAsync(roleManager, _loggerMock.Object);
 
-        // Assert - Should attempt to create both roles
+        // Assert - Should attempt to create all tenant roles
         roleStore.Verify(
             x => x.CreateAsync(It.IsAny<ApplicationRole>(), It.IsAny<CancellationToken>()),
-            Times.Exactly(Roles.Defaults.Count()));
+            Times.Exactly(Roles.TenantRoles.Count));
     }
 
     [Fact]
@@ -410,11 +483,18 @@ public class ApplicationDbContextSeederTests
     }
 
     [Fact]
-    public async Task SeedAdminUserAsync_WhenAddToRoleFails_ShouldNotThrow()
+    public async Task SeedTenantAdminUserAsync_WhenAddToRoleFails_ShouldNotThrow()
     {
         // Arrange
         var userStore = new Mock<IUserStore<ApplicationUser>>();
         var userManager = CreateUserManager(userStore);
+        var settings = new TenantAdminSettings
+        {
+            Email = "admin@noir.local",
+            Password = "Admin123!",
+            FirstName = "Tenant",
+            LastName = "Administrator"
+        };
 
         userStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ApplicationUser?)null);
@@ -438,18 +518,25 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync("admin@noir.local");
 
         // Act - Adding to role throws, but creation succeeded
-        var act = () => ApplicationDbContextSeeder.SeedAdminUserAsync(userManager, _loggerMock.Object);
+        var act = () => ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should throw since role assignment is part of the flow
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
     [Fact]
-    public async Task SeedAdminUserAsync_WhenMultipleCreationErrors_ShouldLogAllErrors()
+    public async Task SeedTenantAdminUserAsync_WhenMultipleCreationErrors_ShouldLogAllErrors()
     {
         // Arrange
         var userStore = new Mock<IUserStore<ApplicationUser>>();
         var userManager = CreateUserManager(userStore);
+        var settings = new TenantAdminSettings
+        {
+            Email = "admin@noir.local",
+            Password = "Admin123!",
+            FirstName = "Tenant",
+            LastName = "Administrator"
+        };
 
         userStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ApplicationUser?)null);
@@ -464,7 +551,7 @@ public class ApplicationDbContextSeederTests
                 new IdentityError { Code = "E3", Description = "Username invalid" }));
 
         // Act
-        await ApplicationDbContextSeeder.SeedAdminUserAsync(userManager, _loggerMock.Object);
+        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should log error containing all error descriptions
         _loggerMock.Verify(
@@ -569,7 +656,7 @@ public class ApplicationDbContextSeederTests
         }
     }
 
-    private static void SetupUserPasswordStore(Mock<IUserStore<ApplicationUser>> store, bool hasCorrectPassword = false)
+    private static void SetupUserPasswordStore(Mock<IUserStore<ApplicationUser>> store, bool hasCorrectPassword = false, string correctPassword = "Admin123!")
     {
         var passwordStore = store.As<IUserPasswordStore<ApplicationUser>>();
 
@@ -577,7 +664,7 @@ public class ApplicationDbContextSeederTests
         {
             var hasher = new PasswordHasher<ApplicationUser>();
             var user = new ApplicationUser();
-            var hash = hasher.HashPassword(user, "123qwe");
+            var hash = hasher.HashPassword(user, correctPassword);
 
             passwordStore.Setup(x => x.GetPasswordHashAsync(It.IsAny<ApplicationUser>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(hash);
@@ -609,7 +696,7 @@ public class ApplicationDbContextSeederTests
             .Returns(Task.CompletedTask);
     }
 
-    private static void SetupUserRoleStore(Mock<IUserStore<ApplicationUser>> store)
+    private static void SetupUserRoleStore(Mock<IUserStore<ApplicationUser>> store, List<string>? existingRoles = null)
     {
         var roleStore = store.As<IUserRoleStore<ApplicationUser>>();
 
@@ -617,7 +704,11 @@ public class ApplicationDbContextSeederTests
             .Returns(Task.CompletedTask);
 
         roleStore.Setup(x => x.GetRolesAsync(It.IsAny<ApplicationUser>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string>());
+            .ReturnsAsync(existingRoles ?? new List<string>());
+
+        roleStore.Setup(x => x.IsInRoleAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ApplicationUser _, string role, CancellationToken _) =>
+                existingRoles != null && existingRoles.Contains(role, StringComparer.OrdinalIgnoreCase));
     }
 
     private static void SetupUserTwoFactorStore(Mock<IUserStore<ApplicationUser>> store)

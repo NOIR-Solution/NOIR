@@ -8,6 +8,7 @@ public class UserIdentityServiceTests
 {
     private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
     private readonly Mock<SignInManager<ApplicationUser>> _signInManagerMock;
+    private readonly Mock<IMultiTenantStore<Tenant>> _tenantStoreMock;
     private readonly Mock<IDateTime> _dateTimeMock;
     private readonly UserIdentityService _sut;
 
@@ -19,6 +20,16 @@ public class UserIdentityServiceTests
             userStoreMock.Object,
             null!, null!, null!, null!, null!, null!, null!, null!);
 
+        // Setup default empty Users queryable for async operations using MockQueryable.Moq
+        // BuildMockDbSet is extension on IEnumerable<T>, not IQueryable<T>
+        var emptyUsersList = new List<ApplicationUser>();
+        var mockUsers = emptyUsersList.BuildMockDbSet();
+        _userManagerMock.Setup(x => x.Users).Returns(mockUsers.Object);
+
+        // Setup email normalization
+        _userManagerMock.Setup(x => x.NormalizeEmail(It.IsAny<string>()))
+            .Returns<string>(email => email?.ToUpperInvariant() ?? string.Empty);
+
         // Setup SignInManager mock
         var contextAccessorMock = new Mock<IHttpContextAccessor>();
         var userClaimsPrincipalFactoryMock = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
@@ -28,12 +39,18 @@ public class UserIdentityServiceTests
             userClaimsPrincipalFactoryMock.Object,
             null!, null!, null!, null!);
 
+        // Setup TenantStore mock
+        _tenantStoreMock = new Mock<IMultiTenantStore<Tenant>>();
+        _tenantStoreMock.Setup(x => x.GetAllAsync())
+            .ReturnsAsync([]);
+
         _dateTimeMock = new Mock<IDateTime>();
         _dateTimeMock.Setup(x => x.UtcNow).Returns(DateTimeOffset.UtcNow);
 
         _sut = new UserIdentityService(
             _userManagerMock.Object,
             _signInManagerMock.Object,
+            _tenantStoreMock.Object,
             _dateTimeMock.Object);
     }
 
@@ -403,10 +420,10 @@ public class UserIdentityServiceTests
     }
 
     [Fact]
-    public async Task CreateUserAsync_ShouldSetCorrectUserProperties()
+    public async Task CreateUserAsync_ForPlatformUser_ShouldSetUserNameToEmail()
     {
-        // Arrange
-        var dto = new CreateUserDto("test@example.com", "John", "Doe", "JohnDoe", null);
+        // Arrange - Platform user has TenantId = null
+        var dto = new CreateUserDto("test@example.com", "John", "Doe", "JohnDoe", TenantId: null);
         var password = "Password123!";
         ApplicationUser? capturedUser = null;
 
@@ -420,11 +437,68 @@ public class UserIdentityServiceTests
         // Assert
         capturedUser.Should().NotBeNull();
         capturedUser!.Email.Should().Be(dto.Email);
-        capturedUser.UserName.Should().Be(dto.Email);
+        capturedUser.UserName.Should().Be(dto.Email); // Platform users: UserName = Email
         capturedUser.FirstName.Should().Be(dto.FirstName);
         capturedUser.LastName.Should().Be(dto.LastName);
         capturedUser.DisplayName.Should().Be(dto.DisplayName);
         capturedUser.IsActive.Should().BeTrue();
+        capturedUser.TenantId.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task CreateUserAsync_ForTenantUser_ShouldSetUserNameToEmailWithTenantId()
+    {
+        // Arrange - Tenant user has TenantId set
+        var tenantId = "550e8400-e29b-41d4-a716-446655440000";
+        var email = "user@example.com";
+        var dto = new CreateUserDto(email, "John", "Doe", "JohnDoe", TenantId: tenantId);
+        var password = "Password123!";
+        ApplicationUser? capturedUser = null;
+
+        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), password))
+            .Callback<ApplicationUser, string>((u, _) => capturedUser = u)
+            .ReturnsAsync(IdentityResult.Success);
+
+        // Act
+        await _sut.CreateUserAsync(dto, password);
+
+        // Assert
+        capturedUser.Should().NotBeNull();
+        capturedUser!.Email.Should().Be(email);
+        capturedUser.UserName.Should().Be($"{email}#{tenantId}"); // Tenant users: UserName = email#tenantId
+        capturedUser.FirstName.Should().Be(dto.FirstName);
+        capturedUser.LastName.Should().Be(dto.LastName);
+        capturedUser.TenantId.Should().Be(tenantId);
+    }
+
+    [Fact]
+    public async Task CreateUserAsync_WithEmptyEmail_ShouldReturnFailure()
+    {
+        // Arrange
+        var dto = new CreateUserDto("", "John", "Doe", null, null);
+        var password = "Password123!";
+
+        // Act
+        var result = await _sut.CreateUserAsync(dto, password);
+
+        // Assert
+        result.Succeeded.Should().BeFalse();
+        result.Errors.Should().Contain("Email is required.");
+    }
+
+    [Fact]
+    public async Task CreateUserAsync_WithEmptyPassword_ShouldReturnFailure()
+    {
+        // Arrange
+        var dto = new CreateUserDto("test@example.com", "John", "Doe", null, null);
+        var password = "";
+
+        // Act
+        var result = await _sut.CreateUserAsync(dto, password);
+
+        // Assert
+        result.Succeeded.Should().BeFalse();
+        result.Errors.Should().Contain("Password is required.");
     }
 
     #endregion
@@ -815,14 +889,16 @@ public class UserIdentityServiceTests
         var user = CreateTestUser(userId);
         var newEmail = "newemail@example.com";
 
+        // Setup Users mock for per-tenant email check (empty = no existing user)
+        var users = new List<ApplicationUser> { user }.BuildMockDbSet();
+        _userManagerMock.Setup(x => x.Users).Returns(users.Object);
+
         _userManagerMock.Setup(x => x.FindByIdAsync(userId))
             .ReturnsAsync(user);
-        _userManagerMock.Setup(x => x.FindByEmailAsync(newEmail))
-            .ReturnsAsync((ApplicationUser?)null);
-        _userManagerMock.Setup(x => x.NormalizeEmail(newEmail))
-            .Returns(newEmail.ToUpperInvariant());
-        _userManagerMock.Setup(x => x.NormalizeName(newEmail))
-            .Returns(newEmail.ToUpperInvariant());
+        _userManagerMock.Setup(x => x.NormalizeEmail(It.IsAny<string>()))
+            .Returns<string>(e => e?.ToUpperInvariant() ?? string.Empty);
+        _userManagerMock.Setup(x => x.NormalizeName(It.IsAny<string>()))
+            .Returns<string>(n => n?.ToUpperInvariant() ?? string.Empty);
         _userManagerMock.Setup(x => x.UpdateAsync(user))
             .ReturnsAsync(IdentityResult.Success);
 
@@ -832,6 +908,7 @@ public class UserIdentityServiceTests
         // Assert
         result.Succeeded.Should().BeTrue();
         user.Email.Should().Be(newEmail);
+        // Platform user (TenantId = null): UserName = email
         user.UserName.Should().Be(newEmail);
     }
 
@@ -843,18 +920,25 @@ public class UserIdentityServiceTests
         var user = CreateTestUser(userId);
         var newEmail = "taken@example.com";
         var existingUser = CreateTestUser(Guid.NewGuid().ToString(), email: newEmail);
+        // Both users in same tenant (null = platform)
+        user.TenantId = null;
+        existingUser.TenantId = null;
+
+        // Setup Users mock with existing user having the same email in same tenant
+        var users = new List<ApplicationUser> { user, existingUser }.BuildMockDbSet();
+        _userManagerMock.Setup(x => x.Users).Returns(users.Object);
 
         _userManagerMock.Setup(x => x.FindByIdAsync(userId))
             .ReturnsAsync(user);
-        _userManagerMock.Setup(x => x.FindByEmailAsync(newEmail))
-            .ReturnsAsync(existingUser);
+        _userManagerMock.Setup(x => x.NormalizeEmail(It.IsAny<string>()))
+            .Returns<string>(e => e?.ToUpperInvariant() ?? string.Empty);
 
         // Act
         var result = await _sut.UpdateEmailAsync(userId, newEmail);
 
         // Assert
         result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Email is already in use.");
+        result.Errors.Should().Contain("Email is already in use in this tenant.");
     }
 
     [Fact]
@@ -865,14 +949,16 @@ public class UserIdentityServiceTests
         var user = CreateTestUser(userId);
         var sameEmail = user.Email!;
 
+        // Setup Users mock
+        var users = new List<ApplicationUser> { user }.BuildMockDbSet();
+        _userManagerMock.Setup(x => x.Users).Returns(users.Object);
+
         _userManagerMock.Setup(x => x.FindByIdAsync(userId))
             .ReturnsAsync(user);
-        _userManagerMock.Setup(x => x.FindByEmailAsync(sameEmail))
-            .ReturnsAsync(user); // Returns same user
-        _userManagerMock.Setup(x => x.NormalizeEmail(sameEmail))
-            .Returns(sameEmail.ToUpperInvariant());
-        _userManagerMock.Setup(x => x.NormalizeName(sameEmail))
-            .Returns(sameEmail.ToUpperInvariant());
+        _userManagerMock.Setup(x => x.NormalizeEmail(It.IsAny<string>()))
+            .Returns<string>(e => e?.ToUpperInvariant() ?? string.Empty);
+        _userManagerMock.Setup(x => x.NormalizeName(It.IsAny<string>()))
+            .Returns<string>(n => n?.ToUpperInvariant() ?? string.Empty);
         _userManagerMock.Setup(x => x.UpdateAsync(user))
             .ReturnsAsync(IdentityResult.Success);
 

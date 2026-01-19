@@ -36,7 +36,7 @@ public class UpdateTenantCommandHandlerTests
         string name = "Test Tenant",
         bool isActive = true)
     {
-        var tenant = Tenant.Create(identifier, name, isActive);
+        var tenant = Tenant.Create(identifier, name, isActive: isActive);
         // If specific ID needed, use reflection or return as-is
         return tenant;
     }
@@ -66,7 +66,7 @@ public class UpdateTenantCommandHandlerTests
             .Setup(x => x.UpdateAsync(It.IsAny<Tenant>()))
             .ReturnsAsync(true);
 
-        var command = new UpdateTenantCommand(tenantId, newIdentifier, newName, true);
+        var command = new UpdateTenantCommand(tenantId, newIdentifier, newName, IsActive: true);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -99,7 +99,7 @@ public class UpdateTenantCommandHandlerTests
             .Setup(x => x.UpdateAsync(It.IsAny<Tenant>()))
             .ReturnsAsync(true);
 
-        var command = new UpdateTenantCommand(tenantId, identifier, newName, true);
+        var command = new UpdateTenantCommand(tenantId, identifier, newName, IsActive: true);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -123,7 +123,7 @@ public class UpdateTenantCommandHandlerTests
             .Setup(x => x.UpdateAsync(It.Is<Tenant>(t => !t.IsActive)))
             .ReturnsAsync(true);
 
-        var command = new UpdateTenantCommand(tenantId, "test-tenant", "Test Tenant", false);
+        var command = new UpdateTenantCommand(tenantId, "test-tenant", "Test Tenant", IsActive: false);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -147,7 +147,7 @@ public class UpdateTenantCommandHandlerTests
             .Setup(x => x.GetAsync(tenantId.ToString()))
             .ReturnsAsync((Tenant?)null);
 
-        var command = new UpdateTenantCommand(tenantId, "new-identifier", "New Name", true);
+        var command = new UpdateTenantCommand(tenantId, "new-identifier", "New Name", IsActive: true);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -181,7 +181,7 @@ public class UpdateTenantCommandHandlerTests
             .Setup(x => x.GetByIdentifierAsync(newIdentifier.ToLowerInvariant()))
             .ReturnsAsync(conflictingTenant);
 
-        var command = new UpdateTenantCommand(tenantId, newIdentifier, "New Name", true);
+        var command = new UpdateTenantCommand(tenantId, newIdentifier, "New Name", IsActive: true);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -213,7 +213,7 @@ public class UpdateTenantCommandHandlerTests
             .Setup(x => x.UpdateAsync(It.IsAny<Tenant>()))
             .ReturnsAsync(false);
 
-        var command = new UpdateTenantCommand(tenantId, "test-tenant", "Updated Name", true);
+        var command = new UpdateTenantCommand(tenantId, "test-tenant", "Updated Name", IsActive: true);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

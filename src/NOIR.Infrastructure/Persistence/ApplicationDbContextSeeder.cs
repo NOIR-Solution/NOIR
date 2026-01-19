@@ -2,6 +2,9 @@ namespace NOIR.Infrastructure.Persistence;
 
 /// <summary>
 /// Initializes and seeds the database with required data.
+/// Supports two-tier admin model:
+/// - Platform Admin (TenantId = null): Cross-tenant system administration
+/// - Tenant Admin (TenantId = specific): Within-tenant administration
 /// </summary>
 public static class ApplicationDbContextSeeder
 {
@@ -18,6 +21,11 @@ public static class ApplicationDbContextSeeder
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
             var logger = services.GetRequiredService<ILogger<ApplicationDbContext>>();
+            var configuration = services.GetRequiredService<IConfiguration>();
+
+            // Bind platform settings from configuration
+            var platformSettings = new PlatformSettings();
+            configuration.GetSection(PlatformSettings.SectionName).Bind(platformSettings);
 
             // Ensure database is created and migrations are applied FIRST
             // MigrateAsync is idempotent - it checks __EFMigrationsHistory and only applies pending migrations
@@ -63,31 +71,53 @@ public static class ApplicationDbContextSeeder
                 await context.Database.EnsureCreatedAsync();
             }
 
-            // Seed default tenant (required for Finbuckle EFCoreStore and multi-tenant query filters)
-            // This creates the default tenant in the database if it doesn't exist
-            var defaultTenant = await SeedDefaultTenantAsync(tenantStoreContext, logger);
+            // === PHASE 1: Seed System-Level Roles (TenantId = null) ===
+            // These roles are for platform-level administration
+            await SeedSystemRolesAsync(roleManager, logger);
 
-            // Set default tenant context for seeding other data (required for multi-tenant query filters)
-            var tenantSetter = services.GetService<IMultiTenantContextSetter>();
-            var tenantAccessor = services.GetService<IMultiTenantContextAccessor<Tenant>>();
-            if (tenantSetter != null && tenantAccessor?.MultiTenantContext?.TenantInfo == null)
+            // === PHASE 2: Seed Platform Admin User (TenantId = null) ===
+            // This user can manage all tenants and platform-wide settings
+            await SeedPlatformAdminUserAsync(userManager, platformSettings.PlatformAdmin, logger);
+
+            // === PHASE 3: Seed Default Tenant (if enabled) ===
+            Tenant? defaultTenant = null;
+            if (platformSettings.DefaultTenant.Enabled)
             {
-                // Set the seeded default tenant as the context
-                // Finbuckle v10 requires constructor argument for MultiTenantContext
-                tenantSetter.MultiTenantContext = new MultiTenantContext<Tenant>(defaultTenant);
+                defaultTenant = await SeedDefaultTenantAsync(
+                    tenantStoreContext,
+                    platformSettings.DefaultTenant,
+                    logger);
+
+                // Set default tenant context for seeding tenant-specific data
+                var tenantSetter = services.GetService<IMultiTenantContextSetter>();
+                var tenantAccessor = services.GetService<IMultiTenantContextAccessor<Tenant>>();
+                if (tenantSetter != null && tenantAccessor?.MultiTenantContext?.TenantInfo == null)
+                {
+                    // Set the seeded default tenant as the context
+                    // Finbuckle v10 requires constructor argument for MultiTenantContext
+                    tenantSetter.MultiTenantContext = new MultiTenantContext<Tenant>(defaultTenant);
+                }
+
+                // === PHASE 4: Seed Tenant-Level Roles ===
+                // These roles are for within-tenant administration
+                await SeedTenantRolesAsync(roleManager, logger);
+
+                // === PHASE 5: Seed Default Tenant Admin (if enabled) ===
+                if (platformSettings.DefaultTenant.Admin.Enabled)
+                {
+                    await SeedTenantAdminUserAsync(
+                        userManager,
+                        defaultTenant.Id,
+                        platformSettings.DefaultTenant.Admin,
+                        logger);
+                }
+
+                // Seed email templates (tenant-scoped)
+                await SeedEmailTemplatesAsync(context, logger);
+
+                // Fix notification preferences TenantId (for preferences created before proper tenant context)
+                await FixNotificationPreferencesTenantAsync(context, logger);
             }
-
-            // Seed roles with permissions
-            await SeedRolesAsync(roleManager, logger);
-
-            // Seed admin user
-            await SeedAdminUserAsync(userManager, logger);
-
-            // Seed email templates
-            await SeedEmailTemplatesAsync(context, logger);
-
-            // Fix notification preferences TenantId (for preferences created before proper tenant context)
-            await FixNotificationPreferencesTenantAsync(context, logger);
 
             // Seed permissions (database-backed Permission entities)
             await SeedPermissionsAsync(context, logger);
@@ -104,64 +134,17 @@ public static class ApplicationDbContextSeeder
     }
 
     /// <summary>
-    /// Seeds the default tenant in the database.
-    /// This is required for Finbuckle EFCoreStore to resolve tenants.
-    /// Uses TenantStoreDbContext which manages the Tenants table.
+    /// Seeds system-level roles (TenantId = null).
+    /// These roles are for platform administration across all tenants.
     /// </summary>
-    internal static async Task<Tenant> SeedDefaultTenantAsync(TenantStoreDbContext context, ILogger logger)
+    internal static async Task SeedSystemRolesAsync(RoleManager<ApplicationRole> roleManager, ILogger logger)
     {
-        const string defaultIdentifier = "default";
-
-        // Check if default tenant already exists (bypass soft delete filter)
-        // TenantStoreDbContext inherits from EFCoreStoreDbContext<Tenant> which exposes TenantInfo as DbSet
-        var existingTenant = await context.TenantInfo
-            .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(t => t.Identifier == defaultIdentifier);
-
-        if (existingTenant is null)
+        var roleDefinitions = new Dictionary<string, (string? Description, int SortOrder, string? IconName, string? Color, bool IsPlatformRole)>
         {
-            var tenant = Tenant.Create(
-                identifier: defaultIdentifier,
-                name: "Default Tenant",
-                isActive: true);
-
-            context.TenantInfo.Add(tenant);
-            await context.SaveChangesAsync();
-            logger.LogInformation("Created default tenant: {Identifier}", defaultIdentifier);
-            return tenant;
-        }
-
-        // Restore soft-deleted default tenant
-        if (existingTenant.IsDeleted)
-        {
-            var restoredTenant = existingTenant with
-            {
-                IsDeleted = false,
-                DeletedAt = null,
-                DeletedBy = null,
-                IsActive = true,
-                ModifiedAt = DateTimeOffset.UtcNow
-            };
-
-            context.TenantInfo.Entry(existingTenant).CurrentValues.SetValues(restoredTenant);
-            await context.SaveChangesAsync();
-            logger.LogInformation("Restored soft-deleted default tenant: {Identifier}", defaultIdentifier);
-            return restoredTenant;
-        }
-
-        return existingTenant;
-    }
-
-    internal static async Task SeedRolesAsync(RoleManager<ApplicationRole> roleManager, ILogger logger)
-    {
-        // Define role hierarchy and properties
-        var roleDefinitions = new Dictionary<string, (string? Description, string? ParentRoleId, int SortOrder, string? IconName, string? Color)>
-        {
-            [Roles.Admin] = ("Full system access with all permissions", null, 0, "shield", "red"),
-            [Roles.User] = ("Standard user access", null, 10, "user", "blue")
+            [Roles.PlatformAdmin] = ("Platform administrator with full cross-tenant access", 0, "crown", "purple", true)
         };
 
-        foreach (var roleName in Roles.Defaults)
+        foreach (var roleName in Roles.SystemRoles)
         {
             var role = await roleManager.FindByNameAsync(roleName);
             var definition = roleDefinitions.GetValueOrDefault(roleName);
@@ -171,14 +154,85 @@ public static class ApplicationDbContextSeeder
                 role = ApplicationRole.Create(
                     roleName,
                     definition.Description,
-                    definition.ParentRoleId,
-                    tenantId: null,
+                    parentRoleId: null,
+                    tenantId: null,  // System role - no tenant
                     isSystemRole: true,
+                    isPlatformRole: definition.IsPlatformRole,  // Platform roles are hidden from tenant UI
                     definition.SortOrder,
                     definition.IconName,
                     definition.Color);
                 await roleManager.CreateAsync(role);
-                logger.LogInformation("Created role: {Role}", roleName);
+                logger.LogInformation("Created system role: {Role} (IsPlatformRole={IsPlatformRole})", roleName, definition.IsPlatformRole);
+            }
+            else
+            {
+                // Ensure existing role is marked as system role and platform role
+                var needsUpdate = false;
+                if (!role.IsSystemRole)
+                {
+                    var isSystemRoleProp = typeof(ApplicationRole).GetProperty(nameof(ApplicationRole.IsSystemRole));
+                    isSystemRoleProp?.SetValue(role, true);
+                    needsUpdate = true;
+                }
+                if (definition.IsPlatformRole && !role.IsPlatformRole)
+                {
+                    var isPlatformRoleProp = typeof(ApplicationRole).GetProperty(nameof(ApplicationRole.IsPlatformRole));
+                    isPlatformRoleProp?.SetValue(role, true);
+                    needsUpdate = true;
+                }
+                if (needsUpdate)
+                {
+                    role.Update(
+                        roleName,
+                        definition.Description,
+                        parentRoleId: null,
+                        definition.SortOrder,
+                        definition.IconName,
+                        definition.Color);
+                    await roleManager.UpdateAsync(role);
+                    logger.LogInformation("Updated role {Role} to system/platform role", roleName);
+                }
+            }
+
+            // Seed permissions for this role
+            if (Roles.DefaultPermissions.TryGetValue(roleName, out var permissions))
+            {
+                await SeedRolePermissionsAsync(roleManager, role, permissions, logger);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Seeds tenant-level roles (can be assigned to users within a tenant).
+    /// These roles are for within-tenant administration.
+    /// </summary>
+    internal static async Task SeedTenantRolesAsync(RoleManager<ApplicationRole> roleManager, ILogger logger)
+    {
+        var roleDefinitions = new Dictionary<string, (string? Description, int SortOrder, string? IconName, string? Color)>
+        {
+            [Roles.Admin] = ("Full system access with all permissions within tenant", 10, "shield", "red"),
+            [Roles.User] = ("Standard user access within tenant", 20, "user", "blue")
+        };
+
+        foreach (var roleName in Roles.TenantRoles)
+        {
+            var role = await roleManager.FindByNameAsync(roleName);
+            var definition = roleDefinitions.GetValueOrDefault(roleName);
+
+            if (role is null)
+            {
+                role = ApplicationRole.Create(
+                    roleName,
+                    definition.Description,
+                    parentRoleId: null,
+                    tenantId: null,  // Tenant roles are still defined at system level but used within tenants
+                    isSystemRole: true,  // System-defined (not user-created)
+                    isPlatformRole: false,  // Tenant roles are visible in tenant UI
+                    definition.SortOrder,
+                    definition.IconName,
+                    definition.Color);
+                await roleManager.CreateAsync(role);
+                logger.LogInformation("Created tenant role: {Role}", roleName);
             }
             else
             {
@@ -188,11 +242,10 @@ public static class ApplicationDbContextSeeder
                     role.Update(
                         roleName,
                         definition.Description,
-                        definition.ParentRoleId,
+                        parentRoleId: null,
                         definition.SortOrder,
                         definition.IconName,
                         definition.Color);
-                    // Mark as system role directly
                     var isSystemRoleProp = typeof(ApplicationRole).GetProperty(nameof(ApplicationRole.IsSystemRole));
                     isSystemRoleProp?.SetValue(role, true);
                     await roleManager.UpdateAsync(role);
@@ -230,59 +283,251 @@ public static class ApplicationDbContextSeeder
         }
     }
 
-    internal static async Task SeedAdminUserAsync(UserManager<ApplicationUser> userManager, ILogger logger)
+    /// <summary>
+    /// Seeds the platform admin user (TenantId = null).
+    /// This user has access to all tenants and platform-level operations.
+    /// </summary>
+    internal static async Task SeedPlatformAdminUserAsync(
+        UserManager<ApplicationUser> userManager,
+        PlatformAdminSettings settings,
+        ILogger logger)
     {
-        const string adminEmail = "admin@noir.local";
-        const string adminPassword = "123qwe";
-
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+        var adminUser = await userManager.FindByEmailAsync(settings.Email);
 
         if (adminUser is null)
         {
             adminUser = new ApplicationUser
             {
-                UserName = adminEmail,
-                Email = adminEmail,
-                FirstName = "System",
-                LastName = "Administrator",
+                UserName = settings.Email,
+                Email = settings.Email,
+                FirstName = settings.FirstName,
+                LastName = settings.LastName,
                 EmailConfirmed = true,
                 IsActive = true,
                 IsSystemUser = true,
+                TenantId = null,  // Platform admin has NO tenant - cross-tenant access
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
-            var result = await userManager.CreateAsync(adminUser, adminPassword);
+            var result = await userManager.CreateAsync(adminUser, settings.Password);
 
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(adminUser, Roles.Admin);
-                logger.LogInformation("Created admin user: {Email}", adminEmail);
+                await userManager.AddToRoleAsync(adminUser, Roles.PlatformAdmin);
+                logger.LogInformation("Created platform admin user: {Email} (TenantId = null)", settings.Email);
             }
             else
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                logger.LogError("Failed to create admin user: {Errors}", errors);
+                logger.LogError("Failed to create platform admin user: {Errors}", errors);
             }
         }
         else
         {
+            var needsUpdate = false;
+
+            // Ensure platform admin is marked as system user
+            if (!adminUser.IsSystemUser)
+            {
+                adminUser.IsSystemUser = true;
+                needsUpdate = true;
+                logger.LogInformation("Marked platform admin user as system user: {Email}", settings.Email);
+            }
+
+            // Ensure platform admin has NO TenantId (cross-tenant access)
+            if (!string.IsNullOrEmpty(adminUser.TenantId))
+            {
+                adminUser.TenantId = null;
+                needsUpdate = true;
+                logger.LogInformation("Cleared TenantId for platform admin user: {Email} (now cross-tenant)", settings.Email);
+            }
+
+            if (needsUpdate)
+            {
+                await userManager.UpdateAsync(adminUser);
+            }
+
+            // Ensure platform admin has PlatformAdmin role
+            if (!await userManager.IsInRoleAsync(adminUser, Roles.PlatformAdmin))
+            {
+                await userManager.AddToRoleAsync(adminUser, Roles.PlatformAdmin);
+                logger.LogInformation("Added PlatformAdmin role to user: {Email}", settings.Email);
+            }
+
+            // Ensure platform admin password matches expected value
+            var passwordValid = await userManager.CheckPasswordAsync(adminUser, settings.Password);
+            if (!passwordValid)
+            {
+                var token = await userManager.GeneratePasswordResetTokenAsync(adminUser);
+                var result = await userManager.ResetPasswordAsync(adminUser, token, settings.Password);
+                if (result.Succeeded)
+                {
+                    logger.LogInformation("Reset platform admin user password: {Email}", settings.Email);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Seeds the default tenant in the database.
+    /// This is required for Finbuckle EFCoreStore to resolve tenants.
+    /// Uses TenantStoreDbContext which manages the Tenants table.
+    /// </summary>
+    internal static async Task<Tenant> SeedDefaultTenantAsync(
+        TenantStoreDbContext context,
+        DefaultTenantSettings settings,
+        ILogger logger)
+    {
+        // Check if default tenant already exists (bypass soft delete filter)
+        // TenantStoreDbContext inherits from EFCoreStoreDbContext<Tenant> which exposes TenantInfo as DbSet
+        var existingTenant = await context.TenantInfo
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(t => t.Identifier == settings.Identifier);
+
+        if (existingTenant is null)
+        {
+            var tenant = Tenant.Create(
+                identifier: settings.Identifier,
+                name: settings.Name,
+                domain: settings.Domain,
+                description: settings.Description,
+                note: null,
+                isActive: true);
+
+            context.TenantInfo.Add(tenant);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Created default tenant: {Identifier} ({Name})", settings.Identifier, settings.Name);
+            return tenant;
+        }
+
+        // Restore soft-deleted default tenant
+        if (existingTenant.IsDeleted)
+        {
+            var restoredTenant = existingTenant with
+            {
+                IsDeleted = false,
+                DeletedAt = null,
+                DeletedBy = null,
+                IsActive = true,
+                ModifiedAt = DateTimeOffset.UtcNow
+            };
+
+            context.TenantInfo.Entry(existingTenant).CurrentValues.SetValues(restoredTenant);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Restored soft-deleted default tenant: {Identifier}", settings.Identifier);
+            return restoredTenant;
+        }
+
+        // Update existing tenant with new settings if they've changed
+        var needsUpdate = false;
+        var updatedTenant = existingTenant;
+
+        if (existingTenant.Name != settings.Name ||
+            existingTenant.Domain != settings.Domain ||
+            existingTenant.Description != settings.Description)
+        {
+            updatedTenant = existingTenant.WithUpdatedDetails(
+                existingTenant.Identifier,
+                settings.Name,
+                settings.Domain,
+                settings.Description,
+                existingTenant.Note,
+                existingTenant.IsActive);
+            needsUpdate = true;
+        }
+
+        if (needsUpdate)
+        {
+            context.TenantInfo.Entry(existingTenant).CurrentValues.SetValues(updatedTenant);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Updated default tenant: {Identifier}", settings.Identifier);
+            return updatedTenant;
+        }
+
+        return existingTenant;
+    }
+
+    /// <summary>
+    /// Seeds the tenant admin user for a specific tenant.
+    /// This user has Admin role within the specified tenant only.
+    /// </summary>
+    internal static async Task SeedTenantAdminUserAsync(
+        UserManager<ApplicationUser> userManager,
+        string tenantId,
+        TenantAdminSettings settings,
+        ILogger logger)
+    {
+        var adminUser = await userManager.FindByEmailAsync(settings.Email);
+
+        if (adminUser is null)
+        {
+            adminUser = new ApplicationUser
+            {
+                UserName = settings.Email,
+                Email = settings.Email,
+                FirstName = settings.FirstName,
+                LastName = settings.LastName,
+                EmailConfirmed = true,
+                IsActive = true,
+                IsSystemUser = true,
+                TenantId = tenantId,  // Scoped to specific tenant
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+
+            var result = await userManager.CreateAsync(adminUser, settings.Password);
+
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, Roles.Admin);
+                logger.LogInformation("Created tenant admin user: {Email} in tenant {TenantId}", settings.Email, tenantId);
+            }
+            else
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                logger.LogError("Failed to create tenant admin user: {Errors}", errors);
+            }
+        }
+        else
+        {
+            var needsUpdate = false;
+
             // Ensure admin is marked as system user (for upgrades from older versions)
             if (!adminUser.IsSystemUser)
             {
                 adminUser.IsSystemUser = true;
+                needsUpdate = true;
+                logger.LogInformation("Marked tenant admin user as system user: {Email}", settings.Email);
+            }
+
+            // Ensure admin has TenantId assigned (for upgrades to single-tenant-per-user model)
+            if (string.IsNullOrEmpty(adminUser.TenantId))
+            {
+                adminUser.TenantId = tenantId;
+                needsUpdate = true;
+                logger.LogInformation("Assigned tenant {TenantId} to admin user: {Email}", tenantId, settings.Email);
+            }
+
+            if (needsUpdate)
+            {
                 await userManager.UpdateAsync(adminUser);
-                logger.LogInformation("Marked admin user as system user: {Email}", adminEmail);
+            }
+
+            // Ensure admin has Admin role
+            if (!await userManager.IsInRoleAsync(adminUser, Roles.Admin))
+            {
+                await userManager.AddToRoleAsync(adminUser, Roles.Admin);
+                logger.LogInformation("Added Admin role to user: {Email}", settings.Email);
             }
 
             // Ensure admin password matches expected value (useful after password policy changes)
-            var passwordValid = await userManager.CheckPasswordAsync(adminUser, adminPassword);
+            var passwordValid = await userManager.CheckPasswordAsync(adminUser, settings.Password);
             if (!passwordValid)
             {
                 var token = await userManager.GeneratePasswordResetTokenAsync(adminUser);
-                var result = await userManager.ResetPasswordAsync(adminUser, token, adminPassword);
+                var result = await userManager.ResetPasswordAsync(adminUser, token, settings.Password);
                 if (result.Succeeded)
                 {
-                    logger.LogInformation("Reset admin user password: {Email}", adminEmail);
+                    logger.LogInformation("Reset tenant admin user password: {Email}", settings.Email);
                 }
             }
         }

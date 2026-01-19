@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+
 namespace NOIR.Application.Common.Interfaces;
 
 /// <summary>

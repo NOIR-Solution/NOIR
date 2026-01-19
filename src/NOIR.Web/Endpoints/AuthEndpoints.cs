@@ -13,8 +13,9 @@ public static class AuthEndpoints
             .WithTags("Authentication")
             .CacheOutput("NoCache"); // Never cache auth responses
 
-        // Login/Refresh use stricter "auth" rate limit (Sliding Window, 5 req/min)
-        // to prevent brute force attacks
+        // Login - supports single-step with optional tenant selection
+        // When email/password matches one tenant: returns tokens directly
+        // When email/password matches multiple tenants: returns tenant selection list
         group.MapPost("/login", async (
             LoginCommand command,
             IMessageBus bus,
@@ -22,14 +23,16 @@ public static class AuthEndpoints
         {
             // Apply useCookies from query parameter
             var commandWithCookies = command with { UseCookies = useCookies };
-            var result = await bus.InvokeAsync<Result<AuthResponse>>(commandWithCookies);
+            var result = await bus.InvokeAsync<Result<LoginResponse>>(commandWithCookies);
             return result.ToHttpResult();
         })
         .RequireRateLimiting("auth")
         .WithName("Login")
         .WithSummary("Login with email and password")
-        .WithDescription("Authenticates user and returns tokens. Use ?useCookies=true to set HttpOnly auth cookies for browser clients.")
-        .Produces<AuthResponse>(StatusCodes.Status200OK)
+        .WithDescription("Authenticates user. If credentials match one tenant, returns tokens. " +
+                        "If credentials match multiple tenants, returns RequiresTenantSelection=true with tenant list. " +
+                        "Client should then call again with TenantId specified. Use ?useCookies=true for browser auth cookies.")
+        .Produces<LoginResponse>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status401Unauthorized);
 
         group.MapPost("/logout", async (

@@ -323,10 +323,37 @@ public class PermissionsTests
     #region Default Permissions Tests
 
     [Fact]
-    public void AdminDefaults_ShouldEqualAll()
+    public void PlatformAdminDefaults_ShouldContainPlatformLevelPermissions()
     {
-        // Assert
-        Permissions.AdminDefaults.Should().BeEquivalentTo(Permissions.All);
+        // Platform Admin has system-level permissions for managing tenants and platform settings
+        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.TenantsRead);
+        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.TenantsCreate);
+        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.TenantsUpdate);
+        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.TenantsDelete);
+        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.SystemAdmin);
+        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.SystemAuditLogs);
+        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.SystemSettings);
+        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.HangfireDashboard);
+    }
+
+    [Fact]
+    public void AdminDefaults_ShouldContainTenantLevelPermissions()
+    {
+        // Tenant Admin has within-tenant permissions (user management, roles, blog)
+        // but NOT system-level permissions (tenants, system)
+        Permissions.AdminDefaults.Should().Contain(Permissions.UsersRead);
+        Permissions.AdminDefaults.Should().Contain(Permissions.UsersCreate);
+        Permissions.AdminDefaults.Should().Contain(Permissions.UsersUpdate);
+        Permissions.AdminDefaults.Should().Contain(Permissions.UsersDelete);
+        Permissions.AdminDefaults.Should().Contain(Permissions.RolesRead);
+        Permissions.AdminDefaults.Should().Contain(Permissions.RolesCreate);
+        Permissions.AdminDefaults.Should().Contain(Permissions.BlogPostsRead);
+
+        // Admin should NOT have platform-level permissions
+        Permissions.AdminDefaults.Should().NotContain(Permissions.TenantsRead);
+        Permissions.AdminDefaults.Should().NotContain(Permissions.TenantsCreate);
+        Permissions.AdminDefaults.Should().NotContain(Permissions.SystemAdmin);
+        Permissions.AdminDefaults.Should().NotContain(Permissions.HangfireDashboard);
     }
 
     [Fact]
@@ -335,6 +362,21 @@ public class PermissionsTests
         // Assert
         Permissions.UserDefaults.Should().HaveCount(1);
         Permissions.UserDefaults.Should().Contain(Permissions.UsersRead);
+    }
+
+    [Fact]
+    public void PlatformAdmin_And_Admin_ShouldHaveDistinctPermissions()
+    {
+        // Verify the separation of platform-level vs tenant-level permissions
+        var platformOnlyPermissions = Permissions.Scopes.SystemOnly;
+        var tenantAllowedPermissions = Permissions.Scopes.TenantAllowed;
+
+        // Platform admin defaults should include system-only permissions
+        foreach (var permission in platformOnlyPermissions.Intersect(Permissions.PlatformAdminDefaults))
+        {
+            Permissions.AdminDefaults.Should().NotContain(permission,
+                because: $"tenant admin should not have system-only permission '{permission}'");
+        }
     }
 
     #endregion

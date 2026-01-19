@@ -20,17 +20,38 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         _client = factory.CreateTestClient();
     }
 
-    private async Task<HttpClient> GetAdminClientAsync()
+    /// <summary>
+    /// Gets an HTTP client authenticated as the platform admin (TenantId = null).
+    /// Platform admin has tenant management permissions (tenants:read, tenants:create, etc.).
+    /// </summary>
+    private async Task<HttpClient> GetPlatformAdminClientAsync()
     {
+        // Platform admin: platform@noir.local / Platform123! (TenantId = null)
+        var loginCommand = new LoginCommand("platform@noir.local", "Platform123!");
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        response.EnsureSuccessStatusCode();
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
+    }
+
+    /// <summary>
+    /// Gets an HTTP client authenticated as the tenant admin (TenantId = default).
+    /// Tenant admin has user/role management permissions within tenant, but NOT tenant management.
+    /// </summary>
+    private async Task<HttpClient> GetTenantAdminClientAsync()
+    {
+        // Tenant admin: admin@noir.local / 123qwe (TenantId = default)
         var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+        response.EnsureSuccessStatusCode();
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
     }
 
     private async Task<(string Email, string Password, AuthResponse Auth)> CreateTestUserAsync()
     {
-        var adminClient = await GetAdminClientAsync();
+        // Use tenant admin to create users within the default tenant
+        var adminClient = await GetTenantAdminClientAsync();
         var email = $"test_{Guid.NewGuid():N}@example.com";
         var password = "TestPassword123!";
 
@@ -48,9 +69,9 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Login as the created user
         var loginCommand = new LoginCommand(email, password);
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var response = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
 
-        return (email, password, auth!);
+        return (email, password, response!.Auth!);
     }
 
     private static CreateTenantCommand CreateTestTenantCommand()
@@ -68,7 +89,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task GetTenants_AsAdmin_ShouldReturnPaginatedList()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync("/api/tenants");
@@ -108,7 +129,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task GetTenants_WithPagination_ShouldRespectParameters()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync("/api/tenants?pageNumber=1&pageSize=5");
@@ -125,7 +146,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task GetTenants_WithSearch_ShouldFilterResults()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // First create a tenant with a unique name
         var command = CreateTestTenantCommand();
@@ -149,7 +170,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task GetTenantById_ValidId_ShouldReturnTenant()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // First create a tenant
         var command = CreateTestTenantCommand();
@@ -172,7 +193,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task GetTenantById_InvalidId_ShouldReturnNotFound()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync($"/api/tenants/{Guid.NewGuid()}");
@@ -199,7 +220,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task CreateTenant_ValidRequest_ShouldReturnCreatedTenant()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var command = CreateTestTenantCommand();
 
         // Act
@@ -218,7 +239,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task CreateTenant_DuplicateIdentifier_ShouldReturnConflict()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var command = CreateTestTenantCommand();
 
         // Create the first tenant
@@ -235,7 +256,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task CreateTenant_EmptyIdentifier_ShouldReturnBadRequest()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var command = new CreateTenantCommand(
             Identifier: "",
             Name: "Test Tenant",
@@ -252,7 +273,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task CreateTenant_EmptyName_ShouldReturnBadRequest()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var command = new CreateTenantCommand(
             Identifier: $"test-tenant-{Guid.NewGuid():N}",
             Name: "",
@@ -301,7 +322,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateTenant_ValidRequest_ShouldReturnUpdatedTenant()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // First create a tenant
         var createCommand = CreateTestTenantCommand();
@@ -329,7 +350,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateTenant_InvalidId_ShouldReturnNotFound()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var updateRequest = new UpdateTenantRequest(
             Identifier: "test-identifier",
             Name: "Updated Name",
@@ -346,7 +367,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task UpdateTenant_EmptyName_ShouldReturnBadRequest()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // First create a tenant
         var createCommand = CreateTestTenantCommand();
@@ -392,7 +413,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task DeleteTenant_ValidId_ShouldReturnSuccess()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // First create a tenant
         var command = CreateTestTenantCommand();
@@ -414,7 +435,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task DeleteTenant_InvalidId_ShouldReturnNotFound()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.DeleteAsync($"/api/tenants/{Guid.NewGuid()}");
@@ -468,7 +489,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var createResponse = await userClient.PostAsJsonAsync("/api/tenants", CreateTestTenantCommand());
         createResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
-        var updateRequest = new UpdateTenantRequest("test", "Test", true);
+        var updateRequest = new UpdateTenantRequest("test", "Test", IsActive: true);
         var updateResponse = await userClient.PutAsJsonAsync($"/api/tenants/{Guid.NewGuid()}", updateRequest);
         updateResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 

@@ -25,6 +25,7 @@ public class GetRolesQueryHandlerTests
         string? parentRoleId = null,
         Guid? tenantId = null,
         bool isSystemRole = false,
+        bool isPlatformRole = false,
         int sortOrder = 0,
         string? iconName = null,
         string? color = null)
@@ -37,6 +38,7 @@ public class GetRolesQueryHandlerTests
             parentRoleId,
             tenantId,
             isSystemRole,
+            isPlatformRole,
             sortOrder,
             iconName,
             color);

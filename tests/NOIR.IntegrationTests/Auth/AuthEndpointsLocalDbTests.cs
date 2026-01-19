@@ -31,8 +31,8 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
     {
         var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
     }
 
     private async Task<(string email, string password, AuthResponse auth)> CreateTestUserAsync(string? firstName = "Test", string? lastName = "User")
@@ -49,9 +49,9 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         // Login as the new user
         var loginCommand = new LoginCommand(email, password);
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var response = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
 
-        return (email, password, auth!);
+        return (email, password, response!.Auth!);
     }
 
     #region Admin Create User Tests
@@ -109,11 +109,12 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        authResponse.Should().NotBeNull();
-        authResponse!.Email.Should().Be(email);
-        authResponse.AccessToken.Should().NotBeNullOrEmpty();
-        authResponse.RefreshToken.Should().NotBeNullOrEmpty();
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        loginResponse.Should().NotBeNull();
+        loginResponse!.Auth.Should().NotBeNull();
+        loginResponse.Auth!.Email.Should().Be(email);
+        loginResponse.Auth.AccessToken.Should().NotBeNullOrEmpty();
+        loginResponse.Auth.RefreshToken.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
@@ -253,13 +254,13 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
         response3.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var auth1 = await response1.Content.ReadFromJsonAsync<AuthResponse>();
-        var auth2 = await response2.Content.ReadFromJsonAsync<AuthResponse>();
-        var auth3 = await response3.Content.ReadFromJsonAsync<AuthResponse>();
+        var login1 = await response1.Content.ReadFromJsonAsync<LoginResponse>();
+        var login2 = await response2.Content.ReadFromJsonAsync<LoginResponse>();
+        var login3 = await response3.Content.ReadFromJsonAsync<LoginResponse>();
 
         // All should have different refresh tokens
-        auth1!.RefreshToken.Should().NotBe(auth2!.RefreshToken);
-        auth2.RefreshToken.Should().NotBe(auth3!.RefreshToken);
+        login1!.Auth!.RefreshToken.Should().NotBe(login2!.Auth!.RefreshToken);
+        login2.Auth.RefreshToken.Should().NotBe(login3!.Auth!.RefreshToken);
     }
 
     #endregion

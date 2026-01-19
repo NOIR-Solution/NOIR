@@ -31,10 +31,26 @@ public class CreateTenantCommandHandler
                     ErrorCodes.Business.AlreadyExists));
         }
 
+        // Check if domain already exists (if provided)
+        if (!string.IsNullOrWhiteSpace(command.Domain))
+        {
+            var existingByDomain = await _tenantStore.GetAllAsync();
+            if (existingByDomain.Any(t => string.Equals(t.Domain, command.Domain, StringComparison.OrdinalIgnoreCase)))
+            {
+                return Result.Failure<TenantDto>(
+                    Error.Conflict(
+                        $"Domain '{command.Domain}' is already in use by another tenant.",
+                        ErrorCodes.Business.AlreadyExists));
+            }
+        }
+
         // Create tenant
         var tenant = Tenant.Create(
             command.Identifier,
             command.Name,
+            command.Domain,
+            command.Description,
+            command.Note,
             command.IsActive);
 
         var success = await _tenantStore.AddAsync(tenant);
@@ -53,6 +69,9 @@ public class CreateTenantCommandHandler
         tenant.Id,
         tenant.Identifier,
         tenant.Name,
+        tenant.Domain,
+        tenant.Description,
+        tenant.Note,
         tenant.IsActive,
         tenant.CreatedAt,
         tenant.ModifiedAt);

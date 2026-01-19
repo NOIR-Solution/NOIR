@@ -38,6 +38,9 @@ public class GetTenantByIdQueryHandler
         tenant.Id,
         tenant.Identifier,
         tenant.Name,
+        tenant.Domain,
+        tenant.Description,
+        tenant.Note,
         tenant.IsActive,
         tenant.CreatedAt,
         tenant.ModifiedAt);

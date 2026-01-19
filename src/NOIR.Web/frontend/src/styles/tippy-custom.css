@@ -2,48 +2,81 @@
 /* Inspired by Linear, Vercel, and modern design systems */
 /* Uses CSS variables for consistent theming */
 
+/* Base tooltip style - Primary colored background like Tippy's default */
 .tippy-box[data-theme~='custom'] {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  border: 1px solid hsl(var(--border));
-  border-radius: 8px;
-  /* Layered shadows for depth (Vercel pattern) */
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: 6px;
+  /* Subtle shadow for depth */
   box-shadow:
-    0 0 0 1px hsl(var(--border) / 0.5),
-    0 2px 4px hsl(var(--foreground) / 0.04),
-    0 8px 16px hsl(var(--foreground) / 0.08);
+    0 4px 14px rgba(0, 0, 0, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.1);
   font-size: 13px;
-  line-height: 1.5;
-  /* Note: no overflow:hidden - it clips the arrow! */
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .tippy-box[data-theme~='custom'] .tippy-content {
+  padding: 6px 10px;
+  color: var(--primary-foreground);
+}
+
+/* Arrow styling - matches the primary colored background */
+.tippy-box[data-theme~='custom'] > .tippy-arrow::before {
+  color: var(--primary);
+}
+
+.tippy-box[data-theme~='custom'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: var(--primary);
+}
+
+.tippy-box[data-theme~='custom'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: var(--primary);
+}
+
+.tippy-box[data-theme~='custom'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: var(--primary);
+}
+
+.tippy-box[data-theme~='custom'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: var(--primary);
+}
+
+/* Rich tooltip variant - for tooltips with headers and content sections */
+/* Use data-theme="custom rich" on the Tippy component */
+.tippy-box[data-theme~='rich'] {
+  background-color: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.08);
+  font-weight: 400;
+}
+
+.tippy-box[data-theme~='rich'] .tippy-content {
   padding: 0;
-  color: hsl(var(--foreground));
-  /* Clip content at rounded corners without hiding arrow */
+  color: var(--foreground);
   overflow: hidden;
   border-radius: 8px;
 }
 
-/* Arrow styling - matches the primary color header for seamless connection */
-.tippy-box[data-theme~='custom'] > .tippy-arrow::before {
-  color: hsl(var(--primary));
+/* Arrow for rich tooltips - matches background */
+.tippy-box[data-theme~='rich'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: var(--background);
 }
 
-.tippy-box[data-theme~='custom'][data-placement^='top'] > .tippy-arrow::before {
-  border-top-color: hsl(var(--background));
+.tippy-box[data-theme~='rich'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: var(--primary);
 }
 
-/* Bottom placement: arrow at top connects to primary header */
-.tippy-box[data-theme~='custom'][data-placement^='bottom'] > .tippy-arrow::before {
-  border-bottom-color: hsl(var(--primary));
+.tippy-box[data-theme~='rich'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: var(--background);
 }
 
-.tippy-box[data-theme~='custom'][data-placement^='left'] > .tippy-arrow::before {
-  border-left-color: hsl(var(--primary));
-}
-
-/* Right placement: arrow at left connects to primary header */
-.tippy-box[data-theme~='custom'][data-placement^='right'] > .tippy-arrow::before {
-  border-right-color: hsl(var(--primary));
+.tippy-box[data-theme~='rich'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: var(--background);
 }

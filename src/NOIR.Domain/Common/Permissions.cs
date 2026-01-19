@@ -128,9 +128,40 @@ public static class Permissions
     ];
 
     /// <summary>
-    /// Default permissions for Admin role.
+    /// Default permissions for PlatformAdmin role.
+    /// Platform admins have all system-level permissions for managing tenants and platform settings.
     /// </summary>
-    public static IReadOnlyList<string> AdminDefaults => All;
+    public static IReadOnlyList<string> PlatformAdminDefaults =>
+    [
+        // Full tenant management
+        TenantsRead, TenantsCreate, TenantsUpdate, TenantsDelete,
+        // System administration
+        SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
+        // Platform-level email templates
+        EmailTemplatesRead, EmailTemplatesUpdate,
+        // Platform-level audit (all tenants)
+        AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream
+    ];
+
+    /// <summary>
+    /// Default permissions for Admin role (tenant-level).
+    /// Tenant admins have full access within their own tenant.
+    /// </summary>
+    public static IReadOnlyList<string> AdminDefaults =>
+    [
+        // User management within tenant
+        UsersRead, UsersCreate, UsersUpdate, UsersDelete, UsersManageRoles,
+        // Role management within tenant
+        RolesRead, RolesCreate, RolesUpdate, RolesDelete, RolesManagePermissions,
+        // Tenant-level email templates (copy-on-write)
+        EmailTemplatesRead, EmailTemplatesUpdate,
+        // Audit within tenant
+        AuditRead, AuditExport, AuditEntityHistory,
+        // Blog within tenant
+        BlogPostsRead, BlogPostsCreate, BlogPostsUpdate, BlogPostsDelete, BlogPostsPublish,
+        BlogCategoriesRead, BlogCategoriesCreate, BlogCategoriesUpdate, BlogCategoriesDelete,
+        BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete
+    ];
 
     /// <summary>
     /// Default permissions for User role.
@@ -146,6 +177,7 @@ public static class Permissions
         /// <summary>
         /// Permissions that can ONLY be assigned to system roles (TenantId = null).
         /// These permissions affect cross-tenant or platform-level operations.
+        /// Note: Email templates are NOT system-only because tenants have copy-on-write templates.
         /// </summary>
         public static IReadOnlySet<string> SystemOnly { get; } = new HashSet<string>
         {
@@ -158,10 +190,7 @@ public static class Permissions
             SystemAdmin,
             SystemAuditLogs,
             SystemSettings,
-            HangfireDashboard,
-            // Email templates are system-only
-            EmailTemplatesRead,
-            EmailTemplatesUpdate
+            HangfireDashboard
         };
 
         /// <summary>
@@ -182,6 +211,9 @@ public static class Permissions
             RolesUpdate,
             RolesDelete,
             RolesManagePermissions,
+            // Email templates within tenant (copy-on-write)
+            EmailTemplatesRead,
+            EmailTemplatesUpdate,
             // Audit within tenant (read and export only)
             AuditRead,
             AuditExport,

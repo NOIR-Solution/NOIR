@@ -37,6 +37,7 @@ public class GetUserPermissionsQueryHandlerTests
         return new UserIdentityDto(
             Id: id,
             Email: email,
+            TenantId: "default",
             FirstName: null,
             LastName: null,
             DisplayName: null,

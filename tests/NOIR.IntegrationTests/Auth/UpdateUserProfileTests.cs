@@ -24,8 +24,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
     {
         var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
     }
 
     private async Task<(string Email, string Password, AuthResponse Auth)> CreateTestUserAsync(
@@ -50,9 +50,9 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
         // Login as the created user
         var loginCommand = new LoginCommand(email, password);
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var response = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
 
-        return (email, password, auth!);
+        return (email, password, response!.Auth!);
     }
 
     #region Endpoint Tests

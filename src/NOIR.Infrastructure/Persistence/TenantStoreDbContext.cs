@@ -45,6 +45,17 @@ public class TenantStoreDbContext : EFCoreStoreDbContext<Tenant>
             entity.Property(t => t.Name)
                 .HasMaxLength(200);
 
+            // Domain-based tenant resolution
+            entity.Property(t => t.Domain)
+                .HasMaxLength(500);
+
+            // Metadata fields
+            entity.Property(t => t.Description)
+                .HasMaxLength(1000);
+
+            entity.Property(t => t.Note)
+                .HasMaxLength(2000);
+
             // Audit fields
             entity.Property(t => t.CreatedBy).HasMaxLength(100);
             entity.Property(t => t.ModifiedBy).HasMaxLength(100);

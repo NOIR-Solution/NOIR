@@ -36,7 +36,7 @@ public class GetTenantByIdQueryHandlerTests
         bool isActive = true,
         bool isDeleted = false)
     {
-        var tenant = Tenant.Create(identifier, name, isActive);
+        var tenant = Tenant.Create(identifier, name, isActive: isActive);
 
         if (isDeleted)
         {
@@ -146,6 +146,9 @@ public class GetTenantByIdQueryHandlerTests
         var modifiedTenant = baseTenant.WithUpdatedDetails(
             "modified-tenant",
             "Updated Name",
+            null,
+            null,
+            null,
             isActive: true);
         var tenantId = modifiedTenant.GetGuidId();
 

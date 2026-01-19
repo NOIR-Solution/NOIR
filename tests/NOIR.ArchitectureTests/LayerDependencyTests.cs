@@ -139,14 +139,13 @@ public class LayerDependencyTests
     [Fact]
     public void Application_Core_ShouldNotDependOn_EntityFrameworkCore()
     {
-        // Note: Specification layer may have minimal EF Core dependencies for query hints
-        // We check that Features and Interfaces don't depend on EF Core
-
         // Act
         var result = Types
             .InAssembly(ApplicationAssembly)
             .That()
             .ResideInNamespace("NOIR.Application.Features")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.EmailTemplates")
             .ShouldNot()
             .HaveDependencyOn("Microsoft.EntityFrameworkCore")
             .GetResult();

@@ -42,6 +42,14 @@ namespace NOIR.Infrastructure.Migrations.TenantStoreDb
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Domain")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Identifier")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -63,6 +71,10 @@ namespace NOIR.Infrastructure.Migrations.TenantStoreDb
                     b.Property<string>("Name")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.HasKey("Id");
 

@@ -20,8 +20,8 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     {
         var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
     }
 
     private async Task<(string email, string password, AuthResponse auth)> CreateTestUserAsync()
@@ -38,9 +38,9 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Login as the new user
         var loginCommand = new LoginCommand(email, password);
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var response = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
 
-        return (email, password, auth!);
+        return (email, password, response!.Auth!);
     }
 
     #region Login Tests
@@ -58,11 +58,12 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        authResponse.Should().NotBeNull();
-        authResponse!.Email.Should().Be(email);
-        authResponse.AccessToken.Should().NotBeNullOrEmpty();
-        authResponse.RefreshToken.Should().NotBeNullOrEmpty();
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        loginResponse.Should().NotBeNull();
+        loginResponse!.Auth.Should().NotBeNull();
+        loginResponse.Auth!.Email.Should().Be(email);
+        loginResponse.Auth.AccessToken.Should().NotBeNullOrEmpty();
+        loginResponse.Auth.RefreshToken.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
@@ -174,10 +175,10 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         var loginCommand = new LoginCommand(email, password);
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
 
         // Create authenticated client
-        var authenticatedClient = _factory.CreateAuthenticatedClient(authResponse!.AccessToken);
+        var authenticatedClient = _factory.CreateAuthenticatedClient(loginResult!.Auth!.AccessToken);
 
         // Act
         var response = await authenticatedClient.GetAsync("/api/auth/me");

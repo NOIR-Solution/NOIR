@@ -20,8 +20,19 @@ export class TenantsPage {
   readonly identifierInput: Locator
   readonly displayNameInput: Locator
   readonly logoUrlInput: Locator
+  readonly descriptionInput: Locator
+  readonly noteInput: Locator
+  readonly adminEmailInput: Locator
+  readonly adminPasswordInput: Locator
   readonly submitCreateButton: Locator
   readonly cancelButton: Locator
+
+  // Edit dialog elements
+  readonly editDialog: Locator
+  readonly editDisplayNameInput: Locator
+  readonly editDescriptionInput: Locator
+  readonly editNoteInput: Locator
+  readonly submitEditButton: Locator
 
   // Delete dialog elements
   readonly deleteDialog: Locator
@@ -44,11 +55,22 @@ export class TenantsPage {
 
     // Create dialog - use actual field labels from the form
     this.createDialog = page.getByRole('dialog')
-    this.identifierInput = page.getByLabel(/^identifier$/i)
+    this.identifierInput = page.getByLabel(/identifier/i)
     this.displayNameInput = page.getByLabel(/display name/i)
     this.logoUrlInput = page.getByLabel(/logo url/i)
+    this.descriptionInput = page.getByLabel(/^description/i)
+    this.noteInput = page.getByLabel(/internal note/i)
+    this.adminEmailInput = page.getByLabel(/admin email/i)
+    this.adminPasswordInput = page.getByLabel(/admin password/i)
     this.submitCreateButton = page.getByRole('button', { name: /^create$/i })
     this.cancelButton = page.getByRole('button', { name: /cancel/i })
+
+    // Edit dialog
+    this.editDialog = page.getByRole('dialog')
+    this.editDisplayNameInput = page.getByLabel(/display name/i)
+    this.editDescriptionInput = page.getByLabel(/^description/i)
+    this.editNoteInput = page.getByLabel(/internal note/i)
+    this.submitEditButton = page.getByRole('button', { name: /save|update/i })
 
     // Delete dialog
     this.deleteDialog = page.getByRole('alertdialog')
@@ -71,12 +93,48 @@ export class TenantsPage {
     await this.createDialog.waitFor({ state: 'visible' })
   }
 
-  async fillCreateForm(identifier: string, displayName: string, logoUrl?: string) {
+  async fillCreateForm(
+    identifier: string,
+    displayName: string,
+    adminEmail: string,
+    adminPassword: string,
+    options?: { logoUrl?: string; description?: string; note?: string }
+  ) {
     await this.identifierInput.fill(identifier)
     await this.displayNameInput.fill(displayName)
-    if (logoUrl) {
-      await this.logoUrlInput.fill(logoUrl)
+    await this.adminEmailInput.fill(adminEmail)
+    await this.adminPasswordInput.fill(adminPassword)
+    if (options?.logoUrl) {
+      await this.logoUrlInput.fill(options.logoUrl)
     }
+    if (options?.description) {
+      await this.descriptionInput.fill(options.description)
+    }
+    if (options?.note) {
+      await this.noteInput.fill(options.note)
+    }
+  }
+
+  async fillEditForm(
+    displayName: string,
+    options?: { description?: string; note?: string }
+  ) {
+    await this.editDisplayNameInput.fill(displayName)
+    if (options?.description) {
+      await this.editDescriptionInput.fill(options.description)
+    }
+    if (options?.note) {
+      await this.editNoteInput.fill(options.note)
+    }
+  }
+
+  async openEditDialog(index: number) {
+    const row = this.tenantRows.nth(index)
+    await row.getByRole('link', { name: /view/i }).click()
+    await this.page.waitForLoadState('networkidle')
+    // Click edit button on tenant detail page
+    await this.page.getByRole('button', { name: /edit/i }).click()
+    await this.editDialog.waitFor({ state: 'visible' })
   }
 
   async deleteTenant(index: number) {

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Edit, Trash2, Building } from 'lucide-react'
+import { Edit, Trash2, Building, KeyRound } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -18,10 +18,11 @@ interface TenantTableProps {
   tenants: TenantListItem[]
   onEdit: (tenant: TenantListItem) => void
   onDelete: (tenant: TenantListItem) => void
+  onResetPassword: (tenant: TenantListItem) => void
   loading?: boolean
 }
 
-export function TenantTable({ tenants, onEdit, onDelete, loading }: TenantTableProps) {
+export function TenantTable({ tenants, onEdit, onDelete, onResetPassword, loading }: TenantTableProps) {
   const { t } = useTranslation('common')
 
   if (loading) {
@@ -79,14 +80,24 @@ export function TenantTable({ tenants, onEdit, onDelete, loading }: TenantTableP
                     variant="ghost"
                     size="icon"
                     onClick={() => onEdit(tenant)}
+                    title={t('buttons.edit')}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
+                    onClick={() => onResetPassword(tenant)}
+                    title={t('tenants.resetAdminPassword')}
+                  >
+                    <KeyRound className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onDelete(tenant)}
                     className="text-destructive hover:text-destructive"
+                    title={t('buttons.delete')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

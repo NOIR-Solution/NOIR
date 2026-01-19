@@ -2,8 +2,8 @@
 
 > Enterprise-ready .NET 10 + React SaaS foundation with multi-tenancy, Clean Architecture, and comprehensive testing.
 
-**Generated:** 2026-01-19
-**Tests:** 3,768+ unit tests (2,937 Application + 831 Domain)
+**Generated:** 2026-01-20
+**Tests:** 4,333+ tests (Unit, Integration, Architecture)
 
 ---
 
@@ -184,12 +184,12 @@ NOIR/
 
 | Project | Tests | Coverage |
 |---------|-------|----------|
-| `NOIR.Application.UnitTests` | 2,937 | Handlers, services, validators |
-| `NOIR.Domain.UnitTests` | 831 | Entities, value objects |
-| `NOIR.IntegrationTests` | ~100 | Database, API endpoints |
-| `NOIR.ArchitectureTests` | ~40 | Architecture rules |
+| `NOIR.Application.UnitTests` | 2,954 | Handlers, services, validators |
+| `NOIR.Domain.UnitTests` | 840 | Entities, value objects |
+| `NOIR.IntegrationTests` | 525 | Database, API endpoints |
+| `NOIR.ArchitectureTests` | 35 | Architecture rules |
 
-**Total: 3,768+ tests**
+**Total: 4,354+ tests**
 
 ---
 

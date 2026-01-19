@@ -868,6 +868,7 @@ public class EmailChangeServiceTests
         return new UserIdentityDto(
             userId,
             email,
+            "default", // TenantId
             firstName ?? "Test",
             "User",
             displayName ?? "Test User",

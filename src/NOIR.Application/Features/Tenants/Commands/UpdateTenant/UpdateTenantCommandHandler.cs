@@ -46,10 +46,30 @@ public class UpdateTenantCommandHandler
             }
         }
 
+        // Check if domain is being changed and if new domain already exists
+        if (!string.IsNullOrWhiteSpace(command.Domain))
+        {
+            var normalizedDomain = command.Domain.ToLowerInvariant().Trim();
+            if (!string.Equals(tenant.Domain, normalizedDomain, StringComparison.OrdinalIgnoreCase))
+            {
+                var allTenants = await _tenantStore.GetAllAsync();
+                if (allTenants.Any(t => t.Id != tenant.Id && string.Equals(t.Domain, normalizedDomain, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return Result.Failure<TenantDto>(
+                        Error.Conflict(
+                            $"Domain '{command.Domain}' is already in use by another tenant.",
+                            ErrorCodes.Business.AlreadyExists));
+                }
+            }
+        }
+
         // Create updated tenant using record 'with' expression
         var updatedTenant = tenant.WithUpdatedDetails(
             command.Identifier,
             command.Name,
+            command.Domain,
+            command.Description,
+            command.Note,
             command.IsActive);
 
         var success = await _tenantStore.UpdateAsync(updatedTenant);
@@ -68,6 +88,9 @@ public class UpdateTenantCommandHandler
         tenant.Id,
         tenant.Identifier,
         tenant.Name,
+        tenant.Domain,
+        tenant.Description,
+        tenant.Note,
         tenant.IsActive,
         tenant.CreatedAt,
         tenant.ModifiedAt);

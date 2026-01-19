@@ -20,8 +20,8 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
     {
         var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
     }
 
     private async Task<(string email, string password)> CreateTestUserAsync(string? firstName = "Test", string? lastName = "User")
@@ -127,11 +127,11 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
 
         // Login second user and get token
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new LoginCommand(email2, password2));
-        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
 
         // Act - Add Authorization header to cookie client (should override cookies)
         cookieClient.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authResponse!.AccessToken);
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResult!.Auth!.AccessToken);
 
         var response = await cookieClient.GetAsync("/api/auth/me");
 
@@ -174,7 +174,7 @@ public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
 
         var cookieClient = _factory.CreateTestClient();
         var loginResponse = await cookieClient.PostAsJsonAsync("/api/auth/login?useCookies=true", new LoginCommand(email, password, true));
-        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
 
         // Act - Logout with revokeAllSessions
         var logoutCommand = new LogoutCommand(RevokeAllSessions: true);

@@ -25,6 +25,17 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
         builder.Property(t => t.Name)
             .HasMaxLength(200);
 
+        // Domain-based tenant resolution
+        builder.Property(t => t.Domain)
+            .HasMaxLength(500);
+
+        // Metadata fields
+        builder.Property(t => t.Description)
+            .HasMaxLength(1000);
+
+        builder.Property(t => t.Note)
+            .HasMaxLength(2000);
+
         // Audit fields
         builder.Property(t => t.CreatedBy).HasMaxLength(100);
         builder.Property(t => t.ModifiedBy).HasMaxLength(100);

@@ -26,7 +26,7 @@ public class GetTenantsQueryHandlerTests
         bool isActive = true,
         bool isDeleted = false)
     {
-        var tenant = Tenant.Create(identifier, name, isActive);
+        var tenant = Tenant.Create(identifier, name, isActive: isActive);
 
         if (isDeleted)
         {

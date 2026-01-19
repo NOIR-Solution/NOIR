@@ -1,5 +1,7 @@
 using NOIR.Application.Features.Tenants.Commands.CreateTenant;
 using NOIR.Application.Features.Tenants.Commands.DeleteTenant;
+using NOIR.Application.Features.Tenants.Commands.ProvisionTenant;
+using NOIR.Application.Features.Tenants.Commands.ResetTenantAdminPassword;
 using NOIR.Application.Features.Tenants.Commands.UpdateTenant;
 using NOIR.Application.Features.Tenants.Queries.GetTenantById;
 using NOIR.Application.Features.Tenants.Queries.GetTenants;
@@ -56,6 +58,21 @@ public static class TenantEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
 
+        // Provision tenant (create with admin user)
+        group.MapPost("/provision", async (ProvisionTenantCommand command, IMessageBus bus) =>
+        {
+            var result = await bus.InvokeAsync<Result<ProvisionTenantResult>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.TenantsCreate)
+        .WithName("ProvisionTenant")
+        .WithSummary("Provision a new tenant with admin user")
+        .WithDescription("Creates a new tenant and optionally creates an admin user for that tenant. " +
+                        "This is the recommended way to create tenants as it handles all setup in one operation.")
+        .Produces<ProvisionTenantResult>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
+
         // Update tenant
         group.MapPut("/{tenantId:guid}", async (
             Guid tenantId,
@@ -85,5 +102,29 @@ public static class TenantEndpoints
         .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Reset tenant admin password
+        group.MapPost("/{tenantId}/reset-admin-password", async (
+            string tenantId,
+            ResetTenantAdminPasswordRequest request,
+            IMessageBus bus) =>
+        {
+            var command = new ResetTenantAdminPasswordCommand(tenantId, request.NewPassword);
+            var result = await bus.InvokeAsync<Result<ResetTenantAdminPasswordResult>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.TenantsUpdate)
+        .WithName("ResetTenantAdminPassword")
+        .WithSummary("Reset the password of a tenant's admin user")
+        .WithDescription("Allows platform administrators to reset the password for a tenant's admin user. " +
+                        "This is useful when the tenant admin forgets their password.")
+        .Produces<ResetTenantAdminPasswordResult>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 }
+
+/// <summary>
+/// Request body for resetting tenant admin password.
+/// </summary>
+public record ResetTenantAdminPasswordRequest(string NewPassword);

@@ -23,8 +23,8 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
     {
         var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
     }
 
     private async Task<(string Email, string Password, AuthResponse Auth)> CreateTestUserAsync()
@@ -46,10 +46,10 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
 
         // Login as the created user
         var loginCommand = new LoginCommand(email, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var loginResult = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var loginResponse = await loginResult.Content.ReadFromJsonAsync<LoginResponse>();
 
-        return (email, password, auth!);
+        return (email, password, loginResponse!.Auth!);
     }
 
     #region Get All Permissions Tests

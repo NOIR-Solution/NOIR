@@ -237,7 +237,8 @@ public class RoleIdentityServiceTests
             "Test description",
             "parent-id",
             tenantId,
-            true,
+            true,       // isSystemRole
+            false,      // isPlatformRole
             5,
             "shield",
             "blue");
@@ -269,7 +270,7 @@ public class RoleIdentityServiceTests
             .ReturnsAsync(IdentityResult.Failed(errors));
 
         // Act
-        var result = await _sut.CreateRoleAsync("TestRole", null, null, null, false, 0, null, null);
+        var result = await _sut.CreateRoleAsync("TestRole", null, null, null, false, false, 0, null, null);
 
         // Assert
         result.Succeeded.Should().BeFalse();

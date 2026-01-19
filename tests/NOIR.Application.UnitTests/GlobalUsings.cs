@@ -5,6 +5,7 @@ global using Xunit;
 global using FluentAssertions;
 global using Moq;
 global using Bogus;
+global using MockQueryable.Moq;
 
 // System
 global using System;

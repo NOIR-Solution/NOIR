@@ -10,6 +10,27 @@
 export interface LoginRequest {
   email: string
   password: string
+  tenantId?: string | null
+}
+
+/**
+ * Tenant option for tenant selection during login
+ */
+export interface TenantOption {
+  tenantId: string | null
+  identifier: string | null
+  name: string
+}
+
+/**
+ * Login response - can either be successful auth or require tenant selection
+ * Matches backend LoginResponse DTO
+ */
+export interface LoginResponse {
+  success: boolean
+  requiresTenantSelection: boolean
+  availableTenants: TenantOption[] | null
+  auth: AuthResponse | null
 }
 
 /**

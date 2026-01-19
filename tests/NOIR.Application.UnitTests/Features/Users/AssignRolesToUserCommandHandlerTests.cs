@@ -41,6 +41,7 @@ public class AssignRolesToUserCommandHandlerTests
         return new UserIdentityDto(
             Id: id,
             Email: email,
+            TenantId: "default",
             FirstName: "Test",
             LastName: "User",
             DisplayName: null,

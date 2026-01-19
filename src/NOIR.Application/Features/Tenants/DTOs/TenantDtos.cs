@@ -8,6 +8,9 @@ public sealed record TenantDto(
     string? Id,
     string? Identifier,
     string? Name,
+    string? Domain,
+    string? Description,
+    string? Note,
     bool IsActive,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt);
@@ -20,5 +23,13 @@ public sealed record TenantListDto(
     string? Id,
     string? Identifier,
     string? Name,
+    string? Domain,
     bool IsActive,
     DateTimeOffset CreatedAt);
+
+/// <summary>
+/// Public tenant info for login dropdown (minimal exposure).
+/// </summary>
+public sealed record TenantPublicDto(
+    string? Identifier,
+    string? Name);

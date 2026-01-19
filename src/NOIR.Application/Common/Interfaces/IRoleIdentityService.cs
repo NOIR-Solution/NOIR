@@ -72,6 +72,7 @@ public interface IRoleIdentityService
         string? parentRoleId,
         Guid? tenantId,
         bool isSystemRole,
+        bool isPlatformRole,
         int sortOrder,
         string? iconName,
         string? color,
@@ -149,6 +150,18 @@ public interface IRoleIdentityService
         IEnumerable<string> roleIds,
         CancellationToken ct = default);
 
+    /// <summary>
+    /// Gets users assigned to a specific role within a tenant.
+    /// </summary>
+    /// <param name="roleName">The role name to search for.</param>
+    /// <param name="tenantId">The tenant ID to filter users. Pass null for platform-level users.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>List of users with the specified role in the tenant.</returns>
+    Task<IReadOnlyList<UserIdentityDto>> GetUsersInRoleAsync(
+        string roleName,
+        string? tenantId,
+        CancellationToken ct = default);
+
     #endregion
 
     #region Effective Permissions (with Hierarchy)
@@ -179,6 +192,7 @@ public record RoleIdentityDto(
     string? ParentRoleId = null,
     Guid? TenantId = null,
     bool IsSystemRole = false,
+    bool IsPlatformRole = false,
     int SortOrder = 0,
     string? IconName = null,
     string? Color = null);

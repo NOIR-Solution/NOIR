@@ -51,6 +51,7 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
                 r.ParentRoleId,
                 r.TenantId,
                 r.IsSystemRole,
+                r.IsPlatformRole,
                 r.SortOrder,
                 r.IconName,
                 r.Color));
@@ -87,6 +88,7 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
                 r.ParentRoleId,
                 r.TenantId,
                 r.IsSystemRole,
+                r.IsPlatformRole,
                 r.SortOrder,
                 r.IconName,
                 r.Color))
@@ -104,6 +106,10 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
         CancellationToken ct = default)
     {
         var query = _roleManager.Roles.Where(r => !r.IsDeleted).AsQueryable();
+
+        // Always exclude platform roles from tenant-level UI
+        // Platform roles are for cross-tenant administration and should be hidden
+        query = query.Where(r => !r.IsPlatformRole);
 
         // Apply tenant filtering:
         // - If tenantId is specified: include tenant-specific roles AND optionally system roles
@@ -150,6 +156,7 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
                 r.ParentRoleId,
                 r.TenantId,
                 r.IsSystemRole,
+                r.IsPlatformRole,
                 r.SortOrder,
                 r.IconName,
                 r.Color))
@@ -164,7 +171,7 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
 
     public async Task<IdentityOperationResult> CreateRoleAsync(string roleName, CancellationToken ct = default)
     {
-        return await CreateRoleAsync(roleName, null, null, null, false, 0, null, null, ct);
+        return await CreateRoleAsync(roleName, null, null, null, false, false, 0, null, null, ct);
     }
 
     public async Task<IdentityOperationResult> CreateRoleAsync(
@@ -173,6 +180,7 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
         string? parentRoleId,
         Guid? tenantId,
         bool isSystemRole,
+        bool isPlatformRole,
         int sortOrder,
         string? iconName,
         string? color,
@@ -184,6 +192,7 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
             parentRoleId,
             tenantId,
             isSystemRole,
+            isPlatformRole,
             sortOrder,
             iconName,
             color);
@@ -223,6 +232,12 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
             return IdentityOperationResult.Failure("Role not found.");
         }
 
+        // Platform roles cannot be modified at all
+        if (role.IsPlatformRole)
+        {
+            return IdentityOperationResult.Failure("Cannot modify a platform role.");
+        }
+
         if (role.IsSystemRole && role.Name != newName)
         {
             return IdentityOperationResult.Failure("Cannot rename a system role.");
@@ -246,6 +261,12 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
         if (role is null)
         {
             return IdentityOperationResult.Failure("Role not found.");
+        }
+
+        // Platform roles cannot be deleted
+        if (role.IsPlatformRole)
+        {
+            return IdentityOperationResult.Failure("Cannot delete a platform role.");
         }
 
         if (role.IsSystemRole)
@@ -414,6 +435,47 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
             .ToDictionaryAsync(x => x.RoleId, x => x.Count, ct);
     }
 
+    public async Task<IReadOnlyList<UserIdentityDto>> GetUsersInRoleAsync(
+        string roleName,
+        string? tenantId,
+        CancellationToken ct = default)
+    {
+        // Find the role by name
+        var role = await _roleManager.FindByNameAsync(roleName);
+        if (role is null)
+        {
+            return [];
+        }
+
+        // Query users in this role filtered by tenant
+        var users = await _dbContext.UserRoles
+            .TagWith("RoleIdentityService_GetUsersInRole")
+            .Where(ur => ur.RoleId == role.Id)
+            .Join(
+                _dbContext.Users.Where(u => !u.IsDeleted && u.IsActive && u.TenantId == tenantId),
+                ur => ur.UserId,
+                u => u.Id,
+                (ur, u) => u)
+            .Select(u => new UserIdentityDto(
+                u.Id,
+                u.Email ?? string.Empty,
+                u.TenantId,
+                u.FirstName,
+                u.LastName,
+                u.DisplayName,
+                $"{u.FirstName} {u.LastName}".Trim(),
+                u.PhoneNumber,
+                u.AvatarUrl,
+                u.IsActive,
+                u.IsDeleted,
+                u.IsSystemUser,
+                u.CreatedAt,
+                u.ModifiedAt))
+            .ToListAsync(ct);
+
+        return users;
+    }
+
     #endregion
 
     #region Effective Permissions (with Hierarchy)
@@ -492,6 +554,7 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
             role.ParentRoleId,
             role.TenantId,
             role.IsSystemRole,
+            role.IsPlatformRole,
             role.SortOrder,
             role.IconName,
             role.Color);

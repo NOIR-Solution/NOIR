@@ -38,6 +38,7 @@ public class GetCurrentUserQueryHandlerTests
         return new UserIdentityDto(
             Id: id,
             Email: email,
+            TenantId: "default",
             FirstName: firstName,
             LastName: lastName,
             DisplayName: null,

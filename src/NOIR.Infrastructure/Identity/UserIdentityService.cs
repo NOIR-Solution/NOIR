@@ -8,15 +8,18 @@ public class UserIdentityService : IUserIdentityService, IScopedService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IMultiTenantStore<Tenant> _tenantStore;
     private readonly IDateTime _dateTime;
 
     public UserIdentityService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
+        IMultiTenantStore<Tenant> tenantStore,
         IDateTime dateTime)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _tenantStore = tenantStore;
         _dateTime = dateTime;
     }
 
@@ -32,10 +35,66 @@ public class UserIdentityService : IUserIdentityService, IScopedService
     {
         var normalizedEmail = _userManager.NormalizeEmail(email);
         // Email uniqueness is scoped to tenant
+        // IgnoreQueryFilters to bypass any global query filters since we explicitly filter by TenantId
         var user = await _userManager.Users
+            .IgnoreQueryFilters()
             .Where(u => u.NormalizedEmail == normalizedEmail && u.TenantId == tenantId && !u.IsDeleted)
             .FirstOrDefaultAsync(ct);
         return user is null ? null : MapToDto(user);
+    }
+
+    public async Task<IReadOnlyList<UserTenantInfo>> FindTenantsByEmailAsync(string email, CancellationToken ct = default)
+    {
+        var normalizedEmail = _userManager.NormalizeEmail(email);
+
+        // Find all users (across all tenants) with this email
+        // IgnoreQueryFilters to bypass tenant query filter
+        var users = await _userManager.Users
+            .IgnoreQueryFilters()
+            .Where(u => u.NormalizedEmail == normalizedEmail && !u.IsDeleted && u.IsActive)
+            .Select(u => new { u.Id, u.TenantId })
+            .ToListAsync(ct);
+
+        if (users.Count == 0)
+        {
+            return [];
+        }
+
+        // Get all tenants to map tenant IDs to names
+        var allTenants = await _tenantStore.GetAllAsync();
+        var tenantLookup = allTenants.ToDictionary(t => t.Id, t => t);
+
+        var result = new List<UserTenantInfo>();
+        foreach (var user in users)
+        {
+            string tenantName;
+            string? tenantIdentifier;
+
+            if (user.TenantId is null)
+            {
+                // Platform admin user - no tenant
+                tenantName = "Platform";
+                tenantIdentifier = null;
+            }
+            else if (tenantLookup.TryGetValue(user.TenantId, out var tenant))
+            {
+                tenantName = tenant.Name ?? tenant.Identifier;
+                tenantIdentifier = tenant.Identifier;
+            }
+            else
+            {
+                // Tenant not found (orphaned user)
+                continue;
+            }
+
+            result.Add(new UserTenantInfo(
+                user.Id,
+                user.TenantId,
+                tenantName,
+                tenantIdentifier));
+        }
+
+        return result;
     }
 
     public IQueryable<UserIdentityDto> GetUsersQueryable()
@@ -45,6 +104,7 @@ public class UserIdentityService : IUserIdentityService, IScopedService
             .Select(u => new UserIdentityDto(
                 u.Id,
                 u.Email!,
+                u.TenantId,
                 u.FirstName,
                 u.LastName,
                 u.DisplayName,
@@ -89,6 +149,7 @@ public class UserIdentityService : IUserIdentityService, IScopedService
             .Select(u => new UserIdentityDto(
                 u.Id,
                 u.Email!,
+                u.TenantId,
                 u.FirstName,
                 u.LastName,
                 u.DisplayName,
@@ -143,22 +204,54 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         string password,
         CancellationToken ct = default)
     {
+        // Validate required inputs
+        if (string.IsNullOrWhiteSpace(dto.Email))
+        {
+            return IdentityOperationResult.Failure("Email is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            return IdentityOperationResult.Failure("Password is required.");
+        }
+
+        // Check per-tenant email uniqueness (email can exist in different tenants, but not in the same tenant)
+        var existingUser = await FindByEmailAsync(dto.Email, dto.TenantId, ct);
+        if (existingUser is not null)
+        {
+            return IdentityOperationResult.Failure("Email is already in use in this tenant.");
+        }
+
+        // Generate tenant-scoped username to allow same email across tenants
+        // USERNAME FORMAT:
+        // - Platform users (TenantId = null): email (e.g., "admin@noir.local")
+        // - Tenant users: email#tenantId (e.g., "user@example.com#550e8400-e29b-41d4-a716-446655440000")
+        // This allows the same email to exist in multiple tenants while maintaining username uniqueness globally.
+        // ASP.NET Core Identity requires unique usernames, but we want per-tenant email uniqueness.
+        var userName = string.IsNullOrWhiteSpace(dto.TenantId)
+            ? dto.Email
+            : $"{dto.Email}#{dto.TenantId}";
+
         var user = new ApplicationUser
         {
-            UserName = dto.Email,
+            UserName = userName,
             Email = dto.Email,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             DisplayName = dto.DisplayName,
             TenantId = dto.TenantId,
-            IsActive = true
+            IsActive = true,
+            EmailConfirmed = true  // Auto-confirm email for admin-created users
         };
 
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
         {
-            return IdentityOperationResult.Failure(
-                result.Errors.Select(e => e.Description).ToArray());
+            var errors = result.Errors
+                .Select(e => e.Description)
+                .ToArray();
+
+            return IdentityOperationResult.Failure(errors);
         }
 
         return IdentityOperationResult.Success(user.Id);
@@ -330,19 +423,26 @@ public class UserIdentityService : IUserIdentityService, IScopedService
             return IdentityOperationResult.Failure("User not found.");
         }
 
-        // Check if email is already taken
-        var existingUser = await _userManager.FindByEmailAsync(newEmail);
+        // Check per-tenant email uniqueness (email can exist in different tenants, but not in the same tenant)
+        var existingUser = await FindByEmailAsync(newEmail, user.TenantId, ct);
         if (existingUser is not null && existingUser.Id != userId)
         {
-            return IdentityOperationResult.Failure("Email is already in use.");
+            return IdentityOperationResult.Failure("Email is already in use in this tenant.");
         }
 
-        // Update email and username (which is typically email-based)
-        var oldEmail = user.Email;
+        // Generate tenant-scoped username (consistent with CreateUserAsync)
+        // USERNAME FORMAT:
+        // - Platform users (TenantId = null): email (e.g., "admin@noir.local")
+        // - Tenant users: email#tenantId (e.g., "user@example.com#550e8400-e29b-41d4-a716-446655440000")
+        var newUserName = user.TenantId is null
+            ? newEmail
+            : $"{newEmail}#{user.TenantId}";
+
+        // Update email and username
         user.Email = newEmail;
         user.NormalizedEmail = _userManager.NormalizeEmail(newEmail);
-        user.UserName = newEmail;
-        user.NormalizedUserName = _userManager.NormalizeName(newEmail);
+        user.UserName = newUserName;
+        user.NormalizedUserName = _userManager.NormalizeName(newUserName);
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -491,6 +591,7 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         return new UserIdentityDto(
             user.Id,
             user.Email!,
+            user.TenantId,
             user.FirstName,
             user.LastName,
             user.DisplayName,

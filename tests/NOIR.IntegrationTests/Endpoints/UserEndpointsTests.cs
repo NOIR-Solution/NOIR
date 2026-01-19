@@ -20,27 +20,27 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     {
         var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
     }
 
     private async Task<(HttpClient client, AuthResponse auth)> CreateTestUserAsync()
     {
         var email = $"test_{Guid.NewGuid():N}@example.com";
         var password = "TestPassword123!";
-        
+
         // Create user via admin endpoint
         var adminClient = await GetAdminClientAsync();
         var createCommand = new CreateUserCommand(email, password, "Test", "User", null, null);
         var createResponse = await adminClient.PostAsJsonAsync("/api/users", createCommand);
         createResponse.EnsureSuccessStatusCode();
-        
+
         // Login as the new user
         var loginCommand = new LoginCommand(email, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
-        var userClient = _factory.CreateAuthenticatedClient(auth!.AccessToken);
-        return (userClient, auth);
+        var loginResult = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var loginResponse = await loginResult.Content.ReadFromJsonAsync<LoginResponse>();
+        var userClient = _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
+        return (userClient, loginResponse.Auth);
     }
 
     #region GetUsers Tests

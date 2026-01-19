@@ -153,6 +153,7 @@ export function RolePermissionInfo({ role, permissionsCache, onPermissionsLoaded
       interactive={true}
       onShow={() => { loadPermissions() }}
       delay={[100, 0]}
+      theme="custom rich"
     >
       <button
         type="button"

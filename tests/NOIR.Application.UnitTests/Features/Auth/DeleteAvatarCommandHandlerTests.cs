@@ -54,6 +54,7 @@ public class DeleteAvatarCommandHandlerTests
         return new UserIdentityDto(
             Id: id,
             Email: "test@example.com",
+            TenantId: "default",
             FirstName: "Test",
             LastName: "User",
             DisplayName: null,

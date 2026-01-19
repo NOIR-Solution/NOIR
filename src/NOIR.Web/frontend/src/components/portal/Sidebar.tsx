@@ -111,7 +111,7 @@ const navSections: NavSection[] = [
     labelKey: 'nav.monitoring',
     items: [
       { titleKey: 'activityTimeline.title', icon: Activity, path: '/portal/activity-timeline', permission: Permissions.AuditRead },
-      { titleKey: 'developerLogs.title', icon: Terminal, path: '/portal/developer-logs', permission: Permissions.AuditRead },
+      { titleKey: 'developerLogs.title', icon: Terminal, path: '/portal/developer-logs', permission: Permissions.SystemAdmin },
     ],
   },
 ]

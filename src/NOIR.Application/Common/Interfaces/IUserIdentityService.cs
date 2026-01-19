@@ -22,6 +22,13 @@ public interface IUserIdentityService
     Task<UserIdentityDto?> FindByEmailAsync(string email, string? tenantId, CancellationToken ct = default);
 
     /// <summary>
+    /// Finds all tenant IDs where a user with the given email exists.
+    /// Used for progressive login flow - tenant detection before authentication.
+    /// Returns empty list if no user found with this email.
+    /// </summary>
+    Task<IReadOnlyList<UserTenantInfo>> FindTenantsByEmailAsync(string email, CancellationToken ct = default);
+
+    /// <summary>
     /// Gets a queryable for paginated user listing.
     /// Returns a projection to UserIdentityDto.
     /// Note: This returns a projected queryable - use GetUsersPaginatedAsync for EF-compatible pagination.
@@ -172,10 +179,12 @@ public interface IUserIdentityService
 /// DTO representing user identity information.
 /// Decouples Application layer from ApplicationUser entity.
 /// Each user belongs to exactly one tenant (single-tenant-per-user model).
+/// Platform admins have TenantId = null and operate across all tenants.
 /// </summary>
 public record UserIdentityDto(
     string Id,
     string Email,
+    string? TenantId,
     string? FirstName,
     string? LastName,
     string? DisplayName,
@@ -230,5 +239,15 @@ public record IdentityOperationResult(
     public static IdentityOperationResult Success(string? userId = null) => new(true, userId);
     public static IdentityOperationResult Failure(params string[] errors) => new(false, null, errors);
 }
+
+/// <summary>
+/// Information about a user's tenant membership.
+/// Used in progressive login flow to show available tenants for an email.
+/// </summary>
+public record UserTenantInfo(
+    string UserId,
+    string? TenantId,
+    string TenantName,
+    string? TenantIdentifier);
 
 #endregion

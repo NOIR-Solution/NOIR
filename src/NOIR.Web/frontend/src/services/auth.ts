@@ -14,19 +14,23 @@
  * - getCurrentUser() - Returns null on auth failure, throws on network/server errors
  * - logout() - Never throws (best effort server notification)
  */
-import type { LoginRequest, AuthResponse, CurrentUser, ActiveSession } from '@/types'
+import type { LoginRequest, LoginResponse, AuthResponse, CurrentUser, ActiveSession } from '@/types'
 import { storeTokens, clearTokens, getAccessToken } from './tokenStorage'
 import { apiClient, apiClientPublic, ApiError } from './apiClient'
 
 /**
  * Authenticate user with email and password
- * Sets HTTP-only cookies AND stores tokens in localStorage (dual auth)
+ * Single-step login that may return either:
+ * - success=true with auth tokens (login complete)
+ * - requiresTenantSelection=true with tenant list (user needs to select tenant)
+ *
+ * Sets HTTP-only cookies AND stores tokens in localStorage (dual auth) on success
+ * @returns LoginResponse with either auth tokens or tenant selection requirement
  * @throws Error on login failure or storage unavailable
  */
-export async function login(request: LoginRequest): Promise<AuthResponse> {
+export async function login(request: LoginRequest): Promise<LoginResponse> {
   // useCookies=true sets HTTP-only cookies for server-rendered pages (/api/docs, /hangfire)
-  // The response still contains tokens which we store in localStorage for API calls
-  const data = await apiClientPublic<AuthResponse>(
+  const data = await apiClientPublic<LoginResponse>(
     '/auth/login?useCookies=true',
     {
       method: 'POST',
@@ -34,17 +38,19 @@ export async function login(request: LoginRequest): Promise<AuthResponse> {
     }
   )
 
-  // Store tokens in localStorage
-  const stored = storeTokens({
-    accessToken: data.accessToken,
-    refreshToken: data.refreshToken,
-    expiresAt: data.expiresAt,
-  })
+  // If login successful (single tenant match), store tokens
+  if (data.success && data.auth) {
+    const stored = storeTokens({
+      accessToken: data.auth.accessToken,
+      refreshToken: data.auth.refreshToken,
+      expiresAt: data.auth.expiresAt,
+    })
 
-  if (!stored) {
-    throw new Error(
-      'Unable to store authentication tokens. Please enable localStorage or disable private browsing.'
-    )
+    if (!stored) {
+      throw new Error(
+        'Unable to store authentication tokens. Please enable localStorage or disable private browsing.'
+      )
+    }
   }
 
   return data

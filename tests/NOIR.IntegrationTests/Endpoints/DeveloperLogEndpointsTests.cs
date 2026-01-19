@@ -19,17 +19,29 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         _client = factory.CreateTestClient();
     }
 
-    private async Task<HttpClient> GetAdminClientAsync()
+    private async Task<HttpClient> GetPlatformAdminClientAsync()
     {
+        // Use platform admin (has SystemAdmin permission) for system-level endpoints
+        var loginCommand = new LoginCommand("platform@noir.local", "Platform123!");
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        response.EnsureSuccessStatusCode();
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
+    }
+
+    private async Task<HttpClient> GetTenantAdminClientAsync()
+    {
+        // Use tenant admin for tenant-level operations (like creating test users)
         var loginCommand = new LoginCommand("admin@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        return _factory.CreateAuthenticatedClient(auth!.AccessToken);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
     }
 
     private async Task<(string Email, string Password, AuthResponse Auth)> CreateTestUserAsync()
     {
-        var adminClient = await GetAdminClientAsync();
+        // Use tenant admin for creating users (tenant-level operation)
+        var adminClient = await GetTenantAdminClientAsync();
         var email = $"test_{Guid.NewGuid():N}@example.com";
         var password = "TestPassword123!";
 
@@ -46,10 +58,10 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
 
         // Login as the created user
         var loginCommand = new LoginCommand(email, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
-        var auth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var loginResult = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var loginResponse = await loginResult.Content.ReadFromJsonAsync<LoginResponse>();
 
-        return (email, password, auth!);
+        return (email, password, loginResponse!.Auth!);
     }
 
     #region Get Log Level Tests
@@ -58,7 +70,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetLogLevel_AsAdmin_ShouldReturnLogLevel()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync("/api/admin/developer-logs/level");
@@ -103,7 +115,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task SetLogLevel_ValidLevel_ShouldReturnSuccess()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var request = new ChangeLogLevelRequest("Information");
 
         // Act
@@ -120,7 +132,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task SetLogLevel_InvalidLevel_ShouldReturnBadRequest()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var request = new ChangeLogLevelRequest("InvalidLevel");
 
         // Act
@@ -166,7 +178,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetLogLevelOverrides_AsAdmin_ShouldReturnOverrides()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync("/api/admin/developer-logs/level/overrides");
@@ -196,7 +208,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task SetLogLevelOverride_ValidRequest_ShouldReturnSuccess()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var sourcePrefix = "Microsoft.AspNetCore";
         var request = new ChangeLogLevelRequest("Warning");
 
@@ -213,7 +225,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task SetLogLevelOverride_InvalidLevel_ShouldReturnBadRequest()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var sourcePrefix = "Microsoft.AspNetCore";
         var request = new ChangeLogLevelRequest("InvalidLevel");
 
@@ -249,7 +261,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task RemoveLogLevelOverride_NonExistent_ShouldReturnNotFound()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var sourcePrefix = "NonExistent.Namespace.That.Does.Not.Exist";
 
         // Act
@@ -279,7 +291,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetBufferStats_AsAdmin_ShouldReturnStats()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync("/api/admin/developer-logs/buffer/stats");
@@ -323,7 +335,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetBufferEntries_AsAdmin_ShouldReturnEntries()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync("/api/admin/developer-logs/buffer/entries?count=50");
@@ -338,7 +350,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetBufferEntries_WithFilters_ShouldReturnFilteredEntries()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync(
@@ -355,7 +367,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetBufferEntries_WithSearch_ShouldFilterBySearch()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync(
@@ -369,7 +381,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetBufferEntries_ExceptionsOnly_ShouldReturnOnlyExceptions()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync(
@@ -400,7 +412,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetErrorClusters_AsAdmin_ShouldReturnClusters()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync("/api/admin/developer-logs/buffer/errors?maxClusters=10");
@@ -429,7 +441,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task ClearBuffer_AsAdmin_ShouldReturnNoContent()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.DeleteAsync("/api/admin/developer-logs/buffer");
@@ -470,7 +482,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetAvailableLogDates_AsAdmin_ShouldReturnDates()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync("/api/admin/developer-logs/history/dates");
@@ -499,7 +511,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetHistoricalLogs_ValidDate_ShouldReturnLogs()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var today = DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd");
 
         // Act
@@ -516,7 +528,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetHistoricalLogs_InvalidDate_ShouldReturnBadRequest()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync(
@@ -545,7 +557,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task SearchHistoricalLogs_ValidDateRange_ShouldReturnLogs()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var today = DateOnly.FromDateTime(DateTime.Today);
         var fromDate = today.AddDays(-7).ToString("yyyy-MM-dd");
         var toDate = today.ToString("yyyy-MM-dd");
@@ -564,7 +576,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task SearchHistoricalLogs_ExceedsMaxRange_ShouldReturnBadRequest()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var today = DateOnly.FromDateTime(DateTime.Today);
         var fromDate = today.AddDays(-60).ToString("yyyy-MM-dd"); // More than 30 days
         var toDate = today.ToString("yyyy-MM-dd");
@@ -581,7 +593,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task SearchHistoricalLogs_InvalidDateFormat_ShouldReturnBadRequest()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync(
@@ -610,7 +622,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetHistoricalLogSize_ValidDateRange_ShouldReturnSize()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
         var today = DateOnly.FromDateTime(DateTime.Today);
         var fromDate = today.AddDays(-7).ToString("yyyy-MM-dd");
         var toDate = today.ToString("yyyy-MM-dd");
@@ -627,7 +639,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     public async Task GetHistoricalLogSize_InvalidDateFormat_ShouldReturnBadRequest()
     {
         // Arrange
-        var adminClient = await GetAdminClientAsync();
+        var adminClient = await GetPlatformAdminClientAsync();
 
         // Act
         var response = await adminClient.GetAsync(

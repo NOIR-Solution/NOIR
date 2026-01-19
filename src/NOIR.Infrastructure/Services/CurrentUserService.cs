@@ -16,9 +16,9 @@ namespace NOIR.Infrastructure.Services;
 public class CurrentUserService : ICurrentUser, IScopedService
 {
     /// <summary>
-    /// Platform admin role name.
+    /// Platform admin role name - must match Roles.PlatformAdmin constant.
     /// </summary>
-    public const string PlatformAdminRole = "Admin";
+    public const string PlatformAdminRole = "PlatformAdmin";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMultiTenantContextAccessor<Tenant> _tenantContextAccessor;

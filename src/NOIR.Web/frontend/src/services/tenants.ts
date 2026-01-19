@@ -8,6 +8,8 @@ import type {
   TenantListItem,
   CreateTenantRequest,
   UpdateTenantRequest,
+  ProvisionTenantRequest,
+  ProvisionTenantResult,
   PaginatedResponse,
 } from '@/types'
 
@@ -56,10 +58,21 @@ export async function getTenant(id: string): Promise<Tenant> {
 }
 
 /**
- * Create a new tenant
+ * Create a new tenant (basic)
  */
 export async function createTenant(data: CreateTenantRequest): Promise<Tenant> {
   return apiClient<Tenant>('/tenants', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Provision a new tenant with optional admin user
+ * This is the preferred way to create tenants as it handles all setup in one operation.
+ */
+export async function provisionTenant(data: ProvisionTenantRequest): Promise<ProvisionTenantResult> {
+  return apiClient<ProvisionTenantResult>('/tenants/provision', {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -84,5 +97,28 @@ export async function updateTenant(
 export async function deleteTenant(id: string): Promise<void> {
   await apiClient<void>(`/tenants/${id}`, {
     method: 'DELETE',
+  })
+}
+
+/**
+ * Result of resetting tenant admin password
+ */
+export interface ResetTenantAdminPasswordResult {
+  success: boolean
+  message: string
+  adminUserId: string | null
+  adminEmail: string | null
+}
+
+/**
+ * Reset the password for a tenant's admin user
+ */
+export async function resetTenantAdminPassword(
+  tenantId: string,
+  newPassword: string
+): Promise<ResetTenantAdminPasswordResult> {
+  return apiClient<ResetTenantAdminPasswordResult>(`/tenants/${tenantId}/reset-admin-password`, {
+    method: 'POST',
+    body: JSON.stringify({ newPassword }),
   })
 }

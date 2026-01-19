@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { login as loginApi } from '@/services/auth'
 import { useAuthContext } from '@/contexts/AuthContext'
-import type { LoginRequest, AuthResponse } from '@/types'
+import type { LoginRequest, LoginResponse } from '@/types'
 
 /**
  * Custom hook for handling login with automatic auth context synchronization.
@@ -10,16 +10,23 @@ import type { LoginRequest, AuthResponse } from '@/types'
  * 1. Calling the login API to authenticate (tokens stored in localStorage)
  * 2. Refreshing the auth context so ProtectedRoute recognizes the authenticated state
  *
- * Using this hook prevents the common mistake of forgetting to call checkAuth()
- * after a successful login, which would cause ProtectedRoute to redirect back to login.
+ * The login API may return either:
+ * - success=true with auth tokens (single tenant match, login complete)
+ * - requiresTenantSelection=true with tenant list (user must select tenant and retry)
+ *
+ * Auth context is only synced when login is successful (success=true).
  *
  * @example
  * const { login } = useLogin()
  *
  * const handleSubmit = async () => {
  *   try {
- *     await login({ email, password })
- *     navigate('/dashboard')
+ *     const result = await login({ email, password })
+ *     if (result.success) {
+ *       navigate('/dashboard')
+ *     } else if (result.requiresTenantSelection) {
+ *       // Show tenant selection UI
+ *     }
  *   } catch (err) {
  *     setError(err.message)
  *   }
@@ -28,12 +35,14 @@ import type { LoginRequest, AuthResponse } from '@/types'
 export function useLogin() {
   const { checkAuth } = useAuthContext()
 
-  const login = useCallback(async (credentials: LoginRequest): Promise<AuthResponse> => {
-    // Authenticate with the server (tokens stored in localStorage)
+  const login = useCallback(async (credentials: LoginRequest): Promise<LoginResponse> => {
+    // Authenticate with the server (tokens stored in localStorage if successful)
     const response = await loginApi(credentials)
 
-    // Sync auth context so ProtectedRoute sees us as authenticated
-    await checkAuth()
+    // Only sync auth context when login is successful (not when tenant selection required)
+    if (response.success) {
+      await checkAuth()
+    }
 
     return response
   }, [checkAuth])

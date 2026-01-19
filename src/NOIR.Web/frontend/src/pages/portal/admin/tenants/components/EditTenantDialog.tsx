@@ -9,7 +9,8 @@ import {
   CredenzaTitle,
   CredenzaBody,
 } from '@/components/ui/credenza'
-import { TenantFormValidated, type CreateTenantFormData, type UpdateTenantFormData } from './TenantFormValidated'
+import { TenantFormValidated, type UpdateTenantFormData } from './TenantFormValidated'
+import type { ProvisionTenantRequest } from '@/types'
 import { getTenant, updateTenant } from '@/services/tenants'
 import { ApiError } from '@/services/apiClient'
 import type { TenantListItem, Tenant } from '@/types'
@@ -48,13 +49,15 @@ export function EditTenantDialog({ tenant, open, onOpenChange, onSuccess }: Edit
     }
   }, [open, tenant, onOpenChange])
 
-  const handleSubmit = async (data: CreateTenantFormData | UpdateTenantFormData) => {
+  const handleSubmit = async (data: ProvisionTenantRequest | UpdateTenantFormData) => {
     if (!tenant) return
     // When editing, data will have UpdateTenantFormData shape
     const updateData = data as UpdateTenantFormData
     await updateTenant(tenant.id, {
       identifier: updateData.identifier,
       name: updateData.name,
+      description: updateData.description || undefined,
+      note: updateData.note || undefined,
       isActive: updateData.isActive ?? true,
     })
     toast.success(t('messages.updateSuccess'))

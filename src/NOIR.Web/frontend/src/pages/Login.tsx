@@ -1,21 +1,24 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate, useSearchParams, Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Mail, Lock, Eye, EyeOff, ShieldCheck, Sparkles, Loader2 } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff, ShieldCheck, Sparkles, Loader2, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useLogin } from "@/hooks/useLogin"
 import { useAuthContext } from "@/contexts/AuthContext"
-import { useValidatedForm } from "@/hooks/useValidatedForm"
-import { loginSchema } from "@/validation/schemas.generated"
-import { createValidationTranslator } from "@/lib/validation-i18n"
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher"
 import { ThemeToggleCompact } from "@/components/ui/theme-toggle"
-import { z } from "zod"
-
-type LoginFormData = z.infer<typeof loginSchema>
+import type { TenantOption } from "@/types"
 
 /**
  * Validates the return URL to prevent open redirect attacks (CWE-601).
@@ -32,8 +35,10 @@ function validateReturnUrl(url: string): string {
 }
 
 /**
- * Login Page - Professional authentication form with blue-teal color scheme
- * Uses universally accessible colors (colorblind-friendly)
+ * Login Page - Single-step login with optional tenant selection
+ * 1. Enter email + password → Submit
+ * 2. If single tenant match → Login complete, redirect
+ * 3. If multiple tenant matches → Show tenant selection dialog → Complete login
  */
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -42,30 +47,22 @@ export default function LoginPage() {
   const { login } = useLogin()
   const { isAuthenticated, isLoading: isAuthLoading } = useAuthContext()
   const { t } = useTranslation('auth')
-  const { t: tCommon } = useTranslation('common')
 
-  // Memoized translation function for validation errors
-  const translateError = useMemo(() => createValidationTranslator(tCommon), [tCommon])
-
+  // Form state
+  const [email, setEmail] = useState(import.meta.env.DEV ? "admin@noir.local" : "")
+  const [password, setPassword] = useState(import.meta.env.DEV ? "123qwe" : "")
   const [showPassword, setShowPassword] = useState(false)
 
-  // Use validated form with Zod schema
-  const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<LoginFormData>({
-    schema: loginSchema,
-    defaultValues: {
-      email: import.meta.env.DEV ? "admin@noir.local" : "",
-      password: import.meta.env.DEV ? "123qwe" : "",
-    },
-    onSubmit: async (data) => {
-      await login({ email: data.email, password: data.password })
-      // Redirect to validated return URL (prevents open redirect)
-      const safeReturnUrl = validateReturnUrl(returnUrl)
-      navigate(safeReturnUrl)
-    },
-    onError: () => {
-      // Error is already handled by useValidatedForm
-    },
-  })
+  // Tenant selection state
+  const [showTenantDialog, setShowTenantDialog] = useState(false)
+  const [availableTenants, setAvailableTenants] = useState<TenantOption[]>([])
+  const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null)
+
+  // Loading/error state
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
 
   // Redirect to portal if already logged in
   useEffect(() => {
@@ -74,6 +71,89 @@ export default function LoginPage() {
       navigate(safeReturnUrl, { replace: true })
     }
   }, [isAuthenticated, navigate, returnUrl])
+
+  // Handle login form submission
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setServerError(null)
+    setEmailError(null)
+    setPasswordError(null)
+
+    // Basic validation
+    let hasErrors = false
+    if (!email.trim()) {
+      setEmailError(t('login.emailRequired', 'Email is required'))
+      hasErrors = true
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(email)) {
+        setEmailError(t('login.emailInvalid', 'Please enter a valid email address'))
+        hasErrors = true
+      }
+    }
+
+    if (!password.trim()) {
+      setPasswordError(t('login.passwordRequired', 'Password is required'))
+      hasErrors = true
+    }
+
+    if (hasErrors) return
+
+    setIsLoggingIn(true)
+
+    try {
+      const result = await login({ email, password })
+
+      if (result.success) {
+        // Login successful - redirect
+        const safeReturnUrl = validateReturnUrl(returnUrl)
+        navigate(safeReturnUrl)
+      } else if (result.requiresTenantSelection && result.availableTenants) {
+        // Multiple tenants matched - show selection dialog
+        setAvailableTenants(result.availableTenants)
+        setSelectedTenantId(null)
+        setShowTenantDialog(true)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setServerError(error.message)
+      } else {
+        setServerError(t('login.genericError', 'An error occurred. Please try again.'))
+      }
+    } finally {
+      setIsLoggingIn(false)
+    }
+  }
+
+  // Handle tenant selection and complete login
+  const handleTenantSelect = async () => {
+    if (!selectedTenantId) return
+
+    setIsLoggingIn(true)
+    setServerError(null)
+
+    try {
+      const result = await login({
+        email,
+        password,
+        tenantId: selectedTenantId === 'platform' ? null : selectedTenantId
+      })
+
+      if (result.success) {
+        setShowTenantDialog(false)
+        const safeReturnUrl = validateReturnUrl(returnUrl)
+        navigate(safeReturnUrl)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setServerError(error.message)
+      } else {
+        setServerError(t('login.genericError', 'An error occurred. Please try again.'))
+      }
+    } finally {
+      setIsLoggingIn(false)
+    }
+  }
 
   // Show loading indicator while checking auth status (prevents flash of login form)
   if (isAuthLoading) {
@@ -113,7 +193,7 @@ export default function LoginPage() {
           {/* Login Card */}
           <Card className="backdrop-blur-xl bg-background/80 border-border/50 shadow-2xl">
             <CardContent className="p-6 sm:p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleLoginSubmit} className="space-y-6">
                 {/* Email Field */}
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-foreground font-medium">
@@ -125,13 +205,18 @@ export default function LoginPage() {
                       id="email"
                       type="email"
                       placeholder={t('login.emailPlaceholder')}
-                      {...form.register("email")}
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value)
+                        setEmailError(null)
+                      }}
                       className="pl-10 h-12 bg-background border-border focus:border-blue-600 focus:ring-blue-600/20 transition-all"
-                      aria-invalid={!!form.formState.errors.email}
+                      aria-invalid={!!emailError}
+                      autoFocus
                     />
                   </div>
-                  {form.formState.errors.email && (
-                    <p className="text-sm text-destructive">{translateError(form.formState.errors.email.message)}</p>
+                  {emailError && (
+                    <p className="text-sm text-destructive">{emailError}</p>
                   )}
                 </div>
 
@@ -146,9 +231,13 @@ export default function LoginPage() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder={t('login.passwordPlaceholder')}
-                      {...form.register("password")}
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value)
+                        setPasswordError(null)
+                      }}
                       className="pl-10 pr-10 h-12 bg-background border-border focus:border-blue-600 focus:ring-blue-600/20 transition-all"
-                      aria-invalid={!!form.formState.errors.password}
+                      aria-invalid={!!passwordError}
                     />
                     <button
                       type="button"
@@ -159,8 +248,8 @@ export default function LoginPage() {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  {form.formState.errors.password && (
-                    <p className="text-sm text-destructive">{translateError(form.formState.errors.password.message)}</p>
+                  {passwordError && (
+                    <p className="text-sm text-destructive">{passwordError}</p>
                   )}
                   {/* Forgot Password Link */}
                   <div className="flex justify-end mt-1">
@@ -180,13 +269,13 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                {/* Submit Button - Blue-teal gradient */}
+                {/* Submit Button */}
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isLoggingIn}
                   className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01]"
                 >
-                  {isSubmitting ? (
+                  {isLoggingIn ? (
                     <span className="flex items-center gap-2">
                       <Loader2 className="h-5 w-5 animate-spin" />
                       {t('login.submitting')}
@@ -196,7 +285,6 @@ export default function LoginPage() {
                   )}
                 </Button>
               </form>
-
             </CardContent>
           </Card>
 
@@ -262,6 +350,83 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Tenant Selection Dialog */}
+      <Dialog open={showTenantDialog} onOpenChange={setShowTenantDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-blue-600" />
+              {t('login.selectOrganization', 'Select Organization')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('login.multiTenantMessage', 'Your account has access to multiple organizations. Please select one to continue.')}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4 space-y-2">
+            <Label htmlFor="tenant-select" className="text-sm font-medium">
+              {t('login.organizationLabel', 'Organization')}
+            </Label>
+            <Select
+              value={selectedTenantId || ''}
+              onValueChange={setSelectedTenantId}
+            >
+              <SelectTrigger id="tenant-select" className="w-full h-11">
+                <SelectValue placeholder={t('login.selectOrganizationPlaceholder', 'Select an organization...')} />
+              </SelectTrigger>
+              <SelectContent>
+                {availableTenants.map((tenant) => (
+                  <SelectItem
+                    key={tenant.tenantId || 'platform'}
+                    value={tenant.tenantId || 'platform'}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-muted-foreground" />
+                      <span>{tenant.name}</span>
+                      {tenant.identifier && (
+                        <span className="text-xs text-muted-foreground">
+                          ({tenant.identifier})
+                        </span>
+                      )}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {serverError && (
+              <div className="mt-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <p className="text-sm text-destructive">{serverError}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowTenantDialog(false)}
+              disabled={isLoggingIn}
+            >
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button
+              onClick={handleTenantSelect}
+              disabled={!selectedTenantId || isLoggingIn}
+              className="bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800"
+            >
+              {isLoggingIn ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t('login.submitting')}
+                </span>
+              ) : (
+                t('login.continue', 'Continue')
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

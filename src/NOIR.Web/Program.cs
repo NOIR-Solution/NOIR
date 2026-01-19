@@ -180,6 +180,9 @@ builder.Services.AddSignalR(options =>
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
 
+// Configure Platform settings (for seeding platform admin and default tenant)
+builder.Services.Configure<PlatformSettings>(builder.Configuration.GetSection(PlatformSettings.SectionName));
+
 // Configure AuditRetention settings
 builder.Services.Configure<AuditRetentionSettings>(builder.Configuration.GetSection(AuditRetentionSettings.SectionName));
 

@@ -161,7 +161,7 @@ public class TenantTests
         var newName = "Updated Name";
 
         // Act
-        var updated = original.WithUpdatedDetails(newIdentifier, newName, true);
+        var updated = original.WithUpdatedDetails(newIdentifier, newName, null, null, null, true);
 
         // Assert
         updated.Identifier.Should().Be(newIdentifier);
@@ -176,7 +176,7 @@ public class TenantTests
         var original = Tenant.Create("original", "Original");
 
         // Act
-        var updated = original.WithUpdatedDetails("updated", "Updated", true);
+        var updated = original.WithUpdatedDetails("updated", "Updated", null, null, null, true);
 
         // Assert
         updated.Id.Should().Be(original.Id);
@@ -190,7 +190,7 @@ public class TenantTests
         var beforeUpdate = DateTimeOffset.UtcNow;
 
         // Act
-        var updated = original.WithUpdatedDetails("updated", "Updated", true);
+        var updated = original.WithUpdatedDetails("updated", "Updated", null, null, null, true);
 
         // Assert
         updated.ModifiedAt.Should().NotBeNull();
@@ -204,7 +204,7 @@ public class TenantTests
         var original = Tenant.Create("original", "Original");
 
         // Act
-        var updated = original.WithUpdatedDetails("  UPDATED  ", "Updated", true);
+        var updated = original.WithUpdatedDetails("  UPDATED  ", "Updated", null, null, null, true);
 
         // Assert
         updated.Identifier.Should().Be("updated");
@@ -217,7 +217,7 @@ public class TenantTests
         var original = Tenant.Create("original", "Original");
 
         // Act
-        var updated = original.WithUpdatedDetails("updated", "  Updated Name  ", true);
+        var updated = original.WithUpdatedDetails("updated", "  Updated Name  ", null, null, null, true);
 
         // Assert
         updated.Name.Should().Be("Updated Name");
@@ -230,7 +230,7 @@ public class TenantTests
         var tenant = Tenant.Create("original", "Original");
 
         // Act
-        var act = () => tenant.WithUpdatedDetails(null!, "Name", true);
+        var act = () => tenant.WithUpdatedDetails(null!, "Name", null, null, null, true);
 
         // Assert
         act.Should().Throw<ArgumentException>();
@@ -243,7 +243,7 @@ public class TenantTests
         var tenant = Tenant.Create("original", "Original");
 
         // Act
-        var act = () => tenant.WithUpdatedDetails("identifier", null!, true);
+        var act = () => tenant.WithUpdatedDetails("identifier", null!, null, null, null, true);
 
         // Assert
         act.Should().Throw<ArgumentException>();

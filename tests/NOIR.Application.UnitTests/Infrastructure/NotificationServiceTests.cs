@@ -500,6 +500,7 @@ public class NotificationServiceTests
         return new UserIdentityDto(
             Id: id,
             Email: $"{id}@test.com",
+            TenantId: "default",
             FirstName: "Test",
             LastName: $"User {id}",
             DisplayName: null,

@@ -35,7 +35,7 @@ public class CreateTenantCommandHandlerTests
         string name = "Test Tenant",
         bool isActive = true)
     {
-        return Tenant.Create(identifier, name, isActive);
+        return Tenant.Create(identifier, name, isActive: isActive);
     }
 
     #endregion
@@ -84,7 +84,7 @@ public class CreateTenantCommandHandlerTests
             .Setup(x => x.AddAsync(It.Is<Tenant>(t => !t.IsActive)))
             .ReturnsAsync(true);
 
-        var command = new CreateTenantCommand(identifier, name, false);
+        var command = new CreateTenantCommand(identifier, name, IsActive: false);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

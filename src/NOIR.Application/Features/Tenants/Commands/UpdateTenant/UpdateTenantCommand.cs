@@ -8,6 +8,9 @@ namespace NOIR.Application.Features.Tenants.Commands.UpdateTenant;
 public sealed record UpdateTenantRequest(
     string Identifier,
     string Name,
+    string? Domain = null,
+    string? Description = null,
+    string? Note = null,
     bool IsActive = true);
 
 /// <summary>
@@ -18,6 +21,9 @@ public sealed record UpdateTenantCommand(
     Guid TenantId,
     string Identifier,
     string Name,
+    string? Domain = null,
+    string? Description = null,
+    string? Note = null,
     bool IsActive = true) : IAuditableCommand<TenantDto>
 {
     public AuditOperationType OperationType => AuditOperationType.Update;
@@ -29,5 +35,5 @@ public sealed record UpdateTenantCommand(
     /// Creates a command from a request body and tenant ID from URL.
     /// </summary>
     public static UpdateTenantCommand FromRequest(Guid tenantId, UpdateTenantRequest request) =>
-        new(tenantId, request.Identifier, request.Name, request.IsActive);
+        new(tenantId, request.Identifier, request.Name, request.Domain, request.Description, request.Note, request.IsActive);
 }

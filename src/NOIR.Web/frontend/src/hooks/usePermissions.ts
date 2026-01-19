@@ -137,6 +137,11 @@ export const Permissions = {
   TenantsCreate: 'tenants:create',
   TenantsUpdate: 'tenants:update',
   TenantsDelete: 'tenants:delete',
+  // System (platform-level only)
+  SystemAdmin: 'system:admin',
+  SystemAuditLogs: 'system:audit-logs',
+  SystemSettings: 'system:settings',
+  HangfireDashboard: 'system:hangfire',
   // Audit
   AuditRead: 'audit:read',
   AuditExport: 'audit:export',

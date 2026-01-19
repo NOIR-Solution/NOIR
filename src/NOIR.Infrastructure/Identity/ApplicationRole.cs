@@ -39,6 +39,12 @@ public class ApplicationRole : IdentityRole, IAuditableEntity
     public bool IsSystemRole { get; set; }
 
     /// <summary>
+    /// Whether this is a platform-level role for cross-tenant administration.
+    /// Platform roles are completely hidden from tenant-level role management.
+    /// </summary>
+    public bool IsPlatformRole { get; set; }
+
+    /// <summary>
     /// Order for display purposes in UI.
     /// </summary>
     public int SortOrder { get; set; }
@@ -74,6 +80,7 @@ public class ApplicationRole : IdentityRole, IAuditableEntity
         string? parentRoleId = null,
         Guid? tenantId = null,
         bool isSystemRole = false,
+        bool isPlatformRole = false,
         int sortOrder = 0,
         string? iconName = null,
         string? color = null)
@@ -87,6 +94,7 @@ public class ApplicationRole : IdentityRole, IAuditableEntity
             ParentRoleId = parentRoleId,
             TenantId = tenantId,
             IsSystemRole = isSystemRole,
+            IsPlatformRole = isPlatformRole,
             SortOrder = sortOrder,
             IconName = iconName,
             Color = color,

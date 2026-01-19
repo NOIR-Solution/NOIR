@@ -1,8 +1,7 @@
 import * as React from 'react'
 import Tippy from '@tippyjs/react'
 import type { TippyProps } from '@tippyjs/react'
-import 'tippy.js/dist/tippy.css'
-import 'tippy.js/animations/shift-away-subtle.css'
+// CSS imports moved to index.css for reliable loading
 import { cn } from '@/lib/utils'
 
 export interface TooltipProps extends Omit<TippyProps, 'content'> {
@@ -17,12 +16,14 @@ export interface TooltipProps extends Omit<TippyProps, 'content'> {
 /**
  * A beautiful tooltip component powered by Tippy.js
  * with smooth animations and clean styling.
+ *
+ * Uses primary color background with white text by default.
  */
 export function TippyTooltip({
   content,
   children,
   contentClassName,
-  placement = 'top',
+  placement = 'right',
   animation = 'shift-away-subtle',
   duration = [200, 150],
   delay = [100, 0],
@@ -33,9 +34,9 @@ export function TippyTooltip({
   return (
     <Tippy
       content={
-        <div className={cn('text-sm', contentClassName)}>
+        <span className={cn(contentClassName)}>
           {content}
-        </div>
+        </span>
       }
       placement={placement}
       animation={animation}
@@ -44,6 +45,7 @@ export function TippyTooltip({
       interactive={interactive}
       arrow={arrow}
       theme="custom"
+      appendTo={() => document.body}
       {...props}
     >
       {children}
@@ -54,6 +56,8 @@ export function TippyTooltip({
 /**
  * Rich content tooltip with header and list items
  * Perfect for search hints, feature explanations, etc.
+ *
+ * Uses a white/light background with primary colored header.
  */
 export interface RichTooltipProps extends Omit<TooltipProps, 'content'> {
   /** Title/header of the tooltip */
@@ -80,10 +84,10 @@ export function RichTooltip({
         <div
           style={{
             padding: '10px 14px',
-            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            background: 'hsl(var(--primary))',
             fontWeight: 600,
             fontSize: '13px',
-            color: '#ffffff',
+            color: 'hsl(var(--primary-foreground))',
             letterSpacing: '-0.01em',
           }}
         >
@@ -98,7 +102,7 @@ export function RichTooltip({
             margin: 0,
             listStyle: 'none',
             fontSize: '13px',
-            color: '#374151',
+            color: 'hsl(var(--foreground))',
             lineHeight: 1.7,
           }}
         >
@@ -107,7 +111,7 @@ export function RichTooltip({
               <span style={{
                 position: 'absolute',
                 left: 0,
-                color: '#3b82f6',
+                color: 'hsl(var(--primary))',
                 fontWeight: 700,
               }}>•</span>
               {item}
@@ -119,14 +123,20 @@ export function RichTooltip({
   )
 
   return (
-    <TippyTooltip
+    <Tippy
       content={tooltipContent}
       placement={placement}
+      animation="shift-away-subtle"
+      duration={[200, 150]}
+      delay={[100, 0]}
       interactive={interactive}
+      arrow={true}
+      theme="custom rich"
+      appendTo={() => document.body}
       {...props}
     >
       {children}
-    </TippyTooltip>
+    </Tippy>
   )
 }
 

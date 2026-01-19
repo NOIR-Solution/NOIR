@@ -105,7 +105,9 @@ public static class DependencyInjection
             options.Password.RequiredUniqueChars = identitySettings.Password.RequiredUniqueChars;
 
             // User settings
-            options.User.RequireUniqueEmail = true;
+            // In multi-tenant mode, email uniqueness is per-tenant, not global
+            // Per-tenant uniqueness is enforced in CreateUserAsync/UpdateUserAsync
+            options.User.RequireUniqueEmail = false;
 
             // Lockout settings from configuration
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(identitySettings.Lockout.DefaultLockoutTimeSpanMinutes);

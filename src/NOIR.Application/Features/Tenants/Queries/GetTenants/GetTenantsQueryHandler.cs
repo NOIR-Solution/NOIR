@@ -56,6 +56,7 @@ public class GetTenantsQueryHandler
             t.Id,
             t.Identifier,
             t.Name,
+            t.Domain,
             t.IsActive,
             t.CreatedAt
         )).ToList();

@@ -272,9 +272,9 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-            // Assert - Should have exactly 2 roles (Admin, User)
+            // Assert - Should have exactly the default roles (PlatformAdmin, Admin, User)
             var roles = roleManager.Roles.ToList();
-            roles.Should().HaveCount(2);
+            roles.Should().HaveCount(Roles.Defaults.Count);
 
             // Should have exactly 1 admin user
             var adminUsers = await userManager.Users
@@ -364,7 +364,13 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             verifyDeleted!.IsDeleted.Should().BeTrue();
 
             // Act - Re-run the seeder which should restore the tenant
-            await ApplicationDbContextSeeder.SeedDefaultTenantAsync(tenantContext, logger);
+            var settings = new DefaultTenantSettings
+            {
+                Enabled = true,
+                Identifier = "default",
+                Name = "Default Tenant"
+            };
+            await ApplicationDbContextSeeder.SeedDefaultTenantAsync(tenantContext, settings, logger);
 
             // Assert - Tenant should be restored
             var restoredTenant = await tenantContext.TenantInfo

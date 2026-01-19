@@ -35,6 +35,27 @@ public record Tenant : TenantInfo, IAuditableEntity
 
     #endregion
 
+    #region Tenant Details
+
+    /// <summary>
+    /// Custom domain for this tenant (e.g., "acme.platform.com" or "app.acme.com").
+    /// Used for automatic tenant resolution from request host.
+    /// If null, tenant can only be accessed via identifier or explicit selection.
+    /// </summary>
+    public string? Domain { get; init; }
+
+    /// <summary>
+    /// Description of the tenant for administrative purposes.
+    /// </summary>
+    public string? Description { get; init; }
+
+    /// <summary>
+    /// Internal notes about this tenant (not visible to tenant users).
+    /// </summary>
+    public string? Note { get; init; }
+
+    #endregion
+
     #region Timestamps (from Entity pattern)
 
     /// <summary>
@@ -65,10 +86,16 @@ public record Tenant : TenantInfo, IAuditableEntity
     /// </summary>
     /// <param name="identifier">Unique identifier/slug (will be lowercased).</param>
     /// <param name="name">Display name.</param>
+    /// <param name="domain">Optional custom domain for tenant resolution.</param>
+    /// <param name="description">Optional description.</param>
+    /// <param name="note">Optional internal notes.</param>
     /// <param name="isActive">Whether the tenant is active (default: true).</param>
     public static Tenant Create(
         string identifier,
         string name,
+        string? domain = null,
+        string? description = null,
+        string? note = null,
         bool isActive = true)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identifier, nameof(identifier));
@@ -77,6 +104,9 @@ public record Tenant : TenantInfo, IAuditableEntity
         var id = Guid.NewGuid().ToString();
         return new Tenant(id, identifier.ToLowerInvariant().Trim(), name.Trim())
         {
+            Domain = domain?.ToLowerInvariant().Trim(),
+            Description = description?.Trim(),
+            Note = note?.Trim(),
             IsActive = isActive
         };
     }
@@ -93,6 +123,9 @@ public record Tenant : TenantInfo, IAuditableEntity
     public Tenant WithUpdatedDetails(
         string identifier,
         string name,
+        string? domain,
+        string? description,
+        string? note,
         bool isActive)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(identifier, nameof(identifier));
@@ -102,6 +135,9 @@ public record Tenant : TenantInfo, IAuditableEntity
         {
             Identifier = identifier.ToLowerInvariant().Trim(),
             Name = name.Trim(),
+            Domain = domain?.ToLowerInvariant().Trim(),
+            Description = description?.Trim(),
+            Note = note?.Trim(),
             IsActive = isActive,
             ModifiedAt = DateTimeOffset.UtcNow
         };

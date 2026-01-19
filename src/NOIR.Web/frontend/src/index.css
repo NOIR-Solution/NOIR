@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "tippy.js/dist/tippy.css";
+@import "tippy.js/animations/shift-away-subtle.css";
 @import "./styles/tippy-custom.css";
 
 /* Custom dark variant for targeting dark mode elements */

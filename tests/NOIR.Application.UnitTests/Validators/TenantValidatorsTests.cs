@@ -35,6 +35,19 @@ public class TenantValidatorsTests
         mock.Setup(x => x.Get("validation.tenantName.maxLength", It.IsAny<object[]>()))
             .Returns((string _, object[] args) => $"Tenant name cannot exceed {args[0]} characters");
 
+        // Tenant domain validations
+        mock.Setup(x => x["validation.tenantDomain.pattern"]).Returns("Domain must be a valid domain name (e.g., example.com)");
+        mock.Setup(x => x.Get("validation.tenantDomain.maxLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Domain cannot exceed {args[0]} characters");
+
+        // Tenant description validations
+        mock.Setup(x => x.Get("validation.tenantDescription.maxLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Description cannot exceed {args[0]} characters");
+
+        // Tenant note validations
+        mock.Setup(x => x.Get("validation.tenantNote.maxLength", It.IsAny<object[]>()))
+            .Returns((string _, object[] args) => $"Note cannot exceed {args[0]} characters");
+
         return mock.Object;
     }
 

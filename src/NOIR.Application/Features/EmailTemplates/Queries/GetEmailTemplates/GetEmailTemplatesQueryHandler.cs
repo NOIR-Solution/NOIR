@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace NOIR.Application.Features.EmailTemplates.Queries.GetEmailTemplates;
 
 /// <summary>

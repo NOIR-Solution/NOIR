@@ -49,11 +49,16 @@
     "description": "Quản lý tổ chức và cài đặt của họ",
     "listTitle": "Tất cả Tổ chức",
     "createNew": "Tạo Tổ chức",
+    "createTitle": "Tạo Tổ chức",
     "createDescription": "Tạo tổ chức mới cho nền tảng",
     "editTitle": "Sửa Tổ chức",
     "editDescription": "Cập nhật cài đặt và thương hiệu tổ chức",
     "deleteTitle": "Xóa Tổ chức",
     "deleteDescription": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Hành động này không thể hoàn tác.",
+    "resetAdminPassword": "Đặt lại mật khẩu quản trị",
+    "resetAdminPasswordTitle": "Đặt lại mật khẩu quản trị",
+    "resetAdminPasswordDescription": "Đặt mật khẩu mới cho quản trị viên của \"{{name}}\".",
+    "resetPasswordSuccess": "Đã đặt lại mật khẩu thành công cho {{email}}",
     "searchPlaceholder": "Tìm kiếm tổ chức...",
     "table": {
       "identifier": "Mã định danh",
@@ -65,10 +70,28 @@
       "identifierHint": "Mã định danh duy nhất cho tổ chức (chữ thường, số và dấu gạch ngang)",
       "name": "Tên hiển thị",
       "namePlaceholder": "Công ty của tôi",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Mô tả ngắn gọn về tổ chức",
+      "note": "Ghi chú nội bộ",
+      "notePlaceholder": "Ghi chú nội bộ (không hiển thị cho tổ chức)",
+      "adminEmail": "Email quản trị",
+      "adminEmailPlaceholder": "admin@example.com",
+      "adminPassword": "Mật khẩu quản trị",
+      "adminPasswordPlaceholder": "Nhập mật khẩu",
+      "adminFirstName": "Tên",
+      "adminFirstNamePlaceholder": "Văn",
+      "adminLastName": "Họ",
+      "adminLastNamePlaceholder": "Nguyễn",
+      "adminUserSection": "Quản trị viên Tổ chức",
+      "adminUserHint": "Tạo tài khoản quản trị viên ban đầu cho tổ chức này",
       "logoUrl": "URL Logo",
       "primaryColor": "Màu chính",
       "accentColor": "Màu phụ",
       "theme": "Giao diện"
+    },
+    "messages": {
+      "provisionSuccess": "Đã tạo tổ chức thành công với quản trị viên {{email}}",
+      "provisionPartial": "Đã tạo tổ chức nhưng tạo quản trị viên thất bại: {{error}}"
     },
     "details": {
       "basicInfo": "Thông tin cơ bản",
@@ -165,7 +188,11 @@
   },
   "auth": {
     "signIn": "Đăng nhập",
-    "signOut": "Đăng xuất"
+    "signOut": "Đăng xuất",
+    "newPassword": "Mật khẩu mới",
+    "enterNewPassword": "Nhập mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "confirmNewPassword": "Xác nhận mật khẩu mới"
   },
   "dashboard": {
     "title": "Bảng điều khiển",
@@ -236,7 +263,8 @@
     "upload": "Tải lên",
     "yes": "Có",
     "no": "Không",
-    "ok": "Đồng ý"
+    "ok": "Đồng ý",
+    "resetPassword": "Đặt lại mật khẩu"
   },
   "labels": {
     "loading": "Đang tải...",
@@ -293,6 +321,15 @@
     "dark": "Tối",
     "system": "Hệ thống"
   },
+  "errors": {
+    "notFound": "Không tìm thấy tài nguyên",
+    "tenantNotFound": "Không tìm thấy tổ chức",
+    "noAdminFound": "Không tìm thấy quản trị viên cho tổ chức này",
+    "operationFailed": "Thao tác thất bại. Vui lòng thử lại.",
+    "unauthorized": "Bạn không được phép thực hiện thao tác này",
+    "forbidden": "Truy cập bị từ chối",
+    "serverError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
+  },
   "messages": {
     "saveSuccess": "Lưu thành công",
     "deleteSuccess": "Xóa thành công",
@@ -329,6 +366,7 @@
     "maxValue": "Giá trị tối đa là {{value}}",
     "passwordConfirm": "Vui lòng xác nhận mật khẩu mới",
     "passwordsMismatch": "Mật khẩu không khớp",
+    "passwordMismatch": "Mật khẩu không khớp",
     "passwordSameAsCurrent": "Mật khẩu mới phải khác mật khẩu hiện tại",
     "emailSameAsCurrent": "Email mới phải khác email hiện tại"
   },

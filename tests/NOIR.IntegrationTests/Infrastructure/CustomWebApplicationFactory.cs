@@ -73,6 +73,20 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
                 ["Identity:Password:RequiredLength"] = "6",
                 ["Identity:Password:RequiredUniqueChars"] = "1",
 
+                // Platform settings - for seeding platform admin and default tenant
+                ["Platform:PlatformAdmin:Email"] = "platform@noir.local",
+                ["Platform:PlatformAdmin:Password"] = "Platform123!",
+                ["Platform:PlatformAdmin:FirstName"] = "Platform",
+                ["Platform:PlatformAdmin:LastName"] = "Administrator",
+                ["Platform:DefaultTenant:Enabled"] = "true",
+                ["Platform:DefaultTenant:Identifier"] = "default",
+                ["Platform:DefaultTenant:Name"] = "Default Tenant",
+                ["Platform:DefaultTenant:Admin:Enabled"] = "true",
+                ["Platform:DefaultTenant:Admin:Email"] = "admin@noir.local",
+                ["Platform:DefaultTenant:Admin:Password"] = "123qwe",
+                ["Platform:DefaultTenant:Admin:FirstName"] = "Tenant",
+                ["Platform:DefaultTenant:Admin:LastName"] = "Administrator",
+
                 // Multi-tenant configuration - same as production with "default" tenant
                 // StaticStrategy uses "default" as fallback for non-HTTP contexts (seeding, background jobs)
                 ["Finbuckle:MultiTenant:Stores:ConfigurationStore:Tenants:0:Id"] = "default",

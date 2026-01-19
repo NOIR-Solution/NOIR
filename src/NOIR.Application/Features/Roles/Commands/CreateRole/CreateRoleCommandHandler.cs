@@ -69,6 +69,7 @@ public class CreateRoleCommandHandler
             command.ParentRoleId,
             command.TenantId,
             isSystemRole: false, // User-created roles are not system roles
+            isPlatformRole: false, // User-created roles are never platform roles
             command.SortOrder,
             command.IconName,
             command.Color,

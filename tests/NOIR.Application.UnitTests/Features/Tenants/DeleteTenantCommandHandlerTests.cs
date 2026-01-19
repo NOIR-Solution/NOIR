@@ -34,7 +34,7 @@ public class DeleteTenantCommandHandlerTests
         string name = "Test Tenant",
         bool isActive = true)
     {
-        return Tenant.Create(identifier, name, isActive);
+        return Tenant.Create(identifier, name, isActive: isActive);
     }
 
     #endregion

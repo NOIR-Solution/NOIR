@@ -49,11 +49,16 @@
     "description": "Manage platform tenants and their settings",
     "listTitle": "All Tenants",
     "createNew": "Create Tenant",
+    "createTitle": "Create Tenant",
     "createDescription": "Create a new tenant for the platform",
     "editTitle": "Edit Tenant",
     "editDescription": "Update tenant settings and branding",
     "deleteTitle": "Delete Tenant",
     "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "resetAdminPassword": "Reset Admin Password",
+    "resetAdminPasswordTitle": "Reset Admin Password",
+    "resetAdminPasswordDescription": "Set a new password for the administrator of \"{{name}}\".",
+    "resetPasswordSuccess": "Password reset successfully for {{email}}",
     "searchPlaceholder": "Search tenants...",
     "table": {
       "identifier": "Identifier",
@@ -65,10 +70,28 @@
       "identifierHint": "Unique identifier for the tenant (lowercase letters, numbers, and hyphens)",
       "name": "Display Name",
       "namePlaceholder": "My Company",
+      "description": "Description",
+      "descriptionPlaceholder": "Brief description of the tenant",
+      "note": "Internal Note",
+      "notePlaceholder": "Internal notes (not visible to tenant)",
+      "adminEmail": "Admin Email",
+      "adminEmailPlaceholder": "admin@example.com",
+      "adminPassword": "Admin Password",
+      "adminPasswordPlaceholder": "Enter password",
+      "adminFirstName": "First Name",
+      "adminFirstNamePlaceholder": "John",
+      "adminLastName": "Last Name",
+      "adminLastNamePlaceholder": "Doe",
+      "adminUserSection": "Tenant Administrator",
+      "adminUserHint": "Create the initial administrator account for this tenant",
       "logoUrl": "Logo URL",
       "primaryColor": "Primary Color",
       "accentColor": "Accent Color",
       "theme": "Theme"
+    },
+    "messages": {
+      "provisionSuccess": "Tenant created successfully with admin user {{email}}",
+      "provisionPartial": "Tenant created, but admin user creation failed: {{error}}"
     },
     "details": {
       "basicInfo": "Basic Information",
@@ -165,7 +188,11 @@
   },
   "auth": {
     "signIn": "Sign In",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "newPassword": "New Password",
+    "enterNewPassword": "Enter new password",
+    "confirmPassword": "Confirm Password",
+    "confirmNewPassword": "Confirm new password"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -236,7 +263,8 @@
     "upload": "Upload",
     "yes": "Yes",
     "no": "No",
-    "ok": "OK"
+    "ok": "OK",
+    "resetPassword": "Reset Password"
   },
   "labels": {
     "loading": "Loading...",
@@ -293,6 +321,15 @@
     "dark": "Dark",
     "system": "System"
   },
+  "errors": {
+    "notFound": "Resource not found",
+    "tenantNotFound": "Tenant not found",
+    "noAdminFound": "No administrator found for this tenant",
+    "operationFailed": "Operation failed. Please try again.",
+    "unauthorized": "You are not authorized to perform this action",
+    "forbidden": "Access denied",
+    "serverError": "An unexpected error occurred. Please try again later."
+  },
   "messages": {
     "saveSuccess": "Saved successfully",
     "deleteSuccess": "Deleted successfully",
@@ -329,6 +366,7 @@
     "maxValue": "Must be at most {{value}}",
     "passwordConfirm": "Please confirm your new password",
     "passwordsMismatch": "Passwords don't match",
+    "passwordMismatch": "Passwords don't match",
     "passwordSameAsCurrent": "New password must be different from current password",
     "emailSameAsCurrent": "New email must be different from current email"
   },
