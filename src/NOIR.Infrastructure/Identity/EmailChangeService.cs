@@ -85,30 +85,35 @@ public class EmailChangeService : IEmailChangeService, IScopedService
 
         if (existingOtp != null)
         {
-            // Check if cooldown is still active
+            var isSameEmail = existingOtp.NewEmail.Equals(normalizedEmail, StringComparison.OrdinalIgnoreCase);
             var remainingCooldown = existingOtp.GetRemainingCooldownSeconds(ResendCooldownSeconds);
-            if (remainingCooldown > 0)
-            {
-                _logger.LogInformation(
-                    "Email change requested but cooldown active for user {UserId}, {Seconds}s remaining",
-                    userId, remainingCooldown);
 
-                // Return the existing session instead of creating a new one (bypass prevention)
-                return Result<EmailChangeRequestResult>.Success(new EmailChangeRequestResult(
-                    existingOtp.SessionToken,
-                    _otpService.MaskEmail(existingOtp.NewEmail),
-                    existingOtp.ExpiresAt,
-                    OtpLength));
-            }
-
-            // Cooldown passed - check if email changed
-            if (existingOtp.NewEmail.Equals(normalizedEmail, StringComparison.OrdinalIgnoreCase))
+            if (isSameEmail)
             {
-                // Same email - resend using existing session (keeps same sessionToken)
+                // Same email requested - enforce cooldown to prevent spam
+                if (remainingCooldown > 0)
+                {
+                    _logger.LogInformation(
+                        "Email change requested but cooldown active for user {UserId}, {Seconds}s remaining",
+                        userId, remainingCooldown);
+
+                    // Return the existing session instead of creating a new one (bypass prevention)
+                    return Result<EmailChangeRequestResult>.Success(new EmailChangeRequestResult(
+                        existingOtp.SessionToken,
+                        _otpService.MaskEmail(existingOtp.NewEmail),
+                        existingOtp.ExpiresAt,
+                        OtpLength));
+                }
+
+                // Cooldown passed - resend using existing session (keeps same sessionToken)
                 return await ResendOtpInternalAsync(existingOtp, user, cancellationToken);
             }
 
-            // Different email - mark existing OTP as used and create new one
+            // Different email requested - user is changing their mind
+            // Mark old OTP as used and create new one (no cooldown restriction for different email)
+            _logger.LogInformation(
+                "User {UserId} changed target email from {OldEmail} to {NewEmail}, cancelling old OTP",
+                userId, existingOtp.NewEmail, normalizedEmail);
             existingOtp.MarkAsUsed();
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

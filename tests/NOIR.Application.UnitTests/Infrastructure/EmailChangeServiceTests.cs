@@ -187,6 +187,52 @@ public class EmailChangeServiceTests
     }
 
     [Fact]
+    public async Task RequestEmailChangeAsync_WithActiveCooldownButDifferentEmail_ShouldCreateNewSession()
+    {
+        // Arrange - User requests email1, then while cooldown active, requests email2
+        var userId = Guid.NewGuid().ToString();
+        var currentEmail = "current@example.com";
+        var firstNewEmail = "first@example.com";
+        var secondNewEmail = "second@example.com"; // Different email!
+        var user = CreateUserDto(userId, currentEmail);
+        var existingOtp = CreateEmailChangeOtp(userId, currentEmail, firstNewEmail, "old-session-token");
+        var newSessionToken = "new-session-token";
+        var otpCode = "123456";
+
+        // Set LastResendAt to simulate active cooldown
+        var lastResendAtProperty = typeof(EmailChangeOtp).GetProperty(nameof(EmailChangeOtp.LastResendAt));
+        lastResendAtProperty!.SetValue(existingOtp, DateTimeOffset.UtcNow);
+
+        SetupNoRateLimit(userId);
+        SetupUserExists(userId, user);
+        SetupEmailNotInUse(secondNewEmail);
+        SetupOtpGeneration(otpCode);
+        SetupTokenGeneration(newSessionToken);
+
+        // Active OTP with cooldown still active (for DIFFERENT email)
+        _otpRepositoryMock.Setup(x => x.FirstOrDefaultAsync(
+            It.IsAny<ActiveEmailChangeOtpByUserIdSpec>(),
+            It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingOtp);
+
+        _otpRepositoryMock.Setup(x => x.AddAsync(It.IsAny<EmailChangeOtp>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((EmailChangeOtp otp, CancellationToken _) => otp);
+
+        _otpServiceMock.Setup(x => x.MaskEmail(It.IsAny<string>()))
+            .Returns("s***@e***.com");
+
+        // Act - Request DIFFERENT email while cooldown is still active for first email
+        var result = await _sut.RequestEmailChangeAsync(userId, secondNewEmail);
+
+        // Assert - Should create new session, not block with cooldown
+        result.IsSuccess.Should().BeTrue();
+        result.Value.SessionToken.Should().Be(newSessionToken); // New session, not the old one
+        existingOtp.IsUsed.Should().BeTrue(); // Old OTP should be marked as used
+        _otpRepositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailChangeOtp>(), It.IsAny<CancellationToken>()), Times.Once);
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(2)); // Once for marking old as used, once for new OTP
+    }
+
+    [Fact]
     public async Task RequestEmailChangeAsync_ShouldNormalizeEmail()
     {
         // Arrange
