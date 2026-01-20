@@ -1,21 +1,30 @@
 import * as React from 'react'
-import Tippy from '@tippyjs/react'
-import type { TippyProps } from '@tippyjs/react'
-// CSS imports moved to index.css for reliable loading
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
-export interface TooltipProps extends Omit<TippyProps, 'content'> {
+export interface TooltipProps {
   /** The content to display in the tooltip */
   content: React.ReactNode
   /** The trigger element */
   children: React.ReactElement
   /** Additional className for the tooltip content wrapper */
   contentClassName?: string
+  /** Placement of the tooltip */
+  placement?: 'top' | 'right' | 'bottom' | 'left'
+  /** Delay before showing (ms) - array [show, hide] or single number */
+  delay?: number | [number, number]
+  /** Whether tooltip should stay open when hovering over it */
+  interactive?: boolean
+  /** Callback when tooltip opens */
+  onShow?: () => void
+  /** Theme (ignored - for API compatibility) */
+  theme?: string
 }
 
 /**
- * A beautiful tooltip component powered by Tippy.js
+ * A beautiful tooltip component powered by Radix UI
  * with smooth animations and clean styling.
+ * React 19 compatible.
  *
  * Uses primary color background with white text by default.
  */
@@ -24,40 +33,36 @@ export function TippyTooltip({
   children,
   contentClassName,
   placement = 'right',
-  animation = 'shift-away-subtle',
-  duration = [200, 150],
-  delay = [100, 0],
-  interactive = false,
-  arrow = true,
-  ...props
+  delay = 100,
+  onShow,
 }: TooltipProps) {
+  const delayDuration = Array.isArray(delay) ? delay[0] : delay
+
   return (
-    <Tippy
-      content={
-        <span className={cn(contentClassName)}>
-          {content}
-        </span>
-      }
-      placement={placement}
-      animation={animation}
-      duration={duration}
-      delay={delay}
-      interactive={interactive}
-      arrow={arrow}
-      theme="custom"
-      appendTo={() => document.body}
-      {...props}
+    <Tooltip
+      delayDuration={delayDuration}
+      onOpenChange={(open) => {
+        if (open && onShow) {
+          onShow()
+        }
+      }}
     >
-      <span style={{ display: 'inline-block' }}>{children}</span>
-    </Tippy>
+      <TooltipTrigger asChild>
+        {children}
+      </TooltipTrigger>
+      <TooltipContent side={placement} className={cn(contentClassName)}>
+        {content}
+      </TooltipContent>
+    </Tooltip>
   )
 }
 
 /**
  * Rich content tooltip with header and list items
  * Perfect for search hints, feature explanations, etc.
+ * React 19 compatible.
  *
- * Uses a white/light background with primary colored header.
+ * Uses a card-style background with primary colored header.
  */
 export interface RichTooltipProps extends Omit<TooltipProps, 'content'> {
   /** Title/header of the tooltip */
@@ -74,47 +79,25 @@ export function RichTooltip({
   content,
   children,
   placement = 'bottom',
-  interactive = true,
-  ...props
+  delay = 100,
 }: RichTooltipProps) {
+  const delayDuration = Array.isArray(delay) ? delay[0] : delay
+
   const tooltipContent = content || (
-    <div style={{ minWidth: '200px' }}>
+    <div className="min-w-[200px]">
       {/* Header - Primary theme color */}
       {title && (
-        <div
-          style={{
-            padding: '10px 14px',
-            background: 'hsl(var(--primary))',
-            fontWeight: 600,
-            fontSize: '13px',
-            color: 'hsl(var(--primary-foreground))',
-            letterSpacing: '-0.01em',
-          }}
-        >
+        <div className="bg-primary text-primary-foreground px-3.5 py-2.5 font-semibold text-[13px] tracking-tight -mx-3 -mt-1.5 mb-1.5 rounded-t-md">
           {title}
         </div>
       )}
       {/* Content */}
       {items && items.length > 0 && (
-        <ul
-          style={{
-            padding: '12px 14px',
-            margin: 0,
-            listStyle: 'none',
-            fontSize: '13px',
-            color: 'hsl(var(--foreground))',
-            lineHeight: 1.7,
-          }}
-        >
+        <ul className="space-y-0.5 text-[13px] leading-relaxed">
           {items.map((item, index) => (
-            <li key={index} style={{ paddingLeft: '14px', position: 'relative' }}>
-              <span style={{
-                position: 'absolute',
-                left: 0,
-                color: 'hsl(var(--primary))',
-                fontWeight: 700,
-              }}>•</span>
-              {item}
+            <li key={index} className="flex items-start gap-2">
+              <span className="text-primary font-bold mt-0.5">•</span>
+              <span>{item}</span>
             </li>
           ))}
         </ul>
@@ -123,20 +106,17 @@ export function RichTooltip({
   )
 
   return (
-    <Tippy
-      content={tooltipContent}
-      placement={placement}
-      animation="shift-away-subtle"
-      duration={[200, 150]}
-      delay={[100, 0]}
-      interactive={interactive}
-      arrow={true}
-      theme="custom rich"
-      appendTo={() => document.body}
-      {...props}
-    >
-      <span style={{ display: 'inline-block' }}>{children}</span>
-    </Tippy>
+    <Tooltip delayDuration={delayDuration}>
+      <TooltipTrigger asChild>
+        {children}
+      </TooltipTrigger>
+      <TooltipContent
+        side={placement}
+        className="bg-card text-card-foreground border-border max-w-sm"
+      >
+        {tooltipContent}
+      </TooltipContent>
+    </Tooltip>
   )
 }
 
