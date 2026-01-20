@@ -72,79 +72,22 @@ public class ProvisionTenantCommandHandler
             "Provisioned new tenant: {TenantId} ({Identifier})",
             tenant.Id, tenant.Identifier);
 
-        // Step 4: Create admin user if requested
+        // Step 4: Create admin user if requested (atomic - fail entire operation if this fails)
         string? adminUserId = null;
         string? adminEmail = null;
-        string? adminCreationError = null;
-        var adminUserCreated = false;
 
         if (command.CreateAdminUser && !string.IsNullOrWhiteSpace(command.AdminEmail))
         {
-            // Check if admin email already exists in this tenant
-            var existingAdmin = await _identityService.FindByEmailAsync(
-                command.AdminEmail, tenant.Id, cancellationToken);
-
-            if (existingAdmin is not null)
+            var userCreationResult = await CreateAdminUserAsync(tenant, command, cancellationToken);
+            if (userCreationResult.IsFailure)
             {
-                adminCreationError = _localization["auth.users.emailExists"];
-                _logger.LogWarning(
-                    "Admin user with email {Email} already exists in tenant {TenantId}",
-                    command.AdminEmail, tenant.Id);
+                // Rollback: Delete the tenant we just created
+                await RollbackTenantAsync(tenant);
+                return Result.Failure<ProvisionTenantResult>(userCreationResult.Error);
             }
-            else
-            {
-                // Create the admin user
-                var createUserDto = new CreateUserDto(
-                    command.AdminEmail,
-                    command.AdminFirstName ?? "Admin",
-                    command.AdminLastName ?? "User",
-                    DisplayName: null,
-                    TenantId: tenant.Id);
 
-                var createResult = await _identityService.CreateUserAsync(
-                    createUserDto,
-                    command.AdminPassword!,
-                    cancellationToken);
-
-                if (createResult.Succeeded && createResult.UserId is not null)
-                {
-                    adminUserId = createResult.UserId;
-                    adminEmail = command.AdminEmail;
-                    adminUserCreated = true;
-
-                    // Assign Admin role
-                    var roleResult = await _identityService.AssignRolesAsync(
-                        createResult.UserId,
-                        [Domain.Common.Roles.Admin],
-                        replaceExisting: false,
-                        cancellationToken);
-
-                    if (!roleResult.Succeeded)
-                    {
-                        _logger.LogWarning(
-                            "Failed to assign Admin role to user {UserId} in tenant {TenantId}: {Errors}",
-                            createResult.UserId,
-                            tenant.Id,
-                            string.Join(", ", roleResult.Errors ?? []));
-                    }
-                    else
-                    {
-                        _logger.LogInformation(
-                            "Created admin user {UserId} ({Email}) for tenant {TenantId}",
-                            createResult.UserId, command.AdminEmail, tenant.Id);
-                    }
-                }
-                else
-                {
-                    // Capture the error message for the response
-                    adminCreationError = createResult.Errors?.FirstOrDefault()
-                        ?? _localization["auth.users.createFailed"];
-                    _logger.LogWarning(
-                        "Failed to create admin user for tenant {TenantId}: {Errors}",
-                        tenant.Id,
-                        string.Join(", ", createResult.Errors ?? []));
-                }
-            }
+            adminUserId = userCreationResult.Value.UserId;
+            adminEmail = userCreationResult.Value.Email;
         }
 
         return Result.Success(new ProvisionTenantResult(
@@ -154,9 +97,108 @@ public class ProvisionTenantCommandHandler
             Domain: tenant.Domain,
             IsActive: tenant.IsActive,
             CreatedAt: tenant.CreatedAt,
-            AdminUserCreated: adminUserCreated,
+            AdminUserCreated: adminUserId is not null,
             AdminUserId: adminUserId,
             AdminEmail: adminEmail,
-            AdminCreationError: adminCreationError));
+            AdminCreationError: null)); // No error if we got here
+    }
+
+    /// <summary>
+    /// Creates the admin user for the tenant. Returns failure if any step fails.
+    /// </summary>
+    private async Task<Result<(string UserId, string Email)>> CreateAdminUserAsync(
+        Tenant tenant,
+        ProvisionTenantCommand command,
+        CancellationToken cancellationToken)
+    {
+        // Check if admin email already exists in this tenant
+        var existingAdmin = await _identityService.FindByEmailAsync(
+            command.AdminEmail!, tenant.Id, cancellationToken);
+
+        if (existingAdmin is not null)
+        {
+            _logger.LogWarning(
+                "Admin user with email {Email} already exists in tenant {TenantId}",
+                command.AdminEmail, tenant.Id);
+            return Result.Failure<(string, string)>(
+                Error.Conflict(
+                    _localization["auth.users.emailExists"],
+                    ErrorCodes.Auth.DuplicateEmail));
+        }
+
+        // Create the admin user
+        var createUserDto = new CreateUserDto(
+            command.AdminEmail!,
+            command.AdminFirstName ?? "Admin",
+            command.AdminLastName ?? "User",
+            DisplayName: null,
+            TenantId: tenant.Id);
+
+        var createResult = await _identityService.CreateUserAsync(
+            createUserDto,
+            command.AdminPassword!,
+            cancellationToken);
+
+        if (!createResult.Succeeded || createResult.UserId is null)
+        {
+            var errorMessage = createResult.Errors?.FirstOrDefault()
+                ?? _localization["auth.users.createFailed"];
+            _logger.LogWarning(
+                "Failed to create admin user for tenant {TenantId}: {Errors}",
+                tenant.Id,
+                string.Join(", ", createResult.Errors ?? []));
+            return Result.Failure<(string, string)>(
+                Error.Validation("adminEmail", errorMessage, ErrorCodes.Auth.UserCreationFailed));
+        }
+
+        // Assign Admin role
+        var roleResult = await _identityService.AssignRolesAsync(
+            createResult.UserId,
+            [Domain.Common.Roles.Admin],
+            replaceExisting: false,
+            cancellationToken);
+
+        if (!roleResult.Succeeded)
+        {
+            // Role assignment failed - this is also a critical failure
+            // Delete the user we just created and fail
+            await _identityService.SoftDeleteUserAsync(createResult.UserId, "SYSTEM", cancellationToken);
+            _logger.LogWarning(
+                "Failed to assign Admin role to user {UserId} in tenant {TenantId}: {Errors}",
+                createResult.UserId,
+                tenant.Id,
+                string.Join(", ", roleResult.Errors ?? []));
+            return Result.Failure<(string, string)>(
+                Error.Internal(
+                    _localization["auth.users.roleAssignmentFailed"],
+                    ErrorCodes.Auth.RoleAssignmentFailed));
+        }
+
+        _logger.LogInformation(
+            "Created admin user {UserId} ({Email}) for tenant {TenantId}",
+            createResult.UserId, command.AdminEmail, tenant.Id);
+
+        return Result.Success((createResult.UserId, command.AdminEmail!));
+    }
+
+    /// <summary>
+    /// Rolls back tenant creation by removing the tenant from the store.
+    /// </summary>
+    private async Task RollbackTenantAsync(Tenant tenant)
+    {
+        try
+        {
+            await _tenantStore.RemoveAsync(tenant.Identifier);
+            _logger.LogInformation(
+                "Rolled back tenant creation: {TenantId} ({Identifier})",
+                tenant.Id, tenant.Identifier);
+        }
+        catch (Exception ex)
+        {
+            // Log but don't throw - we're already returning a failure
+            _logger.LogError(ex,
+                "Failed to rollback tenant {TenantId} ({Identifier}) after admin user creation failed",
+                tenant.Id, tenant.Identifier);
+        }
     }
 }

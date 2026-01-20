@@ -108,6 +108,10 @@ public static class DependencyInjection
             // In multi-tenant mode, email uniqueness is per-tenant, not global
             // Per-tenant uniqueness is enforced in CreateUserAsync/UpdateUserAsync
             options.User.RequireUniqueEmail = false;
+            // Allow # in usernames for multi-tenant format: email#tenantId
+            // Default is "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+"
+            options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+#";
 
             // Lockout settings from configuration
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(identitySettings.Lockout.DefaultLockoutTimeSpanMinutes);

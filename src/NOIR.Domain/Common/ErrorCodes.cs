@@ -92,6 +92,12 @@ public static class ErrorCodes
 
         /// <summary>Tenant is inactive</summary>
         public const string TenantInactive = "NOIR-AUTH-1408";
+
+        /// <summary>User creation failed</summary>
+        public const string UserCreationFailed = "NOIR-AUTH-1018";
+
+        /// <summary>Role assignment failed</summary>
+        public const string RoleAssignmentFailed = "NOIR-AUTH-1019";
     }
 
     /// <summary>
