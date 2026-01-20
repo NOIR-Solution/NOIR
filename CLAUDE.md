@@ -33,11 +33,79 @@
 
 ---
 
-## SuperClaude Auto-Routing (MUST FOLLOW)
+## 🤖 SuperClaude Auto-Routing (CRITICAL - MUST FOLLOW)
 
-**CRITICAL: When user's message matches ANY pattern below, IMMEDIATELY invoke the skill using the Skill tool BEFORE responding. Do NOT ask clarifying questions first - let the skill handle that.**
+**⚠️ CRITICAL:** When user intent matches these patterns, **AUTOMATICALLY invoke the skill** using the Skill tool **BEFORE responding**. Do NOT ask clarifying questions first - invoke the skill immediately and let it handle clarification.
 
-### Routing Rules by Priority (Check in Order)
+### 🎯 Command Reference by Category
+
+#### 🧠 Planning & Discovery Commands
+
+| Command | Natural Language Triggers | Description |
+|---------|---------------------------|-------------|
+| `/sc:brainstorm` | add, create, new, implement, build, develop, make, feature, I want to, let's make, need a, how about, idea for, explore options, what if we | Interactive requirements discovery through Socratic dialogue |
+| `/sc:design` | plan, design, architect, structure, how should we, layout, organize, blueprint, system design, API design, schema | System architecture, APIs, and component interface design |
+| `/sc:estimate` | estimate, how long, complexity, effort, timeline, scope, cost, resources, when can, how much work | Development time and effort estimation |
+| `/sc:spec-panel` | review spec, requirements, acceptance criteria, PRD, specification, user stories, feature spec, validate requirements | Multi-expert specification review and improvement |
+| `/sc:workflow` | workflow, process, steps to, sequence, pipeline, from PRD, implementation plan, task breakdown | Generate structured workflows from PRDs and requirements |
+
+#### 💻 Development Commands
+
+| Command | Natural Language Triggers | Description |
+|---------|---------------------------|-------------|
+| `/sc:implement` | code this, write code, implement this, develop, create component, add method, build function, make it work | Feature and code implementation with persona activation |
+| `/sc:build` | build, compile, package, bundle, deploy build, run build, fix build, build failed | Build, compile, and package with error handling |
+| `/sc:improve` | improve, enhance, better, upgrade, polish, refine, make better, quality | Systematic code quality and maintainability improvements |
+| `/sc:cleanup` | refactor, clean up, optimize, simplify, remove dead code, reorganize, tidy, DRY | Code cleanup, dead code removal, and optimization |
+| `/sc:git` | commit, push, merge, branch, git, version control, PR, pull request | Git operations with intelligent commit messages |
+
+#### 🧪 Testing & Quality Commands
+
+| Command | Natural Language Triggers | Description |
+|---------|---------------------------|-------------|
+| `/sc:test` | test, write tests, unit test, coverage, spec file, test case, testing, TDD | Test generation with coverage analysis |
+| `/sc:analyze` | analyze, inspect, audit, metrics, code review, scan, check quality, lint | Comprehensive code analysis (quality, security, performance) |
+| `/sc:troubleshoot` | fix bug, debug, error, not working, broken, fails, issue, problem, crash, exception, why doesn't, doesn't work | Systematic diagnosis and root cause analysis |
+| `/sc:reflect` | reflect, retrospective, what went wrong, lessons learned, review session | Task reflection and validation |
+
+#### 📚 Documentation & Explanation Commands
+
+| Command | Natural Language Triggers | Description |
+|---------|---------------------------|-------------|
+| `/sc:document` | document, add docs, README, comments, docstring, API docs, write documentation | Documentation generation for components and APIs |
+| `/sc:explain` | explain, what does this do, understand, how does, walk through, clarify, describe, teach me | Clear explanations of code and system behavior |
+| `/sc:index` | index project, catalog, inventory, map codebase, project structure | Generate comprehensive project documentation |
+| `/sc:index-repo` | repo index, repository index, update index | Token-efficient repository indexing (94% reduction) |
+
+#### 🔍 Research & Analysis Commands
+
+| Command | Natural Language Triggers | Description |
+|---------|---------------------------|-------------|
+| `/sc:research` | research, look up, find out, investigate, what is, best practice, how to, latest, current, 2025, 2026 | Deep web research with adaptive planning |
+| `/sc:business-panel` | business analysis, market, stakeholder, ROI, business case | Multi-expert business analysis |
+
+#### 🔧 Orchestration & Utility Commands
+
+| Command | Natural Language Triggers | Description |
+|---------|---------------------------|-------------|
+| `/sc:pm` | manage project, coordinate, orchestrate, overall status, progress | Project manager agent for workflow orchestration |
+| `/sc:task` | complex task, multi-step, big task | Complex task execution with workflow management |
+| `/sc:spawn` | parallel, concurrent, multiple tasks | Meta-system task orchestration with delegation |
+| `/sc:agent` | use agent, specialist, expert | AI agent selection for specialized tasks |
+| `/sc:select-tool` | which tool, tool selection | Intelligent MCP tool selection |
+| `/sc:recommend` | recommend, suggest command, what should I use | Command recommendation engine |
+| `/sc:help` | help, commands, what can you do | List all available /sc commands |
+
+#### 📋 Session Management Commands
+
+| Command | Natural Language Triggers | Description |
+|---------|---------------------------|-------------|
+| `/sc:load` | load session, restore context, continue from | Load project context via Serena MCP |
+| `/sc:save` | save session, persist context, checkpoint | Save session context for later |
+
+---
+
+### ⚡ Auto-Routing Priority Rules
 
 #### 🔴 PRIORITY 1: Problem/Error Detection → `/sc:troubleshoot`
 **Trigger immediately when user mentions ANY of these:**
@@ -129,16 +197,100 @@
 - Git words: `commit`, `push`, `branch`, `merge`, `PR`, `pull request`
 - Save: `save changes`, `check in`
 
-### Chained Workflows (Auto-Sequence)
+**Process skills first (determines HOW to approach):**
+- `/sc:brainstorm` - Vague ideas, new features, requirements gathering
+- `/sc:troubleshoot` - Errors, bugs, failures, broken functionality
+- `/sc:research` - External knowledge, best practices, latest patterns
+
+**Implementation skills second (guides execution):**
+- `/sc:implement` - Clear coding tasks with defined requirements
+- `/sc:design` - Architecture decisions, system structure
+- `/sc:cleanup` - Refactoring work, code organization
+
+**Quality skills third (validation):**
+- `/sc:analyze` - Code review, quality checks
+- `/sc:test` - Testing, coverage verification
+- `/sc:document` - Documentation, explanations
+
+---
+
+### 📝 Example Auto-Triggers
+
+Real-world examples of automatic skill invocation:
+
+```
+User: "The decimal parsing test is failing"
+→ Auto-invoke /sc:troubleshoot (matches: test, failing, error)
+
+User: "Add bulk export feature for audit logs"
+→ Auto-invoke /sc:brainstorm (matches: add, feature, implement)
+
+User: "How should we structure the notification hub?"
+→ Auto-invoke /sc:design (matches: how should, structure, system)
+
+User: "What's the best practice for EF Core specifications in 2026?"
+→ Auto-invoke /sc:research (matches: best practice, what is, 2026)
+
+User: "Review the authentication service quality"
+→ Auto-invoke /sc:analyze (matches: review, quality, code)
+
+User: "Write unit tests for TenantSettingsService"
+→ Auto-invoke /sc:test (matches: write tests, unit test)
+
+User: "Clean up the user management endpoints"
+→ Auto-invoke /sc:cleanup (matches: clean up, refactor)
+
+User: "Explain how the refresh token flow works"
+→ Auto-invoke /sc:explain (matches: explain, how does)
+
+User: "How long will the SSO integration take?"
+→ Auto-invoke /sc:estimate (matches: how long, timeline)
+
+User: "Build and run all tests"
+→ Auto-invoke /sc:build (matches: build, compile)
+
+User: "Create index for the project"
+→ Auto-invoke /sc:index-repo (matches: index, repository)
+```
+
+---
+
+### 🚩 SuperClaude Flags (Optional Modifiers)
+
+Enhance command execution with optional flags:
+
+| Flag | Purpose | Example | Impact |
+|------|---------|---------|--------|
+| `--think` | Standard analysis | `/sc:analyze --think` | ~4K tokens, balanced reasoning |
+| `--think-hard` | Deep analysis | `/sc:design --think-hard` | ~10K tokens, thorough exploration |
+| `--ultrathink` | Maximum depth | `/sc:troubleshoot --ultrathink` | ~32K tokens, exhaustive analysis |
+| `--safe-mode` | Conservative execution | `/sc:implement --safe-mode` | Extra validation, cautious changes |
+| `--with-tests` | Include test generation | `/sc:implement --with-tests` | Automatic test creation |
+| `--parallel` | Enable parallel execution | `/sc:spawn --parallel` | Concurrent task execution |
+| `--depth quick` | Quick research | `/sc:research --depth quick` | Fast results, less comprehensive |
+| `--depth deep` | Thorough research | `/sc:research --depth deep` | Comprehensive, time-intensive |
+
+**Usage:**
+```bash
+/sc:troubleshoot --ultrathink    # Deep bug investigation
+/sc:implement --with-tests        # Code + tests together
+/sc:design --think-hard           # Thorough architecture planning
+```
+
+---
+
+### 🔗 Chained Workflows (Auto-Sequence)
 
 When a task requires multiple steps, chain these commands:
 
 | Workflow | Sequence | When to Use |
 |----------|----------|-------------|
-| **Feature Dev** | `/sc:brainstorm` → `/sc:design` → `/sc:implement` → `/sc:test` | Building new features |
-| **Bug Fix** | `/sc:troubleshoot` → fix → `/sc:test` | Fixing issues |
-| **Refactor** | `/sc:analyze` → `/sc:cleanup` → `/sc:test` | Code improvement |
-| **Research** | `/sc:research` → `/sc:design` → `/sc:document` | Learning + planning |
+| **Feature Development** | `/sc:brainstorm` → `/sc:design` → `/sc:implement` → `/sc:test` → `/sc:document` | Building new features from scratch |
+| **Bug Fixing** | `/sc:troubleshoot` → fix → `/sc:test` | Diagnosing and resolving issues |
+| **Code Review** | `/sc:analyze` → `/sc:improve` → `/sc:test` | Improving code quality |
+| **Research Task** | `/sc:research` → `/sc:analyze` → `/sc:document` | Learning and documenting patterns |
+| **Refactoring** | `/sc:analyze` → `/sc:cleanup` → `/sc:test` | Systematic code improvement |
+| **Documentation** | `/sc:explain` → `/sc:document` → `/sc:index` | Creating comprehensive docs |
 
 ### DO NOT Auto-Route When:
 
