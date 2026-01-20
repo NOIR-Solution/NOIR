@@ -69,12 +69,6 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
             .HasColumnName("Actions")
             .HasColumnType("nvarchar(max)");
 
-        // Backing field for Actions (owned entity workaround)
-        builder.Ignore(n => n.Actions);
-        builder.Property<string>("ActionsJson")
-            .HasColumnName("Actions")
-            .HasColumnType("nvarchar(max)");
-
         // Indexes for efficient queries
         builder.HasIndex(n => new { n.UserId, n.IsRead, n.CreatedAt })
             .HasDatabaseName("IX_Notifications_UserId_IsRead_CreatedAt");

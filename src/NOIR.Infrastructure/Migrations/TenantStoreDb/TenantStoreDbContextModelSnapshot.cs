@@ -10,7 +10,7 @@ using NOIR.Infrastructure.Persistence;
 
 namespace NOIR.Infrastructure.Migrations.TenantStoreDb
 {
-    [DbContext(typeof(TenantStoreDbContext))]
+    [DbContext(typeof(Persistence.TenantStoreDbContext))]
     partial class TenantStoreDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

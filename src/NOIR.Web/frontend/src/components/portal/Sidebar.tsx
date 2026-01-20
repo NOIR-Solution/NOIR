@@ -59,6 +59,7 @@ import type { SupportedLanguage } from '@/i18n'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useNotificationContext } from '@/contexts/NotificationContext'
 import { Badge } from '@/components/ui/badge'
+import { isPlatformAdmin } from '@/lib/roles'
 
 interface NavItem {
   titleKey: string
@@ -764,13 +765,18 @@ function SidebarContent({
 
       {/* Footer Section */}
       <div className="border-t border-sidebar-border">
-        {/* Notifications */}
-        <div className={cn('px-2 pt-3', isExpanded ? 'pb-2' : 'pb-3')}>
-          <NotificationSidebarItem isExpanded={isExpanded} t={t} onItemClick={onItemClick} />
-        </div>
+        {/*
+          Notifications hidden for Platform Admin.
+          Platform Admins operate at system level and don't receive tenant-scoped notifications.
+        */}
+        {!isPlatformAdmin(user?.roles) && (
+          <div className={cn('px-2 pt-3', isExpanded ? 'pb-2' : 'pb-3')}>
+            <NotificationSidebarItem isExpanded={isExpanded} t={t} onItemClick={onItemClick} />
+          </div>
+        )}
 
         {/* User Profile (includes theme toggle in dropdown) */}
-        <div className="p-3 pt-1 border-t border-sidebar-border">
+        <div className={cn('p-3 pt-1', !isPlatformAdmin(user?.roles) && 'border-t border-sidebar-border')}>
           <UserProfileDropdown isExpanded={isExpanded} t={t} user={user} />
         </div>
       </div>
@@ -903,34 +909,39 @@ export function MobileSidebarTrigger({
 
           {/* Footer Section */}
           <div className="border-t border-sidebar-border">
-            {/* Notifications */}
-            <div className="px-2 pt-3 pb-2">
-              <Button
-                variant="ghost"
-                asChild
-                className={cn(
-                  'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
-                  notificationActive && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
-                  !notificationActive && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                )}
-              >
-                <Link to="/portal/notifications" onClick={() => onOpenChange(false)}>
-                  {notificationActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
+            {/*
+              Notifications hidden for Platform Admin.
+              Platform Admins operate at system level and don't receive tenant-scoped notifications.
+            */}
+            {!isPlatformAdmin(user?.roles) && (
+              <div className="px-2 pt-3 pb-2">
+                <Button
+                  variant="ghost"
+                  asChild
+                  className={cn(
+                    'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
+                    notificationActive && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
+                    !notificationActive && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                   )}
-                  <Bell className="h-5 w-5 flex-shrink-0 mr-3" />
-                  <span className="flex-1 text-left">{t('notifications.title')}</span>
-                  {unreadCount > 0 && (
-                    <Badge variant="destructive" className="ml-auto h-5 min-w-5 p-0 px-1.5 text-[10px]">
-                      {displayCount}
-                    </Badge>
-                  )}
-                </Link>
-              </Button>
-            </div>
+                >
+                  <Link to="/portal/notifications" onClick={() => onOpenChange(false)}>
+                    {notificationActive && (
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
+                    )}
+                    <Bell className="h-5 w-5 flex-shrink-0 mr-3" />
+                    <span className="flex-1 text-left">{t('notifications.title')}</span>
+                    {unreadCount > 0 && (
+                      <Badge variant="destructive" className="ml-auto h-5 min-w-5 p-0 px-1.5 text-[10px]">
+                        {displayCount}
+                      </Badge>
+                    )}
+                  </Link>
+                </Button>
+              </div>
+            )}
 
             {/* Mobile User Profile (includes theme toggle in dropdown) */}
-            <div className="p-3 pt-1 border-t border-sidebar-border">
+            <div className={cn('p-3 pt-1', !isPlatformAdmin(user?.roles) && 'border-t border-sidebar-border')}>
               <UserProfileDropdown isExpanded={true} t={t} user={user} />
             </div>
           </div>

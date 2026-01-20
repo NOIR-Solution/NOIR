@@ -32,6 +32,12 @@ public class GetUnreadCountQueryHandler
                 Error.Unauthorized(_localization["auth.user.notAuthenticated"], ErrorCodes.Auth.Unauthorized));
         }
 
+        // Platform admins don't receive notifications
+        if (_currentUser.IsPlatformAdmin)
+        {
+            return Result.Success(new UnreadCountResponse(0));
+        }
+
         var spec = new UnreadNotificationsCountSpec(_currentUser.UserId);
         var count = await _repository.CountAsync(spec, cancellationToken);
 

@@ -7,11 +7,16 @@ public class TokenService : ITokenService, IScopedService
 {
     private readonly JwtSettings _jwtSettings;
     private readonly IDateTime _dateTime;
+    private readonly IMultiTenantStore<Tenant> _tenantStore;
 
-    public TokenService(IOptions<JwtSettings> jwtSettings, IDateTime dateTime)
+    public TokenService(
+        IOptions<JwtSettings> jwtSettings,
+        IDateTime dateTime,
+        IMultiTenantStore<Tenant> tenantStore)
     {
         _jwtSettings = jwtSettings.Value;
         _dateTime = dateTime;
+        _tenantStore = tenantStore;
     }
 
     public string GenerateAccessToken(string userId, string email, string? tenantId = null)
@@ -26,9 +31,16 @@ public class TokenService : ITokenService, IScopedService
         };
 
         // Add tenant claim for multi-tenancy (used by Finbuckle's ClaimStrategy)
+        // CRITICAL: Finbuckle's ClaimStrategy looks up tenants by Identifier, not Id!
+        // We must resolve the tenant to get its Identifier field
         if (!string.IsNullOrEmpty(tenantId))
         {
-            claims.Add(new Claim("tenant_id", tenantId));
+            var tenant = _tenantStore.GetAsync(tenantId).GetAwaiter().GetResult();
+            if (tenant is not null)
+            {
+                // Use Identifier (e.g., "default") not Id (GUID) for Finbuckle lookup
+                claims.Add(new Claim("tenant_id", tenant.Identifier!));
+            }
         }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));

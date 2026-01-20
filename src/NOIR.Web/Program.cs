@@ -417,10 +417,17 @@ app.MapScalarApiReference("/api/docs", options =>
     options.Servers = [];
 });
 
-// Multi-tenant middleware (must be before auth)
+// Authentication must run BEFORE multi-tenant for ClaimStrategy to work
+// ClaimStrategy needs HttpContext.User populated with JWT claims
+app.UseAuthentication();
+
+// Multi-tenant middleware (reads tenant_id claim from HttpContext.User)
 app.UseMultiTenant();
 
-app.UseAuthentication();
+// Load complete user profile from database and cache for request lifetime
+// Must run AFTER authentication (needs User.Identity) and AFTER multi-tenant (needs tenant context)
+app.UseMiddleware<CurrentUserLoaderMiddleware>();
+
 app.UseAuthorization();
 
 // HTTP Request Audit Middleware (captures request/response for audit logging)

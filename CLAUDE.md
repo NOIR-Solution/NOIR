@@ -348,6 +348,7 @@ When multiple patterns match:
 15. **Error factory method parameter order** - `Error.Validation(propertyName, message, code?)` - The first parameter is the property/field name, second is the human-readable message, third is the optional error code. WRONG: `Error.Validation("message", errorCode)` causes error codes to display instead of messages! CORRECT: `Error.Validation("fieldName", "Message to user", ErrorCodes.SomeCode)`. See `docs/KNOWLEDGE_BASE.md#error-factory-methods` for all factory methods.
 16. **Email templates are database-driven** - Email templates are loaded from the `EmailTemplate` table, NOT from .cshtml files. Templates are seeded by `ApplicationDbContextSeeder.cs` and customized via Admin UI. NEVER create .cshtml files in `src/NOIR.Web/EmailTemplates/` - they are not used by `EmailService.SendTemplateAsync()`. To update email template HTML, edit the database seeder methods (`GetPasswordResetOtpHtmlBody()`, etc.) or use the Admin UI. Multi-tenant architecture: platform defaults (TenantId=null) with tenant-specific overrides (copy-on-write pattern).
 17. **System users must have TenantId = null** - Platform admins and system processes MUST have `IsSystemUser = true` and `TenantId = null` for cross-tenant access. The `TenantIdSetterInterceptor` protects system users from accidental tenant assignment by checking `IsSystemUser` BEFORE any entity state checks. NEVER manually set `TenantId` on system users. The database seeder automatically creates platform admin with correct values and fixes any drift on startup. Verification: Check logs for "Created platform admin user: {Email} (TenantId = null)". See `docs/backend/architecture/tenant-id-interceptor.md`.
+18. **EF Core migrations MUST specify --context** - ALWAYS use `--context ApplicationDbContext` or `--context TenantStoreDbContext` when running `dotnet ef migrations` commands. This project has multiple DbContexts and omitting `--context` will cause errors. Also specify `--output-dir Migrations/ApplicationDbContext` or `--output-dir Migrations/TenantStoreDb` to organize migrations properly. **IMPORTANT:** After generating migrations, the auto-generated files will have a namespace conflict (`NOIR.Infrastructure.Migrations.ApplicationDbContext` namespace vs `ApplicationDbContext` class name). You MUST manually fix the `[DbContext(typeof(ApplicationDbContext))]` attributes to use `typeof(Persistence.ApplicationDbContext)` instead. See Quick Reference for examples.
 
 ## Quick Reference
 
@@ -360,8 +361,22 @@ dotnet watch --project src/NOIR.Web
 # Tests (2,000+ tests)
 dotnet test src/NOIR.sln
 
-# Migrations
-dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web
+# Migrations (CRITICAL - Always specify --context)
+# ApplicationDbContext (main database)
+dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/ApplicationDbContext
+
+# TenantStoreDbContext (tenant store)
+dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context TenantStoreDbContext --output-dir Migrations/TenantStoreDb
+
+# Drop database and reset migrations to single InitialCreate
+dotnet ef database drop --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --force
+rm -rf src/NOIR.Infrastructure/Migrations/ApplicationDbContext/*.cs
+dotnet ef migrations add InitialCreate --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/ApplicationDbContext
+
+# IMPORTANT: After migration generation, manually fix namespace conflict in generated files
+# Change: [DbContext(typeof(ApplicationDbContext))]
+# To:     [DbContext(typeof(Persistence.ApplicationDbContext))]
+# Files:  *_InitialCreate.Designer.cs and ApplicationDbContextModelSnapshot.cs
 ```
 
 **Admin Login:** `admin@noir.local` / `123qwe`

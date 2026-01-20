@@ -6,14 +6,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NOIR.Infrastructure.Persistence;
-using AppDbContext = NOIR.Infrastructure.Persistence.ApplicationDbContext;
 
 #nullable disable
 
 namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
 {
-    [DbContext(typeof(AppDbContext))]
-    [Migration("20260120140620_InitialCreate")]
+    [DbContext(typeof(Persistence.ApplicationDbContext))]
+    [Migration("20260120164142_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -876,9 +875,8 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<string>("ActionsJson")
-                        .HasMaxLength(500)
-                        .IsUnicode(true)
+                    b.Property<string>("Actions")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Actions");
 

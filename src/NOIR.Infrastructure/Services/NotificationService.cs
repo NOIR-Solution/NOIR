@@ -58,28 +58,75 @@ public class NotificationService : INotificationService, IScopedService
     {
         try
         {
-            // Skip notifications for platform admins (they don't belong to a tenant)
-            if (_currentUser.TenantId == null)
+            // Fetch user to check platform admin status and get TenantId
+            var targetUser = await _userIdentityService.FindByIdAsync(userId, ct);
+            if (targetUser is null)
             {
-                _logger.LogDebug("Skipping notification for platform admin user {UserId}", userId);
+                _logger.LogWarning("Cannot send notification to non-existent user {UserId}", userId);
+                return Result.Failure<NotificationDto>(
+                    Error.NotFound("User not found", "NOTIFICATION-001"));
+            }
+
+            // Delegate to internal overload that accepts pre-fetched user
+            return await SendToUserInternalAsync(
+                targetUser,
+                type,
+                category,
+                title,
+                message,
+                iconClass,
+                actionUrl,
+                actions,
+                metadata,
+                ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send notification to user {UserId}", userId);
+            return Result.Failure<NotificationDto>(
+                Error.Failure($"Failed to send notification: {ex.Message}", "NOTIFICATION_SEND_FAILED"));
+        }
+    }
+
+    /// <summary>
+    /// Internal overload accepting pre-fetched UserIdentityDto to avoid repeated lookups in batch operations.
+    /// </summary>
+    private async Task<Result<NotificationDto>> SendToUserInternalAsync(
+        UserIdentityDto targetUser,
+        NotificationType type,
+        NotificationCategory category,
+        string title,
+        string message,
+        string? iconClass,
+        string? actionUrl,
+        IEnumerable<NotificationActionDto>? actions,
+        string? metadata,
+        CancellationToken ct)
+    {
+        try
+        {
+            // Skip notifications for platform admins (they operate across all tenants)
+            if (targetUser.IsSystemUser || targetUser.TenantId is null)
+            {
+                _logger.LogDebug("Skipping notification for platform admin user {UserId}", targetUser.Id);
                 return Result.Success<NotificationDto>(null!);
             }
 
             // Check user preferences
-            var prefSpec = new UserPreferencesByCategorySpec(userId, category);
+            var prefSpec = new UserPreferencesByCategorySpec(targetUser.Id, category);
             var preference = await _preferenceRepository.FirstOrDefaultAsync(prefSpec, ct);
 
             // If no preference, create defaults and use them
             if (preference is null)
             {
                 preference = NotificationPreference.Create(
-                    userId,
+                    targetUser.Id,
                     category,
                     inAppEnabled: true,
                     emailFrequency: category == NotificationCategory.Security
                         ? EmailFrequency.Immediate
                         : EmailFrequency.Daily,
-                    _currentUser.TenantId);
+                    targetUser.TenantId);
                 await _preferenceRepository.AddAsync(preference, ct);
             }
 
@@ -87,12 +134,12 @@ public class NotificationService : INotificationService, IScopedService
             if (!preference.InAppEnabled)
             {
                 _logger.LogDebug("In-app notifications disabled for user {UserId}, category {Category}",
-                    userId, category);
+                    targetUser.Id, category);
 
                 // Still handle email if configured
                 if (preference.EmailFrequency == EmailFrequency.Immediate)
                 {
-                    await SendImmediateEmailAsync(userId, type, title, message, actionUrl, ct);
+                    await SendImmediateEmailAsync(targetUser.Id, type, title, message, actionUrl, ct);
                 }
 
                 return Result.Success<NotificationDto>(null!);
@@ -100,7 +147,7 @@ public class NotificationService : INotificationService, IScopedService
 
             // 1. PERSIST: Create and save notification
             var notification = Notification.Create(
-                userId,
+                targetUser.Id,
                 type,
                 category,
                 title,
@@ -108,7 +155,7 @@ public class NotificationService : INotificationService, IScopedService
                 iconClass,
                 actionUrl,
                 metadata,
-                _currentUser.TenantId);
+                targetUser.TenantId);
 
             // Add actions if provided
             if (actions != null)
@@ -128,30 +175,30 @@ public class NotificationService : INotificationService, IScopedService
 
             // 2. NOTIFY: Push via SignalR
             var dto = MapToDto(notification);
-            await _hubContext.SendToUserAsync(userId, dto, ct);
+            await _hubContext.SendToUserAsync(targetUser.Id, dto, ct);
 
             // Update unread count
             var unreadCount = await _notificationRepository.CountAsync(
-                new UnreadNotificationsCountSpec(userId), ct);
-            await _hubContext.UpdateUnreadCountAsync(userId, unreadCount, ct);
+                new UnreadNotificationsCountSpec(targetUser.Id), ct);
+            await _hubContext.UpdateUnreadCountAsync(targetUser.Id, unreadCount, ct);
 
             // 3. EMAIL: Handle immediate email if configured
             if (preference.EmailFrequency == EmailFrequency.Immediate)
             {
                 // Queue email to avoid blocking
-                _backgroundJobs.Enqueue(() => SendImmediateEmailAsync(userId, type, title, message, actionUrl, ct));
+                _backgroundJobs.Enqueue(() => SendImmediateEmailAsync(targetUser.Id, type, title, message, actionUrl, ct));
                 notification.MarkEmailSent();
                 await _unitOfWork.SaveChangesAsync(ct);
             }
 
             _logger.LogInformation("Notification {NotificationId} sent to user {UserId}",
-                notification.Id, userId);
+                notification.Id, targetUser.Id);
 
             return Result.Success(dto);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send notification to user {UserId}", userId);
+            _logger.LogError(ex, "Failed to send notification to user {UserId}", targetUser.Id);
             return Result.Failure<NotificationDto>(
                 Error.Failure($"Failed to send notification: {ex.Message}", "NOTIFICATION_SEND_FAILED"));
         }
@@ -179,12 +226,17 @@ public class NotificationService : INotificationService, IScopedService
 
             foreach (var user in users)
             {
+                // Skip platform admins early (performance optimization)
+                if (user.IsSystemUser || user.TenantId is null)
+                    continue;
+
                 // Check if user is in role
                 var isInRole = await _userIdentityService.IsInRoleAsync(user.Id, roleName, ct);
                 if (!isInRole) continue;
 
-                var result = await SendToUserAsync(
-                    user.Id,
+                // Use internal method to avoid re-fetching user
+                var result = await SendToUserInternalAsync(
+                    user,
                     type,
                     category,
                     title,
@@ -230,10 +282,13 @@ public class NotificationService : INotificationService, IScopedService
 
             foreach (var user in users)
             {
-                if (!user.IsActive || user.IsDeleted) continue;
+                // Skip inactive/deleted users and platform admins
+                if (!user.IsActive || user.IsDeleted || user.IsSystemUser || user.TenantId is null)
+                    continue;
 
-                var result = await SendToUserAsync(
-                    user.Id,
+                // Use internal method to avoid re-fetching user
+                var result = await SendToUserInternalAsync(
+                    user,
                     type,
                     category,
                     title,

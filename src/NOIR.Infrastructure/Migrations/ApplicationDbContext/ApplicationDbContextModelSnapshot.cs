@@ -5,13 +5,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NOIR.Infrastructure.Persistence;
-using AppDbContext = NOIR.Infrastructure.Persistence.ApplicationDbContext;
 
 #nullable disable
 
 namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(Persistence.ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -873,9 +872,8 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<string>("ActionsJson")
-                        .HasMaxLength(500)
-                        .IsUnicode(true)
+                    b.Property<string>("Actions")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Actions");
 

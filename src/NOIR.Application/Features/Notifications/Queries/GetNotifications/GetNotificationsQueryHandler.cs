@@ -32,6 +32,18 @@ public class GetNotificationsQueryHandler
                 Error.Unauthorized(_localization["auth.user.notAuthenticated"], ErrorCodes.Auth.Unauthorized));
         }
 
+        // Platform admins don't receive notifications
+        if (_currentUser.IsPlatformAdmin)
+        {
+            var emptyResponse = new NotificationsPagedResponse(
+                Enumerable.Empty<NotificationDto>(),
+                0,
+                query.Page,
+                query.PageSize,
+                0);
+            return Result.Success(emptyResponse);
+        }
+
         var spec = new UserNotificationsSpec(
             _currentUser.UserId,
             query.IncludeRead,

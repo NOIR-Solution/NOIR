@@ -85,6 +85,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import { isPlatformAdmin } from '@/lib/roles'
+import { useAuthContext } from '@/contexts/AuthContext'
 import {
   getLogLevel,
   setLogLevel,
@@ -1209,6 +1211,17 @@ export default function DeveloperLogsPage() {
   useTranslation('common')
   usePageContext('Developer Logs')
 
+  const { user } = useAuthContext()
+
+  /**
+   * LogStream hub requires SystemAdmin permission (Permissions.SystemAdmin).
+   * Only Platform Admins have this permission.
+   * Tenant admins should not auto-connect to prevent 403 errors.
+   * @see NOIR.Infrastructure.Hubs.LogStreamHub [Authorize(Policy = "system:admin")]
+   * @see NOIR.Domain.Common.Permissions - SystemAdmin only in PlatformAdminDefaults
+   */
+  const canAccessLogStream = isPlatformAdmin(user?.roles)
+
   // Log stream hook
   const {
     connectionState,
@@ -1222,7 +1235,7 @@ export default function DeveloperLogsPage() {
     requestErrorSummary,
     requestBufferStats,
   } = useLogStream({
-    autoConnect: LOG_STREAM_CONFIG.AUTO_CONNECT,
+    autoConnect: canAccessLogStream && LOG_STREAM_CONFIG.AUTO_CONNECT,
     maxEntries: LOG_STREAM_CONFIG.MAX_ENTRIES,
   })
 

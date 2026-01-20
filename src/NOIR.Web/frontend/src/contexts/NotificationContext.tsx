@@ -26,6 +26,7 @@ import {
 import type { Notification } from '@/types'
 import { useAuthContext } from './AuthContext'
 import { toast } from 'sonner'
+import { isPlatformAdmin } from '@/lib/roles'
 
 interface NotificationContextValue {
   /** List of notifications */
@@ -59,7 +60,7 @@ const NotificationContext = createContext<NotificationContextValue | undefined>(
 const PAGE_SIZE = 10
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuthContext()
+  const { isAuthenticated, user } = useAuthContext()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
@@ -67,8 +68,19 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [totalCount, setTotalCount] = useState(0)
   const [hasMore, setHasMore] = useState(false)
 
+  /**
+   * Platform Admins (TenantId = null) do not receive notifications
+   * because they operate at the system level, not tenant level.
+   * All notifications are tenant-scoped.
+   * @see NOIR.Application.Features.Notifications.Queries.GetNotifications
+   */
+  const isPlatformAdminUser = isPlatformAdmin(user?.roles)
+
   // Handle new notification from SignalR
   const handleNewNotification = useCallback((notification: Notification) => {
+    // Platform admins don't receive notifications
+    if (isPlatformAdminUser) return
+
     // Add to top of list
     setNotifications((prev) => [notification, ...prev])
     setTotalCount((prev) => prev + 1)
@@ -85,23 +97,23 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         onClick: () => window.location.href = notification.actionUrl!,
       } : undefined,
     })
-  }, [])
+  }, [isPlatformAdminUser])
 
   // Handle unread count update from SignalR
   const handleUnreadCountUpdate = useCallback((count: number) => {
     setUnreadCount(count)
   }, [])
 
-  // SignalR connection
+  // SignalR connection (platform admins don't connect)
   const { connectionState } = useSignalR({
-    autoConnect: isAuthenticated,
+    autoConnect: isAuthenticated && !isPlatformAdminUser,
     onNotification: handleNewNotification,
     onUnreadCountUpdate: handleUnreadCountUpdate,
   })
 
   // Fetch notifications from server
   const fetchNotifications = useCallback(async (pageNum: number, append: boolean = false) => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated || isPlatformAdminUser) return
 
     setIsLoading(true)
     try {
@@ -115,11 +127,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, isPlatformAdminUser])
 
   // Fetch unread count
   const fetchUnreadCount = useCallback(async () => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated || isPlatformAdminUser) return
 
     try {
       const count = await getUnreadCount()
@@ -127,7 +139,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } catch {
       // Error visible in network tab
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, isPlatformAdminUser])
 
   // Refresh notifications
   const refreshNotifications = useCallback(async () => {

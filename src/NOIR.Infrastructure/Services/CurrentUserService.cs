@@ -1,11 +1,14 @@
 namespace NOIR.Infrastructure.Services;
 
+using NOIR.Domain.Common;
+
 /// <summary>
-/// Implementation of ICurrentUser that extracts user information from HTTP context.
+/// Implementation of ICurrentUser that reads from HttpContext.Items cache.
+/// User data is loaded once per request by CurrentUserLoaderMiddleware.
 ///
 /// IMPORTANT: This service is safe to use in non-HTTP contexts (e.g., Hangfire background jobs).
-/// When HttpContext is null:
-/// - UserId, Email, TenantId return null
+/// When HttpContext is null or user data not loaded:
+/// - UserId, Email, TenantId return null or fallback from JWT claims
 /// - IsAuthenticated returns false
 /// - Roles returns empty collection
 /// - IsInRole returns false
@@ -15,11 +18,6 @@ namespace NOIR.Infrastructure.Services;
 /// </summary>
 public class CurrentUserService : ICurrentUser, IScopedService
 {
-    /// <summary>
-    /// Platform admin role name - must match Roles.PlatformAdmin constant.
-    /// </summary>
-    public const string PlatformAdminRole = "PlatformAdmin";
-
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMultiTenantContextAccessor<Tenant> _tenantContextAccessor;
 
@@ -31,11 +29,19 @@ public class CurrentUserService : ICurrentUser, IScopedService
         _tenantContextAccessor = tenantContextAccessor;
     }
 
+    private CurrentUserData? GetCachedUserData() =>
+        _httpContextAccessor.HttpContext?.Items.TryGetValue(
+            CurrentUserData.CacheKey, out var data) == true
+            ? data as CurrentUserData
+            : null;
+
     public string? UserId =>
-        _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        GetCachedUserData()?.Id
+        ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
     public string? Email =>
-        _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
+        GetCachedUserData()?.Email
+        ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
 
     public string? TenantId =>
         _tenantContextAccessor.MultiTenantContext?.TenantInfo?.Id;
@@ -44,12 +50,10 @@ public class CurrentUserService : ICurrentUser, IScopedService
         _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
     public IEnumerable<string> Roles =>
-        _httpContextAccessor.HttpContext?.User?.Claims
-            .Where(c => c.Type == ClaimTypes.Role)
-            .Select(c => c.Value) ?? [];
+        GetCachedUserData()?.Roles ?? [];
 
     public bool IsInRole(string role) =>
-        _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
+        Roles.Contains(role, StringComparer.OrdinalIgnoreCase);
 
-    public bool IsPlatformAdmin => IsInRole(PlatformAdminRole);
+    public bool IsPlatformAdmin => IsInRole(Domain.Common.Roles.PlatformAdmin);
 }

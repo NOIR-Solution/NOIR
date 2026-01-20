@@ -9,6 +9,7 @@ public class TokenServiceTests
     private readonly TokenService _sut;
     private readonly JwtSettings _jwtSettings;
     private readonly Mock<IDateTime> _dateTimeMock;
+    private readonly Mock<IMultiTenantStore<Tenant>> _tenantStoreMock;
 
     public TokenServiceTests()
     {
@@ -24,8 +25,13 @@ public class TokenServiceTests
         _dateTimeMock = new Mock<IDateTime>();
         _dateTimeMock.Setup(x => x.UtcNow).Returns(DateTimeOffset.UtcNow);
 
+        _tenantStoreMock = new Mock<IMultiTenantStore<Tenant>>();
+        // Setup tenant store to return a tenant with Identifier matching the Id (for test simplicity)
+        _tenantStoreMock.Setup(x => x.GetAsync("tenant-1"))
+            .ReturnsAsync(new Tenant("tenant-1", "tenant-1", "Test Tenant"));
+
         var options = Options.Create(_jwtSettings);
-        _sut = new TokenService(options, _dateTimeMock.Object);
+        _sut = new TokenService(options, _dateTimeMock.Object, _tenantStoreMock.Object);
     }
 
     #region GenerateAccessToken Tests

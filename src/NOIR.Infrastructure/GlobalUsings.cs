@@ -21,6 +21,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 // Microsoft - ASP.NET Core
+global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Hosting;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Identity;
