@@ -144,7 +144,7 @@ public class TenantSetting : Entity<Guid>, IAuditableEntity
     /// <summary>
     /// Gets the value as an integer.
     /// </summary>
-    public int GetIntValue() => int.Parse(Value);
+    public int GetIntValue() => int.Parse(Value, CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Gets the value as a boolean.
@@ -154,14 +154,14 @@ public class TenantSetting : Entity<Guid>, IAuditableEntity
     /// <summary>
     /// Gets the value as a decimal.
     /// </summary>
-    public decimal GetDecimalValue() => decimal.Parse(Value);
+    public decimal GetDecimalValue() => decimal.Parse(Value, CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Tries to get the value as the specified type.
     /// </summary>
     public bool TryGetValue<T>(out T? result) where T : IParsable<T>
     {
-        return T.TryParse(Value, null, out result);
+        return T.TryParse(Value, CultureInfo.InvariantCulture, out result);
     }
 
     #endregion
