@@ -105,7 +105,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var newRefreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, TestTenantId);
+        var newRefreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, user.TenantId);
         _refreshTokenServiceMock
             .Setup(x => x.RotateTokenAsync(
                 It.IsAny<string>(),
@@ -115,7 +115,7 @@ public class RefreshTokenCommandHandlerTests
             .ReturnsAsync(newRefreshToken);
 
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, TestTenantId))
+            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId)) // Use user.TenantId from database, not _currentUser.TenantId
             .Returns("new-access-token");
 
         _deviceFingerprintServiceMock
@@ -189,7 +189,7 @@ public class RefreshTokenCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ValidTokens_WithTenant_ShouldGenerateTokenWithTenant()
+    public async Task Handle_ValidTokens_WithTenant_ShouldGenerateTokenWithUserTenantId()
     {
         // Arrange
         var user = CreateTestUserDto();
@@ -199,9 +199,9 @@ public class RefreshTokenCommandHandlerTests
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
-        // Assert
+        // Assert - Handler should use user.TenantId from database, not _currentUser.TenantId
         _tokenServiceMock.Verify(
-            x => x.GenerateAccessToken(user.Id, user.Email, "tenant-abc"),
+            x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId),
             Times.Once);
     }
 

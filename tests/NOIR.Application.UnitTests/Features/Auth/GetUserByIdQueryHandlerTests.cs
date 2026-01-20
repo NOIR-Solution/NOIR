@@ -139,7 +139,7 @@ public class GetUserByIdQueryHandlerTests
         profile.PhoneNumber.Should().Be("+1234567890");
         profile.AvatarUrl.Should().Be("https://example.com/avatar.jpg");
         profile.IsActive.Should().BeTrue();
-        profile.TenantId.Should().Be(TestTenantId);
+        profile.TenantId.Should().Be("default"); // Handler returns user.TenantId from database, not _currentUser.TenantId
         profile.CreatedAt.Should().BeCloseTo(user.CreatedAt, TimeSpan.FromSeconds(1));
         profile.ModifiedAt.Should().BeCloseTo(user.ModifiedAt!.Value, TimeSpan.FromSeconds(1));
     }
@@ -397,14 +397,29 @@ public class GetUserByIdQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldIncludeTenantIdFromCurrentUser()
+    public async Task Handle_ShouldIncludeTenantIdFromUserEntity()
     {
         // Arrange
         var customTenantId = "custom-tenant-xyz";
-        _currentUserMock.Setup(x => x.TenantId).Returns(customTenantId);
+
+        // Create user with specific TenantId in database
+        var user = new UserIdentityDto(
+            Id: TestUserId,
+            Email: "test@example.com",
+            TenantId: customTenantId, // User's actual tenant from database
+            FirstName: "Test",
+            LastName: "User",
+            DisplayName: null,
+            FullName: "Test User",
+            PhoneNumber: null,
+            AvatarUrl: null,
+            IsActive: true,
+            IsDeleted: false,
+            IsSystemUser: false,
+            CreatedAt: DateTimeOffset.UtcNow,
+            ModifiedAt: DateTimeOffset.UtcNow);
 
         var query = new GetUserByIdQuery(TestUserId);
-        var user = CreateTestUserDto();
 
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(TestUserId, It.IsAny<CancellationToken>()))
@@ -417,7 +432,7 @@ public class GetUserByIdQueryHandlerTests
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
-        // Assert
+        // Assert - Handler should return user.TenantId from database, not _currentUser.TenantId
         result.IsSuccess.Should().BeTrue();
         result.Value.TenantId.Should().Be(customTenantId);
     }
@@ -426,10 +441,24 @@ public class GetUserByIdQueryHandlerTests
     public async Task Handle_WhenTenantIdIsNull_ShouldReturnNullTenantId()
     {
         // Arrange
-        _currentUserMock.Setup(x => x.TenantId).Returns((string?)null);
-
         var query = new GetUserByIdQuery(TestUserId);
-        var user = CreateTestUserDto();
+
+        // Create user with null TenantId (platform admin/system user)
+        var user = new UserIdentityDto(
+            Id: TestUserId,
+            Email: "platform@example.com",
+            TenantId: null, // Platform admin has no tenant
+            FirstName: "Platform",
+            LastName: "Admin",
+            DisplayName: null,
+            FullName: "Platform Admin",
+            PhoneNumber: null,
+            AvatarUrl: null,
+            IsActive: true,
+            IsDeleted: false,
+            IsSystemUser: true,
+            CreatedAt: DateTimeOffset.UtcNow,
+            ModifiedAt: DateTimeOffset.UtcNow);
 
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(TestUserId, It.IsAny<CancellationToken>()))
@@ -437,12 +466,12 @@ public class GetUserByIdQueryHandlerTests
 
         _userIdentityServiceMock
             .Setup(x => x.GetRolesAsync(TestUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string>());
+            .ReturnsAsync(new List<string> { "PlatformAdmin" });
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
-        // Assert
+        // Assert - Handler should return user.TenantId (null) from database, not _currentUser.TenantId
         result.IsSuccess.Should().BeTrue();
         result.Value.TenantId.Should().BeNull();
     }

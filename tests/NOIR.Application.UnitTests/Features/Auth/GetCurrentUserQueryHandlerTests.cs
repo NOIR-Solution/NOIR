@@ -133,7 +133,7 @@ public class GetCurrentUserQueryHandlerTests
         result.Value.FirstName.Should().Be("Jane");
         result.Value.LastName.Should().Be("Smith");
         result.Value.FullName.Should().Be("Jane Smith");
-        result.Value.TenantId.Should().Be(TestTenantId);
+        result.Value.TenantId.Should().Be("default"); // Handler returns user.TenantId from database, not _currentUser.TenantId
         result.Value.IsActive.Should().BeTrue();
         result.Value.CreatedAt.Should().BeCloseTo(user.CreatedAt, TimeSpan.FromSeconds(1));
     }
@@ -397,12 +397,26 @@ public class GetCurrentUserQueryHandlerTests
     [Fact]
     public async Task Handle_UserWithNoTenant_ShouldReturnNullTenantId()
     {
-        // Arrange
-        var user = CreateTestUserDto();
+        // Arrange - Platform admin with no tenant
+        var user = new UserIdentityDto(
+            Id: "platform-user-123",
+            Email: "platform@example.com",
+            TenantId: null, // Platform admin has no tenant
+            FirstName: "Platform",
+            LastName: "Admin",
+            DisplayName: null,
+            FullName: "Platform Admin",
+            PhoneNumber: null,
+            AvatarUrl: null,
+            IsActive: true,
+            IsDeleted: false,
+            IsSystemUser: true,
+            CreatedAt: DateTimeOffset.UtcNow.AddDays(-30),
+            ModifiedAt: null);
+
         var query = new GetCurrentUserQuery();
 
         SetupAuthenticatedUser(user.Id);
-        _currentUserMock.Setup(x => x.TenantId).Returns((string?)null);
 
         _userIdentityServiceMock
             .Setup(x => x.FindByIdAsync(user.Id, It.IsAny<CancellationToken>()))
@@ -410,12 +424,12 @@ public class GetCurrentUserQueryHandlerTests
 
         _userIdentityServiceMock
             .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string>());
+            .ReturnsAsync(new List<string> { "PlatformAdmin" });
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
-        // Assert
+        // Assert - Handler should return user.TenantId (null) from database, not _currentUser.TenantId
         result.IsSuccess.Should().BeTrue();
         result.Value.TenantId.Should().BeNull();
     }
