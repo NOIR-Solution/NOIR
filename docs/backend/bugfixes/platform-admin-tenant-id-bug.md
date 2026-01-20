@@ -127,6 +127,36 @@ The middleware sets a fallback tenant because:
 
 **Key Principle**: Request context (`_currentUser`) is for **scoping/filtering**, database entity is for **user properties**.
 
+### Architectural Improvement: Removing The Fallback Strategy
+
+**Question**: Why did `_currentUser.TenantId` have a value when it should be null for platform admin?
+
+**Root Cause**: Finbuckle middleware had `.WithStaticStrategy("default")` which set a fallback tenant when JWT had no `tenant_id` claim.
+
+**Solution**: We removed the static fallback strategy entirely (commit 35ead8d) for consistency:
+
+```csharp
+// BEFORE (inconsistent)
+services.AddMultiTenant<Tenant>()
+    .WithHeaderStrategy("X-Tenant")
+    .WithClaimStrategy("tenant_id")
+    .WithStaticStrategy("default")   // ❌ Fallback caused inconsistency
+    .WithEFCoreStore<TenantStoreDbContext, Tenant>();
+
+// AFTER (consistent)
+services.AddMultiTenant<Tenant>()
+    .WithHeaderStrategy("X-Tenant")
+    .WithClaimStrategy("tenant_id")
+    .WithEFCoreStore<TenantStoreDbContext, Tenant>();  // ✅ No fallback
+```
+
+**Impact**:
+- Database seeder: Still works - explicitly sets tenant context via `IMultiTenantContextSetter`
+- Background jobs: Still work - use EF Core global query filters, don't access `ICurrentUser`
+- Platform admin: Now has `_currentUser.TenantId = NULL` consistently ✅
+
+**Result**: When tenant is null, it's now null **everywhere** - no more confusion!
+
 ## Prevention
 
 To prevent similar bugs:
