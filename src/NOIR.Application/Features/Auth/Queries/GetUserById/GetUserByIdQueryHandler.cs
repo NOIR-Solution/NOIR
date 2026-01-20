@@ -48,7 +48,7 @@ public class GetUserByIdQueryHandler
             user.PhoneNumber,
             user.AvatarUrl,
             roles,
-            _currentUser.TenantId,
+            user.TenantId,  // Use TenantId from database, not HTTP context
             user.IsActive,
             user.CreatedAt,
             user.ModifiedAt);

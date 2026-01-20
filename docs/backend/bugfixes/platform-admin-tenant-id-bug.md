@@ -102,6 +102,31 @@ Logs confirmed:
 3. **JSON serialization of null** - When C# returns `null`, JSON serialization omits the field entirely (becomes `undefined` in JavaScript, not `null`)
 4. **E2E tests are critical** - The bug was only caught through end-to-end testing that verified the actual UI display
 
+### Understanding _currentUser.TenantId vs user.TenantId
+
+**Why did `_currentUser.TenantId` have a value when it should be null?**
+
+`_currentUser.TenantId` is the **REQUEST tenant context** (from HTTP middleware), NOT the user's actual tenant property. For platform admins:
+
+- **JWT token**: No `tenant_id` claim ✅ (correct)
+- **Database**: `TenantId = NULL` ✅ (correct)
+- **HTTP context**: `_currentUser.TenantId = "default"` (fallback from `WithStaticStrategy("default")`)
+
+The middleware sets a fallback tenant because:
+1. Platform admins may want to scope requests to specific tenants
+2. Non-HTTP contexts (like database seeding) need a default tenant
+
+**This is NOT a bug in the middleware** - it's working as designed. The bug was in **handlers using the wrong source**:
+
+| Use Case | Correct Source | Wrong Source |
+|----------|---------------|--------------|
+| Filter query by tenant | `_currentUser.TenantId` | N/A |
+| Check tenant access | `_currentUser.TenantId` | N/A |
+| **Return user's tenant** | `user.TenantId` | ❌ `_currentUser.TenantId` |
+| **Generate user token** | `user.TenantId` | ❌ `_currentUser.TenantId` |
+
+**Key Principle**: Request context (`_currentUser`) is for **scoping/filtering**, database entity is for **user properties**.
+
 ## Prevention
 
 To prevent similar bugs:

@@ -100,7 +100,7 @@ public class RefreshTokenCommandHandler
         }
 
         // Generate new access token
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email, _currentUser.TenantId);
+        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email, user.TenantId);
         var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Set cookies if requested (for browser-based auth)
