@@ -499,6 +499,8 @@ export default function EmailTemplateEditPage() {
                   `,
                   branding: false,
                   promotion: false,
+                  // Security: Convert unsafe embed/object elements to safer alternatives (CVE-2024-29881)
+                  convert_unsafe_embeds: true,
                   // Setup autocomplete for variables when typing {{
                   setup: (editor) => {
                     // Register autocompleter for {{ trigger with CardMenuItem for better UX

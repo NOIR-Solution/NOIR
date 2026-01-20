@@ -449,6 +449,8 @@ export default function PostEditorPage() {
                         `,
                         branding: false,
                         promotion: false,
+                        // Security: Convert unsafe embed/object elements to safer alternatives (CVE-2024-29881)
+                        convert_unsafe_embeds: true,
                         // Image upload handler - uses unified media endpoint
                         images_upload_handler: async (blobInfo) => {
                           const formData = new FormData()
