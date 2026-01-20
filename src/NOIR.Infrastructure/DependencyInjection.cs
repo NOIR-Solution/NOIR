@@ -16,10 +16,11 @@ public static class DependencyInjection
         // Configure Multi-Tenancy with Finbuckle using database-backed EFCoreStore
         // Tenant entity inherits from TenantInfo for Finbuckle compatibility
         // Using separate TenantStoreDbContext because EFCoreStore requires EFCoreStoreDbContext base class
+        // NO FALLBACK STRATEGY: If tenant is null, it stays null everywhere for consistency
+        // Database seeder explicitly sets tenant context when needed
         services.AddMultiTenant<Tenant>()
             .WithHeaderStrategy("X-Tenant")  // Detect tenant from header
             .WithClaimStrategy("tenant_id")  // Or from JWT claim
-            .WithStaticStrategy("default")   // Fallback for non-HTTP contexts (like seeding)
             .WithEFCoreStore<TenantStoreDbContext, Tenant>();  // Store tenants in dedicated DbContext
 
         // Register EF Core interceptors
