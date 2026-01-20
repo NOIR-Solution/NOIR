@@ -181,11 +181,12 @@ dotnet test src/NOIR.sln
 
 ### v2.1 - Multi-Tenant Filter & React 19 Migration (2026-01-20)
 
-**Multi-Tenant Filter Fix** (Commit: eb8bd1d):
-1. Excluded Notification and NotificationPreference from multi-tenant query filter
-2. Fixed NullReferenceException for platform admins accessing notifications API
-3. Pattern: User-scoped entities (not tenant-scoped) need filter exclusion
-4. Migration: `20260120125147_ExcludeNotificationFromMultiTenantFilter`
+**Multi-Tenant Filter & Notification Fix**:
+1. RefreshToken Filter Exclusion: Excluded RefreshToken from multi-tenant query filter (user-scoped, not tenant-scoped)
+2. Notification Platform Admin Skip: Added check in NotificationService to skip notification creation for platform admins (TenantId = null)
+3. Fixed NullReferenceException for platform admins accessing notifications and login endpoints
+4. Architectural Decision: Notifications ARE tenant-scoped, so they remain subject to tenant filtering
+5. Migrations: `20260120124230_ExcludeRefreshTokenFromMultiTenantFilter`, `20260120135707_RevertNotificationTenantIdToNotNull`
 
 **React 19 Tooltip Migration** (Commit: cc3d713):
 1. Migrated TippyTooltip and RichTooltip from Tippy.js to Radix UI
@@ -194,7 +195,9 @@ dotnet test src/NOIR.sln
 4. Benefits: No warnings, better a11y, smaller bundle, consistent with Radix UI usage
 
 **Impact**:
-- ✅ Platform admins can access /api/notifications endpoints
+- ✅ Platform admins can login successfully (RefreshToken fix)
+- ✅ Platform admins won't receive notifications (architecturally correct - they have no tenant)
+- ✅ Tenant isolation security maintained for notifications
 - ✅ No React 19 console warnings
 - ✅ 100% test pass rate maintained (4,322 tests)
 
@@ -260,7 +263,7 @@ npm run dev
 - **Build Time**: ~30 seconds
 - **Test Time**: ~2.5 minutes (all tests)
 - **Configuration Files**: 20+ EF Core configurations
-- **Database Migrations**: 4 migrations (latest: ExcludeNotificationFromMultiTenantFilter)
+- **Database Migrations**: 5 migrations (latest: RevertNotificationTenantIdToNotNull)
 - **Documentation Pages**: 15+ markdown files
 
 ---
@@ -281,7 +284,7 @@ npm run dev
 - String-based tenant IDs (max 64 chars)
 - Host-based tenant resolution
 - Query filter for tenant isolation
-- Excluded entities: Audit logs, RefreshToken, Notification, NotificationPreference (user-scoped)
+- Excluded entities: Audit logs (system-level operations), RefreshToken (user-scoped sessions)
 
 ---
 

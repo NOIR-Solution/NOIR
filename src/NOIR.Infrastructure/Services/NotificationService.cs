@@ -58,6 +58,13 @@ public class NotificationService : INotificationService, IScopedService
     {
         try
         {
+            // Skip notifications for platform admins (they don't belong to a tenant)
+            if (_currentUser.TenantId == null)
+            {
+                _logger.LogDebug("Skipping notification for platform admin user {UserId}", userId);
+                return Result.Success<NotificationDto>(null!);
+            }
+
             // Check user preferences
             var prefSpec = new UserPreferencesByCategorySpec(userId, category);
             var preference = await _preferenceRepository.FirstOrDefaultAsync(prefSpec, ct);

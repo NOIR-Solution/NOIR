@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NOIR.Infrastructure.Persistence;
 using AppDbContext = NOIR.Infrastructure.Persistence.ApplicationDbContext;
@@ -12,9 +13,11 @@ using AppDbContext = NOIR.Infrastructure.Persistence.ApplicationDbContext;
 namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
 {
     [DbContext(typeof(AppDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260120135707_RevertNotificationTenantIdToNotNull")]
+    partial class RevertNotificationTenantIdToNotNull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
