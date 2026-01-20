@@ -1,7 +1,7 @@
 # NOIR Project Index
 
-**Generated**: 2026-01-20 15:35:00
-**Version**: 2.0 (Platform/Tenant Pattern Optimization)
+**Generated**: 2026-01-20 20:52:00
+**Version**: 2.1 (Multi-Tenant Filter & React 19 Migration)
 
 ---
 
@@ -37,8 +37,8 @@ NOIR/
 - Seeder: `src/NOIR.Infrastructure/Persistence/ApplicationDbContextSeeder.cs`
 
 **Frontend**:
-- Entry: `src/NOIR.Web/frontend/src/main.tsx` - React 18 + TypeScript
-- Routing: `src/NOIR.Web/frontend/src/App.tsx` - React Router v6
+- Entry: `src/NOIR.Web/frontend/src/main.tsx` - React 19 + TypeScript
+- Routing: `src/NOIR.Web/frontend/src/App.tsx` - React Router v7
 
 **Tests**:
 - Run all: `dotnet test src/NOIR.sln`
@@ -119,10 +119,10 @@ NOIR/
 - Multi-tenancy (Finbuckle)
 
 **Frontend**:
-- React 18 + TypeScript
+- React 19 + TypeScript
 - TanStack Query for data fetching
-- shadcn/ui components
-- Tailwind CSS
+- shadcn/ui + Radix UI components
+- Tailwind CSS v4
 
 ---
 
@@ -155,12 +155,12 @@ dotnet test src/NOIR.sln
 - Serilog - Structured logging
 
 **Frontend**:
-- React 18 - UI library
-- TypeScript 5 - Type safety
+- React 19.2 - UI library
+- TypeScript 5.9 - Type safety
 - TanStack Query - Server state
-- React Router 6 - Routing
-- shadcn/ui - Component library
-- Tailwind CSS - Styling
+- React Router 7 - Routing
+- shadcn/ui + Radix UI - Component libraries
+- Tailwind CSS 4.1 - Styling
 
 ---
 
@@ -177,9 +177,30 @@ dotnet test src/NOIR.sln
 
 ---
 
-## 📝 Recent Changes (v2.0)
+## 📝 Recent Changes
 
-**Platform/Tenant Pattern Optimization** (2026-01-20):
+### v2.1 - Multi-Tenant Filter & React 19 Migration (2026-01-20)
+
+**Multi-Tenant Filter Fix** (Commit: eb8bd1d):
+1. Excluded Notification and NotificationPreference from multi-tenant query filter
+2. Fixed NullReferenceException for platform admins accessing notifications API
+3. Pattern: User-scoped entities (not tenant-scoped) need filter exclusion
+4. Migration: `20260120125147_ExcludeNotificationFromMultiTenantFilter`
+
+**React 19 Tooltip Migration** (Commit: cc3d713):
+1. Migrated TippyTooltip and RichTooltip from Tippy.js to Radix UI
+2. Fixed React 19 deprecation warnings ("Accessing element.ref was removed")
+3. Maintained backward-compatible API (no consumer changes required)
+4. Benefits: No warnings, better a11y, smaller bundle, consistent with Radix UI usage
+
+**Impact**:
+- ✅ Platform admins can access /api/notifications endpoints
+- ✅ No React 19 console warnings
+- ✅ 100% test pass rate maintained (4,322 tests)
+
+### v2.0 - Platform/Tenant Pattern Optimization (2026-01-20)
+
+**Platform/Tenant Pattern Optimization**:
 1. Created `DatabaseConstants.cs` for schema consistency
 2. Added `PlatformTenantEntity<TId>` and `PlatformTenantAggregateRoot<TId>` base classes
 3. Refactored EmailTemplate, TenantSetting, PermissionTemplate to use new bases
@@ -239,7 +260,7 @@ npm run dev
 - **Build Time**: ~30 seconds
 - **Test Time**: ~2.5 minutes (all tests)
 - **Configuration Files**: 20+ EF Core configurations
-- **Database Migrations**: 3 migrations
+- **Database Migrations**: 4 migrations (latest: ExcludeNotificationFromMultiTenantFilter)
 - **Documentation Pages**: 15+ markdown files
 
 ---
@@ -260,8 +281,9 @@ npm run dev
 - String-based tenant IDs (max 64 chars)
 - Host-based tenant resolution
 - Query filter for tenant isolation
+- Excluded entities: Audit logs, RefreshToken, Notification, NotificationPreference (user-scoped)
 
 ---
 
-**Index Version**: 2.0 (Platform/Tenant Pattern Optimization)
-**Last Updated**: 2026-01-20
+**Index Version**: 2.1 (Multi-Tenant Filter & React 19 Migration)
+**Last Updated**: 2026-01-20 20:52:00
