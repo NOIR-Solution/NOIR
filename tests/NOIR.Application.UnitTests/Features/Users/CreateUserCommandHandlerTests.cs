@@ -11,8 +11,7 @@ public class CreateUserCommandHandlerTests
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
-    private readonly Mock<IEmailService> _emailServiceMock;
-    private readonly Mock<IBaseUrlService> _baseUrlServiceMock;
+    private readonly Mock<IWelcomeEmailService> _welcomeEmailServiceMock;
     private readonly Mock<ILogger<CreateUserCommandHandler>> _loggerMock;
     private readonly CreateUserCommandHandler _handler;
     private const string TestTenantId = "test-tenant-id";
@@ -22,8 +21,7 @@ public class CreateUserCommandHandlerTests
         _userIdentityServiceMock = new Mock<IUserIdentityService>();
         _currentUserMock = new Mock<ICurrentUser>();
         _localizationServiceMock = new Mock<ILocalizationService>();
-        _emailServiceMock = new Mock<IEmailService>();
-        _baseUrlServiceMock = new Mock<IBaseUrlService>();
+        _welcomeEmailServiceMock = new Mock<IWelcomeEmailService>();
         _loggerMock = new Mock<ILogger<CreateUserCommandHandler>>();
 
         // Setup current user with test tenant
@@ -38,8 +36,7 @@ public class CreateUserCommandHandlerTests
             _userIdentityServiceMock.Object,
             _currentUserMock.Object,
             _localizationServiceMock.Object,
-            _emailServiceMock.Object,
-            _baseUrlServiceMock.Object,
+            _welcomeEmailServiceMock.Object,
             _loggerMock.Object);
     }
 
@@ -98,10 +95,6 @@ public class CreateUserCommandHandlerTests
         _userIdentityServiceMock
             .Setup(x => x.GetRolesAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string>());
-
-        _baseUrlServiceMock
-            .Setup(x => x.BuildUrl(It.IsAny<string>()))
-            .Returns("https://example.com/login");
 
         var command = new CreateUserCommand(email, password, firstName, lastName, displayName, null, false);
 
@@ -166,7 +159,6 @@ public class CreateUserCommandHandlerTests
         const string email = "newuser@example.com";
         const string password = "Password123!";
         const string userId = "new-user-id";
-        const string loginUrl = "https://example.com/login";
 
         _userIdentityServiceMock
             .Setup(x => x.FindByEmailAsync(email, TestTenantId, It.IsAny<CancellationToken>()))
@@ -183,10 +175,6 @@ public class CreateUserCommandHandlerTests
         _userIdentityServiceMock
             .Setup(x => x.GetRolesAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<string>());
-
-        _baseUrlServiceMock
-            .Setup(x => x.BuildUrl("/login"))
-            .Returns(loginUrl);
 
         var command = new CreateUserCommand(email, password, null, null, null, null, true);
 

@@ -339,11 +339,16 @@ public class EmailChangeService : IEmailChangeService, IScopedService
     {
         try
         {
+            var model = new EmailChangeOtpEmailModel(
+                OtpCode: otpCode,
+                UserName: userName ?? "User",
+                ExpiryMinutes: OtpExpiryMinutes);
+
             await _emailService.SendTemplateAsync(
                 email,
                 "Verify your new email address",
                 "EmailChangeOtp",
-                new { OtpCode = otpCode, UserName = userName ?? "User", ExpiryMinutes = OtpExpiryMinutes },
+                model,
                 cancellationToken);
         }
         catch (Exception ex)
@@ -353,3 +358,11 @@ public class EmailChangeService : IEmailChangeService, IScopedService
         }
     }
 }
+
+/// <summary>
+/// Model for the email change OTP email template.
+/// </summary>
+public record EmailChangeOtpEmailModel(
+    string OtpCode,
+    string UserName,
+    int ExpiryMinutes);

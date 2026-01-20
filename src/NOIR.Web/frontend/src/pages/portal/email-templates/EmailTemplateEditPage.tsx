@@ -57,6 +57,7 @@ import {
   getEmailTemplate,
   updateEmailTemplate,
   previewEmailTemplate,
+  revertToPlatformDefault,
   getDefaultSampleData,
   type EmailTemplateDto,
   type EmailPreviewResponse,
@@ -245,6 +246,35 @@ export default function EmailTemplateEditPage() {
     }
   }
 
+  // Handle revert to platform default
+  const handleRevert = async () => {
+    if (!id || !template) return
+
+    if (!confirm('Are you sure you want to revert to the platform default? Your customizations will be lost.')) {
+      return
+    }
+
+    setSaving(true)
+    try {
+      const reverted = await revertToPlatformDefault(id)
+      setTemplate(reverted)
+      setSubject(reverted.subject)
+      setHtmlBody(reverted.htmlBody)
+      setPlainTextBody(reverted.plainTextBody || '')
+      setDescription(reverted.description || '')
+      setHasChanges(false)
+      toast.success('Template reverted to platform default successfully.')
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      } else {
+        toast.error(t('messages.operationFailed'))
+      }
+    } finally {
+      setSaving(false)
+    }
+  }
+
   // Insert variable into editor
   const insertVariable = (variable: string) => {
     const variableText = `{{${variable}}}`
@@ -330,6 +360,12 @@ export default function EmailTemplateEditPage() {
             <Send className="h-4 w-4 mr-2" />
             {t('emailTemplates.sendTestEmail')}
           </Button>
+          {template.isInherited === false && (
+            <Button variant="outline" onClick={handleRevert} disabled={saving}>
+              <GitFork className="h-4 w-4 mr-2" />
+              Revert to Default
+            </Button>
+          )}
           <Button onClick={handleSave} disabled={!hasChanges || saving}>
             <Save className="h-4 w-4 mr-2" />
             {saving ? t('labels.loading') : t('buttons.save')}

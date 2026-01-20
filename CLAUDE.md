@@ -346,6 +346,7 @@ When multiple patterns match:
     - **Session token stability**: Use refs (`sessionTokenRef`) to avoid stale closure issues in callbacks
     - Reference: `PasswordResetService.cs` is the canonical implementation pattern
 15. **Error factory method parameter order** - `Error.Validation(propertyName, message, code?)` - The first parameter is the property/field name, second is the human-readable message, third is the optional error code. WRONG: `Error.Validation("message", errorCode)` causes error codes to display instead of messages! CORRECT: `Error.Validation("fieldName", "Message to user", ErrorCodes.SomeCode)`. See `docs/KNOWLEDGE_BASE.md#error-factory-methods` for all factory methods.
+16. **Email templates are database-driven** - Email templates are loaded from the `EmailTemplate` table, NOT from .cshtml files. Templates are seeded by `ApplicationDbContextSeeder.cs` and customized via Admin UI. NEVER create .cshtml files in `src/NOIR.Web/EmailTemplates/` - they are not used by `EmailService.SendTemplateAsync()`. To update email template HTML, edit the database seeder methods (`GetPasswordResetOtpHtmlBody()`, etc.) or use the Admin UI. Multi-tenant architecture: platform defaults (TenantId=null) with tenant-specific overrides (copy-on-write pattern).
 
 ## Quick Reference
 

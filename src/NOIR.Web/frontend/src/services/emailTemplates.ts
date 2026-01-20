@@ -134,13 +134,26 @@ export async function previewEmailTemplate(
 }
 
 /**
+ * Revert a tenant's customized template to the platform default.
+ * Deletes the tenant's custom version and returns the platform template.
+ */
+export async function revertToPlatformDefault(id: string): Promise<EmailTemplateDto> {
+  return apiClient<EmailTemplateDto>(`/email-templates/${id}/revert`, {
+    method: 'DELETE',
+  })
+}
+
+/**
  * Get default sample data for a template's variables.
  */
 export function getDefaultSampleData(variables: string[]): Record<string, string> {
   const sampleValues: Record<string, string> = {
     UserName: 'John Doe',
     OtpCode: '123456',
-    ExpiryMinutes: '5',
+    ExpiryMinutes: '15',
+    Email: 'john.doe@example.com',
+    TemporaryPassword: 'TempPass123!',
+    ApplicationName: 'NOIR',
     LoginUrl: 'https://example.com/login',
     ActivationLink: 'https://example.com/activate?token=abc123',
     ExpiryHours: '24',

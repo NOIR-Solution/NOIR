@@ -10,23 +10,20 @@ public class CreateUserCommandHandler
     private readonly IUserIdentityService _userIdentityService;
     private readonly ICurrentUser _currentUser;
     private readonly ILocalizationService _localization;
-    private readonly IEmailService _emailService;
-    private readonly IBaseUrlService _baseUrlService;
+    private readonly IWelcomeEmailService _welcomeEmailService;
     private readonly ILogger<CreateUserCommandHandler> _logger;
 
     public CreateUserCommandHandler(
         IUserIdentityService userIdentityService,
         ICurrentUser currentUser,
         ILocalizationService localization,
-        IEmailService emailService,
-        IBaseUrlService baseUrlService,
+        IWelcomeEmailService welcomeEmailService,
         ILogger<CreateUserCommandHandler> logger)
     {
         _userIdentityService = userIdentityService;
         _currentUser = currentUser;
         _localization = localization;
-        _emailService = emailService;
-        _baseUrlService = baseUrlService;
+        _welcomeEmailService = welcomeEmailService;
         _logger = logger;
     }
 
@@ -91,7 +88,7 @@ public class CreateUserCommandHandler
         // Send welcome email (fire and forget - don't block user creation)
         if (command.SendWelcomeEmail)
         {
-            _ = SendWelcomeEmailAsync(
+            _ = _welcomeEmailService.SendWelcomeEmailAsync(
                 createdUser.Email,
                 createdUser.DisplayName ?? createdUser.Email,
                 command.Password,
@@ -111,37 +108,5 @@ public class CreateUserCommandHandler
             roles);
 
         return Result.Success(userDto);
-    }
-
-    private async Task SendWelcomeEmailAsync(
-        string email,
-        string userName,
-        string temporaryPassword,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var loginUrl = _baseUrlService.BuildUrl("/login");
-            var model = new WelcomeEmailModel(
-                UserName: userName,
-                Email: email,
-                TemporaryPassword: temporaryPassword,
-                LoginUrl: loginUrl,
-                ApplicationName: "NOIR");
-
-            await _emailService.SendTemplateAsync(
-                email,
-                "Welcome to NOIR - Your Account Has Been Created",
-                "WelcomeEmail",
-                model,
-                cancellationToken);
-
-            _logger.LogInformation("Welcome email sent to {Email}", email);
-        }
-        catch (Exception ex)
-        {
-            // Log but don't fail - email delivery shouldn't block user creation
-            _logger.LogError(ex, "Failed to send welcome email to {Email}", email);
-        }
     }
 }

@@ -9,17 +9,20 @@ public class ProvisionTenantCommandHandler
     private readonly IMultiTenantStore<Tenant> _tenantStore;
     private readonly IUserIdentityService _identityService;
     private readonly ILocalizationService _localization;
+    private readonly IWelcomeEmailService _welcomeEmailService;
     private readonly ILogger<ProvisionTenantCommandHandler> _logger;
 
     public ProvisionTenantCommandHandler(
         IMultiTenantStore<Tenant> tenantStore,
         IUserIdentityService identityService,
         ILocalizationService localization,
+        IWelcomeEmailService welcomeEmailService,
         ILogger<ProvisionTenantCommandHandler> logger)
     {
         _tenantStore = tenantStore;
         _identityService = identityService;
         _localization = localization;
+        _welcomeEmailService = welcomeEmailService;
         _logger = logger;
     }
 
@@ -177,6 +180,13 @@ public class ProvisionTenantCommandHandler
         _logger.LogInformation(
             "Created admin user {UserId} ({Email}) for tenant {TenantId}",
             createResult.UserId, command.AdminEmail, tenant.Id);
+
+        // Send welcome email with temporary password
+        await _welcomeEmailService.SendWelcomeEmailAsync(
+            command.AdminEmail!,
+            $"{command.AdminFirstName ?? "Admin"} {command.AdminLastName ?? "User"}".Trim(),
+            command.AdminPassword!,
+            cancellationToken);
 
         return Result.Success((createResult.UserId, command.AdminEmail!));
     }

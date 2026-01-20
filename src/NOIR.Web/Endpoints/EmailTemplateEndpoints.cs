@@ -1,3 +1,5 @@
+using NOIR.Application.Features.EmailTemplates.Commands.RevertToPlatformDefault;
+
 namespace NOIR.Web.Endpoints;
 
 /// <summary>
@@ -112,6 +114,21 @@ public static class EmailTemplateEndpoints
         .WithSummary("Preview email template")
         .WithDescription("Returns the rendered email template with sample data applied.")
         .Produces<EmailPreviewResponse>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Revert to platform default
+        group.MapDelete("/{id:guid}/revert", async (Guid id, IMessageBus bus) =>
+        {
+            var command = new RevertToPlatformDefaultCommand(id);
+            var result = await bus.InvokeAsync<Result<EmailTemplateDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.EmailTemplatesUpdate)
+        .WithName("RevertToPlatformDefault")
+        .WithSummary("Revert to platform default template")
+        .WithDescription("Deletes the tenant's customized version and reverts to the platform default template. Only available for tenant users.")
+        .Produces<EmailTemplateDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 
