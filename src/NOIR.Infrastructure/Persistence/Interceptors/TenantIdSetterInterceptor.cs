@@ -39,12 +39,12 @@ public class TenantIdSetterInterceptor : SaveChangesInterceptor
 
         foreach (var entry in context.ChangeTracker.Entries<ITenantEntity>())
         {
+            // CRITICAL: Never modify TenantId for system users - they must remain tenant-agnostic
+            if (entry.Entity is ApplicationUser user && user.IsSystemUser)
+                continue;
+
             if (entry.State == EntityState.Added && string.IsNullOrEmpty(entry.Entity.TenantId))
             {
-                // Skip system users (e.g., platform admin) - they have explicit null TenantId for cross-tenant access
-                if (entry.Entity is ApplicationUser user && user.IsSystemUser)
-                    continue;
-
                 // Use EF Core property API to set the value, bypassing the protected setter
                 // This is the only place that should set TenantId after construction
                 entry.Property(nameof(ITenantEntity.TenantId)).CurrentValue = tenantId;
