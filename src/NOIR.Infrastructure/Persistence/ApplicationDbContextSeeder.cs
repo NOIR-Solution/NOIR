@@ -97,9 +97,18 @@ public static class ApplicationDbContextSeeder
                 var tenantAccessor = services.GetService<IMultiTenantContextAccessor<Tenant>>();
                 if (tenantSetter != null && tenantAccessor?.MultiTenantContext?.TenantInfo == null)
                 {
+                    logger.LogInformation(
+                        "[Seeder] SETTING tenant context to default tenant: {TenantId} ({TenantName})",
+                        defaultTenant.Id,
+                        defaultTenant.Name);
+
                     // Set the seeded default tenant as the context
                     // Finbuckle v10 requires constructor argument for MultiTenantContext
                     tenantSetter.MultiTenantContext = new MultiTenantContext<Tenant>(defaultTenant);
+
+                    logger.LogInformation(
+                        "[Seeder] Tenant context NOW SET. All subsequent saves will use TenantId: {TenantId}",
+                        defaultTenant.Id);
                 }
 
                 // === PHASE 5: Seed Tenant-Level Roles ===
@@ -297,6 +306,8 @@ public static class ApplicationDbContextSeeder
 
         if (adminUser is null)
         {
+            logger.LogInformation("[Seeder] Creating NEW platform admin user: {Email}", settings.Email);
+
             adminUser = new ApplicationUser
             {
                 UserName = settings.Email,
@@ -310,12 +321,32 @@ public static class ApplicationDbContextSeeder
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
+            logger.LogInformation(
+                "[Seeder] BEFORE CreateAsync: Email={Email}, IsSystemUser={IsSystemUser}, TenantId={TenantId}",
+                adminUser.Email,
+                adminUser.IsSystemUser,
+                adminUser.TenantId ?? "NULL");
+
             var result = await userManager.CreateAsync(adminUser, settings.Password);
 
             if (result.Succeeded)
             {
+                logger.LogInformation(
+                    "[Seeder] AFTER CreateAsync: Email={Email}, IsSystemUser={IsSystemUser}, TenantId={TenantId}",
+                    adminUser.Email,
+                    adminUser.IsSystemUser,
+                    adminUser.TenantId ?? "NULL");
+
+                logger.LogInformation("[Seeder] Adding PlatformAdmin role to user: {Email}", settings.Email);
                 await userManager.AddToRoleAsync(adminUser, Roles.PlatformAdmin);
-                logger.LogInformation("Created platform admin user: {Email} (TenantId = null)", settings.Email);
+
+                logger.LogInformation(
+                    "[Seeder] AFTER AddToRoleAsync: Email={Email}, IsSystemUser={IsSystemUser}, TenantId={TenantId}",
+                    adminUser.Email,
+                    adminUser.IsSystemUser,
+                    adminUser.TenantId ?? "NULL");
+
+                logger.LogInformation("Created platform admin user: {Email} (TenantId = {TenantId})", settings.Email, adminUser.TenantId ?? "NULL");
             }
             else
             {
