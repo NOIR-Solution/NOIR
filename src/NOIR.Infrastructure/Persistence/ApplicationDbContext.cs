@@ -107,26 +107,27 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     /// Configures multi-tenant query filters for all entities implementing ITenantEntity.
     /// Uses Finbuckle.MultiTenant for automatic tenant filtering.
     /// All data belongs to a tenant - TenantId is required.
-    /// Default tenant "default" is always seeded and available via StaticStrategy fallback.
-    /// Audit log entities are excluded - they store TenantId for filtering but don't require it.
+    /// Audit log entities and RefreshToken are excluded - they store TenantId for filtering but don't require it.
     /// </summary>
     private void ConfigureMultiTenancy(ModelBuilder modelBuilder)
     {
-        // Audit-related types should not enforce tenant requirement
-        // They store TenantId for filtering but allow null for system-level operations
-        var auditLogTypes = new HashSet<Type>
+        // Types that should not enforce tenant requirement via query filter
+        // - Audit logs: Store TenantId for filtering but allow null for system-level operations
+        // - RefreshToken: User-scoped (not tenant-scoped) - platform admins need sessions too
+        var excludedTypes = new HashSet<Type>
         {
             typeof(HttpRequestAuditLog),
             typeof(HandlerAuditLog),
-            typeof(EntityAuditLog)
+            typeof(EntityAuditLog),
+            typeof(RefreshToken)
         };
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             if (typeof(ITenantEntity).IsAssignableFrom(entityType.ClrType))
             {
-                // Skip audit log entities from strict multi-tenant enforcement
-                if (auditLogTypes.Contains(entityType.ClrType))
+                // Skip excluded types from strict multi-tenant enforcement
+                if (excludedTypes.Contains(entityType.ClrType))
                 {
                     continue;
                 }
