@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
 **Last Updated:** 2026-01-20
-**Version:** 2.0
+**Version:** 2.1
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -11,6 +11,7 @@ A comprehensive cross-referenced guide to the NOIR codebase, patterns, and archi
 
 | Section | Description |
 |---------|-------------|
+| [Recent Fixes & Improvements](#recent-fixes--improvements) | Latest bug fixes and architectural changes |
 | [Architecture Overview](#architecture-overview) | Clean Architecture layers and dependencies |
 | [Domain Layer](#domain-layer) | Entities, interfaces, value objects |
 | [Application Layer](#application-layer) | Features, commands, queries, specifications |
@@ -20,6 +21,88 @@ A comprehensive cross-referenced guide to the NOIR codebase, patterns, and archi
 | [Development Guide](#development-guide) | Common tasks and patterns |
 | [Testing](#testing) | Test structure and patterns |
 | [Documentation Map](#documentation-map) | All docs with descriptions |
+
+---
+
+## Recent Fixes & Improvements
+
+**Last Session:** 2026-01-20
+
+### Platform Admin Tenant ID Bug Fix
+
+**Issue:** Platform admins were showing a tenant GUID in the dashboard instead of "Platform" (null tenant).
+
+**Root Cause:** `GetCurrentUserQueryHandler` was using `_currentUser.TenantId` (HTTP context) instead of `user.TenantId` (database).
+
+**Fix:** Changed line 53 in `GetCurrentUserQueryHandler.cs` to use database value:
+```csharp
+// ✅ CORRECT
+var userDto = new CurrentUserDto(
+    ...
+    user.TenantId,  // Use TenantId from database, not HTTP context
+    ...
+);
+```
+
+**Key Insight:** Request context (`_currentUser`) is for **scoping/filtering**, database entity is for **user properties**.
+
+**Verification:** Added Playwright E2E test (`platform-admin-tenant-test.spec.ts`) that verifies:
+- Dashboard displays "Platform" not a GUID
+- `/api/auth/me` response omits `tenantId` field (null value)
+- JWT token has no `tenant_id` claim
+
+**Doc:** [backend/bugfixes/platform-admin-tenant-id-bug.md](backend/bugfixes/platform-admin-tenant-id-bug.md)
+
+---
+
+### Removal of Tenant Fallback Strategy
+
+**Issue:** Finbuckle middleware had `.WithStaticStrategy("default")` which set a fallback tenant when JWT had no `tenant_id` claim, causing inconsistency.
+
+**Solution:** Removed static fallback strategy entirely for consistency:
+
+```csharp
+// BEFORE (inconsistent)
+services.AddMultiTenant<Tenant>()
+    .WithHeaderStrategy("X-Tenant")
+    .WithClaimStrategy("tenant_id")
+    .WithStaticStrategy("default")   // ❌ Fallback caused inconsistency
+    .WithEFCoreStore<TenantStoreDbContext, Tenant>();
+
+// AFTER (consistent)
+services.AddMultiTenant<Tenant>()
+    .WithHeaderStrategy("X-Tenant")
+    .WithClaimStrategy("tenant_id")
+    .WithEFCoreStore<TenantStoreDbContext, Tenant>();  // ✅ No fallback
+```
+
+**Impact:**
+- Database seeder: Still works - explicitly sets tenant context via `IMultiTenantContextSetter`
+- Background jobs: Still work - use EF Core global query filters, don't access `ICurrentUser`
+- Platform admin: Now has `_currentUser.TenantId = NULL` consistently ✅
+
+**Result:** When tenant is null, it's now null **everywhere** - no more confusion!
+
+---
+
+### Platform/Tenant Pattern Optimization
+
+**Improvement:** Added `DatabaseConstants` for consistent schema sizing across platform/tenant entities.
+
+**Constants:**
+- `TenantIdMaxLength = 64` - Consistent tenant ID column size
+- `UserIdMaxLength = 450` - ASP.NET Identity user ID max length
+
+**Benefit:** Prevents migration inconsistencies and ensures optimal index performance.
+
+**Filtered Indexes:** Platform default lookups are 2-3x faster with filtered indexes:
+```sql
+CREATE INDEX IX_EntityName_Platform_Lookup
+ON EntityTable (Name, IsActive)
+WHERE TenantId IS NULL AND IsDeleted = 0;
+```
+
+**Doc:** [backend/architecture/tenant-id-interceptor.md](backend/architecture/tenant-id-interceptor.md)
 
 ---
 
@@ -1004,6 +1087,15 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ## Documentation Map
 
+### Core Documentation
+
+| Document | Path | Description |
+|----------|------|-------------|
+| **KNOWLEDGE_BASE** | `docs/KNOWLEDGE_BASE.md` | This document - complete codebase reference |
+| **API_INDEX** | `docs/API_INDEX.md` | Complete REST API endpoint documentation |
+| **ARCHITECTURE** | `docs/ARCHITECTURE.md` | Architecture overview, patterns, decisions |
+| **PROJECT_INDEX** | `docs/PROJECT_INDEX.md` | Project structure and quick reference |
+
 ### Backend Documentation
 
 | Document | Path | Description |
@@ -1015,6 +1107,9 @@ dotnet test --collect:"XPlat Code Coverage"
 | JWT Refresh Tokens | `docs/backend/patterns/jwt-refresh-token.md` | Token rotation |
 | Audit Logging | `docs/backend/patterns/hierarchical-audit-logging.md` | 3-level audit |
 | Bulk Operations | `docs/backend/patterns/bulk-operations.md` | High-volume data |
+| Before State Resolver | `docs/backend/patterns/before-state-resolver.md` | Audit before-state pattern |
+| JSON Enum Serialization | `docs/backend/patterns/json-enum-serialization.md` | Enum string serialization |
+| Technical Checklist | `docs/backend/patterns/technical-checklist.md` | Implementation checklist |
 
 ### Research Documents
 
@@ -1023,6 +1118,16 @@ dotnet test --collect:"XPlat Code Coverage"
 | Audit Logging Comparison | `docs/backend/research/hierarchical-audit-logging-comparison-2025.md` | Technology comparison |
 | Role & Permission Systems | `docs/backend/research/role-permission-best-practices-2025.md` | Best practices |
 | IUnitOfWork & EF Core | `docs/backend/research/research_iunitofwork_efcore_best_practices_20250103.md` | Persistence patterns |
+| Cache Busting | `docs/backend/research/cache-busting-best-practices.md` | Frontend cache strategies |
+| Developer Log System | `docs/backend/research/developer-log-system-research.md` | Real-time log streaming |
+| Role Permission Management | `docs/backend/research/role-permission-management-research.md` | Permission system design |
+
+### Bug Fixes & Architecture Notes
+
+| Document | Path | Description |
+|----------|------|-------------|
+| Platform Admin Tenant Bug | `docs/backend/bugfixes/platform-admin-tenant-id-bug.md` | Platform admin tenant fix (2026-01-20) |
+| Tenant ID Interceptor | `docs/backend/architecture/tenant-id-interceptor.md` | Multi-tenancy interceptor pattern |
 
 ### Frontend Documentation
 
@@ -1034,6 +1139,14 @@ dotnet test --collect:"XPlat Code Coverage"
 | API Types | `docs/frontend/api-types.md` | Type generation |
 | Localization | `docs/frontend/localization-guide.md` | i18n setup |
 | Color Schema | `docs/frontend/COLOR_SCHEMA_GUIDE.md` | Color guidelines |
+| Vibe Kanban Integration | `docs/frontend/vibe-kanban-integration.md` | Task management integration |
+
+### Frontend Designs
+
+| Document | Path | Description |
+|----------|------|-------------|
+| Developer Log UI | `docs/frontend/designs/developer-log-ui-ux-design.md` | Real-time log viewer design |
+| Notification Dropdown | `docs/frontend/designs/notification-dropdown-ui-design.md` | Notification bell design |
 
 ### Architecture Decisions
 
@@ -1041,6 +1154,16 @@ dotnet test --collect:"XPlat Code Coverage"
 |-----|------|-------------|
 | 001 | `docs/decisions/001-tech-stack.md` | Technology selection |
 | 002 | `docs/decisions/002-frontend-ui-stack.md` | Frontend UI choices |
+| 003 | `docs/decisions/003-vertical-slice-cqrs.md` | Vertical slice architecture for CQRS |
+
+### Project Plans
+
+| Document | Path | Description |
+|----------|------|-------------|
+| Feature Roadmap 2026 | `docs/plans/feature-roadmap-2026.md` | Feature planning |
+| Session Management | `docs/plans/2025-01-12-session-management.md` | Session management implementation |
+| Permission Enforcement | `docs/plans/2025-01-15-permission-enforcement-welcome-email.md` | Permission system rollout |
+| Dark/Light Mode | `docs/plans/2026-01-16-dark-light-mode-design.md` | Theme system design |
 
 ### AI Instructions
 

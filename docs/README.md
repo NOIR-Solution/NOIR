@@ -4,6 +4,15 @@ Welcome to the NOIR documentation. This folder contains comprehensive guides for
 
 > **Start Here:** [KNOWLEDGE_BASE.md](KNOWLEDGE_BASE.md) - Comprehensive cross-referenced guide to the entire codebase
 
+## Core Documentation
+
+| Document | Description |
+|----------|-------------|
+| [KNOWLEDGE_BASE.md](KNOWLEDGE_BASE.md) | Complete codebase reference with cross-links |
+| [API_INDEX.md](API_INDEX.md) | REST API endpoint documentation |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Architecture overview, patterns, and decisions |
+| [PROJECT_INDEX.md](PROJECT_INDEX.md) | Project structure and quick navigation |
+
 ## Structure
 
 ```
@@ -45,6 +54,7 @@ docs/
 |-----|-------|
 | [001](decisions/001-tech-stack.md) | Technology Stack Selection |
 | [002](decisions/002-frontend-ui-stack.md) | Frontend UI Stack |
+| [003](decisions/003-vertical-slice-cqrs.md) | Vertical Slice Architecture for CQRS |
 
 ## For AI Assistants
 
