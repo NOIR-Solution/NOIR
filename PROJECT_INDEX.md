@@ -1,7 +1,7 @@
 # NOIR Project Index
 
-**Generated**: 2026-01-20 20:52:00
-**Version**: 2.1 (Multi-Tenant Filter & React 19 Migration)
+**Generated**: 2026-01-20 21:10:00
+**Version**: 3.0 (Clean Migration Reset)
 
 ---
 
@@ -179,29 +179,29 @@ dotnet test src/NOIR.sln
 
 ## 📝 Recent Changes
 
-### v2.1 - Multi-Tenant Filter & React 19 Migration (2026-01-20)
+### v3.0 - Clean Migration Reset (2026-01-20)
 
-**Multi-Tenant Filter & Notification Fix**:
-1. RefreshToken Filter Exclusion: Excluded RefreshToken from multi-tenant query filter (user-scoped, not tenant-scoped)
-2. Notification Platform Admin Skip: Added check in NotificationService to skip notification creation for platform admins (TenantId = null)
-3. Fixed NullReferenceException for platform admins accessing notifications and login endpoints
-4. Architectural Decision: Notifications ARE tenant-scoped, so they remain subject to tenant filtering
-5. Migrations: `20260120124230_ExcludeRefreshTokenFromMultiTenantFilter`, `20260120135707_RevertNotificationTenantIdToNotNull`
+**Migration Cleanup**:
+1. **Dropped database** and removed all existing migrations (5 → 1)
+2. **Created fresh InitialCreate** migration with current clean schema
+3. **Removed migration history clutter** from back-and-forth changes
+4. **All functionality preserved**: Platform admin support, tenant isolation, React 19 compatibility
 
-**React 19 Tooltip Migration** (Commit: cc3d713):
-1. Migrated TippyTooltip and RichTooltip from Tippy.js to Radix UI
-2. Fixed React 19 deprecation warnings ("Accessing element.ref was removed")
-3. Maintained backward-compatible API (no consumer changes required)
-4. Benefits: No warnings, better a11y, smaller bundle, consistent with Radix UI usage
-
-**Impact**:
-- ✅ Platform admins can login successfully (RefreshToken fix)
-- ✅ Platform admins won't receive notifications (architecturally correct - they have no tenant)
-- ✅ Tenant isolation security maintained for notifications
-- ✅ No React 19 console warnings
+**Current State**:
+- ✅ Single clean InitialCreate migration (20260120140620)
+- ✅ RefreshToken excluded from tenant filter (user-scoped sessions)
+- ✅ Notification platform admin skip in service layer (tenant-scoped data)
+- ✅ React 19 compatible tooltips (Radix UI)
+- ✅ Platform/Tenant pattern with DatabaseConstants
 - ✅ 100% test pass rate maintained (4,322 tests)
 
-### v2.0 - Platform/Tenant Pattern Optimization (2026-01-20)
+**Architectural Decisions Preserved**:
+- **RefreshToken**: User-scoped, excluded from tenant filter
+- **Notification**: Tenant-scoped, filtered at query level, skipped for platform admins at service level
+- **Platform/Tenant Entities**: EmailTemplate, TenantSetting, PermissionTemplate with filtered indexes
+- **Multi-Tenancy**: Query filters via Finbuckle.MultiTenant for tenant isolation
+
+### v2.0 - Platform/Tenant Pattern Optimization (2026-01-20) [ARCHIVED]
 
 **Platform/Tenant Pattern Optimization**:
 1. Created `DatabaseConstants.cs` for schema consistency
@@ -263,7 +263,7 @@ npm run dev
 - **Build Time**: ~30 seconds
 - **Test Time**: ~2.5 minutes (all tests)
 - **Configuration Files**: 20+ EF Core configurations
-- **Database Migrations**: 5 migrations (latest: RevertNotificationTenantIdToNotNull)
+- **Database Migrations**: 1 migration (InitialCreate - clean schema)
 - **Documentation Pages**: 15+ markdown files
 
 ---
@@ -288,5 +288,5 @@ npm run dev
 
 ---
 
-**Index Version**: 2.1 (Multi-Tenant Filter & React 19 Migration)
-**Last Updated**: 2026-01-20 20:52:00
+**Index Version**: 3.0 (Clean Migration Reset)
+**Last Updated**: 2026-01-20 21:10:00

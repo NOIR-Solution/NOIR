@@ -126,7 +126,6 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Subject = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     HtmlBody = table.Column<string>(type: "nvarchar(max)", maxLength: 500, nullable: false),
@@ -141,7 +140,8 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                     ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
+                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -330,18 +330,18 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsSystem = table.Column<bool>(type: "bit", nullable: false),
                     IconName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Color = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     SortOrder = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                    DeletedBy = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -430,7 +430,7 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -493,19 +493,19 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
                     Key = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Value = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     DataType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "string"),
                     Category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -919,7 +919,14 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                 name: "IX_EmailTemplates_Name_TenantId",
                 table: "EmailTemplates",
                 columns: new[] { "Name", "TenantId" },
-                unique: true);
+                unique: true,
+                filter: "[TenantId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailTemplates_Platform_Lookup",
+                table: "EmailTemplates",
+                columns: new[] { "Name", "IsActive" },
+                filter: "[TenantId] IS NULL AND [IsDeleted] = 0");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmailTemplates_TenantId",
@@ -1177,6 +1184,12 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                 filter: "[TenantId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PermissionTemplates_Platform_Lookup",
+                table: "PermissionTemplates",
+                columns: new[] { "Name", "IsSystem" },
+                filter: "[TenantId] IS NULL AND [IsDeleted] = 0");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PermissionTemplates_TenantId",
                 table: "PermissionTemplates",
                 column: "TenantId");
@@ -1347,6 +1360,12 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                 name: "IX_TenantSettings_Key",
                 table: "TenantSettings",
                 column: "Key");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TenantSettings_Platform_Lookup",
+                table: "TenantSettings",
+                columns: new[] { "Key", "Category" },
+                filter: "[TenantId] IS NULL AND [IsDeleted] = 0");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TenantSettings_TenantId_Category",

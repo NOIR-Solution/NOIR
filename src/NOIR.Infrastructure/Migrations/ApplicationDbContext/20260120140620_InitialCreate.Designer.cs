@@ -13,8 +13,8 @@ using AppDbContext = NOIR.Infrastructure.Persistence.ApplicationDbContext;
 namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260120135707_RevertNotificationTenantIdToNotNull")]
-    partial class RevertNotificationTenantIdToNotNull
+    [Migration("20260120140620_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
