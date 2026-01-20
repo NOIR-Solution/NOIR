@@ -48,7 +48,7 @@ export function TippyTooltip({
       appendTo={() => document.body}
       {...props}
     >
-      {children}
+      <span style={{ display: 'inline-block' }}>{children}</span>
     </Tippy>
   )
 }
@@ -135,7 +135,7 @@ export function RichTooltip({
       appendTo={() => document.body}
       {...props}
     >
-      {children}
+      <span style={{ display: 'inline-block' }}>{children}</span>
     </Tippy>
   )
 }
