@@ -29,13 +29,21 @@ public class PermissionTemplateConfiguration : IEntityTypeConfiguration<Permissi
             .HasMaxLength(50);
 
         // Tenant scoping
-        builder.Property(e => e.TenantId);
+        builder.Property(e => e.TenantId)
+            .HasMaxLength(DatabaseConstants.TenantIdMaxLength)
+            .IsRequired(false);
         builder.HasIndex(e => e.TenantId);
 
         // Unique name within tenant (or system if TenantId is null)
         builder.HasIndex(e => new { e.Name, e.TenantId })
             .IsUnique()
             .HasDatabaseName("IX_PermissionTemplates_Name_TenantId");
+
+        // Filtered index for platform defaults lookup optimization
+        // Most lookups query platform defaults (TenantId = null) as fallback
+        builder.HasIndex(e => new { e.Name, e.IsSystem })
+            .HasDatabaseName("IX_PermissionTemplates_Platform_Lookup")
+            .HasFilter("[TenantId] IS NULL AND [IsDeleted] = 0");
 
         // Soft delete filter
         builder.HasQueryFilter(e => !e.IsDeleted);

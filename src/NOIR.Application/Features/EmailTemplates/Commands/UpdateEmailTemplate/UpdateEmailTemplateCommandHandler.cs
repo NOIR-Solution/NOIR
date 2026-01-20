@@ -46,18 +46,18 @@ public class UpdateEmailTemplateCommandHandler
 
         EmailTemplate resultTemplate;
 
-        // Copy-on-Write: If this is a platform template and user has tenant context, create a copy
-        if (template.TenantId == null && !string.IsNullOrEmpty(currentTenantId))
+        // Copy-on-Edit: If this is a platform template and user has tenant context, create a copy
+        if (template.IsPlatformDefault && !string.IsNullOrEmpty(currentTenantId))
         {
-            // Create a new tenant-specific copy
-            var tenantCopy = EmailTemplate.Create(
+            // Create a new tenant-specific override using copy-on-edit pattern
+            var tenantCopy = EmailTemplate.CreateTenantOverride(
+                currentTenantId,
                 template.Name,
                 command.Subject,
                 command.HtmlBody,
                 command.PlainTextBody,
                 command.Description,
-                template.AvailableVariables,
-                currentTenantId);
+                template.AvailableVariables);
 
             await _repository.AddAsync(tenantCopy, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

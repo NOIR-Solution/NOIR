@@ -52,14 +52,23 @@ public class EmailTemplateConfiguration : IEntityTypeConfiguration<EmailTemplate
         // Index for active template lookup
         builder.HasIndex(e => new { e.Name, e.IsActive, e.IsDeleted });
 
-        // Tenant ID
-        builder.Property(e => e.TenantId).HasMaxLength(64);
+        // Tenant ID (nullable for platform-level templates)
+        builder.Property(e => e.TenantId)
+            .HasMaxLength(DatabaseConstants.TenantIdMaxLength)
+            .IsRequired(false); // Allow null for platform-level templates
         builder.HasIndex(e => e.TenantId);
 
+        // Filtered index for platform template lookup optimization
+        // This index optimizes queries that look up platform defaults (TenantId = null)
+        // which are the most frequently accessed templates (fallback for all tenants)
+        builder.HasIndex(e => new { e.Name, e.IsActive })
+            .HasDatabaseName("IX_EmailTemplates_Platform_Lookup")
+            .HasFilter("[TenantId] IS NULL AND [IsDeleted] = 0");
+
         // Audit fields
-        builder.Property(e => e.CreatedBy).HasMaxLength(450);
-        builder.Property(e => e.ModifiedBy).HasMaxLength(450);
-        builder.Property(e => e.DeletedBy).HasMaxLength(450);
+        builder.Property(e => e.CreatedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.ModifiedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.DeletedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
         builder.Property(e => e.IsDeleted).HasDefaultValue(false);
 
         // Soft delete query filter

@@ -89,20 +89,20 @@ public class MediaFileConfiguration : IEntityTypeConfiguration<MediaFile>
 
         // Uploader
         builder.Property(e => e.UploadedBy)
-            .HasMaxLength(450)
+            .HasMaxLength(DatabaseConstants.UserIdMaxLength)
             .IsRequired();
 
         builder.HasIndex(e => e.UploadedBy)
             .HasDatabaseName("IX_MediaFiles_UploadedBy");
 
         // Tenant ID
-        builder.Property(e => e.TenantId).HasMaxLength(64);
+        builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);
         builder.HasIndex(e => e.TenantId);
 
         // Audit fields
-        builder.Property(e => e.CreatedBy).HasMaxLength(450);
-        builder.Property(e => e.ModifiedBy).HasMaxLength(450);
-        builder.Property(e => e.DeletedBy).HasMaxLength(450);
+        builder.Property(e => e.CreatedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.ModifiedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.DeletedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
         builder.Property(e => e.IsDeleted).HasDefaultValue(false);
 
         // Soft delete query filter

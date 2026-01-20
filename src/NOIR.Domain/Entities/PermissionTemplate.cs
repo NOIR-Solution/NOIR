@@ -2,9 +2,10 @@ namespace NOIR.Domain.Entities;
 
 /// <summary>
 /// Pre-defined permission sets for quick role creation.
-/// Templates can be system-wide or tenant-specific.
+/// Platform templates (TenantId = null) serve as defaults for all tenants.
+/// Tenant templates (TenantId = value) are tenant-specific overrides.
 /// </summary>
-public class PermissionTemplate : Entity<Guid>, IAuditableEntity
+public class PermissionTemplate : PlatformTenantEntity<Guid>
 {
     /// <summary>
     /// Display name for the template.
@@ -15,12 +16,6 @@ public class PermissionTemplate : Entity<Guid>, IAuditableEntity
     /// Description of what this template is for.
     /// </summary>
     public string? Description { get; private set; }
-
-    /// <summary>
-    /// Tenant ID for tenant-specific templates.
-    /// Null means this is a system template.
-    /// </summary>
-    public Guid? TenantId { get; private set; }
 
     /// <summary>
     /// Whether this is a system template that cannot be deleted.
@@ -47,41 +42,84 @@ public class PermissionTemplate : Entity<Guid>, IAuditableEntity
     /// </summary>
     public ICollection<PermissionTemplateItem> Items { get; private set; } = [];
 
-    #region IAuditableEntity Implementation
-
-    public string? CreatedBy { get; protected set; }
-    public string? ModifiedBy { get; protected set; }
-    public bool IsDeleted { get; protected set; }
-    public DateTimeOffset? DeletedAt { get; protected set; }
-    public string? DeletedBy { get; protected set; }
-
-    #endregion
+    // Note: TenantId, IsPlatformDefault, IsTenantOverride, and IAuditableEntity properties
+    // are inherited from PlatformTenantEntity<Guid> base class
 
     private PermissionTemplate() { }
 
     /// <summary>
-    /// Creates a new permission template.
+    /// Creates a platform-level default template (TenantId = null).
+    /// Platform templates are shared across all tenants.
     /// </summary>
-    public static PermissionTemplate Create(
+    public static PermissionTemplate CreatePlatformDefault(
         string name,
         string? description = null,
-        Guid? tenantId = null,
         bool isSystem = false,
         string? iconName = null,
         string? color = null,
         int sortOrder = 0)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+
         return new PermissionTemplate
         {
             Id = Guid.NewGuid(),
+            TenantId = null, // Platform default
             Name = name,
             Description = description,
-            TenantId = tenantId,
             IsSystem = isSystem,
             IconName = iconName,
             Color = color,
             SortOrder = sortOrder
         };
+    }
+
+    /// <summary>
+    /// Creates a tenant-specific template override.
+    /// Used when a tenant creates a custom permission template.
+    /// </summary>
+    public static PermissionTemplate CreateTenantOverride(
+        string tenantId,
+        string name,
+        string? description = null,
+        bool isSystem = false,
+        string? iconName = null,
+        string? color = null,
+        int sortOrder = 0)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId, nameof(tenantId));
+        ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+
+        return new PermissionTemplate
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            Name = name,
+            Description = description,
+            IsSystem = isSystem,
+            IconName = iconName,
+            Color = color,
+            SortOrder = sortOrder
+        };
+    }
+
+    /// <summary>
+    /// Creates a new permission template (legacy method for backward compatibility).
+    /// Use CreatePlatformDefault() or CreateTenantOverride() for clearer semantics.
+    /// </summary>
+    [Obsolete("Use CreatePlatformDefault() or CreateTenantOverride() for clearer semantics.")]
+    public static PermissionTemplate Create(
+        string name,
+        string? description = null,
+        string? tenantId = null,
+        bool isSystem = false,
+        string? iconName = null,
+        string? color = null,
+        int sortOrder = 0)
+    {
+        return tenantId == null
+            ? CreatePlatformDefault(name, description, isSystem, iconName, color, sortOrder)
+            : CreateTenantOverride(tenantId, name, description, isSystem, iconName, color, sortOrder);
     }
 
     /// <summary>

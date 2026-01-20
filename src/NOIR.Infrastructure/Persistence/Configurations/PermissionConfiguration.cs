@@ -57,7 +57,7 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
 
         // Role ID
         builder.Property(e => e.RoleId)
-            .HasMaxLength(450)
+            .HasMaxLength(DatabaseConstants.UserIdMaxLength)
             .IsRequired();
 
         // Unique constraint on (RoleId, PermissionId) - replaces composite key

@@ -21,7 +21,7 @@ public class PasswordResetOtpConfiguration : IEntityTypeConfiguration<PasswordRe
 
         // User ID (nullable for non-existent emails)
         builder.Property(e => e.UserId)
-            .HasMaxLength(450);
+            .HasMaxLength(DatabaseConstants.UserIdMaxLength);
         builder.HasIndex(e => e.UserId);
 
         // OTP Hash
@@ -57,13 +57,13 @@ public class PasswordResetOtpConfiguration : IEntityTypeConfiguration<PasswordRe
         builder.HasIndex(e => new { e.SessionToken, e.IsUsed });
 
         // Tenant ID
-        builder.Property(e => e.TenantId).HasMaxLength(64);
+        builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);
         builder.HasIndex(e => e.TenantId);
 
         // Audit fields
-        builder.Property(e => e.CreatedBy).HasMaxLength(450);
-        builder.Property(e => e.ModifiedBy).HasMaxLength(450);
-        builder.Property(e => e.DeletedBy).HasMaxLength(450);
+        builder.Property(e => e.CreatedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.ModifiedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.DeletedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
         builder.Property(e => e.IsDeleted).HasDefaultValue(false);
 
         // Soft delete query filter

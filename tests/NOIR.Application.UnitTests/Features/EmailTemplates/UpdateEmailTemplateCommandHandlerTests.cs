@@ -45,14 +45,22 @@ public class UpdateEmailTemplateCommandHandlerTests
         string? availableVariables = null,
         string? tenantId = null)
     {
-        return EmailTemplate.Create(
-            name,
-            subject,
-            htmlBody,
-            plainTextBody: null,
-            description: "Test Description",
-            availableVariables: availableVariables,
-            tenantId: tenantId);
+        return tenantId == null
+            ? EmailTemplate.CreatePlatformDefault(
+                name,
+                subject,
+                htmlBody,
+                plainTextBody: null,
+                description: "Test Description",
+                availableVariables: availableVariables)
+            : EmailTemplate.CreateTenantOverride(
+                tenantId,
+                name,
+                subject,
+                htmlBody,
+                plainTextBody: null,
+                description: "Test Description",
+                availableVariables: availableVariables);
     }
 
     private void SetupDbContextWithTemplates(params EmailTemplate[] templates)

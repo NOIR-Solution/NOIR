@@ -16,7 +16,7 @@ public class TenantSettingConfiguration : IEntityTypeConfiguration<TenantSetting
 
         // Tenant ID (nullable - NULL = platform default)
         builder.Property(e => e.TenantId)
-            .HasMaxLength(36);
+            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
 
         // Setting key
         builder.Property(e => e.Key)
@@ -46,10 +46,16 @@ public class TenantSettingConfiguration : IEntityTypeConfiguration<TenantSetting
         builder.HasIndex(e => new { e.TenantId, e.Category })
             .HasDatabaseName("IX_TenantSettings_TenantId_Category");
 
+        // Filtered index for platform defaults lookup optimization
+        // Most lookups query platform defaults (TenantId = null) as fallback
+        builder.HasIndex(e => new { e.Key, e.Category })
+            .HasDatabaseName("IX_TenantSettings_Platform_Lookup")
+            .HasFilter("[TenantId] IS NULL AND [IsDeleted] = 0");
+
         // Audit fields
-        builder.Property(e => e.CreatedBy).HasMaxLength(450);
-        builder.Property(e => e.ModifiedBy).HasMaxLength(450);
-        builder.Property(e => e.DeletedBy).HasMaxLength(450);
+        builder.Property(e => e.CreatedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.ModifiedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.DeletedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
         builder.Property(e => e.IsDeleted).HasDefaultValue(false);
 
         // Soft delete query filter only (NO tenant query filter - need both NULL and tenant rows)

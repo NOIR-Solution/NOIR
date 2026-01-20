@@ -38,14 +38,22 @@ public class GetEmailTemplateQueryHandlerTests
         string? availableVariables = null,
         string? tenantId = null)
     {
-        return EmailTemplate.Create(
-            name,
-            subject,
-            htmlBody,
-            plainTextBody,
-            description,
-            availableVariables,
-            tenantId);
+        return tenantId == null
+            ? EmailTemplate.CreatePlatformDefault(
+                name,
+                subject,
+                htmlBody,
+                plainTextBody,
+                description,
+                availableVariables)
+            : EmailTemplate.CreateTenantOverride(
+                tenantId,
+                name,
+                subject,
+                htmlBody,
+                plainTextBody,
+                description,
+                availableVariables);
     }
 
     private void SetupDbContextWithTemplates(params EmailTemplate[] templates)

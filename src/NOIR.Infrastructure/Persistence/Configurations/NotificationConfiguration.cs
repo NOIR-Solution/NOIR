@@ -19,7 +19,7 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
 
         // User ID (references AspNetUsers)
         builder.Property(n => n.UserId)
-            .HasMaxLength(450)
+            .HasMaxLength(DatabaseConstants.UserIdMaxLength)
             .IsRequired();
 
         // Type and Category (stored as int)
@@ -90,13 +90,13 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
             .HasDatabaseName("IX_Notifications_PendingDigest");
 
         // Tenant ID
-        builder.Property(n => n.TenantId).HasMaxLength(64);
+        builder.Property(n => n.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);
         builder.HasIndex(n => n.TenantId);
 
         // Audit fields
-        builder.Property(n => n.CreatedBy).HasMaxLength(450);
-        builder.Property(n => n.ModifiedBy).HasMaxLength(450);
-        builder.Property(n => n.DeletedBy).HasMaxLength(450);
+        builder.Property(n => n.CreatedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(n => n.ModifiedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(n => n.DeletedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
         builder.Property(n => n.IsDeleted).HasDefaultValue(false);
 
         // Soft delete query filter

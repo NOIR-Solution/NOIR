@@ -14,5 +14,5 @@ public interface IPermissionTemplateQueryService
     /// <param name="tenantId">Optional tenant ID to include tenant-specific templates.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>List of permission template DTOs.</returns>
-    Task<IReadOnlyList<PermissionTemplateDto>> GetAllAsync(Guid? tenantId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<PermissionTemplateDto>> GetAllAsync(string? tenantId, CancellationToken cancellationToken = default);
 }

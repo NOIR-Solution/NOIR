@@ -6,14 +6,8 @@ namespace NOIR.Domain.Entities;
 /// When TenantId has a value, this is a tenant-specific override.
 /// Platform-level entity - NOT scoped to any tenant (does not implement ITenantEntity).
 /// </summary>
-public class TenantSetting : Entity<Guid>, IAuditableEntity
+public class TenantSetting : PlatformTenantEntity<Guid>
 {
-    /// <summary>
-    /// The tenant this setting belongs to.
-    /// NULL = platform default (applies to all tenants unless overridden).
-    /// </summary>
-    public string? TenantId { get; private set; }
-
     /// <summary>
     /// The setting key/name (e.g., "max_users", "default_language").
     /// </summary>
@@ -40,26 +34,8 @@ public class TenantSetting : Entity<Guid>, IAuditableEntity
     /// </summary>
     public string? Category { get; private set; }
 
-    /// <summary>
-    /// Whether this is a platform-level default setting.
-    /// </summary>
-    public bool IsPlatformDefault => TenantId == null;
-
-    /// <summary>
-    /// Whether this is a tenant-specific override.
-    /// </summary>
-    public bool IsTenantOverride => TenantId != null;
-
-    #region IAuditableEntity Implementation
-    // CreatedAt and ModifiedAt are inherited from Entity<Guid>
-
-    public string? CreatedBy { get; set; }
-    public string? ModifiedBy { get; set; }
-    public bool IsDeleted { get; set; }
-    public DateTimeOffset? DeletedAt { get; set; }
-    public string? DeletedBy { get; set; }
-
-    #endregion
+    // Note: TenantId, IsPlatformDefault, IsTenantOverride, and IAuditableEntity properties
+    // are inherited from PlatformTenantEntity<Guid> base class
 
     // Private constructor for EF Core
     private TenantSetting() : base() { }

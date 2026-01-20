@@ -24,7 +24,7 @@ public class GetPermissionTemplatesQueryHandlerTests
         Guid? id = null,
         string name = "Test Template",
         string? description = "Test Description",
-        Guid? tenantId = null,
+        string? tenantId = null,
         bool isSystem = false,
         string? iconName = "icon-test",
         string? color = "#000000",
@@ -77,7 +77,7 @@ public class GetPermissionTemplatesQueryHandlerTests
     public async Task Handle_WithTenantFilter_ShouldReturnTenantTemplates()
     {
         // Arrange
-        var tenantId = Guid.NewGuid();
+        var tenantId = "tenant-123";
         var templates = new List<PermissionTemplateDto>
         {
             CreateTestTemplateDto(name: "System Template", isSystem: true),
@@ -152,7 +152,7 @@ public class GetPermissionTemplatesQueryHandlerTests
     public async Task Handle_WhenNoTemplatesForTenant_ShouldReturnEmptyList()
     {
         // Arrange
-        var tenantId = Guid.NewGuid();
+        var tenantId = "tenant-123";
 
         _queryServiceMock
             .Setup(x => x.GetAllAsync(tenantId, It.IsAny<CancellationToken>()))

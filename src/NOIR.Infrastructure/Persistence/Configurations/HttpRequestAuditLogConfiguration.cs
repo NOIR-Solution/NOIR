@@ -20,12 +20,12 @@ public class HttpRequestAuditLogConfiguration : IEntityTypeConfiguration<HttpReq
         builder.HasIndex(e => e.CorrelationId).IsUnique();
 
         // User context
-        builder.Property(e => e.UserId).HasMaxLength(450);
+        builder.Property(e => e.UserId).HasMaxLength(DatabaseConstants.UserIdMaxLength);
         builder.HasIndex(e => e.UserId);
         builder.Property(e => e.UserEmail).HasMaxLength(256);
 
         // Tenant
-        builder.Property(e => e.TenantId).HasMaxLength(64);
+        builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);
         builder.HasIndex(e => e.TenantId);
 
         // Composite index for tenant-scoped time-based queries (common in multi-tenant scenarios)

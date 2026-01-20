@@ -79,7 +79,11 @@ public static class ApplicationDbContextSeeder
             // This user can manage all tenants and platform-wide settings
             await SeedPlatformAdminUserAsync(userManager, platformSettings.PlatformAdmin, logger);
 
-            // === PHASE 3: Seed Default Tenant (if enabled) ===
+            // === PHASE 3: Seed Platform Email Templates (TenantId = null) ===
+            // These templates are shared defaults that all tenants inherit from
+            await SeedPlatformEmailTemplatesAsync(context, logger);
+
+            // === PHASE 4: Seed Default Tenant (if enabled) ===
             Tenant? defaultTenant = null;
             if (platformSettings.DefaultTenant.Enabled)
             {
@@ -98,11 +102,11 @@ public static class ApplicationDbContextSeeder
                     tenantSetter.MultiTenantContext = new MultiTenantContext<Tenant>(defaultTenant);
                 }
 
-                // === PHASE 4: Seed Tenant-Level Roles ===
+                // === PHASE 5: Seed Tenant-Level Roles ===
                 // These roles are for within-tenant administration
                 await SeedTenantRolesAsync(roleManager, logger);
 
-                // === PHASE 5: Seed Default Tenant Admin (if enabled) ===
+                // === PHASE 6: Seed Default Tenant Admin (if enabled) ===
                 if (platformSettings.DefaultTenant.Admin.Enabled)
                 {
                     await SeedTenantAdminUserAsync(
@@ -111,9 +115,6 @@ public static class ApplicationDbContextSeeder
                         platformSettings.DefaultTenant.Admin,
                         logger);
                 }
-
-                // Seed email templates (tenant-scoped)
-                await SeedEmailTemplatesAsync(context, logger);
 
                 // Fix notification preferences TenantId (for preferences created before proper tenant context)
                 await FixNotificationPreferencesTenantAsync(context, logger);
@@ -533,26 +534,25 @@ public static class ApplicationDbContextSeeder
         }
     }
 
-    internal static async Task SeedEmailTemplatesAsync(ApplicationDbContext context, ILogger logger)
+    /// <summary>
+    /// Seeds platform-level email templates (TenantId = null).
+    /// These are shared defaults that all tenants inherit from.
+    /// Tenants can customize these templates using the copy-on-edit pattern.
+    /// </summary>
+    internal static async Task SeedPlatformEmailTemplatesAsync(ApplicationDbContext context, ILogger logger)
     {
-        // Email templates support two levels:
-        // 1. Platform-level (TenantId = null) - shared defaults across all tenants
-        // 2. Tenant-level (TenantId = current) - tenant-specific overrides
+        // Platform email templates (TenantId = null) are shared defaults across all tenants.
+        // Tenants inherit these templates and can create their own copies via copy-on-edit.
         //
-        // Smart upsert logic per tenant context:
-        // 1. If template doesn't exist for current context → Add it
-        // 2. If template exists AND Version = 1 → Update it (user never modified it)
-        // 3. If template exists AND Version > 1 → Skip it (user customized, respect their changes)
-        //
-        // Note: The seeder runs within the current tenant context, so templates
-        // are created at the tenant level (not platform level) when a tenant is active.
+        // Smart upsert logic for platform templates:
+        // 1. If template doesn't exist at platform level → Add it
+        // 2. If template exists AND Version = 1 → Update it (never customized)
+        // 3. If template exists AND Version > 1 → Skip it (platform admin customized it)
 
-        var currentTenantId = context.TenantInfo?.Id;
-
-        // Get templates for the current context (platform or tenant)
+        // Get existing platform-level templates (TenantId = null)
         var existingTemplates = await context.Set<EmailTemplate>()
             .IgnoreQueryFilters()
-            .Where(t => t.TenantId == currentTenantId && !t.IsDeleted)
+            .Where(t => t.TenantId == null && !t.IsDeleted)
             .ToListAsync();
 
         var templateDefinitions = GetEmailTemplateDefinitions();
@@ -566,8 +566,8 @@ public static class ApplicationDbContextSeeder
 
             if (existing == null)
             {
-                // Template doesn't exist for current context - add it
-                // Note: TenantId will be auto-set by EF Core based on current context
+                // Template doesn't exist at platform level - add it
+                // Note: definition.TenantId is already null from GetEmailTemplateDefinitions()
                 await context.Set<EmailTemplate>().AddAsync(definition);
                 addedCount++;
             }
@@ -599,19 +599,18 @@ public static class ApplicationDbContextSeeder
         {
             await context.SaveChangesAsync();
             logger.LogInformation(
-                "Email templates (TenantId={TenantId}): {Added} added, {Updated} updated, {Skipped} skipped (user customized)",
-                currentTenantId ?? "platform", addedCount, updatedCount, skippedCount);
+                "Platform email templates: {Added} added, {Updated} updated, {Skipped} skipped (customized)",
+                addedCount, updatedCount, skippedCount);
         }
     }
 
     /// <summary>
     /// Resets template version back to 1 after a seed update.
-    /// Uses reflection since Version property has private setter.
     /// </summary>
     private static void ResetTemplateVersion(EmailTemplate template)
     {
-        var versionProperty = typeof(EmailTemplate).GetProperty("Version");
-        versionProperty?.SetValue(template, 1);
+        // Use the internal method instead of reflection
+        template.ResetVersionForSeeding();
     }
 
     /// <summary>
@@ -886,7 +885,7 @@ public static class ApplicationDbContextSeeder
         var templates = new List<EmailTemplate>();
 
         // Password Reset OTP
-        templates.Add(EmailTemplate.Create(
+        templates.Add(EmailTemplate.CreatePlatformDefault(
             name: "PasswordResetOtp",
             subject: "Password Reset Code: {{OtpCode}}",
             htmlBody: GetPasswordResetOtpHtmlBody(),
@@ -895,7 +894,7 @@ public static class ApplicationDbContextSeeder
             availableVariables: "[\"UserName\", \"OtpCode\", \"ExpiryMinutes\"]"));
 
         // Email Change OTP
-        templates.Add(EmailTemplate.Create(
+        templates.Add(EmailTemplate.CreatePlatformDefault(
             name: "EmailChangeOtp",
             subject: "Email Change Verification Code: {{OtpCode}}",
             htmlBody: GetEmailChangeOtpHtmlBody(),
@@ -904,7 +903,7 @@ public static class ApplicationDbContextSeeder
             availableVariables: "[\"UserName\", \"OtpCode\", \"ExpiryMinutes\"]"));
 
         // Welcome Email (used when admin creates user)
-        templates.Add(EmailTemplate.Create(
+        templates.Add(EmailTemplate.CreatePlatformDefault(
             name: "WelcomeEmail",
             subject: "Welcome to NOIR - Your Account Has Been Created",
             htmlBody: GetWelcomeEmailHtmlBody(),

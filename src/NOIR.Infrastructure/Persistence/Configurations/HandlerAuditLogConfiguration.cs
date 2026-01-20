@@ -20,7 +20,7 @@ public class HandlerAuditLogConfiguration : IEntityTypeConfiguration<HandlerAudi
         builder.HasIndex(e => e.CorrelationId);
 
         // Tenant
-        builder.Property(e => e.TenantId).HasMaxLength(64);
+        builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);
         builder.HasIndex(e => e.TenantId);
 
         // Handler info

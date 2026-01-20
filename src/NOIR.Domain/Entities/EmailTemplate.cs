@@ -2,9 +2,12 @@ namespace NOIR.Domain.Entities;
 
 /// <summary>
 /// Email template entity for storing customizable email templates.
+/// Platform-level entity - NOT scoped to any tenant by default.
+/// When TenantId is null, this is a platform-level default template.
+/// When TenantId has a value, this is a tenant-specific override (copy-on-edit).
 /// Supports template variables for admin portal editing.
 /// </summary>
-public class EmailTemplate : TenantAggregateRoot<Guid>
+public class EmailTemplate : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
 {
     /// <summary>
     /// Unique template identifier/name (e.g., "PasswordResetOtp", "WelcomeEmail").
@@ -49,12 +52,74 @@ public class EmailTemplate : TenantAggregateRoot<Guid>
     /// </summary>
     public string? AvailableVariables { get; private set; }
 
+    // Note: TenantId, IsPlatformDefault, IsTenantOverride, and IAuditableEntity properties
+    // are inherited from PlatformTenantAggregateRoot<Guid> base class
+
     // Private constructor for EF Core
     private EmailTemplate() : base() { }
 
     /// <summary>
-    /// Creates a new email template.
+    /// Creates a platform-level default template (TenantId = null).
+    /// Platform templates are shared across all tenants and serve as defaults.
     /// </summary>
+    public static EmailTemplate CreatePlatformDefault(
+        string name,
+        string subject,
+        string htmlBody,
+        string? plainTextBody = null,
+        string? description = null,
+        string? availableVariables = null)
+    {
+        return new EmailTemplate
+        {
+            Id = Guid.NewGuid(),
+            TenantId = null, // Platform default
+            Name = name,
+            Subject = subject,
+            HtmlBody = htmlBody,
+            PlainTextBody = plainTextBody,
+            IsActive = true,
+            Version = 1,
+            Description = description,
+            AvailableVariables = availableVariables
+        };
+    }
+
+    /// <summary>
+    /// Creates a tenant-specific template override.
+    /// Used when a tenant customizes a platform template (copy-on-edit pattern).
+    /// </summary>
+    public static EmailTemplate CreateTenantOverride(
+        string tenantId,
+        string name,
+        string subject,
+        string htmlBody,
+        string? plainTextBody = null,
+        string? description = null,
+        string? availableVariables = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId, nameof(tenantId));
+
+        return new EmailTemplate
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            Name = name,
+            Subject = subject,
+            HtmlBody = htmlBody,
+            PlainTextBody = plainTextBody,
+            IsActive = true,
+            Version = 1,
+            Description = description,
+            AvailableVariables = availableVariables
+        };
+    }
+
+    /// <summary>
+    /// Creates a new email template (legacy method for backward compatibility).
+    /// Use CreatePlatformDefault() or CreateTenantOverride() for clearer semantics.
+    /// </summary>
+    [Obsolete("Use CreatePlatformDefault() or CreateTenantOverride() for clearer semantics.")]
     public static EmailTemplate Create(
         string name,
         string subject,
@@ -64,19 +129,9 @@ public class EmailTemplate : TenantAggregateRoot<Guid>
         string? availableVariables = null,
         string? tenantId = null)
     {
-        return new EmailTemplate
-        {
-            Id = Guid.NewGuid(),
-            Name = name,
-            Subject = subject,
-            HtmlBody = htmlBody,
-            PlainTextBody = plainTextBody,
-            IsActive = true,
-            Version = 1,
-            Description = description,
-            AvailableVariables = availableVariables,
-            TenantId = tenantId
-        };
+        return tenantId == null
+            ? CreatePlatformDefault(name, subject, htmlBody, plainTextBody, description, availableVariables)
+            : CreateTenantOverride(tenantId, name, subject, htmlBody, plainTextBody, description, availableVariables);
     }
 
     /// <summary>
@@ -111,5 +166,16 @@ public class EmailTemplate : TenantAggregateRoot<Guid>
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    /// <summary>
+    /// Resets version to 1. FOR SEEDING USE ONLY.
+    /// This is used when platform defaults are updated during application startup.
+    /// Prevents the need for reflection-based version manipulation.
+    /// Should NOT be called from business logic - only from database seeders.
+    /// </summary>
+    public void ResetVersionForSeeding()
+    {
+        Version = 1;
     }
 }

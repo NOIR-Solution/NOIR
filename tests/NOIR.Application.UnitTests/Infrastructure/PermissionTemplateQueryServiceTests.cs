@@ -24,7 +24,7 @@ public class PermissionTemplateQueryServiceTests
     {
         // Arrange
         var systemTemplate = CreateTemplate(name: "System Admin", tenantId: null, isSystem: true);
-        var tenantTemplate = CreateTemplate(name: "Tenant Admin", tenantId: Guid.NewGuid(), isSystem: false);
+        var tenantTemplate = CreateTemplate(name: "Tenant Admin", tenantId: "tenant-123", isSystem: false);
 
         var templates = new List<PermissionTemplate> { systemTemplate, tenantTemplate };
         var mockDbSet = CreateMockDbSet(templates.Where(t => t.TenantId == null));
@@ -44,10 +44,10 @@ public class PermissionTemplateQueryServiceTests
     public async Task GetAllAsync_WithTenantId_ShouldReturnSystemAndTenantTemplates()
     {
         // Arrange
-        var tenantId = Guid.NewGuid();
+        var tenantId = "tenant-123";
         var systemTemplate = CreateTemplate(name: "System Template", tenantId: null, isSystem: true);
         var matchingTenantTemplate = CreateTemplate(name: "Tenant Template", tenantId: tenantId, isSystem: false);
-        var otherTenantTemplate = CreateTemplate(name: "Other Tenant", tenantId: Guid.NewGuid(), isSystem: false);
+        var otherTenantTemplate = CreateTemplate(name: "Other Tenant", tenantId: "tenant-123", isSystem: false);
 
         var templates = new List<PermissionTemplate> { systemTemplate, matchingTenantTemplate };
         var mockDbSet = CreateMockDbSet(templates);
@@ -111,7 +111,7 @@ public class PermissionTemplateQueryServiceTests
     {
         // Arrange
         var templateId = Guid.NewGuid();
-        var tenantId = Guid.NewGuid();
+        var tenantId = "tenant-123";
         var template = CreateTemplateWithPermissions(
             id: templateId,
             name: "Test Template",
@@ -210,7 +210,7 @@ public class PermissionTemplateQueryServiceTests
 
     private static PermissionTemplate CreateTemplate(
         string name,
-        Guid? tenantId,
+        string? tenantId,
         bool isSystem = false,
         int sortOrder = 0,
         bool isDeleted = false)
@@ -238,7 +238,7 @@ public class PermissionTemplateQueryServiceTests
         Guid id,
         string name,
         string? description,
-        Guid? tenantId,
+        string? tenantId,
         bool isSystem,
         string? iconName,
         string? color,

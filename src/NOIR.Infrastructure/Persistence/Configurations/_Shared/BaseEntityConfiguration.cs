@@ -42,11 +42,11 @@ public abstract class AuditableEntityConfiguration<TEntity> : BaseEntityConfigur
 
         // Creation audit
         builder.Property(e => e.CreatedBy)
-            .HasMaxLength(450);
+            .HasMaxLength(DatabaseConstants.UserIdMaxLength);
 
         // Modification audit
         builder.Property(e => e.ModifiedBy)
-            .HasMaxLength(450);
+            .HasMaxLength(DatabaseConstants.UserIdMaxLength);
 
         // Soft delete
         builder.Property(e => e.IsDeleted)
@@ -56,7 +56,7 @@ public abstract class AuditableEntityConfiguration<TEntity> : BaseEntityConfigur
         builder.Property(e => e.DeletedAt);
 
         builder.Property(e => e.DeletedBy)
-            .HasMaxLength(450);
+            .HasMaxLength(DatabaseConstants.UserIdMaxLength);
 
         // Index for soft delete queries
         builder.HasIndex(e => e.IsDeleted);
@@ -81,7 +81,7 @@ public abstract class TenantEntityConfiguration<TEntity> : AuditableEntityConfig
 
         // Tenant ID
         builder.Property(e => e.TenantId)
-            .HasMaxLength(64);
+            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
 
         // Index for tenant filtering (critical for performance)
         builder.HasIndex(e => e.TenantId);

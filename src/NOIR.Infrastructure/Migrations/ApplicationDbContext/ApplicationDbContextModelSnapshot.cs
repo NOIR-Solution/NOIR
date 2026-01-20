@@ -354,7 +354,6 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("TenantId")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(64)");
@@ -368,15 +367,18 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
 
                     b.HasIndex("TenantId");
 
+                    b.HasIndex("Name", "IsActive")
+                        .HasDatabaseName("IX_EmailTemplates_Platform_Lookup")
+                        .HasFilter("[TenantId] IS NULL AND [IsDeleted] = 0");
+
                     b.HasIndex("Name", "TenantId")
                         .IsUnique()
-                        .HasDatabaseName("IX_EmailTemplates_Name_TenantId");
+                        .HasDatabaseName("IX_EmailTemplates_Name_TenantId")
+                        .HasFilter("[TenantId] IS NOT NULL");
 
                     b.HasIndex("Name", "IsActive", "IsDeleted");
 
                     b.ToTable("EmailTemplates", (string)null);
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
             modelBuilder.Entity("NOIR.Domain.Entities.EntityAuditLog", b =>
@@ -1303,14 +1305,20 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("TenantId");
+
+                    b.HasIndex("Name", "IsSystem")
+                        .HasDatabaseName("IX_PermissionTemplates_Platform_Lookup")
+                        .HasFilter("[TenantId] IS NULL AND [IsDeleted] = 0");
 
                     b.HasIndex("Name", "TenantId")
                         .IsUnique()
@@ -2129,9 +2137,9 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("TenantId")
-                        .HasMaxLength(36)
+                        .HasMaxLength(64)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(36)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -2145,6 +2153,10 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
 
                     b.HasIndex("Key")
                         .HasDatabaseName("IX_TenantSettings_Key");
+
+                    b.HasIndex("Key", "Category")
+                        .HasDatabaseName("IX_TenantSettings_Platform_Lookup")
+                        .HasFilter("[TenantId] IS NULL AND [IsDeleted] = 0");
 
                     b.HasIndex("TenantId", "Category")
                         .HasDatabaseName("IX_TenantSettings_TenantId_Category");

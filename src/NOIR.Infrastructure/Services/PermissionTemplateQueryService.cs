@@ -16,7 +16,7 @@ public class PermissionTemplateQueryService : IPermissionTemplateQueryService, I
     }
 
     public async Task<IReadOnlyList<PermissionTemplateDto>> GetAllAsync(
-        Guid? tenantId,
+        string? tenantId,
         CancellationToken cancellationToken = default)
     {
         // Build query - include system templates (TenantId = null) and optionally tenant-specific
@@ -28,10 +28,10 @@ public class PermissionTemplateQueryService : IPermissionTemplateQueryService, I
             .TagWith("GetPermissionTemplates");
 
         // Filter by tenant
-        if (tenantId.HasValue)
+        if (!string.IsNullOrEmpty(tenantId))
         {
             templatesQuery = templatesQuery
-                .Where(t => t.TenantId == null || t.TenantId == tenantId.Value);
+                .Where(t => t.TenantId == null || t.TenantId == tenantId);
         }
         else
         {

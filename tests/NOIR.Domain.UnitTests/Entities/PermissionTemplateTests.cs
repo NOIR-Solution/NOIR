@@ -32,7 +32,7 @@ public class PermissionTemplateTests
         // Arrange
         var name = "Content Manager";
         var description = "Can manage content but not users";
-        var tenantId = Guid.NewGuid();
+        var tenantId = "tenant-123";
         var isSystem = true;
         var iconName = "file-text";
         var color = "#3B82F6";

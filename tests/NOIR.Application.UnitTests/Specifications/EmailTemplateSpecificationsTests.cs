@@ -22,14 +22,22 @@ public class EmailTemplateSpecificationsTests
         bool isActive = true,
         string? tenantId = null)
     {
-        var template = EmailTemplate.Create(
-            name: name ?? "TestTemplate",
-            subject: subject ?? "Test Subject",
-            htmlBody: htmlBody ?? "<p>Test Body</p>",
-            plainTextBody: "Test Body",
-            description: "Test description",
-            availableVariables: "[\"Var1\", \"Var2\"]",
-            tenantId: tenantId);
+        var template = tenantId == null
+            ? EmailTemplate.CreatePlatformDefault(
+                name: name ?? "TestTemplate",
+                subject: subject ?? "Test Subject",
+                htmlBody: htmlBody ?? "<p>Test Body</p>",
+                plainTextBody: "Test Body",
+                description: "Test description",
+                availableVariables: "[\"Var1\", \"Var2\"]")
+            : EmailTemplate.CreateTenantOverride(
+                tenantId: tenantId,
+                name: name ?? "TestTemplate",
+                subject: subject ?? "Test Subject",
+                htmlBody: htmlBody ?? "<p>Test Body</p>",
+                plainTextBody: "Test Body",
+                description: "Test description",
+                availableVariables: "[\"Var1\", \"Var2\"]");
 
         if (id.HasValue)
         {

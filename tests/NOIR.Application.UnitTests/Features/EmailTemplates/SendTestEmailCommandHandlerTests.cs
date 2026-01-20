@@ -35,7 +35,7 @@ public class SendTestEmailCommandHandlerTests
         string htmlBody = "<p>Hello, {{UserName}}!</p>",
         string? plainTextBody = "Hello, {{UserName}}!")
     {
-        return EmailTemplate.Create(
+        return EmailTemplate.CreatePlatformDefault(
             name,
             subject,
             htmlBody,

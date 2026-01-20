@@ -126,6 +126,7 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Subject = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     HtmlBody = table.Column<string>(type: "nvarchar(max)", maxLength: 500, nullable: false),
@@ -140,8 +141,7 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                     ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
                 },
                 constraints: table =>
                 {

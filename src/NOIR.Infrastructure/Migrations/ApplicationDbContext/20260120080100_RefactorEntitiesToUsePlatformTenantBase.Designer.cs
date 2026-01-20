@@ -12,8 +12,8 @@ using NOIR.Infrastructure.Persistence;
 namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
 {
     [DbContext(typeof(Persistence.ApplicationDbContext))]
-    [Migration("20260119162540_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260120080100_RefactorEntitiesToUsePlatformTenantBase")]
+    partial class RefactorEntitiesToUsePlatformTenantBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -357,7 +357,6 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("TenantId")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(64)");
@@ -371,15 +370,18 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
 
                     b.HasIndex("TenantId");
 
+                    b.HasIndex("Name", "IsActive")
+                        .HasDatabaseName("IX_EmailTemplates_Platform_Lookup")
+                        .HasFilter("[TenantId] IS NULL AND [IsDeleted] = 0");
+
                     b.HasIndex("Name", "TenantId")
                         .IsUnique()
-                        .HasDatabaseName("IX_EmailTemplates_Name_TenantId");
+                        .HasDatabaseName("IX_EmailTemplates_Name_TenantId")
+                        .HasFilter("[TenantId] IS NOT NULL");
 
                     b.HasIndex("Name", "IsActive", "IsDeleted");
 
                     b.ToTable("EmailTemplates", (string)null);
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
             modelBuilder.Entity("NOIR.Domain.Entities.EntityAuditLog", b =>
@@ -1306,8 +1308,10 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
 
                     b.HasKey("Id");
 

@@ -7,7 +7,7 @@ public sealed record PermissionTemplateDto(
     Guid Id,
     string Name,
     string? Description,
-    Guid? TenantId,
+    string? TenantId,
     bool IsSystem,
     string? IconName,
     string? Color,

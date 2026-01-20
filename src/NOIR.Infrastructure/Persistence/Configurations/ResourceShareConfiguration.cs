@@ -24,11 +24,11 @@ public class ResourceShareConfiguration : IEntityTypeConfiguration<ResourceShare
 
         // User references
         builder.Property(e => e.SharedWithUserId)
-            .HasMaxLength(450)
+            .HasMaxLength(DatabaseConstants.UserIdMaxLength)
             .IsRequired();
 
         builder.Property(e => e.SharedByUserId)
-            .HasMaxLength(450);
+            .HasMaxLength(DatabaseConstants.UserIdMaxLength);
 
         // Permission (stored as string via global convention)
         builder.Property(e => e.Permission)
@@ -60,9 +60,9 @@ public class ResourceShareConfiguration : IEntityTypeConfiguration<ResourceShare
             .HasDatabaseName("IX_ResourceShares_ExpiresAt");
 
         // Audit fields
-        builder.Property(e => e.CreatedBy).HasMaxLength(450);
-        builder.Property(e => e.ModifiedBy).HasMaxLength(450);
-        builder.Property(e => e.DeletedBy).HasMaxLength(450);
+        builder.Property(e => e.CreatedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.ModifiedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.DeletedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
         builder.Property(e => e.IsDeleted).HasDefaultValue(false);
 
         // Soft delete query filter (named filter for EF Core 10 compatibility with multi-tenancy)
