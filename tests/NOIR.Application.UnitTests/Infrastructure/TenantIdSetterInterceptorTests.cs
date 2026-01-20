@@ -1,7 +1,16 @@
 namespace NOIR.Application.UnitTests.Infrastructure;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
+using Moq;
+using NOIR.Domain.Common;
+using NOIR.Infrastructure.Persistence.Interceptors;
+using Xunit;
+
 /// <summary>
-/// Unit tests for TenantIdSetterInterceptor.
+/// Unit tests for Tenant IdSetterInterceptor.
 /// Tests that tenant ID is correctly set on new entities.
 /// </summary>
 public class TenantIdSetterInterceptorTests
@@ -88,7 +97,7 @@ public class TenantIdSetterInterceptorTests
         var accessor = CreateTenantAccessor("tenant-1");
 
         // Act
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         // Assert
         interceptor.Should().NotBeNull();
@@ -104,7 +113,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor("tenant-123");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         var entity = new TestTenantEntity { Name = "Test" };
         context.TenantEntities.Add(entity);
@@ -124,7 +133,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor("tenant-123");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         var entity = new TestTenantEntity { Name = "Test", TenantId = "preset-tenant" };
         context.TenantEntities.Add(entity);
@@ -144,7 +153,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor(null);
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         var entity = new TestTenantEntity { Name = "Test" };
         context.TenantEntities.Add(entity);
@@ -164,7 +173,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor("");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         var entity = new TestTenantEntity { Name = "Test" };
         context.TenantEntities.Add(entity);
@@ -184,7 +193,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor("new-tenant");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         // First, add and save entity with original tenant
         var entity = new TestTenantEntity { Name = "Test", TenantId = "original-tenant" };
@@ -210,7 +219,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor("tenant-123");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         var entity = new TestNonTenantEntity { Name = "Test" };
         context.NonTenantEntities.Add(entity);
@@ -234,7 +243,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor("tenant-456");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         var entity = new TestTenantEntity { Name = "Test" };
         context.TenantEntities.Add(entity);
@@ -253,7 +262,7 @@ public class TenantIdSetterInterceptorTests
     {
         // Arrange
         var accessor = CreateTenantAccessor("tenant-123");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         var eventDefinition = new EventDefinition(
             Mock.Of<ILoggingOptions>(),
@@ -282,7 +291,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor("tenant-789");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         var entity = new TestTenantEntity { Name = "Test" };
         context.TenantEntities.Add(entity);
@@ -307,7 +316,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor("multi-tenant");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         var entity1 = new TestTenantEntity { Name = "Test1" };
         var entity2 = new TestTenantEntity { Name = "Test2" };
@@ -332,7 +341,7 @@ public class TenantIdSetterInterceptorTests
         // Arrange
         using var context = CreateContext();
         var accessor = CreateTenantAccessor("new-tenant");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         // Create existing entity
         var existingEntity = new TestTenantEntity { Name = "Existing", TenantId = "old-tenant" };
@@ -363,7 +372,7 @@ public class TenantIdSetterInterceptorTests
     {
         // Arrange
         var accessor = CreateTenantAccessor("tenant");
-        var interceptor = new TenantIdSetterInterceptor(accessor.Object);
+        var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         // Assert
         interceptor.Should().BeAssignableTo<SaveChangesInterceptor>();
