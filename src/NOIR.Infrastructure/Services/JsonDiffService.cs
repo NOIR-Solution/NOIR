@@ -122,13 +122,19 @@ public class JsonDiffService : IDiffService, IScopedService
             }
             else if (hadBefore && !hasAfter)
             {
-                // Removed
-                changes[key] = new FieldChange { From = beforeValue, To = null };
+                // Removed (skip if beforeValue was null - no meaningful change)
+                if (beforeValue is not null)
+                {
+                    changes[key] = new FieldChange { From = beforeValue, To = null };
+                }
             }
             else if (!hadBefore && hasAfter)
             {
-                // Added
-                changes[key] = new FieldChange { From = null, To = afterValue };
+                // Added (skip if afterValue is null - no meaningful change)
+                if (afterValue is not null)
+                {
+                    changes[key] = new FieldChange { From = null, To = afterValue };
+                }
             }
         }
 
@@ -147,7 +153,7 @@ public class JsonDiffService : IDiffService, IScopedService
 
         if (before is null && after is not null)
         {
-            // Full create - show all fields as added (except system fields)
+            // Full create - show all fields as added (except system fields and null values)
             if (after is JsonObject afterObj)
             {
                 foreach (var prop in afterObj)
@@ -156,10 +162,16 @@ public class JsonDiffService : IDiffService, IScopedService
                     if (ExcludedFields.Contains(prop.Key))
                         continue;
 
+                    var toValue = ConvertNodeToObject(prop.Value);
+
+                    // Skip properties that are null - no point showing null → null as a change
+                    if (toValue is null)
+                        continue;
+
                     changes[prop.Key] = new FieldChange
                     {
                         From = null,
-                        To = ConvertNodeToObject(prop.Value)
+                        To = toValue
                     };
                 }
             }
@@ -261,19 +273,29 @@ public class JsonDiffService : IDiffService, IScopedService
             }
             else if (hasBefore && !hasAfter)
             {
-                changes[fieldName] = new FieldChange
+                var fromValue = ConvertNodeToObject(beforeValue);
+                // Skip if beforeValue was null - no meaningful change
+                if (fromValue is not null)
                 {
-                    From = ConvertNodeToObject(beforeValue),
-                    To = null
-                };
+                    changes[fieldName] = new FieldChange
+                    {
+                        From = fromValue,
+                        To = null
+                    };
+                }
             }
             else if (!hasBefore && hasAfter)
             {
-                changes[fieldName] = new FieldChange
+                var toValue = ConvertNodeToObject(afterValue);
+                // Skip if afterValue is null - no meaningful change
+                if (toValue is not null)
                 {
-                    From = null,
-                    To = ConvertNodeToObject(afterValue)
-                };
+                    changes[fieldName] = new FieldChange
+                    {
+                        From = null,
+                        To = toValue
+                    };
+                }
             }
         }
     }

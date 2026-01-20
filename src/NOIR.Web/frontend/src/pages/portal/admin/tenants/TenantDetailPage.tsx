@@ -23,7 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { TenantFormValidated, type CreateTenantFormData, type UpdateTenantFormData } from './components/TenantFormValidated'
+import { TenantFormValidated, type ProvisionTenantFormData, type UpdateTenantFormData } from './components/TenantFormValidated'
 import { getTenant, updateTenant, deleteTenant } from '@/services/tenants'
 import { ApiError } from '@/services/apiClient'
 import type { Tenant } from '@/types'
@@ -70,7 +70,7 @@ export default function TenantDetailPage() {
     fetchTenant()
   }, [id, searchParams, setSearchParams])
 
-  const handleUpdate = async (data: CreateTenantFormData | UpdateTenantFormData) => {
+  const handleUpdate = async (data: ProvisionTenantFormData | UpdateTenantFormData) => {
     if (!id) return
     // When editing, data will have UpdateTenantFormData shape
     const updateData = data as UpdateTenantFormData

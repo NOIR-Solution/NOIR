@@ -14,7 +14,7 @@
  * - getCurrentUser() - Returns null on auth failure, throws on network/server errors
  * - logout() - Never throws (best effort server notification)
  */
-import type { LoginRequest, LoginResponse, AuthResponse, CurrentUser, ActiveSession } from '@/types'
+import type { LoginRequest, LoginResponse, CurrentUser, ActiveSession } from '@/types'
 import { storeTokens, clearTokens, getAccessToken } from './tokenStorage'
 import { apiClient, apiClientPublic, ApiError } from './apiClient'
 

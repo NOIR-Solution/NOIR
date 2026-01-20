@@ -232,7 +232,8 @@
   "profile": {
     "email": "Email",
     "tenant": "Tenant",
-    "roles": "Roles"
+    "roles": "Roles",
+    "platform": "Platform"
   },
   "buttons": {
     "save": "Save",

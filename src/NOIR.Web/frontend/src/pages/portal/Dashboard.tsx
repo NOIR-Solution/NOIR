@@ -70,7 +70,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('profile.tenant')}:</span>
-                  <span className="font-medium text-foreground">{user?.tenantId || 'N/A'}</span>
+                  <span className="font-medium text-foreground">{user?.tenantId ?? t('profile.platform')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('profile.roles')}:</span>
