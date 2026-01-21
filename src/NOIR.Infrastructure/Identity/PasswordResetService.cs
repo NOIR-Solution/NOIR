@@ -13,7 +13,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
     private readonly IUserIdentityService _userIdentityService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IEmailService _emailService;
-    private readonly PasswordResetSettings _settings;
+    private readonly IOptionsMonitor<PasswordResetSettings> _settings;
     private readonly ILogger<PasswordResetService> _logger;
 
     public PasswordResetService(
@@ -24,7 +24,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
         IUserIdentityService userIdentityService,
         IRefreshTokenService refreshTokenService,
         IEmailService emailService,
-        IOptions<PasswordResetSettings> settings,
+        IOptionsMonitor<PasswordResetSettings> settings,
         ILogger<PasswordResetService> logger)
     {
         _otpRepository = otpRepository;
@@ -34,7 +34,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
         _userIdentityService = userIdentityService;
         _refreshTokenService = refreshTokenService;
         _emailService = emailService;
-        _settings = settings.Value;
+        _settings = settings;
         _logger = logger;
     }
 
@@ -61,7 +61,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
         if (existingOtp != null)
         {
             // Check if cooldown is still active
-            var remainingCooldown = existingOtp.GetRemainingCooldownSeconds(_settings.ResendCooldownSeconds);
+            var remainingCooldown = existingOtp.GetRemainingCooldownSeconds(_settings.CurrentValue.ResendCooldownSeconds);
             if (remainingCooldown > 0)
             {
                 _logger.LogInformation(
@@ -73,7 +73,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
                     existingOtp.SessionToken,
                     _otpService.MaskEmail(normalizedEmail),
                     existingOtp.ExpiresAt,
-                    _settings.OtpLength));
+                    _settings.CurrentValue.OtpLength));
             }
 
             // Cooldown passed, resend using existing session
@@ -93,7 +93,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
             normalizedEmail,
             otpHash,
             sessionToken,
-            _settings.OtpExpiryMinutes,
+            _settings.CurrentValue.OtpExpiryMinutes,
             user?.Id,
             tenantId,
             ipAddress);
@@ -115,7 +115,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
             otp.SessionToken,
             _otpService.MaskEmail(normalizedEmail),
             otp.ExpiresAt,
-            _settings.OtpLength));
+            _settings.CurrentValue.OtpLength));
     }
 
     public async Task<Result<PasswordResetVerifyResult>> VerifyOtpAsync(
@@ -160,7 +160,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
 
         // Mark as used with pre-generated reset token (64 bytes for higher security)
         var resetToken = _tokenGenerator.GenerateToken(64);
-        otpRecord.MarkAsUsed(resetToken, _settings.ResetTokenExpiryMinutes);
+        otpRecord.MarkAsUsed(resetToken, _settings.CurrentValue.ResetTokenExpiryMinutes);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(
@@ -192,9 +192,9 @@ public class PasswordResetService : IPasswordResetService, IScopedService
         }
 
         // Check resend limits
-        if (!otpRecord.CanResend(_settings.ResendCooldownSeconds, _settings.MaxResendCount))
+        if (!otpRecord.CanResend(_settings.CurrentValue.ResendCooldownSeconds, _settings.CurrentValue.MaxResendCount))
         {
-            var remainingCooldown = otpRecord.GetRemainingCooldownSeconds(_settings.ResendCooldownSeconds);
+            var remainingCooldown = otpRecord.GetRemainingCooldownSeconds(_settings.CurrentValue.ResendCooldownSeconds);
             if (remainingCooldown > 0)
             {
                 return Result.Failure<PasswordResetResendResult>(
@@ -209,7 +209,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
         var newOtpCode = _otpService.GenerateOtp();
         var newOtpHash = _otpService.HashOtp(newOtpCode);
 
-        otpRecord.Resend(newOtpHash, _settings.OtpExpiryMinutes);
+        otpRecord.Resend(newOtpHash, _settings.CurrentValue.OtpExpiryMinutes);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // Send email only if user exists
@@ -228,8 +228,8 @@ public class PasswordResetService : IPasswordResetService, IScopedService
 
         return Result<PasswordResetResendResult>.Success(new PasswordResetResendResult(
             true,
-            DateTimeOffset.UtcNow.AddSeconds(_settings.ResendCooldownSeconds),
-            _settings.MaxResendCount - otpRecord.ResendCount));
+            DateTimeOffset.UtcNow.AddSeconds(_settings.CurrentValue.ResendCooldownSeconds),
+            _settings.CurrentValue.MaxResendCount - otpRecord.ResendCount));
     }
 
     public async Task<Result> ResetPasswordAsync(
@@ -297,7 +297,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
         var spec = new RecentPasswordResetOtpsByEmailSpec(normalizedEmail, 1);
         var recentCount = await _otpRepository.CountAsync(spec, cancellationToken);
 
-        return recentCount >= _settings.MaxRequestsPerEmailPerHour;
+        return recentCount >= _settings.CurrentValue.MaxRequestsPerEmailPerHour;
     }
 
     private async Task<Result<PasswordResetRequestResult>> ResendOtpInternalAsync(
@@ -305,7 +305,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
         CancellationToken cancellationToken)
     {
         // Check resend limits
-        if (!existingOtp.CanResend(_settings.ResendCooldownSeconds, _settings.MaxResendCount))
+        if (!existingOtp.CanResend(_settings.CurrentValue.ResendCooldownSeconds, _settings.CurrentValue.MaxResendCount))
         {
             return Result.Failure<PasswordResetRequestResult>(
                 Error.Failure("NOIR-AUTH-1021", "Maximum resend attempts reached. Please try again later."));
@@ -315,7 +315,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
         var newOtpCode = _otpService.GenerateOtp();
         var newOtpHash = _otpService.HashOtp(newOtpCode);
 
-        existingOtp.Resend(newOtpHash, _settings.OtpExpiryMinutes);
+        existingOtp.Resend(newOtpHash, _settings.CurrentValue.OtpExpiryMinutes);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // Send email only if user exists
@@ -336,7 +336,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
             existingOtp.SessionToken,
             _otpService.MaskEmail(existingOtp.Email),
             existingOtp.ExpiresAt,
-            _settings.OtpLength));
+            _settings.CurrentValue.OtpLength));
     }
 
     private async Task SendOtpEmailAsync(
@@ -350,7 +350,7 @@ public class PasswordResetService : IPasswordResetService, IScopedService
             var model = new PasswordResetOtpEmailModel(
                 otpCode,
                 userName ?? "User",
-                _settings.OtpExpiryMinutes);
+                _settings.CurrentValue.OtpExpiryMinutes);
 
             await _emailService.SendTemplateAsync(
                 email,

@@ -224,12 +224,15 @@ public class PermissionsTests
     [Fact]
     public void Groups_System_ShouldContainAllSystemPermissions()
     {
-        // Assert
-        Permissions.Groups.System.Should().HaveCount(4);
-        Permissions.Groups.System.Should().Contain(Permissions.SystemAdmin);
-        Permissions.Groups.System.Should().Contain(Permissions.SystemAuditLogs);
-        Permissions.Groups.System.Should().Contain(Permissions.SystemSettings);
-        Permissions.Groups.System.Should().Contain(Permissions.HangfireDashboard);
+        // Assert - now includes 3 new configuration management permissions
+        Permissions.Groups.SystemPermissions.Should().HaveCount(7);
+        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.SystemAdmin);
+        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.SystemAuditLogs);
+        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.SystemSettings);
+        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.HangfireDashboard);
+        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.System.ViewConfig);
+        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.System.EditConfig);
+        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.System.RestartApp);
     }
 
     [Fact]
@@ -257,7 +260,7 @@ public class PermissionsTests
         var expectedCount = Permissions.Groups.Users.Count
             + Permissions.Groups.Roles.Count
             + Permissions.Groups.Tenants.Count
-            + Permissions.Groups.System.Count
+            + Permissions.Groups.SystemPermissions.Count
             + Permissions.Groups.Audit.Count
             + Permissions.Groups.EmailTemplates.Count
             + Permissions.Groups.BlogPosts.Count
@@ -302,7 +305,7 @@ public class PermissionsTests
     public void All_ShouldContainAllSystemPermissions()
     {
         // Assert
-        foreach (var permission in Permissions.Groups.System)
+        foreach (var permission in Permissions.Groups.SystemPermissions)
         {
             Permissions.All.Should().Contain(permission);
         }

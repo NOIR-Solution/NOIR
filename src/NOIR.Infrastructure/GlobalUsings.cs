@@ -136,6 +136,7 @@ global using Microsoft.AspNetCore.Authorization;
 // NOIR Infrastructure
 global using NOIR.Infrastructure.Audit;
 global using NOIR.Infrastructure.BackgroundJobs;
+global using NOIR.Infrastructure.Configuration;
 global using NOIR.Infrastructure.Email;
 global using NOIR.Infrastructure.Hubs;
 global using NOIR.Infrastructure.Identity;

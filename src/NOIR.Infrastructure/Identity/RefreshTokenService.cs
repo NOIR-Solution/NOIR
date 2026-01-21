@@ -10,20 +10,20 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
     private readonly IRepository<RefreshToken, Guid> _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISecureTokenGenerator _tokenGenerator;
-    private readonly JwtSettings _jwtSettings;
+    private readonly IOptionsMonitor<JwtSettings> _jwtSettings;
     private readonly ILogger<RefreshTokenService> _logger;
 
     public RefreshTokenService(
         IRepository<RefreshToken, Guid> repository,
         IUnitOfWork unitOfWork,
         ISecureTokenGenerator tokenGenerator,
-        IOptions<JwtSettings> jwtSettings,
+        IOptionsMonitor<JwtSettings> jwtSettings,
         ILogger<RefreshTokenService> logger)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _tokenGenerator = tokenGenerator;
-        _jwtSettings = jwtSettings.Value;
+        _jwtSettings = jwtSettings;
         _logger = logger;
     }
 
@@ -37,10 +37,10 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         CancellationToken cancellationToken = default)
     {
         // Check max concurrent sessions
-        if (_jwtSettings.MaxConcurrentSessions > 0)
+        if (_jwtSettings.CurrentValue.MaxConcurrentSessions > 0)
         {
             var activeCount = await GetActiveSessionCountAsync(userId, cancellationToken);
-            if (activeCount >= _jwtSettings.MaxConcurrentSessions)
+            if (activeCount >= _jwtSettings.CurrentValue.MaxConcurrentSessions)
             {
                 // Revoke oldest session using specification
                 var oldestTokenSpec = new OldestActiveRefreshTokenSpec(userId);
@@ -60,7 +60,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         var token = RefreshToken.Create(
             _tokenGenerator.GenerateToken(64),
             userId,
-            _jwtSettings.RefreshTokenExpirationInDays,
+            _jwtSettings.CurrentValue.RefreshTokenExpirationInDays,
             tenantId,
             ipAddress,
             deviceFingerprint,
@@ -115,7 +115,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         }
 
         // Validate device fingerprint if enabled
-        if (_jwtSettings.EnableDeviceFingerprinting &&
+        if (_jwtSettings.CurrentValue.EnableDeviceFingerprinting &&
             !string.IsNullOrEmpty(existingToken.DeviceFingerprint) &&
             existingToken.DeviceFingerprint != deviceFingerprint)
         {
@@ -136,7 +136,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         var newToken = RefreshToken.Create(
             _tokenGenerator.GenerateToken(64),
             existingToken.UserId,
-            _jwtSettings.RefreshTokenExpirationInDays,
+            _jwtSettings.CurrentValue.RefreshTokenExpirationInDays,
             existingToken.TenantId,
             ipAddress,
             deviceFingerprint ?? existingToken.DeviceFingerprint,
@@ -176,7 +176,7 @@ public class RefreshTokenService : IRefreshTokenService, IScopedService
         }
 
         // Validate device fingerprint if enabled
-        if (_jwtSettings.EnableDeviceFingerprinting &&
+        if (_jwtSettings.CurrentValue.EnableDeviceFingerprinting &&
             !string.IsNullOrEmpty(refreshToken.DeviceFingerprint) &&
             refreshToken.DeviceFingerprint != deviceFingerprint)
         {

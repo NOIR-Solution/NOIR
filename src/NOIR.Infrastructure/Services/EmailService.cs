@@ -8,18 +8,18 @@ public class EmailService : IEmailService, IScopedService
 {
     private readonly IFluentEmail _fluentEmail;
     private readonly ApplicationDbContext _dbContext;
-    private readonly EmailSettings _emailSettings;
+    private readonly IOptionsMonitor<EmailSettings> _emailSettings;
     private readonly ILogger<EmailService> _logger;
 
     public EmailService(
         IFluentEmail fluentEmail,
         ApplicationDbContext dbContext,
-        IOptions<EmailSettings> emailSettings,
+        IOptionsMonitor<EmailSettings> emailSettings,
         ILogger<EmailService> logger)
     {
         _fluentEmail = fluentEmail;
         _dbContext = dbContext;
-        _emailSettings = emailSettings.Value;
+        _emailSettings = emailSettings;
         _logger = logger;
     }
 

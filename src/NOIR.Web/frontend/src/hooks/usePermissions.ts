@@ -142,6 +142,10 @@ export const Permissions = {
   SystemAuditLogs: 'system:audit-logs',
   SystemSettings: 'system:settings',
   HangfireDashboard: 'system:hangfire',
+  // Configuration Management
+  SystemViewConfig: 'system:config:view',
+  SystemEditConfig: 'system:config:edit',
+  SystemRestartApp: 'system:app:restart',
   // Audit
   AuditRead: 'audit:read',
   AuditExport: 'audit:export',

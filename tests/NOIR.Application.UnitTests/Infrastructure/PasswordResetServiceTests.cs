@@ -13,7 +13,7 @@ public class PasswordResetServiceTests
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock;
     private readonly Mock<IEmailService> _emailServiceMock;
-    private readonly Mock<IOptions<PasswordResetSettings>> _settingsMock;
+    private readonly Mock<IOptionsMonitor<PasswordResetSettings>> _settingsMock;
     private readonly Mock<ILogger<PasswordResetService>> _loggerMock;
     private readonly PasswordResetService _sut;
     private readonly PasswordResetSettings _settings;
@@ -39,8 +39,8 @@ public class PasswordResetServiceTests
             ResetTokenExpiryMinutes = 15
         };
 
-        _settingsMock = new Mock<IOptions<PasswordResetSettings>>();
-        _settingsMock.Setup(x => x.Value).Returns(_settings);
+        _settingsMock = new Mock<IOptionsMonitor<PasswordResetSettings>>();
+        _settingsMock.Setup(x => x.CurrentValue).Returns(_settings);
 
         _sut = new PasswordResetService(
             _otpRepositoryMock.Object,

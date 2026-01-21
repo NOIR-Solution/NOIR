@@ -35,10 +35,17 @@ public class RefreshTokenServiceTests : IAsyncLifetime
         var unitOfWork = services.GetRequiredService<IUnitOfWork>();
         var tokenGenerator = services.GetRequiredService<ISecureTokenGenerator>();
         var jwtSettings = customSettings != null
-            ? Options.Create(customSettings)
-            : services.GetRequiredService<IOptions<JwtSettings>>();
+            ? CreateOptionsMonitor(customSettings)
+            : services.GetRequiredService<IOptionsMonitor<JwtSettings>>();
         var logger = services.GetRequiredService<ILogger<RefreshTokenService>>();
         return new RefreshTokenService(repository, unitOfWork, tokenGenerator, jwtSettings, logger);
+    }
+
+    private static IOptionsMonitor<JwtSettings> CreateOptionsMonitor(JwtSettings settings)
+    {
+        var mock = new Mock<IOptionsMonitor<JwtSettings>>();
+        mock.Setup(x => x.CurrentValue).Returns(settings);
+        return mock.Object;
     }
 
     #region CreateTokenAsync Tests

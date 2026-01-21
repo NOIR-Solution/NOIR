@@ -19,7 +19,13 @@ public enum AuditOperationType
     /// <summary>
     /// Deleting an entity. Before state captured.
     /// </summary>
-    Delete
+    Delete,
+
+    /// <summary>
+    /// Executing an action (e.g., restart application, run job).
+    /// No entity state tracking needed.
+    /// </summary>
+    Execute
 }
 
 /// <summary>

@@ -20,16 +20,16 @@ using NoirImageMetadata = NOIR.Application.Common.Interfaces.ImageMetadata;
 /// </summary>
 public class ImageProcessorService : IImageProcessor, IScopedService
 {
-    private readonly ImageProcessingSettings _settings;
+    private readonly IOptionsMonitor<ImageProcessingSettings> _settings;
     private readonly IFileStorage _fileStorage;
     private readonly ILogger<ImageProcessorService> _logger;
 
     public ImageProcessorService(
-        IOptions<ImageProcessingSettings> settings,
+        IOptionsMonitor<ImageProcessingSettings> settings,
         IFileStorage fileStorage,
         ILogger<ImageProcessorService> logger)
     {
-        _settings = settings.Value;
+        _settings = settings;
         _fileStorage = fileStorage;
         _logger = logger;
     }
@@ -53,7 +53,7 @@ public class ImageProcessorService : IImageProcessor, IScopedService
             using var image = await Image.LoadAsync<Rgba32>(inputStream, ct);
 
             // Auto-rotate based on EXIF if enabled
-            if (_settings.AutoRotate)
+            if (_settings.CurrentValue.AutoRotate)
             {
                 image.Mutate(x => x.AutoOrient());
             }
@@ -87,7 +87,7 @@ public class ImageProcessorService : IImageProcessor, IScopedService
             var variantsToGenerate = options.Variants?.ToList() ?? GetDefaultVariants(originalWidth, originalHeight);
 
             // Determine which formats to generate
-            var formatsToGenerate = options.Formats?.ToList() ?? _settings.GetEnabledFormats().ToList();
+            var formatsToGenerate = options.Formats?.ToList() ?? _settings.CurrentValue.GetEnabledFormats().ToList();
 
             // Generate all variants - process formats in parallel for speed
             var variants = new List<ImageVariantInfo>();
@@ -95,7 +95,7 @@ public class ImageProcessorService : IImageProcessor, IScopedService
 
             foreach (var variant in variantsToGenerate)
             {
-                var variantSize = _settings.GetVariantSize(variant);
+                var variantSize = _settings.CurrentValue.GetVariantSize(variant);
 
                 // Skip if variant is larger than original (no upscaling)
                 if (variantSize > Math.Max(originalWidth, originalHeight))
@@ -129,7 +129,7 @@ public class ImageProcessorService : IImageProcessor, IScopedService
                             capturedFormat,
                             capturedWidth,
                             capturedHeight,
-                            options.StorageFolder ?? _settings.StorageFolder,
+                            options.StorageFolder ?? _settings.CurrentValue.StorageFolder,
                             ct);
                     }, ct));
                 }
@@ -182,12 +182,12 @@ public class ImageProcessorService : IImageProcessor, IScopedService
 
         using var image = await Image.LoadAsync<Rgba32>(inputStream, ct);
 
-        if (_settings.AutoRotate)
+        if (_settings.CurrentValue.AutoRotate)
         {
             image.Mutate(x => x.AutoOrient());
         }
 
-        var variantSize = _settings.GetVariantSize(variant);
+        var variantSize = _settings.CurrentValue.GetVariantSize(variant);
         var (width, height) = CalculateSize(image.Width, image.Height, variantSize);
 
         image.Mutate(x => x.Resize(new ResizeOptions
@@ -203,18 +203,18 @@ public class ImageProcessorService : IImageProcessor, IScopedService
         {
             case OutputFormat.Avif:
                 // CQLevel: 0-63 where lower is higher quality. Convert from our 0-100 scale.
-                var avifCqLevel = Math.Max(0, Math.Min(63, (100 - _settings.AvifQuality) * 63 / 100));
+                var avifCqLevel = Math.Max(0, Math.Min(63, (100 - _settings.CurrentValue.AvifQuality) * 63 / 100));
                 var avifEncoder = new AVIFEncoder { CQLevel = avifCqLevel };
                 await image.SaveAsync(ms, avifEncoder, ct);
                 break;
 
             case OutputFormat.WebP:
-                var webpEncoder = new WebpEncoder { Quality = _settings.WebPQuality, FileFormat = WebpFileFormatType.Lossy };
+                var webpEncoder = new WebpEncoder { Quality = _settings.CurrentValue.WebPQuality, FileFormat = WebpFileFormatType.Lossy };
                 await image.SaveAsync(ms, webpEncoder, ct);
                 break;
 
             case OutputFormat.Jpeg:
-                var jpegEncoder = new JpegEncoder { Quality = _settings.DefaultQuality };
+                var jpegEncoder = new JpegEncoder { Quality = _settings.CurrentValue.DefaultQuality };
                 await image.SaveAsync(ms, jpegEncoder, ct);
                 break;
 
@@ -270,7 +270,7 @@ public class ImageProcessorService : IImageProcessor, IScopedService
     {
         // Check extension first
         var extension = Path.GetExtension(fileName)?.ToLowerInvariant();
-        if (string.IsNullOrEmpty(extension) || !_settings.AllowedExtensions.Contains(extension))
+        if (string.IsNullOrEmpty(extension) || !_settings.CurrentValue.AllowedExtensions.Contains(extension))
             return false;
 
         // Then validate the actual content
@@ -313,18 +313,18 @@ public class ImageProcessorService : IImageProcessor, IScopedService
             {
                 case OutputFormat.Avif:
                     // CQLevel: 0-63 where lower is higher quality. Convert from our 0-100 scale.
-                    var avifCqLevel2 = Math.Max(0, Math.Min(63, (100 - _settings.AvifQuality) * 63 / 100));
+                    var avifCqLevel2 = Math.Max(0, Math.Min(63, (100 - _settings.CurrentValue.AvifQuality) * 63 / 100));
                     var avifEncoder2 = new AVIFEncoder { CQLevel = avifCqLevel2 };
                     await image.SaveAsync(ms, avifEncoder2, ct);
                     break;
 
                 case OutputFormat.WebP:
-                    var webpEncoder2 = new WebpEncoder { Quality = _settings.WebPQuality, FileFormat = WebpFileFormatType.Lossy };
+                    var webpEncoder2 = new WebpEncoder { Quality = _settings.CurrentValue.WebPQuality, FileFormat = WebpFileFormatType.Lossy };
                     await image.SaveAsync(ms, webpEncoder2, ct);
                     break;
 
                 case OutputFormat.Jpeg:
-                    var jpegEncoder2 = new JpegEncoder { Quality = _settings.DefaultQuality };
+                    var jpegEncoder2 = new JpegEncoder { Quality = _settings.CurrentValue.DefaultQuality };
                     await image.SaveAsync(ms, jpegEncoder2, ct);
                     break;
 
@@ -345,9 +345,9 @@ public class ImageProcessorService : IImageProcessor, IScopedService
             var url = _fileStorage.GetPublicUrl(storagePath) ?? storagePath;
 
             // Apply CDN base URL if configured
-            if (!string.IsNullOrEmpty(_settings.CdnBaseUrl))
+            if (!string.IsNullOrEmpty(_settings.CurrentValue.CdnBaseUrl))
             {
-                url = $"{_settings.CdnBaseUrl.TrimEnd('/')}/{fileName}";
+                url = $"{_settings.CurrentValue.CdnBaseUrl.TrimEnd('/')}/{fileName}";
             }
 
             return new ImageVariantInfo
@@ -384,7 +384,7 @@ public class ImageProcessorService : IImageProcessor, IScopedService
         var variants = new List<ImageVariant> { ImageVariant.Thumb, ImageVariant.Medium };
 
         // Only add Large if image is big enough (no upscaling)
-        if (maxDimension >= _settings.LargeSize)
+        if (maxDimension >= _settings.CurrentValue.LargeSize)
             variants.Add(ImageVariant.Large);
 
         return variants;

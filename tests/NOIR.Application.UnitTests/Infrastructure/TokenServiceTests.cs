@@ -30,8 +30,9 @@ public class TokenServiceTests
         _tenantStoreMock.Setup(x => x.GetAsync("tenant-1"))
             .ReturnsAsync(new Tenant("tenant-1", "tenant-1", "Test Tenant"));
 
-        var options = Options.Create(_jwtSettings);
-        _sut = new TokenService(options, _dateTimeMock.Object, _tenantStoreMock.Object);
+        var mockOptions = new Mock<IOptionsMonitor<JwtSettings>>();
+        mockOptions.Setup(x => x.CurrentValue).Returns(_jwtSettings);
+        _sut = new TokenService(mockOptions.Object, _dateTimeMock.Object, _tenantStoreMock.Object);
     }
 
     #region GenerateAccessToken Tests

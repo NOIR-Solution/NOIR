@@ -99,6 +99,7 @@ const navSections: NavSection[] = [
     items: [
       { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates', permission: Permissions.EmailTemplatesRead },
       { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants', permission: Permissions.TenantsRead },
+      { titleKey: 'platformSettings.title', icon: Settings, path: '/portal/admin/platform-settings', permission: Permissions.SystemViewConfig },
     ],
   },
   {

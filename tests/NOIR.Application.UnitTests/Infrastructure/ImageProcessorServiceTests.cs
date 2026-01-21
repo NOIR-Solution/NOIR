@@ -35,8 +35,8 @@ public class ImageProcessorServiceTests
             AllowedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
         };
 
-        var optionsMock = new Mock<IOptions<ImageProcessingSettings>>();
-        optionsMock.Setup(x => x.Value).Returns(_settings);
+        var optionsMock = new Mock<IOptionsMonitor<ImageProcessingSettings>>();
+        optionsMock.Setup(x => x.CurrentValue).Returns(_settings);
 
         // Setup file storage mock to return paths
         _fileStorageMock

@@ -10,14 +10,14 @@ public class EmailServiceTests
     private const string TestTenantId = "test-tenant-id";
 
     private readonly Mock<IFluentEmail> _fluentEmailMock;
-    private readonly Mock<IOptions<EmailSettings>> _emailSettingsMock;
+    private readonly Mock<IOptionsMonitor<EmailSettings>> _emailSettingsMock;
     private readonly Mock<ILogger<EmailService>> _loggerMock;
 
     public EmailServiceTests()
     {
         _fluentEmailMock = new Mock<IFluentEmail>();
-        _emailSettingsMock = new Mock<IOptions<EmailSettings>>();
-        _emailSettingsMock.Setup(x => x.Value).Returns(new EmailSettings { TemplatesPath = "EmailTemplates" });
+        _emailSettingsMock = new Mock<IOptionsMonitor<EmailSettings>>();
+        _emailSettingsMock.Setup(x => x.CurrentValue).Returns(new EmailSettings { TemplatesPath = "EmailTemplates" });
         _loggerMock = new Mock<ILogger<EmailService>>();
     }
 

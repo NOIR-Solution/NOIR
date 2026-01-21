@@ -37,6 +37,14 @@ public static class Permissions
     public const string SystemSettings = "system:settings";
     public const string HangfireDashboard = "system:hangfire";
 
+    // Configuration Management (nested under System)
+    public static class System
+    {
+        public const string ViewConfig = "system:config:view";
+        public const string EditConfig = "system:config:edit";
+        public const string RestartApp = "system:app:restart";
+    }
+
     // Audit (granular permissions)
     public const string AuditRead = "audit:read";
     public const string AuditExport = "audit:export";
@@ -83,8 +91,9 @@ public static class Permissions
         public static readonly IReadOnlyList<string> Tenants =
             [TenantsRead, TenantsCreate, TenantsUpdate, TenantsDelete];
 
-        public static readonly IReadOnlyList<string> System =
-            [SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard];
+        public static readonly IReadOnlyList<string> SystemPermissions =
+            [SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
+             Permissions.System.ViewConfig, Permissions.System.EditConfig, Permissions.System.RestartApp];
 
         public static readonly IReadOnlyList<string> Audit =
             [AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream];
@@ -115,6 +124,8 @@ public static class Permissions
         TenantsRead, TenantsCreate, TenantsUpdate, TenantsDelete,
         // System
         SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
+        // Configuration Management
+        System.ViewConfig, System.EditConfig, System.RestartApp,
         // Audit
         AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream,
         // Email Templates
@@ -137,6 +148,8 @@ public static class Permissions
         TenantsRead, TenantsCreate, TenantsUpdate, TenantsDelete,
         // System administration
         SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
+        // Configuration management
+        System.ViewConfig, System.EditConfig, System.RestartApp,
         // Platform-level email templates
         EmailTemplatesRead, EmailTemplatesUpdate,
         // Platform-level audit (all tenants)
@@ -190,7 +203,11 @@ public static class Permissions
             SystemAdmin,
             SystemAuditLogs,
             SystemSettings,
-            HangfireDashboard
+            HangfireDashboard,
+            // Configuration management is system-only
+            System.ViewConfig,
+            System.EditConfig,
+            System.RestartApp
         };
 
         /// <summary>

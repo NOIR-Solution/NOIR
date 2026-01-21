@@ -5,16 +5,16 @@ namespace NOIR.Infrastructure.Identity;
 /// </summary>
 public class TokenService : ITokenService, IScopedService
 {
-    private readonly JwtSettings _jwtSettings;
+    private readonly IOptionsMonitor<JwtSettings> _jwtSettings;
     private readonly IDateTime _dateTime;
     private readonly IMultiTenantStore<Tenant> _tenantStore;
 
     public TokenService(
-        IOptions<JwtSettings> jwtSettings,
+        IOptionsMonitor<JwtSettings> jwtSettings,
         IDateTime dateTime,
         IMultiTenantStore<Tenant> tenantStore)
     {
-        _jwtSettings = jwtSettings.Value;
+        _jwtSettings = jwtSettings;
         _dateTime = dateTime;
         _tenantStore = tenantStore;
     }
@@ -43,14 +43,14 @@ public class TokenService : ITokenService, IScopedService
             }
         }
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.CurrentValue.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: _jwtSettings.Issuer,
-            audience: _jwtSettings.Audience,
+            issuer: _jwtSettings.CurrentValue.Issuer,
+            audience: _jwtSettings.CurrentValue.Audience,
             claims: claims,
-            expires: _dateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes).UtcDateTime,
+            expires: _dateTime.UtcNow.AddMinutes(_jwtSettings.CurrentValue.ExpirationInMinutes).UtcDateTime,
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
@@ -72,7 +72,7 @@ public class TokenService : ITokenService, IScopedService
     {
         var accessToken = GenerateAccessToken(userId, email, tenantId);
         var refreshToken = GenerateRefreshToken();
-        var expiresAt = _dateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
+        var expiresAt = _dateTime.UtcNow.AddMinutes(_jwtSettings.CurrentValue.ExpirationInMinutes);
 
         return new TokenPair(accessToken, refreshToken, expiresAt);
     }
@@ -82,7 +82,7 @@ public class TokenService : ITokenService, IScopedService
     /// </summary>
     public DateTimeOffset GetRefreshTokenExpiry()
     {
-        return _dateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
+        return _dateTime.UtcNow.AddDays(_jwtSettings.CurrentValue.RefreshTokenExpirationInDays);
     }
 
     /// <summary>
@@ -114,9 +114,9 @@ public class TokenService : ITokenService, IScopedService
             ValidateAudience = true,
             ValidateLifetime = false, // Don't validate lifetime - token may be expired
             ValidateIssuerSigningKey = true,
-            ValidIssuer = _jwtSettings.Issuer,
-            ValidAudience = _jwtSettings.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret))
+            ValidIssuer = _jwtSettings.CurrentValue.Issuer,
+            ValidAudience = _jwtSettings.CurrentValue.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.CurrentValue.Secret))
         };
 
         try

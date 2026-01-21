@@ -7,16 +7,16 @@ namespace NOIR.Infrastructure.Identity;
 public class CookieAuthService : ICookieAuthService, IScopedService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly CookieSettings _cookieSettings;
+    private readonly IOptionsMonitor<CookieSettings> _cookieSettings;
     private readonly IHostEnvironment _environment;
 
     public CookieAuthService(
         IHttpContextAccessor httpContextAccessor,
-        IOptions<CookieSettings> cookieSettings,
+        IOptionsMonitor<CookieSettings> cookieSettings,
         IHostEnvironment environment)
     {
         _httpContextAccessor = httpContextAccessor;
-        _cookieSettings = cookieSettings.Value;
+        _cookieSettings = cookieSettings;
         _environment = environment;
     }
 
@@ -31,17 +31,17 @@ public class CookieAuthService : ICookieAuthService, IScopedService
 
         // Secure flag: Always true in production, configurable in development
         var isProduction = !_environment.IsDevelopment();
-        var secure = isProduction ? _cookieSettings.SecureInProduction : false;
+        var secure = isProduction ? _cookieSettings.CurrentValue.SecureInProduction : false;
 
         // Set access token cookie
         httpContext.Response.Cookies.Append(
-            _cookieSettings.AccessTokenCookieName,
+            _cookieSettings.CurrentValue.AccessTokenCookieName,
             accessToken,
             CreateCookieOptions(accessTokenExpiry, secure));
 
         // Set refresh token cookie
         httpContext.Response.Cookies.Append(
-            _cookieSettings.RefreshTokenCookieName,
+            _cookieSettings.CurrentValue.RefreshTokenCookieName,
             refreshToken,
             CreateCookieOptions(refreshTokenExpiry, secure));
     }
@@ -53,14 +53,14 @@ public class CookieAuthService : ICookieAuthService, IScopedService
 
         var deleteOptions = new CookieOptions
         {
-            Path = _cookieSettings.Path,
-            Domain = _cookieSettings.Domain,
+            Path = _cookieSettings.CurrentValue.Path,
+            Domain = _cookieSettings.CurrentValue.Domain,
             HttpOnly = true,
-            SameSite = _cookieSettings.GetSameSiteMode()
+            SameSite = _cookieSettings.CurrentValue.GetSameSiteMode()
         };
 
-        httpContext.Response.Cookies.Delete(_cookieSettings.AccessTokenCookieName, deleteOptions);
-        httpContext.Response.Cookies.Delete(_cookieSettings.RefreshTokenCookieName, deleteOptions);
+        httpContext.Response.Cookies.Delete(_cookieSettings.CurrentValue.AccessTokenCookieName, deleteOptions);
+        httpContext.Response.Cookies.Delete(_cookieSettings.CurrentValue.RefreshTokenCookieName, deleteOptions);
     }
 
     public string? GetRefreshTokenFromCookie()
@@ -68,7 +68,7 @@ public class CookieAuthService : ICookieAuthService, IScopedService
         var httpContext = _httpContextAccessor.HttpContext;
         if (httpContext is null) return null;
 
-        return httpContext.Request.Cookies.TryGetValue(_cookieSettings.RefreshTokenCookieName, out var token)
+        return httpContext.Request.Cookies.TryGetValue(_cookieSettings.CurrentValue.RefreshTokenCookieName, out var token)
             ? token
             : null;
     }
@@ -78,7 +78,7 @@ public class CookieAuthService : ICookieAuthService, IScopedService
         var httpContext = _httpContextAccessor.HttpContext;
         if (httpContext is null) return null;
 
-        return httpContext.Request.Cookies.TryGetValue(_cookieSettings.AccessTokenCookieName, out var token)
+        return httpContext.Request.Cookies.TryGetValue(_cookieSettings.CurrentValue.AccessTokenCookieName, out var token)
             ? token
             : null;
     }
@@ -88,9 +88,9 @@ public class CookieAuthService : ICookieAuthService, IScopedService
         Expires = expires,
         HttpOnly = true,
         Secure = secure,
-        SameSite = _cookieSettings.GetSameSiteMode(),
-        Path = _cookieSettings.Path,
-        Domain = _cookieSettings.Domain,
+        SameSite = _cookieSettings.CurrentValue.GetSameSiteMode(),
+        Path = _cookieSettings.CurrentValue.Path,
+        Domain = _cookieSettings.CurrentValue.Domain,
         IsEssential = true // Auth cookies are essential
     };
 }

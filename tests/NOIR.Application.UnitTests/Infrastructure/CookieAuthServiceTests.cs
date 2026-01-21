@@ -32,9 +32,12 @@ public class CookieAuthServiceTests
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(_httpContext);
         _environmentMock.Setup(x => x.EnvironmentName).Returns("Development");
 
+        var mockOptions = new Mock<IOptionsMonitor<CookieSettings>>();
+        mockOptions.Setup(x => x.CurrentValue).Returns(_cookieSettings);
+
         _service = new CookieAuthService(
             _httpContextAccessorMock.Object,
-            Options.Create(_cookieSettings),
+            mockOptions.Object,
             _environmentMock.Object);
     }
 
@@ -115,9 +118,11 @@ public class CookieAuthServiceTests
     {
         // Arrange
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext?)null);
+        var mockOptions = new Mock<IOptionsMonitor<CookieSettings>>();
+        mockOptions.Setup(x => x.CurrentValue).Returns(_cookieSettings);
         var service = new CookieAuthService(
             _httpContextAccessorMock.Object,
-            Options.Create(_cookieSettings),
+            mockOptions.Object,
             _environmentMock.Object);
 
         // Act
@@ -159,9 +164,11 @@ public class CookieAuthServiceTests
     {
         // Arrange
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext?)null);
+        var mockOptions = new Mock<IOptionsMonitor<CookieSettings>>();
+        mockOptions.Setup(x => x.CurrentValue).Returns(_cookieSettings);
         var service = new CookieAuthService(
             _httpContextAccessorMock.Object,
-            Options.Create(_cookieSettings),
+            mockOptions.Object,
             _environmentMock.Object);
 
         // Act
@@ -205,9 +212,11 @@ public class CookieAuthServiceTests
     {
         // Arrange
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext?)null);
+        var mockOptions = new Mock<IOptionsMonitor<CookieSettings>>();
+        mockOptions.Setup(x => x.CurrentValue).Returns(_cookieSettings);
         var service = new CookieAuthService(
             _httpContextAccessorMock.Object,
-            Options.Create(_cookieSettings),
+            mockOptions.Object,
             _environmentMock.Object);
 
         // Act
@@ -251,9 +260,11 @@ public class CookieAuthServiceTests
     {
         // Arrange
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext?)null);
+        var mockOptions = new Mock<IOptionsMonitor<CookieSettings>>();
+        mockOptions.Setup(x => x.CurrentValue).Returns(_cookieSettings);
         var service = new CookieAuthService(
             _httpContextAccessorMock.Object,
-            Options.Create(_cookieSettings),
+            mockOptions.Object,
             _environmentMock.Object);
 
         // Act
@@ -272,9 +283,11 @@ public class CookieAuthServiceTests
     {
         // Arrange
         _environmentMock.Setup(x => x.EnvironmentName).Returns("Production");
+        var mockOptions = new Mock<IOptionsMonitor<CookieSettings>>();
+        mockOptions.Setup(x => x.CurrentValue).Returns(_cookieSettings);
         var prodService = new CookieAuthService(
             _httpContextAccessorMock.Object,
-            Options.Create(_cookieSettings),
+            mockOptions.Object,
             _environmentMock.Object);
 
         var accessToken = "test-access-token";

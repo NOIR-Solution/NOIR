@@ -243,4 +243,37 @@ public static class ErrorCodes
         /// <summary>Unknown/unexpected error</summary>
         public const string UnknownError = "NOIR-SYS-9500";
     }
+
+    /// <summary>
+    /// Live configuration management errors (CFG-xxx)
+    /// </summary>
+    public static class Configuration
+    {
+        /// <summary>Runtime configuration changes are disabled</summary>
+        public const string RuntimeChangesDisabled = "NOIR-CFG-001";
+
+        /// <summary>Configuration section is not allowed for editing</summary>
+        public const string SectionNotAllowed = "NOIR-CFG-002";
+
+        /// <summary>Invalid JSON format in configuration value</summary>
+        public const string InvalidJson = "NOIR-CFG-003";
+
+        /// <summary>Configuration section not found</summary>
+        public const string SectionNotFound = "NOIR-CFG-004";
+
+        /// <summary>Restart cooldown active (rate limiting)</summary>
+        public const string RestartTooSoon = "NOIR-CFG-005";
+
+        /// <summary>Failed to load configuration backups</summary>
+        public const string BackupLoadFailed = "NOIR-CFG-006";
+
+        /// <summary>Backup file not found</summary>
+        public const string BackupNotFound = "NOIR-CFG-007";
+
+        /// <summary>Backup file is corrupted</summary>
+        public const string BackupCorrupted = "NOIR-CFG-008";
+
+        /// <summary>Failed to rollback configuration</summary>
+        public const string RollbackFailed = "NOIR-CFG-009";
+    }
 }
