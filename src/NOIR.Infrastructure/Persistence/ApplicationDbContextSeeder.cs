@@ -746,6 +746,11 @@ public static class ApplicationDbContextSeeder
         permissions.Add(Permission.Create("system", "settings", "Manage System Settings", null, "Configure system settings", "System", true, sortOrder++));
         permissions.Add(Permission.Create("system", "hangfire", "Hangfire Dashboard", null, "Access Hangfire background job dashboard", "System", true, sortOrder++));
 
+        // Configuration Management category
+        permissions.Add(Permission.Create("system", "config:view", "View Configuration", null, "View platform configuration settings", "Configuration Management", true, sortOrder++));
+        permissions.Add(Permission.Create("system", "config:edit", "Edit Configuration", null, "Edit platform configuration settings", "Configuration Management", true, sortOrder++));
+        permissions.Add(Permission.Create("system", "app:restart", "Restart Application", null, "Restart the application", "Configuration Management", true, sortOrder++));
+
         // Audit category
         permissions.Add(Permission.Create("audit", "read", "View Audit Data", null, "View audit records", "Audit", true, sortOrder++));
         permissions.Add(Permission.Create("audit", "export", "Export Audit Data", null, "Export audit logs to files", "Audit", true, sortOrder++));

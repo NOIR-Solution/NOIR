@@ -29,7 +29,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'e2e/.auth/admin.json',
+        storageState: 'e2e/.auth/tenant-admin.json',
       },
       dependencies: ['setup'],
     },
