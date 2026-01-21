@@ -23,6 +23,7 @@ tmpclaude-*
 # =============================================================================
 # .NET BUILD OUTPUTS
 # =============================================================================
+# Build output directories (case-insensitive for cross-platform compatibility)
 [Dd]ebug/
 [Rr]elease/
 x64/
@@ -30,8 +31,20 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
+
+# Binary and object files - CRITICAL: Prevents Windows checkout failures
+# These patterns match both forward slash (Unix) and backslash (Windows) paths
 [Bb]in/
 [Oo]bj/
+**/[Bb]in/
+**/[Oo]bj/
+# Explicit glob patterns for nested build outputs
+**/bin/Debug/
+**/bin/Release/
+**/obj/Debug/
+**/obj/Release/
+
+# Log directories
 [Ll]og/
 [Ll]ogs/
 
