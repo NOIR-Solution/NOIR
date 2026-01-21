@@ -122,3 +122,42 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 - Global query filters exclude soft-deleted entities
 - Use `IgnoreQueryFilters()` in specs to include deleted
 - Hard delete only for GDPR "right to be forgotten"
+
+## Middleware Pipeline Order
+
+The middleware pipeline order is critical for multi-tenancy and user context:
+
+```
+1. Exception Handling
+2. Authentication (JWT/Cookie)
+3. Multi-Tenant Resolution (Finbuckle)
+4. CurrentUserLoaderMiddleware  ← Loads user profile from DB
+5. Authorization
+6. Request Logging
+7. Endpoint Execution
+```
+
+### CurrentUserLoaderMiddleware Pattern
+
+Centralizes user profile loading after authentication and tenant resolution:
+
+**Purpose:**
+- Single DB query per request (not multiple)
+- Loads complete user profile (roles, display name, avatar, tenant info)
+- Caches in `HttpContext.Items` for request lifetime
+- JWT claims alone don't contain full user profile
+
+**Implementation:** `src/NOIR.Web/Middleware/CurrentUserLoaderMiddleware.cs`
+
+## OTP Flow Canonical Pattern
+
+All OTP-based features (Password Reset, Email Change, etc.) MUST follow the canonical pattern.
+
+**Reference Implementation:** `PasswordResetService.cs`
+
+**Key Requirements:**
+1. Backend bypass prevention (see CLAUDE.md Critical Rule #14)
+2. Frontend error handling (clear OTP input on error)
+3. Session token stability (use refs to avoid stale closures)
+
+**Why:** Prevents OTP bypass attacks and ensures consistent UX across all OTP features.

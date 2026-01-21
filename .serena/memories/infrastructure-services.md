@@ -10,6 +10,31 @@
 - `Storage/` - File storage (FluentStorage)
 - `Migrations/` - EF Core migrations (auto-generated, don't modify)
 
+## Middleware
+
+### CurrentUserLoaderMiddleware
+**Location:** `src/NOIR.Web/Middleware/CurrentUserLoaderMiddleware.cs`
+
+Centralizes user profile loading in middleware pipeline (commit 8c411e6).
+
+**Purpose:**
+- Single DB query per request (not multiple)
+- Loads complete user profile (roles, display name, avatar, tenant info)
+- Caches in `HttpContext.Items` for request lifetime
+- JWT claims alone don't contain full user profile
+
+**Pipeline Position:**
+```
+1. Exception Handling
+2. Authentication (JWT/Cookie)
+3. Multi-Tenant Resolution (Finbuckle)
+4. CurrentUserLoaderMiddleware  ← Runs here (needs tenant context)
+5. Authorization
+6. Request Logging
+```
+
+**Why After Multi-Tenant?** Needs tenant context to query correct database partition.
+
 ## Identity Services
 
 ### TokenService (IScopedService)

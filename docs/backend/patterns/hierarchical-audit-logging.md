@@ -842,6 +842,46 @@ Returns downloadable CSV or JSON file with audit records for compliance reportin
 
 ---
 
+## Troubleshooting
+
+### "No handler diff available" in Activity Timeline
+
+**Symptom:** The Handler tab in Activity Timeline shows "No handler diff available" despite the command implementing `IAuditableCommand<TDto>`.
+
+**Root Cause:** Missing before-state resolver registration in `DependencyInjection.cs`.
+
+**Solution:**
+
+For commands with `OperationType.Update`, you MUST register a before-state resolver to capture the entity state before modification:
+
+```csharp
+// In src/NOIR.Infrastructure/DependencyInjection.cs
+services.AddBeforeStateResolver<YourDto, GetYourEntityQuery>(
+    targetId => new GetYourEntityQuery(targetId));
+```
+
+**Example:**
+
+```csharp
+// For UpdateCustomerCommand that returns CustomerDto
+services.AddBeforeStateResolver<CustomerDto, GetCustomerByIdQuery>(
+    customerId => new GetCustomerByIdQuery((Guid)customerId));
+
+// For UpdateTenantSettingsCommand that returns TenantSettingDto
+services.AddBeforeStateResolver<TenantSettingDto, GetTenantSettingsQuery>(
+    tenantId => new GetTenantSettingsQuery(tenantId?.ToString()));
+```
+
+**Verification:**
+1. Check that resolver is registered in `DependencyInjection.cs`
+2. Verify the query returns the same DTO type as the command result
+3. Check that the query accepts the correct ID type from `GetTargetId()`
+4. Test by updating an entity and viewing the Handler tab in Activity Timeline
+
+**Cross-Reference:** See CLAUDE.md Critical Rule #13 for before-state resolver pattern.
+
+---
+
 ## References
 
 - [ABP Framework Audit Logging](https://abp.io/docs/latest/framework/infrastructure/audit-logging)

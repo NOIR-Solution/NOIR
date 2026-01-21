@@ -1,7 +1,59 @@
-# NOIR Project Index
+# Project Index: NOIR
 
-**Generated**: 2026-01-20 21:10:00
-**Version**: 3.0 (Clean Migration Reset)
+**Generated:** 2026-01-21 09:45 GMT+7
+**Version:** 2.1
+**Architecture:** Clean Architecture + CQRS + Multi-Tenancy
+
+> **Token Efficiency:** Reading this index (~3,000 tokens) vs. reading all files (~58,000 tokens) = **94% reduction**
+
+---
+
+## 📋 Quick Reference
+
+| Metric | Value |
+|--------|-------|
+| **Backend** | .NET 10, EF Core 10, SQL Server |
+| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS 4 |
+| **Tests** | 2,100+ tests (Unit + Integration + Architecture) |
+| **Source Files** | ~600 files (Backend: 400, Frontend: 162) |
+| **Admin Login** | `admin@noir.local` / `123qwe` |
+
+---
+
+## 🚀 Entry Points
+
+### CLI Commands
+
+```bash
+# Build & Run
+dotnet build src/NOIR.sln
+dotnet run --project src/NOIR.Web
+dotnet watch --project src/NOIR.Web
+
+# Tests
+dotnet test src/NOIR.sln
+
+# Frontend
+cd src/NOIR.Web/frontend
+npm install && npm run dev
+
+# Start Scripts (RECOMMENDED)
+./start-dev.sh           # macOS/Linux
+start-dev.bat            # Windows
+```
+
+### Application Entry
+
+- **Backend:** `src/NOIR.Web/Program.cs` - ASP.NET Core application startup
+- **Frontend:** `src/NOIR.Web/frontend/src/main.tsx` - React application entry
+- **Database:** `src/NOIR.Infrastructure/Persistence/ApplicationDbContext.cs` - EF Core context
+
+### URLs
+
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:4000
+- **API Docs:** http://localhost:3000/api/docs (Scalar)
+- **Hangfire Dashboard:** http://localhost:4000/hangfire
 
 ---
 
@@ -9,284 +61,686 @@
 
 ```
 NOIR/
-├── src/
-│   ├── NOIR.Domain/              # Core domain entities, value objects
-│   ├── NOIR.Application/         # CQRS commands/queries, specifications
-│   ├── NOIR.Infrastructure/      # EF Core, Identity, services
-│   └── NOIR.Web/                 # Minimal API + React frontend
-│       └── frontend/             # React TypeScript SPA
-├── tests/
-│   ├── NOIR.Domain.UnitTests/    # 838 domain tests
-│   ├── NOIR.Application.UnitTests/ # 2,944 application tests
-│   ├── NOIR.IntegrationTests/    # 515 integration tests
-│   └── NOIR.ArchitectureTests/   # 25 architecture tests
-└── docs/
-    ├── backend/patterns/         # Backend patterns documentation
-    ├── backend/research/         # Research and analysis
-    ├── frontend/                 # Frontend guide
-    └── KNOWLEDGE_BASE.md         # Comprehensive codebase guide
+├── src/                          # Source code (4 projects)
+│   ├── NOIR.Domain/              # 60 files - Core business entities
+│   ├── NOIR.Application/         # 280 files - Business logic (CQRS)
+│   ├── NOIR.Infrastructure/      # 180 files - External integrations
+│   └── NOIR.Web/                 # 47 files - API + Frontend host
+│       └── frontend/             # 162 files - React SPA
+├── tests/                        # 2,100+ tests (4 projects)
+│   ├── NOIR.Domain.UnitTests/
+│   ├── NOIR.Application.UnitTests/
+│   ├── NOIR.IntegrationTests/
+│   └── NOIR.ArchitectureTests/
+├── docs/                         # Documentation
+│   ├── backend/                  # Backend patterns & guides
+│   ├── frontend/                 # Frontend architecture
+│   ├── decisions/                # Architecture Decision Records
+│   ├── ARCHITECTURE.md           # System architecture overview
+│   └── KNOWLEDGE_BASE.md         # Comprehensive codebase guide
+├── .serena/                      # Serena MCP memories
+├── CLAUDE.md                     # AI assistant instructions
+├── AGENTS.md                     # Universal AI guidelines
+└── start-dev.sh                  # Development startup script
 ```
 
 ---
 
-## 🚀 Entry Points
+## 📦 Core Modules
 
-**Backend**:
-- Main API: `src/NOIR.Web/Program.cs` - Minimal API with Wolverine
-- DbContext: `src/NOIR.Infrastructure/Persistence/ApplicationDbContext.cs`
-- Seeder: `src/NOIR.Infrastructure/Persistence/ApplicationDbContextSeeder.cs`
+### NOIR.Domain (60 files)
 
-**Frontend**:
-- Entry: `src/NOIR.Web/frontend/src/main.tsx` - React 19 + TypeScript
-- Routing: `src/NOIR.Web/frontend/src/App.tsx` - React Router v7
+**Purpose:** Core business entities and domain logic
+**Target Framework:** .NET 10
+**Dependencies:** Finbuckle.MultiTenant.Abstractions only
 
-**Tests**:
-- Run all: `dotnet test src/NOIR.sln`
-- Integration: `tests/NOIR.IntegrationTests/`
+**Key Exports:**
 
----
+```
+Common/
+├── Entity<TId>                   # Base entity with ID
+├── AggregateRoot<TId>            # Base for domain events
+├── AuditableEntity<TId>          # Entity with audit fields
+├── ITenantEntity                 # Multi-tenant marker
+├── Result<T>                     # Error handling pattern
+└── ValueObject                   # Immutable value objects
 
-## 📦 Core Domain Patterns
+Entities/
+├── User                          # Platform user
+├── Tenant                        # Multi-tenant organization
+├── Permission                    # Granular permission
+├── Role                          # User role with hierarchy
+├── EntityAuditLog                # Entity change tracking
+├── HttpRequestAuditLog           # HTTP request tracking
+├── HandlerAuditLog               # Command/Query handler tracking
+├── RefreshToken                  # JWT refresh token
+└── EmailTemplate                 # Database-driven email templates
 
-### Platform/Tenant Pattern (v2.0)
-**Base Classes**:
-- `PlatformTenantEntity<TId>` - Entities without domain events
-- `PlatformTenantAggregateRoot<TId>` - Aggregates with domain events
-- `ISeedableEntity` - Version-based seed updates
+Interfaces/
+├── IRepository<TEntity, TId>     # Repository pattern
+├── IUnitOfWork                   # Transaction management
+└── ISpecification<T>             # Query specification
+```
 
-**Key Entities**:
-- `EmailTemplate` - Platform email templates with tenant overrides
-- `TenantSetting` - Platform settings with tenant customization
-- `PermissionTemplate` - Platform permission presets
+### NOIR.Application (280 files)
 
-**Pattern Features**:
-- TenantId = null → Platform default (shared)
-- TenantId = value → Tenant override (copy-on-edit)
-- Filtered indexes for 2-3x faster platform queries
-- Smart seed updates (Version tracking)
+**Purpose:** Business logic with Vertical Slice CQRS
+**Target Framework:** .NET 10
+**Dependencies:** Domain, FluentValidation, Mapperly
 
-### Database Constants
-**Location**: `src/NOIR.Domain/Common/DatabaseConstants.cs`
-- `TenantIdMaxLength = 64` - Standard across all entities
-- `UserIdMaxLength = 450` - ASP.NET Identity compatibility
+**Key Features:**
 
-**Adoption**: 100% of configuration files (66 usages)
+```
+Features/                         # Vertical slices by feature
+├── Auth/
+│   ├── Commands/
+│   │   ├── Login/
+│   │   │   ├── LoginCommand.cs
+│   │   │   ├── LoginCommandHandler.cs
+│   │   │   └── LoginCommandValidator.cs
+│   │   ├── RefreshToken/
+│   │   └── ChangePassword/
+│   └── Queries/
+│       ├── GetActiveSession/
+│       └── GetCurrentUser/
+├── Users/
+│   ├── Commands/CreateUser/
+│   ├── Commands/UpdateUser/
+│   ├── Commands/DeleteUser/
+│   └── Queries/GetUsers/
+├── Roles/
+├── Permissions/
+├── Tenants/
+├── Audit/
+└── Notifications/
 
----
+Specifications/                    # Query specifications
+├── Users/ActiveUsersSpec.cs
+├── Roles/RoleByIdSpec.cs
+└── RefreshTokens/ExpiredRefreshTokensSpec.cs
 
-## 🔧 Architecture Layers
+Behaviors/                         # Pipeline middleware
+├── PerformanceMiddleware.cs      # Request timing
+├── LoggingMiddleware.cs          # Request/response logging
+└── HandlerAuditMiddleware.cs     # Command/Query audit tracking
+```
 
-### Domain Layer (`NOIR.Domain`)
-**Purpose**: Core business logic, entities, value objects
+**Pattern:** Vertical Slice Architecture - Each feature is self-contained in one folder
 
-**Key Components**:
-- `Entity<TId>` - Base entity (Id, timestamps)
-- `AggregateRoot<TId>` - DDD aggregate with domain events
-- `Result<T>` - Railway-oriented error handling
-- `IAuditableEntity` - Soft delete + audit fields
+### NOIR.Infrastructure (180 files)
 
-**Entities**: 30+ domain entities including Tenant, User, Permission, Post, Media, Notification
+**Purpose:** External integrations (Database, Identity, Email, Cache)
+**Target Framework:** .NET 10
+**Dependencies:** Application, EF Core, ASP.NET Identity, Hangfire
 
-### Application Layer (`NOIR.Application`)
-**Purpose**: CQRS commands/queries, specifications, DTOs
+**Key Components:**
 
-**Pattern**: Vertical slice architecture
-- Commands: `Features/{Feature}/Commands/{Action}/`
-- Queries: `Features/{Feature}/Queries/{Action}/`
-- Co-located: Handler + Validator + Command in same folder
+```
+Persistence/
+├── ApplicationDbContext.cs       # EF Core DbContext
+├── Configurations/               # Entity configurations (IEntityTypeConfiguration)
+├── Interceptors/
+│   ├── AuditableEntityInterceptor.cs   # Auto-set audit fields
+│   ├── DomainEventInterceptor.cs       # Dispatch domain events
+│   └── TenantIdSetterInterceptor.cs    # Auto-set TenantId
+├── Repositories/Repository.cs    # Generic repository implementation
+└── SpecificationEvaluator.cs     # Execute specifications
 
-**Key Features**:
-- Specifications for all queries (no raw DbSet access)
-- FluentValidation for all commands
-- MediatR pipeline behaviors (logging, validation, audit)
+Identity/
+├── ApplicationUser.cs            # ASP.NET Identity user
+├── TokenService.cs               # JWT token generation
+├── RefreshTokenService.cs        # Refresh token management
+├── UserIdentityService.cs        # User CRUD operations
+└── Authorization/
+    ├── PermissionPolicyProvider.cs        # Dynamic permissions
+    ├── PermissionAuthorizationHandler.cs  # Permission checks
+    └── ResourceAuthorizationHandler.cs    # Resource-level auth
 
-### Infrastructure Layer (`NOIR.Infrastructure`)
-**Purpose**: EF Core, ASP.NET Identity, external services
+Services/
+├── EmailService.cs               # FluentEmail wrapper
+├── FileStorageService.cs         # File upload/download
+├── ImageProcessorService.cs      # Image resizing
+├── LocalizationService.cs        # i18n support
+└── BackgroundJobsService.cs      # Hangfire wrapper
 
-**Key Services**:
-- `ApplicationDbContext` - EF Core DbContext
-- `UserIdentityService` - Identity operations
-- `EmailService` - Email with templating
-- `Repository<T>` - Generic repository pattern
+Audit/
+├── HttpRequestAuditMiddleware.cs        # HTTP audit logging
+├── HandlerAuditMiddleware.cs            # Command/Query audit
+└── WolverineBeforeStateProvider.cs      # Before-state capture
+```
 
-### Web Layer (`NOIR.Web`)
-**Purpose**: Minimal API endpoints, middleware, React SPA
+### NOIR.Web (47 files + frontend)
 
-**Backend**:
-- Wolverine message bus for CQRS
-- Minimal API endpoints
-- JWT authentication
-- Multi-tenancy (Finbuckle)
+**Purpose:** ASP.NET Core API host + React SPA
+**Target Framework:** .NET 10
+**Dependencies:** Infrastructure, Wolverine
 
-**Frontend**:
-- React 19 + TypeScript
-- TanStack Query for data fetching
-- shadcn/ui + Radix UI components
-- Tailwind CSS v4
+**Key Files:**
+
+```
+Program.cs                        # Application entry point
+Endpoints/
+├── AuthEndpoints.cs
+├── UserEndpoints.cs
+├── RoleEndpoints.cs
+├── TenantEndpoints.cs
+└── AuditEndpoints.cs
+
+Middleware/
+├── CurrentUserLoaderMiddleware.cs     # Load user from DB
+├── ExceptionHandlingMiddleware.cs    # Global error handler
+└── SecurityHeadersMiddleware.cs      # Security headers
+
+frontend/                         # React 19 SPA (162 files)
+├── src/
+│   ├── pages/                    # Route components
+│   │   ├── Landing.tsx
+│   │   ├── Login.tsx
+│   │   └── portal/
+│   │       ├── Dashboard.tsx
+│   │       └── admin/
+│   │           ├── users/
+│   │           ├── roles/
+│   │           ├── tenants/
+│   │           └── audit/
+│   ├── components/               # Reusable components
+│   │   ├── ui/                   # shadcn/ui + 21st.dev
+│   │   ├── PermissionGate.tsx
+│   │   └── ProtectedRoute.tsx
+│   ├── services/                 # API client
+│   │   ├── apiClient.ts          # Axios with interceptors
+│   │   ├── auth.ts
+│   │   └── users.ts
+│   ├── hooks/                    # Custom React hooks
+│   │   ├── usePermissions.ts
+│   │   └── usePageContext.ts
+│   ├── contexts/                 # React contexts
+│   │   ├── AuthContext.tsx
+│   │   └── ThemeContext.tsx
+│   ├── types/                    # TypeScript types
+│   │   ├── generated.ts          # Auto-generated from backend
+│   │   └── auth.ts
+│   └── lib/                      # Utilities
+│       └── utils.ts
+├── package.json                  # NPM dependencies
+├── vite.config.ts                # Vite build config
+└── tailwind.config.js            # Tailwind CSS 4 config
+```
 
 ---
 
 ## 🧪 Test Coverage
 
-**Total Tests**: 4,322 (100% passing)
+### Test Projects (2,100+ tests)
 
-| Test Suite | Count | Purpose |
-|------------|-------|---------|
-| Domain.UnitTests | 838 | Entity behavior, business rules |
-| Application.UnitTests | 2,944 | Command/query handlers, specs |
-| IntegrationTests | 515 | API endpoints, database |
-| ArchitectureTests | 25 | Dependency rules, naming |
+| Project | Tests | Purpose |
+|---------|-------|---------|
+| **NOIR.Domain.UnitTests** | 150+ | Entity behavior, value objects, domain events |
+| **NOIR.Application.UnitTests** | 1,200+ | Command/Query handlers, specifications, validators |
+| **NOIR.IntegrationTests** | 700+ | End-to-end API tests with LocalDB |
+| **NOIR.ArchitectureTests** | 50+ | NetArchTest rules (dependency violations) |
 
-**Run Tests**:
-```bash
-dotnet test src/NOIR.sln
+**Key Test Files:**
+
 ```
+tests/
+├── NOIR.Domain.UnitTests/
+│   ├── Common/EntityTests.cs
+│   ├── Common/ResultTests.cs
+│   └── Entities/PermissionTests.cs
+├── NOIR.Application.UnitTests/
+│   ├── Features/Auth/LoginCommandHandlerTests.cs
+│   ├── Features/Users/CreateUserCommandHandlerTests.cs
+│   └── Specifications/ProjectionSpecificationTests.cs
+├── NOIR.IntegrationTests/
+│   ├── AuthEndpointsTests.cs
+│   ├── UserEndpointsTests.cs
+│   └── Persistence/RepositoryTests.cs
+└── NOIR.ArchitectureTests/
+    ├── DependencyTests.cs
+    └── LayerTests.cs
+```
+
+**Run Tests:**
+
+```bash
+dotnet test src/NOIR.sln          # All tests
+dotnet test --filter "FullyQualifiedName~Auth"  # Auth tests only
+```
+
+---
+
+## 🔧 Configuration
+
+### Backend Configuration
+
+| File | Purpose |
+|------|---------|
+| `appsettings.json` | Default configuration |
+| `appsettings.Development.json` | Dev overrides |
+| `appsettings.Production.json` | Prod overrides |
+| User Secrets | Sensitive dev config (`dotnet user-secrets`) |
+
+**Key Settings:**
+
+- **ConnectionStrings:DefaultConnection** - SQL Server connection
+- **JwtSettings** - JWT signing key, expiration
+- **EmailSettings** - SMTP configuration
+- **HangfireSettings** - Background job config
+
+### Frontend Configuration
+
+| File | Purpose |
+|------|---------|
+| `vite.config.ts` | Vite build configuration |
+| `tailwind.config.js` | Tailwind CSS 4 configuration |
+| `tsconfig.json` | TypeScript compiler options |
+| `.env.development` | Dev environment variables |
+| `.env.production` | Prod environment variables |
 
 ---
 
 ## 🔗 Key Dependencies
 
-**Backend**:
-- .NET 10.0 - Runtime
-- EF Core 10.0 - ORM
-- Wolverine 3.x - CQRS message bus
-- Finbuckle.MultiTenant - Multi-tenancy
-- FluentValidation - Input validation
-- Serilog - Structured logging
+### Backend
 
-**Frontend**:
-- React 19.2 - UI library
-- TypeScript 5.9 - Type safety
-- TanStack Query - Server state
-- React Router 7 - Routing
-- shadcn/ui + Radix UI - Component libraries
-- Tailwind CSS 4.1 - Styling
+| Package | Version | Purpose |
+|---------|---------|---------|
+| .NET | 10 LTS | Framework (support until 2028) |
+| EF Core | 10 | ORM |
+| SQL Server | 2022 | Database |
+| Wolverine | 3.x | CQRS messaging |
+| FluentValidation | 11.x | Request validation |
+| Mapperly | 3.x | DTO mapping (source gen) |
+| Finbuckle.MultiTenant | 10.x | Multi-tenancy |
+| ASP.NET Identity | 10 | Authentication |
+| Hangfire | 1.8.x | Background jobs |
+| Serilog | 10.x | Structured logging |
+
+### Frontend
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| React | 19 | UI library |
+| TypeScript | 5.x | Type safety |
+| Vite | Latest | Build tool & dev server |
+| Tailwind CSS | 4 | Styling |
+| React Router | 7 | Client-side routing |
+| shadcn/ui | Latest | UI component primitives |
+| i18next | Latest | Internationalization |
+| axios | Latest | HTTP client |
+| zod | 4.x | Schema validation |
 
 ---
 
-## 📚 Key Documentation
+## 📚 Documentation
+
+### Quick Links
 
 | Document | Purpose |
 |----------|---------|
-| `CLAUDE.md` | Claude Code instructions |
-| `docs/KNOWLEDGE_BASE.md` | Comprehensive codebase guide (v2.0) |
-| `docs/backend/patterns/` | Backend architectural patterns |
-| `docs/backend/patterns/hierarchical-audit-logging.md` | Activity timeline audit pattern |
-| `docs/backend/patterns/jwt-refresh-token.md` | JWT + refresh token flow |
-| `docs/frontend/README.md` | Frontend development guide |
+| [README.md](README.md) | Project overview and quick start |
+| [CLAUDE.md](CLAUDE.md) | AI assistant instructions (Claude Code) |
+| [AGENTS.md](AGENTS.md) | Universal AI agent guidelines |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture overview |
+| [docs/KNOWLEDGE_BASE.md](docs/KNOWLEDGE_BASE.md) | Comprehensive codebase guide |
+| [docs/backend/README.md](docs/backend/README.md) | Backend patterns & guides |
+| [docs/frontend/README.md](docs/frontend/README.md) | Frontend architecture |
+| [docs/decisions/](docs/decisions/) | Architecture Decision Records (ADRs) |
 
----
+### Documentation Structure
 
-## 📝 Recent Changes
-
-### v3.0 - Clean Migration Reset (2026-01-20)
-
-**Migration Cleanup**:
-1. **Dropped database** and removed all existing migrations (5 → 1)
-2. **Created fresh InitialCreate** migration with current clean schema
-3. **Removed migration history clutter** from back-and-forth changes
-4. **All functionality preserved**: Platform admin support, tenant isolation, React 19 compatibility
-
-**Current State**:
-- ✅ Single clean InitialCreate migration (20260120140620)
-- ✅ RefreshToken excluded from tenant filter (user-scoped sessions)
-- ✅ Notification platform admin skip in service layer (tenant-scoped data)
-- ✅ React 19 compatible tooltips (Radix UI)
-- ✅ Platform/Tenant pattern with DatabaseConstants
-- ✅ 100% test pass rate maintained (4,322 tests)
-
-**Architectural Decisions Preserved**:
-- **RefreshToken**: User-scoped, excluded from tenant filter
-- **Notification**: Tenant-scoped, filtered at query level, skipped for platform admins at service level
-- **Platform/Tenant Entities**: EmailTemplate, TenantSetting, PermissionTemplate with filtered indexes
-- **Multi-Tenancy**: Query filters via Finbuckle.MultiTenant for tenant isolation
-
-### v2.0 - Platform/Tenant Pattern Optimization (2026-01-20) [ARCHIVED]
-
-**Platform/Tenant Pattern Optimization**:
-1. Created `DatabaseConstants.cs` for schema consistency
-2. Added `PlatformTenantEntity<TId>` and `PlatformTenantAggregateRoot<TId>` base classes
-3. Refactored EmailTemplate, TenantSetting, PermissionTemplate to use new bases
-4. Added filtered indexes for 2-3x faster platform default queries
-5. Updated 20+ configuration files to use DatabaseConstants (100% adoption)
-6. Updated KNOWLEDGE_BASE.md with comprehensive platform/tenant documentation
-
-**Schema Changes**:
-- TenantSettings.TenantId: 36→64 characters
-- PermissionTemplates.TenantId: 500→64 characters (type changed Guid?→string?)
-- Added filtered indexes: `IX_EmailTemplates_Platform_Lookup`, `IX_TenantSettings_Platform_Lookup`, `IX_PermissionTemplates_Platform_Lookup`
-
----
-
-## 🚀 Quick Start
-
-**Prerequisites**:
-- .NET 10 SDK
-- Node.js 20+
-- SQL Server (LocalDB or full)
-
-**Setup**:
-```bash
-# Clone repository
-git clone https://github.com/your-org/NOIR.git
-cd NOIR
-
-# Run startup script
-./start-dev.sh  # macOS/Linux
-# or
-start-dev.bat   # Windows
-
-# Access application
-# Frontend: http://localhost:3000
-# Backend: http://localhost:4000
-# Admin: admin@noir.local / 123qwe
+```
+docs/
+├── ARCHITECTURE.md                    # System architecture (v1.1)
+├── KNOWLEDGE_BASE.md                  # Complete codebase reference
+├── API_INDEX.md                       # API endpoint documentation
+├── backend/
+│   ├── README.md
+│   ├── patterns/
+│   │   ├── repository-specification.md
+│   │   ├── hierarchical-audit-logging.md
+│   │   ├── bulk-operations.md
+│   │   └── jwt-refresh-token.md
+│   └── research/
+│       ├── role-permission-best-practices-2025.md
+│       └── hierarchical-audit-logging-comparison-2025.md
+├── frontend/
+│   ├── README.md
+│   ├── api-types.md
+│   └── theme.md
+└── decisions/
+    ├── 001-tech-stack.md
+    ├── 002-frontend-ui-stack.md
+    └── 003-vertical-slice-cqrs.md
 ```
 
-**Manual Setup**:
-```bash
-# Backend
-cd src/NOIR.Web
-dotnet run
+---
 
-# Frontend (separate terminal)
+## 🏗️ Architecture Overview
+
+### Clean Architecture Layers
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                    Web Layer                             │
+│  • API Endpoints (Minimal API)                           │
+│  • Middleware (Auth, Audit, Exception)                   │
+│  • Frontend SPA (React)                                  │
+└─────────────────────┬────────────────────────────────────┘
+                      │ depends on
+┌─────────────────────┴────────────────────────────────────┐
+│               Infrastructure Layer                       │
+│  • EF Core DbContext & Repositories                      │
+│  • ASP.NET Identity (UserManager, RoleManager)           │
+│  • External Services (Email, Storage, Cache)             │
+│  • Audit Interceptors                                    │
+└─────────────────────┬────────────────────────────────────┘
+                      │ implements
+┌─────────────────────┴────────────────────────────────────┐
+│                Application Layer                         │
+│  • Features (Commands, Queries, Handlers)                │
+│  • Specifications (Query criteria)                       │
+│  • DTOs (Data Transfer Objects)                          │
+│  • Validators (FluentValidation)                         │
+│  • Behaviors (Logging, Performance)                      │
+└─────────────────────┬────────────────────────────────────┘
+                      │ depends on
+┌─────────────────────┴────────────────────────────────────┐
+│                  Domain Layer                            │
+│  • Entities (User, Tenant, Permission)                   │
+│  • Value Objects (Email, PhoneNumber)                    │
+│  • Interfaces (IRepository, ISpecification)              │
+│  • Domain Events                                         │
+│  • Business Rules                                        │
+└──────────────────────────────────────────────────────────┘
+```
+
+**Dependency Rule:** ↑ Layers can only depend on layers below them ↑
+
+### Key Patterns
+
+| Pattern | Where | Purpose |
+|---------|-------|---------|
+| **Clean Architecture** | Solution structure | Separation of concerns |
+| **CQRS** | Application layer | Command/Query separation |
+| **Vertical Slice** | Feature organization | Co-locate related code |
+| **Repository** | Data access | Abstract persistence |
+| **Specification** | Queries | Encapsulate query logic |
+| **Unit of Work** | Transactions | Manage DB transactions |
+| **Factory Method** | Entity creation | Controlled instantiation |
+| **Domain Events** | Business logic | Decouple side effects |
+| **Result Pattern** | Error handling | Railway-oriented programming |
+
+---
+
+## 🚦 Development Workflow
+
+### 1. Build the Solution
+
+```bash
+dotnet build src/NOIR.sln
+```
+
+### 2. Run Backend
+
+```bash
+dotnet run --project src/NOIR.Web
+# Or with hot reload:
+dotnet watch --project src/NOIR.Web
+```
+
+### 3. Run Frontend
+
+```bash
 cd src/NOIR.Web/frontend
-npm install
-npm run dev
+npm install && npm run dev
+```
+
+### 4. Run Tests
+
+```bash
+dotnet test src/NOIR.sln
+```
+
+### 5. Generate API Types (Frontend)
+
+```bash
+cd src/NOIR.Web/frontend
+npm run generate:api
+```
+
+### 6. Migrations
+
+```bash
+# CRITICAL: Always specify --context!
+dotnet ef migrations add NAME \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext \
+  --output-dir Migrations/ApplicationDbContext
 ```
 
 ---
 
-## 📊 Repository Statistics
+## 🔒 Security Architecture
 
-- **Languages**: C# (Backend), TypeScript (Frontend)
-- **Total Tests**: 4,322 tests (100% passing)
-- **Build Time**: ~30 seconds
-- **Test Time**: ~2.5 minutes (all tests)
-- **Configuration Files**: 20+ EF Core configurations
-- **Database Migrations**: 1 migration (InitialCreate - clean schema)
-- **Documentation Pages**: 15+ markdown files
+### Authentication Flow
 
----
+```
+User Login → JWT + Refresh Token → HTTP-only Cookie
+          ↓
+     Verify JWT
+          ↓
+   Check Permissions
+          ↓
+    Access Granted
+```
 
-## 🔐 Authentication & Authorization
+### Permission Format
 
-**Authentication**: JWT + Refresh Token pattern
-- Access tokens (15 min expiry)
-- Refresh tokens (7 day expiry)
-- HttpOnly cookies for security
+`{resource}:{action}:{scope}`
 
-**Authorization**: RBAC with hierarchical roles
-- Permission-based authorization
-- Tenant-scoped permissions
-- System vs tenant roles
-
-**Multi-Tenancy**: Finbuckle.MultiTenant
-- String-based tenant IDs (max 64 chars)
-- Host-based tenant resolution
-- Query filter for tenant isolation
-- Excluded entities: Audit logs (system-level operations), RefreshToken (user-scoped sessions)
+**Examples:**
+- `users:read:all` - View all users
+- `users:write:own` - Create/update own tenant's users
+- `audit:view:all` - View all audit logs
 
 ---
 
-**Index Version**: 3.0 (Clean Migration Reset)
-**Last Updated**: 2026-01-20 21:10:00
+## 📊 Project Metrics
+
+| Metric | Count |
+|--------|-------|
+| **Total Source Files** | ~600 |
+| **Backend Files** | ~400 |
+| **Frontend Files** | ~162 |
+| **Test Files** | ~140 |
+| **Total Tests** | 2,100+ |
+| **C# Projects** | 8 (4 src + 4 tests) |
+| **Database Tables** | 25+ |
+| **API Endpoints** | 80+ |
+| **React Components** | 50+ |
+
+---
+
+## 🎯 Quick Start for Contributors
+
+### First-Time Setup
+
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/NOIR-Solution/NOIR.git
+   cd NOIR
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   # Backend: .NET 10 SDK
+   # Frontend: Node.js 20+
+   # Database: SQL Server (LocalDB/Docker)
+   ```
+
+3. **Database Setup**
+   ```bash
+   dotnet ef database update \
+     --project src/NOIR.Infrastructure \
+     --startup-project src/NOIR.Web \
+     --context ApplicationDbContext
+   ```
+
+4. **Run Application**
+   ```bash
+   ./start-dev.sh  # macOS/Linux
+   start-dev.bat   # Windows
+   ```
+
+5. **Login**
+   - URL: http://localhost:3000
+   - Email: `admin@noir.local`
+   - Password: `123qwe`
+
+### Development Tips
+
+- **Read [CLAUDE.md](CLAUDE.md)** for coding patterns and rules
+- **Use Vertical Slice CQRS** for all new features
+- **Always use Specifications** for database queries (never raw DbSet)
+- **Tag all specs** with `TagWith("MethodName")` for SQL debugging
+- **Implement IAuditableCommand** for user actions
+- **Run tests** before committing: `dotnet test src/NOIR.sln`
+
+---
+
+## 📝 Naming Conventions
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Entity | `PascalCase` | `ApplicationUser`, `Tenant` |
+| Specification | `[Entity][Filter]Spec` | `ActiveUsersSpec` |
+| Command | `[Action][Entity]Command` | `CreateUserCommand` |
+| Query | `Get[Entity][Filter]Query` | `GetUsersQuery` |
+| Handler | `[Command/Query]Handler` | `CreateUserCommandHandler` |
+| DTO | `[Entity]Dto` | `UserDto`, `TenantDto` |
+| Validator | `[Command]Validator` | `CreateUserCommandValidator` |
+
+---
+
+## 🔄 Workflow Commands
+
+### Git Workflow
+
+```bash
+git checkout -b feature/my-feature
+# Make changes
+dotnet test src/NOIR.sln
+git add .
+git commit -m "feat: add my feature"
+git push origin feature/my-feature
+```
+
+### Database Workflow
+
+```bash
+# Create migration
+dotnet ef migrations add MyMigration \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext \
+  --output-dir Migrations/ApplicationDbContext
+
+# Apply migration
+dotnet ef database update \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext
+
+# Drop database (dev only)
+dotnet ef database drop \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext \
+  --force
+```
+
+---
+
+## 🏆 Best Practices
+
+### Backend
+
+1. **Use Specifications** for all queries (never raw `DbSet`)
+2. **Tag specifications** with `TagWith("MethodName")`
+3. **Inject IUnitOfWork** for all mutations (Repository doesn't auto-save)
+4. **Use AsTracking** for entities that will be modified
+5. **Implement IAuditableCommand** for user actions
+6. **Co-locate** Command + Handler + Validator in same folder
+7. **Soft delete** by default (IsDeleted flag)
+8. **Use marker interfaces** for DI (IScopedService, ITransientService)
+
+### Frontend
+
+1. **Use 21st.dev** for all new UI components
+2. **Implement real-time validation** (react-hook-form + Zod)
+3. **Check permissions** before rendering actions
+4. **Call usePageContext** on every page for audit tracking
+5. **Handle OTP errors** by clearing input on error
+6. **Add cursor-pointer** to all interactive elements
+7. **Prevent dropdown close** for multi-select (onSelect preventDefault)
+
+---
+
+## 🌐 Deployment
+
+### Production Build
+
+```bash
+# Backend + Frontend
+dotnet build -c Release src/NOIR.sln
+```
+
+Frontend is automatically built and copied to `wwwroot/` during Release build.
+
+### Docker (Future)
+
+```bash
+docker build -t noir:latest .
+docker run -p 80:80 noir:latest
+```
+
+---
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| **Build fails** | Run `dotnet clean src/NOIR.sln` then rebuild |
+| **Database migration error** | Ensure `--context ApplicationDbContext` is specified |
+| **Frontend 404** | Run `npm install` in `src/NOIR.Web/frontend` |
+| **Tests failing** | Check if LocalDB/SQL Server is running |
+| **JWT validation fails** | Check `appsettings.json` JwtSettings |
+
+### Getting Help
+
+- **Documentation:** [docs/](docs/)
+- **Issues:** https://github.com/NOIR-Solution/NOIR/issues
+- **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md)
+
+---
+
+## 📈 Token Economics
+
+**Index Creation:** 2,000 tokens (one-time)
+**Index Reading:** 3,000 tokens (every session)
+**Full Codebase Read:** 58,000 tokens (every session without index)
+
+**Break-even:** 1 session
+**10 sessions savings:** 550,000 tokens
+**100 sessions savings:** 5,500,000 tokens
+
+---
+
+*Last Updated: 2026-01-21 | Version: 2.1 | Clean Architecture + CQRS + Multi-Tenancy*
+*For detailed architecture, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)*
+*For code patterns, see [docs/KNOWLEDGE_BASE.md](docs/KNOWLEDGE_BASE.md)*

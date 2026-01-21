@@ -1,7 +1,7 @@
 # NOIR Architecture Overview
 
-**Last Updated:** 2026-01-20
-**Version:** 1.0
+**Last Updated:** 2026-01-21
+**Version:** 1.1
 
 A comprehensive guide to the NOIR platform architecture, design patterns, and technical decisions.
 
@@ -12,13 +12,14 @@ A comprehensive guide to the NOIR platform architecture, design patterns, and te
 1. [High-Level Architecture](#high-level-architecture)
 2. [Clean Architecture Layers](#clean-architecture-layers)
 3. [CQRS with Wolverine](#cqrs-with-wolverine)
-4. [Multi-Tenancy Architecture](#multi-tenancy-architecture)
-5. [Authentication & Authorization](#authentication--authorization)
-6. [Data Access Patterns](#data-access-patterns)
-7. [Audit System](#audit-system)
-8. [Frontend Architecture](#frontend-architecture)
-9. [Deployment Architecture](#deployment-architecture)
-10. [Technology Stack](#technology-stack)
+4. [Middleware Pipeline Order](#middleware-pipeline-order)
+5. [Multi-Tenancy Architecture](#multi-tenancy-architecture)
+6. [Authentication & Authorization](#authentication--authorization)
+7. [Data Access Patterns](#data-access-patterns)
+8. [Audit System](#audit-system)
+9. [Frontend Architecture](#frontend-architecture)
+10. [Deployment Architecture](#deployment-architecture)
+11. [Technology Stack](#technology-stack)
 
 ---
 
@@ -288,6 +289,54 @@ app.MapPost("/api/users", async (
 
 ---
 
+## Middleware Pipeline Order
+
+The middleware pipeline executes in a specific order that is critical for multi-tenancy and user context:
+
+```
+1. Exception Handling (top level)
+   ↓
+2. Authentication (JWT/Cookie)
+   ↓
+3. Multi-Tenant Resolution (Finbuckle)
+   ↓
+4. CurrentUserLoaderMiddleware (loads user profile from DB)
+   ↓
+5. Authorization
+   ↓
+6. Request Logging
+   ↓
+7. Endpoint Execution
+```
+
+### Why CurrentUserLoaderMiddleware Runs After Multi-Tenant?
+
+The `CurrentUserLoaderMiddleware` was introduced in commit 8c411e6 to centralize user profile loading:
+
+- **Needs tenant context** - Requires tenant resolution to query the correct database partition
+- **Loads complete profile** - Fetches full user data (roles, display name, avatar, tenant info)
+- **Caches in request scope** - Stores in `HttpContext.Items` for request lifetime
+- **JWT limitations** - JWT claims alone don't contain full user profile data
+
+**Benefits:**
+- Single source of truth for current user data
+- Reduces database queries (one load per request vs multiple)
+- Consistent user context across entire request pipeline
+- Simplifies role and permission checks
+
+**Implementation:**
+```csharp
+// In Program.cs
+app.UseAuthentication();
+app.UseMultiTenant();
+app.UseMiddleware<CurrentUserLoaderMiddleware>();  // Must run after multi-tenant
+app.UseAuthorization();
+```
+
+**Reference:** `src/NOIR.Web/Middleware/CurrentUserLoaderMiddleware.cs`
+
+---
+
 ## Multi-Tenancy Architecture
 
 NOIR implements **multi-tenancy** using **Finbuckle.MultiTenant** with database-per-schema isolation.
@@ -392,6 +441,38 @@ var templates = await _dbContext.Set<EmailTemplate>()
 var template = templates.FirstOrDefault(t => t.TenantId == currentTenantId)
     ?? templates.FirstOrDefault(t => t.TenantId == null);
 ```
+
+### System User Isolation
+
+**Platform admins and system processes MUST have `TenantId = null` for cross-tenant access.**
+
+NOIR enforces strict isolation for system users to prevent accidental tenant contamination:
+
+```csharp
+public class ApplicationUser : IdentityUser
+{
+    public string? TenantId { get; set; }  // null = system user
+    public bool IsSystemUser { get; set; }  // Platform admin or system process
+    // ...
+}
+```
+
+**Protection Mechanism:**
+
+The `TenantIdSetterInterceptor` protects system users from accidental tenant assignment:
+
+1. **Checks `IsSystemUser` flag BEFORE entity state checks**
+2. **Prevents `TenantId` modification** for system users (always keeps `null`)
+3. **Database seeder automatically creates** platform admin with correct values
+4. **Fixes drift on startup** - Ensures platform admin always has `TenantId = null`
+
+**Verification:**
+
+Check logs for: `"Created platform admin user: {Email} (TenantId = null)"`
+
+**CRITICAL:** Never manually set `TenantId` on users with `IsSystemUser = true`. The interceptor will prevent it, but this indicates a logic error.
+
+**Reference:** See `docs/backend/architecture/tenant-id-interceptor.md` for detailed implementation.
 
 ### User-Tenant Membership
 

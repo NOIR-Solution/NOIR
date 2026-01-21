@@ -59,8 +59,32 @@ Frontend builds to `src/NOIR.Web/wwwroot/` for embedding in .NET app.
 - See `docs/frontend/theme.md` for customization
 
 ## Component Patterns
-- shadcn/ui for base components
-- 21st.dev for additional components
+
+### 21st.dev Component Standard (MANDATORY)
+
+**All frontend UI components and pages MUST use 21st.dev for consistency and best UI/UX.**
+
+**Benefits:**
+- Modern design patterns (glassmorphism, animations, micro-interactions)
+- Accessible components (WCAG compliant)
+- Responsive layouts (mobile-first)
+- Consistent spacing, typography, and color schemes
+
+**When to use:**
+- Building new UI components or pages
+- Creating forms, dialogs, tables, pagination
+- Need page headers, empty states, or common patterns
+
+**DO NOT:**
+- Hand-build pagination, page headers, empty states
+- Create custom form validation state management
+- Write inline gradient/focus styling
+
+**Implementation:** Use `mcp__magic__21st_magic_component_builder` tool in Claude Code
+
+### Base Component Library
+- shadcn/ui for base component primitives
+- Radix UI for accessible primitives
 - Tailwind for custom styling
 
 ## Cross-Component Communication

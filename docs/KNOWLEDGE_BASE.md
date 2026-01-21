@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-20
-**Version:** 2.1
+**Last Updated:** 2026-01-21
+**Version:** 2.2
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -51,8 +51,6 @@ var userDto = new CurrentUserDto(
 - `/api/auth/me` response omits `tenantId` field (null value)
 - JWT token has no `tenant_id` claim
 
-**Doc:** [backend/bugfixes/platform-admin-tenant-id-bug.md](backend/bugfixes/platform-admin-tenant-id-bug.md)
-
 ---
 
 ### Removal of Tenant Fallback Strategy
@@ -101,6 +99,114 @@ CREATE INDEX IX_EntityName_Platform_Lookup
 ON EntityTable (Name, IsActive)
 WHERE TenantId IS NULL AND IsDeleted = 0;
 ```
+
+**Doc:** [backend/architecture/tenant-id-interceptor.md](backend/architecture/tenant-id-interceptor.md)
+
+---
+
+### CurrentUserLoaderMiddleware Pattern
+
+**Improvement:** Centralized user profile loading in middleware (commit 8c411e6).
+
+**Before:** Multiple endpoints and services were independently loading user data from database, causing:
+- Repeated database queries per request
+- Inconsistent user context across request pipeline
+- Scattered user loading logic
+
+**After:** Single middleware loads complete user profile once per request:
+
+```csharp
+public class CurrentUserLoaderMiddleware
+{
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (context.User.Identity?.IsAuthenticated == true)
+        {
+            var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _userRepository.GetByIdAsync(userId);
+            context.Items["CurrentUserProfile"] = user;  // Cache for request
+        }
+        await _next(context);
+    }
+}
+```
+
+**Benefits:**
+- **Performance:** One DB query per request instead of multiple
+- **Consistency:** Same user data across entire request pipeline
+- **Simplified code:** Services just read from `HttpContext.Items`
+
+**Key Insight:** Middleware runs **after** multi-tenant resolution so it queries the correct tenant's database partition.
+
+**Reference:** `src/NOIR.Web/Middleware/CurrentUserLoaderMiddleware.cs`
+
+---
+
+### Role Constants Centralization
+
+**Improvement:** Unified role name constants in `RoleConstants` class (commit 8c411e6).
+
+**Before:** Role names were magic strings scattered across 15+ files:
+```csharp
+if (user.Roles.Contains("PlatformAdmin"))  // ❌ Typo-prone
+```
+
+**After:** Centralized constants prevent typos and enable refactoring:
+```csharp
+public static class RoleConstants
+{
+    public const string PlatformAdmin = "PlatformAdmin";
+    public const string TenantOwner = "TenantOwner";
+    public const string TenantAdmin = "TenantAdmin";
+    // ...
+}
+
+if (user.Roles.Contains(RoleConstants.PlatformAdmin))  // ✅ Type-safe
+```
+
+**Impact:** Refactored 15+ files to use constants, eliminating magic strings.
+
+---
+
+### Tooltip Migration to Radix UI
+
+**Improvement:** Replaced custom tooltip with Radix UI `Tooltip` component (commit cc3d713).
+
+**Before:** Custom CSS-based tooltip with accessibility issues and browser inconsistencies.
+
+**After:** Radix UI primitives provide:
+- ARIA-compliant accessibility
+- Keyboard navigation support
+- Portal rendering (avoids z-index issues)
+- Consistent cross-browser behavior
+
+**Reference:** `src/NOIR.Web/frontend/src/components/ui/tooltip.tsx`
+
+---
+
+### RefreshToken Filtering Fix
+
+**Bug Fix:** Fixed refresh token lookup to exclude expired tokens (commit eb8bd1d).
+
+**Issue:** `GetActiveRefreshTokenAsync` was returning expired tokens, causing refresh failures.
+
+**Solution:**
+```csharp
+// BEFORE (returned expired tokens)
+var token = await _dbContext.RefreshTokens
+    .FirstOrDefaultAsync(t => t.Token == refreshToken && t.IsActive);
+
+// AFTER (excludes expired tokens)
+var token = await _dbContext.RefreshTokens
+    .FirstOrDefaultAsync(t =>
+        t.Token == refreshToken &&
+        t.IsActive &&
+        t.ExpiresAt > DateTimeOffset.UtcNow);  // ✅ Check expiration
+```
+
+**Impact:** Prevents token refresh with already-expired refresh tokens.
+
+---
 
 **Doc:** [backend/architecture/tenant-id-interceptor.md](backend/architecture/tenant-id-interceptor.md)
 
@@ -329,6 +435,27 @@ Entities that implement `ISeedableEntity` support version-based seed updates:
 | Query | `GetCurrentUserQuery` | `Queries/GetCurrentUser/` |
 | Query | `GetUserByIdQuery` | `Queries/GetUserById/` |
 | DTO | `AuthResponse` | `DTOs/AuthResponse.cs` |
+
+**OTP Flow Canonical Pattern:**
+
+All OTP-based features (Password Reset, Email Change, Phone Verification, etc.) MUST follow the canonical pattern for consistency and security:
+
+**Reference Implementation:** `PasswordResetService.cs`
+
+**Key Requirements** (from CLAUDE.md Critical Rule #14):
+1. **Backend bypass prevention:** When user requests OTP with same target:
+   - If cooldown active → Return existing session (no new OTP, no email)
+   - If cooldown passed, same target → Use `ResendOtpInternalAsync` (keeps sessionToken, new OTP)
+   - If cooldown passed, different target → Mark old OTP used, create new session
+2. **Frontend error handling:** Clear OTP input on verification error (use `useEffect` watching `serverError`)
+3. **Session token stability:** Use refs (`sessionTokenRef`) to avoid stale closures
+
+**Why This Matters:**
+- Prevents OTP bypass attacks (reusing old session tokens)
+- Consistent UX across all OTP features
+- Prevents rate limit abuse
+
+**See:** CLAUDE.md Critical Rule #14 for complete pattern details
 
 **Related:** [AuthEndpoints](#auth-endpoints), [TokenService](#identity-services)
 
@@ -1117,16 +1244,13 @@ dotnet test --collect:"XPlat Code Coverage"
 |----------|------|-------------|
 | Audit Logging Comparison | `docs/backend/research/hierarchical-audit-logging-comparison-2025.md` | Technology comparison |
 | Role & Permission Systems | `docs/backend/research/role-permission-best-practices-2025.md` | Best practices |
-| IUnitOfWork & EF Core | `docs/backend/research/research_iunitofwork_efcore_best_practices_20250103.md` | Persistence patterns |
 | Cache Busting | `docs/backend/research/cache-busting-best-practices.md` | Frontend cache strategies |
-| Developer Log System | `docs/backend/research/developer-log-system-research.md` | Real-time log streaming |
 | Role Permission Management | `docs/backend/research/role-permission-management-research.md` | Permission system design |
 
-### Bug Fixes & Architecture Notes
+### Architecture Notes
 
 | Document | Path | Description |
 |----------|------|-------------|
-| Platform Admin Tenant Bug | `docs/backend/bugfixes/platform-admin-tenant-id-bug.md` | Platform admin tenant fix (2026-01-20) |
 | Tenant ID Interceptor | `docs/backend/architecture/tenant-id-interceptor.md` | Multi-tenancy interceptor pattern |
 
 ### Frontend Documentation
@@ -1145,7 +1269,6 @@ dotnet test --collect:"XPlat Code Coverage"
 
 | Document | Path | Description |
 |----------|------|-------------|
-| Developer Log UI | `docs/frontend/designs/developer-log-ui-ux-design.md` | Real-time log viewer design |
 | Notification Dropdown | `docs/frontend/designs/notification-dropdown-ui-design.md` | Notification bell design |
 
 ### Architecture Decisions
@@ -1161,9 +1284,6 @@ dotnet test --collect:"XPlat Code Coverage"
 | Document | Path | Description |
 |----------|------|-------------|
 | Feature Roadmap 2026 | `docs/plans/feature-roadmap-2026.md` | Feature planning |
-| Session Management | `docs/plans/2025-01-12-session-management.md` | Session management implementation |
-| Permission Enforcement | `docs/plans/2025-01-15-permission-enforcement-welcome-email.md` | Permission system rollout |
-| Dark/Light Mode | `docs/plans/2026-01-16-dark-light-mode-design.md` | Theme system design |
 
 ### AI Instructions
 
