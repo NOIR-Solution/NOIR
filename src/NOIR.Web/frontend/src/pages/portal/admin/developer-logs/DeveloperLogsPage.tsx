@@ -1281,6 +1281,17 @@ export default function DeveloperLogsPage() {
     try {
       const response = await setLogLevel(level)
       setServerLevel(response.level)
+
+      // Also update display filter to match server level
+      // This syncs the behavior so when user sets "Fatal" server level,
+      // display also filters to show only Fatal+ levels
+      const levelIndex = LOG_LEVELS.findIndex(l => l.value === level)
+      if (levelIndex >= 0) {
+        const levelsToShow = new Set<DevLogLevel>(
+          LOG_LEVELS.slice(levelIndex).map(l => l.value)
+        )
+        setLiveSelectedLevels(levelsToShow)
+      }
     } catch {
       // Error visible in network tab
     } finally {
@@ -1321,9 +1332,16 @@ export default function DeveloperLogsPage() {
   // Filter entries locally
   const filteredEntries = useMemo(() => {
     let result = entries.filter(entry => {
-      // Level filter
-      if (liveSelectedLevels.size > 0 && !liveSelectedLevels.has(entry.level)) {
-        return false
+      // Level filter - normalize comparison to handle potential type mismatches
+      if (liveSelectedLevels.size > 0) {
+        // Check if entry level is in selected levels (case-insensitive for safety)
+        const entryLevel = String(entry.level)
+        const isLevelSelected = Array.from(liveSelectedLevels).some(
+          selectedLevel => selectedLevel.toLowerCase() === entryLevel.toLowerCase()
+        )
+        if (!isLevelSelected) {
+          return false
+        }
       }
 
       // Search filter
@@ -1340,7 +1358,8 @@ export default function DeveloperLogsPage() {
       // Errors only filter - includes exceptions AND error/warning level logs
       // This catches both thrown exceptions and business logic failures (Result.Failure)
       if (exceptionsOnly) {
-        const isError = entry.level === 'Error' || entry.level === 'Warning' || entry.exception
+        const levelLower = String(entry.level).toLowerCase()
+        const isError = levelLower === 'error' || levelLower === 'warning' || levelLower === 'fatal' || entry.exception
         if (!isError) {
           return false
         }
@@ -1471,7 +1490,8 @@ export default function DeveloperLogsPage() {
                   onValueChange={handleLevelChange}
                   disabled={isChangingLevel}
                 >
-                  <SelectTrigger className="w-[130px] h-8" title="Server minimum log level">
+                  <SelectTrigger className="w-[160px] h-8" title="Server minimum log level - also filters display">
+                    <span className="text-muted-foreground mr-1">Min:</span>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

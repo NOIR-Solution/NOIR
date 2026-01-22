@@ -66,8 +66,9 @@ public interface IAuditLogQueryService
 
     /// <summary>
     /// Gets detailed information about a specific activity entry.
+    /// Returns Forbidden error if user doesn't have access to the activity.
     /// </summary>
-    Task<ActivityDetailsDto?> GetActivityDetailsAsync(
+    Task<Result<ActivityDetailsDto>> GetActivityDetailsAsync(
         Guid handlerAuditLogId,
         CancellationToken ct = default);
 

@@ -84,7 +84,7 @@ public class GetActivityDetailsQueryHandlerTests
 
         _auditLogQueryServiceMock
             .Setup(x => x.GetActivityDetailsAsync(activityId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedDetails);
+            .ReturnsAsync(Result.Success(expectedDetails));
 
         var query = new GetActivityDetailsQuery(activityId);
 
@@ -112,7 +112,7 @@ public class GetActivityDetailsQueryHandlerTests
 
         _auditLogQueryServiceMock
             .Setup(x => x.GetActivityDetailsAsync(activityId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedDetails);
+            .ReturnsAsync(Result.Success(expectedDetails));
 
         var query = new GetActivityDetailsQuery(activityId);
 
@@ -166,7 +166,7 @@ public class GetActivityDetailsQueryHandlerTests
 
         _auditLogQueryServiceMock
             .Setup(x => x.GetActivityDetailsAsync(activityId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failedDetails);
+            .ReturnsAsync(Result.Success(failedDetails));
 
         var query = new GetActivityDetailsQuery(activityId);
 
@@ -192,7 +192,8 @@ public class GetActivityDetailsQueryHandlerTests
 
         _auditLogQueryServiceMock
             .Setup(x => x.GetActivityDetailsAsync(nonExistentId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ActivityDetailsDto?)null);
+            .ReturnsAsync(Result.Failure<ActivityDetailsDto>(
+                Error.NotFound($"Activity entry with ID {nonExistentId} was not found.", ErrorCodes.Business.NotFound)));
 
         var query = new GetActivityDetailsQuery(nonExistentId);
 
@@ -213,7 +214,8 @@ public class GetActivityDetailsQueryHandlerTests
 
         _auditLogQueryServiceMock
             .Setup(x => x.GetActivityDetailsAsync(emptyGuid, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ActivityDetailsDto?)null);
+            .ReturnsAsync(Result.Failure<ActivityDetailsDto>(
+                Error.NotFound($"Activity entry with ID {emptyGuid} was not found.", ErrorCodes.Business.NotFound)));
 
         var query = new GetActivityDetailsQuery(emptyGuid);
 
@@ -240,7 +242,7 @@ public class GetActivityDetailsQueryHandlerTests
 
         _auditLogQueryServiceMock
             .Setup(x => x.GetActivityDetailsAsync(activityId, token))
-            .ReturnsAsync(expectedDetails);
+            .ReturnsAsync(Result.Success(expectedDetails));
 
         var query = new GetActivityDetailsQuery(activityId);
 
@@ -285,7 +287,7 @@ public class GetActivityDetailsQueryHandlerTests
 
         _auditLogQueryServiceMock
             .Setup(x => x.GetActivityDetailsAsync(activityId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedDetails);
+            .ReturnsAsync(Result.Success(expectedDetails));
 
         var query = new GetActivityDetailsQuery(activityId);
 
@@ -296,6 +298,32 @@ public class GetActivityDetailsQueryHandlerTests
         _auditLogQueryServiceMock.Verify(
             x => x.GetActivityDetailsAsync(activityId, It.IsAny<CancellationToken>()),
             Times.Once);
+    }
+
+    #endregion
+
+    #region Forbidden Scenarios
+
+    [Fact]
+    public async Task Handle_WhenUnauthorizedAccess_ShouldReturnForbiddenError()
+    {
+        // Arrange
+        var activityId = Guid.NewGuid();
+
+        _auditLogQueryServiceMock
+            .Setup(x => x.GetActivityDetailsAsync(activityId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Failure<ActivityDetailsDto>(
+                Error.Forbidden("You do not have permission to view this activity.", ErrorCodes.Auth.Forbidden)));
+
+        var query = new GetActivityDetailsQuery(activityId);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Type.Should().Be(ErrorType.Forbidden);
+        result.Error.Code.Should().Be(ErrorCodes.Auth.Forbidden);
     }
 
     #endregion

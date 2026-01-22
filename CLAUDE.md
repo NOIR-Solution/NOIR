@@ -491,7 +491,10 @@ dotnet ef migrations add InitialCreate \
 
 ### Admin Credentials
 
-**Login:** `admin@noir.local` / `123qwe`
+| Account | Email | Password |
+|---------|-------|----------|
+| **Platform Admin** | `platform@noir.local` | `123qwe` |
+| **Tenant Admin** | `admin@noir.local` | `123qwe` |
 
 ---
 

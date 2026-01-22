@@ -26,7 +26,58 @@ A comprehensive cross-referenced guide to the NOIR codebase, patterns, and archi
 
 ## Recent Fixes & Improvements
 
-**Last Session:** 2026-01-20
+**Last Session:** 2026-01-23
+
+### Activity Timeline Tenant Filtering Fix
+
+**Issue:** Tenant admins could see platform-level activities in the Activity Timeline by clicking on activity entries.
+
+**Root Cause:** `AuditLogQueryService.GetActivityDetailsAsync` wasn't checking tenant access before returning activity details.
+
+**Fix:** Added tenant access check in `GetActivityDetailsAsync`:
+```csharp
+// Tenant access check: Non-platform admins can only view activities from their tenant
+if (!_currentUser.IsPlatformAdmin && handler.TenantId != _currentUser.TenantId)
+{
+    return Result.Failure<ActivityDetailsDto>(
+        Error.Forbidden("You do not have permission to view this activity.", ErrorCodes.Auth.Forbidden));
+}
+```
+
+**API Change:** `GetActivityDetailsAsync` now returns `Result<ActivityDetailsDto>` instead of `ActivityDetailsDto?` to properly propagate Forbidden/NotFound errors.
+
+---
+
+### Wolverine Development Mode Fix (start-dev.sh)
+
+**Issue:** After restarting the development server, all API calls failed with `JasperFx.CodeGeneration.ExpectedTypeMissingException`.
+
+**Root Cause:** The `start-dev.sh` script used `--no-launch-profile` without setting `ASPNETCORE_ENVIRONMENT`, defaulting to Production mode where Wolverine uses `TypeLoadMode.Static` (expects pre-built handlers).
+
+**Fix:** Updated `start-dev.sh` with two changes:
+
+1. **Set environment explicitly:**
+```bash
+ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS="http://localhost:$BACKEND_PORT" dotnet run ...
+```
+
+2. **Clean generated handlers before build:**
+```bash
+# Clean Wolverine generated handlers (prevents stale handler errors)
+GENERATED_DIR="$BACKEND_DIR/Internal/Generated"
+if [[ -d "$GENERATED_DIR" ]]; then
+    rm -rf "$GENERATED_DIR"
+fi
+```
+
+**Key Insight:** Wolverine's `TypeLoadMode` configuration in `Program.cs`:
+```csharp
+opts.CodeGeneration.TypeLoadMode = builder.Environment.IsProduction()
+    ? TypeLoadMode.Static   // Pre-built handlers (fast startup)
+    : TypeLoadMode.Auto;    // Generate at runtime (development)
+```
+
+---
 
 ### Platform Admin Tenant ID Bug Fix
 

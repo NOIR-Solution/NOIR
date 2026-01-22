@@ -19,16 +19,7 @@ public sealed class GetActivityDetailsQueryHandler
         GetActivityDetailsQuery query,
         CancellationToken cancellationToken)
     {
-        var details = await _auditLogQueryService.GetActivityDetailsAsync(query.Id, cancellationToken);
-
-        if (details is null)
-        {
-            return Result.Failure<ActivityDetailsDto>(
-                Error.NotFound(
-                    $"Activity entry with ID {query.Id} was not found.",
-                    ErrorCodes.Business.NotFound));
-        }
-
-        return Result.Success(details);
+        // Service handles both NotFound and Forbidden errors
+        return await _auditLogQueryService.GetActivityDetailsAsync(query.Id, cancellationToken);
     }
 }

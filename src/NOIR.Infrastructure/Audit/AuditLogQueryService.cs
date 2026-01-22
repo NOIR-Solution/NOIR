@@ -13,10 +13,12 @@ namespace NOIR.Infrastructure.Audit;
 public class AuditLogQueryService : IAuditLogQueryService, IScopedService
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly ICurrentUser _currentUser;
 
-    public AuditLogQueryService(ApplicationDbContext dbContext)
+    public AuditLogQueryService(ApplicationDbContext dbContext, ICurrentUser currentUser)
     {
         _dbContext = dbContext;
+        _currentUser = currentUser;
     }
 
     /// <inheritdoc />
@@ -425,6 +427,13 @@ public class AuditLogQueryService : IAuditLogQueryService, IScopedService
             // Only show activities with page context (UI-triggered actions)
             .Where(h => h.PageContext != null);
 
+        // Tenant filtering: Platform admins see all, tenant users see only their tenant
+        if (!_currentUser.IsPlatformAdmin)
+        {
+            var tenantId = _currentUser.TenantId;
+            query = query.Where(h => h.TenantId == tenantId);
+        }
+
         // Apply filters
         if (!string.IsNullOrWhiteSpace(pageContext))
         {
@@ -544,7 +553,7 @@ public class AuditLogQueryService : IAuditLogQueryService, IScopedService
     }
 
     /// <inheritdoc />
-    public async Task<ActivityDetailsDto?> GetActivityDetailsAsync(
+    public async Task<Result<ActivityDetailsDto>> GetActivityDetailsAsync(
         Guid handlerAuditLogId,
         CancellationToken ct = default)
     {
@@ -557,7 +566,15 @@ public class AuditLogQueryService : IAuditLogQueryService, IScopedService
 
         if (handler is null)
         {
-            return null;
+            return Result.Failure<ActivityDetailsDto>(
+                Error.NotFound($"Activity entry with ID {handlerAuditLogId} was not found.", ErrorCodes.Business.NotFound));
+        }
+
+        // Tenant access check: Non-platform admins can only view activities from their tenant
+        if (!_currentUser.IsPlatformAdmin && handler.TenantId != _currentUser.TenantId)
+        {
+            return Result.Failure<ActivityDetailsDto>(
+                Error.Forbidden("You do not have permission to view this activity.", ErrorCodes.Auth.Forbidden));
         }
 
         // Build timeline entry
@@ -611,7 +628,7 @@ public class AuditLogQueryService : IAuditLogQueryService, IScopedService
             ))
             .ToList();
 
-        return new ActivityDetailsDto(
+        return Result.Success(new ActivityDetailsDto(
             Entry: entry,
             InputParameters: handler.InputParameters,
             OutputResult: handler.OutputResult,
@@ -619,7 +636,7 @@ public class AuditLogQueryService : IAuditLogQueryService, IScopedService
             ErrorMessage: handler.ErrorMessage,
             HttpRequest: httpRequest,
             EntityChanges: entityChanges
-        );
+        ));
     }
 
     /// <inheritdoc />

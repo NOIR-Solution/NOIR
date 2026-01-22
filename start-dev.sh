@@ -208,6 +208,17 @@ main() {
     fi
     printf "\n"
 
+    # Clean Wolverine generated handlers (prevents stale handler errors)
+    print_step "Cleaning generated code"
+    GENERATED_DIR="$BACKEND_DIR/Internal/Generated"
+    if [[ -d "$GENERATED_DIR" ]]; then
+        rm -rf "$GENERATED_DIR"
+        print_ok "Wolverine handlers cleaned"
+    else
+        print_ok "No generated code to clean"
+    fi
+    printf "\n"
+
     # Build backend
     print_step "Backend build"
     cd "$BACKEND_DIR"
@@ -222,7 +233,7 @@ main() {
     # Start backend
     print_step "Starting backend"
     cd "$BACKEND_DIR"
-    ASPNETCORE_URLS="http://localhost:$BACKEND_PORT" dotnet run --no-build --no-launch-profile >"${SCRIPT_DIR}/.backend.log" 2>&1 &
+    ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS="http://localhost:$BACKEND_PORT" dotnet run --no-build --no-launch-profile >"${SCRIPT_DIR}/.backend.log" 2>&1 &
     BACKEND_PID=$!
 
     if ! wait_for_backend; then
@@ -250,7 +261,8 @@ main() {
     printf "   Backend:   %shttp://localhost:%s%s\n" "$CYAN" "$BACKEND_PORT" "$NC"
     printf "   API Docs:  %shttp://localhost:%s/api/docs%s\n" "$CYAN" "$BACKEND_PORT" "$NC"
     printf "\n"
-    printf "   Login: %sadmin@noir.local%s / %s123qwe%s\n" "$WHITE" "$NC" "$WHITE" "$NC"
+    printf "   Platform Admin: %splatform@noir.local%s / %s123qwe%s\n" "$WHITE" "$NC" "$WHITE" "$NC"
+    printf "   Tenant Admin:   %sadmin@noir.local%s / %s123qwe%s\n" "$WHITE" "$NC" "$WHITE" "$NC"
     printf "\n"
     printf "%s   Press Ctrl+C to stop%s\n" "$YELLOW" "$NC"
     printf "\n"
