@@ -447,7 +447,6 @@ app.MapNotificationEndpoints();
 app.MapAuditEndpoints();
 app.MapDeveloperLogEndpoints();
 app.MapBlogEndpoints();
-app.MapConfigurationEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");

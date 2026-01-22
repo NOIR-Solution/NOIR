@@ -193,10 +193,6 @@ public static class DependencyInjection
         services.Configure<ApplicationSettings>(
             configuration.GetSection(ApplicationSettings.SectionName));
 
-        // Configure Configuration Management settings for live config editing
-        services.Configure<ConfigurationManagementSettings>(
-            configuration.GetSection("ConfigurationManagement"));
-
         // Configure Image Processing settings
         services.AddOptions<ImageProcessingSettings>()
             .Bind(configuration.GetSection(ImageProcessingSettings.SectionName))

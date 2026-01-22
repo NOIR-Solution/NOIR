@@ -4,7 +4,8 @@
     "welcomeTo": "Welcome to",
     "description": "Your secure portal for managing business operations with enterprise-grade security and seamless collaboration.",
     "accessPortal": "Access Portal",
-    "allRightsReserved": "All rights reserved."
+    "allRightsReserved": "All rights reserved.",
+    "trustedBy": "Trusted by innovative teams worldwide"
   },
   "nav": {
     "portal": "Portal",
@@ -106,6 +107,8 @@
     "description": "Manage roles and their permissions",
     "listTitle": "All Roles",
     "createNew": "Create Role",
+    "create": "Create Role",
+    "createTitle": "Create New Role",
     "createDescription": "Create a new role with permissions",
     "editTitle": "Edit Role",
     "editDescription": "Update role settings and permissions",
@@ -113,13 +116,24 @@
     "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
     "searchPlaceholder": "Search roles...",
     "permissions": "Permissions",
+    "permissionsTitle": "Manage Permissions",
     "permissionsDescription": "Manage permissions for this role",
     "managePermissions": "Manage Permissions",
+    "searchPermissions": "Search permissions...",
     "selectAll": "Select All",
     "clearAll": "Clear All",
     "applyTemplate": "Apply Template",
     "permissionsSelected": "{{count}} permissions selected",
+    "selectedCount": "{{count}} permissions selected",
     "noPermissions": "No permissions assigned",
+    "system": "System",
+    "userCount": "{{count}} users",
+    "columns": {
+      "name": "Name",
+      "description": "Description",
+      "users": "Users",
+      "type": "Type"
+    },
     "table": {
       "name": "Name",
       "description": "Description",
@@ -143,6 +157,9 @@
     "title": "Users",
     "description": "Manage platform users and their roles",
     "listTitle": "All Users",
+    "createUser": "Create User",
+    "createTitle": "Create User",
+    "createDescription": "Add a new user to the system",
     "searchPlaceholder": "Search users...",
     "filterByRole": "Filter by role",
     "filterByStatus": "Status",
@@ -163,6 +180,7 @@
     "loadError": "Failed to load user details",
     "editTitle": "Edit User",
     "editDescription": "Update user details and account status",
+    "viewActivity": "View Activity",
     "assignRoles": "Assign Roles",
     "assignRolesTitle": "Assign Roles",
     "assignRolesDescription": "Select roles to assign to \"{{email}}\"",
@@ -183,7 +201,12 @@
       "displayNamePlaceholder": "John Doe",
       "displayNameHint": "Optional. Overrides first/last name display.",
       "lockAccount": "Lock Account",
-      "lockAccountHint": "Prevent user from signing in"
+      "lockAccountHint": "Prevent user from signing in",
+      "emailPlaceholder": "user@example.com",
+      "passwordPlaceholder": "Enter password",
+      "confirmPasswordPlaceholder": "Confirm password",
+      "roles": "Roles",
+      "rolesHint": "Select roles to assign to this user. You can also assign roles later."
     }
   },
   "auth": {
@@ -265,7 +288,9 @@
     "yes": "Yes",
     "no": "No",
     "ok": "OK",
-    "resetPassword": "Reset Password"
+    "resetPassword": "Reset Password",
+    "selectAll": "Select All",
+    "clearAll": "Clear All"
   },
   "labels": {
     "loading": "Loading...",
@@ -315,7 +340,11 @@
     "appearance": "Appearance",
     "darkMode": "Dark Mode",
     "lightMode": "Light Mode",
-    "theme": "Theme"
+    "theme": "Theme",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "openMenu": "Open menu",
+    "permissions": "permissions"
   },
   "theme": {
     "light": "Light",
@@ -409,45 +438,6 @@
     "showDebugLogs": "Show debug logs",
     "resetFilters": "Reset filters",
     "noErrorPatterns": "No error patterns detected"
-  },
-  "platformSettings": {
-    "title": "Platform Settings",
-    "description": "Manage runtime configuration and system settings",
-    "sections": "Configuration Sections",
-    "allowedSections": "Allowed Sections",
-    "restrictedSections": "Restricted Sections",
-    "currentValue": "Current Value",
-    "newValue": "New Value",
-    "save": "Save & Apply",
-    "saveChanges": "Save Changes",
-    "cancel": "Cancel",
-    "backups": "Backups",
-    "backupTimeline": "Backup Timeline",
-    "noBackups": "No backups available",
-    "createdAt": "Created",
-    "createdBy": "By",
-    "size": "Size",
-    "restore": "Restore",
-    "restoreBackup": "Restore Backup",
-    "restartApp": "Restart Application",
-    "restartStatus": "Restart Status",
-    "environment": "Environment",
-    "canRestart": "Can Restart",
-    "lastRestart": "Last Restart",
-    "restartReason": "Reason for Restart",
-    "restartReasonPlaceholder": "e.g., Updated log settings for debugging",
-    "restartWarning": "Restarting will disconnect all users and may cause 10-30 seconds of downtime",
-    "restartConfirm": "I understand, restart now",
-    "autoReload": "Auto-reload (applies instantly)",
-    "requiresRestart": "Requires restart",
-    "forbidden": "Access Denied",
-    "forbiddenMessage": "This configuration section is not allowed for editing",
-    "updateSuccess": "Configuration updated successfully",
-    "updateError": "Failed to update configuration",
-    "restoreSuccess": "Configuration restored from backup",
-    "restoreError": "Failed to restore configuration",
-    "invalidJson": "Invalid JSON format",
-    "selectSection": "Select a configuration section to view or edit"
   },
   "audit": {
     "entityHistory": "Entity History",

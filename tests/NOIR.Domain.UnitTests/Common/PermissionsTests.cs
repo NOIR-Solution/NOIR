@@ -224,15 +224,12 @@ public class PermissionsTests
     [Fact]
     public void Groups_System_ShouldContainAllSystemPermissions()
     {
-        // Assert - now includes 3 new configuration management permissions
-        Permissions.Groups.SystemPermissions.Should().HaveCount(7);
+        // Assert
+        Permissions.Groups.SystemPermissions.Should().HaveCount(4);
         Permissions.Groups.SystemPermissions.Should().Contain(Permissions.SystemAdmin);
         Permissions.Groups.SystemPermissions.Should().Contain(Permissions.SystemAuditLogs);
         Permissions.Groups.SystemPermissions.Should().Contain(Permissions.SystemSettings);
         Permissions.Groups.SystemPermissions.Should().Contain(Permissions.HangfireDashboard);
-        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.System.ViewConfig);
-        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.System.EditConfig);
-        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.System.RestartApp);
     }
 
     [Fact]

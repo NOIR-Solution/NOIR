@@ -2,16 +2,21 @@
 
 Welcome to the NOIR documentation. This folder contains comprehensive guides for both backend and frontend development.
 
-> **Start Here:** [KNOWLEDGE_BASE.md](KNOWLEDGE_BASE.md) - Comprehensive cross-referenced guide to the entire codebase
+> **📍 Start Here:** [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) - Your complete guide to navigating all documentation
+
+> **📚 Learning the Codebase?** [KNOWLEDGE_BASE.md](KNOWLEDGE_BASE.md) - Comprehensive cross-referenced guide to the entire codebase
 
 ## Core Documentation
 
 | Document | Description |
 |----------|-------------|
-| [KNOWLEDGE_BASE.md](KNOWLEDGE_BASE.md) | Complete codebase reference with cross-links |
-| [API_INDEX.md](API_INDEX.md) | REST API endpoint documentation |
+| **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** | 📍 **Start here** - Complete navigation guide to all documentation |
+| **[KNOWLEDGE_BASE.md](KNOWLEDGE_BASE.md)** | Comprehensive codebase reference with deep-dive explanations |
+| **[PROJECT_INDEX.md](PROJECT_INDEX.md)** | Complete project navigation with structure, features, and quick links |
+| **[FEATURE_CATALOG.md](FEATURE_CATALOG.md)** | Complete feature reference with all commands, queries, and endpoints |
+| **[TECH_STACK.md](TECH_STACK.md)** | Complete technology stack reference with versions and rationale |
+| [API_INDEX.md](API_INDEX.md) | REST API endpoint documentation with examples |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Architecture overview, patterns, and decisions |
-| [PROJECT_INDEX.md](PROJECT_INDEX.md) | Project structure and quick navigation |
 
 ## Structure
 

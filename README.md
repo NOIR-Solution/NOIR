@@ -1,120 +1,401 @@
+<div align="center">
+
 # NOIR
 
-> Enterprise-ready .NET 10 + React SaaS foundation with multi-tenancy, Clean Architecture, and comprehensive testing.
+**Enterprise-ready .NET 10 + React 19 SaaS Foundation**
 
-[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
-[![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-2100+-green.svg)](tests/)
+*Multi-tenancy • Clean Architecture • Comprehensive Testing*
 
-## Quick Start
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-2100+-green.svg?style=flat-square)](tests/)
+
+[Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Tech Stack](#-tech-stack) • [Contributing](#-contributing)
+
+</div>
+
+---
+
+## 🎯 What is NOIR?
+
+NOIR is a **production-ready foundation** for building modern SaaS applications. It combines .NET 10's performance with React 19's cutting-edge features, wrapped in Clean Architecture principles.
+
+**Built for:**
+- 🏢 Multi-tenant B2B SaaS applications
+- 🚀 Startups needing to ship fast with quality
+- 👥 Teams seeking best-practice patterns
+- 🎓 Developers learning enterprise architecture
+
+---
+
+## ⚡ Quick Start
+
+### Prerequisites
+
+- **Runtime:** .NET 10 SDK ([Download](https://dotnet.microsoft.com/download/dotnet/10.0))
+- **Frontend:** Node.js 20+ ([Download](https://nodejs.org/))
+- **Database:** SQL Server 2022 (LocalDB on Windows, [Docker](https://hub.docker.com/_/microsoft-mssql-server) on macOS/Linux)
+
+### 🚀 One-Command Start
 
 ```bash
-# Clone and build
+# Clone the repository
 git clone https://github.com/NOIR-Solution/NOIR.git
 cd NOIR
+
+# Build backend
 dotnet build src/NOIR.sln
+```
 
-# Start backend (terminal 1)
-dotnet run --project src/NOIR.Web
+**Development Mode (Recommended):**
 
-# Start frontend with hot reload (terminal 2)
+```bash
+# Terminal 1 - Backend with hot reload (port 4000)
+dotnet watch --project src/NOIR.Web
+
+# Terminal 2 - Frontend with Vite HMR (port 3000)
 cd src/NOIR.Web/frontend
 npm install && npm run dev
-
-# Access: http://localhost:3000
-# API Docs: http://localhost:3000/api/docs
-# Admin: admin@noir.local / 123qwe
 ```
 
-> **Production-like mode:** Build with `dotnet build -c Release` (auto-builds frontend), then access `http://localhost:4000` directly.
+**Production Mode:**
 
-**Requirements:** .NET 10 SDK, Node.js 20+, SQL Server (LocalDB on Windows, Docker on macOS/Linux)
+```bash
+# Build everything (includes frontend)
+dotnet build src/NOIR.sln -c Release
 
-## Features
-
-- **Multi-Tenancy** - Finbuckle.MultiTenant with automatic query filtering
-- **Authentication** - JWT + refresh tokens with cookie support
-- **Authorization** - Role-based + permission-based (`resource:action:scope`)
-- **Audit Logging** - 3-level tracking (HTTP, Handler, Entity)
-- **Soft Delete** - Data safety with GDPR-ready hard delete
-- **Background Jobs** - Hangfire with dashboard
-- **API Documentation** - Scalar with OpenAPI spec
-
-## Tech Stack
-
-| Layer | Technologies |
-|-------|--------------|
-| **Backend** | .NET 10, EF Core 10, SQL Server, Wolverine, FluentValidation, Mapperly |
-| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS 4, shadcn/ui, React Router 7 |
-| **Infrastructure** | Hangfire, Serilog, Finbuckle.MultiTenant, FluentStorage, FluentEmail |
-
-## Project Structure
-
-```
-NOIR/
-├── src/
-│   ├── NOIR.Domain/           # Entities, interfaces, specifications
-│   ├── NOIR.Application/      # Commands, queries, DTOs, behaviors
-│   ├── NOIR.Infrastructure/   # EF Core, handlers, services
-│   └── NOIR.Web/              # API endpoints, middleware
-│       └── frontend/          # React SPA
-├── tests/                     # 2,100+ tests
-├── docs/                      # Documentation
-│   ├── backend/               # Backend patterns & guides
-│   ├── frontend/              # Frontend architecture
-│   └── decisions/             # Architecture Decision Records
-└── .github/                   # GitHub templates
+# Run (backend serves frontend)
+dotnet run --project src/NOIR.Web -c Release
 ```
 
-## Documentation
+### 🌐 Access Points
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| **Frontend** | http://localhost:3000 | `admin@noir.local` / `123qwe` |
+| **API** | http://localhost:4000 | - |
+| **API Docs** | http://localhost:4000/api/docs | - |
+| **Hangfire** | http://localhost:4000/hangfire | Requires `system:hangfire` permission |
+
+---
+
+## ✨ Features
+
+### 🏗️ Architecture
+
+- **Clean Architecture** - Domain, Application, Infrastructure, Web layers
+- **Vertical Slice Architecture** - Features organized by use case, not layer
+- **CQRS** - Command/Query separation with Wolverine messaging
+- **Repository + Specification Pattern** - Reusable, testable queries
+
+### 🔐 Authentication & Authorization
+
+- **JWT + Refresh Tokens** - Secure authentication with token rotation
+- **Role-Based Access Control (RBAC)** - Flexible role management
+- **Permission-Based Authorization** - Granular `resource:action` permissions
+- **Multi-Factor Authentication Ready** - OTP infrastructure in place
+
+### 🏢 Multi-Tenancy
+
+- **Finbuckle.MultiTenant** - Enterprise-grade tenant isolation
+- **Automatic Query Filtering** - Transparent tenant data separation
+- **Tenant Resolution** - Header, claim, and host-based strategies
+- **Per-Tenant Customization** - Isolated settings and configurations
+
+### 📊 Audit & Monitoring
+
+- **3-Level Audit Logging** - HTTP request, Handler command, Entity change
+- **Activity Timeline** - Complete audit trail with before/after states
+- **Real-Time Logs** - SignalR streaming of Serilog logs
+- **Performance Monitoring** - Built-in performance behavior pipeline
+
+### 🔔 Real-Time Communication
+
+- **SignalR Hubs** - Notifications and log streaming
+- **Push Notifications** - Real-time user notifications
+- **Live Updates** - WebSocket-based instant updates
+
+### 📧 Email System
+
+- **Database-Driven Templates** - No .cshtml files, all in database
+- **Multi-Tenant Templates** - Copy-on-write template inheritance
+- **Variable Interpolation** - Mustache-style `{{variable}}` syntax
+- **FluentEmail + MailKit** - Reliable SMTP delivery
+
+### 🗃️ Data Management
+
+- **Soft Delete** - Data safety with restore capability
+- **Bulk Operations** - High-performance batch processing
+- **Change Tracking** - Automatic audit of entity modifications
+- **Optimistic Concurrency** - Conflict detection and resolution
+
+### 🎨 Frontend Features
+
+- **Modern UI** - shadcn/ui components with Tailwind CSS 4
+- **Dark/Light Mode** - System-aware theme switching
+- **Internationalization** - Multi-language support (i18next)
+- **Type-Safe API** - Auto-generated TypeScript types
+- **Form Validation** - React Hook Form + Zod schemas
+
+### 📦 Content Management
+
+- **Blog CMS** - Posts, categories, tags with rich editor
+- **Media Management** - Image upload with processing
+- **File Storage** - Local, Azure Blob, or AWS S3 support
+
+### 🔧 Developer Experience
+
+- **Hot Reload** - Backend and frontend live reloading
+- **Type Generation** - Swagger → TypeScript types
+- **2,100+ Tests** - Unit, Integration, Architecture, E2E
+- **Architecture Tests** - Enforce layer boundaries
+- **Comprehensive Docs** - 9,500+ lines of documentation
+
+---
+
+## 📚 Documentation
+
+### 📖 Core Guides
 
 | Document | Purpose |
 |----------|---------|
-| **[docs/KNOWLEDGE_BASE.md](docs/KNOWLEDGE_BASE.md)** | Comprehensive cross-referenced codebase guide |
-| **[docs/](docs/README.md)** | Complete documentation index |
-| **[CONTRIBUTING.md](CONTRIBUTING.md)** | How to contribute |
-| **[CLAUDE.md](CLAUDE.md)** | AI assistant instructions (Claude Code) |
-| **[AGENTS.md](AGENTS.md)** | Universal AI agent guidelines |
+| **[📍 Documentation Index](docs/DOCUMENTATION_INDEX.md)** | Your navigation hub for all documentation |
+| **[📚 Knowledge Base](docs/KNOWLEDGE_BASE.md)** | Comprehensive codebase reference with deep-dives |
+| **[🗺️ Project Index](docs/PROJECT_INDEX.md)** | Complete project navigation and structure |
+| **[📋 Feature Catalog](docs/FEATURE_CATALOG.md)** | All features, commands, and endpoints |
+| **[🔧 Tech Stack](docs/TECH_STACK.md)** | Technologies with versions and rationale |
 
-### Quick Links
+### 🎯 Quick Links
 
-- [Backend Architecture](docs/backend/README.md) - Clean Architecture, patterns, APIs
-- [Frontend Guide](docs/frontend/README.md) - React SPA structure, theming
-- [Architecture Decisions](docs/decisions/README.md) - ADRs for tech choices
+<table>
+<tr>
+<td width="50%" valign="top">
 
-## Commands
+**Backend (.NET)**
 
-```bash
-# Development
-dotnet watch --project src/NOIR.Web          # Hot reload
-dotnet test src/NOIR.sln                      # Run all tests
+- [Backend Overview](docs/backend/README.md)
+- [Repository Pattern](docs/backend/patterns/repository-specification.md)
+- [DI Auto-Registration](docs/backend/patterns/di-auto-registration.md)
+- [Audit Logging](docs/backend/patterns/hierarchical-audit-logging.md)
+- [Multi-Tenancy](docs/backend/architecture/tenant-id-interceptor.md)
 
-# Database
-dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web
+</td>
+<td width="50%" valign="top">
 
-# Frontend
-cd src/NOIR.Web/frontend
-npm run dev                                   # Dev server
-npm run generate:api                          # Sync types from backend
+**Frontend (React)**
+
+- [Frontend Overview](docs/frontend/README.md)
+- [Architecture](docs/frontend/architecture.md)
+- [Theme System](docs/frontend/theme.md)
+- [API Types](docs/frontend/api-types.md)
+- [Localization](docs/frontend/localization-guide.md)
+
+</td>
+</tr>
+</table>
+
+### 🤖 AI Assistant Guides
+
+- **[CLAUDE.md](CLAUDE.md)** - Claude Code specific instructions
+- **[AGENTS.md](AGENTS.md)** - Universal AI agent guidelines
+
+---
+
+## 🛠️ Tech Stack
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### Backend
+
+| Technology | Purpose |
+|------------|---------|
+| **.NET 10** | Runtime and SDK |
+| **EF Core 10** | ORM with interceptors |
+| **SQL Server** | Primary database |
+| **Wolverine** | CQRS messaging |
+| **FluentValidation** | Command validation |
+| **Mapperly** | Object mapping |
+| **Hangfire** | Background jobs |
+| **Serilog** | Structured logging |
+| **FusionCache** | Hybrid L1/L2 caching |
+
+</td>
+<td width="50%" valign="top">
+
+### Frontend
+
+| Technology | Purpose |
+|------------|---------|
+| **React 19** | UI library |
+| **TypeScript 5.7** | Type safety |
+| **Vite 6** | Build tool |
+| **Tailwind CSS 4** | Utility-first CSS |
+| **shadcn/ui** | Component library |
+| **React Router 7** | Client routing |
+| **React Hook Form** | Form management |
+| **Zod** | Schema validation |
+| **i18next** | Internationalization |
+
+</td>
+</tr>
+</table>
+
+**[📋 Complete Stack](docs/TECH_STACK.md)** - Detailed technology reference with versions and rationale
+
+---
+
+## 📂 Project Structure
+
+```
+NOIR/
+├── 📦 src/
+│   ├── NOIR.Domain/           # 🎯 Entities, interfaces, value objects
+│   ├── NOIR.Application/      # 📋 Commands, queries, DTOs, handlers
+│   ├── NOIR.Infrastructure/   # 🔧 EF Core, services, persistence
+│   └── NOIR.Web/              # 🌐 API endpoints, middleware, SPA host
+│       └── frontend/          # ⚛️  React application
+├── ✅ tests/                  # 2,100+ tests (Unit, Integration, Architecture, E2E)
+├── 📚 docs/                   # 9,500+ lines of documentation
+└── ⚙️  .github/               # CI/CD workflows and templates
 ```
 
-## Contributing
+---
 
-We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+## 🧪 Testing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Follow coding standards in [CLAUDE.md](CLAUDE.md)
-4. Run tests (`dotnet test src/NOIR.sln`)
-5. Submit a pull request
+### Test Coverage
 
-## License
+| Test Type | Project | Count | Coverage |
+|-----------|---------|-------|----------|
+| **Unit Tests** | Domain.UnitTests | 500+ | Domain logic |
+| **Unit Tests** | Application.UnitTests | 600+ | Application logic |
+| **Integration** | IntegrationTests | 900+ | API endpoints |
+| **Architecture** | ArchitectureTests | 100+ | Layer boundaries |
+| **E2E** | frontend/e2e | - | Critical flows |
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+### Running Tests
 
-## Acknowledgments
+```bash
+# All tests
+dotnet test src/NOIR.sln
 
-- [Jason Taylor's Clean Architecture](https://github.com/jasontaylordev/CleanArchitecture)
-- [Wolverine](https://wolverinefx.net/) for CQRS messaging
-- [shadcn/ui](https://ui.shadcn.com/) for React components
+# Specific project
+dotnet test tests/NOIR.IntegrationTests
+
+# With coverage
+dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
+
+# E2E tests
+cd src/NOIR.Web/frontend
+npm run test:e2e
+```
+
+---
+
+## 🚀 Common Commands
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### Development
+
+```bash
+# Backend hot reload
+dotnet watch --project src/NOIR.Web
+
+# Frontend dev server
+cd src/NOIR.Web/frontend
+npm run dev
+
+# Run tests
+dotnet test src/NOIR.sln
+
+# Generate API types
+cd src/NOIR.Web/frontend
+npm run generate:api
+```
+
+</td>
+<td width="50%" valign="top">
+
+### Database
+
+```bash
+# Add migration
+dotnet ef migrations add NAME \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext \
+  --output-dir Migrations/ApplicationDbContext
+
+# Update database
+dotnet ef database update \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext
+```
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Follow** coding standards in [CLAUDE.md](CLAUDE.md)
+4. **Write** tests for new features
+5. **Run** tests (`dotnet test src/NOIR.sln`)
+6. **Commit** with clear messages
+7. **Push** to your fork
+8. **Open** a Pull Request
+
+**Read:** [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+---
+
+## 📜 License
+
+This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 💝 Acknowledgments
+
+NOIR builds on the shoulders of giants:
+
+- **[Clean Architecture](https://github.com/jasontaylordev/CleanArchitecture)** by Jason Taylor - Architectural foundation
+- **[Wolverine](https://wolverinefx.net/)** - CQRS messaging framework
+- **[shadcn/ui](https://ui.shadcn.com/)** - Beautiful React components
+- **[Finbuckle.MultiTenant](https://www.finbuckle.com/MultiTenant/)** - Multi-tenancy framework
+
+---
+
+## 🌟 Why NOIR?
+
+| Aspect | NOIR Advantage |
+|--------|----------------|
+| **Production-Ready** | Battle-tested patterns, comprehensive testing, security built-in |
+| **Developer-Friendly** | Hot reload, type generation, extensive docs, AI-assisted development |
+| **Performance** | Source generators, compiled queries, hybrid caching, optimized builds |
+| **Scalability** | Multi-tenancy, horizontal scaling, efficient data access patterns |
+| **Maintainability** | Clean Architecture, clear patterns, 100% documentation coverage |
+
+---
+
+<div align="center">
+
+**Built with ❤️ by the NOIR Team**
+
+[⭐ Star on GitHub](https://github.com/NOIR-Solution/NOIR) • [📖 Read the Docs](docs/) • [🐛 Report Bug](https://github.com/NOIR-Solution/NOIR/issues) • [💡 Request Feature](https://github.com/NOIR-Solution/NOIR/issues)
+
+</div>

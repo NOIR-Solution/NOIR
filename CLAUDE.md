@@ -1,12 +1,20 @@
-# NOIR - Claude Code Instructions
+<div align="center">
 
-> Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).
+# 🤖 NOIR - Claude Code Instructions
+
+**Your AI-Powered Development Companion**
+
+*Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).*
+
+</div>
 
 ---
 
-## SuperClaude Framework - Quick Guide
+## 🚀 SuperClaude Framework - Quick Guide
 
 **Don't remember commands? Just say what you want in natural language!**
+
+### Common Tasks
 
 | You Say... | Claude Uses |
 |------------|-------------|
@@ -20,26 +28,30 @@
 | "how long will this take" | `/sc:estimate` |
 | "research best practices for X" | `/sc:research` |
 
-**Helpful Commands:**
-```
-/sc:help      - Show all available commands
-/sc:recommend - Get command suggestions for your task
+### Helpful Commands
+
+```bash
+/sc:help      # Show all available commands
+/sc:recommend # Get command suggestions for your task
 ```
 
-**Pro Tips:**
+### 💡 Pro Tips
+
 1. **Natural language works** - Just describe what you need, Claude auto-routes to the right command
 2. **Use `/sc:help`** - When you forget, this shows everything
 3. **Use `/sc:recommend`** - Describes your task, gets the right command suggested
 
 ---
 
-## 🤖 SuperClaude Auto-Routing (CRITICAL - MUST FOLLOW)
+## 🎯 SuperClaude Auto-Routing (CRITICAL - MUST FOLLOW)
 
 **⚠️ CRITICAL:** When user intent matches these patterns, **AUTOMATICALLY invoke the skill** using the Skill tool **BEFORE responding**. Do NOT ask clarifying questions first - invoke the skill immediately and let it handle clarification.
 
-### 🎯 Command Reference by Category
+---
 
-#### 🧠 Planning & Discovery Commands
+## 📋 Command Reference by Category
+
+### 🧠 Planning & Discovery Commands
 
 | Command | Natural Language Triggers | Description |
 |---------|---------------------------|-------------|
@@ -49,7 +61,7 @@
 | `/sc:spec-panel` | review spec, requirements, acceptance criteria, PRD, specification, user stories, feature spec, validate requirements | Multi-expert specification review and improvement |
 | `/sc:workflow` | workflow, process, steps to, sequence, pipeline, from PRD, implementation plan, task breakdown | Generate structured workflows from PRDs and requirements |
 
-#### 💻 Development Commands
+### 💻 Development Commands
 
 | Command | Natural Language Triggers | Description |
 |---------|---------------------------|-------------|
@@ -59,7 +71,7 @@
 | `/sc:cleanup` | refactor, clean up, optimize, simplify, remove dead code, reorganize, tidy, DRY | Code cleanup, dead code removal, and optimization |
 | `/sc:git` | commit, push, merge, branch, git, version control, PR, pull request | Git operations with intelligent commit messages |
 
-#### 🧪 Testing & Quality Commands
+### 🧪 Testing & Quality Commands
 
 | Command | Natural Language Triggers | Description |
 |---------|---------------------------|-------------|
@@ -68,7 +80,7 @@
 | `/sc:troubleshoot` | fix bug, debug, error, not working, broken, fails, issue, problem, crash, exception, why doesn't, doesn't work | Systematic diagnosis and root cause analysis |
 | `/sc:reflect` | reflect, retrospective, what went wrong, lessons learned, review session | Task reflection and validation |
 
-#### 📚 Documentation & Explanation Commands
+### 📚 Documentation & Explanation Commands
 
 | Command | Natural Language Triggers | Description |
 |---------|---------------------------|-------------|
@@ -77,14 +89,14 @@
 | `/sc:index` | index project, catalog, inventory, map codebase, project structure | Generate comprehensive project documentation |
 | `/sc:index-repo` | repo index, repository index, update index | Token-efficient repository indexing (94% reduction) |
 
-#### 🔍 Research & Analysis Commands
+### 🔍 Research & Analysis Commands
 
 | Command | Natural Language Triggers | Description |
 |---------|---------------------------|-------------|
 | `/sc:research` | research, look up, find out, investigate, what is, best practice, how to, latest, current, 2025, 2026 | Deep web research with adaptive planning |
 | `/sc:business-panel` | business analysis, market, stakeholder, ROI, business case | Multi-expert business analysis |
 
-#### 🔧 Orchestration & Utility Commands
+### 🔧 Orchestration & Utility Commands
 
 | Command | Natural Language Triggers | Description |
 |---------|---------------------------|-------------|
@@ -96,7 +108,7 @@
 | `/sc:recommend` | recommend, suggest command, what should I use | Command recommendation engine |
 | `/sc:help` | help, commands, what can you do | List all available /sc commands |
 
-#### 📋 Session Management Commands
+### 📋 Session Management Commands
 
 | Command | Natural Language Triggers | Description |
 |---------|---------------------------|-------------|
@@ -105,9 +117,10 @@
 
 ---
 
-### ⚡ Auto-Routing Priority Rules
+## ⚡ Auto-Routing Priority Rules
 
-#### 🔴 PRIORITY 1: Problem/Error Detection → `/sc:troubleshoot`
+### 🔴 PRIORITY 1: Problem/Error Detection → `/sc:troubleshoot`
+
 **Trigger immediately when user mentions ANY of these:**
 - Error words: `error`, `exception`, `fail`, `crash`, `bug`, `issue`, `problem`
 - Broken state: `not working`, `doesn't work`, `broken`, `stuck`, `hang`, `freeze`
@@ -120,7 +133,8 @@
 - "Why is this test failing?" → `/sc:troubleshoot`
 - "Something's wrong with the database" → `/sc:troubleshoot`
 
-#### 🟠 PRIORITY 2: New Feature/Implementation → `/sc:brainstorm`
+### 🟠 PRIORITY 2: New Feature/Implementation → `/sc:brainstorm`
+
 **Trigger when user wants to ADD something new:**
 - Creation words: `add`, `create`, `new`, `implement`, `build`, `develop`, `make`
 - Feature requests: `feature`, `functionality`, `capability`, `support for`
@@ -132,7 +146,8 @@
 - "Create a new dashboard" → `/sc:brainstorm`
 - "Build export functionality" → `/sc:brainstorm`
 
-#### 🟡 PRIORITY 3: Architecture/Design → `/sc:design`
+### 🟡 PRIORITY 3: Architecture/Design → `/sc:design`
+
 **Trigger when user asks HOW to structure something:**
 - Design words: `design`, `architect`, `structure`, `organize`, `pattern`
 - Planning: `how should`, `what's the best way`, `approach`, `strategy`
@@ -143,7 +158,8 @@
 - "What's the best pattern for this?" → `/sc:design`
 - "Design the notification system" → `/sc:design`
 
-#### 🟢 PRIORITY 4: Code Quality → `/sc:cleanup` or `/sc:improve`
+### 🟢 PRIORITY 4: Code Quality → `/sc:cleanup` or `/sc:improve`
+
 **Use `/sc:cleanup` for:**
 - Refactoring: `refactor`, `clean up`, `simplify`, `reorganize`, `restructure`
 - Code smell: `messy`, `ugly`, `duplicate`, `DRY`, `dead code`
@@ -158,7 +174,8 @@
 - "Make this query faster" → `/sc:improve`
 - "Improve the code quality" → `/sc:improve`
 
-#### 🔵 PRIORITY 5: Testing → `/sc:test`
+### 🔵 PRIORITY 5: Testing → `/sc:test`
+
 **Trigger for test-related requests:**
 - Test words: `test`, `spec`, `coverage`, `TDD`, `unit test`, `integration test`
 - Verification: `verify`, `validate`, `check`, `ensure`
@@ -168,7 +185,8 @@
 - "Add unit tests" → `/sc:test`
 - "Increase test coverage" → `/sc:test`
 
-#### 🟣 PRIORITY 6: Research/Learning → `/sc:research` or `/sc:explain`
+### 🟣 PRIORITY 6: Research/Learning → `/sc:research` or `/sc:explain`
+
 **Use `/sc:research` for:**
 - External knowledge: `best practice`, `how do others`, `industry standard`
 - Technology research: `compare`, `alternatives`, `which library`, `latest`
@@ -182,20 +200,27 @@
 - "Explain how the auth flow works" → `/sc:explain`
 - "What does this specification do?" → `/sc:explain`
 
-#### ⚫ PRIORITY 7: Documentation → `/sc:document`
+### ⚫ PRIORITY 7: Documentation → `/sc:document`
+
 **Trigger for documentation requests:**
 - Doc words: `document`, `docs`, `README`, `comment`, `docstring`, `JSDoc`
 - Writing: `write docs`, `add documentation`, `update README`
 
-#### ⚪ PRIORITY 8: Estimation → `/sc:estimate`
+### ⚪ PRIORITY 8: Estimation → `/sc:estimate`
+
 **Trigger for time/effort questions:**
 - Time: `how long`, `time`, `duration`, `deadline`
 - Effort: `effort`, `complexity`, `estimate`, `scope`
 
-#### 🔘 PRIORITY 9: Git Operations → `/sc:git`
+### 🔘 PRIORITY 9: Git Operations → `/sc:git`
+
 **Trigger for version control:**
 - Git words: `commit`, `push`, `branch`, `merge`, `PR`, `pull request`
 - Save: `save changes`, `check in`
+
+---
+
+## 🎭 Skill Execution Order
 
 **Process skills first (determines HOW to approach):**
 - `/sc:brainstorm` - Vague ideas, new features, requirements gathering
@@ -214,7 +239,7 @@
 
 ---
 
-### 📝 Example Auto-Triggers
+## 📝 Example Auto-Triggers
 
 Real-world examples of automatic skill invocation:
 
@@ -255,7 +280,7 @@ User: "Create index for the project"
 
 ---
 
-### 🚩 SuperClaude Flags (Optional Modifiers)
+## 🚩 SuperClaude Flags (Optional Modifiers)
 
 Enhance command execution with optional flags:
 
@@ -279,7 +304,7 @@ Enhance command execution with optional flags:
 
 ---
 
-### 🔗 Chained Workflows (Auto-Sequence)
+## 🔗 Chained Workflows (Auto-Sequence)
 
 When a task requires multiple steps, chain these commands:
 
@@ -292,14 +317,18 @@ When a task requires multiple steps, chain these commands:
 | **Refactoring** | `/sc:analyze` → `/sc:cleanup` → `/sc:test` | Systematic code improvement |
 | **Documentation** | `/sc:explain` → `/sc:document` → `/sc:index` | Creating comprehensive docs |
 
-### DO NOT Auto-Route When:
+---
+
+## ⛔ DO NOT Auto-Route When
 
 1. **User explicitly names a command** - Just run what they asked
 2. **Simple file operations** - "read file X", "show me Y" - just do it
 3. **Direct questions about this conversation** - "what did we do?"
 4. **Run/start commands** - "run tests", "start website", "build" - execute directly
 
-### Disambiguation Rules
+---
+
+## 🎯 Disambiguation Rules
 
 When multiple patterns match:
 1. **Error/problem keywords ALWAYS win** → `/sc:troubleshoot`
@@ -308,7 +337,9 @@ When multiple patterns match:
 4. **"Clean/refactor" existing code** → `/sc:cleanup`
 5. **"Make better/faster"** → `/sc:improve`
 
-### Quick Command Reference
+---
+
+## 📚 Quick Command Reference
 
 | Category | Commands | Use For |
 |----------|----------|---------|
@@ -322,22 +353,42 @@ When multiple patterns match:
 
 ---
 
-## Critical Rules
+## ⚠️ Critical Rules
 
-1. **Check existing patterns first** - Look at similar files before writing new code
-2. **Use Specifications** for all database queries - Never raw `DbSet` queries in services
-3. **Tag all specifications** with `TagWith("MethodName")` for SQL debugging
-4. **Run `dotnet build src/NOIR.sln`** after code changes
-5. **Soft delete only** - Never hard delete unless explicitly requested for GDPR
-6. **No using statements in files** - Add to `GlobalUsings.cs` in each project
-7. **Use marker interfaces** for DI - Add `IScopedService`, `ITransientService`, or `ISingletonService`
-8. **Use IUnitOfWork for persistence** - Repository methods do NOT auto-save. Always inject `IUnitOfWork` and call `SaveChangesAsync()` after mutations. Never inject `ApplicationDbContext` directly into services.
-9. **Use AsTracking for mutations** - Specifications default to `AsNoTracking`. For specs that retrieve entities for modification, add `.AsTracking()` to enable change detection.
-10. **Co-locate Command + Handler + Validator** - All CQRS components live in the same folder under `Application/Features/{Feature}/Commands/{Action}/` or `Application/Features/{Feature}/Queries/{Action}/`
-11. **Audit logging for user actions** - Commands that create, update, or delete data via frontend MUST implement `IAuditableCommand`. See `docs/backend/patterns/hierarchical-audit-logging.md` for the checklist and pattern. Requires: (a) Command implements `IAuditableCommand<TResult>`, (b) Endpoint sets `UserId` on command, (c) Frontend page calls `usePageContext('PageName')`.
-12. **Enums serialize as strings** - All C# enums are serialized as strings (not integers) for JavaScript compatibility. This is configured in HTTP JSON, SignalR, and Source Generator. See `docs/backend/patterns/json-enum-serialization.md`.
-13. **Register before-state resolvers for Update commands** - Commands implementing `IAuditableCommand<TDto>` with `OperationType.Update` MUST have a before-state resolver registered in `DependencyInjection.cs`. Without this, the Activity Timeline's Handler tab shows "No handler diff available". See `docs/backend/patterns/before-state-resolver.md`. Add: `services.AddBeforeStateResolver<YourDto, GetYourEntityQuery>(targetId => new GetYourEntityQuery(...));`
-14. **OTP flow consistency** - All OTP-based features (Password Reset, Email Change, etc.) MUST follow these patterns to prevent bypass attacks and ensure consistent UX:
+### Core Principles
+
+1. ✅ **Check existing patterns first** - Look at similar files before writing new code
+2. ✅ **Use Specifications** for all database queries - Never raw `DbSet` queries in services
+3. ✅ **Tag all specifications** with `TagWith("MethodName")` for SQL debugging
+4. ✅ **Run `dotnet build src/NOIR.sln`** after code changes
+5. ✅ **Soft delete only** - Never hard delete unless explicitly requested for GDPR
+
+### Dependency Injection
+
+6. ✅ **No using statements in files** - Add to `GlobalUsings.cs` in each project
+7. ✅ **Use marker interfaces** for DI - Add `IScopedService`, `ITransientService`, or `ISingletonService`
+
+### Data Access
+
+8. ✅ **Use IUnitOfWork for persistence** - Repository methods do NOT auto-save. Always inject `IUnitOfWork` and call `SaveChangesAsync()` after mutations. Never inject `ApplicationDbContext` directly into services.
+9. ✅ **Use AsTracking for mutations** - Specifications default to `AsNoTracking`. For specs that retrieve entities for modification, add `.AsTracking()` to enable change detection.
+
+### Architecture
+
+10. ✅ **Co-locate Command + Handler + Validator** - All CQRS components live in the same folder under `Application/Features/{Feature}/Commands/{Action}/` or `Application/Features/{Feature}/Queries/{Action}/`
+
+### Audit & Activity Timeline
+
+11. ✅ **Audit logging for user actions** - Commands that create, update, or delete data via frontend MUST implement `IAuditableCommand`. See `docs/backend/patterns/hierarchical-audit-logging.md` for the checklist and pattern. Requires: (a) Command implements `IAuditableCommand<TResult>`, (b) Endpoint sets `UserId` on command, (c) Frontend page calls `usePageContext('PageName')`.
+13. ✅ **Register before-state resolvers for Update commands** - Commands implementing `IAuditableCommand<TDto>` with `OperationType.Update` MUST have a before-state resolver registered in `DependencyInjection.cs`. Without this, the Activity Timeline's Handler tab shows "No handler diff available". See `docs/backend/patterns/before-state-resolver.md`. Add: `services.AddBeforeStateResolver<YourDto, GetYourEntityQuery>(targetId => new GetYourEntityQuery(...));`
+
+### Serialization
+
+12. ✅ **Enums serialize as strings** - All C# enums are serialized as strings (not integers) for JavaScript compatibility. This is configured in HTTP JSON, SignalR, and Source Generator. See `docs/backend/patterns/json-enum-serialization.md`.
+
+### Security Patterns
+
+14. ✅ **OTP flow consistency** - All OTP-based features (Password Reset, Email Change, etc.) MUST follow these patterns to prevent bypass attacks and ensure consistent UX:
     - **Backend bypass prevention**: When user requests OTP again with same target (email/userId), if an active OTP exists:
       - If cooldown still active → Return existing session (no new OTP, no email)
       - If cooldown passed but same target → Use `ResendOtpInternalAsync` (keeps same sessionToken, generates new OTP)
@@ -345,62 +396,144 @@ When multiple patterns match:
     - **Frontend error handling**: Always clear OTP input on verification error (use `useEffect` to watch `serverError`)
     - **Session token stability**: Use refs (`sessionTokenRef`) to avoid stale closure issues in callbacks
     - Reference: `PasswordResetService.cs` is the canonical implementation pattern
-15. **Error factory method parameter order** - `Error.Validation(propertyName, message, code?)` - The first parameter is the property/field name, second is the human-readable message, third is the optional error code. WRONG: `Error.Validation("message", errorCode)` causes error codes to display instead of messages! CORRECT: `Error.Validation("fieldName", "Message to user", ErrorCodes.SomeCode)`. See `docs/KNOWLEDGE_BASE.md#error-factory-methods` for all factory methods.
-16. **Email templates are database-driven** - Email templates are loaded from the `EmailTemplate` table, NOT from .cshtml files. Templates are seeded by `ApplicationDbContextSeeder.cs` and customized via Admin UI. NEVER create .cshtml files in `src/NOIR.Web/EmailTemplates/` - they are not used by `EmailService.SendTemplateAsync()`. To update email template HTML, edit the database seeder methods (`GetPasswordResetOtpHtmlBody()`, etc.) or use the Admin UI. Multi-tenant architecture: platform defaults (TenantId=null) with tenant-specific overrides (copy-on-write pattern).
-17. **System users must have TenantId = null** - Platform admins and system processes MUST have `IsSystemUser = true` and `TenantId = null` for cross-tenant access. The `TenantIdSetterInterceptor` protects system users from accidental tenant assignment by checking `IsSystemUser` BEFORE any entity state checks. NEVER manually set `TenantId` on system users. The database seeder automatically creates platform admin with correct values and fixes any drift on startup. Verification: Check logs for "Created platform admin user: {Email} (TenantId = null)". See `docs/backend/architecture/tenant-id-interceptor.md`.
-18. **EF Core migrations MUST specify --context** - ALWAYS use `--context ApplicationDbContext` or `--context TenantStoreDbContext` when running `dotnet ef migrations` commands. This project has multiple DbContexts and omitting `--context` will cause errors. Also specify `--output-dir Migrations/ApplicationDbContext` or `--output-dir Migrations/TenantStoreDb` to organize migrations properly. **IMPORTANT:** After generating migrations, the auto-generated files will have a namespace conflict (`NOIR.Infrastructure.Migrations.ApplicationDbContext` namespace vs `ApplicationDbContext` class name). You MUST manually fix the `[DbContext(typeof(ApplicationDbContext))]` attributes to use `typeof(Persistence.ApplicationDbContext)` instead. See Quick Reference for examples.
 
-## Quick Reference
+### Error Handling
+
+15. ✅ **Error factory method parameter order** - `Error.Validation(propertyName, message, code?)` - The first parameter is the property/field name, second is the human-readable message, third is the optional error code. WRONG: `Error.Validation("message", errorCode)` causes error codes to display instead of messages! CORRECT: `Error.Validation("fieldName", "Message to user", ErrorCodes.SomeCode)`. See `docs/KNOWLEDGE_BASE.md#error-factory-methods` for all factory methods.
+
+### Email System
+
+16. ✅ **Email templates are database-driven** - Email templates are loaded from the `EmailTemplate` table, NOT from .cshtml files. Templates are seeded by `ApplicationDbContextSeeder.cs` and customized via Admin UI. NEVER create .cshtml files in `src/NOIR.Web/EmailTemplates/` - they are not used by `EmailService.SendTemplateAsync()`. To update email template HTML, edit the database seeder methods (`GetPasswordResetOtpHtmlBody()`, etc.) or use the Admin UI. Multi-tenant architecture: platform defaults (TenantId=null) with tenant-specific overrides (copy-on-write pattern).
+
+### Multi-Tenancy
+
+17. ✅ **System users must have TenantId = null** - Platform admins and system processes MUST have `IsSystemUser = true` and `TenantId = null` for cross-tenant access. The `TenantIdSetterInterceptor` protects system users from accidental tenant assignment by checking `IsSystemUser` BEFORE any entity state checks. NEVER manually set `TenantId` on system users. The database seeder automatically creates platform admin with correct values and fixes any drift on startup. Verification: Check logs for "Created platform admin user: {Email} (TenantId = null)". See `docs/backend/architecture/tenant-id-interceptor.md`.
+
+### Database Migrations
+
+18. ✅ **EF Core migrations MUST specify --context** - ALWAYS use `--context ApplicationDbContext` or `--context TenantStoreDbContext` when running `dotnet ef migrations` commands. This project has multiple DbContexts and omitting `--context` will cause errors. Also specify `--output-dir Migrations/ApplicationDbContext` or `--output-dir Migrations/TenantStoreDb` to organize migrations properly. **IMPORTANT:** After generating migrations, the auto-generated files will have a namespace conflict (`NOIR.Infrastructure.Migrations.ApplicationDbContext` namespace vs `ApplicationDbContext` class name). You MUST manually fix the `[DbContext(typeof(ApplicationDbContext))]` attributes to use `typeof(Persistence.ApplicationDbContext)` instead. See Quick Reference for examples.
+
+---
+
+## ⚡ Quick Reference
+
+### Build & Run
 
 ```bash
-# Build & Run
+# Build
 dotnet build src/NOIR.sln
+
+# Run (production mode - serves frontend)
 dotnet run --project src/NOIR.Web
+
+# Development mode with hot reload
 dotnet watch --project src/NOIR.Web
-
-# Tests (2,000+ tests)
-dotnet test src/NOIR.sln
-
-# Migrations (CRITICAL - Always specify --context)
-# ApplicationDbContext (main database)
-dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/ApplicationDbContext
-
-# TenantStoreDbContext (tenant store)
-dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context TenantStoreDbContext --output-dir Migrations/TenantStoreDb
-
-# Drop database and reset migrations to single InitialCreate
-dotnet ef database drop --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --force
-rm -rf src/NOIR.Infrastructure/Migrations/ApplicationDbContext/*.cs
-dotnet ef migrations add InitialCreate --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/ApplicationDbContext
-
-# IMPORTANT: After migration generation, manually fix namespace conflict in generated files
-# Change: [DbContext(typeof(ApplicationDbContext))]
-# To:     [DbContext(typeof(Persistence.ApplicationDbContext))]
-# Files:  *_InitialCreate.Designer.cs and ApplicationDbContextModelSnapshot.cs
 ```
 
-**Admin Login:** `admin@noir.local` / `123qwe`
+### Testing
 
-## Running the Website (IMPORTANT)
+```bash
+# All tests (2,100+ tests)
+dotnet test src/NOIR.sln
+
+# Specific project
+dotnet test tests/NOIR.IntegrationTests
+
+# With coverage
+dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
+```
+
+### Database Migrations
+
+**CRITICAL: Always specify `--context`**
+
+```bash
+# ApplicationDbContext (main database)
+dotnet ef migrations add NAME \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext \
+  --output-dir Migrations/ApplicationDbContext
+
+# TenantStoreDbContext (tenant store)
+dotnet ef migrations add NAME \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context TenantStoreDbContext \
+  --output-dir Migrations/TenantStoreDb
+
+# Update database
+dotnet ef database update \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext
+
+# Drop database and reset migrations to single InitialCreate
+dotnet ef database drop \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext \
+  --force
+
+rm -rf src/NOIR.Infrastructure/Migrations/ApplicationDbContext/*.cs
+
+dotnet ef migrations add InitialCreate \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext \
+  --output-dir Migrations/ApplicationDbContext
+```
+
+**⚠️ IMPORTANT:** After migration generation, manually fix namespace conflict in generated files:
+- Change: `[DbContext(typeof(ApplicationDbContext))]`
+- To: `[DbContext(typeof(Persistence.ApplicationDbContext))]`
+- Files: `*_InitialCreate.Designer.cs` and `ApplicationDbContextModelSnapshot.cs`
+
+### Admin Credentials
+
+**Login:** `admin@noir.local` / `123qwe`
+
+---
+
+## 🌐 Running the Website (IMPORTANT)
 
 **When user says "run website" or "start the app", use the startup scripts:**
 
-```bash
-# macOS/Linux - Run from project root:
-./start-dev.sh
+<table>
+<tr>
+<td width="50%" valign="top">
 
-# Windows - Run from project root:
+### macOS/Linux
+
+```bash
+# Run from project root
+./start-dev.sh
+```
+
+</td>
+<td width="50%" valign="top">
+
+### Windows
+
+```bash
+# Run from project root
 start-dev.bat
 ```
 
-**What the scripts do:**
+</td>
+</tr>
+</table>
+
+### What the Scripts Do
+
 1. Kill any processes on ports 3000 and 4000
 2. Install frontend npm dependencies (prevents missing package errors)
 3. Start backend on port 4000
 4. Start frontend on port 3000
 5. Display URLs and login credentials
 
-**Manual startup (if scripts fail):**
+### Manual Startup (if scripts fail)
+
 ```bash
 # Terminal 1 - Backend
 cd src/NOIR.Web && dotnet run
@@ -409,7 +542,8 @@ cd src/NOIR.Web && dotnet run
 cd src/NOIR.Web/frontend && npm install && npm run dev
 ```
 
-**Claude Code on Windows (CRITICAL):**
+### Claude Code on Windows (CRITICAL)
+
 The bash shell in Claude Code cannot run .bat files directly and background processes (`&`) don't stay alive. Use this approach:
 
 ```bash
@@ -420,15 +554,20 @@ dotnet run --project src/NOIR.Web
 powershell -Command "Start-Process cmd -ArgumentList '/c cd /d D:\TOP\GIT\NOIR\src\NOIR.Web\frontend && npm run dev'"
 ```
 
-**URLs:**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:4000
+### Access Points
 
-## Project Structure
+| Service | URL |
+|---------|-----|
+| **Frontend** | http://localhost:3000 |
+| **Backend API** | http://localhost:4000 |
+
+---
+
+## 📂 Project Structure
 
 ```
-src/NOIR.Domain/          # Entities, IRepository, ISpecification
-src/NOIR.Application/     # Features (Command + Handler + Validator co-located), DTOs
+src/NOIR.Domain/          # 🎯 Entities, IRepository, ISpecification
+src/NOIR.Application/     # 📋 Features (Command + Handler + Validator co-located), DTOs
     └── Features/
         └── {Feature}/
             ├── Commands/{Action}/
@@ -439,20 +578,24 @@ src/NOIR.Application/     # Features (Command + Handler + Validator co-located),
                 ├── {Action}Query.cs
                 └── {Action}QueryHandler.cs
     └── Common/Interfaces/  # Service abstractions (IUserIdentityService, etc.)
-src/NOIR.Infrastructure/  # EF Core, Repositories, Service implementations
-src/NOIR.Web/             # Endpoints, Middleware, Program.cs
-    └── frontend/         # React SPA
+src/NOIR.Infrastructure/  # 🔧 EF Core, Repositories, Service implementations
+src/NOIR.Web/             # 🌐 Endpoints, Middleware, Program.cs
+    └── frontend/         # ⚛️ React SPA
 ```
 
-## Code Patterns
+---
+
+## 💻 Code Patterns
 
 ### Service Registration
+
 ```csharp
 // Just add marker interface - auto-registered!
 public class CustomerService : ICustomerService, IScopedService { }
 ```
 
 ### Specifications (Required for queries)
+
 ```csharp
 public class ActiveCustomersSpec : Specification<Customer>
 {
@@ -465,6 +608,7 @@ public class ActiveCustomersSpec : Specification<Customer>
 ```
 
 ### Handlers (Wolverine - Vertical Slice)
+
 ```csharp
 // Handler co-located with Command in Application/Features/{Feature}/Commands/{Action}/
 public class CreateOrderCommandHandler
@@ -487,13 +631,14 @@ public class CreateOrderCommandHandler
         // Validation and business logic
         var order = Order.Create(cmd.CustomerId, cmd.Items);
         await _repository.AddAsync(order, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _unitOfWork.SaveChangesAsync(ct);  // REQUIRED - repos don't auto-save
         return Result.Success(order.ToDto());
     }
 }
 ```
 
 ### Entity Configuration
+
 ```csharp
 // Auto-discovered via ApplyConfigurationsFromAssembly
 public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
@@ -507,6 +652,7 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 ```
 
 ### Unit of Work Pattern (CRITICAL)
+
 ```csharp
 // Repository methods do NOT auto-save! Always use IUnitOfWork.
 // For tracked entities (from spec with AsTracking), just modify and save.
@@ -526,6 +672,7 @@ public class CustomerService : ICustomerService, IScopedService
 ```
 
 ### Specification Tracking (CRITICAL)
+
 ```csharp
 // Specifications default to AsNoTracking (read-only).
 // For entities that WILL BE MODIFIED, use .AsTracking()!
@@ -541,6 +688,7 @@ public class CustomerByIdSpec : Specification<Customer>
 ```
 
 ### Auditable Commands (CRITICAL for Activity Timeline)
+
 ```csharp
 // Commands that mutate data via frontend MUST implement IAuditableCommand
 public sealed record UpdateCustomerCommand(
@@ -572,7 +720,9 @@ group.MapPut("/customers/{id}", async (
 usePageContext('Customers')  // Required for Activity Timeline
 ```
 
-## Naming Conventions
+---
+
+## 📛 Naming Conventions
 
 | Type | Pattern | Example |
 |------|---------|---------|
@@ -581,16 +731,21 @@ usePageContext('Customers')  // Required for Activity Timeline
 | Handler | `[Command]Handler` | `CreateOrderHandler` |
 | Configuration | `[Entity]Configuration` | `CustomerConfiguration` |
 
-## Performance Rules
+---
+
+## ⚡ Performance Rules
 
 | Scenario | Use |
 |----------|-----|
 | Read-only queries | `AsNoTracking` (default) |
 | Multiple collections | `.AsSplitQuery()` |
 
-## Frontend Rules (React/TypeScript)
+---
 
-### 21st.dev Component Standard (MANDATORY)
+## ⚛️ Frontend Rules (React/TypeScript)
+
+### 🎨 21st.dev Component Standard (MANDATORY)
+
 **All frontend UI components and pages MUST use 21st.dev for consistency and best UI/UX.**
 
 ```typescript
@@ -614,7 +769,7 @@ usePageContext('Customers')  // Required for Activity Timeline
 - CreateUserDialog form validation
 - Empty state components in tables
 
-### Interactive Elements Must Have cursor-pointer
+### 🖱️ Interactive Elements Must Have cursor-pointer
 
 **All clickable/interactive elements MUST have `cursor-pointer` class.** This includes:
 - Tabs (`TabsTrigger`)
@@ -626,7 +781,7 @@ usePageContext('Customers')  // Required for Activity Timeline
 
 When creating or modifying UI components in `src/components/ui/`, always verify `cursor-pointer` is included in the className for interactive elements.
 
-### Multi-Select Dropdowns Must Stay Open
+### 📝 Multi-Select Dropdowns Must Stay Open
 
 For dropdown menus that allow multi-selection (checkboxes), add `onSelect={(e) => e.preventDefault()}` to prevent the dropdown from closing on each click:
 
@@ -640,7 +795,7 @@ For dropdown menus that allow multi-selection (checkboxes), add `onSelect={(e) =
 </DropdownMenuCheckboxItem>
 ```
 
-### Validation Consistency (CRITICAL)
+### ✅ Validation Consistency (CRITICAL)
 
 **Backend:** FluentValidation for all Commands/Queries
 **Frontend:** Real-time validation with smooth UI/UX
@@ -680,7 +835,8 @@ const [touched, setTouched] = useState({}) // ❌ Don't do this
 
 **Validation rules must match between FluentValidation and Zod schemas.**
 
-### Zod Validation
+### 🔍 Zod Validation
+
 ```typescript
 // CORRECT: Zod uses `.issues` not `.errors`
 const result = schema.safeParse(data)
@@ -694,7 +850,8 @@ if (!result.success) {
 result.error.errors.forEach(...)  // ❌ .errors does not exist
 ```
 
-### Real-Time Form Validation
+### 📋 Real-Time Form Validation
+
 ```typescript
 // Use onBlur + touched state for inline validation (not browser tooltips)
 const [errors, setErrors] = useState<Record<string, string>>({})
@@ -719,7 +876,8 @@ const handleBlur = (field: string, value: string) => {
 </form>
 ```
 
-### Dialog Form Layout (Focus Ring Clipping)
+### 💬 Dialog Form Layout (Focus Ring Clipping)
+
 ```typescript
 // CORRECT: Simple DialogContent without scroll containers (like CreateRoleDialog)
 <DialogContent className="sm:max-w-[500px]">
@@ -741,7 +899,8 @@ const handleBlur = (field: string, value: string) => {
 
 **Key insight:** Never wrap form inputs in any overflow container. Let the dialog grow naturally - the browser handles tall dialogs.
 
-### Multi-Select Role Pattern
+### 🎭 Multi-Select Role Pattern
+
 ```typescript
 // Use Set<string> for role selection
 const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set())
@@ -762,28 +921,57 @@ const handleToggleRole = (roleName: string) => {
 roleNames: selectedRoles.size > 0 ? Array.from(selectedRoles) : null
 ```
 
-## Task Management
+---
+
+## 📊 Task Management
 
 This project uses **Vibe Kanban** for task tracking and sprint management. Check the kanban board for current tasks, priorities, and sprint goals before starting work.
 
-## Documentation
+---
+
+## 📚 Documentation
 
 For detailed documentation, see the `docs/` folder:
 
 | Topic | Location |
 |-------|----------|
-| Backend patterns | `docs/backend/patterns/` |
-| Backend research | `docs/backend/research/` |
-| Frontend guide | `docs/frontend/` |
-| Architecture decisions | `docs/decisions/` |
-| Knowledge base | `docs/KNOWLEDGE_BASE.md` |
+| **Core Documentation** | `docs/DOCUMENTATION_INDEX.md` |
+| **Knowledge Base** | `docs/KNOWLEDGE_BASE.md` |
+| **Project Navigation** | `docs/PROJECT_INDEX.md` |
+| **Feature Catalog** | `docs/FEATURE_CATALOG.md` |
+| **Tech Stack** | `docs/TECH_STACK.md` |
+| **Backend Patterns** | `docs/backend/patterns/` |
+| **Backend Research** | `docs/backend/research/` |
+| **Frontend Guide** | `docs/frontend/` |
+| **Architecture Decisions** | `docs/decisions/` |
 
-**When creating documentation:**
+### When Creating Documentation
+
 - Research reports go to `docs/backend/research/` or `docs/frontend/research/`
 - Do NOT use `claudedocs/` - that folder is deprecated
 
-## File Boundaries
+---
 
-**Read freely:** `src/`, `tests/`, `docs/`, `.claude/`
+## 🔒 File Boundaries
 
-**Avoid modifying:** `*.Designer.cs`, `Migrations/` (auto-generated)
+### Read Freely
+
+✅ `src/`, `tests/`, `docs/`, `.claude/`
+
+### Avoid Modifying
+
+⚠️ `*.Designer.cs`, `Migrations/` (auto-generated)
+
+---
+
+<div align="center">
+
+**🎯 Pro Tip:** Just describe what you need in natural language - Claude auto-routes to the right command!
+
+---
+
+**Built with ❤️ by the NOIR Team**
+
+[📚 Documentation](docs/) • [🤖 AGENTS.md](AGENTS.md) • [🌟 Star on GitHub](https://github.com/NOIR-Solution/NOIR)
+
+</div>

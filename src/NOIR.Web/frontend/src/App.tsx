@@ -26,7 +26,6 @@ const RolesPage = lazy(() => import('@/pages/portal/admin/roles/RolesPage'))
 const UsersPage = lazy(() => import('@/pages/portal/admin/users/UsersPage'))
 const ActivityTimelinePage = lazy(() => import('@/pages/portal/admin/activity-timeline/ActivityTimelinePage'))
 const DeveloperLogsPage = lazy(() => import('@/pages/portal/admin/developer-logs/DeveloperLogsPage'))
-const PlatformSettingsPage = lazy(() => import('@/pages/portal/admin/platform-settings/PlatformSettingsPage'))
 // Blog CMS
 const BlogPostsPage = lazy(() => import('@/pages/portal/blog/posts/BlogPostsPage'))
 const PostEditorPage = lazy(() => import('@/pages/portal/blog/posts/PostEditorPage'))
@@ -91,7 +90,6 @@ function App() {
             <Route path="admin/users" element={<Suspense fallback={<LazyFallback />}><UsersPage /></Suspense>} />
             <Route path="activity-timeline" element={<Suspense fallback={<LazyFallback />}><ActivityTimelinePage /></Suspense>} />
             <Route path="developer-logs" element={<Suspense fallback={<LazyFallback />}><DeveloperLogsPage /></Suspense>} />
-            <Route path="admin/platform-settings" element={<Suspense fallback={<LazyFallback />}><PlatformSettingsPage /></Suspense>} />
             {/* Blog CMS */}
             <Route path="blog/posts" element={<Suspense fallback={<LazyFallback />}><BlogPostsPage /></Suspense>} />
             <Route path="blog/posts/new" element={<Suspense fallback={<LazyFallback />}><PostEditorPage /></Suspense>} />
