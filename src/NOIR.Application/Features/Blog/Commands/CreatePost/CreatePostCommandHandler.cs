@@ -100,13 +100,14 @@ public class CreatePostCommandHandler
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // Return DTO (use command.FeaturedImageUrl since FeaturedImage isn't loaded)
-        return Result.Success(MapToDto(post, command.FeaturedImageUrl, null, null, []));
+        return Result.Success(MapToDto(post, command.FeaturedImageUrl, null, null, null, []));
     }
 
     private static PostDto MapToDto(
         Post post,
         string? featuredImageUrl,
         string? categoryName,
+        string? categorySlug,
         string? authorName,
         List<PostTagDto> tags)
     {
@@ -120,6 +121,9 @@ public class CreatePostCommandHandler
             post.FeaturedImageId,
             featuredImageUrl ?? post.FeaturedImageUrl,
             post.FeaturedImageAlt,
+            null, // FeaturedImageWidth - not loaded for new posts
+            null, // FeaturedImageHeight - not loaded for new posts
+            null, // FeaturedImageThumbHash - not loaded for new posts
             post.Status,
             post.PublishedAt,
             post.ScheduledPublishAt,
@@ -129,6 +133,7 @@ public class CreatePostCommandHandler
             post.AllowIndexing,
             post.CategoryId,
             categoryName,
+            categorySlug,
             post.AuthorId,
             authorName,
             post.ViewCount,

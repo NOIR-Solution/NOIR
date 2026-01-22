@@ -1,8 +1,9 @@
 # NOIR Feature Roadmap - Comprehensive Implementation Plan
 
-> **Status:** Approved - Ready for Implementation
+> **Status:** In Progress
 > **Author:** Claude AI Assistant
 > **Date:** January 2026
+> **Last Updated:** 2026-01-22
 > **Estimated Phases:** 5
 
 ### Decisions Made
@@ -10,11 +11,14 @@
 | Question | Decision |
 |----------|----------|
 | Caching | In-memory with Redis-ready interface |
-| Image Variants | thumb, sm, md, lg, xl (1920), original (2560) |
+| Image Variants | Thumb (150px), Medium (640px), Large (1280px) |
 | Schema.org JSON-LD | Yes - include for rich snippets |
 | Multi-language | No - single language only |
 | Comments | No - not needed |
-| RSS/Sitemap | Yes - auto-generate |
+| RSS/Sitemap | Yes - auto-generate (RSS only, no Atom) |
+| Rich Text Editor | Keep current editor (BlockNote skipped) |
+| Sitemap Format | Single file (will split if >50k URLs) |
+| Image Sitemap | Yes - include images for SEO |
 
 ---
 
@@ -22,13 +26,19 @@
 
 This document outlines the implementation plan for 5 major features to make NOIR the best enterprise template:
 
-| Phase | Feature | Priority | Dependencies |
-|-------|---------|----------|--------------|
-| 1 | Caching Infrastructure | Critical | None |
-| 2 | Image Processing Service | High | Phase 1 |
-| 3 | BlockNote Editor | High | Phase 2 |
-| 4 | Blog/CMS Feature | High | Phase 2, 3 |
-| 5 | Performance Hardening | Medium | Phase 1-4 |
+| Phase | Feature | Priority | Status | Dependencies |
+|-------|---------|----------|--------|--------------|
+| 1 | Caching Infrastructure | Critical | ✅ **COMPLETE** | None |
+| 2 | Image Processing Service | High | ✅ **COMPLETE** | Phase 1 |
+| 3 | BlockNote Editor | ~~High~~ | ⏭️ **SKIPPED** | - |
+| 4 | Blog/CMS Feature | High | 🔶 **PARTIAL** | Phase 2 |
+| 4a | **Blog SEO (RSS, Sitemap, JSON-LD)** | **High** | 🎯 **NEXT** | Phase 4 |
+| 5 | Performance Hardening | Medium | ❌ Not Started | Phase 1-4 |
+
+### Current Priority: Phase 4a - Blog SEO Features
+
+**Scope:** RSS Feed, Sitemap.xml, Schema.org JSON-LD
+**Decision:** RSS only (no Atom), single sitemap, include images, JSON-LD via React Helmet
 
 ---
 
@@ -358,25 +368,25 @@ public class CacheInvalidationService :
 ### 1.12 Phase 1 Checklist
 
 **Core Implementation:**
-- [ ] Add FusionCache NuGet packages to Infrastructure project
-- [ ] Create `CacheKeys` static class
-- [ ] Create `CacheSettings` configuration
-- [ ] Create `FusionCacheRegistration.cs` DI setup
-- [ ] Implement `CacheInvalidationService` with Wolverine handlers
-- [ ] Integrate with permission authorization handler (use IFusionCache)
+- [x] Add FusionCache NuGet packages to Infrastructure project
+- [x] Create `CacheKeys` static class
+- [x] Create `CacheSettings` configuration
+- [x] Create `FusionCacheRegistration.cs` DI setup
+- [x] Implement `CacheInvalidationService` with Wolverine handlers
+- [x] Integrate with permission authorization handler (use IFusionCache)
 
 **NOIR Patterns (CRITICAL):**
-- [ ] Add `IScopedService` marker to `CacheInvalidationService`
-- [ ] Update `GlobalUsings.cs` with `ZiggyCreatures.Caching.Fusion`
-- [ ] Update `DependencyInjection.cs` to call `AddFusionCaching()`
+- [x] Add `IScopedService` marker to `CacheInvalidationService`
+- [x] Update `GlobalUsings.cs` with `ZiggyCreatures.Caching.Fusion`
+- [x] Update `DependencyInjection.cs` to call `AddFusionCaching()`
 
 **Testing:**
-- [ ] Add unit tests for cache key validation
+- [x] Add unit tests for cache key validation
 - [ ] Add integration tests for cache invalidation events
 
 **Configuration:**
-- [ ] Add `appsettings.json` configuration
-- [ ] Add `appsettings.Development.json` with shorter timeouts for dev
+- [x] Add `appsettings.json` configuration
+- [x] Add `appsettings.Development.json` with shorter timeouts for dev
 
 **Observability (Recommended):**
 - [ ] Add cache health check endpoint (`/health/cache`)
@@ -1302,42 +1312,42 @@ export function ThumbHashImage({ src, thumbhash, alt, width, height, className }
 ### 2.13 Phase 2 Checklist
 
 **Core Implementation:**
-- [ ] Add SixLabors.ImageSharp NuGet packages
-- [ ] Add NeoSolve.ImageSharp.AVIF NuGet package (real AVIF support)
-- [ ] Add Thumbhash NuGet package for C# ThumbHash generation
-- [ ] Create `IImageProcessor` interface with ThumbHash and color extraction
-- [ ] Implement `ImageProcessorService` with AVIF/WebP/JPEG multi-format support
-- [ ] Create `ThumbHashGenerator` service
-- [ ] Create `SlugGenerator` for SEO-friendly filenames
-- [ ] Create `ColorAnalyzer` for dominant color extraction
-- [ ] Create `SrcsetGenerator` for responsive images
-- [ ] Create `ImageVariant`, `ImageMetadata`, `ImageProcessingResult` models
-- [ ] Create `ImageProcessingSettings` configuration
-- [ ] Create `MediaEndpoints` with upload endpoints
-- [ ] Update `FileEndpoints` allowed prefixes
+- [x] Add SixLabors.ImageSharp NuGet packages
+- [x] Add NeoSolve.ImageSharp.AVIF NuGet package (real AVIF support)
+- [x] Add Thumbhash NuGet package for C# ThumbHash generation
+- [x] Create `IImageProcessor` interface with ThumbHash and color extraction
+- [x] Implement `ImageProcessorService` with AVIF/WebP/JPEG multi-format support
+- [x] Create `ThumbHashGenerator` service
+- [x] Create `SlugGenerator` for SEO-friendly filenames
+- [x] Create `ColorAnalyzer` for dominant color extraction
+- [x] Create `SrcsetGenerator` for responsive images
+- [x] Create `ImageVariant`, `ImageMetadata`, `ImageProcessingResult` models
+- [x] Create `ImageProcessingSettings` configuration
+- [x] Create `MediaEndpoints` with upload endpoints
+- [x] Update `FileEndpoints` allowed prefixes
 
 **NOIR Patterns (CRITICAL):**
-- [ ] Add `IScopedService` marker to `ImageProcessorService`
-- [ ] Update `GlobalUsings.cs` with ImageSharp namespaces
-- [ ] Update `appsettings.json` with image processing settings
+- [x] Add `IScopedService` marker to `ImageProcessorService`
+- [x] Update `GlobalUsings.cs` with ImageSharp namespaces
+- [x] Update `appsettings.json` with image processing settings
 
 **Security & Validation:**
-- [ ] Add file size limit validation (e.g., 10MB max)
-- [ ] Add file type validation (magic bytes, not just extension)
-- [ ] Add image dimension limits (prevent memory exhaustion)
-- [ ] Handle corrupt/malformed images gracefully with error response
-- [ ] Sanitize filenames to prevent path traversal
+- [x] Add file size limit validation (e.g., 10MB max)
+- [x] Add file type validation (magic bytes, not just extension)
+- [x] Add image dimension limits (prevent memory exhaustion)
+- [x] Handle corrupt/malformed images gracefully with error response
+- [x] Sanitize filenames to prevent path traversal
 
 **Frontend:**
-- [ ] Create `ThumbHashImage` React component
-- [ ] Install `thumbhash` npm package (decoder for frontend)
-- [ ] Add loading skeleton while ThumbHash decodes
+- [x] Create `ThumbHashImage` React component
+- [x] Install `thumbhash` npm package (decoder for frontend)
+- [x] Add loading skeleton while ThumbHash decodes
 
 **Testing:**
-- [ ] Add unit tests for image processing (including AVIF)
-- [ ] Add unit tests for ThumbHash generator
-- [ ] Add unit tests for slug generator
-- [ ] Add unit tests for color analyzer
+- [x] Add unit tests for image processing (including AVIF)
+- [x] Add unit tests for ThumbHash generator
+- [x] Add unit tests for slug generator
+- [x] Add unit tests for color analyzer
 - [ ] Add integration tests for upload flow
 - [ ] Test with various image formats (PNG, JPEG, GIF, WebP, AVIF)
 - [ ] Test with edge cases (very large, very small, corrupt files)
@@ -2333,38 +2343,38 @@ export function SeoPanel({ seo, onChange, title, excerpt, featuredImage }) {
 ### 4.9 Phase 4 Checklist
 
 **Domain & Infrastructure:**
-- [ ] Create `Post` entity with factory methods
-- [ ] Create `PostCategory` entity (hierarchical)
-- [ ] Create `PostTag` entity
-- [ ] Create `PostRevision` entity
-- [ ] Create `SeoMetadata` value object
-- [ ] Create EF configurations for all entities
-- [ ] Add migration
-- [ ] Create Blog permissions (Blog.Create, Blog.Edit, Blog.Publish, Blog.Delete)
-- [ ] Seed Blog permissions
+- [x] Create `Post` entity with factory methods
+- [x] Create `PostCategory` entity (hierarchical)
+- [x] Create `PostTag` entity
+- [ ] Create `PostRevision` entity (optional - for version history)
+- [x] Create `SeoMetadata` value object
+- [x] Create EF configurations for all entities
+- [x] Add migration
+- [x] Create Blog permissions (Blog.Create, Blog.Edit, Blog.Publish, Blog.Delete)
+- [x] Seed Blog permissions
 
 **Application Layer:**
-- [ ] Create specifications (PublishedPostsSpec, PostBySlugSpec, etc.)
-- [ ] Create Post Commands (Create, Update, Publish, Delete)
-- [ ] Create Category/Tag Commands
-- [ ] Create Queries (GetPosts, GetBySlug, etc.)
-- [ ] Create DTOs and mappers
-- [ ] Create SlugGenerator service
+- [x] Create specifications (PublishedPostsSpec, PostBySlugSpec, etc.)
+- [x] Create Post Commands (Create, Update, Publish, Delete)
+- [x] Create Category/Tag Commands
+- [x] Create Queries (GetPosts, GetBySlug, etc.)
+- [x] Create DTOs and mappers
+- [x] Create SlugGenerator service
 
 **NOIR Patterns (CRITICAL - See CLAUDE.md):**
-- [ ] All specifications use `.TagWith("MethodName")` for SQL debugging
-- [ ] Specs for mutations use `.AsTracking()` for change detection
-- [ ] All Commands implement `IAuditableCommand` (Activity Timeline)
-- [ ] All Commands have co-located FluentValidation validators
-- [ ] Command handlers use `IUnitOfWork.SaveChangesAsync()` for persistence
-- [ ] Use soft delete only (set `IsDeleted = true`, never hard delete)
-- [ ] Add `IScopedService` marker to all services
+- [x] All specifications use `.TagWith("MethodName")` for SQL debugging
+- [x] Specs for mutations use `.AsTracking()` for change detection
+- [x] All Commands implement `IAuditableCommand` (Activity Timeline)
+- [x] All Commands have co-located FluentValidation validators
+- [x] Command handlers use `IUnitOfWork.SaveChangesAsync()` for persistence
+- [x] Use soft delete only (set `IsDeleted = true`, never hard delete)
+- [x] Add `IScopedService` marker to all services
 - [ ] Frontend pages call `usePageContext('Blog')` for audit context
 
 **API Endpoints:**
-- [ ] Create BlogEndpoints (posts, categories, tags)
+- [x] Create BlogEndpoints (posts, categories, tags)
 - [ ] Create FeedEndpoints (RSS, Sitemap)
-- [ ] Integrate caching for blog queries
+- [x] Integrate caching for blog queries
 
 **Frontend:**
 - [ ] Create BlogDashboard page (list posts with stats)
@@ -2375,10 +2385,10 @@ export function SeoPanel({ seo, onChange, title, excerpt, featuredImage }) {
 - [ ] Create BlogPostMeta component (OpenGraph + Twitter with image dimensions)
 - [ ] Add RSS autodiscovery link to PublicLayout
 - [ ] Install react-helmet-async for meta tag management
-- [ ] Integrate BlockNote editor
+- [x] ~~Integrate BlockNote editor~~ (SKIPPED - keeping current editor)
 - [ ] Update navigation/routing
 
-**SEO Enhancements (2025 Best Practices):**
+**SEO Enhancements (2026 Best Practices) - NEXT PRIORITY:**
 - [ ] Add `featuredImageWidth`, `featuredImageHeight`, `featuredImageAlt` to PostDetailDto
 - [ ] Add `categoryName`, `authorSlug` to PostDetailDto for schema
 - [ ] Implement `og:image:width` and `og:image:height` meta tags
@@ -2388,7 +2398,7 @@ export function SeoPanel({ seo, onChange, title, excerpt, featuredImage }) {
 - [ ] Add `articleSection`, `keywords`, `isAccessibleForFree` to JSON-LD
 
 **Testing:**
-- [ ] Add unit tests (handlers, specifications)
+- [x] Add unit tests (handlers, specifications)
 - [ ] Add integration tests (endpoints)
 - [ ] Test RSS/Sitemap generation
 - [ ] Validate JSON-LD with Google Rich Results Test
@@ -2404,6 +2414,116 @@ export function SeoPanel({ seo, onChange, title, excerpt, featuredImage }) {
 - [ ] Author bio/profile page
 - [ ] Post series/collections feature
 - [ ] Table of contents auto-generation from headings
+
+---
+
+## Phase 4a: Blog SEO Features (CURRENT PRIORITY)
+
+> **Status:** 🎯 NEXT - Ready for Implementation
+> **Decisions:** RSS only (no Atom), Single sitemap, Include images, JSON-LD via React Helmet
+
+### 4a.1 Overview
+
+Complete the Blog CMS with essential SEO features that developers expect from a modern content platform. These features improve discoverability, search engine indexing, and rich snippet display.
+
+### 4a.2 Features
+
+#### RSS Feed
+- **Endpoint:** `GET /blog/feed.xml` (or `/rss.xml`)
+- **Format:** RSS 2.0
+- **Content:** Title, description, link, pubDate, author, categories, featured image
+- **Filtering:** Published posts only, ordered by publish date (newest first)
+- **Limit:** Configurable (default: 20 most recent posts)
+- **Caching:** Use FusionCache with `CacheKeys.RssFeed()`
+- **Auto-discovery:** `<link rel="alternate" type="application/rss+xml">` in HTML head
+
+#### Sitemap
+- **Endpoint:** `GET /sitemap.xml`
+- **Format:** Standard XML sitemap
+- **Content:** All published posts + categories with lastmod, changefreq, priority
+- **Images:** Include featured images for image SEO
+- **Post priority:** 0.8 (high - content pages)
+- **Category priority:** 0.6 (medium - listing pages)
+- **Caching:** Use FusionCache with `CacheKeys.Sitemap()`
+- **robots.txt:** Include sitemap reference
+
+#### Schema.org JSON-LD
+- **Type:** BlogPosting schema for blog posts
+- **Fields:** headline, datePublished, dateModified, author, image (with dimensions), publisher
+- **Enhanced:** speakable (voice assistants), articleSection, keywords, isAccessibleForFree
+- **Breadcrumbs:** BreadcrumbList schema for navigation
+- **Publisher:** Organization info from tenant settings
+- **Implementation:** React Helmet for meta tag management
+
+### 4a.3 New Files
+
+```
+src/NOIR.Application/
+├── Features/
+│   └── Blog/
+│       └── Queries/
+│           ├── GetRssFeed/
+│           │   ├── GetRssFeedQuery.cs
+│           │   └── GetRssFeedQueryHandler.cs
+│           └── GetSitemap/
+│               ├── GetSitemapQuery.cs
+│               └── GetSitemapQueryHandler.cs
+
+src/NOIR.Web/
+├── Endpoints/
+│   └── FeedEndpoints.cs              # RSS + Sitemap endpoints
+
+src/NOIR.Web/frontend/
+├── src/components/
+│   └── seo/
+│       ├── BlogPostSchema.tsx        # JSON-LD for blog posts
+│       ├── BlogPostMeta.tsx          # OpenGraph + Twitter meta
+│       └── BreadcrumbSchema.tsx      # Breadcrumb JSON-LD
+├── src/hooks/
+│   └── useSeo.ts                     # SEO helper hook
+```
+
+### 4a.4 Phase 4a Checklist
+
+**Backend - RSS Feed:**
+- [ ] Create `GetRssFeedQuery` and handler
+- [ ] Create `FeedEndpoints.cs` with RSS endpoint
+- [ ] Implement RSS 2.0 XML generation
+- [ ] Add caching with `CacheKeys.RssFeed()`
+- [ ] Invalidate cache on post publish/unpublish
+
+**Backend - Sitemap:**
+- [ ] Create `GetSitemapQuery` and handler
+- [ ] Add sitemap endpoint to `FeedEndpoints.cs`
+- [ ] Implement XML sitemap generation with images
+- [ ] Add caching with `CacheKeys.Sitemap()`
+- [ ] Invalidate cache on post/category changes
+- [ ] Update `robots.txt` with sitemap reference
+
+**Frontend - JSON-LD:**
+- [ ] Install `react-helmet-async` if not present
+- [ ] Create `BlogPostSchema` component (BlogPosting + speakable)
+- [ ] Create `BlogPostMeta` component (OpenGraph + Twitter)
+- [ ] Create `BreadcrumbSchema` component
+- [ ] Add RSS autodiscovery `<link>` to layout
+- [ ] Add sitemap hint `<link rel="sitemap">` to layout
+
+**DTO Updates:**
+- [ ] Add `featuredImageWidth`, `featuredImageHeight`, `featuredImageAlt` to PostDetailDto
+- [ ] Add `categoryName`, `authorName`, `authorSlug` to PostDetailDto
+
+**Testing:**
+- [ ] Unit tests for RSS generation
+- [ ] Unit tests for sitemap generation
+- [ ] Validate RSS with W3C Feed Validator
+- [ ] Validate sitemap with Google Search Console
+- [ ] Validate JSON-LD with Google Rich Results Test
+- [ ] Validate OpenGraph with Facebook Debugger
+
+**NOIR Patterns:**
+- [ ] Use specifications with `.TagWith()` for queries
+- [ ] Integrate with existing FusionCache infrastructure
+- [ ] Follow endpoint patterns from existing BlogEndpoints
 
 ---
 

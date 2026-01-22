@@ -79,6 +79,9 @@ public class GetPostQueryHandler
             post.FeaturedImageId,
             featuredImageUrl,
             post.FeaturedImageAlt,
+            post.FeaturedImage?.Width,
+            post.FeaturedImage?.Height,
+            post.FeaturedImage?.ThumbHash,
             post.Status,
             post.PublishedAt,
             post.ScheduledPublishAt,
@@ -88,6 +91,7 @@ public class GetPostQueryHandler
             post.AllowIndexing,
             post.CategoryId,
             post.Category?.Name,
+            post.Category?.Slug,
             post.AuthorId,
             null, // AuthorName would require user lookup
             post.ViewCount,

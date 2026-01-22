@@ -89,13 +89,15 @@ public class UpdatePostCommandHandler
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Get category name for DTO
+        // Get category name and slug for DTO
         string? categoryName = null;
+        string? categorySlug = null;
         if (post.CategoryId.HasValue)
         {
             var categorySpec = new CategoryByIdSpec(post.CategoryId.Value);
             var category = await _categoryRepository.FirstOrDefaultAsync(categorySpec, cancellationToken);
             categoryName = category?.Name;
+            categorySlug = category?.Slug;
         }
 
         // Get tags for DTO
@@ -107,7 +109,7 @@ public class UpdatePostCommandHandler
             .ToList();
 
         // Use command.FeaturedImageUrl since FeaturedImage navigation isn't loaded
-        return Result.Success(MapToDto(post, command.FeaturedImageUrl, categoryName, null, tagDtos));
+        return Result.Success(MapToDto(post, command.FeaturedImageUrl, categoryName, categorySlug, null, tagDtos));
     }
 
     private async Task UpdateTagAssignmentsAsync(
@@ -152,6 +154,7 @@ public class UpdatePostCommandHandler
         Post post,
         string? featuredImageUrl,
         string? categoryName,
+        string? categorySlug,
         string? authorName,
         List<PostTagDto> tags)
     {
@@ -165,6 +168,9 @@ public class UpdatePostCommandHandler
             post.FeaturedImageId,
             featuredImageUrl ?? post.FeaturedImageUrl,
             post.FeaturedImageAlt,
+            null, // FeaturedImageWidth - not loaded in update flow
+            null, // FeaturedImageHeight - not loaded in update flow
+            null, // FeaturedImageThumbHash - not loaded in update flow
             post.Status,
             post.PublishedAt,
             post.ScheduledPublishAt,
@@ -174,6 +180,7 @@ public class UpdatePostCommandHandler
             post.AllowIndexing,
             post.CategoryId,
             categoryName,
+            categorySlug,
             post.AuthorId,
             authorName,
             post.ViewCount,

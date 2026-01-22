@@ -103,3 +103,16 @@ public sealed class CategoryHasPostsSpec : Specification<Post>
              .TagWith("CheckCategoryHasPosts");
     }
 }
+
+/// <summary>
+/// Specification to retrieve all active (non-deleted) categories for sitemap.
+/// </summary>
+public sealed class ActiveCategoriesSpec : Specification<PostCategory>
+{
+    public ActiveCategoriesSpec()
+    {
+        Query.OrderBy(c => c.SortOrder)
+             .ThenBy(c => c.Name)
+             .TagWith("GetActiveCategories");
+    }
+}

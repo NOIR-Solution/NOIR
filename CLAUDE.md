@@ -497,42 +497,33 @@ dotnet ef migrations add InitialCreate \
 
 ## 🌐 Running the Website (IMPORTANT)
 
-**When user says "run website" or "start the app", use the startup scripts:**
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### macOS/Linux
+**When user says "run website" or "start the app", use the unified startup script:**
 
 ```bash
-# Run from project root
+# All platforms (macOS, Linux, Windows via Git Bash/MSYS2/WSL)
 ./start-dev.sh
 ```
 
-</td>
-<td width="50%" valign="top">
+### What the Script Does
 
-### Windows
+1. Detects OS (macOS, Linux, Windows, WSL)
+2. Checks prerequisites (.NET SDK, Node.js, npm)
+3. Frees ports 3000 and 4000 (kills existing processes)
+4. Installs frontend dependencies
+5. Builds and starts backend on port 4000
+6. Starts frontend on port 3000
+7. Opens browser automatically
+8. Handles graceful shutdown with Ctrl+C
 
-```bash
-# Run from project root
-start-dev.bat
-```
+### Logs
 
-</td>
-</tr>
-</table>
+The script creates log files in the project root:
+- `.backend.log` - Backend output
+- `.frontend.log` - Frontend output
 
-### What the Scripts Do
+View logs with: `tail -f .backend.log` or `tail -f .frontend.log`
 
-1. Kill any processes on ports 3000 and 4000
-2. Install frontend npm dependencies (prevents missing package errors)
-3. Start backend on port 4000
-4. Start frontend on port 3000
-5. Display URLs and login credentials
-
-### Manual Startup (if scripts fail)
+### Manual Startup (if script fails)
 
 ```bash
 # Terminal 1 - Backend
@@ -544,14 +535,14 @@ cd src/NOIR.Web/frontend && npm install && npm run dev
 
 ### Claude Code on Windows (CRITICAL)
 
-The bash shell in Claude Code cannot run .bat files directly and background processes (`&`) don't stay alive. Use this approach:
+When running commands directly in Claude Code on Windows (not via start-dev.sh):
 
 ```bash
 # Backend - works with run_in_background
 dotnet run --project src/NOIR.Web
 
 # Frontend - MUST use PowerShell Start-Process to spawn detached process
-powershell -Command "Start-Process cmd -ArgumentList '/c cd /d D:\TOP\GIT\NOIR\src\NOIR.Web\frontend && npm run dev'"
+powershell -Command "Start-Process cmd -ArgumentList '/c cd /d D:\GIT\TOP\NOIR\src\NOIR.Web\frontend && npm run dev'"
 ```
 
 ### Access Points
@@ -560,6 +551,7 @@ powershell -Command "Start-Process cmd -ArgumentList '/c cd /d D:\TOP\GIT\NOIR\s
 |---------|-----|
 | **Frontend** | http://localhost:3000 |
 | **Backend API** | http://localhost:4000 |
+| **API Docs** | http://localhost:4000/api/docs |
 
 ---
 

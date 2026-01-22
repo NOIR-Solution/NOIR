@@ -421,6 +421,10 @@ app.MapScalarApiReference("/api/docs", options =>
 // ClaimStrategy needs HttpContext.User populated with JWT claims
 app.UseAuthentication();
 
+// Set default tenant for feed routes (RSS, Sitemap) - must run BEFORE multi-tenant
+// This allows anonymous access to public feed endpoints by injecting X-Tenant header
+app.UseFeedTenantResolver();
+
 // Multi-tenant middleware (reads tenant_id claim from HttpContext.User)
 app.UseMultiTenant();
 
@@ -447,6 +451,7 @@ app.MapNotificationEndpoints();
 app.MapAuditEndpoints();
 app.MapDeveloperLogEndpoints();
 app.MapBlogEndpoints();
+app.MapFeedEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");

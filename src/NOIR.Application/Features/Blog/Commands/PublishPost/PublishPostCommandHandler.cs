@@ -56,13 +56,15 @@ public class PublishPostCommandHandler
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Get category name for DTO
+        // Get category name and slug for DTO
         string? categoryName = null;
+        string? categorySlug = null;
         if (post.CategoryId.HasValue)
         {
             var categorySpec = new CategoryByIdSpec(post.CategoryId.Value);
             var category = await _categoryRepository.FirstOrDefaultAsync(categorySpec, cancellationToken);
             categoryName = category?.Name;
+            categorySlug = category?.Slug;
         }
 
         // Get tags for DTO from post's tag assignments
@@ -73,12 +75,13 @@ public class PublishPostCommandHandler
                 ta.Tag.Color, ta.Tag.PostCount, ta.Tag.CreatedAt, ta.Tag.ModifiedAt))
             .ToList();
 
-        return Result.Success(MapToDto(post, categoryName, null, tagDtos));
+        return Result.Success(MapToDto(post, categoryName, categorySlug, null, tagDtos));
     }
 
     private static PostDto MapToDto(
         Post post,
         string? categoryName,
+        string? categorySlug,
         string? authorName,
         List<PostTagDto> tags)
     {
@@ -95,6 +98,9 @@ public class PublishPostCommandHandler
             post.FeaturedImageId,
             featuredImageUrl,
             post.FeaturedImageAlt,
+            post.FeaturedImage?.Width,
+            post.FeaturedImage?.Height,
+            post.FeaturedImage?.ThumbHash,
             post.Status,
             post.PublishedAt,
             post.ScheduledPublishAt,
@@ -104,6 +110,7 @@ public class PublishPostCommandHandler
             post.AllowIndexing,
             post.CategoryId,
             categoryName,
+            categorySlug,
             post.AuthorId,
             authorName,
             post.ViewCount,
