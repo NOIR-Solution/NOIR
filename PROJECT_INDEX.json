@@ -3,24 +3,24 @@
     "name": "NOIR",
     "type": "Enterprise .NET 10 + React 19 SaaS Foundation",
     "architecture": ["Clean Architecture", "CQRS", "DDD", "Multi-Tenant"],
-    "generated": "2026-01-20",
-    "version": "2.0"
+    "generated": "2026-01-23",
+    "version": "2.1"
   },
   "metrics": {
-    "backend_files": 562,
-    "frontend_files": 163,
-    "test_files": 246,
-    "total_tests": 4317,
+    "backend_files": 580,
+    "frontend_files": 180,
+    "test_files": 307,
+    "total_tests": 5431,
     "test_status": "passing",
-    "documentation_files": 38,
+    "documentation_files": 42,
     "ai_memories": 13
   },
   "tests": {
-    "domain": 833,
-    "application": 2944,
+    "domain": 838,
+    "application": 3064,
     "architecture": 25,
     "integration": 515,
-    "total": 4317,
+    "total": 5431,
     "pass_rate": "100%"
   },
   "entry_points": {
@@ -36,32 +36,46 @@
     "hangfire": "http://localhost:3000/hangfire"
   },
   "admin_credentials": {
-    "email": "admin@noir.local",
-    "password": "123qwe"
+    "platform_admin": {
+      "email": "platform@noir.local",
+      "password": "123qwe",
+      "description": "Cross-tenant platform administrator"
+    },
+    "tenant_admin": {
+      "email": "admin@noir.local",
+      "password": "123qwe",
+      "description": "Default tenant administrator"
+    }
   },
   "features": {
     "auth": ["Login", "Logout", "Register", "RefreshToken", "ChangePassword", "ResetPassword", "ChangeEmail", "UpdateProfile", "UpdateAvatar", "Sessions"],
-    "users": ["CRUD", "AssignRoles", "GetUserRoles"],
-    "roles": ["CRUD", "GetRoleById"],
+    "users": ["CRUD", "AssignRoles", "GetUserRoles", "Pagination", "Search"],
+    "roles": ["CRUD", "GetRoleById", "AssignPermissions"],
     "permissions": ["AssignToRole", "RemoveFromRole", "GetRolePermissions", "GetUserPermissions"],
-    "audit": ["EntityHistory", "HandlerHistory", "HttpRequestHistory", "Search", "Export"],
-    "email_templates": ["Update", "SendTest", "Preview"],
-    "tenants": ["CRUD", "Provisioning"],
-    "notifications": ["MarkAsRead", "Delete", "Preferences", "List", "UnreadCount"],
-    "blog": ["Posts CRUD", "Publish", "Categories", "Tags"]
+    "audit": ["EntityHistory", "HandlerHistory", "HttpRequestHistory", "Search", "Export", "ActivityTimeline"],
+    "email_templates": ["Update", "SendTest", "Preview", "MultiTenant COW"],
+    "legal_pages": ["Update", "Preview", "RevertToDefault", "MultiTenant COW", "SEO"],
+    "tenants": ["CRUD", "Provisioning", "Settings", "Archive", "Restore"],
+    "tenant_settings": ["Branding", "Contact", "SMTP", "Regional", "EmailTemplates", "LegalPages"],
+    "notifications": ["MarkAsRead", "Delete", "Preferences", "List", "UnreadCount", "SignalR Push"],
+    "blog": ["Posts CRUD", "Publish/Unpublish", "Categories", "Tags", "SEO"],
+    "media": ["Upload", "Delete", "List", "ImageProcessing"],
+    "developer_logs": ["StreamLogs", "ErrorClusters", "Stats", "History"]
   },
   "tech_stack": {
     "backend": {
-      "runtime": ".NET 10",
+      "runtime": ".NET 10 LTS",
       "database": "SQL Server + EF Core 10",
       "mediator": "Wolverine 5.9+",
       "validation": "FluentValidation 11.x",
       "mapping": "Mapperly 4.3+",
-      "multi_tenancy": "Finbuckle.MultiTenant 9.0+",
+      "multi_tenancy": "Finbuckle.MultiTenant 10.0+",
       "background_jobs": "Hangfire 1.8+",
       "logging": "Serilog 4.x",
       "email": "FluentEmail 3.x",
-      "api_docs": "Scalar"
+      "api_docs": "Scalar",
+      "caching": "FusionCache",
+      "real_time": "SignalR"
     },
     "frontend": {
       "framework": "React 19",
@@ -69,62 +83,129 @@
       "build_tool": "Vite 6.x",
       "routing": "React Router 7.x",
       "styling": "Tailwind CSS 4.x",
-      "ui_components": "shadcn/ui",
+      "ui_components": "shadcn/ui + 21st.dev",
       "data_fetching": "TanStack Query 5.x",
       "validation": "Zod 3.x",
-      "forms": "React Hook Form 7.x"
+      "forms": "React Hook Form 7.x",
+      "i18n": "i18next"
     }
   },
   "layers": {
     "domain": {
       "path": "src/NOIR.Domain/",
-      "entities": 15,
-      "common_types": 18,
-      "interfaces": 2,
-      "enums": 5
+      "entities": [
+        "ApplicationUser", "ApplicationRole", "RefreshToken", "Tenant", "TenantSetting",
+        "Permission", "PermissionTemplate", "Notification", "NotificationPreference",
+        "EmailTemplate", "LegalPage", "MediaFile", "Post", "PostCategory", "PostTag",
+        "EntityAuditLog", "HandlerAuditLog", "HttpRequestAuditLog", "ResourceShare",
+        "PasswordResetOtp", "EmailChangeOtp"
+      ],
+      "common_types": ["Result", "Error", "ErrorCodes", "Permissions", "Roles"],
+      "base_classes": ["Entity", "AggregateRoot", "TenantAggregateRoot", "PlatformTenantAggregateRoot"],
+      "interfaces": ["IRepository", "IUnitOfWork", "ITenantEntity", "IAuditableEntity", "ISeedableEntity"],
+      "enums": ["AuditOperationType", "NotificationType", "NotificationCategory", "PostStatus", "EmailFrequency"]
     },
     "application": {
       "path": "src/NOIR.Application/",
-      "commands": 39,
-      "queries": 26,
-      "specifications": "25+",
-      "behaviors": ["Logging", "Performance", "Validation", "Audit"]
+      "feature_modules": [
+        "Auth", "Users", "Roles", "Permissions", "Tenants", "TenantSettings",
+        "Audit", "Notifications", "EmailTemplates", "LegalPages", "Media",
+        "Blog", "DeveloperLogs", "PlatformSettings"
+      ],
+      "specifications": ["RefreshTokens", "Notifications", "PasswordResetOtps", "EmailChangeOtps", "TenantSettings", "Roles", "Permissions"],
+      "behaviors": ["Logging", "Performance", "Validation", "Audit"],
+      "interfaces": ["ICurrentUser", "IUserIdentityService", "IEmailService", "ITokenService"]
     },
     "infrastructure": {
       "path": "src/NOIR.Infrastructure/",
-      "modules": ["Persistence", "Identity", "Services", "Email", "Audit"]
+      "modules": ["Persistence", "Identity", "Services", "Email", "Audit", "Caching", "Hubs", "Media", "Storage", "Localization", "Logging", "BackgroundJobs", "Validation"],
+      "contexts": ["ApplicationDbContext", "TenantStoreDbContext"],
+      "interceptors": ["AuditableEntityInterceptor", "EntityAuditLogInterceptor", "TenantIdSetterInterceptor", "DomainEventInterceptor"],
+      "hubs": ["NotificationHub", "DeveloperLogHub"]
     },
     "web": {
       "path": "src/NOIR.Web/",
-      "endpoints": "15+",
-      "middleware": 5,
-      "hubs": 2,
-      "filters": 1
+      "endpoints": [
+        "AuthEndpoints", "UserEndpoints", "RoleEndpoints", "PermissionEndpoints",
+        "TenantEndpoints", "TenantSettingsEndpoints", "AuditEndpoints", "NotificationEndpoints",
+        "EmailTemplateEndpoints", "LegalPageEndpoints", "PublicLegalPageEndpoints",
+        "MediaEndpoints", "FileEndpoints", "BlogEndpoints", "FeedEndpoints",
+        "DeveloperLogEndpoints", "PlatformSettingsEndpoints"
+      ],
+      "middleware": ["ExceptionHandling", "CurrentUserLoader", "HttpRequestAudit", "TenantResolution"],
+      "filters": ["ValidateAntiforgeryTokenAttribute"]
+    },
+    "frontend": {
+      "path": "src/NOIR.Web/frontend/",
+      "pages": {
+        "public": ["Landing", "Login", "ForgotPassword", "VerifyOtp", "ResetPassword", "PrivacyPage", "TermsPage"],
+        "portal": ["Dashboard", "Settings", "Notifications", "NotificationPreferences"],
+        "admin": ["Users", "Roles", "Tenants", "TenantDetail", "TenantSettings", "ActivityTimeline", "DeveloperLogs", "PlatformSettings"],
+        "content": ["EmailTemplates", "LegalPages", "BlogPosts", "BlogCategories", "BlogTags"]
+      },
+      "components": ["ui", "auth", "portal", "settings", "notifications", "seo", "forgot-password"],
+      "contexts": ["AuthContext", "ThemeContext", "NotificationContext", "BrandingContext", "RegionalSettingsContext"],
+      "hooks": ["useLogin", "useSignalR", "usePermissions", "useRoles", "useUsers", "useTenants", "useBlog", "useLogStream", "usePageContext", "useImageUpload", "useValidatedForm"],
+      "services": ["apiClient", "auth", "users", "roles", "tenants", "tenantSettings", "audit", "notifications", "emailTemplates", "legalPages", "media", "blog", "developerLogs", "platformSettings", "forgotPassword", "profile", "settings", "pageContext"]
     }
   },
   "documentation": {
-    "backend_patterns": 8,
-    "backend_research": 5,
-    "frontend_guides": 9,
-    "architecture_decisions": 3,
-    "plans": 4,
-    "knowledge_base": "docs/KNOWLEDGE_BASE.md"
+    "index": "docs/PROJECT_INDEX.md",
+    "knowledge_base": "docs/KNOWLEDGE_BASE.md",
+    "api_index": "docs/API_INDEX.md",
+    "architecture": "docs/ARCHITECTURE.md",
+    "feature_catalog": "docs/FEATURE_CATALOG.md",
+    "tech_stack": "docs/TECH_STACK.md",
+    "backend_patterns": [
+      "repository-specification", "hierarchical-audit-logging", "before-state-resolver",
+      "bulk-operations", "di-auto-registration", "entity-configuration",
+      "json-enum-serialization", "jwt-refresh-token", "technical-checklist"
+    ],
+    "backend_research": [
+      "role-permission-best-practices-2025", "hierarchical-audit-logging-comparison-2025",
+      "validation-unification-plan", "cache-busting-best-practices", "seo-meta-and-hint-text-best-practices"
+    ],
+    "frontend_guides": [
+      "architecture", "theme", "api-types", "localization-guide", "COLOR_SCHEMA_GUIDE", "vibe-kanban-integration"
+    ],
+    "architecture_decisions": ["001-tech-stack", "002-frontend-ui-stack", "003-vertical-slice-cqrs"]
   },
   "commands": {
     "build": "dotnet build src/NOIR.sln",
     "run": "dotnet run --project src/NOIR.Web",
+    "watch": "dotnet watch --project src/NOIR.Web",
     "test": "dotnet test src/NOIR.sln",
-    "start_dev": "./start-dev.sh or start-dev.bat",
-    "migrations_add": "dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web",
-    "migrations_update": "dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web",
+    "test_coverage": "dotnet test src/NOIR.sln --collect:\"XPlat Code Coverage\"",
+    "start_dev": "./start-dev.sh",
+    "migrations_add": "dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/ApplicationDbContext",
+    "migrations_update": "dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext",
+    "frontend_install": "cd src/NOIR.Web/frontend && npm install",
     "frontend_dev": "cd src/NOIR.Web/frontend && npm run dev",
-    "frontend_build": "cd src/NOIR.Web/frontend && npm run build"
+    "frontend_build": "cd src/NOIR.Web/frontend && npm run build",
+    "frontend_generate_api": "cd src/NOIR.Web/frontend && npm run generate:api"
   },
+  "critical_rules": [
+    "Use Specifications for all database queries - never raw DbSet",
+    "Tag all specifications with TagWith('MethodName')",
+    "Use IUnitOfWork for persistence - repos don't auto-save",
+    "Use AsTracking for mutations in specifications",
+    "Implement IAuditableCommand for user actions",
+    "Register before-state resolvers for Update commands",
+    "Unique constraints must include TenantId for tenant entities",
+    "EF migrations must specify --context",
+    "System users must have TenantId = null",
+    "Error.Validation(propertyName, message, code?) - first param is property name"
+  ],
+  "serena_memories": [
+    "project-overview", "domain-entities", "application-features", "api-endpoints",
+    "frontend-architecture", "infrastructure-services", "architecture-patterns",
+    "authentication-authorization", "coding-standards", "testing-strategy",
+    "json-enum-serialization", "soft-delete-seeding-pattern", "suggested-commands"
+  ],
   "token_efficiency": {
     "before_index_tokens": 58000,
-    "after_index_tokens": 5000,
-    "savings_percent": 91,
-    "roi_sessions": 1,
-    "savings_100_sessions": 5300000
+    "after_index_tokens": 4500,
+    "savings_percent": 92,
+    "roi_sessions": 1
   }
 }

@@ -20,15 +20,15 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 4,400+ tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,400+ tests.
 
 ### Key Statistics
 
-- **Lines of Code:** ~150,000
+- **Lines of Code:** ~160,000
 - **Test Coverage:** 5,431 tests across Unit, Integration, and Architecture layers
-- **Feature Modules:** 12 domain-driven modules
-- **API Endpoints:** 65+ REST endpoints
-- **Technologies:** .NET 10, React 19, SQL Server, EF Core 10
+- **Feature Modules:** 14 domain-driven modules
+- **API Endpoints:** 70+ REST endpoints (17 endpoint groups)
+- **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
 
 ### Directory Structure
 
@@ -40,12 +40,12 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ Comprehensive test suite
-│   ├── NOIR.Domain.UnitTests/
-│   ├── NOIR.Application.UnitTests/
-│   ├── NOIR.IntegrationTests/
-│   └── NOIR.ArchitectureTests/
-├── docs/                         # 📚 Documentation
+├── tests/                        # ✅ 5,431 tests across 4 projects
+│   ├── NOIR.Domain.UnitTests/    # 838 domain logic tests
+│   ├── NOIR.Application.UnitTests/ # 3,064 handler/service tests
+│   ├── NOIR.IntegrationTests/    # 515 API integration tests
+│   └── NOIR.ArchitectureTests/   # 25 architectural rule tests
+├── docs/                         # 📚 42 documentation files
 └── .github/                      # ⚙️  CI/CD workflows
 
 ```
@@ -73,11 +73,14 @@ NOIR.Domain/
 │   ├── RefreshToken.cs                  # JWT refresh token
 │   ├── Notification.cs                  # User notification
 │   ├── EntityAuditLog.cs                # Entity-level audit trail
+│   ├── HandlerAuditLog.cs               # Handler-level audit (CQRS)
+│   ├── HttpRequestAuditLog.cs           # HTTP request audit
 │   ├── EmailTemplate.cs                 # Multi-tenant email templates
 │   ├── LegalPage.cs                     # Multi-tenant legal pages (COW)
+│   ├── MediaFile.cs                     # File storage tracking
 │   ├── Post.cs                          # Blog post
-│   ├── Category.cs                      # Blog category
-│   └── Tag.cs                           # Blog tag
+│   ├── PostCategory.cs                  # Blog category
+│   └── PostTag.cs                       # Blog tag
 ├── Enums/                               # Domain enumerations
 │   ├── AuditOperationType.cs            # CRUD operations
 │   ├── NotificationType.cs              # Notification types
@@ -149,8 +152,10 @@ NOIR.Application/
 │   ├── EmailTemplates/                  # Email template CRUD
 │   ├── LegalPages/                      # Legal pages (Terms, Privacy)
 │   ├── Media/                           # File upload/management
-│   ├── Blog/                            # Blog CMS
-│   └── DeveloperLogs/                   # Serilog streaming
+│   ├── Blog/                            # Blog CMS (Posts, Categories, Tags)
+│   ├── DeveloperLogs/                   # Serilog streaming
+│   ├── TenantSettings/                  # Tenant configuration (Branding, SMTP, etc.)
+│   └── PlatformSettings/                # Platform-level settings
 └── Specifications/                      # EF Core query specs
     ├── RefreshTokens/
     ├── Notifications/
@@ -193,6 +198,8 @@ Features/{Feature}/
 | **Media** | UploadFile, DeleteFile | GetFiles | File storage |
 | **Blog** | CreatePost, UpdatePost, DeletePost, PublishPost, CreateCategory, UpdateCategory, DeleteCategory, CreateTag, UpdateTag, DeleteTag | GetPosts, GetPost, GetCategories, GetTags | Blog CMS |
 | **DeveloperLogs** | - | StreamLogs | Real-time Serilog streaming |
+| **TenantSettings** | UpdateBranding, UpdateContact, UpdateSmtp, UpdateRegional | GetTenantSettings, GetBranding | Tenant configuration |
+| **PlatformSettings** | UpdatePlatformSettings | GetPlatformSettings | Platform-level config |
 
 #### Navigation
 
@@ -307,7 +314,12 @@ NOIR.Web/
 │   ├── LegalPageEndpoints.cs            # /api/legal-pages/*
 │   ├── PublicLegalPageEndpoints.cs      # /api/public/legal/*
 │   ├── MediaEndpoints.cs                # /api/media/*
-│   └── BlogEndpoints.cs                 # /api/blog/*
+│   ├── FileEndpoints.cs                 # /api/files/*
+│   ├── BlogEndpoints.cs                 # /api/blog/*
+│   ├── FeedEndpoints.cs                 # /api/feeds/* (RSS/Atom)
+│   ├── DeveloperLogEndpoints.cs         # /api/developer-logs/*
+│   ├── TenantSettingsEndpoints.cs       # /api/tenant-settings/*
+│   └── PlatformSettingsEndpoints.cs     # /api/platform-settings/*
 ├── Middleware/
 │   ├── CurrentUserLoaderMiddleware.cs   # Loads user claims into context
 │   ├── ExceptionHandlingMiddleware.cs   # Global error handler
@@ -317,7 +329,7 @@ NOIR.Web/
 └── frontend/                            # React SPA (Vite)
     ├── src/
     │   ├── components/                  # Reusable components
-    │   ├── contexts/                    # React contexts (Auth, Theme, Notification)
+    │   ├── contexts/                    # React contexts (Auth, Theme, Notification, Branding, Regional)
     │   ├── hooks/                       # Custom React hooks
     │   ├── layouts/                     # Layout components
     │   ├── pages/                       # Route pages
@@ -342,6 +354,11 @@ NOIR.Web/
 | **Legal Pages** | `/api/legal-pages`, `/api/public/legal` | CRUD, revert, public |
 | **Media** | `/api/media` | upload, delete, list |
 | **Blog** | `/api/blog` | posts, categories, tags (full CRUD) |
+| **Feeds** | `/api/feeds` | RSS/Atom blog feeds |
+| **Files** | `/api/files` | File upload/download |
+| **Developer Logs** | `/api/developer-logs` | Serilog streaming, error clusters |
+| **Tenant Settings** | `/api/tenant-settings` | Branding, SMTP, regional, contact |
+| **Platform Settings** | `/api/platform-settings` | Platform-level configuration |
 | **Hangfire** | `/hangfire` | Dashboard (requires `system:hangfire` permission) |
 
 #### Navigation
@@ -663,9 +680,10 @@ public static partial class UserMapper
 ```
 tests/
 ├── NOIR.Domain.UnitTests/           # Domain logic tests (838 tests)
-├── NOIR.Application.UnitTests/      # Application layer tests (3,064 tests)
+├── NOIR.Application.UnitTests/      # Handler, service, validator tests (3,064 tests)
 ├── NOIR.IntegrationTests/           # API integration tests (515 tests)
-└── NOIR.ArchitectureTests/          # Architecture rules (25 tests)
+├── NOIR.ArchitectureTests/          # Architecture rule validation (25 tests)
+└── coverage.runsettings             # Test coverage configuration
 ```
 
 ### Integration Tests
@@ -893,4 +911,6 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 ---
 
 **Last Updated:** 2026-01-23
+**Version:** 2.1
 **Maintainer:** NOIR Team
+**Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
