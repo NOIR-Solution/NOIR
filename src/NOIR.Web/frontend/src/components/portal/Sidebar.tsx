@@ -60,6 +60,8 @@ import { languageFlags } from '@/i18n/languageFlags'
 import type { SupportedLanguage } from '@/i18n'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useNotificationContext } from '@/contexts/NotificationContext'
+import { useBranding } from '@/contexts/BrandingContext'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { Badge } from '@/components/ui/badge'
 import { isPlatformAdmin } from '@/lib/roles'
 
@@ -343,6 +345,7 @@ interface SidebarContentProps {
   t: (key: string) => string
   pathname: string
   user?: UserData | null
+  logoUrl?: string | null
 }
 
 
@@ -359,26 +362,6 @@ function getNotificationTimeLabel(dateString: string): string {
   if (diffDays === 1) return 'Yesterday'
   if (diffDays <= 7) return 'Earlier this week'
   return 'Older'
-}
-
-/**
- * Format relative time for display
- */
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffSec = Math.floor(diffMs / 1000)
-  const diffMin = Math.floor(diffSec / 60)
-  const diffHour = Math.floor(diffMin / 60)
-  const diffDay = Math.floor(diffHour / 24)
-
-  if (diffSec < 60) return 'Just now'
-  if (diffMin < 60) return `${diffMin}m ago`
-  if (diffHour < 24) return `${diffHour}h ago`
-  if (diffDay < 7) return `${diffDay}d ago`
-
-  return date.toLocaleDateString()
 }
 
 /**
@@ -440,6 +423,7 @@ function NotificationEmptyState() {
  */
 function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: boolean; t: (key: string) => string; onItemClick?: (path: string) => void }) {
   const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead, connectionState } = useNotificationContext()
+  const { formatRelativeTime } = useRegionalSettings()
   const location = useLocation()
   const isActive = location.pathname === '/portal/notifications'
   const [open, setOpen] = useState(false)
@@ -660,6 +644,7 @@ function SidebarContent({
   t,
   pathname,
   user,
+  logoUrl,
 }: SidebarContentProps) {
   const isActive = (path: string) => isActivePath(pathname, path)
   const { hasPermission } = usePermissions()
@@ -724,10 +709,20 @@ function SidebarContent({
       <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
         {isExpanded && (
           <Link to="/portal" className="flex items-center gap-3 group" onClick={() => onItemClick?.('/portal')}>
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center text-sidebar-primary-foreground shadow-lg group-hover:shadow-xl transition-all">
-              <ShieldCheck className="h-5 w-5" />
-            </div>
-            <h2 className="text-lg font-semibold text-sidebar-foreground">NOIR</h2>
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt="Logo"
+                className="h-10 max-w-[160px] object-contain"
+              />
+            ) : (
+              <>
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center text-sidebar-primary-foreground shadow-lg group-hover:shadow-xl transition-all">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <h2 className="text-lg font-semibold text-sidebar-foreground">NOIR</h2>
+              </>
+            )}
           </Link>
         )}
         <Button
@@ -805,6 +800,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
   const { t } = useTranslation('common')
   const location = useLocation()
   const { user } = useAuthContext()
+  const { branding } = useBranding()
 
   return (
     <aside
@@ -819,6 +815,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
         t={t}
         pathname={location.pathname}
         user={user}
+        logoUrl={branding?.logoUrl}
       />
     </aside>
   )
@@ -839,6 +836,7 @@ export function MobileSidebarTrigger({
   const { user } = useAuthContext()
   const { hasPermission } = usePermissions()
   const { unreadCount } = useNotificationContext()
+  const { branding } = useBranding()
 
   // Filter sections and items based on permissions
   const visibleSections = navSections
@@ -890,10 +888,20 @@ export function MobileSidebarTrigger({
           {/* Mobile Header */}
           <div className="flex items-center p-4 border-b border-sidebar-border">
             <Link to="/portal" className="flex items-center gap-3" onClick={() => onOpenChange(false)}>
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center text-sidebar-primary-foreground shadow-lg">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <h2 className="text-lg font-semibold text-sidebar-foreground">NOIR</h2>
+              {branding?.logoUrl ? (
+                <img
+                  src={branding.logoUrl}
+                  alt="Logo"
+                  className="h-10 max-w-[160px] object-contain"
+                />
+              ) : (
+                <>
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center text-sidebar-primary-foreground shadow-lg">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-sidebar-foreground">NOIR</h2>
+                </>
+              )}
             </Link>
           </div>
 

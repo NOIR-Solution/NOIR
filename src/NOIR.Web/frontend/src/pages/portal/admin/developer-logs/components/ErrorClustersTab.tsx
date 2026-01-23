@@ -5,6 +5,7 @@
  * Shows severity, count, first/last seen timestamps for each error pattern.
  */
 import { RefreshCw, ChevronRight, AlertCircle } from 'lucide-react'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -28,6 +29,8 @@ function ErrorClusters({
   clusters: ErrorClusterDto[]
   onRefresh: () => void
 }) {
+  const { formatDateTime } = useRegionalSettings()
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -69,11 +72,11 @@ function ErrorClusters({
                 <div className="mt-1 p-2 bg-muted/50 rounded text-xs space-y-1">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">First seen:</span>
-                    <span className="font-mono">{new Date(cluster.firstSeen).toLocaleString()}</span>
+                    <span className="font-mono">{formatDateTime(cluster.firstSeen)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Last seen:</span>
-                    <span className="font-mono">{new Date(cluster.lastSeen).toLocaleString()}</span>
+                    <span className="font-mono">{formatDateTime(cluster.lastSeen)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Severity:</span>

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ApiError } from '@/services/apiClient'
 import { getEmailTemplates, type EmailTemplateListDto } from '@/services/emailTemplates'
+import { formatDisplayName } from '@/lib/utils'
 
 export interface EmailTemplatesTabProps {
   onEdit: (id: string) => void
@@ -54,7 +55,7 @@ export function EmailTemplatesTab({ onEdit, onView }: EmailTemplatesTabProps) {
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <h4 className="font-medium">{template.name}</h4>
+                    <h4 className="font-medium">{formatDisplayName(template.name)}</h4>
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {template.description}
                     </p>

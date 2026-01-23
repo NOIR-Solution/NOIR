@@ -120,15 +120,4 @@ export async function updatePreferences(
   })
 }
 
-/**
- * Notification service object for convenience
- */
-export const notificationService = {
-  getNotifications,
-  getUnreadCount,
-  markAsRead,
-  markAllAsRead,
-  deleteNotification,
-  getPreferences,
-  updatePreferences,
-}
+

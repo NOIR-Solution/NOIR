@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import type { DateRange } from 'react-day-picker'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useRegionalSettings, getLocaleForFormat } from '@/contexts/RegionalSettingsContext'
 import {
   Activity,
   Search,
@@ -58,35 +59,54 @@ const operationConfig = {
   Delete: { icon: Trash2, color: 'bg-red-500', textColor: 'text-red-700', bgColor: 'bg-red-100 dark:bg-red-900/30' },
 }
 
-// Format relative time
-function formatRelativeTime(timestamp: string): string {
+// Format time only (used for inline display)
+function formatTimeOnly(timestamp: string, timezone: string): string {
   const date = new Date(timestamp)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffSecs = Math.floor(diffMs / 1000)
-  const diffMins = Math.floor(diffSecs / 60)
-  const diffHours = Math.floor(diffMins / 60)
-  const diffDays = Math.floor(diffHours / 24)
-
-  if (diffSecs < 60) return 'Just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays < 7) return `${diffDays}d ago`
-  return date.toLocaleDateString()
+  try {
+    return date.toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: timezone,
+    })
+  } catch {
+    return date.toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
+  }
 }
 
-// Format exact timestamp for tooltip
-function formatExactTime(timestamp: string): string {
+// Format exact timestamp for tooltip (uses tenant timezone and date format)
+function formatExactTime(timestamp: string, timezone: string, dateFormat: string): string {
   const date = new Date(timestamp)
-  return date.toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
+  const locale = getLocaleForFormat(dateFormat)
+
+  try {
+    return date.toLocaleString(locale, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: timezone,
+    })
+  } catch {
+    return date.toLocaleString(locale, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
+  }
 }
 
 // Timeline Entry Component - clickable card that opens details popup
@@ -101,6 +121,7 @@ function TimelineEntry({
 }) {
   const config = operationConfig[entry.operationType as keyof typeof operationConfig] || operationConfig.Update
   const Icon = config.icon
+  const { formatRelativeTime, timezone, dateFormat } = useRegionalSettings()
 
   return (
     <div className="relative flex gap-4">
@@ -181,11 +202,11 @@ function TimelineEntry({
                       {formatRelativeTime(entry.timestamp)}
                     </span>
                     <span>·</span>
-                    {formatExactTime(entry.timestamp).split(', ').pop()}
+                    {formatTimeOnly(entry.timestamp, timezone)}
                   </span>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="font-mono text-xs">
-                  {formatExactTime(entry.timestamp)}
+                  {formatExactTime(entry.timestamp, timezone, dateFormat)}
                 </TooltipContent>
               </Tooltip>
               {entry.durationMs && (

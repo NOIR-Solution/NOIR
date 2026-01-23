@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -33,6 +34,7 @@ export default function TenantDetailPage() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { t } = useTranslation('common')
+  const { formatDateTime } = useRegionalSettings()
 
   const [tenant, setTenant] = useState<Tenant | null>(null)
   const [loading, setLoading] = useState(true)
@@ -187,12 +189,12 @@ export default function TenantDetailPage() {
           <CardContent className="space-y-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('labels.createdAt')}</p>
-              <p>{new Date(tenant.createdAt).toLocaleString()}</p>
+              <p>{formatDateTime(tenant.createdAt)}</p>
             </div>
             {tenant.modifiedAt && (
               <div>
                 <p className="text-sm font-medium text-muted-foreground">{t('labels.updatedAt')}</p>
-                <p>{new Date(tenant.modifiedAt).toLocaleString()}</p>
+                <p>{formatDateTime(tenant.modifiedAt)}</p>
               </div>
             )}
           </CardContent>

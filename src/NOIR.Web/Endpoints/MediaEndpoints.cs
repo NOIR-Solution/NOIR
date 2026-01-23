@@ -6,7 +6,7 @@ namespace NOIR.Web.Endpoints;
 /// </summary>
 public static class MediaEndpoints
 {
-    private static readonly string[] AllowedFolders = ["blog", "content", "avatars"];
+    private static readonly string[] AllowedFolders = ["blog", "content", "avatars", "branding"];
     private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
 
     public static void MapMediaEndpoints(this WebApplication app)
@@ -61,6 +61,12 @@ public static class MediaEndpoints
                 // Use entityId if provided, otherwise current user
                 var userId = !string.IsNullOrEmpty(entityId) ? entityId : currentUser.UserId;
                 storageFolder = $"{targetFolder}/{userId}";
+            }
+            else if (targetFolder == "branding")
+            {
+                // Use tenant ID for branding assets
+                var tenantId = multiTenantContext.MultiTenantContext?.TenantInfo?.Id ?? "default";
+                storageFolder = $"{targetFolder}/{tenantId}";
             }
 
             try
@@ -498,6 +504,16 @@ public static class MediaEndpoints
                 GenerateThumbHash = false,
                 ExtractDominantColor = false,
                 PreserveOriginal = false,
+                StorageFolder = storageFolder
+            },
+            "branding" => new ImageProcessingOptions
+            {
+                // Branding: medium for display, preserve original for favicon
+                Variants = [ImageVariant.Thumb, ImageVariant.Medium],
+                Formats = [OutputFormat.WebP],
+                GenerateThumbHash = false,
+                ExtractDominantColor = false,
+                PreserveOriginal = true, // Keep original for favicon (ICO format)
                 StorageFolder = storageFolder
             },
             "blog" or "content" => new ImageProcessingOptions

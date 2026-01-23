@@ -12,6 +12,8 @@ interface ThemeContextType {
   setTheme: (theme: Theme) => void
   /** Toggle between light and dark (sets explicit preference) */
   toggleTheme: () => void
+  /** Whether the user has explicitly set a theme preference */
+  hasUserPreference: boolean
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -45,6 +47,11 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProviderProps) {
+  const [hasUserPreference, setHasUserPreference] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    return localStorage.getItem(STORAGE_KEY) !== null
+  })
+
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === 'undefined') return defaultTheme
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null
@@ -84,6 +91,7 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme)
     localStorage.setItem(STORAGE_KEY, newTheme)
+    setHasUserPreference(true)
   }, [])
 
   const toggleTheme = useCallback(() => {
@@ -93,7 +101,7 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
   }, [resolvedTheme, setTheme])
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, toggleTheme, hasUserPreference }}>
       {children}
     </ThemeContext.Provider>
   )

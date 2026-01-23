@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { Edit, Trash2, Building, KeyRound } from 'lucide-react'
 import {
   Table,
@@ -24,6 +25,7 @@ interface TenantTableProps {
 
 export function TenantTable({ tenants, onEdit, onDelete, onResetPassword, loading }: TenantTableProps) {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
 
   if (loading) {
     return (
@@ -72,7 +74,7 @@ export function TenantTable({ tenants, onEdit, onDelete, onResetPassword, loadin
                 <TenantStatusBadge isActive={tenant.isActive} />
               </TableCell>
               <TableCell className="text-sm text-muted-foreground">
-                {new Date(tenant.createdAt).toLocaleDateString()}
+                {formatDate(tenant.createdAt)}
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end space-x-2">

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
 import { FileText, ArrowLeft, RotateCcw, Save, Info } from 'lucide-react'
 import { Editor } from '@tinymce/tinymce-react'
@@ -67,6 +68,7 @@ export default function LegalPageEditPage() {
   const { id } = useParams<{ id: string }>()
   const { t } = useTranslation('common')
   const navigate = useNavigate()
+  const { formatDate } = useRegionalSettings()
   const { hasPermission } = usePermissions()
   const canEdit = hasPermission(Permissions.LegalPagesUpdate)
   const editorRef = useRef<TinyMCEEditor | null>(null)
@@ -531,7 +533,7 @@ export default function LegalPageEditPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Last Modified:</span>
-                <span>{new Date(page.lastModified).toLocaleDateString()}</span>
+                <span>{formatDate(page.lastModified)}</span>
               </div>
             </CardContent>
           </Card>

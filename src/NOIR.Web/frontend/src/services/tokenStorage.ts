@@ -111,10 +111,4 @@ export function isTokenExpired(): boolean {
   }
 }
 
-/**
- * Check if we have valid stored tokens
- */
-export function hasValidTokens(): boolean {
-  const tokens = getStoredTokens()
-  return tokens !== null && !isTokenExpired()
-}
+

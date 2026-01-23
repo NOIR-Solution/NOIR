@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useRegionalSettings, getLocaleForFormat } from '@/contexts/RegionalSettingsContext'
 import {
   Clock,
   User,
@@ -46,9 +47,32 @@ interface ActivityDetailsDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
-// Format timestamp for display
-function formatTimestamp(timestamp: string): string {
-  return new Date(timestamp).toLocaleString()
+// Format timestamp for display (uses tenant timezone and date format)
+function formatTimestamp(timestamp: string, timezone: string, dateFormat: string): string {
+  const date = new Date(timestamp)
+  const locale = getLocaleForFormat(dateFormat)
+  try {
+    return date.toLocaleString(locale, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      timeZone: timezone,
+    })
+  } catch {
+    return date.toLocaleString(locale, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    })
+  }
 }
 
 // Color variants for metadata items
@@ -177,6 +201,7 @@ export function ActivityDetailsDialog({
   const [details, setDetails] = useState<ActivityDetails | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { timezone, dateFormat } = useRegionalSettings()
 
   useEffect(() => {
     if (entry && open) {
@@ -215,7 +240,7 @@ export function ActivityDetailsDialog({
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
-                  {formatTimestamp(entry.timestamp)}
+                  {formatTimestamp(entry.timestamp, timezone, dateFormat)}
                 </span>
                 <Badge
                   variant="outline"

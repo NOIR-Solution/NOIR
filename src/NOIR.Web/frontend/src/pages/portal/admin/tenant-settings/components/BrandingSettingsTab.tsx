@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Save } from 'lucide-react'
+import { Save, RotateCcw } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ColorPicker } from '@/components/ui/color-picker'
+import { ImageUploadField } from '@/components/ui/image-upload-field'
 import { ApiError } from '@/services/apiClient'
+import { useBranding } from '@/contexts/BrandingContext'
 import {
   getBrandingSettings,
   updateBrandingSettings,
@@ -21,6 +22,7 @@ export interface BrandingSettingsTabProps {
 
 export function BrandingSettingsTab({ canEdit }: BrandingSettingsTabProps) {
   const { t } = useTranslation('common')
+  const { reloadBranding } = useBranding()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [data, setData] = useState<BrandingSettingsDto | null>(null)
@@ -64,6 +66,8 @@ export function BrandingSettingsTab({ canEdit }: BrandingSettingsTabProps) {
         darkModeDefault,
       })
       setData(updated)
+      // Reload branding context to apply changes globally (theme colors, favicon, dark mode)
+      await reloadBranding()
       toast.success(t('tenantSettings.saved'))
     } catch (error) {
       if (error instanceof ApiError) {
@@ -90,9 +94,9 @@ export function BrandingSettingsTab({ canEdit }: BrandingSettingsTabProps) {
         <CardContent className="py-8">
           <div className="animate-pulse space-y-4">
             <div className="h-4 w-48 bg-muted rounded" />
-            <div className="h-10 w-full bg-muted rounded" />
+            <div className="h-24 w-full bg-muted rounded" />
             <div className="h-4 w-48 bg-muted rounded" />
-            <div className="h-10 w-full bg-muted rounded" />
+            <div className="h-24 w-full bg-muted rounded" />
           </div>
         </CardContent>
       </Card>
@@ -106,24 +110,55 @@ export function BrandingSettingsTab({ canEdit }: BrandingSettingsTabProps) {
         <CardDescription>{t('tenantSettings.branding.description')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="logoUrl">{t('tenantSettings.branding.logoUrl')}</Label>
-            <Input
-              id="logoUrl"
+            <div className="flex items-center justify-between">
+              <Label>{t('tenantSettings.branding.logoUrl')}</Label>
+              {canEdit && logoUrl && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs text-muted-foreground cursor-pointer"
+                  onClick={() => setLogoUrl('')}
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  {t('buttons.resetToDefault', 'Reset to default')}
+                </Button>
+              )}
+            </div>
+            <ImageUploadField
               value={logoUrl}
-              onChange={(e) => setLogoUrl(e.target.value)}
-              placeholder="https://example.com/logo.png"
+              onChange={setLogoUrl}
+              folder="branding"
+              placeholder="Click to upload"
+              aspectClass="aspect-video"
               disabled={!canEdit}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="faviconUrl">{t('tenantSettings.branding.faviconUrl')}</Label>
-            <Input
-              id="faviconUrl"
+            <div className="flex items-center justify-between">
+              <Label>{t('tenantSettings.branding.faviconUrl')}</Label>
+              {canEdit && faviconUrl && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs text-muted-foreground cursor-pointer"
+                  onClick={() => setFaviconUrl('')}
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  {t('buttons.resetToDefault', 'Reset to default')}
+                </Button>
+              )}
+            </div>
+            <ImageUploadField
               value={faviconUrl}
-              onChange={(e) => setFaviconUrl(e.target.value)}
-              placeholder="https://example.com/favicon.ico"
+              onChange={setFaviconUrl}
+              folder="branding"
+              placeholder="Upload"
+              aspectClass="aspect-square max-w-[120px]"
+              accept="image/jpeg,image/png,image/gif,image/webp,image/x-icon,image/svg+xml"
               disabled={!canEdit}
             />
           </div>
@@ -131,7 +166,21 @@ export function BrandingSettingsTab({ canEdit }: BrandingSettingsTabProps) {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>{t('tenantSettings.branding.primaryColor')}</Label>
+            <div className="flex items-center justify-between">
+              <Label>{t('tenantSettings.branding.primaryColor')}</Label>
+              {canEdit && primaryColor && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs text-muted-foreground cursor-pointer"
+                  onClick={() => setPrimaryColor('')}
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  {t('buttons.resetToDefault', 'Reset to default')}
+                </Button>
+              )}
+            </div>
             <ColorPicker
               value={primaryColor || '#3B82F6'}
               onChange={setPrimaryColor}
@@ -139,7 +188,21 @@ export function BrandingSettingsTab({ canEdit }: BrandingSettingsTabProps) {
             />
           </div>
           <div className="space-y-2">
-            <Label>{t('tenantSettings.branding.secondaryColor')}</Label>
+            <div className="flex items-center justify-between">
+              <Label>{t('tenantSettings.branding.secondaryColor')}</Label>
+              {canEdit && secondaryColor && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs text-muted-foreground cursor-pointer"
+                  onClick={() => setSecondaryColor('')}
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  {t('buttons.resetToDefault', 'Reset to default')}
+                </Button>
+              )}
+            </div>
             <ColorPicker
               value={secondaryColor || '#6366F1'}
               onChange={setSecondaryColor}

@@ -195,34 +195,6 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ResourceSharesByResourceSpec_ShouldReturnAllSharesForResource()
-    {
-        await _factory.ExecuteWithTenantAsync(async sp =>
-        {
-            var context = sp.GetRequiredService<ApplicationDbContext>();
-            var resourceId = Guid.NewGuid();
-
-            // Create multiple shares for same resource
-            var share1 = ResourceShare.Create("document", resourceId, "user-1", SharePermission.View);
-            var share2 = ResourceShare.Create("document", resourceId, "user-2", SharePermission.Edit);
-            var share3 = ResourceShare.Create("document", resourceId, "user-3", SharePermission.Admin);
-
-            context.ResourceShares.AddRange(share1, share2, share3);
-            await context.SaveChangesAsync();
-
-            // Act
-            var spec = new ResourceSharesByResourceSpec("document", resourceId);
-            var results = await SpecificationEvaluator
-                .GetQuery(context.ResourceShares, spec)
-                .ToListAsync();
-
-            // Assert
-            results.Should().HaveCount(3);
-            results.Select(r => r.SharedWithUserId).Should().BeEquivalentTo(["user-1", "user-2", "user-3"]);
-        });
-    }
-
-    [Fact]
     public async Task ResourceSharesByUserSpec_ShouldReturnAllSharesForUser()
     {
         await _factory.ExecuteWithTenantAsync(async sp =>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { FileText, ArrowLeft, Save, Upload, X, Image as ImageIcon, Loader2, Calendar, Info } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -85,6 +86,7 @@ export default function PostEditorPage() {
   const { id } = useParams<{ id: string }>()
   const isEdit = !!id
   usePageContext(isEdit ? 'Edit Post' : 'New Post')
+  const { formatDateTime, formatDate } = useRegionalSettings()
   const editorRef = useRef<TinyMCEEditor | null>(null)
 
   const [loading, setLoading] = useState(false)
@@ -242,7 +244,7 @@ export default function PostEditorPage() {
         // Schedule for future
         const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`)
         await publishPost(savedPost.id, { scheduledPublishAt: scheduledDateTime.toISOString() })
-        toast.success(`Post scheduled for ${scheduledDateTime.toLocaleString()}`)
+        toast.success(`Post scheduled for ${formatDateTime(scheduledDateTime)}`)
       }
 
       navigate('/portal/blog/posts')
@@ -336,7 +338,7 @@ export default function PostEditorPage() {
               post.status === 'Scheduled' ? 'secondary' : 'outline'
             }>
               {post.status === 'Scheduled' && post.scheduledPublishAt
-                ? `Scheduled: ${new Date(post.scheduledPublishAt).toLocaleDateString()}`
+                ? `Scheduled: ${formatDate(post.scheduledPublishAt!)}`
                 : post.status}
             </Badge>
           )}

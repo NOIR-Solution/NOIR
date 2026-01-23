@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
 import { Loader2, Pencil, Eye, GitFork } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -14,6 +15,7 @@ export interface LegalPagesTabProps {
 
 export function LegalPagesTab({ onEdit }: LegalPagesTabProps) {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const [loading, setLoading] = useState(true)
   const [pages, setPages] = useState<LegalPageListDto[]>([])
 
@@ -72,7 +74,7 @@ export function LegalPagesTab({ onEdit }: LegalPagesTabProps) {
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground pt-1">
-                      {t('legalPages.lastModified')}: {new Date(page.lastModified).toLocaleDateString()}
+                      {t('legalPages.lastModified')}: {formatDate(page.lastModified)}
                     </p>
                   </div>
                   <div className="flex flex-col gap-1">

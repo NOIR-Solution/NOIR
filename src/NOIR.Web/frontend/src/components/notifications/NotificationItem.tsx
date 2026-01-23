@@ -10,6 +10,7 @@
  */
 import { Info, CheckCircle, AlertTriangle, XCircle, Trash2, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { Button } from '@/components/ui/button'
 import type { Notification, NotificationType } from '@/types'
 import { useNavigate } from 'react-router-dom'
@@ -46,26 +47,6 @@ const typeConfig: Record<NotificationType, { icon: typeof Info; color: string; b
   },
 }
 
-/**
- * Format relative time (e.g., "2 min ago", "1 hour ago")
- */
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffSec = Math.floor(diffMs / 1000)
-  const diffMin = Math.floor(diffSec / 60)
-  const diffHour = Math.floor(diffMin / 60)
-  const diffDay = Math.floor(diffHour / 24)
-
-  if (diffSec < 60) return 'Just now'
-  if (diffMin < 60) return `${diffMin}m ago`
-  if (diffHour < 24) return `${diffHour}h ago`
-  if (diffDay < 7) return `${diffDay}d ago`
-
-  return date.toLocaleDateString()
-}
-
 export function NotificationItem({
   notification,
   onMarkAsRead,
@@ -74,6 +55,7 @@ export function NotificationItem({
   className,
 }: NotificationItemProps) {
   const navigate = useNavigate()
+  const { formatRelativeTime } = useRegionalSettings()
   const config = typeConfig[notification.type] || typeConfig.info
   const Icon = config.icon
 

@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ApiError } from '@/services/apiClient'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import {
   getRegionalSettings,
   updateRegionalSettings,
@@ -35,17 +36,10 @@ const TIMEZONE_OPTIONS = [
   { value: 'Australia/Sydney', label: 'Sydney (AEST)' },
 ]
 
+// Only languages with actual translation files
 const LANGUAGE_OPTIONS = [
   { value: 'en', label: 'English' },
-  { value: 'vi', label: 'Ti\u1EBFng Vi\u1EC7t' },
-  { value: 'ja', label: '日本語' },
-  { value: 'ko', label: '한국어' },
-  { value: 'zh', label: '中文' },
-  { value: 'fr', label: 'Fran\u00E7ais' },
-  { value: 'de', label: 'Deutsch' },
-  { value: 'es', label: 'Espa\u00F1ol' },
-  { value: 'it', label: 'Italiano' },
-  { value: 'pt', label: 'Portugu\u00EAs' },
+  { value: 'vi', label: 'Tiếng Việt' },
 ]
 
 const DATE_FORMAT_OPTIONS = [
@@ -61,6 +55,7 @@ export interface RegionalSettingsTabProps {
 
 export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
   const { t } = useTranslation('common')
+  const { reloadRegional } = useRegionalSettings()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [data, setData] = useState<RegionalSettingsDto | null>(null)
@@ -98,6 +93,8 @@ export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
         dateFormat,
       })
       setData(updated)
+      // Reload regional context to apply changes globally (timezone, date format, language default)
+      await reloadRegional()
       toast.success(t('tenantSettings.saved'))
     } catch (error) {
       if (error instanceof ApiError) {
@@ -140,6 +137,9 @@ export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="timezone">{t('tenantSettings.regional.timezone')}</Label>
+          <p className="text-sm text-muted-foreground">
+            {t('tenantSettings.regional.timezoneDescription')}
+          </p>
           <Select value={timezone} onValueChange={setTimezone} disabled={!canEdit}>
             <SelectTrigger className="cursor-pointer">
               <SelectValue />
@@ -155,6 +155,9 @@ export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="language">{t('tenantSettings.regional.language')}</Label>
+          <p className="text-sm text-muted-foreground">
+            {t('tenantSettings.regional.languageDescription')}
+          </p>
           <Select value={language} onValueChange={setLanguage} disabled={!canEdit}>
             <SelectTrigger className="cursor-pointer">
               <SelectValue />
@@ -170,6 +173,9 @@ export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="dateFormat">{t('tenantSettings.regional.dateFormat')}</Label>
+          <p className="text-sm text-muted-foreground">
+            {t('tenantSettings.regional.dateFormatDescription')}
+          </p>
           <Select value={dateFormat} onValueChange={setDateFormat} disabled={!canEdit}>
             <SelectTrigger className="cursor-pointer">
               <SelectValue />

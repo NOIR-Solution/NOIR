@@ -2,6 +2,8 @@ import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { BrandingProvider } from '@/contexts/BrandingContext'
+import { RegionalSettingsProvider } from '@/contexts/RegionalSettingsContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
@@ -53,6 +55,8 @@ function App() {
   return (
     <ThemeProvider defaultTheme="system">
       <AuthProvider>
+        <BrandingProvider>
+        <RegionalSettingsProvider>
         <NotificationProvider>
           <BrowserRouter>
         <Toaster
@@ -119,6 +123,8 @@ function App() {
           </Routes>
           </BrowserRouter>
         </NotificationProvider>
+        </RegionalSettingsProvider>
+        </BrandingProvider>
       </AuthProvider>
     </ThemeProvider>
   )

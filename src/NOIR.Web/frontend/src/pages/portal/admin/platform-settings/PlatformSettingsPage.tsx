@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -46,6 +47,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { usePageContext } from '@/hooks/usePageContext'
 import { ApiError } from '@/services/apiClient'
+import { formatDisplayName } from '@/lib/utils'
 
 import {
   getSmtpSettings,
@@ -537,7 +539,7 @@ function EmailTemplatesTab({ onEdit }: { onEdit: (id: string) => void }) {
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <h4 className="font-medium">{template.name}</h4>
+                    <h4 className="font-medium">{formatDisplayName(template.name)}</h4>
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {template.description}
                     </p>
@@ -577,6 +579,7 @@ function EmailTemplatesTab({ onEdit }: { onEdit: (id: string) => void }) {
 // ============================================================================
 function LegalPagesTab({ onEdit }: { onEdit: (id: string) => void }) {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const [loading, setLoading] = useState(true)
   const [pages, setPages] = useState<LegalPageListDto[]>([])
 
@@ -626,7 +629,7 @@ function LegalPagesTab({ onEdit }: { onEdit: (id: string) => void }) {
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground pt-1">
-                      Last modified: {new Date(page.lastModified).toLocaleDateString()}
+                      Last modified: {formatDate(page.lastModified)}
                     </p>
                   </div>
                   <div className="flex flex-col gap-1">

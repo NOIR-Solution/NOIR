@@ -6,6 +6,7 @@ import { Editor } from '@tinymce/tinymce-react'
 import type { Editor as TinyMCEEditor } from 'tinymce'
 import { z } from 'zod'
 import { updateEmailTemplateSchema } from '@/validation/schemas.generated'
+import { formatDisplayName } from '@/lib/utils'
 
 // Import TinyMCE 6 for self-hosted usage
 /* eslint-disable import/no-unresolved */
@@ -121,14 +122,6 @@ export default function EmailTemplateEditPage() {
 
   // Validation errors
   const [errors, setErrors] = useState<EmailTemplateFormErrors>({})
-
-  // Get template display name
-  const getDisplayName = (name: string): string => {
-    return name
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, (str) => str.toUpperCase())
-      .trim()
-  }
 
   // Load template
   useEffect(() => {
@@ -367,7 +360,7 @@ export default function EmailTemplateEditPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              {getDisplayName(template.name)}
+              {formatDisplayName(template.name)}
               <Badge variant="secondary">HTML</Badge>
             </h1>
             <p className="text-muted-foreground">
@@ -669,7 +662,7 @@ export default function EmailTemplateEditPage() {
             <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Name:</span>
-                <span className="font-medium">{template.name}</span>
+                <span className="font-medium">{formatDisplayName(template.name)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Language:</span>

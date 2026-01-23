@@ -6,6 +6,7 @@
  */
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { Monitor, Smartphone, Globe, Trash2, Loader2, RefreshCw, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -57,25 +58,9 @@ function getDeviceInfo(session: ActiveSession): string {
   return `${browser} on ${os}`
 }
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) {
-    return 'Today at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  } else if (diffDays === 1) {
-    return 'Yesterday at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`
-  } else {
-    return date.toLocaleDateString()
-  }
-}
-
 export function SessionManagement() {
   const { t } = useTranslation('auth')
+  const { formatRelativeTime } = useRegionalSettings()
   const [sessions, setSessions] = useState<ActiveSession[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isRevoking, setIsRevoking] = useState<string | null>(null)
@@ -170,7 +155,7 @@ export function SessionManagement() {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         {session.ipAddress && <span>{session.ipAddress}</span>}
                         <span>-</span>
-                        <span>{formatDate(session.createdAt)}</span>
+                        <span>{formatRelativeTime(session.createdAt)}</span>
                       </div>
                     </div>
                   </div>
