@@ -447,6 +447,10 @@ app.MapPermissionEndpoints();
 app.MapTenantEndpoints();
 app.MapUserEndpoints();
 app.MapEmailTemplateEndpoints();
+app.MapLegalPageEndpoints();
+app.MapPublicLegalPageEndpoints();
+app.MapPlatformSettingsEndpoints();
+app.MapTenantSettingsEndpoints();
 app.MapNotificationEndpoints();
 app.MapAuditEndpoints();
 app.MapDeveloperLogEndpoints();
@@ -479,6 +483,23 @@ if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalI
 }
 
 // Map Health Checks (under /api to avoid React routing conflicts)
+// Liveness probe - simple check that the app is running (no dependencies)
+// Use for Kubernetes livenessProbe to restart unhealthy pods
+app.MapHealthChecks("/api/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false, // Don't run any checks - just return healthy
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+// Readiness probe - checks all dependencies (database)
+// Use for Kubernetes readinessProbe to stop traffic to unhealthy pods
+app.MapHealthChecks("/api/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("db"),
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+// Full health check - includes all checks with detailed UI response
 app.MapHealthChecks("/api/health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

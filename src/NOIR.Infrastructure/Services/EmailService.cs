@@ -1,7 +1,8 @@
 namespace NOIR.Infrastructure.Services;
 
 /// <summary>
-/// FluentEmail implementation of email service.
+/// Email service implementation.
+/// Uses database SMTP settings (platform level) with fallback to appsettings.json via FluentEmail.
 /// Uses database templates for email content.
 /// </summary>
 public class EmailService : IEmailService, IScopedService
@@ -9,17 +10,20 @@ public class EmailService : IEmailService, IScopedService
     private readonly IFluentEmail _fluentEmail;
     private readonly ApplicationDbContext _dbContext;
     private readonly IOptionsMonitor<EmailSettings> _emailSettings;
+    private readonly ITenantSettingsService _settingsService;
     private readonly ILogger<EmailService> _logger;
 
     public EmailService(
         IFluentEmail fluentEmail,
         ApplicationDbContext dbContext,
         IOptionsMonitor<EmailSettings> emailSettings,
+        ITenantSettingsService settingsService,
         ILogger<EmailService> logger)
     {
         _fluentEmail = fluentEmail;
         _dbContext = dbContext;
         _emailSettings = emailSettings;
+        _settingsService = settingsService;
         _logger = logger;
     }
 
@@ -27,6 +31,12 @@ public class EmailService : IEmailService, IScopedService
     {
         try
         {
+            // Try DB-configured SMTP first
+            var dbResult = await TrySendViaDbSettingsAsync([to], subject, body, isHtml, cancellationToken);
+            if (dbResult.HasValue)
+                return dbResult.Value;
+
+            // Fallback to FluentEmail (appsettings.json config)
             var email = _fluentEmail
                 .To(to)
                 .Subject(subject);
@@ -56,8 +66,16 @@ public class EmailService : IEmailService, IScopedService
     {
         try
         {
+            var recipients = to.ToList();
+
+            // Try DB-configured SMTP first
+            var dbResult = await TrySendViaDbSettingsAsync(recipients, subject, body, isHtml, cancellationToken);
+            if (dbResult.HasValue)
+                return dbResult.Value;
+
+            // Fallback to FluentEmail (appsettings.json config)
             var email = _fluentEmail
-                .To(to.Select(x => new FluentEmail.Core.Models.Address(x)))
+                .To(recipients.Select(x => new FluentEmail.Core.Models.Address(x)))
                 .Subject(subject);
 
             if (isHtml)
@@ -106,6 +124,12 @@ public class EmailService : IEmailService, IScopedService
                 ? ReplacePlaceholders(template.Subject, model)
                 : subject;
 
+            // Try DB-configured SMTP first
+            var dbResult = await TrySendViaDbSettingsAsync([to], emailSubject, htmlBody, true, cancellationToken);
+            if (dbResult.HasValue)
+                return dbResult.Value;
+
+            // Fallback to FluentEmail (appsettings.json config)
             var response = await _fluentEmail
                 .To(to)
                 .Subject(emailSubject)
@@ -122,6 +146,75 @@ public class EmailService : IEmailService, IScopedService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception while sending template email to {To}", to);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Tries to send email using database-configured SMTP settings.
+    /// Returns null if no DB settings are configured (caller should fallback to FluentEmail).
+    /// Returns true/false if DB settings exist and send was attempted.
+    /// </summary>
+    private async Task<bool?> TrySendViaDbSettingsAsync(
+        IReadOnlyList<string> recipients,
+        string subject,
+        string body,
+        bool isHtml,
+        CancellationToken cancellationToken)
+    {
+        var settings = await _settingsService.GetSettingsAsync(
+            tenantId: null, // Platform level only for SMTP
+            keyPrefix: "smtp:",
+            cancellationToken: cancellationToken);
+
+        // If no DB settings, return null to signal fallback should be used
+        if (settings.Count == 0 || !settings.ContainsKey("smtp:host"))
+            return null;
+
+        var host = settings.GetValueOrDefault("smtp:host", string.Empty);
+        if (string.IsNullOrWhiteSpace(host))
+            return null;
+
+        var port = int.TryParse(settings.GetValueOrDefault("smtp:port"), out var p) ? p : 25;
+        var username = settings.GetValueOrDefault("smtp:username");
+        var password = settings.GetValueOrDefault("smtp:password");
+        var useSsl = bool.TryParse(settings.GetValueOrDefault("smtp:use_ssl"), out var ssl) && ssl;
+        var fromEmail = settings.GetValueOrDefault("smtp:from_email", _emailSettings.CurrentValue.DefaultFromEmail);
+        var fromName = settings.GetValueOrDefault("smtp:from_name", _emailSettings.CurrentValue.DefaultFromName);
+
+        try
+        {
+            using var client = new MailKit.Net.Smtp.SmtpClient();
+            await client.ConnectAsync(host, port, useSsl
+                ? MailKit.Security.SecureSocketOptions.SslOnConnect
+                : MailKit.Security.SecureSocketOptions.StartTlsWhenAvailable, cancellationToken);
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                await client.AuthenticateAsync(username, password, cancellationToken);
+            }
+
+            var message = new MimeKit.MimeMessage();
+            message.From.Add(new MimeKit.MailboxAddress(fromName, fromEmail));
+            foreach (var recipient in recipients)
+            {
+                message.To.Add(MimeKit.MailboxAddress.Parse(recipient));
+            }
+            message.Subject = subject;
+            message.Body = new MimeKit.TextPart(isHtml ? "html" : "plain")
+            {
+                Text = body
+            };
+
+            await client.SendAsync(message, cancellationToken);
+            await client.DisconnectAsync(true, cancellationToken);
+
+            _logger.LogDebug("Email sent via DB-configured SMTP to {Recipients}", string.Join(", ", recipients));
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send email via DB-configured SMTP ({Host}:{Port})", host, port);
             return false;
         }
     }

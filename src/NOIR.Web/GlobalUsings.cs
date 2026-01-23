@@ -129,6 +129,12 @@ global using NOIR.Application.Features.EmailTemplates.Queries.GetEmailTemplate;
 global using NOIR.Application.Features.EmailTemplates.Commands.UpdateEmailTemplate;
 global using NOIR.Application.Features.EmailTemplates.Commands.SendTestEmail;
 
+// NOIR Application - Legal Pages
+global using NOIR.Application.Features.LegalPages.DTOs;
+
+// NOIR Application - Tenant Settings
+global using NOIR.Application.Features.TenantSettings.DTOs;
+
 // NOIR Application - Tenants
 global using NOIR.Application.Features.Tenants.DTOs;
 global using NOIR.Application.Features.Tenants.Commands.CreateTenant;

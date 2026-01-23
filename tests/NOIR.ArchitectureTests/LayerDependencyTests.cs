@@ -140,12 +140,16 @@ public class LayerDependencyTests
     public void Application_Core_ShouldNotDependOn_EntityFrameworkCore()
     {
         // Act
+        // Note: EmailTemplates and LegalPages use IApplicationDbContext for copy-on-write
+        // pattern which requires direct EF Core access for tenant override queries
         var result = Types
             .InAssembly(ApplicationAssembly)
             .That()
             .ResideInNamespace("NOIR.Application.Features")
             .And()
             .DoNotResideInNamespace("NOIR.Application.Features.EmailTemplates")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.LegalPages")
             .ShouldNot()
             .HaveDependencyOn("Microsoft.EntityFrameworkCore")
             .GetResult();

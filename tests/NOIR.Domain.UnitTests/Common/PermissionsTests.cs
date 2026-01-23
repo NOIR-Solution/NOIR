@@ -260,6 +260,9 @@ public class PermissionsTests
             + Permissions.Groups.SystemPermissions.Count
             + Permissions.Groups.Audit.Count
             + Permissions.Groups.EmailTemplates.Count
+            + Permissions.Groups.LegalPages.Count
+            + Permissions.Groups.TenantSettings.Count
+            + Permissions.Groups.PlatformSettings.Count
             + Permissions.Groups.BlogPosts.Count
             + Permissions.Groups.BlogCategories.Count
             + Permissions.Groups.BlogTags.Count;

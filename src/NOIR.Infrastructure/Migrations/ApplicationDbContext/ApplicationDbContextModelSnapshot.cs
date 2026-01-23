@@ -710,6 +710,115 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                     b.ToTable("HttpRequestAuditLogs", (string)null);
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.LegalPage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("AllowIndexing")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("CanonicalUrl")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("HtmlContent")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("MetaDescription")
+                        .HasMaxLength(160)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(160)");
+
+                    b.Property<string>("MetaTitle")
+                        .HasMaxLength(60)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Version")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("Slug", "IsActive")
+                        .HasDatabaseName("IX_LegalPages_Platform_Lookup")
+                        .HasFilter("[TenantId] IS NULL AND [IsDeleted] = 0");
+
+                    b.HasIndex("Slug", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_LegalPages_Slug_TenantId")
+                        .HasFilter("[TenantId] IS NOT NULL");
+
+                    b.HasIndex("Slug", "IsActive", "IsDeleted");
+
+                    b.ToTable("LegalPages", (string)null);
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.MediaFile", b =>
                 {
                     b.Property<Guid>("Id")

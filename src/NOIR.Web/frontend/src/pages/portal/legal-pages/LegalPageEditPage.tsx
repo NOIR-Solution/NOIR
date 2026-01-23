@@ -1,0 +1,529 @@
+import { useState, useEffect, useRef } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { FileText, ArrowLeft, RotateCcw, Save } from 'lucide-react'
+import { Editor } from '@tinymce/tinymce-react'
+import type { Editor as TinyMCEEditor } from 'tinymce'
+
+// Import TinyMCE 6 for self-hosted usage
+/* eslint-disable import/no-unresolved */
+import 'tinymce/tinymce'
+import 'tinymce/models/dom'
+import 'tinymce/themes/silver'
+import 'tinymce/icons/default'
+import 'tinymce/plugins/advlist'
+import 'tinymce/plugins/autolink'
+import 'tinymce/plugins/lists'
+import 'tinymce/plugins/link'
+import 'tinymce/plugins/image'
+import 'tinymce/plugins/charmap'
+import 'tinymce/plugins/preview'
+import 'tinymce/plugins/anchor'
+import 'tinymce/plugins/searchreplace'
+import 'tinymce/plugins/visualblocks'
+import 'tinymce/plugins/code'
+import 'tinymce/plugins/fullscreen'
+import 'tinymce/plugins/insertdatetime'
+import 'tinymce/plugins/media'
+import 'tinymce/plugins/table'
+import 'tinymce/plugins/wordcount'
+/* eslint-enable import/no-unresolved */
+
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { usePageContext } from '@/hooks/usePageContext'
+import {
+  getLegalPageById,
+  updateLegalPage,
+  revertLegalPageToDefault,
+  type LegalPageDto,
+} from '@/services/legalPages'
+import { ApiError } from '@/services/apiClient'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+
+/**
+ * Legal Page Edit Page
+ * Admin page for editing legal page content with TinyMCE editor.
+ */
+export default function LegalPageEditPage() {
+  usePageContext('Legal Pages')
+  const { id } = useParams<{ id: string }>()
+  const { t } = useTranslation('common')
+  const navigate = useNavigate()
+  const { hasPermission } = usePermissions()
+  const canEdit = hasPermission(Permissions.LegalPagesUpdate)
+  const editorRef = useRef<TinyMCEEditor | null>(null)
+
+  // State
+  const [page, setPage] = useState<LegalPageDto | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [reverting, setReverting] = useState(false)
+
+  // Form state
+  const [title, setTitle] = useState('')
+  const [htmlContent, setHtmlContent] = useState('')
+  const [metaTitle, setMetaTitle] = useState('')
+  const [metaDescription, setMetaDescription] = useState('')
+  const [canonicalUrl, setCanonicalUrl] = useState('')
+  const [allowIndexing, setAllowIndexing] = useState(true)
+
+  // Load page
+  const loadPage = async () => {
+    if (!id) return
+    setLoading(true)
+    try {
+      const data = await getLegalPageById(id)
+      setPage(data)
+      setTitle(data.title)
+      setHtmlContent(data.htmlContent)
+      setMetaTitle(data.metaTitle || '')
+      setMetaDescription(data.metaDescription || '')
+      setCanonicalUrl(data.canonicalUrl || '')
+      setAllowIndexing(data.allowIndexing)
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      } else {
+        toast.error(t('messages.operationFailed'))
+      }
+      navigate('/portal/legal-pages')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Load page on mount
+  useEffect(() => {
+    loadPage()
+  }, [id])
+
+  // Handle save
+  const handleSave = async () => {
+    if (!id || !canEdit) return
+
+    if (!title.trim()) {
+      toast.error('Title is required')
+      return
+    }
+    if (!htmlContent.trim()) {
+      toast.error('Content is required')
+      return
+    }
+    if (metaTitle.length > 60) {
+      toast.error('Meta title must not exceed 60 characters')
+      return
+    }
+    if (metaDescription.length > 160) {
+      toast.error('Meta description must not exceed 160 characters')
+      return
+    }
+    if (canonicalUrl && !isValidUrl(canonicalUrl)) {
+      toast.error('Canonical URL must be a valid absolute URL')
+      return
+    }
+
+    setSaving(true)
+    try {
+      const updated = await updateLegalPage(id, {
+        title: title.trim(),
+        htmlContent: htmlContent.trim(),
+        metaTitle: metaTitle.trim() || null,
+        metaDescription: metaDescription.trim() || null,
+        canonicalUrl: canonicalUrl.trim() || null,
+        allowIndexing,
+      })
+      setPage(updated)
+      toast.success('Legal page saved successfully')
+      // If COW created a new page, navigate to the new ID
+      if (updated.id !== id) {
+        navigate(`/portal/legal-pages/${updated.id}`, { replace: true })
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      } else {
+        toast.error(t('messages.operationFailed'))
+      }
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // URL validation helper
+  const isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  // Handle revert
+  const handleRevert = async () => {
+    if (!id) return
+    setReverting(true)
+    try {
+      const reverted = await revertLegalPageToDefault(id)
+      setPage(reverted)
+      setTitle(reverted.title)
+      setHtmlContent(reverted.htmlContent)
+      setMetaTitle(reverted.metaTitle || '')
+      setMetaDescription(reverted.metaDescription || '')
+      setCanonicalUrl(reverted.canonicalUrl || '')
+      setAllowIndexing(reverted.allowIndexing)
+      toast.success('Reverted to platform default')
+      // Navigate to the platform page ID
+      if (reverted.id !== id) {
+        navigate(`/portal/legal-pages/${reverted.id}`, { replace: true })
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      } else {
+        toast.error(t('messages.operationFailed'))
+      }
+    } finally {
+      setReverting(false)
+    }
+  }
+
+  // Check if form has changes
+  const hasChanges = page && (
+    title !== page.title ||
+    htmlContent !== page.htmlContent ||
+    (metaTitle || '') !== (page.metaTitle || '') ||
+    (metaDescription || '') !== (page.metaDescription || '') ||
+    (canonicalUrl || '') !== (page.canonicalUrl || '') ||
+    allowIndexing !== page.allowIndexing
+  )
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-48 bg-muted rounded" />
+          <div className="h-64 bg-muted rounded" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!page) {
+    return null
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/portal/legal-pages')}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <FileText className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">{page.title}</h1>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm text-muted-foreground">/{page.slug}</span>
+              {page.isInherited && (
+                <Badge variant="outline" className="text-purple-600 border-purple-600/30">
+                  Platform Default
+                </Badge>
+              )}
+              {!page.isInherited && page.version > 1 && (
+                <Badge variant="outline" className="text-blue-600 border-blue-600/30">
+                  Customized (v{page.version})
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Revert button - only shown for non-inherited (tenant-owned) pages */}
+          {!page.isInherited && canEdit && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" disabled={reverting}>
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Revert to Default
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Revert to Platform Default?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will delete your customized version and restore the platform default content.
+                    This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleRevert}>
+                    Revert
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          {canEdit && (
+            <Button onClick={handleSave} disabled={saving || !hasChanges}>
+              <Save className="h-4 w-4 mr-2" />
+              {saving ? 'Saving...' : 'Save'}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Edit Form */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Content</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Page title"
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>HTML Content</Label>
+                <Editor
+                  onInit={(_evt, editor) => {
+                    editorRef.current = editor
+                  }}
+                  value={htmlContent}
+                  onEditorChange={(content) => setHtmlContent(content)}
+                  disabled={!canEdit}
+                  init={{
+                    height: 500,
+                    menubar: true,
+                    skin_url: '/tinymce/skins/ui/oxide',
+                    content_css: '/tinymce/skins/content/default/content.min.css',
+                    plugins: [
+                      'advlist',
+                      'autolink',
+                      'lists',
+                      'link',
+                      'image',
+                      'charmap',
+                      'preview',
+                      'anchor',
+                      'searchreplace',
+                      'visualblocks',
+                      'code',
+                      'fullscreen',
+                      'insertdatetime',
+                      'media',
+                      'table',
+                      'wordcount',
+                    ],
+                    toolbar:
+                      'undo redo | blocks | ' +
+                      'bold italic forecolor backcolor | alignleft aligncenter ' +
+                      'alignright alignjustify | bullist numlist outdent indent | ' +
+                      'link image media table | code fullscreen preview',
+                    content_style: `
+                      body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                        font-size: 16px;
+                        line-height: 1.7;
+                        color: #333;
+                        padding: 15px;
+                        max-width: 100%;
+                        margin: 0;
+                      }
+                      body > *:first-child {
+                        margin-top: 0;
+                      }
+                      h1, h2, h3, h4, h5, h6 {
+                        margin-top: 1.5em;
+                        margin-bottom: 0.5em;
+                        font-weight: 600;
+                      }
+                      p {
+                        margin: 1em 0;
+                      }
+                      img {
+                        max-width: 100%;
+                        height: auto;
+                      }
+                      pre {
+                        background: #f4f4f5;
+                        padding: 1em;
+                        border-radius: 4px;
+                        overflow-x: auto;
+                      }
+                      code {
+                        background: #f4f4f5;
+                        padding: 0.2em 0.4em;
+                        border-radius: 3px;
+                        font-size: 0.9em;
+                      }
+                      blockquote {
+                        border-left: 4px solid #e5e7eb;
+                        padding-left: 1em;
+                        margin: 1em 0;
+                        color: #6b7280;
+                      }
+                      ul, ol {
+                        margin: 1em 0;
+                        padding-left: 1.5em;
+                      }
+                      li {
+                        margin: 0.5em 0;
+                      }
+                    `,
+                    branding: false,
+                    promotion: false,
+                    // Security: Convert unsafe embed/object elements to safer alternatives (CVE-2024-29881)
+                    convert_unsafe_embeds: true,
+                    // Image upload handler - uses unified media endpoint
+                    images_upload_handler: async (blobInfo) => {
+                      const formData = new FormData()
+                      formData.append('file', blobInfo.blob(), blobInfo.filename())
+
+                      const response = await fetch('/api/media/upload?folder=legal', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include',
+                      })
+
+                      if (!response.ok) {
+                        throw new Error('Upload failed')
+                      }
+
+                      const { location } = await response.json()
+                      return location
+                    },
+                    automatic_uploads: true,
+                    file_picker_types: 'image',
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">SEO</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="metaTitle">Meta Title</Label>
+                <Input
+                  id="metaTitle"
+                  value={metaTitle}
+                  onChange={(e) => setMetaTitle(e.target.value)}
+                  placeholder="Page title for search engines..."
+                  maxLength={60}
+                  disabled={!canEdit}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {metaTitle.length}/60 characters
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="metaDescription">Meta Description</Label>
+                <Textarea
+                  id="metaDescription"
+                  value={metaDescription}
+                  onChange={(e) => setMetaDescription(e.target.value)}
+                  placeholder="Brief description for search engines..."
+                  className="min-h-[80px]"
+                  maxLength={160}
+                  disabled={!canEdit}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {metaDescription.length}/160 characters
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="canonicalUrl">Canonical URL</Label>
+                <Input
+                  id="canonicalUrl"
+                  value={canonicalUrl}
+                  onChange={(e) => setCanonicalUrl(e.target.value)}
+                  placeholder="https://example.com/page"
+                  disabled={!canEdit}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Leave empty to use default URL
+                </p>
+              </div>
+              <div className="flex items-center justify-between pt-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="allowIndexing">Allow Search Indexing</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Allow search engines to index this page
+                  </p>
+                </div>
+                <Switch
+                  id="allowIndexing"
+                  checked={allowIndexing}
+                  onCheckedChange={setAllowIndexing}
+                  disabled={!canEdit}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Info</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Slug:</span>
+                <span className="font-mono">{page.slug}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Status:</span>
+                <span>{page.isActive ? 'Active' : 'Inactive'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Version:</span>
+                <span>{page.version}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Last Modified:</span>
+                <span>{new Date(page.lastModified).toLocaleDateString()}</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}

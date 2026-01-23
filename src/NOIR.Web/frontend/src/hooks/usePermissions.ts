@@ -132,6 +132,12 @@ export const Permissions = {
   // Email Templates
   EmailTemplatesRead: 'email-templates:read',
   EmailTemplatesUpdate: 'email-templates:update',
+  // Legal Pages
+  LegalPagesRead: 'legal-pages:read',
+  LegalPagesUpdate: 'legal-pages:update',
+  // Tenant Settings
+  TenantSettingsRead: 'tenant-settings:read',
+  TenantSettingsUpdate: 'tenant-settings:update',
   // Tenants
   TenantsRead: 'tenants:read',
   TenantsCreate: 'tenants:create',
@@ -162,6 +168,9 @@ export const Permissions = {
   BlogTagsCreate: 'blog-tags:create',
   BlogTagsUpdate: 'blog-tags:update',
   BlogTagsDelete: 'blog-tags:delete',
+  // Platform Settings
+  PlatformSettingsRead: 'platform-settings:read',
+  PlatformSettingsManage: 'platform-settings:manage',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

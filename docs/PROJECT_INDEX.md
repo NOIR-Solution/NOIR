@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-23
 
 ---
 
@@ -25,9 +25,9 @@
 ### Key Statistics
 
 - **Lines of Code:** ~150,000
-- **Test Coverage:** 2,100+ tests across Unit, Integration, and Architecture layers
-- **Feature Modules:** 11 domain-driven modules
-- **API Endpoints:** 60+ REST endpoints
+- **Test Coverage:** 4,386 tests across Unit, Integration, and Architecture layers
+- **Feature Modules:** 12 domain-driven modules
+- **API Endpoints:** 65+ REST endpoints
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10
 
 ### Directory Structure
@@ -74,6 +74,7 @@ NOIR.Domain/
 │   ├── Notification.cs                  # User notification
 │   ├── EntityAuditLog.cs                # Entity-level audit trail
 │   ├── EmailTemplate.cs                 # Multi-tenant email templates
+│   ├── LegalPage.cs                     # Multi-tenant legal pages (COW)
 │   ├── Post.cs                          # Blog post
 │   ├── Category.cs                      # Blog category
 │   └── Tag.cs                           # Blog tag
@@ -146,6 +147,7 @@ NOIR.Application/
 │   ├── Audit/                           # Audit log queries
 │   ├── Notifications/                   # User notifications
 │   ├── EmailTemplates/                  # Email template CRUD
+│   ├── LegalPages/                      # Legal pages (Terms, Privacy)
 │   ├── Media/                           # File upload/management
 │   ├── Blog/                            # Blog CMS
 │   └── DeveloperLogs/                   # Serilog streaming
@@ -187,6 +189,7 @@ Features/{Feature}/
 | **Audit** | BulkExport | GetAuditLogs, GetEntityHistory | Audit log queries and export |
 | **Notifications** | MarkAsRead, MarkAllAsRead, DeleteNotification | GetNotifications, GetUnreadCount | User notifications |
 | **EmailTemplates** | UpdateEmailTemplate | GetEmailTemplates, GetEmailTemplateById | Template customization |
+| **LegalPages** | UpdateLegalPage, RevertToDefault | GetLegalPages, GetLegalPage, GetPublicLegalPage | Legal page COW |
 | **Media** | UploadFile, DeleteFile | GetFiles | File storage |
 | **Blog** | CreatePost, UpdatePost, DeletePost, PublishPost, CreateCategory, UpdateCategory, DeleteCategory, CreateTag, UpdateTag, DeleteTag | GetPosts, GetPost, GetCategories, GetTags | Blog CMS |
 | **DeveloperLogs** | - | StreamLogs | Real-time Serilog streaming |
@@ -295,6 +298,8 @@ NOIR.Web/
 │   ├── AuditEndpoints.cs                # /api/audit/*
 │   ├── NotificationEndpoints.cs         # /api/notifications/*
 │   ├── EmailTemplateEndpoints.cs        # /api/email-templates/*
+│   ├── LegalPageEndpoints.cs            # /api/legal-pages/*
+│   ├── PublicLegalPageEndpoints.cs      # /api/public/legal/*
 │   ├── MediaEndpoints.cs                # /api/media/*
 │   └── BlogEndpoints.cs                 # /api/blog/*
 ├── Middleware/
@@ -328,6 +333,7 @@ NOIR.Web/
 | **Audit** | `/api/audit` | logs, entity-history, export |
 | **Notifications** | `/api/notifications` | list, mark-read, delete |
 | **Email Templates** | `/api/email-templates` | CRUD, preview |
+| **Legal Pages** | `/api/legal-pages`, `/api/public/legal` | CRUD, revert, public |
 | **Media** | `/api/media` | upload, delete, list |
 | **Blog** | `/api/blog` | posts, categories, tags (full CRUD) |
 | **Hangfire** | `/hangfire` | Dashboard (requires `system:hangfire` permission) |
@@ -472,6 +478,25 @@ NOIR.Web/
 - `Infrastructure/Persistence/ApplicationDbContextSeeder.cs` (template seeding)
 
 **Tests:** `tests/NOIR.Application.UnitTests/Infrastructure/EmailServiceTests.cs`
+
+---
+
+### Legal Pages
+
+**Files:** `src/NOIR.Application/Features/LegalPages/`
+
+- **Copy-on-Write** - Platform defaults with tenant overrides (same as Email Templates)
+- **SEO** - MetaTitle, MetaDescription, CanonicalUrl, AllowIndexing
+- **Rich Editor** - TinyMCE (self-hosted) with image upload
+- **Public API** - Slug-based resolution (tenant override → platform default)
+
+**Key Files:**
+- `Features/LegalPages/Commands/UpdateLegalPage/UpdateLegalPageCommand.cs` - COW update
+- `Features/LegalPages/Commands/RevertLegalPageToDefault/RevertLegalPageToDefaultCommand.cs`
+- `Features/LegalPages/Queries/GetPublicLegalPage/GetPublicLegalPageQuery.cs`
+- `Domain/Entities/LegalPage.cs`
+
+**Tests:** `tests/NOIR.IntegrationTests/Features/LegalPages/`
 
 ---
 
@@ -861,5 +886,5 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-23
 **Maintainer:** NOIR Team

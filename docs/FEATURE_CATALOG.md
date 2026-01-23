@@ -2,7 +2,7 @@
 
 > **Complete reference of all features, commands, queries, and endpoints in the NOIR platform.**
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-23
 
 ---
 
@@ -16,6 +16,7 @@
 - [Audit Logging](#audit-logging)
 - [Notifications](#notifications)
 - [Email Templates](#email-templates)
+- [Legal Pages](#legal-pages)
 - [Media Management](#media-management)
 - [Blog CMS](#blog-cms)
 - [Developer Tools](#developer-tools)
@@ -769,6 +770,131 @@ await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification", notifica
 
 ---
 
+## Legal Pages
+
+**Namespace:** `NOIR.Application.Features.LegalPages`
+**Endpoint:** `/api/legal-pages`, `/api/public/legal`
+**Permissions:** `legal-pages:*`
+
+### Architecture
+
+- **Copy-on-Write** - Same pattern as Email Templates:
+  - Platform defaults (`TenantId = null`) seeded on startup
+  - Tenant overrides created on first edit (COW)
+  - Revert-to-default deletes tenant copy
+- **Entity:** `LegalPage` extends `PlatformTenantAggregateRoot<Guid>`
+- **Rich Editor:** TinyMCE (self-hosted) with image upload support
+- **SEO Fields:** MetaTitle, MetaDescription, CanonicalUrl, AllowIndexing
+- **Seeding:** Platform templates seeded in `ApplicationDbContextSeeder`
+
+### Seeded Pages
+
+| Slug | Title | Purpose |
+|------|-------|---------|
+| `terms-of-service` | Terms of Service | Platform terms and conditions |
+| `privacy-policy` | Privacy Policy | Data privacy and handling policy |
+
+### SEO Fields
+
+| Field | Max Length | Default | Purpose |
+|-------|-----------|---------|---------|
+| `MetaTitle` | 60 chars | null | Page title for search engines |
+| `MetaDescription` | 160 chars | null | Brief description for search results |
+| `CanonicalUrl` | 500 chars | null | Preferred URL for deduplication |
+| `AllowIndexing` | bool | true | Whether search engines can index |
+
+### Commands
+
+#### Update Legal Page
+- **Command:** `UpdateLegalPageCommand`
+- **Endpoint:** `PUT /api/legal-pages/{id}`
+- **Permission:** `legal-pages:update`
+- **Purpose:** Update legal page content and SEO fields
+- **Returns:** LegalPageDto
+- **Multi-Tenancy:**
+  - Platform admin → edits platform default in place
+  - Tenant admin editing platform page → creates tenant copy (COW)
+  - Tenant admin editing own copy → updates in place
+- **Validation:**
+  - Title: Required, max 200 chars
+  - HtmlContent: Required
+  - MetaTitle: Max 60 chars
+  - MetaDescription: Max 160 chars
+  - CanonicalUrl: Max 500 chars, valid URL format
+- **Audit:** IAuditableCommand
+
+**Example Request:**
+```json
+{
+  "title": "Terms of Service",
+  "htmlContent": "<h1>Terms of Service</h1><p>...</p>",
+  "metaTitle": "Terms of Service | NOIR Platform",
+  "metaDescription": "Read our terms and conditions for using the platform.",
+  "canonicalUrl": "https://example.com/terms",
+  "allowIndexing": true
+}
+```
+
+#### Revert Legal Page to Default
+- **Command:** `RevertLegalPageToDefaultCommand`
+- **Endpoint:** `POST /api/legal-pages/{id}/revert`
+- **Permission:** `legal-pages:update`
+- **Purpose:** Delete tenant's customized version, restore platform default
+- **Returns:** LegalPageDto (platform default, with `IsInherited: true`)
+- **Validation:** Page must be a tenant override (not platform default)
+- **Audit:** IAuditableCommand
+
+### Queries
+
+#### Get Legal Pages
+- **Query:** `GetLegalPagesQuery`
+- **Endpoint:** `GET /api/legal-pages`
+- **Permission:** `legal-pages:read`
+- **Purpose:** List all legal pages visible to current user
+- **Returns:** List<LegalPageListDto>
+- **Logic:**
+  - Tenant users see: tenant overrides + platform defaults (not yet customized)
+  - Platform admins see: all platform defaults
+  - Each page has `IsInherited` flag
+
+#### Get Legal Page
+- **Query:** `GetLegalPageQuery`
+- **Endpoint:** `GET /api/legal-pages/{id}`
+- **Permission:** `legal-pages:read`
+- **Purpose:** Get single page with full content for editing
+- **Returns:** LegalPageDto
+
+#### Get Public Legal Page
+- **Query:** `GetPublicLegalPageQuery`
+- **Endpoint:** `GET /api/public/legal/{slug}`
+- **Permission:** None (public)
+- **Purpose:** Resolve legal page for public display
+- **Returns:** PublicLegalPageDto
+- **Resolution:** Tenant override → Platform default
+- **Use Case:** Frontend `/terms` and `/privacy` routes
+
+**Example Response:**
+```json
+{
+  "slug": "terms-of-service",
+  "title": "Terms of Service",
+  "htmlContent": "<h1>Terms of Service</h1><p>...</p>",
+  "metaTitle": "Terms of Service | NOIR Platform",
+  "metaDescription": "Read our terms and conditions.",
+  "canonicalUrl": null,
+  "allowIndexing": true,
+  "lastModified": "2026-01-23T03:00:00Z"
+}
+```
+
+### Frontend
+
+- **Admin List:** `/portal/legal-pages` — Shows all pages with "Platform Default" or "Customized" badges
+- **Admin Editor:** `/portal/legal-pages/{id}` — TinyMCE editor with SEO sidebar
+- **Public Routes:** `/terms`, `/privacy` — React pages fetching from public API
+
+---
+
 ## Media Management
 
 **Namespace:** `NOIR.Application.Features.Media`
@@ -1016,6 +1142,7 @@ Similar structure to Categories:
 | **Audit Logs** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Notifications** | ❌ (system-level) | ✅ | ✅ |
 | **Email Templates** | ✅ Platform defaults | ✅ Tenant overrides | ❌ |
+| **Legal Pages** | ✅ Platform defaults | ✅ Tenant overrides | ❌ |
 | **Media** | ✅ | ✅ | ✅ Own files |
 | **Blog** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Developer Logs** | ✅ | ❌ | ❌ |
@@ -1033,11 +1160,13 @@ Similar structure to Categories:
 | `/api/audit` | 3 | Audit logs, entity history, export |
 | `/api/notifications` | 4 | Notification CRUD |
 | `/api/email-templates` | 4 | Template customization |
+| `/api/legal-pages` | 4 | Legal page CRUD (COW) |
+| `/api/public/legal` | 1 | Public legal page access |
 | `/api/media` | 3 | File upload, delete, list |
 | `/api/blog/posts` | 6 | Blog post CRUD |
 | `/api/blog/categories` | 4 | Category CRUD |
 | `/api/blog/tags` | 4 | Tag CRUD |
-| **Total** | **58** | |
+| **Total** | **63** | |
 
 ### Commands vs Queries
 
@@ -1051,12 +1180,13 @@ Similar structure to Categories:
 | Audit | 1 | 2 | 3 |
 | Notifications | 3 | 2 | 5 |
 | Email Templates | 1 | 3 | 4 |
+| Legal Pages | 2 | 3 | 5 |
 | Media | 2 | 1 | 3 |
 | Blog Posts | 4 | 2 | 6 |
 | Blog Categories | 3 | 1 | 4 |
 | Blog Tags | 3 | 1 | 4 |
 | Developer Logs | 0 | 1 | 1 |
-| **Total** | **37** | **24** | **61** |
+| **Total** | **39** | **27** | **66** |
 
 ---
 
@@ -1070,5 +1200,5 @@ Similar structure to Categories:
 
 ---
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-23
 **Maintainer:** NOIR Team

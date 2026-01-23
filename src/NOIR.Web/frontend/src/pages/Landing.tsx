@@ -140,9 +140,17 @@ export default function LandingPage() {
               </div>
               <span className="text-sm font-medium text-foreground">NOIR</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} NOIR. {t('landing.allRightsReserved')}
-            </p>
+            <div className="flex items-center gap-6">
+              <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Terms
+              </Link>
+              <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Privacy
+              </Link>
+              <p className="text-sm text-muted-foreground">
+                © {new Date().getFullYear()} NOIR. {t('landing.allRightsReserved')}
+              </p>
+            </div>
           </div>
         </div>
       </footer>

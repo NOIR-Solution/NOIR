@@ -5,6 +5,7 @@ using NOIR.Application.Features.Blog.Commands.DeleteCategory;
 using NOIR.Application.Features.Blog.Commands.DeletePost;
 using NOIR.Application.Features.Blog.Commands.DeleteTag;
 using NOIR.Application.Features.Blog.Commands.PublishPost;
+using NOIR.Application.Features.Blog.Commands.UnpublishPost;
 using NOIR.Application.Features.Blog.Commands.UpdateCategory;
 using NOIR.Application.Features.Blog.Commands.UpdatePost;
 using NOIR.Application.Features.Blog.Commands.UpdateTag;
@@ -205,6 +206,26 @@ public static class BlogEndpoints
         .WithDescription("Publishes the post immediately or schedules it for future publication.")
         .Produces<PostDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Unpublish post (revert to draft)
+        group.MapPost("/{id:guid}/unpublish", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new UnpublishPostCommand(id)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<PostDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.BlogPostsPublish)
+        .WithName("UnpublishBlogPost")
+        .WithSummary("Unpublish a blog post")
+        .WithDescription("Reverts a published or scheduled post back to draft status.")
+        .Produces<PostDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 

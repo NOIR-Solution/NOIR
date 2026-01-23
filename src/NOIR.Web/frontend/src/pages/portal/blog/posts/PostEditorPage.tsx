@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { FileText, ArrowLeft, Save, Send, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { FileText, ArrowLeft, Save, Upload, X, Image as ImageIcon, Loader2, Calendar, Info } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -55,7 +55,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { getPostById, createPost, updatePost, publishPost } from '@/services/blog'
+import { getPostById, createPost, updatePost, publishPost, unpublishPost } from '@/services/blog'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
 import { uploadMedia } from '@/services/media'
 import { useCategories, useTags } from '@/hooks/useBlog'
 import { ApiError } from '@/services/apiClient'
@@ -87,11 +89,16 @@ export default function PostEditorPage() {
 
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [publishing, setPublishing] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [post, setPost] = useState<Post | null>(null)
   const [contentHtml, setContentHtml] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Publishing options state
+  type PublishOption = 'draft' | 'publish' | 'schedule'
+  const [publishOption, setPublishOption] = useState<PublishOption>('draft')
+  const [scheduledDate, setScheduledDate] = useState('')
+  const [scheduledTime, setScheduledTime] = useState('09:00')
 
   const { data: categories } = useCategories()
   const { data: tags } = useTags()
@@ -137,6 +144,18 @@ export default function PostEditorPage() {
           })
           // Load HTML content
           setContentHtml(data.contentHtml || '')
+
+          // Set initial publish option based on post status
+          if (data.status === 'Published') {
+            setPublishOption('publish')
+          } else if (data.status === 'Scheduled' && data.scheduledPublishAt) {
+            setPublishOption('schedule')
+            const scheduleDate = new Date(data.scheduledPublishAt)
+            setScheduledDate(scheduleDate.toISOString().split('T')[0])
+            setScheduledTime(scheduleDate.toTimeString().slice(0, 5))
+          } else {
+            setPublishOption('draft')
+          }
         })
         .catch((err) => {
           const message = err instanceof ApiError ? err.message : 'Failed to load post'
@@ -161,12 +180,21 @@ export default function PostEditorPage() {
     }
   }, [watchTitle, isEdit, form])
 
-  const handleSave = async (values: FormValues, shouldPublish: boolean = false) => {
-    if (shouldPublish) {
-      setPublishing(true)
-    } else {
-      setSaving(true)
+  const handleSave = async (values: FormValues) => {
+    // Validate schedule date if scheduling
+    if (publishOption === 'schedule') {
+      if (!scheduledDate) {
+        toast.error('Please select a date for scheduling')
+        return
+      }
+      const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`)
+      if (scheduledDateTime <= new Date()) {
+        toast.error('Scheduled date must be in the future')
+        return
+      }
     }
+
+    setSaving(true)
 
     try {
       const request: CreatePostRequest = {
@@ -189,16 +217,32 @@ export default function PostEditorPage() {
       let savedPost: Post
       if (isEdit && id) {
         savedPost = await updatePost(id, request)
-        toast.success('Post saved')
       } else {
         savedPost = await createPost(request)
-        toast.success('Post created')
       }
 
-      // Publish if requested
-      if (shouldPublish && savedPost.status !== 'Published') {
-        await publishPost(savedPost.id)
-        toast.success('Post published')
+      // Handle publish/unpublish based on selected option
+      if (publishOption === 'draft') {
+        // If post was published or scheduled, unpublish it
+        if (savedPost.status === 'Published' || savedPost.status === 'Scheduled') {
+          await unpublishPost(savedPost.id)
+          toast.success('Post saved as draft')
+        } else {
+          toast.success(isEdit ? 'Post saved' : 'Post created')
+        }
+      } else if (publishOption === 'publish') {
+        // Publish immediately
+        if (savedPost.status !== 'Published') {
+          await publishPost(savedPost.id)
+          toast.success('Post published')
+        } else {
+          toast.success('Post saved')
+        }
+      } else if (publishOption === 'schedule') {
+        // Schedule for future
+        const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`)
+        await publishPost(savedPost.id, { scheduledPublishAt: scheduledDateTime.toISOString() })
+        toast.success(`Post scheduled for ${scheduledDateTime.toLocaleString()}`)
       }
 
       navigate('/portal/blog/posts')
@@ -207,12 +251,10 @@ export default function PostEditorPage() {
       toast.error(message)
     } finally {
       setSaving(false)
-      setPublishing(false)
     }
   }
 
-  const onSubmit = (values: FormValues) => handleSave(values, false)
-  const onPublish = () => handleSave(form.getValues(), true)
+  const onSubmit = (values: FormValues) => handleSave(values)
 
   // Handle featured image upload
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -289,17 +331,27 @@ export default function PostEditorPage() {
         </div>
         <div className="flex items-center gap-2">
           {post?.status && (
-            <Badge variant="secondary" className="mr-2">
-              {post.status}
+            <Badge variant={
+              post.status === 'Published' ? 'default' :
+              post.status === 'Scheduled' ? 'secondary' : 'outline'
+            }>
+              {post.status === 'Scheduled' && post.scheduledPublishAt
+                ? `Scheduled: ${new Date(post.scheduledPublishAt).toLocaleDateString()}`
+                : post.status}
             </Badge>
           )}
-          <Button variant="outline" onClick={() => form.handleSubmit(onSubmit)()} disabled={saving || publishing}>
-            <Save className="h-4 w-4 mr-2" />
-            {saving ? 'Saving...' : 'Save Draft'}
-          </Button>
-          <Button onClick={onPublish} disabled={saving || publishing}>
-            <Send className="h-4 w-4 mr-2" />
-            {publishing ? 'Publishing...' : 'Publish'}
+          <Button onClick={() => form.handleSubmit(onSubmit)()} disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Save
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -481,6 +533,99 @@ export default function PostEditorPage() {
 
             {/* Sidebar */}
             <div className="space-y-6">
+              {/* Publishing Options */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Publishing
+                  </CardTitle>
+                  <CardDescription>Choose when to publish your post</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <RadioGroup value={publishOption} onValueChange={(v) => setPublishOption(v as PublishOption)}>
+                    <div className="flex items-start space-x-3 rounded-md border p-3 hover:bg-accent/50 cursor-pointer">
+                      <RadioGroupItem value="draft" id="draft" className="mt-0.5" />
+                      <div className="space-y-1">
+                        <Label htmlFor="draft" className="font-medium cursor-pointer">
+                          Save as Draft
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Post won't be visible to public
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3 rounded-md border p-3 hover:bg-accent/50 cursor-pointer">
+                      <RadioGroupItem value="publish" id="publish" className="mt-0.5" />
+                      <div className="space-y-1">
+                        <Label htmlFor="publish" className="font-medium cursor-pointer">
+                          Publish Now
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Post will be visible immediately
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3 rounded-md border p-3 hover:bg-accent/50 cursor-pointer">
+                      <RadioGroupItem value="schedule" id="schedule" className="mt-0.5" />
+                      <div className="space-y-1">
+                        <Label htmlFor="schedule" className="font-medium cursor-pointer">
+                          Schedule
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Post will auto-publish at the set time
+                        </p>
+                      </div>
+                    </div>
+                  </RadioGroup>
+
+                  {/* Schedule date/time picker */}
+                  {publishOption === 'schedule' && (
+                    <div className="space-y-3 pt-2 border-t">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="scheduledDate" className="text-sm">Date</Label>
+                          <Input
+                            type="date"
+                            id="scheduledDate"
+                            value={scheduledDate}
+                            onChange={(e) => setScheduledDate(e.target.value)}
+                            min={new Date().toISOString().split('T')[0]}
+                            className="cursor-pointer"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="scheduledTime" className="text-sm">Time</Label>
+                          <Input
+                            type="time"
+                            id="scheduledTime"
+                            value={scheduledTime}
+                            onChange={(e) => setScheduledTime(e.target.value)}
+                            className="cursor-pointer"
+                          />
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Info className="h-3 w-3" />
+                        Uses your local timezone
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Status info for existing posts */}
+                  {post && post.status !== 'Draft' && publishOption === 'draft' && (
+                    <div className="p-3 rounded-md bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
+                      <p className="text-sm text-amber-800 dark:text-amber-200">
+                        This post is currently <strong>{post.status}</strong>.
+                        Saving as draft will unpublish it.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* Organization */}
               <Card>
                 <CardHeader>

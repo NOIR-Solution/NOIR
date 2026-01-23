@@ -28,6 +28,9 @@ import {
   FileText,
   FolderTree,
   Tag,
+  SlidersHorizontal,
+  Scale,
+  Palette,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -74,42 +77,50 @@ interface NavSection {
   items: NavItem[]
 }
 
-// Task-based navigation structure
-// Primary: Dashboard (always visible, no section label)
-// Configuration: Things you SET UP
-// Access Control: WHO can do WHAT
-// Monitoring: Things you WATCH
+// Task-based navigation structure following standard admin dashboard patterns:
+// 1. Dashboard - Overview (always visible, no section label)
+// 2. Content - Business content creation (Blog, Legal Pages)
+// 3. Users & Access - Who does what (Users, Roles, Tenants)
+// 4. Settings - System configuration (Platform, Tenant, Email)
+// 5. System - Monitoring and admin tools
 const navSections: NavSection[] = [
   {
-    // Primary - no section label
+    // Primary - Dashboard (no section label)
     items: [
       { titleKey: 'dashboard.title', icon: LayoutDashboard, path: '/portal' },
     ],
   },
   {
+    // Content - Business content creation
     labelKey: 'nav.content',
     items: [
       { titleKey: 'blog.posts', icon: FileText, path: '/portal/blog/posts', permission: Permissions.BlogPostsRead },
       { titleKey: 'blog.categories', icon: FolderTree, path: '/portal/blog/categories', permission: Permissions.BlogCategoriesRead },
       { titleKey: 'blog.tags', icon: Tag, path: '/portal/blog/tags', permission: Permissions.BlogTagsRead },
+      { titleKey: 'legalPages.title', icon: Scale, path: '/portal/legal-pages', permission: Permissions.LegalPagesRead },
     ],
   },
   {
-    labelKey: 'nav.configuration',
+    // Users & Access - Who can do what
+    labelKey: 'nav.usersAccess',
     items: [
-      { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates', permission: Permissions.EmailTemplatesRead },
+      { titleKey: 'users.title', icon: Users, path: '/portal/admin/users', permission: Permissions.UsersRead },
+      { titleKey: 'roles.title', icon: Shield, path: '/portal/admin/roles', permission: Permissions.RolesRead },
       { titleKey: 'tenants.title', icon: Building2, path: '/portal/admin/tenants', permission: Permissions.TenantsRead },
     ],
   },
   {
-    labelKey: 'nav.accessControl',
+    // Settings - System configuration
+    labelKey: 'nav.settings',
     items: [
-      { titleKey: 'users.title', icon: Users, path: '/portal/admin/users', permission: Permissions.UsersRead },
-      { titleKey: 'roles.title', icon: Shield, path: '/portal/admin/roles', permission: Permissions.RolesRead },
+      { titleKey: 'platformSettings.title', icon: SlidersHorizontal, path: '/portal/admin/platform-settings', permission: Permissions.PlatformSettingsRead },
+      { titleKey: 'tenantSettings.title', icon: Palette, path: '/portal/admin/tenant-settings', permission: Permissions.TenantSettingsRead },
+      { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates', permission: Permissions.EmailTemplatesRead },
     ],
   },
   {
-    labelKey: 'nav.monitoring',
+    // System - Monitoring and admin tools
+    labelKey: 'nav.system',
     items: [
       { titleKey: 'activityTimeline.title', icon: Activity, path: '/portal/activity-timeline', permission: Permissions.AuditRead },
       { titleKey: 'developerLogs.title', icon: Terminal, path: '/portal/developer-logs', permission: Permissions.SystemAdmin },

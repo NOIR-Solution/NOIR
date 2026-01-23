@@ -11,6 +11,7 @@ public class EmailServiceTests
 
     private readonly Mock<IFluentEmail> _fluentEmailMock;
     private readonly Mock<IOptionsMonitor<EmailSettings>> _emailSettingsMock;
+    private readonly Mock<ITenantSettingsService> _tenantSettingsMock;
     private readonly Mock<ILogger<EmailService>> _loggerMock;
 
     public EmailServiceTests()
@@ -18,6 +19,9 @@ public class EmailServiceTests
         _fluentEmailMock = new Mock<IFluentEmail>();
         _emailSettingsMock = new Mock<IOptionsMonitor<EmailSettings>>();
         _emailSettingsMock.Setup(x => x.CurrentValue).Returns(new EmailSettings { TemplatesPath = "EmailTemplates" });
+        _tenantSettingsMock = new Mock<ITenantSettingsService>();
+        _tenantSettingsMock.Setup(x => x.GetSettingsAsync(null, "smtp:", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<string, string>().AsReadOnly());
         _loggerMock = new Mock<ILogger<EmailService>>();
     }
 
@@ -27,6 +31,7 @@ public class EmailServiceTests
             _fluentEmailMock.Object,
             dbContext,
             _emailSettingsMock.Object,
+            _tenantSettingsMock.Object,
             _loggerMock.Object);
     }
 

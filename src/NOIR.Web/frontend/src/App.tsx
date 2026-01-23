@@ -31,8 +31,18 @@ const BlogPostsPage = lazy(() => import('@/pages/portal/blog/posts/BlogPostsPage
 const PostEditorPage = lazy(() => import('@/pages/portal/blog/posts/PostEditorPage'))
 const BlogCategoriesPage = lazy(() => import('@/pages/portal/blog/categories/BlogCategoriesPage'))
 const BlogTagsPage = lazy(() => import('@/pages/portal/blog/tags/BlogTagsPage'))
+// Platform Settings
+const PlatformSettingsPage = lazy(() => import('@/pages/portal/admin/platform-settings/PlatformSettingsPage'))
+// Tenant Settings
+const TenantSettingsPage = lazy(() => import('@/pages/portal/admin/tenant-settings/TenantSettingsPage'))
 // Email templates - keep named exports as eager load (smaller components)
 import { EmailTemplatesPage, EmailTemplateEditPage } from '@/pages/portal/email-templates'
+// Legal pages
+const LegalPagesPage = lazy(() => import('@/pages/portal/legal-pages/LegalPagesPage'))
+const LegalPageEditPage = lazy(() => import('@/pages/portal/legal-pages/LegalPageEditPage'))
+// Public legal pages
+const TermsPage = lazy(() => import('@/pages/TermsPage'))
+const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'))
 
 // Forgot password flow - keep as eager load (auth flow should be fast)
 import ForgotPasswordPage from '@/pages/forgot-password/ForgotPassword'
@@ -62,6 +72,10 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
 
+          {/* Public Legal Pages */}
+          <Route path="/terms" element={<Suspense fallback={<LazyFallback />}><TermsPage /></Suspense>} />
+          <Route path="/privacy" element={<Suspense fallback={<LazyFallback />}><PrivacyPage /></Suspense>} />
+
           {/* Forgot Password Flow */}
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/forgot-password/verify" element={<VerifyOtpPage />} />
@@ -81,9 +95,13 @@ function App() {
             <Route path="settings" element={<Suspense fallback={<LazyFallback />}><SettingsPage /></Suspense>} />
             <Route path="email-templates" element={<EmailTemplatesPage />} />
             <Route path="email-templates/:id" element={<EmailTemplateEditPage />} />
+            <Route path="legal-pages" element={<Suspense fallback={<LazyFallback />}><LegalPagesPage /></Suspense>} />
+            <Route path="legal-pages/:id" element={<Suspense fallback={<LazyFallback />}><LegalPageEditPage /></Suspense>} />
             <Route path="notifications" element={<Suspense fallback={<LazyFallback />}><Notifications /></Suspense>} />
             <Route path="settings/notifications" element={<Suspense fallback={<LazyFallback />}><NotificationPreferences /></Suspense>} />
             {/* Admin Routes */}
+            <Route path="admin/platform-settings" element={<Suspense fallback={<LazyFallback />}><PlatformSettingsPage /></Suspense>} />
+            <Route path="admin/tenant-settings" element={<Suspense fallback={<LazyFallback />}><TenantSettingsPage /></Suspense>} />
             <Route path="admin/tenants" element={<Suspense fallback={<LazyFallback />}><TenantsPage /></Suspense>} />
             <Route path="admin/tenants/:id" element={<Suspense fallback={<LazyFallback />}><TenantDetailPage /></Suspense>} />
             <Route path="admin/roles" element={<Suspense fallback={<LazyFallback />}><RolesPage /></Suspense>} />

@@ -108,6 +108,15 @@ export async function publishPost(id: string, request?: PublishPostRequest): Pro
   })
 }
 
+/**
+ * Unpublish a post (revert to draft)
+ */
+export async function unpublishPost(id: string): Promise<Post> {
+  return apiClient<Post>(`/blog/posts/${id}/unpublish`, {
+    method: 'POST',
+  })
+}
+
 // ============================================================================
 // Categories
 // ============================================================================

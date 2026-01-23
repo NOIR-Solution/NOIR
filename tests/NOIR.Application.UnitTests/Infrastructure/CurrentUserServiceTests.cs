@@ -23,6 +23,26 @@ public class CurrentUserServiceTests
         if (user != null)
         {
             httpContext.User = user;
+
+            // Cache CurrentUserData in HttpContext.Items (simulates middleware behavior)
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+            var email = user.FindFirstValue(ClaimTypes.Email) ?? "";
+            var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value);
+
+            var userData = new CurrentUserData(
+                Id: userId,
+                Email: email,
+                FirstName: "Test",
+                LastName: "User",
+                DisplayName: null,
+                FullName: "Test User",
+                AvatarUrl: null,
+                PhoneNumber: null,
+                Roles: roles,
+                TenantId: null,
+                IsActive: true);
+
+            httpContext.Items[CurrentUserData.CacheKey] = userData;
         }
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
     }

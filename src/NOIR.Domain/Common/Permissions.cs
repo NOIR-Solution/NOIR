@@ -69,6 +69,18 @@ public static class Permissions
     public const string BlogTagsUpdate = "blog-tags:update";
     public const string BlogTagsDelete = "blog-tags:delete";
 
+    // Legal Pages
+    public const string LegalPagesRead = "legal-pages:read";
+    public const string LegalPagesUpdate = "legal-pages:update";
+
+    // Tenant Settings
+    public const string TenantSettingsRead = "tenant-settings:read";
+    public const string TenantSettingsUpdate = "tenant-settings:update";
+
+    // Platform Settings
+    public const string PlatformSettingsRead = "platform-settings:read";
+    public const string PlatformSettingsManage = "platform-settings:manage";
+
     /// <summary>
     /// All permissions grouped by resource.
     /// </summary>
@@ -100,6 +112,15 @@ public static class Permissions
 
         public static readonly IReadOnlyList<string> BlogTags =
             [BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete];
+
+        public static readonly IReadOnlyList<string> LegalPages =
+            [LegalPagesRead, LegalPagesUpdate];
+
+        public static readonly IReadOnlyList<string> TenantSettings =
+            [TenantSettingsRead, TenantSettingsUpdate];
+
+        public static readonly IReadOnlyList<string> PlatformSettings =
+            [PlatformSettingsRead, PlatformSettingsManage];
     }
 
     /// <summary>
@@ -124,7 +145,13 @@ public static class Permissions
         // Blog Categories
         BlogCategoriesRead, BlogCategoriesCreate, BlogCategoriesUpdate, BlogCategoriesDelete,
         // Blog Tags
-        BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete
+        BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete,
+        // Legal Pages
+        LegalPagesRead, LegalPagesUpdate,
+        // Tenant Settings
+        TenantSettingsRead, TenantSettingsUpdate,
+        // Platform Settings
+        PlatformSettingsRead, PlatformSettingsManage
     ];
 
     /// <summary>
@@ -139,8 +166,12 @@ public static class Permissions
         SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
         // Platform-level email templates
         EmailTemplatesRead, EmailTemplatesUpdate,
+        // Platform-level legal pages
+        LegalPagesRead, LegalPagesUpdate,
         // Platform-level audit (all tenants)
-        AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream
+        AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream,
+        // Platform settings
+        PlatformSettingsRead, PlatformSettingsManage
     ];
 
     /// <summary>
@@ -155,6 +186,10 @@ public static class Permissions
         RolesRead, RolesCreate, RolesUpdate, RolesDelete, RolesManagePermissions,
         // Tenant-level email templates (copy-on-write)
         EmailTemplatesRead, EmailTemplatesUpdate,
+        // Tenant-level legal pages (copy-on-write)
+        LegalPagesRead, LegalPagesUpdate,
+        // Tenant settings (branding, contact, regional)
+        TenantSettingsRead, TenantSettingsUpdate,
         // Audit within tenant
         AuditRead, AuditExport, AuditEntityHistory,
         // Blog within tenant
@@ -190,7 +225,10 @@ public static class Permissions
             SystemAdmin,
             SystemAuditLogs,
             SystemSettings,
-            HangfireDashboard
+            HangfireDashboard,
+            // Platform settings management
+            PlatformSettingsRead,
+            PlatformSettingsManage
         };
 
         /// <summary>
@@ -214,6 +252,12 @@ public static class Permissions
             // Email templates within tenant (copy-on-write)
             EmailTemplatesRead,
             EmailTemplatesUpdate,
+            // Legal pages within tenant (copy-on-write)
+            LegalPagesRead,
+            LegalPagesUpdate,
+            // Tenant settings (branding, contact, regional)
+            TenantSettingsRead,
+            TenantSettingsUpdate,
             // Audit within tenant (read and export only)
             AuditRead,
             AuditExport,

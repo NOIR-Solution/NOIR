@@ -35,6 +35,8 @@ global using NOIR.Application.Features.Users.DTOs;
 global using NOIR.Application.Features.Roles.DTOs;
 global using NOIR.Application.Features.EmailTemplates.DTOs;
 global using NOIR.Application.Features.EmailTemplates.Specifications;
+global using NOIR.Application.Features.LegalPages.DTOs;
+global using NOIR.Application.Features.TenantSettings.DTOs;
 global using NOIR.Application.Features.Tenants.DTOs;
 global using NOIR.Application.Specifications;
 global using NOIR.Application.Specifications.Notifications;

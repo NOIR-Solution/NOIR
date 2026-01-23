@@ -38,6 +38,25 @@ public class NotificationServiceTests
 
         _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
 
+        // Default mock: FindByIdAsync returns a valid user so SendToUserAsync doesn't fail early
+        _userIdentityServiceMock
+            .Setup(x => x.FindByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new UserIdentityDto(
+                Id: TestUserId,
+                Email: "test@example.com",
+                TenantId: TestTenantId,
+                FirstName: "Test",
+                LastName: "User",
+                DisplayName: null,
+                FullName: "Test User",
+                PhoneNumber: null,
+                AvatarUrl: null,
+                IsActive: true,
+                IsDeleted: false,
+                IsSystemUser: false,
+                CreatedAt: DateTimeOffset.UtcNow,
+                ModifiedAt: null));
+
         _sut = new NotificationService(
             _notificationRepoMock.Object,
             _preferenceRepoMock.Object,

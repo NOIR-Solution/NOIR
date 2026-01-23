@@ -24,6 +24,8 @@
     "menu": "Thực đơn",
     "admin": "Quản trị",
     "content": "Nội dung",
+    "usersAccess": "Người dùng & Truy cập",
+    "system": "Hệ thống",
     "configuration": "Cấu hình",
     "accessControl": "Kiểm soát truy cập",
     "monitoring": "Giám sát"
