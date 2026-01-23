@@ -1,4 +1,3 @@
-using NOIR.Application.Features.Tenants.DTOs;
 
 namespace NOIR.Application.Features.Tenants.Commands.CreateTenant;
 

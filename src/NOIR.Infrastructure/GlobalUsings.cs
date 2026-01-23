@@ -122,6 +122,19 @@ global using NOIR.Application.Features.EmailTemplates.Specifications;
 global using NOIR.Application.Features.DeveloperLogs.DTOs;
 global using NOIR.Application.Features.Blog.DTOs;
 global using NOIR.Application.Features.Blog.Queries.GetPost;
+global using NOIR.Application.Features.Blog.Queries.GetCategoryById;
+global using NOIR.Application.Features.Blog.Queries.GetTagById;
+global using NOIR.Application.Features.EmailTemplates.DTOs;
+global using NOIR.Application.Features.EmailTemplates.Queries.GetEmailTemplate;
+global using NOIR.Application.Features.LegalPages.DTOs;
+global using NOIR.Application.Features.LegalPages.Queries.GetLegalPage;
+global using NOIR.Application.Features.PlatformSettings.DTOs;
+global using NOIR.Application.Features.PlatformSettings.Queries.GetSmtpSettings;
+global using NOIR.Application.Features.TenantSettings.DTOs;
+global using NOIR.Application.Features.TenantSettings.Queries.GetBrandingSettings;
+global using NOIR.Application.Features.TenantSettings.Queries.GetContactSettings;
+global using NOIR.Application.Features.TenantSettings.Queries.GetRegionalSettings;
+global using NOIR.Application.Features.TenantSettings.Queries.GetTenantSmtpSettings;
 
 // NOIR Domain
 global using NOIR.Domain.Common;
@@ -144,6 +157,7 @@ global using NOIR.Infrastructure.Logging;
 global using NOIR.Infrastructure.Persistence;
 global using NOIR.Infrastructure.Persistence.Configurations;
 global using NOIR.Infrastructure.Persistence.Interceptors;
+global using NOIR.Infrastructure.Persistence.Seeders;
 global using NOIR.Infrastructure.Services;
 global using NOIR.Infrastructure.Storage;
 global using NOIR.Infrastructure.Localization;

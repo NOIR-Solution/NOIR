@@ -1,29 +1,39 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace NOIR.Domain.Entities;
 
 /// <summary>
 /// Represents a tenant in the multi-tenant system.
 /// Platform-level entity - NOT scoped to any tenant (does not implement ITenantEntity).
-/// Inherits from TenantInfo record for Finbuckle EFCoreStore compatibility.
+/// Inherits from TenantInfo class for Finbuckle EFCoreStore compatibility.
 /// </summary>
 /// <remarks>
-/// TenantInfo base properties (Id, Identifier, Name) are immutable per C# record semantics.
-/// For updates, use the record 'with' expression to create a modified copy.
-/// EF Core will track these changes appropriately.
+/// As of Finbuckle.MultiTenant 10.0.2, TenantInfo has required init-only properties.
+/// This class uses factory methods for creation and updates to work within those constraints.
+/// For updates, use CreateUpdated() to generate a new instance with modified values.
 /// </remarks>
-public record Tenant : TenantInfo, IAuditableEntity
+public class Tenant : TenantInfo, IAuditableEntity
 {
     /// <summary>
     /// Private constructor for EF Core materialization.
-    /// Uses dummy values that EF Core will overwrite during materialization.
+    /// EF Core can set required/init-only properties through this constructor.
     /// </summary>
-    private Tenant() : base("", "") { }
+    [SetsRequiredMembers]
+    private Tenant()
+    {
+        Id = string.Empty;
+        Identifier = string.Empty;
+    }
 
     /// <summary>
     /// Primary constructor for creating Tenant instances.
     /// </summary>
+    [SetsRequiredMembers]
     public Tenant(string id, string identifier, string? name = null)
-        : base(id, identifier, name)
     {
+        Id = id;
+        Identifier = identifier;
+        Name = name;
     }
 
     #region Status
@@ -31,7 +41,7 @@ public record Tenant : TenantInfo, IAuditableEntity
     /// <summary>
     /// Whether the tenant is active. Inactive tenants cannot log in.
     /// </summary>
-    public bool IsActive { get; init; } = true;
+    public bool IsActive { get; set; } = true;
 
     #endregion
 
@@ -42,17 +52,17 @@ public record Tenant : TenantInfo, IAuditableEntity
     /// Used for automatic tenant resolution from request host.
     /// If null, tenant can only be accessed via identifier or explicit selection.
     /// </summary>
-    public string? Domain { get; init; }
+    public string? Domain { get; set; }
 
     /// <summary>
     /// Description of the tenant for administrative purposes.
     /// </summary>
-    public string? Description { get; init; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// Internal notes about this tenant (not visible to tenant users).
     /// </summary>
-    public string? Note { get; init; }
+    public string? Note { get; set; }
 
     #endregion
 
@@ -61,22 +71,22 @@ public record Tenant : TenantInfo, IAuditableEntity
     /// <summary>
     /// Timestamp when the entity was created.
     /// </summary>
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Timestamp when the entity was last modified.
     /// </summary>
-    public DateTimeOffset? ModifiedAt { get; init; }
+    public DateTimeOffset? ModifiedAt { get; set; }
 
     #endregion
 
     #region IAuditableEntity Implementation
 
-    public string? CreatedBy { get; init; }
-    public string? ModifiedBy { get; init; }
-    public bool IsDeleted { get; init; }
-    public DateTimeOffset? DeletedAt { get; init; }
-    public string? DeletedBy { get; init; }
+    public string? CreatedBy { get; set; }
+    public string? ModifiedBy { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
+    public string? DeletedBy { get; set; }
 
     #endregion
 
@@ -117,10 +127,11 @@ public record Tenant : TenantInfo, IAuditableEntity
     public Guid GetGuidId() => Guid.Parse(Id);
 
     /// <summary>
-    /// Creates an updated copy of this tenant with modified properties.
+    /// Creates a new Tenant instance with updated details.
+    /// TenantInfo base class has init-only properties, so updates require creating a new instance.
+    /// Finbuckle's EFCoreStore handles replacing the tracked entity appropriately.
     /// </summary>
-    /// <returns>A new Tenant record with the updated values.</returns>
-    public Tenant WithUpdatedDetails(
+    public Tenant CreateUpdated(
         string identifier,
         string name,
         string? domain,
@@ -131,25 +142,83 @@ public record Tenant : TenantInfo, IAuditableEntity
         ArgumentException.ThrowIfNullOrWhiteSpace(identifier, nameof(identifier));
         ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
 
-        return this with
+        return new Tenant(Id, identifier.ToLowerInvariant().Trim(), name.Trim())
         {
-            Identifier = identifier.ToLowerInvariant().Trim(),
-            Name = name.Trim(),
             Domain = domain?.ToLowerInvariant().Trim(),
             Description = description?.Trim(),
             Note = note?.Trim(),
             IsActive = isActive,
-            ModifiedAt = DateTimeOffset.UtcNow
+            ModifiedAt = DateTimeOffset.UtcNow,
+            CreatedAt = CreatedAt,
+            CreatedBy = CreatedBy,
+            ModifiedBy = ModifiedBy,
+            IsDeleted = IsDeleted,
+            DeletedAt = DeletedAt,
+            DeletedBy = DeletedBy
         };
     }
 
     /// <summary>
     /// Creates an activated copy of this tenant.
     /// </summary>
-    public Tenant WithActivated() => this with { IsActive = true, ModifiedAt = DateTimeOffset.UtcNow };
+    public Tenant CreateActivated()
+    {
+        return new Tenant(Id, Identifier, Name)
+        {
+            Domain = Domain,
+            Description = Description,
+            Note = Note,
+            IsActive = true,
+            ModifiedAt = DateTimeOffset.UtcNow,
+            CreatedAt = CreatedAt,
+            CreatedBy = CreatedBy,
+            ModifiedBy = ModifiedBy,
+            IsDeleted = IsDeleted,
+            DeletedAt = DeletedAt,
+            DeletedBy = DeletedBy
+        };
+    }
 
     /// <summary>
     /// Creates a deactivated copy of this tenant.
     /// </summary>
-    public Tenant WithDeactivated() => this with { IsActive = false, ModifiedAt = DateTimeOffset.UtcNow };
+    public Tenant CreateDeactivated()
+    {
+        return new Tenant(Id, Identifier, Name)
+        {
+            Domain = Domain,
+            Description = Description,
+            Note = Note,
+            IsActive = false,
+            ModifiedAt = DateTimeOffset.UtcNow,
+            CreatedAt = CreatedAt,
+            CreatedBy = CreatedBy,
+            ModifiedBy = ModifiedBy,
+            IsDeleted = IsDeleted,
+            DeletedAt = DeletedAt,
+            DeletedBy = DeletedBy
+        };
+    }
+
+    /// <summary>
+    /// Creates a soft-deleted copy of this tenant.
+    /// </summary>
+    /// <param name="deletedBy">Optional user ID who performed the deletion.</param>
+    public Tenant CreateDeleted(string? deletedBy = null)
+    {
+        return new Tenant(Id, Identifier, Name)
+        {
+            Domain = Domain,
+            Description = Description,
+            Note = Note,
+            IsActive = IsActive,
+            ModifiedAt = DateTimeOffset.UtcNow,
+            CreatedAt = CreatedAt,
+            CreatedBy = CreatedBy,
+            ModifiedBy = ModifiedBy,
+            IsDeleted = true,
+            DeletedAt = DateTimeOffset.UtcNow,
+            DeletedBy = deletedBy ?? DeletedBy
+        };
+    }
 }

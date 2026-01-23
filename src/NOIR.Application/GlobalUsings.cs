@@ -25,17 +25,25 @@ global using FluentValidation.Results;
 // System - Security
 global using System.Security.Claims;
 
+// Microsoft - Entity Framework Core (used by handlers via IApplicationDbContext)
+global using Microsoft.EntityFrameworkCore;
+
 // NOIR Application
 global using NOIR.Application.Common.Interfaces;
 global using NOIR.Application.Common.Models;
 global using NOIR.Application.Common.Settings;
 global using NOIR.Application.Features.Auth.DTOs;
 global using NOIR.Application.Features.Auth.Queries.GetUserById;
+global using NOIR.Application.Features.Audit.DTOs;
+global using NOIR.Application.Features.Blog.DTOs;
+global using NOIR.Application.Features.Blog.Specifications;
 global using NOIR.Application.Features.Users.DTOs;
 global using NOIR.Application.Features.Roles.DTOs;
 global using NOIR.Application.Features.EmailTemplates.DTOs;
 global using NOIR.Application.Features.EmailTemplates.Specifications;
 global using NOIR.Application.Features.LegalPages.DTOs;
+global using NOIR.Application.Features.Notifications.DTOs;
+global using NOIR.Application.Features.PlatformSettings.DTOs;
 global using NOIR.Application.Features.TenantSettings.DTOs;
 global using NOIR.Application.Features.Tenants.DTOs;
 global using NOIR.Application.Specifications;

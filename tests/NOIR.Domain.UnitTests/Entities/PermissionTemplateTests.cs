@@ -15,7 +15,7 @@ public class PermissionTemplateTests
         var name = "Administrator";
 
         // Act
-        var template = PermissionTemplate.Create(name);
+        var template = PermissionTemplate.CreatePlatformDefault(name);
 
         // Assert
         template.Should().NotBeNull();
@@ -27,20 +27,20 @@ public class PermissionTemplateTests
     }
 
     [Fact]
-    public void Create_WithAllParameters_ShouldSetAllProperties()
+    public void CreateTenantOverride_WithAllParameters_ShouldSetAllProperties()
     {
         // Arrange
+        var tenantId = "tenant-123";
         var name = "Content Manager";
         var description = "Can manage content but not users";
-        var tenantId = "tenant-123";
         var isSystem = true;
         var iconName = "file-text";
         var color = "#3B82F6";
         var sortOrder = 10;
 
         // Act
-        var template = PermissionTemplate.Create(
-            name, description, tenantId, isSystem, iconName, color, sortOrder);
+        var template = PermissionTemplate.CreateTenantOverride(
+            tenantId, name, description, isSystem, iconName, color, sortOrder);
 
         // Assert
         template.Name.Should().Be(name);
@@ -53,10 +53,10 @@ public class PermissionTemplateTests
     }
 
     [Fact]
-    public void Create_WithoutTenantId_ShouldBeSystemTemplate()
+    public void CreatePlatformDefault_ShouldHaveNullTenantId()
     {
         // Act
-        var template = PermissionTemplate.Create("Global Template");
+        var template = PermissionTemplate.CreatePlatformDefault("Global Template");
 
         // Assert
         template.TenantId.Should().BeNull();
@@ -70,7 +70,7 @@ public class PermissionTemplateTests
     public void Update_ShouldModifyAllEditableProperties()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Original");
+        var template = PermissionTemplate.CreatePlatformDefault("Original");
         var newName = "Updated Name";
         var newDescription = "Updated description";
         var newIconName = "shield";
@@ -92,7 +92,7 @@ public class PermissionTemplateTests
     public void Update_WithNullOptionalValues_ShouldClearThem()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test", "Original Desc", null, false, "icon", "#000", 1);
+        var template = PermissionTemplate.CreatePlatformDefault("Test", "Original Desc", false, "icon", "#000", 1);
 
         // Act
         template.Update("Test", null, null, null, 0);
@@ -111,7 +111,7 @@ public class PermissionTemplateTests
     public void AddPermission_ShouldAddPermissionToItems()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
         var permissionId = Guid.NewGuid();
 
         // Act
@@ -126,7 +126,7 @@ public class PermissionTemplateTests
     public void AddPermission_DuplicatePermission_ShouldNotAddAgain()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
         var permissionId = Guid.NewGuid();
 
         // Act
@@ -141,7 +141,7 @@ public class PermissionTemplateTests
     public void AddPermission_MultiplePermissions_ShouldAddAll()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
         var permission1 = Guid.NewGuid();
         var permission2 = Guid.NewGuid();
         var permission3 = Guid.NewGuid();
@@ -163,7 +163,7 @@ public class PermissionTemplateTests
     public void RemovePermission_ExistingPermission_ShouldRemove()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
         var permissionId = Guid.NewGuid();
         template.AddPermission(permissionId);
 
@@ -178,7 +178,7 @@ public class PermissionTemplateTests
     public void RemovePermission_NonExistentPermission_ShouldNotThrow()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
         var permissionId = Guid.NewGuid();
 
         // Act
@@ -193,7 +193,7 @@ public class PermissionTemplateTests
     public void RemovePermission_PartialRemoval_ShouldOnlyRemoveSpecified()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
         var permission1 = Guid.NewGuid();
         var permission2 = Guid.NewGuid();
         template.AddPermission(permission1);
@@ -215,7 +215,7 @@ public class PermissionTemplateTests
     public void SetPermissions_ShouldReplaceAllPermissions()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
         template.AddPermission(Guid.NewGuid());
         template.AddPermission(Guid.NewGuid());
 
@@ -233,7 +233,7 @@ public class PermissionTemplateTests
     public void SetPermissions_WithEmptyList_ShouldClearAllPermissions()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
         template.AddPermission(Guid.NewGuid());
         template.AddPermission(Guid.NewGuid());
 
@@ -248,7 +248,7 @@ public class PermissionTemplateTests
     public void SetPermissions_ShouldSetCorrectTemplateId()
     {
         // Arrange
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
         var permissionId = Guid.NewGuid();
 
         // Act
@@ -302,7 +302,7 @@ public class PermissionTemplateTests
     public void Create_ShouldInitializeAuditableProperties()
     {
         // Act
-        var template = PermissionTemplate.Create("Test");
+        var template = PermissionTemplate.CreatePlatformDefault("Test");
 
         // Assert
         template.IsDeleted.Should().BeFalse();
@@ -317,20 +317,20 @@ public class PermissionTemplateTests
     #region IsSystem Tests
 
     [Fact]
-    public void Create_WithIsSystemTrue_ShouldBeSystemTemplate()
+    public void CreatePlatformDefault_WithIsSystemTrue_ShouldBeSystemTemplate()
     {
         // Act
-        var template = PermissionTemplate.Create("Admin", isSystem: true);
+        var template = PermissionTemplate.CreatePlatformDefault("Admin", isSystem: true);
 
         // Assert
         template.IsSystem.Should().BeTrue();
     }
 
     [Fact]
-    public void Create_WithIsSystemFalse_ShouldNotBeSystemTemplate()
+    public void CreatePlatformDefault_WithIsSystemFalse_ShouldNotBeSystemTemplate()
     {
         // Act
-        var template = PermissionTemplate.Create("Custom", isSystem: false);
+        var template = PermissionTemplate.CreatePlatformDefault("Custom", isSystem: false);
 
         // Assert
         template.IsSystem.Should().BeFalse();

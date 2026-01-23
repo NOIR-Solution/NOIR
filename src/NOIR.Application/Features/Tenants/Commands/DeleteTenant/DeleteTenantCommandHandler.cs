@@ -42,12 +42,7 @@ public class DeleteTenantCommandHandler
         }
 
         // Soft delete by setting IsDeleted flag and updating via store
-        var deletedTenant = tenant with
-        {
-            IsDeleted = true,
-            DeletedAt = DateTimeOffset.UtcNow,
-            ModifiedAt = DateTimeOffset.UtcNow
-        };
+        var deletedTenant = tenant.CreateDeleted();
 
         var success = await _tenantStore.UpdateAsync(deletedTenant);
         if (!success)

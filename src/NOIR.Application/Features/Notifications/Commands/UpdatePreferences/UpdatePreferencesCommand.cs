@@ -1,6 +1,5 @@
 namespace NOIR.Application.Features.Notifications.Commands.UpdatePreferences;
 
-using NOIR.Application.Features.Notifications.DTOs;
 
 /// <summary>
 /// Command to update notification preferences for the current user.

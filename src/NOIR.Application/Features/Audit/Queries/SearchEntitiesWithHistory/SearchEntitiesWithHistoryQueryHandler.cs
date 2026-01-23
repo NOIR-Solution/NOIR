@@ -1,6 +1,3 @@
-using NOIR.Application.Common.Interfaces;
-using NOIR.Application.Common.Models;
-using NOIR.Application.Features.Audit.DTOs;
 
 namespace NOIR.Application.Features.Audit.Queries.SearchEntitiesWithHistory;
 

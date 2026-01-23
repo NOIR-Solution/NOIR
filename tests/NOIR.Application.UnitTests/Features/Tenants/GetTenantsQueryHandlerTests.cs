@@ -30,7 +30,8 @@ public class GetTenantsQueryHandlerTests
 
         if (isDeleted)
         {
-            return tenant with { IsDeleted = true, DeletedAt = DateTimeOffset.UtcNow };
+            tenant.IsDeleted = true;
+            tenant.DeletedAt = DateTimeOffset.UtcNow;
         }
 
         return tenant;

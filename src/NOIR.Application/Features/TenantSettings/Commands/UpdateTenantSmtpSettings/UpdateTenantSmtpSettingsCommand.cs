@@ -11,8 +11,13 @@ public sealed record UpdateTenantSmtpSettingsCommand(
     string? Password,
     string FromEmail,
     string FromName,
-    bool UseSsl)
+    bool UseSsl) : IAuditableCommand
 {
     [System.Text.Json.Serialization.JsonIgnore]
     public string? UserId { get; init; }
+
+    public AuditOperationType OperationType => AuditOperationType.Update;
+    public object? GetTargetId() => null;
+    public string? GetTargetDisplayName() => "Tenant SMTP settings";
+    public string? GetActionDescription() => "Updated tenant SMTP settings";
 }

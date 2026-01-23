@@ -1,7 +1,3 @@
-using System.Text.Json;
-using NOIR.Application.Features.Blog.DTOs;
-using NOIR.Application.Features.Blog.Specifications;
-
 namespace NOIR.Application.Features.Blog.Queries.GetPosts;
 
 /// <summary>

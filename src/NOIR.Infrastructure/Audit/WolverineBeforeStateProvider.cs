@@ -214,6 +214,28 @@ public static class BeforeStateProviderExtensions
             new BeforeStateQueryResolverRegistration<TDto, TQuery>(queryFactory));
         return services;
     }
+
+    /// <summary>
+    /// Registers a resolver for a settings DTO type using a parameterless Wolverine query.
+    /// Used for tenant-scoped singleton settings that don't require an ID.
+    /// </summary>
+    /// <typeparam name="TSettingsDto">The DTO type for the settings</typeparam>
+    /// <typeparam name="TSettingsQuery">The query type (must have parameterless constructor)</typeparam>
+    public static IServiceCollection AddSettingsBeforeStateResolver<TSettingsDto, TSettingsQuery>(
+        this IServiceCollection services)
+        where TSettingsDto : class
+        where TSettingsQuery : class, new()
+    {
+        services.AddBeforeStateResolver<TSettingsDto>(
+            async (sp, _, ct) =>
+            {
+                await using var scope = sp.CreateAsyncScope();
+                var bus = scope.ServiceProvider.GetRequiredService<IMessageBus>();
+                var result = await bus.InvokeAsync<Result<TSettingsDto>>(new TSettingsQuery(), ct);
+                return result.IsSuccess ? result.Value : null;
+            });
+        return services;
+    }
 }
 
 /// <summary>

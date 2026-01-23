@@ -192,9 +192,11 @@ public static class TenantSettingsEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
 
         // Revert tenant SMTP settings to platform defaults
-        group.MapPost("/smtp/revert", async (IMessageBus bus) =>
+        group.MapPost("/smtp/revert", async (
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var command = new RevertTenantSmtpSettingsCommand();
+            var command = new RevertTenantSmtpSettingsCommand { UserId = currentUser.UserId };
             var result = await bus.InvokeAsync<Result<TenantSmtpSettingsDto>>(command);
             return result.ToHttpResult();
         })

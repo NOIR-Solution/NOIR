@@ -107,9 +107,10 @@ public static class TenantEndpoints
         group.MapPost("/{tenantId}/reset-admin-password", async (
             string tenantId,
             ResetTenantAdminPasswordRequest request,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
-            var command = new ResetTenantAdminPasswordCommand(tenantId, request.NewPassword);
+            var command = new ResetTenantAdminPasswordCommand(tenantId, request.NewPassword) { UserId = currentUser.UserId };
             var result = await bus.InvokeAsync<Result<ResetTenantAdminPasswordResult>>(command);
             return result.ToHttpResult();
         })

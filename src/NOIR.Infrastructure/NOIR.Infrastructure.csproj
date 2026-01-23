@@ -15,9 +15,9 @@
 
     <ItemGroup>
         <!-- Database -->
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -30,11 +30,11 @@
         <PackageReference Include="EFCore.BulkExtensions.MIT" Version="10.22.0" />
 
         <!-- Authentication -->
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.2" />
 
         <!-- Multi-Tenancy -->
-        <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="10.0.1" />
-        <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="10.0.1" />
+        <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="10.0.2" />
+        <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="10.0.2" />
 
         <!-- Background Jobs -->
         <PackageReference Include="Hangfire.AspNetCore" Version="1.8.22" />
@@ -45,9 +45,9 @@
         <PackageReference Include="FluentStorage.AWS" Version="6.0.1" />
         <PackageReference Include="FluentStorage.Azure.Blobs" Version="6.0.0" />
         <!-- Override AWSSDK transitive dependencies to fix security vulnerability -->
-        <PackageReference Include="AWSSDK.Core" Version="4.0.3.9" />
-        <PackageReference Include="AWSSDK.S3" Version="4.0.17.2" />
-        <PackageReference Include="AWSSDK.SecurityToken" Version="4.0.5.7" />
+        <PackageReference Include="AWSSDK.Core" Version="4.0.3.10" />
+        <PackageReference Include="AWSSDK.S3" Version="4.0.17.3" />
+        <PackageReference Include="AWSSDK.SecurityToken" Version="4.0.5.8" />
 
         <!-- Email -->
         <PackageReference Include="FluentEmail.Core" Version="3.0.2" />
@@ -70,8 +70,8 @@
 
         <!-- Hybrid Caching (L1 in-memory + optional L2 distributed) -->
         <!-- FusionCache provides stampede protection, fail-safe, soft/hard timeouts -->
-        <PackageReference Include="ZiggyCreatures.FusionCache" Version="2.0.0" />
-        <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.0.0" />
+        <PackageReference Include="ZiggyCreatures.FusionCache" Version="2.5.0" />
+        <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.5.0" />
 
         <!-- Image Processing -->
         <!-- ImageSharp for resize, crop, optimize. AVIF for modern format. ThumbHash for placeholders -->

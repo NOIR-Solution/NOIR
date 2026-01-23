@@ -13,7 +13,16 @@ public sealed record ResetTenantAdminPasswordCommand(
     /// <summary>
     /// The new password for the tenant admin.
     /// </summary>
-    string NewPassword);
+    string NewPassword) : IAuditableCommand<ResetTenantAdminPasswordResult>
+{
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
+    public AuditOperationType OperationType => AuditOperationType.Update;
+    public object? GetTargetId() => TenantId;
+    public string? GetTargetDisplayName() => $"Tenant {TenantId}";
+    public string? GetActionDescription() => $"Reset admin password for tenant '{TenantId}'";
+}
 
 /// <summary>
 /// Result of the reset tenant admin password operation.

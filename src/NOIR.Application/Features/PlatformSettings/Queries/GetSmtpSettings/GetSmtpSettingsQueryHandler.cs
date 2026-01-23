@@ -1,4 +1,3 @@
-using NOIR.Application.Features.PlatformSettings.DTOs;
 
 namespace NOIR.Application.Features.PlatformSettings.Queries.GetSmtpSettings;
 

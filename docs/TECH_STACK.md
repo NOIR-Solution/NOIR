@@ -2,7 +2,7 @@
 
 > **Complete reference of technologies, libraries, and frameworks used in NOIR.**
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-23
 
 ---
 
@@ -180,7 +180,7 @@ public static partial class UserMapper
 
 | Technology | Version | Purpose | Docs |
 |------------|---------|---------|------|
-| **Finbuckle.MultiTenant** | 10.0 | Multi-tenancy | [Finbuckle](https://www.finbuckle.com/MultiTenant/) |
+| **Finbuckle.MultiTenant** | 10.0.2 | Multi-tenancy | [Finbuckle](https://www.finbuckle.com/MultiTenant/) |
 
 **Features:**
 - **Strategy-based** - Header, claim, host resolution
@@ -752,5 +752,5 @@ const form = useForm<FormData>({
 
 ---
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-23
 **Maintainer:** NOIR Team

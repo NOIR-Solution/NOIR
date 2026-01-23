@@ -25,7 +25,7 @@
 ### Key Statistics
 
 - **Lines of Code:** ~150,000
-- **Test Coverage:** 4,442 tests across Unit, Integration, and Architecture layers
+- **Test Coverage:** 5,431 tests across Unit, Integration, and Architecture layers
 - **Feature Modules:** 12 domain-driven modules
 - **API Endpoints:** 65+ REST endpoints
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10
@@ -69,7 +69,7 @@ NOIR.Domain/
 ├── Entities/                            # Core domain entities
 │   ├── ApplicationUser.cs               # Identity user with multi-tenancy
 │   ├── ApplicationRole.cs               # Role with permissions
-│   ├── Tenant.cs                        # Tenant entity (Finbuckle)
+│   ├── Tenant.cs                        # Tenant entity (Finbuckle, immutable factory methods)
 │   ├── RefreshToken.cs                  # JWT refresh token
 │   ├── Notification.cs                  # User notification
 │   ├── EntityAuditLog.cs                # Entity-level audit trail
@@ -241,7 +241,13 @@ NOIR.Infrastructure/
 ├── Persistence/
 │   ├── ApplicationDbContext.cs          # Main DbContext
 │   ├── TenantStoreDbContext.cs          # Finbuckle tenant store
-│   ├── ApplicationDbContextSeeder.cs    # Database seeding
+│   ├── ApplicationDbContextSeeder.cs    # Seeder orchestrator
+│   ├── Seeders/                         # Individual domain seeders (ISeeder)
+│   │   ├── TenantSeeder.cs              # Default tenant
+│   │   ├── RoleSeeder.cs                # Roles and permissions
+│   │   ├── UserSeeder.cs                # Platform/tenant admins
+│   │   ├── EmailTemplateSeeder.cs       # Email templates
+│   │   └── ...                          # LegalPage, Notification, etc.
 │   ├── Configurations/                  # EF Core entity configs
 │   ├── Interceptors/
 │   │   ├── AuditableEntityInterceptor.cs

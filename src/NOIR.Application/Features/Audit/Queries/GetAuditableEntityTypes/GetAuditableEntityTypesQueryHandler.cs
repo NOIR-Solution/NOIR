@@ -1,4 +1,3 @@
-using NOIR.Application.Common.Interfaces;
 
 namespace NOIR.Application.Features.Audit.Queries.GetAuditableEntityTypes;
 

@@ -1,4 +1,3 @@
-using NOIR.Application.Features.Tenants.DTOs;
 
 namespace NOIR.Application.Features.Tenants.Commands.UpdateTenant;
 
@@ -63,8 +62,8 @@ public class UpdateTenantCommandHandler
             }
         }
 
-        // Create updated tenant using record 'with' expression
-        var updatedTenant = tenant.WithUpdatedDetails(
+        // Create updated tenant (TenantInfo has init-only properties, requires new instance)
+        var updatedTenant = tenant.CreateUpdated(
             command.Identifier,
             command.Name,
             command.Domain,

@@ -1,7 +1,5 @@
-using System.Text;
 using System.Xml;
 using NOIR.Application.Features.Blog.Helpers;
-using NOIR.Application.Features.Blog.Specifications;
 
 namespace NOIR.Application.Features.Blog.Queries.GetRssFeed;
 

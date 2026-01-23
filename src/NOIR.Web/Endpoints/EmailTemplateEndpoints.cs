@@ -118,9 +118,12 @@ public static class EmailTemplateEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Revert to platform default
-        group.MapDelete("/{id:guid}/revert", async (Guid id, IMessageBus bus) =>
+        group.MapDelete("/{id:guid}/revert", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var command = new RevertToPlatformDefaultCommand(id);
+            var command = new RevertToPlatformDefaultCommand(id) { UserId = currentUser.UserId };
             var result = await bus.InvokeAsync<Result<EmailTemplateDto>>(command);
             return result.ToHttpResult();
         })

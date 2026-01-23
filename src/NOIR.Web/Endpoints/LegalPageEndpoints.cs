@@ -70,9 +70,12 @@ public static class LegalPageEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Revert to platform default
-        group.MapPost("/{id:guid}/revert", async (Guid id, IMessageBus bus) =>
+        group.MapPost("/{id:guid}/revert", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var command = new RevertLegalPageToDefaultCommand(id);
+            var command = new RevertLegalPageToDefaultCommand(id) { UserId = currentUser.UserId };
             var result = await bus.InvokeAsync<Result<LegalPageDto>>(command);
             return result.ToHttpResult();
         })

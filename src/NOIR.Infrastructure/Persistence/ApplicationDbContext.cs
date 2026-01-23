@@ -23,7 +23,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     }
 
     // IMultiTenantDbContext implementation - Tenant inherits from TenantInfo
-    public TenantInfo? TenantInfo => _tenantContextAccessor?.MultiTenantContext?.TenantInfo;
+    public ITenantInfo? TenantInfo => _tenantContextAccessor?.MultiTenantContext?.TenantInfo;
     public TenantMismatchMode TenantMismatchMode => TenantMismatchMode.Throw;
     public TenantNotSetMode TenantNotSetMode => TenantNotSetMode.Throw;
 

@@ -2,14 +2,14 @@ namespace NOIR.Application.UnitTests.Infrastructure;
 
 /// <summary>
 /// Unit tests for EmailService.
-/// Tests email sending functionality with mocked FluentEmail.
-/// Note: SendTemplateAsync tests are integration tests due to DbContext dependency.
+/// Tests email sending functionality with mocked FluentEmail and repository.
 /// </summary>
 public class EmailServiceTests
 {
     private const string TestTenantId = "test-tenant-id";
 
     private readonly Mock<IFluentEmail> _fluentEmailMock;
+    private readonly Mock<IRepository<EmailTemplate, Guid>> _emailTemplateRepositoryMock;
     private readonly Mock<IOptionsMonitor<EmailSettings>> _emailSettingsMock;
     private readonly Mock<ITenantSettingsService> _tenantSettingsMock;
     private readonly Mock<IMultiTenantContextAccessor<Tenant>> _tenantContextAccessorMock;
@@ -18,49 +18,51 @@ public class EmailServiceTests
     public EmailServiceTests()
     {
         _fluentEmailMock = new Mock<IFluentEmail>();
+        _emailTemplateRepositoryMock = new Mock<IRepository<EmailTemplate, Guid>>();
         _emailSettingsMock = new Mock<IOptionsMonitor<EmailSettings>>();
         _emailSettingsMock.Setup(x => x.CurrentValue).Returns(new EmailSettings { TemplatesPath = "EmailTemplates" });
         _tenantSettingsMock = new Mock<ITenantSettingsService>();
-        _tenantSettingsMock.Setup(x => x.GetSettingsAsync(null, "smtp:", It.IsAny<CancellationToken>()))
+        // Setup for both tenant-level and platform-level SMTP settings queries (return empty = no DB settings configured)
+        _tenantSettingsMock.Setup(x => x.GetSettingsAsync(It.IsAny<string?>(), "smtp:", It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<string, string>().AsReadOnly());
         _tenantContextAccessorMock = new Mock<IMultiTenantContextAccessor<Tenant>>();
         _loggerMock = new Mock<ILogger<EmailService>>();
     }
 
-    private EmailService CreateService(ApplicationDbContext dbContext)
+    private EmailService CreateService(List<EmailTemplate>? templates = null)
     {
+        // Setup repository to return templates when ListAsync is called with any specification
+        var templateList = templates ?? new List<EmailTemplate>();
+        _emailTemplateRepositoryMock
+            .Setup(x => x.ListAsync(It.IsAny<ISpecification<EmailTemplate>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ISpecification<EmailTemplate> spec, CancellationToken _) =>
+            {
+                // Simulate the spec filtering - return templates as-is since spec is already applied in production
+                return (IReadOnlyList<EmailTemplate>)templateList;
+            });
+
         return new EmailService(
             _fluentEmailMock.Object,
-            dbContext,
+            _emailTemplateRepositoryMock.Object,
             _emailSettingsMock.Object,
             _tenantSettingsMock.Object,
             _tenantContextAccessorMock.Object,
             _loggerMock.Object);
     }
 
-    private static ApplicationDbContext CreateMockDbContext(List<EmailTemplate>? templates = null)
+    private void SetupTenantContext(string? tenantId)
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        // Create a mock tenant context accessor for multi-tenant support
-        var mockTenantAccessor = new Mock<IMultiTenantContextAccessor<Tenant>>();
-        var mockTenantContext = new Mock<IMultiTenantContext<Tenant>>();
-        var testTenant = new Tenant(TestTenantId, "test-tenant", "Test Tenant");
-
-        mockTenantContext.Setup(x => x.TenantInfo).Returns(testTenant);
-        mockTenantAccessor.Setup(x => x.MultiTenantContext).Returns(mockTenantContext.Object);
-
-        var dbContext = new ApplicationDbContext(options, mockTenantAccessor.Object);
-
-        if (templates != null)
+        if (tenantId != null)
         {
-            dbContext.Set<EmailTemplate>().AddRange(templates);
-            dbContext.SaveChanges();
+            var mockTenantContext = new Mock<IMultiTenantContext<Tenant>>();
+            var testTenant = new Tenant(tenantId, "test-tenant", "Test Tenant");
+            mockTenantContext.Setup(x => x.TenantInfo).Returns(testTenant);
+            _tenantContextAccessorMock.Setup(x => x.MultiTenantContext).Returns(mockTenantContext.Object);
         }
-
-        return dbContext;
+        else
+        {
+            _tenantContextAccessorMock.Setup(x => x.MultiTenantContext).Returns((IMultiTenantContext<Tenant>?)null!);
+        }
     }
 
     #region SendAsync Single Recipient Tests
@@ -69,8 +71,7 @@ public class EmailServiceTests
     public async Task SendAsync_WithValidEmail_ShouldReturnTrue()
     {
         // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        var sut = CreateService();
 
         var response = new SendResponse { MessageId = "123" };
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
@@ -90,8 +91,7 @@ public class EmailServiceTests
     public async Task SendAsync_WithHtmlBody_ShouldSendAsHtml()
     {
         // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        var sut = CreateService();
 
         var response = new SendResponse { MessageId = "123" };
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
@@ -112,8 +112,7 @@ public class EmailServiceTests
     public async Task SendAsync_WithPlainTextBody_ShouldSendAsPlainText()
     {
         // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        var sut = CreateService();
 
         var response = new SendResponse { MessageId = "123" };
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
@@ -134,8 +133,7 @@ public class EmailServiceTests
     public async Task SendAsync_WhenSendFails_ShouldReturnFalse()
     {
         // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        var sut = CreateService();
 
         var response = new SendResponse();
         response.ErrorMessages.Add("SMTP error");
@@ -156,8 +154,7 @@ public class EmailServiceTests
     public async Task SendAsync_WhenExceptionThrown_ShouldReturnFalse()
     {
         // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        var sut = CreateService();
 
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Throws(new Exception("Network error"));
 
@@ -172,8 +169,7 @@ public class EmailServiceTests
     public async Task SendAsync_WhenExceptionThrown_ShouldLogError()
     {
         // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        var sut = CreateService();
 
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Throws(new Exception("Network error"));
 
@@ -199,8 +195,7 @@ public class EmailServiceTests
     public async Task SendAsync_ToMultipleRecipients_ShouldReturnTrue()
     {
         // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        var sut = CreateService();
 
         var response = new SendResponse { MessageId = "123" };
         _fluentEmailMock.Setup(x => x.To(It.IsAny<IEnumerable<Address>>())).Returns(_fluentEmailMock.Object);
@@ -222,8 +217,7 @@ public class EmailServiceTests
     public async Task SendAsync_ToMultipleRecipients_WhenFails_ShouldReturnFalse()
     {
         // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        var sut = CreateService();
 
         var response = new SendResponse();
         response.ErrorMessages.Add("SMTP error");
@@ -246,8 +240,7 @@ public class EmailServiceTests
     public async Task SendAsync_ToMultipleRecipients_WhenExceptionThrown_ShouldReturnFalse()
     {
         // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        var sut = CreateService();
 
         _fluentEmailMock.Setup(x => x.To(It.IsAny<IEnumerable<Address>>()))
             .Throws(new Exception("Network error"));
@@ -269,17 +262,16 @@ public class EmailServiceTests
     public async Task SendTemplateAsync_WithValidTemplate_ShouldReturnTrue()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        var template = EmailTemplate.CreatePlatformDefault(
             name: "TestTemplate",
             subject: "Test Subject",
             htmlBody: "<p>Hello {{Name}}</p>",
             plainTextBody: "Hello {{Name}}",
             description: "Test template",
-            availableVariables: "[\"Name\"]",
-            tenantId: TestTenantId);
+            availableVariables: "[\"Name\"]");
 
-        using var dbContext = CreateMockDbContext([template]);
-        var sut = CreateService(dbContext);
+        SetupTenantContext(TestTenantId);
+        var sut = CreateService([template]);
 
         var response = new SendResponse { MessageId = "123" };
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);
@@ -298,9 +290,8 @@ public class EmailServiceTests
     [Fact]
     public async Task SendTemplateAsync_WhenTemplateNotFound_ShouldReturnFalse()
     {
-        // Arrange
-        using var dbContext = CreateMockDbContext();
-        var sut = CreateService(dbContext);
+        // Arrange - empty template list
+        var sut = CreateService();
 
         // Act
         var result = await sut.SendTemplateAsync("test@example.com", "Subject", "NonExistentTemplate", new { Name = "Test" });
@@ -313,18 +304,17 @@ public class EmailServiceTests
     public async Task SendTemplateAsync_WhenTemplateNotActive_ShouldReturnFalse()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        var template = EmailTemplate.CreatePlatformDefault(
             name: "TestTemplate",
             subject: "Test Subject",
             htmlBody: "<p>Hello {{Name}}</p>",
             plainTextBody: "Hello {{Name}}",
             description: "Test template",
-            availableVariables: "[\"Name\"]",
-            tenantId: TestTenantId);
+            availableVariables: "[\"Name\"]");
         template.Deactivate();
 
-        using var dbContext = CreateMockDbContext([template]);
-        var sut = CreateService(dbContext);
+        SetupTenantContext(TestTenantId);
+        var sut = CreateService([template]);
 
         // Act
         var result = await sut.SendTemplateAsync("test@example.com", "Subject", "TestTemplate", new { Name = "Test" });
@@ -337,17 +327,16 @@ public class EmailServiceTests
     public async Task SendTemplateAsync_WhenSendFails_ShouldReturnFalse()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        var template = EmailTemplate.CreatePlatformDefault(
             name: "TestTemplate",
             subject: "Test Subject",
             htmlBody: "<p>Hello {{Name}}</p>",
             plainTextBody: "Hello {{Name}}",
             description: "Test template",
-            availableVariables: "[\"Name\"]",
-            tenantId: TestTenantId);
+            availableVariables: "[\"Name\"]");
 
-        using var dbContext = CreateMockDbContext([template]);
-        var sut = CreateService(dbContext);
+        SetupTenantContext(TestTenantId);
+        var sut = CreateService([template]);
 
         var response = new SendResponse();
         response.ErrorMessages.Add("SMTP error");
@@ -368,17 +357,16 @@ public class EmailServiceTests
     public async Task SendTemplateAsync_ShouldReplacePlaceholders()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        var template = EmailTemplate.CreatePlatformDefault(
             name: "TestTemplate",
             subject: "Hello {{Name}}",
             htmlBody: "<p>Hello {{Name}}, your email is {{Email}}</p>",
             plainTextBody: "Hello {{Name}}",
             description: "Test template",
-            availableVariables: "[\"Name\", \"Email\"]",
-            tenantId: TestTenantId);
+            availableVariables: "[\"Name\", \"Email\"]");
 
-        using var dbContext = CreateMockDbContext([template]);
-        var sut = CreateService(dbContext);
+        SetupTenantContext(TestTenantId);
+        var sut = CreateService([template]);
 
         var response = new SendResponse { MessageId = "123" };
         string? capturedBody = null;
@@ -401,17 +389,15 @@ public class EmailServiceTests
     [Fact]
     public async Task SendTemplateAsync_WithPlatformTemplate_ShouldUseFallback()
     {
-        // Arrange - Platform template (using TestTenantId for InMemory compatibility)
-        // Note: In production, platform templates have TenantId = null, but InMemory
-        // provider requires TenantId due to Finbuckle's IsMultiTenant() configuration
-        var platformTemplate = EmailTemplate.Create(
+        // Arrange - Platform template (TenantId = null for platform-level fallback)
+        var platformTemplate = EmailTemplate.CreatePlatformDefault(
             name: "WelcomeEmail",
             subject: "Welcome",
-            htmlBody: "<p>Welcome {{Name}}</p>",
-            tenantId: TestTenantId);
+            htmlBody: "<p>Welcome {{Name}}</p>");
 
-        using var dbContext = CreateMockDbContext([platformTemplate]);
-        var sut = CreateService(dbContext);
+        // Setup tenant context - current tenant is different, so fallback to platform template
+        SetupTenantContext(TestTenantId);
+        var sut = CreateService([platformTemplate]);
 
         var response = new SendResponse { MessageId = "123" };
         _fluentEmailMock.Setup(x => x.To(It.IsAny<string>())).Returns(_fluentEmailMock.Object);

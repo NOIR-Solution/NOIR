@@ -1,8 +1,8 @@
 namespace NOIR.Domain.UnitTests.Entities;
 
 /// <summary>
-/// Unit tests for the Tenant entity (record).
-/// Tests factory methods, immutable updates, and state transitions.
+/// Unit tests for the Tenant entity.
+/// Tests factory methods, mutation methods, and state transitions.
 /// </summary>
 public class TenantTests
 {
@@ -150,10 +150,10 @@ public class TenantTests
 
     #endregion
 
-    #region WithUpdatedDetails Tests
+    #region CreateUpdated Tests
 
     [Fact]
-    public void WithUpdatedDetails_ShouldCreateNewTenantWithUpdatedValues()
+    public void CreateUpdated_ShouldReturnNewTenantWithUpdatedValues()
     {
         // Arrange
         var original = Tenant.Create("original", "Original Name");
@@ -161,7 +161,7 @@ public class TenantTests
         var newName = "Updated Name";
 
         // Act
-        var updated = original.WithUpdatedDetails(newIdentifier, newName, null, null, null, true);
+        var updated = original.CreateUpdated(newIdentifier, newName, null, null, null, true);
 
         // Assert
         updated.Identifier.Should().Be(newIdentifier);
@@ -170,27 +170,27 @@ public class TenantTests
     }
 
     [Fact]
-    public void WithUpdatedDetails_ShouldPreserveId()
+    public void CreateUpdated_ShouldPreserveId()
     {
         // Arrange
         var original = Tenant.Create("original", "Original");
 
         // Act
-        var updated = original.WithUpdatedDetails("updated", "Updated", null, null, null, true);
+        var updated = original.CreateUpdated("updated", "Updated", null, null, null, true);
 
         // Assert
         updated.Id.Should().Be(original.Id);
     }
 
     [Fact]
-    public void WithUpdatedDetails_ShouldSetModifiedAt()
+    public void CreateUpdated_ShouldSetModifiedAt()
     {
         // Arrange
         var original = Tenant.Create("original", "Original");
         var beforeUpdate = DateTimeOffset.UtcNow;
 
         // Act
-        var updated = original.WithUpdatedDetails("updated", "Updated", null, null, null, true);
+        var updated = original.CreateUpdated("updated", "Updated", null, null, null, true);
 
         // Assert
         updated.ModifiedAt.Should().NotBeNull();
@@ -198,52 +198,52 @@ public class TenantTests
     }
 
     [Fact]
-    public void WithUpdatedDetails_ShouldLowercaseIdentifier()
+    public void CreateUpdated_ShouldLowercaseIdentifier()
     {
         // Arrange
         var original = Tenant.Create("original", "Original");
 
         // Act
-        var updated = original.WithUpdatedDetails("  UPDATED  ", "Updated", null, null, null, true);
+        var updated = original.CreateUpdated("  UPDATED  ", "Updated", null, null, null, true);
 
         // Assert
         updated.Identifier.Should().Be("updated");
     }
 
     [Fact]
-    public void WithUpdatedDetails_ShouldTrimName()
+    public void CreateUpdated_ShouldTrimName()
     {
         // Arrange
         var original = Tenant.Create("original", "Original");
 
         // Act
-        var updated = original.WithUpdatedDetails("updated", "  Updated Name  ", null, null, null, true);
+        var updated = original.CreateUpdated("updated", "  Updated Name  ", null, null, null, true);
 
         // Assert
         updated.Name.Should().Be("Updated Name");
     }
 
     [Fact]
-    public void WithUpdatedDetails_WithNullIdentifier_ShouldThrowArgumentException()
+    public void CreateUpdated_WithNullIdentifier_ShouldThrowArgumentException()
     {
         // Arrange
         var tenant = Tenant.Create("original", "Original");
 
         // Act
-        var act = () => tenant.WithUpdatedDetails(null!, "Name", null, null, null, true);
+        var act = () => tenant.CreateUpdated(null!, "Name", null, null, null, true);
 
         // Assert
         act.Should().Throw<ArgumentException>();
     }
 
     [Fact]
-    public void WithUpdatedDetails_WithNullName_ShouldThrowArgumentException()
+    public void CreateUpdated_WithNullName_ShouldThrowArgumentException()
     {
         // Arrange
         var tenant = Tenant.Create("original", "Original");
 
         // Act
-        var act = () => tenant.WithUpdatedDetails("identifier", null!, null, null, null, true);
+        var act = () => tenant.CreateUpdated("identifier", null!, null, null, null, true);
 
         // Assert
         act.Should().Throw<ArgumentException>();
@@ -251,30 +251,30 @@ public class TenantTests
 
     #endregion
 
-    #region WithActivated Tests
+    #region CreateActivated Tests
 
     [Fact]
-    public void WithActivated_ShouldCreateActiveTenant()
+    public void CreateActivated_ShouldReturnActiveTenant()
     {
         // Arrange
-        var inactive = Tenant.Create("acme", "Acme", isActive: false);
+        var tenant = Tenant.Create("acme", "Acme", isActive: false);
 
         // Act
-        var activated = inactive.WithActivated();
+        var activated = tenant.CreateActivated();
 
         // Assert
         activated.IsActive.Should().BeTrue();
     }
 
     [Fact]
-    public void WithActivated_ShouldSetModifiedAt()
+    public void CreateActivated_ShouldSetModifiedAt()
     {
         // Arrange
         var tenant = Tenant.Create("acme", "Acme", isActive: false);
         var beforeActivation = DateTimeOffset.UtcNow;
 
         // Act
-        var activated = tenant.WithActivated();
+        var activated = tenant.CreateActivated();
 
         // Assert
         activated.ModifiedAt.Should().NotBeNull();
@@ -282,46 +282,46 @@ public class TenantTests
     }
 
     [Fact]
-    public void WithActivated_ShouldPreserveOtherProperties()
+    public void CreateActivated_ShouldPreserveOtherProperties()
     {
         // Arrange
-        var original = Tenant.Create("acme", "Acme Corp", isActive: false);
+        var tenant = Tenant.Create("acme", "Acme Corp", isActive: false);
 
         // Act
-        var activated = original.WithActivated();
+        var activated = tenant.CreateActivated();
 
         // Assert
-        activated.Id.Should().Be(original.Id);
-        activated.Identifier.Should().Be(original.Identifier);
-        activated.Name.Should().Be(original.Name);
+        activated.Id.Should().Be(tenant.Id);
+        activated.Identifier.Should().Be(tenant.Identifier);
+        activated.Name.Should().Be(tenant.Name);
     }
 
     #endregion
 
-    #region WithDeactivated Tests
+    #region CreateDeactivated Tests
 
     [Fact]
-    public void WithDeactivated_ShouldCreateInactiveTenant()
+    public void CreateDeactivated_ShouldReturnInactiveTenant()
     {
         // Arrange
-        var active = Tenant.Create("acme", "Acme");
+        var tenant = Tenant.Create("acme", "Acme");
 
         // Act
-        var deactivated = active.WithDeactivated();
+        var deactivated = tenant.CreateDeactivated();
 
         // Assert
         deactivated.IsActive.Should().BeFalse();
     }
 
     [Fact]
-    public void WithDeactivated_ShouldSetModifiedAt()
+    public void CreateDeactivated_ShouldSetModifiedAt()
     {
         // Arrange
         var tenant = Tenant.Create("acme", "Acme");
         var beforeDeactivation = DateTimeOffset.UtcNow;
 
         // Act
-        var deactivated = tenant.WithDeactivated();
+        var deactivated = tenant.CreateDeactivated();
 
         // Assert
         deactivated.ModifiedAt.Should().NotBeNull();
@@ -329,18 +329,82 @@ public class TenantTests
     }
 
     [Fact]
-    public void WithDeactivated_ShouldPreserveOtherProperties()
+    public void CreateDeactivated_ShouldPreserveOtherProperties()
     {
         // Arrange
-        var original = Tenant.Create("acme", "Acme Corp");
+        var tenant = Tenant.Create("acme", "Acme Corp");
 
         // Act
-        var deactivated = original.WithDeactivated();
+        var deactivated = tenant.CreateDeactivated();
 
         // Assert
-        deactivated.Id.Should().Be(original.Id);
-        deactivated.Identifier.Should().Be(original.Identifier);
-        deactivated.Name.Should().Be(original.Name);
+        deactivated.Id.Should().Be(tenant.Id);
+        deactivated.Identifier.Should().Be(tenant.Identifier);
+        deactivated.Name.Should().Be(tenant.Name);
+    }
+
+    #endregion
+
+    #region CreateDeleted Tests
+
+    [Fact]
+    public void CreateDeleted_ShouldReturnDeletedTenant()
+    {
+        // Arrange
+        var tenant = Tenant.Create("acme", "Acme");
+
+        // Act
+        var deleted = tenant.CreateDeleted();
+
+        // Assert
+        deleted.IsDeleted.Should().BeTrue();
+        deleted.DeletedAt.Should().NotBeNull();
+        deleted.DeletedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+    }
+
+    [Fact]
+    public void CreateDeleted_WithDeletedBy_ShouldSetDeletedBy()
+    {
+        // Arrange
+        var tenant = Tenant.Create("acme", "Acme");
+        var deletedBy = "user-123";
+
+        // Act
+        var deleted = tenant.CreateDeleted(deletedBy);
+
+        // Assert
+        deleted.DeletedBy.Should().Be(deletedBy);
+    }
+
+    [Fact]
+    public void CreateDeleted_ShouldPreserveOtherProperties()
+    {
+        // Arrange
+        var tenant = Tenant.Create("acme", "Acme Corp");
+
+        // Act
+        var deleted = tenant.CreateDeleted("admin");
+
+        // Assert
+        deleted.Id.Should().Be(tenant.Id);
+        deleted.Identifier.Should().Be(tenant.Identifier);
+        deleted.Name.Should().Be(tenant.Name);
+        deleted.IsActive.Should().Be(tenant.IsActive);
+    }
+
+    [Fact]
+    public void CreateDeleted_ShouldSetModifiedAt()
+    {
+        // Arrange
+        var tenant = Tenant.Create("acme", "Acme");
+        var beforeDeletion = DateTimeOffset.UtcNow;
+
+        // Act
+        var deleted = tenant.CreateDeleted();
+
+        // Assert
+        deleted.ModifiedAt.Should().NotBeNull();
+        deleted.ModifiedAt.Should().BeOnOrAfter(beforeDeletion);
     }
 
     #endregion
@@ -359,23 +423,6 @@ public class TenantTests
         tenant.DeletedBy.Should().BeNull();
         tenant.CreatedBy.Should().BeNull();
         tenant.ModifiedBy.Should().BeNull();
-    }
-
-    #endregion
-
-
-    #region Record Equality Tests
-
-    [Fact]
-    public void TwoTenants_WithSameId_ShouldBeEqual()
-    {
-        // Arrange
-        var tenant1 = Tenant.Create("acme", "Acme");
-        var tenant2 = tenant1 with { Name = "Acme Updated" };
-
-        // Assert - Records with same Id should be equal (based on record equality)
-        // Note: This depends on how TenantInfo defines equality
-        tenant1.Id.Should().Be(tenant2.Id);
     }
 
     #endregion

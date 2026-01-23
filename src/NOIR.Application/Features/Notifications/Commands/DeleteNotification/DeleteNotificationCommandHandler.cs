@@ -1,6 +1,5 @@
 namespace NOIR.Application.Features.Notifications.Commands.DeleteNotification;
 
-using NOIR.Domain.Interfaces;
 
 /// <summary>
 /// Wolverine handler for deleting a notification (soft delete).

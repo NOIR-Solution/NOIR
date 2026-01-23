@@ -266,6 +266,25 @@ public static class DependencyInjection
         services.AddBeforeStateResolver<PostDto, GetPostQuery>(
             targetId => new GetPostQuery(Id: Guid.Parse(targetId.ToString()!)));
 
+        services.AddBeforeStateResolver<PostCategoryDto, GetCategoryByIdQuery>(
+            targetId => new GetCategoryByIdQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<PostTagDto, GetTagByIdQuery>(
+            targetId => new GetTagByIdQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<EmailTemplateDto, GetEmailTemplateQuery>(
+            targetId => new GetEmailTemplateQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<LegalPageDto, GetLegalPageQuery>(
+            targetId => new GetLegalPageQuery(Guid.Parse(targetId.ToString()!)));
+
+        // Settings DTOs use parameterless query resolvers (tenant-scoped singletons, no ID needed)
+        services.AddSettingsBeforeStateResolver<SmtpSettingsDto, GetSmtpSettingsQuery>();
+        services.AddSettingsBeforeStateResolver<BrandingSettingsDto, GetBrandingSettingsQuery>();
+        services.AddSettingsBeforeStateResolver<ContactSettingsDto, GetContactSettingsQuery>();
+        services.AddSettingsBeforeStateResolver<RegionalSettingsDto, GetRegionalSettingsQuery>();
+        services.AddSettingsBeforeStateResolver<TenantSmtpSettingsDto, GetTenantSmtpSettingsQuery>();
+
         // Configure FluentStorage (Local, Azure, or S3)
         var storageSettings = configuration.GetSection(StorageSettings.SectionName).Get<StorageSettings>() ?? new StorageSettings();
         services.Configure<StorageSettings>(configuration.GetSection(StorageSettings.SectionName));

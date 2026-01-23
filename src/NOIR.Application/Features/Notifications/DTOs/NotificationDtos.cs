@@ -1,7 +1,5 @@
 namespace NOIR.Application.Features.Notifications.DTOs;
 
-using NOIR.Domain.Enums;
-
 /// <summary>
 /// Data transfer object for a notification.
 /// </summary>

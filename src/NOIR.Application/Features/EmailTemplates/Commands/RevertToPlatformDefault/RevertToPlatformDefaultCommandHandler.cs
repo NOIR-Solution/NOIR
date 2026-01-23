@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 
 namespace NOIR.Application.Features.EmailTemplates.Commands.RevertToPlatformDefault;
 

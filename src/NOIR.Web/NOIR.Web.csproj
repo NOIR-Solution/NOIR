@@ -34,21 +34,21 @@
 
     <ItemGroup>
         <!-- API Documentation -->
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
-        <PackageReference Include="Scalar.AspNetCore" Version="2.12.5" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+        <PackageReference Include="Scalar.AspNetCore" Version="2.12.14" />
 
         <!-- Authentication -->
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
 
         <!-- Health Checks -->
         <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
 
         <!-- CQRS/Mediator -->
-        <PackageReference Include="WolverineFx.Http" Version="5.9.2" />
+        <PackageReference Include="WolverineFx.Http" Version="5.11.0" />
 
         <!-- EF Core Design for Migrations -->
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

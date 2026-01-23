@@ -40,8 +40,8 @@ public class CurrentUserLoaderMiddleware
                         var userData = new CurrentUserData(
                             user.Id,
                             user.Email,
-                            user.FirstName,
-                            user.LastName,
+                            user.FirstName ?? string.Empty,
+                            user.LastName ?? string.Empty,
                             user.DisplayName,
                             user.FullName,
                             user.AvatarUrl,

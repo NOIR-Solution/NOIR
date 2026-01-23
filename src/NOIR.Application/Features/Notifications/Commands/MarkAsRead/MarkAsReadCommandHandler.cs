@@ -1,6 +1,5 @@
 namespace NOIR.Application.Features.Notifications.Commands.MarkAsRead;
 
-using NOIR.Domain.Interfaces;
 
 /// <summary>
 /// Wolverine handler for marking a notification as read.

@@ -8,7 +8,7 @@ namespace NOIR.Infrastructure.Services;
 public class EmailService : IEmailService, IScopedService
 {
     private readonly IFluentEmail _fluentEmail;
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IRepository<EmailTemplate, Guid> _emailTemplateRepository;
     private readonly IOptionsMonitor<EmailSettings> _emailSettings;
     private readonly ITenantSettingsService _settingsService;
     private readonly IMultiTenantContextAccessor<Tenant> _tenantContextAccessor;
@@ -16,14 +16,14 @@ public class EmailService : IEmailService, IScopedService
 
     public EmailService(
         IFluentEmail fluentEmail,
-        ApplicationDbContext dbContext,
+        IRepository<EmailTemplate, Guid> emailTemplateRepository,
         IOptionsMonitor<EmailSettings> emailSettings,
         ITenantSettingsService settingsService,
         IMultiTenantContextAccessor<Tenant> tenantContextAccessor,
         ILogger<EmailService> logger)
     {
         _fluentEmail = fluentEmail;
-        _dbContext = dbContext;
+        _emailTemplateRepository = emailTemplateRepository;
         _emailSettings = emailSettings;
         _settingsService = settingsService;
         _tenantContextAccessor = tenantContextAccessor;
@@ -286,13 +286,11 @@ public class EmailService : IEmailService, IScopedService
     /// </summary>
     private async Task<EmailTemplate?> GetTemplateWithFallbackAsync(string templateName, CancellationToken cancellationToken)
     {
-        var currentTenantId = _dbContext.TenantInfo?.Id;
+        var currentTenantId = _tenantContextAccessor.MultiTenantContext?.TenantInfo?.Id;
 
-        // Query all templates with this name, ignoring tenant filter and soft delete filter
-        var templates = await _dbContext.Set<EmailTemplate>()
-            .IgnoreQueryFilters()
-            .Where(t => t.Name == templateName && t.IsActive && !t.IsDeleted)
-            .ToListAsync(cancellationToken);
+        // Query all templates with this name using specification (ignores tenant and soft delete filters)
+        var spec = new EmailTemplateByNameWithFallbackSpec(templateName);
+        var templates = await _emailTemplateRepository.ListAsync(spec, cancellationToken);
 
         if (templates.Count == 0)
             return null;

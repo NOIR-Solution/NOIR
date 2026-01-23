@@ -1,5 +1,3 @@
-using NOIR.Application.Features.Auth.Queries.GetUserById;
-
 namespace NOIR.Application.Features.Users.Commands.UpdateUser;
 
 /// <summary>

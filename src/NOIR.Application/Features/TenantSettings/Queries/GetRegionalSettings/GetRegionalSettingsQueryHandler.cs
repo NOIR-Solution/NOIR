@@ -1,4 +1,3 @@
-using NOIR.Application.Features.TenantSettings.DTOs;
 
 namespace NOIR.Application.Features.TenantSettings.Queries.GetRegionalSettings;
 

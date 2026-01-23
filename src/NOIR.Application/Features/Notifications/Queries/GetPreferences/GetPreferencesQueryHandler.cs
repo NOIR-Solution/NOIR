@@ -1,9 +1,5 @@
 namespace NOIR.Application.Features.Notifications.Queries.GetPreferences;
 
-using NOIR.Application.Features.Notifications.DTOs;
-using NOIR.Domain.Enums;
-using NOIR.Domain.Interfaces;
-
 /// <summary>
 /// Wolverine handler for getting user notification preferences.
 /// Returns preferences for all categories, creating defaults if not found.

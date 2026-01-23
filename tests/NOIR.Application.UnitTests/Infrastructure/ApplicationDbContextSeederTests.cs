@@ -32,7 +32,7 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, []);
 
         // Act
-        await ApplicationDbContextSeeder.SeedSystemRolesAsync(roleManager, _loggerMock.Object);
+        await RoleSeeder.SeedSystemRolesAsync(roleManager, _loggerMock.Object);
 
         // Assert - Should create each system role
         roleStore.Verify(
@@ -57,7 +57,7 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, []);
 
         // Act
-        await ApplicationDbContextSeeder.SeedTenantRolesAsync(roleManager, _loggerMock.Object);
+        await RoleSeeder.SeedTenantRolesInternalAsync(roleManager, _loggerMock.Object);
 
         // Assert - Should create each tenant role
         roleStore.Verify(
@@ -79,7 +79,7 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, []);
 
         // Act
-        await ApplicationDbContextSeeder.SeedTenantRolesAsync(roleManager, _loggerMock.Object);
+        await RoleSeeder.SeedTenantRolesInternalAsync(roleManager, _loggerMock.Object);
 
         // Assert - Should not create any roles
         roleStore.Verify(
@@ -103,7 +103,7 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, []);
 
         // Act
-        await ApplicationDbContextSeeder.SeedRolePermissionsAsync(
+        await RoleSeeder.SeedRolePermissionsAsync(
             roleManager, role, permissions, _loggerMock.Object);
 
         // Assert - Should add each permission
@@ -129,7 +129,7 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, existingClaims);
 
         // Act
-        await ApplicationDbContextSeeder.SeedRolePermissionsAsync(
+        await RoleSeeder.SeedRolePermissionsAsync(
             roleManager, role, permissions, _loggerMock.Object);
 
         // Assert - Should not add any claims
@@ -156,7 +156,7 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, existingClaims);
 
         // Act
-        await ApplicationDbContextSeeder.SeedRolePermissionsAsync(
+        await RoleSeeder.SeedRolePermissionsAsync(
             roleManager, role, permissions, _loggerMock.Object);
 
         // Assert - Should add only 2 new permissions
@@ -201,7 +201,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync("admin@noir.local");
 
         // Act
-        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
+        await UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should create admin user
         userStore.Verify(
@@ -241,7 +241,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync(existingUser.Id);
 
         // Act
-        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
+        await UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should not create or modify user
         userStore.Verify(
@@ -286,7 +286,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync(IdentityResult.Success);
 
         // Act
-        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
+        await UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should update user (password reset)
         userStore.Verify(
@@ -318,7 +318,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Test error" }));
 
         // Act
-        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
+        await UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should log error
         _loggerMock.Verify(
@@ -362,7 +362,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync("admin@noir.local");
 
         // Act
-        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
+        await UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should add to Admin role (normalized to uppercase)
         var roleStore = userStore.As<IUserRoleStore<ApplicationUser>>();
@@ -413,7 +413,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Reset failed" }));
 
         // Act - Should not throw even if reset fails
-        var act = () => ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
+        var act = () => UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert
         await act.Should().NotThrowAsync();
@@ -443,7 +443,7 @@ public class ApplicationDbContextSeederTests
         SetupRoleClaimsStore(roleStore, []);
 
         // Act - Should not throw, should continue to next role
-        await ApplicationDbContextSeeder.SeedTenantRolesAsync(roleManager, _loggerMock.Object);
+        await RoleSeeder.SeedTenantRolesInternalAsync(roleManager, _loggerMock.Object);
 
         // Assert - Should attempt to create all tenant roles
         roleStore.Verify(
@@ -476,7 +476,7 @@ public class ApplicationDbContextSeederTests
             });
 
         // Act & Assert - Should throw on first failure (unlike roles, permissions don't have built-in error handling)
-        var act = () => ApplicationDbContextSeeder.SeedRolePermissionsAsync(
+        var act = () => RoleSeeder.SeedRolePermissionsAsync(
             roleManager, role, permissions, _loggerMock.Object);
 
         await act.Should().ThrowAsync<InvalidOperationException>();
@@ -518,7 +518,7 @@ public class ApplicationDbContextSeederTests
             .ReturnsAsync("admin@noir.local");
 
         // Act - Adding to role throws, but creation succeeded
-        var act = () => ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
+        var act = () => UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should throw since role assignment is part of the flow
         await act.Should().ThrowAsync<InvalidOperationException>();
@@ -551,7 +551,7 @@ public class ApplicationDbContextSeederTests
                 new IdentityError { Code = "E3", Description = "Username invalid" }));
 
         // Act
-        await ApplicationDbContextSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
+        await UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should log error containing all error descriptions
         _loggerMock.Verify(

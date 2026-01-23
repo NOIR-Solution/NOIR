@@ -1,0 +1,6 @@
+export { BrandingSettingsTab } from './BrandingSettingsTab'
+export { ContactSettingsTab } from './ContactSettingsTab'
+export { RegionalSettingsTab } from './RegionalSettingsTab'
+export { SmtpSettingsTab } from './SmtpSettingsTab'
+export { EmailTemplatesTab } from './EmailTemplatesTab'
+export { LegalPagesTab } from './LegalPagesTab'

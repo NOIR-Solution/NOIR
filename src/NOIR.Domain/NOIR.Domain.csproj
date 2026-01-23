@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <!-- Finbuckle abstractions for ITenantInfo interface (required by Tenant entity) -->
-        <PackageReference Include="Finbuckle.MultiTenant.Abstractions" Version="10.0.1" />
+        <PackageReference Include="Finbuckle.MultiTenant.Abstractions" Version="10.0.2" />
     </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-21
-**Version:** 2.2
+**Last Updated:** 2026-01-23
+**Version:** 2.3
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -27,6 +27,49 @@ A comprehensive cross-referenced guide to the NOIR codebase, patterns, and archi
 ## Recent Fixes & Improvements
 
 **Last Session:** 2026-01-23
+
+### Finbuckle.MultiTenant 10.0.2 Breaking Change Migration
+
+**Issue:** Upgrading Finbuckle.MultiTenant from 9.x to 10.0.2 introduced a breaking change where `TenantInfo` changed from a `record` to a `class` with `required init` properties.
+
+**Breaking Changes:**
+- `TenantInfo.Id`, `Identifier` are now `required init`-only → cannot be mutated after construction
+- `TenantInfo` is a `class`, not a `record` → `with` expressions no longer work
+- `IMultiTenantDbContext.TenantInfo` returns `ITenantInfo?` instead of `TenantInfo?`
+
+**Solution:** Converted `Tenant` entity from `record` to `class` with immutable factory methods:
+
+```csharp
+public class Tenant : TenantInfo, IAuditableEntity
+{
+    [SetsRequiredMembers]
+    private Tenant() { Id = string.Empty; Identifier = string.Empty; }
+
+    [SetsRequiredMembers]
+    public Tenant(string id, string identifier, string? name = null) { ... }
+
+    // Immutable factory methods (return new instances)
+    public static Tenant Create(string identifier, string name, ...) { ... }
+    public Tenant CreateUpdated(string identifier, string name, ...) { ... }
+    public Tenant CreateActivated() { ... }
+    public Tenant CreateDeactivated() { ... }
+    public Tenant CreateDeleted(string? deletedBy = null) { ... }
+}
+```
+
+**Key Patterns:**
+- `[SetsRequiredMembers]` attribute satisfies C# `required` member constraints
+- Factory methods create new instances instead of mutating (init-only properties)
+- EF Core tracked entities use `Entry.CurrentValues.SetValues()` for updates
+- Finbuckle's `IMultiTenantStore.UpdateAsync()` handles detached entity replacement
+
+**Files Modified:**
+- `src/NOIR.Domain/Entities/Tenant.cs` - Core entity rewrite
+- `src/NOIR.Application/Features/Tenants/Commands/*/` - Handler updates
+- `src/NOIR.Infrastructure/Persistence/ApplicationDbContext.cs` - `ITenantInfo?` return type
+- `src/NOIR.Infrastructure/Persistence/Seeders/TenantSeeder.cs` - Direct mutation for tracked entities
+
+---
 
 ### Activity Timeline Tenant Filtering Fix
 
@@ -1068,8 +1111,25 @@ Three-level audit system:
 
 ### Multi-Tenancy
 
-**Package:** Finbuckle.MultiTenant
+**Package:** Finbuckle.MultiTenant 10.0.2
 **Interceptor:** `TenantIdSetterInterceptor`
+
+#### Tenant Entity Pattern
+
+The `Tenant` entity inherits from Finbuckle's `TenantInfo` class and uses **immutable factory methods** due to `TenantInfo` having `required init`-only properties (Finbuckle 10.x breaking change):
+
+```csharp
+// Create new tenant
+var tenant = Tenant.Create("acme", "Acme Corp");
+
+// Update (returns new instance)
+var updated = tenant.CreateUpdated("acme", "Updated Name", ...);
+
+// Soft delete (returns new instance)
+var deleted = tenant.CreateDeleted("admin-user-id");
+```
+
+**Important:** Cannot use `with` expressions on `Tenant` (not a record). Use factory methods instead.
 
 NOIR implements a multi-tenant architecture where:
 - Users can belong to **multiple tenants** via `UserTenantMembership`

@@ -215,14 +215,22 @@ public class PermissionTemplateQueryServiceTests
         int sortOrder = 0,
         bool isDeleted = false)
     {
-        var template = PermissionTemplate.Create(
-            name: name,
-            description: $"Description for {name}",
-            tenantId: tenantId,
-            isSystem: isSystem,
-            iconName: null,
-            color: null,
-            sortOrder: sortOrder);
+        var template = tenantId == null
+            ? PermissionTemplate.CreatePlatformDefault(
+                name: name,
+                description: $"Description for {name}",
+                isSystem: isSystem,
+                iconName: null,
+                color: null,
+                sortOrder: sortOrder)
+            : PermissionTemplate.CreateTenantOverride(
+                tenantId: tenantId,
+                name: name,
+                description: $"Description for {name}",
+                isSystem: isSystem,
+                iconName: null,
+                color: null,
+                sortOrder: sortOrder);
 
         if (isDeleted)
         {
@@ -245,14 +253,22 @@ public class PermissionTemplateQueryServiceTests
         int sortOrder,
         string[] permissionNames)
     {
-        var template = PermissionTemplate.Create(
-            name: name,
-            description: description,
-            tenantId: tenantId,
-            isSystem: isSystem,
-            iconName: iconName,
-            color: color,
-            sortOrder: sortOrder);
+        var template = tenantId == null
+            ? PermissionTemplate.CreatePlatformDefault(
+                name: name,
+                description: description,
+                isSystem: isSystem,
+                iconName: iconName,
+                color: color,
+                sortOrder: sortOrder)
+            : PermissionTemplate.CreateTenantOverride(
+                tenantId: tenantId,
+                name: name,
+                description: description,
+                isSystem: isSystem,
+                iconName: iconName,
+                color: color,
+                sortOrder: sortOrder);
 
         // Use reflection to set ID
         var idProperty = typeof(PermissionTemplate).GetProperty("Id");

@@ -1,7 +1,5 @@
 namespace NOIR.Application.Features.Notifications.Queries.GetNotifications;
 
-using NOIR.Application.Features.Notifications.DTOs;
-using NOIR.Domain.Interfaces;
 
 /// <summary>
 /// Wolverine handler for getting paginated notifications.

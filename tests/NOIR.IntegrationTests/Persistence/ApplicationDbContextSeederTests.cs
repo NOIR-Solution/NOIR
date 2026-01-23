@@ -346,15 +346,10 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
 
             defaultTenant.Should().NotBeNull();
 
-            // Soft delete using record with expression (Tenant is a record)
-            var deletedTenant = defaultTenant! with
-            {
-                IsDeleted = true,
-                DeletedAt = DateTimeOffset.UtcNow,
-                DeletedBy = "test-soft-delete"
-            };
-
-            tenantContext.TenantInfo.Entry(defaultTenant).CurrentValues.SetValues(deletedTenant);
+            // Soft delete by mutating tracked entity properties
+            defaultTenant!.IsDeleted = true;
+            defaultTenant.DeletedAt = DateTimeOffset.UtcNow;
+            defaultTenant.DeletedBy = "test-soft-delete";
             await tenantContext.SaveChangesAsync();
 
             // Verify it's soft-deleted
@@ -370,7 +365,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
                 Identifier = "default",
                 Name = "Default Tenant"
             };
-            await ApplicationDbContextSeeder.SeedDefaultTenantAsync(tenantContext, settings, logger);
+            await TenantSeeder.SeedDefaultTenantAsync(tenantContext, settings, logger);
 
             // Assert - Tenant should be restored
             var restoredTenant = await tenantContext.TenantInfo

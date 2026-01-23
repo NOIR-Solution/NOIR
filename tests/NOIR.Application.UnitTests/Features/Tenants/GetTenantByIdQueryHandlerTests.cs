@@ -40,13 +40,8 @@ public class GetTenantByIdQueryHandlerTests
 
         if (isDeleted)
         {
-            // Use reflection to set IsDeleted for testing
-            var propertyInfo = typeof(Tenant).GetProperty(nameof(Tenant.IsDeleted));
-            if (propertyInfo != null)
-            {
-                // Since Tenant is a record with init-only property, we need to create a new instance
-                return tenant with { IsDeleted = true, DeletedAt = DateTimeOffset.UtcNow };
-            }
+            tenant.IsDeleted = true;
+            tenant.DeletedAt = DateTimeOffset.UtcNow;
         }
 
         return tenant;
@@ -143,7 +138,7 @@ public class GetTenantByIdQueryHandlerTests
         var baseTenant = CreateTestTenant(
             identifier: "modified-tenant",
             name: "Original Name");
-        var modifiedTenant = baseTenant.WithUpdatedDetails(
+        var modifiedTenant = baseTenant.CreateUpdated(
             "modified-tenant",
             "Updated Name",
             null,

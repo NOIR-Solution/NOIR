@@ -75,6 +75,7 @@ global using NOIR.Domain.Interfaces;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Persistence;
 global using NOIR.Infrastructure.Persistence.Interceptors;
+global using NOIR.Infrastructure.Persistence.Seeders;
 
 // NOIR Web
 global using NOIR.Web.Extensions;
