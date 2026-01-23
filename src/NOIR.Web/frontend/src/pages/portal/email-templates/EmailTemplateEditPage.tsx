@@ -47,6 +47,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,6 +60,7 @@ import {
   updateEmailTemplate,
   previewEmailTemplate,
   revertToPlatformDefault,
+  toggleEmailTemplateActive,
   getDefaultSampleData,
   type EmailTemplateDto,
   type EmailPreviewResponse,
@@ -96,6 +99,7 @@ export default function EmailTemplateEditPage() {
   const [template, setTemplate] = useState<EmailTemplateDto | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [toggling, setToggling] = useState(false)
 
   // Form state
   const [subject, setSubject] = useState('')
@@ -149,7 +153,7 @@ export default function EmailTemplateEditPage() {
         } else {
           toast.error(t('messages.operationFailed'))
         }
-        navigate('/portal/email-templates')
+        navigate('/portal/admin/tenant-settings?tab=emailTemplates')
       } finally {
         setLoading(false)
       }
@@ -275,6 +279,26 @@ export default function EmailTemplateEditPage() {
     }
   }
 
+  // Toggle active status
+  const handleToggleActive = async (isActive: boolean) => {
+    if (!id || !template) return
+
+    setToggling(true)
+    try {
+      const updated = await toggleEmailTemplateActive(id, isActive)
+      setTemplate(updated)
+      toast.success(isActive ? 'Template activated' : 'Template deactivated')
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      } else {
+        toast.error('Failed to toggle template status')
+      }
+    } finally {
+      setToggling(false)
+    }
+  }
+
   // Insert variable into editor
   const insertVariable = (variable: string) => {
     const variableText = `{{${variable}}}`
@@ -338,7 +362,7 @@ export default function EmailTemplateEditPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/portal/email-templates')}>
+          <Button variant="ghost" size="icon" onClick={() => navigate('/portal/admin/tenant-settings?tab=emailTemplates')}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
@@ -655,17 +679,22 @@ export default function EmailTemplateEditPage() {
                 <span className="text-muted-foreground">{t('emailTemplates.version')}:</span>
                 <span className="font-medium">{template.version}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Status:</span>
-                {template.isActive ? (
-                  <Badge variant="outline" className="text-green-600 border-green-600/30">
-                    Active
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    Inactive
-                  </Badge>
-                )}
+              <div className="flex items-center justify-between">
+                <Label htmlFor="template-active" className="text-muted-foreground cursor-pointer">
+                  Status:
+                </Label>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-medium ${template.isActive ? 'text-green-600' : 'text-muted-foreground'}`}>
+                    {template.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                  <Switch
+                    id="template-active"
+                    checked={template.isActive}
+                    onCheckedChange={handleToggleActive}
+                    disabled={toggling}
+                    className="cursor-pointer"
+                  />
+                </div>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Source:</span>

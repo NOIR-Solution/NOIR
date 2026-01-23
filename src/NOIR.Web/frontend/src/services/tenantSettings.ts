@@ -59,6 +59,84 @@ export interface UpdateRegionalSettingsRequest {
 }
 
 // ============================================================================
+// Types - SMTP
+// ============================================================================
+
+export interface TenantSmtpSettingsDto {
+  host: string
+  port: number
+  username: string | null
+  hasPassword: boolean
+  fromEmail: string
+  fromName: string
+  useSsl: boolean
+  isConfigured: boolean
+  /** True if using platform defaults (not customized at tenant level) */
+  isInherited: boolean
+}
+
+export interface UpdateTenantSmtpSettingsRequest {
+  host: string
+  port: number
+  username: string | null
+  password: string | null
+  fromEmail: string
+  fromName: string
+  useSsl: boolean
+}
+
+export interface TestTenantSmtpRequest {
+  recipientEmail: string
+}
+
+// ============================================================================
+// SMTP API
+// ============================================================================
+
+/**
+ * Get SMTP settings for the current tenant.
+ * Returns platform defaults if tenant hasn't customized.
+ */
+export async function getTenantSmtpSettings(): Promise<TenantSmtpSettingsDto> {
+  return apiClient<TenantSmtpSettingsDto>('/tenant-settings/smtp')
+}
+
+/**
+ * Update SMTP settings for the current tenant (Copy-on-Write).
+ * Creates tenant-specific settings on first save.
+ */
+export async function updateTenantSmtpSettings(
+  request: UpdateTenantSmtpSettingsRequest
+): Promise<TenantSmtpSettingsDto> {
+  return apiClient<TenantSmtpSettingsDto>('/tenant-settings/smtp', {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Revert tenant SMTP settings to platform defaults.
+ * Deletes tenant-specific settings.
+ */
+export async function revertTenantSmtpSettings(): Promise<TenantSmtpSettingsDto> {
+  return apiClient<TenantSmtpSettingsDto>('/tenant-settings/smtp/revert', {
+    method: 'POST',
+  })
+}
+
+/**
+ * Test tenant SMTP connection by sending a test email.
+ */
+export async function testTenantSmtpConnection(
+  request: TestTenantSmtpRequest
+): Promise<boolean> {
+  return apiClient<boolean>('/tenant-settings/smtp/test', {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+// ============================================================================
 // Branding API
 // ============================================================================
 

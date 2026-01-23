@@ -196,6 +196,32 @@ main() {
     print_ok "Ports $BACKEND_PORT/$FRONTEND_PORT ready"
     printf "\n"
 
+    # Start MailHog (Docker)
+    print_step "MailHog (SMTP)"
+    if command -v docker &>/dev/null; then
+        # Check if Docker daemon is running
+        if docker info >/dev/null 2>&1; then
+            # Check if MailHog is already running
+            if docker ps --format '{{.Names}}' 2>/dev/null | grep -q "noir-mailhog"; then
+                print_ok "MailHog already running"
+            else
+                # Start MailHog using docker-compose
+                cd "$SCRIPT_DIR"
+                if docker-compose up -d mailhog >/dev/null 2>&1; then
+                    print_ok "MailHog started (SMTP: 1025, Web: 8025)"
+                else
+                    print_warn "Failed to start MailHog, emails may not work"
+                fi
+            fi
+        else
+            print_warn "Docker not running, emails won't be captured"
+            print_info "Start Docker Desktop manually if needed"
+        fi
+    else
+        print_warn "Docker not installed, emails won't be captured"
+    fi
+    printf "\n"
+
     # Frontend dependencies (skip if node_modules exists)
     print_step "Frontend"
     cd "$FRONTEND_DIR"
@@ -260,6 +286,7 @@ main() {
     printf "   Frontend:  %shttp://localhost:%s%s\n" "$CYAN" "$FRONTEND_PORT" "$NC"
     printf "   Backend:   %shttp://localhost:%s%s\n" "$CYAN" "$BACKEND_PORT" "$NC"
     printf "   API Docs:  %shttp://localhost:%s/api/docs%s\n" "$CYAN" "$BACKEND_PORT" "$NC"
+    printf "   MailHog:   %shttp://localhost:8025%s\n" "$CYAN" "$NC"
     printf "\n"
     printf "   Platform Admin: %splatform@noir.local%s / %s123qwe%s\n" "$WHITE" "$NC" "$WHITE" "$NC"
     printf "   Tenant Admin:   %sadmin@noir.local%s / %s123qwe%s\n" "$WHITE" "$NC" "$WHITE" "$NC"

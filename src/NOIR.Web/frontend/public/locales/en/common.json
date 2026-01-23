@@ -268,7 +268,9 @@
     "version": "Version",
     "editPage": "Edit Page",
     "savePage": "Save Page",
-    "htmlContent": "HTML Content"
+    "htmlContent": "HTML Content",
+    "customizingPlatform": "Customizing Platform Page",
+    "customizingPlatformDescription": "This is a default platform page. When you save changes, a customized copy will be created for your tenant. The original platform page will remain unchanged."
   },
   "profile": {
     "email": "Email",
@@ -278,6 +280,7 @@
   },
   "buttons": {
     "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
@@ -460,6 +463,11 @@
   "platformSettings": {
     "title": "Platform Settings",
     "description": "Configure platform-level settings for SMTP, branding, and more.",
+    "tabs": {
+      "smtp": "SMTP",
+      "emailTemplates": "Email Templates",
+      "legalPages": "Legal Pages"
+    },
     "smtp": {
       "title": "SMTP Configuration",
       "description": "Configure email delivery settings for the platform.",
@@ -492,6 +500,14 @@
   "tenantSettings": {
     "title": "Tenant Settings",
     "description": "Configure tenant-level branding, contact information, and regional preferences.",
+    "tabs": {
+      "branding": "Branding",
+      "contact": "Contact",
+      "regional": "Regional",
+      "smtp": "SMTP",
+      "emailTemplates": "Email Templates",
+      "legalPages": "Legal Pages"
+    },
     "branding": {
       "title": "Branding",
       "description": "Customize the look and feel of your tenant.",
@@ -506,7 +522,8 @@
       "secondaryColor": "Secondary Color",
       "secondaryColorHint": "Accent color used for highlights and secondary elements",
       "darkModeDefault": "Dark Mode Default",
-      "darkModeDefaultHint": "Enable dark mode as the default theme for this tenant"
+      "darkModeDefaultHint": "Enable dark mode as the default theme for this tenant",
+      "darkModeDescription": "Enable dark mode as the default theme for this tenant"
     },
     "contact": {
       "title": "Contact",
@@ -528,6 +545,7 @@
       "dateFormat": "Date Format",
       "dateFormatPlaceholder": "Select date format"
     },
+    "saved": "Settings saved successfully",
     "saveSuccess": "Settings saved successfully",
     "saveError": "Failed to save settings",
     "loadError": "Failed to load settings"

@@ -144,6 +144,19 @@ export async function revertToPlatformDefault(id: string): Promise<EmailTemplate
 }
 
 /**
+ * Toggle email template active/inactive status.
+ */
+export async function toggleEmailTemplateActive(
+  id: string,
+  isActive: boolean
+): Promise<EmailTemplateDto> {
+  return apiClient<EmailTemplateDto>(`/email-templates/${id}/toggle-active`, {
+    method: 'PATCH',
+    body: JSON.stringify({ isActive }),
+  })
+}
+
+/**
  * Get default sample data for a template's variables.
  */
 export function getDefaultSampleData(variables: string[]): Record<string, string> {

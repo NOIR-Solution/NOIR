@@ -66,3 +66,8 @@ public sealed record EmailPreviewResponse(
     string Subject,
     string HtmlBody,
     string? PlainTextBody);
+
+/// <summary>
+/// Request to toggle email template active status.
+/// </summary>
+public sealed record ToggleActiveRequest(bool IsActive);

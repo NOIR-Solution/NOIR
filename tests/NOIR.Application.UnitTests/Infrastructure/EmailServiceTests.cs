@@ -12,6 +12,7 @@ public class EmailServiceTests
     private readonly Mock<IFluentEmail> _fluentEmailMock;
     private readonly Mock<IOptionsMonitor<EmailSettings>> _emailSettingsMock;
     private readonly Mock<ITenantSettingsService> _tenantSettingsMock;
+    private readonly Mock<IMultiTenantContextAccessor<Tenant>> _tenantContextAccessorMock;
     private readonly Mock<ILogger<EmailService>> _loggerMock;
 
     public EmailServiceTests()
@@ -22,6 +23,7 @@ public class EmailServiceTests
         _tenantSettingsMock = new Mock<ITenantSettingsService>();
         _tenantSettingsMock.Setup(x => x.GetSettingsAsync(null, "smtp:", It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<string, string>().AsReadOnly());
+        _tenantContextAccessorMock = new Mock<IMultiTenantContextAccessor<Tenant>>();
         _loggerMock = new Mock<ILogger<EmailService>>();
     }
 
@@ -32,6 +34,7 @@ public class EmailServiceTests
             dbContext,
             _emailSettingsMock.Object,
             _tenantSettingsMock.Object,
+            _tenantContextAccessorMock.Object,
             _loggerMock.Object);
     }
 

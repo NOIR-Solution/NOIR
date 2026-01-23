@@ -29,7 +29,6 @@ import {
   FolderTree,
   Tag,
   SlidersHorizontal,
-  Scale,
   Palette,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -79,9 +78,9 @@ interface NavSection {
 
 // Task-based navigation structure following standard admin dashboard patterns:
 // 1. Dashboard - Overview (always visible, no section label)
-// 2. Content - Business content creation (Blog, Legal Pages)
+// 2. Content - Business content creation (Blog)
 // 3. Users & Access - Who does what (Users, Roles, Tenants)
-// 4. Settings - System configuration (Platform, Tenant, Email)
+// 4. Settings - System configuration (Platform Settings has SMTP/Email/Legal tabs, Tenant Settings has Branding/Contact/Regional/SMTP/Email/Legal tabs)
 // 5. System - Monitoring and admin tools
 const navSections: NavSection[] = [
   {
@@ -97,7 +96,6 @@ const navSections: NavSection[] = [
       { titleKey: 'blog.posts', icon: FileText, path: '/portal/blog/posts', permission: Permissions.BlogPostsRead },
       { titleKey: 'blog.categories', icon: FolderTree, path: '/portal/blog/categories', permission: Permissions.BlogCategoriesRead },
       { titleKey: 'blog.tags', icon: Tag, path: '/portal/blog/tags', permission: Permissions.BlogTagsRead },
-      { titleKey: 'legalPages.title', icon: Scale, path: '/portal/legal-pages', permission: Permissions.LegalPagesRead },
     ],
   },
   {
@@ -110,12 +108,11 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    // Settings - System configuration
+    // Settings - System configuration (consolidated with tabs)
     labelKey: 'nav.settings',
     items: [
       { titleKey: 'platformSettings.title', icon: SlidersHorizontal, path: '/portal/admin/platform-settings', permission: Permissions.PlatformSettingsRead },
       { titleKey: 'tenantSettings.title', icon: Palette, path: '/portal/admin/tenant-settings', permission: Permissions.TenantSettingsRead },
-      { titleKey: 'emailTemplates.title', icon: Mail, path: '/portal/email-templates', permission: Permissions.EmailTemplatesRead },
     ],
   },
   {

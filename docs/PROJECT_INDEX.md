@@ -20,12 +20,12 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 2,100+ tests.
+**NOIR** is an enterprise-ready .NET 10 + React SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 4,400+ tests.
 
 ### Key Statistics
 
 - **Lines of Code:** ~150,000
-- **Test Coverage:** 4,386 tests across Unit, Integration, and Architecture layers
+- **Test Coverage:** 4,442 tests across Unit, Integration, and Architecture layers
 - **Feature Modules:** 12 domain-driven modules
 - **API Endpoints:** 65+ REST endpoints
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10
@@ -496,7 +496,7 @@ NOIR.Web/
 - `Features/LegalPages/Queries/GetPublicLegalPage/GetPublicLegalPageQuery.cs`
 - `Domain/Entities/LegalPage.cs`
 
-**Tests:** `tests/NOIR.IntegrationTests/Features/LegalPages/`
+**Tests:** `tests/NOIR.Application.UnitTests/Features/LegalPages/`, `tests/NOIR.IntegrationTests/Features/LegalPages/`
 
 ---
 
@@ -656,10 +656,10 @@ public static partial class UserMapper
 
 ```
 tests/
-├── NOIR.Domain.UnitTests/           # Domain logic tests (500+ tests)
-├── NOIR.Application.UnitTests/      # Application layer tests (600+ tests)
-├── NOIR.IntegrationTests/           # API integration tests (900+ tests)
-└── NOIR.ArchitectureTests/          # Architecture rules (100+ tests)
+├── NOIR.Domain.UnitTests/           # Domain logic tests (838 tests)
+├── NOIR.Application.UnitTests/      # Application layer tests (3,064 tests)
+├── NOIR.IntegrationTests/           # API integration tests (515 tests)
+└── NOIR.ArchitectureTests/          # Architecture rules (25 tests)
 ```
 
 ### Integration Tests

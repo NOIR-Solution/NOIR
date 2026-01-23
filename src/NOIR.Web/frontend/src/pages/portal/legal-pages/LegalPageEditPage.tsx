@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { FileText, ArrowLeft, RotateCcw, Save } from 'lucide-react'
+import { FileText, ArrowLeft, RotateCcw, Save, Info } from 'lucide-react'
 import { Editor } from '@tinymce/tinymce-react'
 import type { Editor as TinyMCEEditor } from 'tinymce'
 
@@ -104,7 +104,7 @@ export default function LegalPageEditPage() {
       } else {
         toast.error(t('messages.operationFailed'))
       }
-      navigate('/portal/legal-pages')
+      navigate('/portal/admin/tenant-settings?tab=legalPages')
     } finally {
       setLoading(false)
     }
@@ -236,7 +236,7 @@ export default function LegalPageEditPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/portal/legal-pages')}>
+          <Button variant="ghost" size="icon" onClick={() => navigate('/portal/admin/tenant-settings?tab=legalPages')}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="p-2 bg-primary/10 rounded-lg">
@@ -294,6 +294,19 @@ export default function LegalPageEditPage() {
           )}
         </div>
       </div>
+
+      {/* Copy-on-Write notice for platform templates */}
+      {page.isInherited && (
+        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 text-sm text-purple-800 dark:text-purple-200 flex items-start gap-3">
+          <Info className="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium">{t('legalPages.customizingPlatform')}</p>
+            <p className="text-purple-600 dark:text-purple-300 mt-1">
+              {t('legalPages.customizingPlatformDescription')}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Edit Form */}
       <div className="grid gap-6 lg:grid-cols-3">

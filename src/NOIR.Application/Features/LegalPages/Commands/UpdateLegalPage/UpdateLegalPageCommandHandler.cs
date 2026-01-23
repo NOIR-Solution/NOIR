@@ -46,24 +46,49 @@ public class UpdateLegalPageCommandHandler
 
         LegalPage resultPage;
 
-        // Copy-on-Edit: If this is a platform page and user has tenant context, create a copy
+        // Copy-on-Edit: If this is a platform page and user has tenant context
         if (page.IsPlatformDefault && !string.IsNullOrEmpty(currentTenantId))
         {
-            // Create a new tenant-specific override using copy-on-write pattern
-            var tenantCopy = LegalPage.CreateTenantOverride(
-                currentTenantId,
-                page.Slug,
-                command.Title,
-                command.HtmlContent,
-                command.MetaTitle,
-                command.MetaDescription,
-                command.CanonicalUrl,
-                command.AllowIndexing);
+            // Check if tenant already has a copy of this page (by slug)
+            var existingTenantCopy = await _dbContext.LegalPages
+                .IgnoreQueryFilters()
+                .Where(p => p.Slug == page.Slug && p.TenantId == currentTenantId && !p.IsDeleted)
+                .TagWith("LegalPageExistingTenantCopy")
+                .FirstOrDefaultAsync(cancellationToken);
 
-            await _repository.AddAsync(tenantCopy, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (existingTenantCopy != null)
+            {
+                // Tenant copy exists - update it instead of creating new
+                _dbContext.Attach(existingTenantCopy);
 
-            resultPage = tenantCopy;
+                existingTenantCopy.Update(
+                    command.Title,
+                    command.HtmlContent,
+                    command.MetaTitle,
+                    command.MetaDescription,
+                    command.CanonicalUrl,
+                    command.AllowIndexing);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                resultPage = existingTenantCopy;
+            }
+            else
+            {
+                // No tenant copy exists - create a new tenant-specific override
+                var tenantCopy = LegalPage.CreateTenantOverride(
+                    currentTenantId,
+                    page.Slug,
+                    command.Title,
+                    command.HtmlContent,
+                    command.MetaTitle,
+                    command.MetaDescription,
+                    command.CanonicalUrl,
+                    command.AllowIndexing);
+
+                await _repository.AddAsync(tenantCopy, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                resultPage = tenantCopy;
+            }
         }
         else
         {
@@ -79,7 +104,6 @@ public class UpdateLegalPageCommandHandler
                 command.AllowIndexing);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-
             resultPage = page;
         }
 

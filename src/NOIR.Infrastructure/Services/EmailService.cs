@@ -2,8 +2,8 @@ namespace NOIR.Infrastructure.Services;
 
 /// <summary>
 /// Email service implementation.
-/// Uses database SMTP settings (platform level) with fallback to appsettings.json via FluentEmail.
-/// Uses database templates for email content.
+/// SMTP fallback chain: Tenant DB settings → Platform DB settings → appsettings.json (FluentEmail).
+/// Uses database templates for email content with tenant override support.
 /// </summary>
 public class EmailService : IEmailService, IScopedService
 {
@@ -11,6 +11,7 @@ public class EmailService : IEmailService, IScopedService
     private readonly ApplicationDbContext _dbContext;
     private readonly IOptionsMonitor<EmailSettings> _emailSettings;
     private readonly ITenantSettingsService _settingsService;
+    private readonly IMultiTenantContextAccessor<Tenant> _tenantContextAccessor;
     private readonly ILogger<EmailService> _logger;
 
     public EmailService(
@@ -18,12 +19,14 @@ public class EmailService : IEmailService, IScopedService
         ApplicationDbContext dbContext,
         IOptionsMonitor<EmailSettings> emailSettings,
         ITenantSettingsService settingsService,
+        IMultiTenantContextAccessor<Tenant> tenantContextAccessor,
         ILogger<EmailService> logger)
     {
         _fluentEmail = fluentEmail;
         _dbContext = dbContext;
         _emailSettings = emailSettings;
         _settingsService = settingsService;
+        _tenantContextAccessor = tenantContextAccessor;
         _logger = logger;
     }
 
@@ -151,8 +154,10 @@ public class EmailService : IEmailService, IScopedService
     }
 
     /// <summary>
-    /// Tries to send email using database-configured SMTP settings.
-    /// Returns null if no DB settings are configured (caller should fallback to FluentEmail).
+    /// Tries to send email using database-configured SMTP settings with fallback chain:
+    /// 1. Tenant-specific SMTP settings (if tenant context exists)
+    /// 2. Platform-level SMTP settings (tenantId = null)
+    /// Returns null if no DB settings are configured (caller should fallback to FluentEmail/appsettings).
     /// Returns true/false if DB settings exist and send was attempted.
     /// </summary>
     private async Task<bool?> TrySendViaDbSettingsAsync(
@@ -162,25 +167,14 @@ public class EmailService : IEmailService, IScopedService
         bool isHtml,
         CancellationToken cancellationToken)
     {
-        var settings = await _settingsService.GetSettingsAsync(
-            tenantId: null, // Platform level only for SMTP
-            keyPrefix: "smtp:",
-            cancellationToken: cancellationToken);
+        // Get SMTP settings with fallback chain: Tenant → Platform
+        var settings = await GetSmtpSettingsWithFallbackAsync(cancellationToken);
 
-        // If no DB settings, return null to signal fallback should be used
-        if (settings.Count == 0 || !settings.ContainsKey("smtp:host"))
+        // If no DB settings at any level, return null to signal fallback to FluentEmail
+        if (settings == null)
             return null;
 
-        var host = settings.GetValueOrDefault("smtp:host", string.Empty);
-        if (string.IsNullOrWhiteSpace(host))
-            return null;
-
-        var port = int.TryParse(settings.GetValueOrDefault("smtp:port"), out var p) ? p : 25;
-        var username = settings.GetValueOrDefault("smtp:username");
-        var password = settings.GetValueOrDefault("smtp:password");
-        var useSsl = bool.TryParse(settings.GetValueOrDefault("smtp:use_ssl"), out var ssl) && ssl;
-        var fromEmail = settings.GetValueOrDefault("smtp:from_email", _emailSettings.CurrentValue.DefaultFromEmail);
-        var fromName = settings.GetValueOrDefault("smtp:from_name", _emailSettings.CurrentValue.DefaultFromName);
+        var (host, port, username, password, useSsl, fromEmail, fromName, source) = settings.Value;
 
         try
         {
@@ -209,14 +203,79 @@ public class EmailService : IEmailService, IScopedService
             await client.SendAsync(message, cancellationToken);
             await client.DisconnectAsync(true, cancellationToken);
 
-            _logger.LogDebug("Email sent via DB-configured SMTP to {Recipients}", string.Join(", ", recipients));
+            _logger.LogDebug("Email sent via {Source} SMTP to {Recipients}", source, string.Join(", ", recipients));
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send email via DB-configured SMTP ({Host}:{Port})", host, port);
+            _logger.LogError(ex, "Failed to send email via {Source} SMTP ({Host}:{Port})", source, host, port);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Gets SMTP settings with fallback chain: Tenant → Platform.
+    /// Returns null if no SMTP settings configured at any level.
+    /// </summary>
+    private async Task<(string Host, int Port, string? Username, string? Password, bool UseSsl, string FromEmail, string FromName, string Source)?> GetSmtpSettingsWithFallbackAsync(
+        CancellationToken cancellationToken)
+    {
+        var currentTenantId = _tenantContextAccessor.MultiTenantContext?.TenantInfo?.Id;
+
+        // Step 1: Check for tenant-specific SMTP settings
+        if (currentTenantId != null)
+        {
+            var tenantSettings = await _settingsService.GetSettingsAsync(
+                tenantId: currentTenantId,
+                keyPrefix: "smtp:",
+                cancellationToken: cancellationToken);
+
+            if (tenantSettings.Count > 0 && tenantSettings.ContainsKey("smtp:host"))
+            {
+                var tenantHost = tenantSettings.GetValueOrDefault("smtp:host", string.Empty);
+                if (!string.IsNullOrWhiteSpace(tenantHost))
+                {
+                    _logger.LogDebug("Using tenant-specific SMTP settings for tenant {TenantId}", currentTenantId);
+                    return ParseSmtpSettings(tenantSettings, "Tenant");
+                }
+            }
+        }
+
+        // Step 2: Check for platform-level SMTP settings
+        var platformSettings = await _settingsService.GetSettingsAsync(
+            tenantId: null,
+            keyPrefix: "smtp:",
+            cancellationToken: cancellationToken);
+
+        if (platformSettings.Count > 0 && platformSettings.ContainsKey("smtp:host"))
+        {
+            var platformHost = platformSettings.GetValueOrDefault("smtp:host", string.Empty);
+            if (!string.IsNullOrWhiteSpace(platformHost))
+            {
+                _logger.LogDebug("Using platform-level SMTP settings (no tenant override)");
+                return ParseSmtpSettings(platformSettings, "Platform");
+            }
+        }
+
+        // Step 3: No DB settings - return null to fall back to FluentEmail (appsettings.json)
+        return null;
+    }
+
+    /// <summary>
+    /// Parses SMTP settings from a dictionary into a typed tuple.
+    /// </summary>
+    private (string Host, int Port, string? Username, string? Password, bool UseSsl, string FromEmail, string FromName, string Source)
+        ParseSmtpSettings(IReadOnlyDictionary<string, string> settings, string source)
+    {
+        var host = settings.GetValueOrDefault("smtp:host", string.Empty)!;
+        var port = int.TryParse(settings.GetValueOrDefault("smtp:port"), out var p) ? p : 25;
+        var username = settings.GetValueOrDefault("smtp:username");
+        var password = settings.GetValueOrDefault("smtp:password");
+        var useSsl = bool.TryParse(settings.GetValueOrDefault("smtp:use_ssl"), out var ssl) && ssl;
+        var fromEmail = settings.GetValueOrDefault("smtp:from_email", _emailSettings.CurrentValue.DefaultFromEmail)!;
+        var fromName = settings.GetValueOrDefault("smtp:from_name", _emailSettings.CurrentValue.DefaultFromName)!;
+
+        return (host, port, username, password, useSsl, fromEmail, fromName, source);
     }
 
     /// <summary>

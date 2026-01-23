@@ -35,10 +35,9 @@ const BlogTagsPage = lazy(() => import('@/pages/portal/blog/tags/BlogTagsPage'))
 const PlatformSettingsPage = lazy(() => import('@/pages/portal/admin/platform-settings/PlatformSettingsPage'))
 // Tenant Settings
 const TenantSettingsPage = lazy(() => import('@/pages/portal/admin/tenant-settings/TenantSettingsPage'))
-// Email templates - keep named exports as eager load (smaller components)
-import { EmailTemplatesPage, EmailTemplateEditPage } from '@/pages/portal/email-templates'
-// Legal pages
-const LegalPagesPage = lazy(() => import('@/pages/portal/legal-pages/LegalPagesPage'))
+// Email templates - edit page only (list is in Tenant Settings)
+import { EmailTemplateEditPage } from '@/pages/portal/email-templates'
+// Legal pages - edit page only (list is in Tenant Settings)
 const LegalPageEditPage = lazy(() => import('@/pages/portal/legal-pages/LegalPageEditPage'))
 // Public legal pages
 const TermsPage = lazy(() => import('@/pages/TermsPage'))
@@ -93,9 +92,8 @@ function App() {
           >
             <Route index element={<Suspense fallback={<LazyFallback />}><Dashboard /></Suspense>} />
             <Route path="settings" element={<Suspense fallback={<LazyFallback />}><SettingsPage /></Suspense>} />
-            <Route path="email-templates" element={<EmailTemplatesPage />} />
+            {/* Email templates and Legal pages edit routes - list views are in Tenant Settings */}
             <Route path="email-templates/:id" element={<EmailTemplateEditPage />} />
-            <Route path="legal-pages" element={<Suspense fallback={<LazyFallback />}><LegalPagesPage /></Suspense>} />
             <Route path="legal-pages/:id" element={<Suspense fallback={<LazyFallback />}><LegalPageEditPage /></Suspense>} />
             <Route path="notifications" element={<Suspense fallback={<LazyFallback />}><Notifications /></Suspense>} />
             <Route path="settings/notifications" element={<Suspense fallback={<LazyFallback />}><NotificationPreferences /></Suspense>} />

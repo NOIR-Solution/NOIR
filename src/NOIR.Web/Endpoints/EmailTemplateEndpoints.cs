@@ -1,4 +1,5 @@
 using NOIR.Application.Features.EmailTemplates.Commands.RevertToPlatformDefault;
+using NOIR.Application.Features.EmailTemplates.Commands.ToggleEmailTemplateActive;
 
 namespace NOIR.Web.Endpoints;
 
@@ -129,6 +130,23 @@ public static class EmailTemplateEndpoints
         .WithDescription("Deletes the tenant's customized version and reverts to the platform default template. Only available for tenant users.")
         .Produces<EmailTemplateDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Toggle email template active/inactive
+        group.MapPatch("/{id:guid}/toggle-active", async (
+            Guid id,
+            ToggleActiveRequest request,
+            IMessageBus bus) =>
+        {
+            var command = new ToggleEmailTemplateActiveCommand(id, request.IsActive);
+            var result = await bus.InvokeAsync<Result<EmailTemplateDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.EmailTemplatesUpdate)
+        .WithName("ToggleEmailTemplateActive")
+        .WithSummary("Toggle email template active status")
+        .WithDescription("Activates or deactivates an email template. Uses Copy-on-Write for platform templates.")
+        .Produces<EmailTemplateDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 

@@ -1,10 +1,24 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { Settings, Mail, Send, Loader2, Check, AlertCircle, Server } from 'lucide-react'
+import {
+  Settings,
+  Mail,
+  Send,
+  Loader2,
+  Check,
+  AlertCircle,
+  Server,
+  FileText,
+  Scale,
+  Pencil,
+  Eye,
+  GitFork,
+} from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,6 +43,7 @@ import {
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { usePageContext } from '@/hooks/usePageContext'
 import { ApiError } from '@/services/apiClient'
 
@@ -36,10 +51,14 @@ import {
   getSmtpSettings,
   updateSmtpSettings,
   testSmtpConnection,
-  type SmtpSettingsDto,
 } from '@/services/platformSettings'
 
-// Validation schema for SMTP settings
+import { getEmailTemplates, type EmailTemplateListDto } from '@/services/emailTemplates'
+import { getLegalPages, type LegalPageListDto } from '@/services/legalPages'
+
+// ============================================================================
+// SMTP Form Schema
+// ============================================================================
 const smtpSettingsSchema = z.object({
   host: z.string().min(1, 'SMTP host is required'),
   port: z.coerce.number().int().min(1).max(65535),
@@ -52,20 +71,75 @@ const smtpSettingsSchema = z.object({
 
 type SmtpSettingsFormData = z.infer<typeof smtpSettingsSchema>
 
-// Validation schema for test email
 const testEmailSchema = z.object({
   recipientEmail: z.string().email('Invalid email address'),
 })
 
 type TestEmailFormData = z.infer<typeof testEmailSchema>
 
+// ============================================================================
+// Main Component
+// ============================================================================
 export default function PlatformSettingsPage() {
   const { t } = useTranslation('common')
-
-  // Set page context for Activity Timeline
+  const navigate = useNavigate()
   usePageContext('PlatformSettings')
 
-  // State
+  // Active tab state
+  const [activeTab, setActiveTab] = useState('smtp')
+
+  return (
+    <div className="container max-w-4xl py-6 space-y-6">
+      {/* Page Header */}
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+          <Settings className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t('platformSettings.title')}</h1>
+          <p className="text-muted-foreground">{t('platformSettings.description')}</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="smtp" className="cursor-pointer">
+            <Mail className="h-4 w-4 mr-2" />
+            {t('platformSettings.tabs.smtp')}
+          </TabsTrigger>
+          <TabsTrigger value="emailTemplates" className="cursor-pointer">
+            <FileText className="h-4 w-4 mr-2" />
+            {t('platformSettings.tabs.emailTemplates')}
+          </TabsTrigger>
+          <TabsTrigger value="legalPages" className="cursor-pointer">
+            <Scale className="h-4 w-4 mr-2" />
+            {t('platformSettings.tabs.legalPages')}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="smtp">
+          <SmtpSettingsTab />
+        </TabsContent>
+
+        <TabsContent value="emailTemplates">
+          <EmailTemplatesTab onEdit={(id) => navigate(`/portal/email-templates/${id}`)} />
+        </TabsContent>
+
+        <TabsContent value="legalPages">
+          <LegalPagesTab onEdit={(id) => navigate(`/portal/legal-pages/${id}`)} />
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
+
+// ============================================================================
+// SMTP Settings Tab
+// ============================================================================
+function SmtpSettingsTab() {
+  const { t } = useTranslation('common')
+
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [testing, setTesting] = useState(false)
@@ -73,7 +147,6 @@ export default function PlatformSettingsPage() {
   const [isConfigured, setIsConfigured] = useState(false)
   const [hasPassword, setHasPassword] = useState(false)
 
-  // SMTP settings form
   const form = useForm<SmtpSettingsFormData>({
     resolver: zodResolver(smtpSettingsSchema),
     defaultValues: {
@@ -88,7 +161,6 @@ export default function PlatformSettingsPage() {
     mode: 'onBlur',
   })
 
-  // Test email form
   const testForm = useForm<TestEmailFormData>({
     resolver: zodResolver(testEmailSchema),
     defaultValues: {
@@ -96,7 +168,6 @@ export default function PlatformSettingsPage() {
     },
   })
 
-  // Load settings on mount
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -108,7 +179,7 @@ export default function PlatformSettingsPage() {
           host: settings.host,
           port: settings.port,
           username: settings.username ?? '',
-          password: '', // Never expose password
+          password: '',
           fromEmail: settings.fromEmail,
           fromName: settings.fromName,
           useSsl: settings.useSsl,
@@ -124,7 +195,6 @@ export default function PlatformSettingsPage() {
     loadSettings()
   }, [form])
 
-  // Handle save
   const onSubmit = async (data: SmtpSettingsFormData) => {
     setSaving(true)
     try {
@@ -140,8 +210,6 @@ export default function PlatformSettingsPage() {
 
       setIsConfigured(result.isConfigured)
       setHasPassword(result.hasPassword)
-
-      // Clear password field after save (don't show it)
       form.setValue('password', '')
 
       toast.success(t('platformSettings.smtp.saveSuccess'))
@@ -153,7 +221,6 @@ export default function PlatformSettingsPage() {
     }
   }
 
-  // Handle test email
   const onTestSubmit = async (data: TestEmailFormData) => {
     setTesting(true)
     try {
@@ -171,28 +238,14 @@ export default function PlatformSettingsPage() {
 
   if (loading) {
     return (
-      <div className="container max-w-4xl py-6">
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
 
   return (
-    <div className="container max-w-4xl py-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Settings className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('platformSettings.title')}</h1>
-          <p className="text-muted-foreground">{t('platformSettings.description')}</p>
-        </div>
-      </div>
-
-      {/* SMTP Settings Card */}
+    <>
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -221,7 +274,6 @@ export default function PlatformSettingsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          {/* Status Alert */}
           {!isConfigured && (
             <Alert className="mb-6">
               <AlertCircle className="h-4 w-4" />
@@ -234,7 +286,6 @@ export default function PlatformSettingsPage() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Server Settings */}
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -243,10 +294,7 @@ export default function PlatformSettingsPage() {
                     <FormItem>
                       <FormLabel>{t('platformSettings.smtp.host')}</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder={t('platformSettings.smtp.hostPlaceholder')}
-                          {...field}
-                        />
+                        <Input placeholder={t('platformSettings.smtp.hostPlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -259,11 +307,7 @@ export default function PlatformSettingsPage() {
                     <FormItem>
                       <FormLabel>{t('platformSettings.smtp.port')}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="587"
-                          {...field}
-                        />
+                        <Input type="number" placeholder="587" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -271,7 +315,6 @@ export default function PlatformSettingsPage() {
                 />
               </div>
 
-              {/* Authentication */}
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -319,7 +362,6 @@ export default function PlatformSettingsPage() {
                 />
               </div>
 
-              {/* Sender Settings */}
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -356,31 +398,22 @@ export default function PlatformSettingsPage() {
                 />
               </div>
 
-              {/* SSL Toggle */}
               <FormField
                 control={form.control}
                 name="useSsl"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        {t('platformSettings.smtp.useSsl')}
-                      </FormLabel>
-                      <FormDescription>
-                        {t('platformSettings.smtp.useSslHint')}
-                      </FormDescription>
+                      <FormLabel className="text-base">{t('platformSettings.smtp.useSsl')}</FormLabel>
+                      <FormDescription>{t('platformSettings.smtp.useSslHint')}</FormDescription>
                     </div>
                     <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                   </FormItem>
                 )}
               />
 
-              {/* Actions */}
               <div className="flex items-center justify-between pt-4 border-t">
                 <Button
                   type="button"
@@ -395,10 +428,10 @@ export default function PlatformSettingsPage() {
                   {saving ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Saving...
+                      {t('buttons.saving')}
                     </>
                   ) : (
-                    'Save Settings'
+                    t('buttons.save')
                   )}
                 </Button>
               </div>
@@ -412,9 +445,7 @@ export default function PlatformSettingsPage() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{t('platformSettings.smtp.testConnectionTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('platformSettings.smtp.testConnectionDescription')}
-            </DialogDescription>
+            <DialogDescription>{t('platformSettings.smtp.testConnectionDescription')}</DialogDescription>
           </DialogHeader>
           <Form {...testForm}>
             <form onSubmit={testForm.handleSubmit(onTestSubmit)} className="space-y-4">
@@ -436,13 +467,8 @@ export default function PlatformSettingsPage() {
                 )}
               />
               <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setTestDialogOpen(false)}
-                  disabled={testing}
-                >
-                  Cancel
+                <Button type="button" variant="outline" onClick={() => setTestDialogOpen(false)} disabled={testing}>
+                  {t('buttons.cancel')}
                 </Button>
                 <Button type="submit" disabled={testing}>
                   {testing ? (
@@ -462,6 +488,170 @@ export default function PlatformSettingsPage() {
           </Form>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
+  )
+}
+
+// ============================================================================
+// Email Templates Tab
+// ============================================================================
+function EmailTemplatesTab({ onEdit }: { onEdit: (id: string) => void }) {
+  const { t } = useTranslation('common')
+  const [loading, setLoading] = useState(true)
+  const [templates, setTemplates] = useState<EmailTemplateListDto[]>([])
+
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const data = await getEmailTemplates()
+        // Filter to only platform templates (isInherited = true means it's a platform default)
+        setTemplates(data.filter(t => t.isInherited))
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : 'Failed to load templates'
+        toast.error(message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadTemplates()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">{t('emailTemplates.title')}</CardTitle>
+        <CardDescription>{t('emailTemplates.description')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 md:grid-cols-2">
+          {templates.map((template) => (
+            <Card key={template.id} className="overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <h4 className="font-medium">{template.name}</h4>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {template.description}
+                    </p>
+                    <div className="flex items-center gap-2 pt-2">
+                      <Badge variant="outline" className="text-xs">
+                        {template.language}
+                      </Badge>
+                      <Badge variant={template.isActive ? 'default' : 'secondary'} className="text-xs">
+                        {template.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                      <Badge variant="outline" className="text-purple-600 border-purple-600/30 text-xs">
+                        <GitFork className="h-3 w-3 mr-1" />
+                        Platform
+                      </Badge>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => onEdit(template.id)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        {templates.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            No platform email templates found.
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// Legal Pages Tab
+// ============================================================================
+function LegalPagesTab({ onEdit }: { onEdit: (id: string) => void }) {
+  const { t } = useTranslation('common')
+  const [loading, setLoading] = useState(true)
+  const [pages, setPages] = useState<LegalPageListDto[]>([])
+
+  useEffect(() => {
+    const loadPages = async () => {
+      try {
+        const data = await getLegalPages()
+        // Filter to only platform pages (isInherited = true means it's a platform default)
+        setPages(data.filter(p => p.isInherited))
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : 'Failed to load legal pages'
+        toast.error(message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadPages()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">{t('legalPages.title')}</CardTitle>
+        <CardDescription>{t('legalPages.description')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 md:grid-cols-2">
+          {pages.map((page) => (
+            <Card key={page.id} className="overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <h4 className="font-medium">{page.title}</h4>
+                    <p className="text-sm text-muted-foreground">/{page.slug}</p>
+                    <div className="flex items-center gap-2 pt-2">
+                      <Badge variant="outline" className="text-purple-600 border-purple-600/30 text-xs">
+                        <GitFork className="h-3 w-3 mr-1" />
+                        Platform Default
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground pt-1">
+                      Last modified: {new Date(page.lastModified).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Button variant="ghost" size="icon" onClick={() => onEdit(page.id)}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => window.open(`/${page.slug === 'terms-of-service' ? 'terms' : 'privacy'}`, '_blank')}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        {pages.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            No platform legal pages found.
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }
