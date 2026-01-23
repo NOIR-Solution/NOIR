@@ -629,23 +629,6 @@ const form = useForm<FormData>({
 
 ---
 
-### E2E Testing
-
-| Technology | Version | Purpose | Docs |
-|------------|---------|---------|------|
-| **Playwright** | 1.49 | Browser automation | [Playwright](https://playwright.dev/) |
-
-**Features:**
-- **Multi-browser** - Chromium, Firefox, WebKit
-- **Parallel execution** - Faster test runs
-- **Screenshots** - On failure
-- **Trace viewer** - Debug failures
-
-**Test Location:**
-- `src/NOIR.Web/frontend/e2e/`
-
----
-
 ## Development Tools
 
 ### Code Quality

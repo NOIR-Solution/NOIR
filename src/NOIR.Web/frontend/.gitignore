@@ -23,10 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 
-# Playwright E2E test artifacts
-e2e/.auth/
-e2e/html-report/
-e2e/test-results/
-playwright-report/
-blob-report/
-playwright/.cache/

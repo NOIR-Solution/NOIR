@@ -90,7 +90,7 @@
 - Backend stack (.NET 10, EF Core, Wolverine, etc.)
 - Frontend stack (React 19, Vite, Tailwind, shadcn/ui)
 - Infrastructure (Docker, Azure, SQL Server)
-- Testing framework (xUnit, Playwright)
+- Testing framework (xUnit)
 - Best for: Understanding technology choices
 
 **Size:** ~756 lines | **Type:** Technology Reference

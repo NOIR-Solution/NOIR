@@ -11,11 +11,7 @@
     "preview": "vite preview",
     "generate:api": "node scripts/generate-api-types.mjs",
     "generate:api:file": "node scripts/generate-api-types.mjs --from-file",
-    "generate:validation": "node scripts/generate-validation-schemas.mjs",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug"
+    "generate:validation": "node scripts/generate-validation-schemas.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -62,7 +58,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@playwright/test": "^1.57.0",
     "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",

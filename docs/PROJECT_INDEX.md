@@ -335,7 +335,6 @@ NOIR.Web/
     │   ├── pages/                       # Route pages
     │   ├── services/                    # API services
     │   └── lib/                         # Utilities
-    ├── e2e/                             # Playwright E2E tests
     └── public/                          # Static assets
 ```
 
@@ -829,7 +828,6 @@ npm install
 npm run dev
 npm run build
 npm run generate:api
-npm run test:e2e
 ```
 
 ### Key Directories

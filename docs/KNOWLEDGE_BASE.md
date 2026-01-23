@@ -140,7 +140,7 @@ var userDto = new CurrentUserDto(
 
 **Key Insight:** Request context (`_currentUser`) is for **scoping/filtering**, database entity is for **user properties**.
 
-**Verification:** Added Playwright E2E test (`platform-admin-tenant-test.spec.ts`) that verifies:
+**Verification:**
 - Dashboard displays "Platform" not a GUID
 - `/api/auth/me` response omits `tenantId` field (null value)
 - JWT token has no `tenant_id` claim
