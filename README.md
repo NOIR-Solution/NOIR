@@ -346,6 +346,40 @@ dotnet ef database update \
 
 ---
 
+## AI-Assisted Development (SuperClaude)
+
+This project uses [SuperClaude Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework/) for AI-powered development with Claude Code. It provides auto-routing of natural language to specialized skills.
+
+### Setup
+
+```bash
+# 1. Install SuperClaude CLI
+pipx install superclaude
+
+# 2. Install commands to Claude Code
+superclaude install
+
+# 3. Verify installation
+superclaude doctor
+
+# 4. Restart Claude Code to load commands
+```
+
+### Usage
+
+Once installed, just speak naturally in Claude Code within this project:
+
+- "fix this bug" → auto-routes to `/sc:troubleshoot`
+- "add a new feature" → auto-routes to `/sc:brainstorm`
+- "write tests for this" → auto-routes to `/sc:test`
+- "explain this code" → auto-routes to `/sc:explain`
+
+Run `/sc:help` to see all available commands, or `/sc:recommend "your task"` for suggestions.
+
+> Auto-routing rules are defined in `.claude/rules/superclaude-routing.md`
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions! Here's how to get started:
