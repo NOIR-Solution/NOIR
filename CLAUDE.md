@@ -106,7 +106,7 @@ dotnet watch --project src/NOIR.Web
 ### Testing
 
 ```bash
-# All tests (2,100+ tests)
+# All tests (5,370+ tests)
 dotnet test src/NOIR.sln
 
 # Specific project

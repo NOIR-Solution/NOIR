@@ -149,7 +149,7 @@ dotnet run --project src/NOIR.Web -c Release
 
 - **Hot Reload** - Backend and frontend live reloading
 - **Type Generation** - Swagger → TypeScript types
-- **2,100+ Tests** - Unit, Integration, Architecture, E2E
+- **5,370+ Tests** - Unit, Integration, Architecture
 - **Architecture Tests** - Enforce layer boundaries
 - **Comprehensive Docs** - 9,500+ lines of documentation
 
@@ -257,7 +257,7 @@ NOIR/
 │   ├── NOIR.Infrastructure/   # 🔧 EF Core, services, persistence
 │   └── NOIR.Web/              # 🌐 API endpoints, middleware, SPA host
 │       └── frontend/          # ⚛️  React application
-├── ✅ tests/                  # 2,100+ tests (Unit, Integration, Architecture, E2E)
+├── ✅ tests/                  # 5,370+ tests (Unit, Integration, Architecture)
 ├── 📚 docs/                   # 9,500+ lines of documentation
 └── ⚙️  .github/               # CI/CD workflows and templates
 ```
@@ -270,11 +270,10 @@ NOIR/
 
 | Test Type | Project | Count | Coverage |
 |-----------|---------|-------|----------|
-| **Unit Tests** | Domain.UnitTests | 500+ | Domain logic |
-| **Unit Tests** | Application.UnitTests | 600+ | Application logic |
-| **Integration** | IntegrationTests | 900+ | API endpoints |
-| **Architecture** | ArchitectureTests | 100+ | Layer boundaries |
-| **E2E** | frontend/e2e | - | Critical flows |
+| **Unit Tests** | Domain.UnitTests | 841 | Domain logic |
+| **Unit Tests** | Application.UnitTests | 3,903 | Application logic |
+| **Integration** | IntegrationTests | 605 | API endpoints |
+| **Architecture** | ArchitectureTests | 25 | Layer boundaries |
 
 ### Running Tests
 
@@ -287,10 +286,6 @@ dotnet test tests/NOIR.IntegrationTests
 
 # With coverage
 dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
-
-# E2E tests
-cd src/NOIR.Web/frontend
-npm run test:e2e
 ```
 
 ---

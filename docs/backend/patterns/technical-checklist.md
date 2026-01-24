@@ -221,7 +221,7 @@ const form = useForm<FormData>({
 | # | Requirement | Details |
 |---|-------------|---------|
 | ☐ | **Run `dotnet build src/NOIR.sln`** | After ALL code changes |
-| ☐ | **Run `dotnet test src/NOIR.sln`** | Before committing (2,100+ tests) |
+| ☐ | **Run `dotnet test src/NOIR.sln`** | Before committing (5,370+ tests) |
 | ☐ | **Add tests for new handlers** | Unit tests with xUnit + Moq |
 | ☐ | **Add tests for new specifications** | Test filter logic |
 

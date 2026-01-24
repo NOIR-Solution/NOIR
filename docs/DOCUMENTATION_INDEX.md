@@ -161,9 +161,11 @@ Technical research and comparisons:
 | Document | Topic |
 |----------|-------|
 | [role-permission-best-practices-2025.md](backend/research/role-permission-best-practices-2025.md) | Role/permission patterns |
+| [role-permission-management-research.md](backend/research/role-permission-management-research.md) | Permission management research |
 | [hierarchical-audit-logging-comparison-2025.md](backend/research/hierarchical-audit-logging-comparison-2025.md) | Audit system design comparison |
 | [validation-unification-plan.md](backend/research/validation-unification-plan.md) | Unified validation strategy |
 | [cache-busting-best-practices.md](backend/research/cache-busting-best-practices.md) | Cache invalidation strategies |
+| [seo-meta-and-hint-text-best-practices.md](backend/research/seo-meta-and-hint-text-best-practices.md) | SEO meta tags and hint text |
 
 ---
 
@@ -178,6 +180,7 @@ Technical research and comparisons:
 | [api-types.md](frontend/api-types.md) | Type generation from backend |
 | [localization-guide.md](frontend/localization-guide.md) | i18n management |
 | [COLOR_SCHEMA_GUIDE.md](frontend/COLOR_SCHEMA_GUIDE.md) | Color system and palettes |
+| [vibe-kanban-integration.md](frontend/vibe-kanban-integration.md) | Vibe Kanban task management integration |
 
 ### Designs (`frontend/designs/`)
 
@@ -209,7 +212,8 @@ Architecture Decision Records documenting key technical choices:
 
 | Document | Purpose |
 |----------|---------|
-| [feature-roadmap-2026.md](plans/feature-roadmap-2026.md) | 2026 feature planning |
+| [feature-roadmap-basic.md](plans/feature-roadmap-basic.md) | Phases 1-4: Caching, Image Processing, Blog CMS, Performance |
+| [feature-roadmap-ecommerce.md](plans/feature-roadmap-ecommerce.md) | Phases 5-12: E-commerce & Payment Gateways |
 
 ---
 
@@ -221,10 +225,11 @@ Architecture Decision Records documenting key technical choices:
 |------|-------|-------------|
 | **Core Docs** | 6 | ~4,000 |
 | **Backend Patterns** | 9 | ~2,000 |
-| **Backend Research** | 4 | ~1,500 |
-| **Frontend Guides** | 6 | ~1,200 |
+| **Backend Research** | 6 | ~2,000 |
+| **Frontend Guides** | 7 | ~1,500 |
+| **Plans & Roadmaps** | 2 | ~3,400 |
 | **ADRs** | 3 | ~800 |
-| **Total** | **28** | **~9,500** |
+| **Total** | **33** | **~13,700** |
 
 ### Coverage
 
