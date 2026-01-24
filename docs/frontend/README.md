@@ -55,7 +55,6 @@ npm run lint
 | Document | Description |
 |----------|-------------|
 | [Architecture](architecture.md) | Project structure and patterns |
-| [Theme](theme.md) | Theme customization guide |
 | [API Types](api-types.md) | Type generation from backend |
 | [Localization Guide](localization-guide.md) | Managing translations and adding languages |
 

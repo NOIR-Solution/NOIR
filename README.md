@@ -188,7 +188,6 @@ dotnet run --project src/NOIR.Web -c Release
 
 - [Frontend Overview](docs/frontend/README.md)
 - [Architecture](docs/frontend/architecture.md)
-- [Theme System](docs/frontend/theme.md)
 - [API Types](docs/frontend/api-types.md)
 - [Localization](docs/frontend/localization-guide.md)
 

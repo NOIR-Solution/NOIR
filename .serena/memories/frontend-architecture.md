@@ -54,9 +54,9 @@ This creates types matching backend DTOs for type-safe API calls.
 Frontend builds to `src/NOIR.Web/wwwroot/` for embedding in .NET app.
 
 ## Theme System
-- CSS custom properties for theming
+- Database-driven Branding Settings per tenant (Admin UI)
+- CSS custom properties applied at runtime
 - Light/dark mode support
-- See `docs/frontend/theme.md` for customization
 
 ## Component Patterns
 

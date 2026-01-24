@@ -175,7 +175,6 @@ Technical research and comparisons:
 |----------|---------|
 | [README.md](frontend/README.md) | Frontend overview and setup |
 | [architecture.md](frontend/architecture.md) | Component structure and patterns |
-| [theme.md](frontend/theme.md) | Theme customization guide |
 | [api-types.md](frontend/api-types.md) | Type generation from backend |
 | [localization-guide.md](frontend/localization-guide.md) | i18n management |
 | [COLOR_SCHEMA_GUIDE.md](frontend/COLOR_SCHEMA_GUIDE.md) | Color system and palettes |

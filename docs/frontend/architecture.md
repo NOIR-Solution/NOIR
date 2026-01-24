@@ -28,9 +28,6 @@ frontend/
 │   │   ├── ProtectedRoute.tsx  # Route-level protection
 │   │   └── *.tsx            # App-level shared components
 │   │
-│   ├── config/              # App configuration
-│   │   └── theme.ts         # Theme/brand colors
-│   │
 │   ├── contexts/            # React Context providers
 │   │   └── AuthContext.tsx  # Authentication state
 │   │
@@ -178,15 +175,6 @@ function UserActions() {
   )
 }
 ```
-
-### `/config`
-
-**Purpose:** Application configuration.
-
-**Guidelines:**
-- Theme customization (see [theme.md](theme.md))
-- Environment-specific constants
-- Feature flags (if needed)
 
 ### `/lib`
 

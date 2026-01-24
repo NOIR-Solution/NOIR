@@ -263,18 +263,7 @@ export const chartColors = {
 
 ## Theme Configuration
 
-The `theme.ts` file provides pre-configured theme presets. The **blue** theme is the default and most accessible:
-
-```typescript
-// src/config/theme.ts
-export const SELECTED_THEME: keyof typeof themes = "blue"
-
-// Available themes (all validated for accessibility)
-// - blue: Trust & technology (DEFAULT)
-// - corporate: Professional & stable
-// - healthcare: Teal/Cyan, calming
-// - finance: Emerald/Green, growth
-```
+NOIR uses **database-driven Branding Settings** for theming, configured per-tenant via the Admin UI. The **blue** theme is the default and most accessible. Theme colors are applied as CSS custom properties at runtime based on tenant configuration.
 
 ---
 

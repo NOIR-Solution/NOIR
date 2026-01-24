@@ -32,6 +32,7 @@ tmpclaude-*
 # Development startup script logs
 .backend.log
 .frontend.log
+.script-output.log
 
 # =============================================================================
 # .NET BUILD OUTPUTS
@@ -330,4 +331,3 @@ chromatic-build/
 # Git will not track empty directories by default
 # This is just documentation for developers
 # If you need to track an empty folder, add a .gitkeep file
-.build.log

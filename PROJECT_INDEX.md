@@ -407,8 +407,7 @@ docs/
 │       └── hierarchical-audit-logging-comparison-2025.md
 ├── frontend/
 │   ├── README.md
-│   ├── api-types.md
-│   └── theme.md
+│   └── api-types.md
 └── decisions/
     ├── 001-tech-stack.md
     ├── 002-frontend-ui-stack.md

@@ -1370,7 +1370,6 @@ dotnet test --collect:"XPlat Code Coverage"
 |----------|------|-------------|
 | Frontend README | `docs/frontend/README.md` | Overview and setup |
 | Architecture | `docs/frontend/architecture.md` | Project structure |
-| Theme | `docs/frontend/theme.md` | Theming guide |
 | API Types | `docs/frontend/api-types.md` | Type generation |
 | Localization | `docs/frontend/localization-guide.md` | i18n setup |
 | Color Schema | `docs/frontend/COLOR_SCHEMA_GUIDE.md` | Color guidelines |

@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-01-24
 
 ---
 
@@ -20,12 +20,12 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,400+ tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,370+ tests.
 
 ### Key Statistics
 
 - **Lines of Code:** ~160,000
-- **Test Coverage:** 5,431 tests across Unit, Integration, and Architecture layers
+- **Test Coverage:** 5,374 tests across Unit, Integration, and Architecture layers
 - **Feature Modules:** 14 domain-driven modules
 - **API Endpoints:** 70+ REST endpoints (17 endpoint groups)
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
@@ -40,12 +40,12 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 5,431 tests across 4 projects
-│   ├── NOIR.Domain.UnitTests/    # 838 domain logic tests
-│   ├── NOIR.Application.UnitTests/ # 3,064 handler/service tests
-│   ├── NOIR.IntegrationTests/    # 515 API integration tests
+├── tests/                        # ✅ 5,374 tests across 4 projects
+│   ├── NOIR.Domain.UnitTests/    # 841 domain logic tests
+│   ├── NOIR.Application.UnitTests/ # 3,903 handler/service tests
+│   ├── NOIR.IntegrationTests/    # 605 API integration tests
 │   └── NOIR.ArchitectureTests/   # 25 architectural rule tests
-├── docs/                         # 📚 42 documentation files
+├── docs/                         # 📚 39 documentation files
 └── .github/                      # ⚙️  CI/CD workflows
 
 ```
@@ -678,9 +678,9 @@ public static partial class UserMapper
 
 ```
 tests/
-├── NOIR.Domain.UnitTests/           # Domain logic tests (838 tests)
-├── NOIR.Application.UnitTests/      # Handler, service, validator tests (3,064 tests)
-├── NOIR.IntegrationTests/           # API integration tests (515 tests)
+├── NOIR.Domain.UnitTests/           # Domain logic tests (841 tests)
+├── NOIR.Application.UnitTests/      # Handler, service, validator tests (3,903 tests)
+├── NOIR.IntegrationTests/           # API integration tests (605 tests)
 ├── NOIR.ArchitectureTests/          # Architecture rule validation (25 tests)
 └── coverage.runsettings             # Test coverage configuration
 ```
@@ -784,7 +784,6 @@ public void Domain_Should_Not_HaveDependencyOn_Application()
 |----------|---------|
 | [Frontend Overview](frontend/README.md) | Frontend architecture and setup |
 | [Architecture](frontend/architecture.md) | Component structure and patterns |
-| [Theme](frontend/theme.md) | Theme customization guide |
 | [API Types](frontend/api-types.md) | Type generation from backend |
 | [Localization](frontend/localization-guide.md) | i18n management |
 | [Color Schema](frontend/COLOR_SCHEMA_GUIDE.md) | Color system and palettes |
