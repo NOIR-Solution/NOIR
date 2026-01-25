@@ -465,7 +465,7 @@ This roadmap extends NOIR from an enterprise admin template to a **full e-commer
 ### E-commerce Phases
 | Phase | Feature | Priority | Complexity | Status |
 |-------|---------|----------|------------|--------|
-| **5** | Payment Foundation | Critical | High | ⏳ Pending |
+| **5** | Payment Foundation | Critical | High | ✅ Complete |
 | **6** | Vietnam Domestic Gateways + COD | Critical | High | ⏳ Pending |
 | **7** | International & Advanced | High | Medium | ⏳ Pending |
 | **8** | E-commerce Core | Critical | Very High | ⏳ Pending |
@@ -476,7 +476,10 @@ This roadmap extends NOIR from an enterprise admin template to a **full e-commer
 
 ---
 
-## Phase 5: Payment Foundation
+## Phase 5: Payment Foundation ✅ COMPLETE
+
+> **Status:** ✅ Complete (January 2026)
+> **Test Coverage:** All 5,374 tests passing
 
 ### 5.1 Overview
 Build gateway-agnostic payment infrastructure. Per-tenant credential storage (SaaS model).

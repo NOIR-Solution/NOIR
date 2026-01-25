@@ -1138,6 +1138,31 @@ Similar structure to Categories:
 
 > ⭐ **NEW FEATURE:** Complete payment gateway integration supporting multiple providers, transaction tracking, refund management, and webhook processing.
 
+### Real-Time Architecture
+
+- **SignalR Hub:** `PaymentHub` at `/hubs/payments`
+- **Client Interface:** `IPaymentClient` (strongly-typed)
+- **Abstraction:** `IPaymentHubContext` (injectable service)
+- **Connection:** Auto-join user/tenant groups on connect
+
+**Notification Types:**
+| Method | Event | Target Groups |
+|--------|-------|---------------|
+| `PaymentStatusChanged` | Payment status transition | `payment_{id}`, `order_{orderId}` |
+| `CodCollected` | COD cash collected | `cod_updates_{tenantId}`, `payment_{id}` |
+| `RefundStatusChanged` | Refund approved/rejected | `payment_{id}` |
+| `WebhookProcessed` | Webhook callback handled | `webhooks_{tenantId}` |
+
+**Client Groups:**
+- `user_{userId}` - Personal payment updates
+- `tenant_{tenantId}` - Tenant-wide payment events
+- `payment_{transactionId}` - Specific transaction tracking
+- `order_{orderId}` - Order payment tracking
+- `cod_updates_{tenantId}` - COD collection monitoring
+- `webhooks_{tenantId}` - Webhook processing monitoring
+
+---
+
 ### Gateway Management
 
 #### Configure Gateway

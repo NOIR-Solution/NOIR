@@ -461,6 +461,7 @@ app.MapPaymentEndpoints();
 // Map SignalR Hubs
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");
 app.MapHub<NOIR.Infrastructure.Hubs.LogStreamHub>("/hubs/logstream");
+app.MapHub<NOIR.Infrastructure.Hubs.PaymentHub>("/hubs/payments");
 
 // Hangfire Dashboard (requires Admin role in production, skip in Testing)
 if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))

@@ -249,7 +249,10 @@ NOIR.Infrastructure/
 │   └── EmailSettings.cs                 # SMTP configuration
 ├── Hubs/
 │   ├── NotificationHub.cs               # SignalR notifications
-│   └── DeveloperLogHub.cs               # SignalR log streaming
+│   ├── DeveloperLogHub.cs               # SignalR log streaming
+│   ├── PaymentHub.cs                    # ⭐ NEW: Real-time payment updates
+│   ├── IPaymentClient.cs                # ⭐ NEW: Payment hub client interface
+│   └── PaymentHubContext.cs             # ⭐ NEW: Payment hub abstraction (IPaymentHubContext)
 ├── Identity/
 │   ├── UserIdentityService.cs           # UserManager wrapper
 │   └── Authorization/
