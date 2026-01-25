@@ -2,7 +2,7 @@
 
 > **Complete reference of all features, commands, queries, and endpoints in the NOIR platform.**
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-01-25
 
 ---
 
@@ -13,6 +13,7 @@
 - [User Management](#user-management)
 - [Role & Permission Management](#role--permission-management)
 - [Multi-Tenancy](#multi-tenancy)
+- [Payment Processing](#payment-processing) ⭐ **NEW**
 - [Audit Logging](#audit-logging)
 - [Notifications](#notifications)
 - [Email Templates](#email-templates)
@@ -1129,6 +1130,312 @@ Similar structure to Categories:
 
 ---
 
+## Payment Processing
+
+**Namespace:** `NOIR.Application.Features.Payments`
+**Endpoint:** `/api/payments`
+**Permissions:** `payments:*`
+
+> ⭐ **NEW FEATURE:** Complete payment gateway integration supporting multiple providers, transaction tracking, refund management, and webhook processing.
+
+### Gateway Management
+
+#### Configure Gateway
+- **Command:** `ConfigureGatewayCommand`
+- **Endpoint:** `POST /api/payments/gateways`
+- **Permission:** `payments:gateways:write`
+- **Purpose:** Configure a payment gateway for the tenant
+- **Returns:** PaymentGatewayDto
+- **Validation:**
+  - Provider: Required, valid provider type
+  - DisplayName: Required, max 100 chars
+  - Credentials: Required, encrypted storage
+- **Audit:** IAuditableCommand (Handler + Entity levels)
+
+**Example Request:**
+```json
+{
+  "provider": "Stripe",
+  "displayName": "Stripe Credit Card",
+  "environment": "Sandbox",
+  "credentials": {
+    "apiKey": "sk_test_xxx",
+    "webhookSecret": "whsec_xxx"
+  },
+  "supportedCurrencies": ["USD", "EUR", "VND"],
+  "minAmount": 1.00,
+  "maxAmount": 10000.00
+}
+```
+
+#### Update Gateway
+- **Command:** `UpdateGatewayCommand`
+- **Endpoint:** `PUT /api/payments/gateways/{id}`
+- **Permission:** `payments:gateways:write`
+- **Purpose:** Update gateway configuration
+- **Returns:** Updated PaymentGatewayDto
+- **Audit:** IAuditableCommand
+
+#### Get Gateway
+- **Query:** `GetPaymentGatewayQuery`
+- **Endpoint:** `GET /api/payments/gateways/{id}`
+- **Permission:** `payments:gateways:read`
+- **Purpose:** Get specific gateway configuration
+- **Returns:** PaymentGatewayDto (credentials masked)
+
+#### Get Gateways
+- **Query:** `GetPaymentGatewaysQuery`
+- **Endpoint:** `GET /api/payments/gateways`
+- **Permission:** `payments:gateways:read`
+- **Purpose:** List all configured gateways
+- **Returns:** PagedResult<PaymentGatewayDto>
+
+#### Get Active Gateways
+- **Query:** `GetActiveGatewaysQuery`
+- **Endpoint:** `GET /api/payments/gateways/active`
+- **Permission:** `payments:read`
+- **Purpose:** Get active gateways for checkout
+- **Returns:** List<PaymentGatewayDto> (public info only)
+
+---
+
+### Payment Transactions
+
+#### Create Payment
+- **Command:** `CreatePaymentCommand`
+- **Endpoint:** `POST /api/payments/transactions`
+- **Permission:** `payments:write`
+- **Purpose:** Initiate a payment transaction
+- **Returns:** PaymentTransactionDto with redirect URL (if applicable)
+- **Validation:**
+  - OrderId: Required
+  - Amount: Required, positive
+  - Currency: Required, valid ISO code
+  - PaymentGatewayId: Required, active gateway
+  - PaymentMethod: Required
+- **Audit:** IAuditableCommand
+
+**Example Request:**
+```json
+{
+  "orderId": "order-123",
+  "amount": 99.99,
+  "currency": "USD",
+  "paymentGatewayId": "gateway-456",
+  "paymentMethod": "CreditCard",
+  "returnUrl": "https://example.com/checkout/complete",
+  "metadata": {
+    "customerEmail": "customer@example.com",
+    "orderReference": "ORD-2026-001"
+  }
+}
+```
+
+**Example Response:**
+```json
+{
+  "id": "txn-789",
+  "transactionNumber": "TXN-2026-000123",
+  "status": "Pending",
+  "amount": 99.99,
+  "currency": "USD",
+  "paymentMethod": "CreditCard",
+  "redirectUrl": "https://gateway.example.com/pay/xyz",
+  "expiresAt": "2026-01-25T12:30:00Z"
+}
+```
+
+#### Cancel Payment
+- **Command:** `CancelPaymentCommand`
+- **Endpoint:** `POST /api/payments/transactions/{id}/cancel`
+- **Permission:** `payments:write`
+- **Purpose:** Cancel a pending payment
+- **Returns:** Updated PaymentTransactionDto
+- **Validation:** Payment must be in cancellable state (Pending, RequiresAction)
+- **Audit:** IAuditableCommand
+
+#### Get Transaction
+- **Query:** `GetPaymentTransactionQuery`
+- **Endpoint:** `GET /api/payments/transactions/{id}`
+- **Permission:** `payments:read`
+- **Purpose:** Get specific transaction details
+- **Returns:** PaymentTransactionDto
+
+#### Get Transactions
+- **Query:** `GetPaymentTransactionsQuery`
+- **Endpoint:** `GET /api/payments/transactions`
+- **Permission:** `payments:read`
+- **Purpose:** List transactions with filtering
+- **Query Params:**
+  - `status` - Filter by PaymentStatus
+  - `paymentMethod` - Filter by PaymentMethod
+  - `dateFrom` / `dateTo` - Date range
+  - `orderId` - Filter by order
+- **Returns:** PagedResult<PaymentTransactionDto>
+
+#### Get Order Payments
+- **Query:** `GetOrderPaymentsQuery`
+- **Endpoint:** `GET /api/payments/orders/{orderId}/payments`
+- **Permission:** `payments:read`
+- **Purpose:** Get all payments for a specific order
+- **Returns:** List<PaymentTransactionDto>
+
+---
+
+### Cash-on-Delivery (COD)
+
+#### Get Pending COD Payments
+- **Query:** `GetPendingCodPaymentsQuery`
+- **Endpoint:** `GET /api/payments/cod/pending`
+- **Permission:** `payments:cod:read`
+- **Purpose:** List pending COD payments awaiting collection
+- **Returns:** PagedResult<PaymentTransactionDto>
+
+#### Confirm COD Collection
+- **Command:** `ConfirmCodCollectionCommand`
+- **Endpoint:** `POST /api/payments/transactions/{id}/cod-collected`
+- **Permission:** `payments:cod:write`
+- **Purpose:** Mark COD payment as collected by courier
+- **Returns:** Updated PaymentTransactionDto
+- **Validation:** Payment must be COD method with CodPending status
+- **Audit:** IAuditableCommand
+
+**Example Request:**
+```json
+{
+  "collectorName": "John Courier",
+  "collectedAmount": 99.99
+}
+```
+
+---
+
+### Refunds
+
+#### Request Refund
+- **Command:** `RequestRefundCommand`
+- **Endpoint:** `POST /api/payments/transactions/{id}/refund`
+- **Permission:** `payments:refunds:write`
+- **Purpose:** Request a refund for a paid transaction
+- **Returns:** RefundDto
+- **Validation:**
+  - Amount: Required, positive, <= original amount
+  - Reason: Required
+- **Audit:** IAuditableCommand
+
+**Example Request:**
+```json
+{
+  "amount": 49.99,
+  "reason": "CustomerRequest",
+  "reasonDetail": "Customer changed their mind about the product"
+}
+```
+
+#### Approve Refund
+- **Command:** `ApproveRefundCommand`
+- **Endpoint:** `POST /api/payments/refunds/{id}/approve`
+- **Permission:** `payments:refunds:approve`
+- **Purpose:** Approve a pending refund request
+- **Returns:** Updated RefundDto
+- **Audit:** IAuditableCommand
+
+#### Reject Refund
+- **Command:** `RejectRefundCommand`
+- **Endpoint:** `POST /api/payments/refunds/{id}/reject`
+- **Permission:** `payments:refunds:approve`
+- **Purpose:** Reject a pending refund request
+- **Returns:** Updated RefundDto
+- **Audit:** IAuditableCommand
+
+**Example Request:**
+```json
+{
+  "rejectionReason": "Outside return window"
+}
+```
+
+#### Get Refunds
+- **Query:** `GetRefundsQuery`
+- **Endpoint:** `GET /api/payments/refunds`
+- **Permission:** `payments:refunds:read`
+- **Purpose:** List refunds with filtering
+- **Query Params:**
+  - `status` - Filter by RefundStatus
+  - `transactionId` - Filter by transaction
+- **Returns:** PagedResult<RefundDto>
+
+---
+
+### Webhooks
+
+#### Process Webhook
+- **Command:** `ProcessWebhookCommand`
+- **Endpoint:** `POST /api/payments/webhooks/{provider}`
+- **Permission:** Public endpoint (signature verified)
+- **Purpose:** Handle payment provider webhook callbacks
+- **Returns:** HTTP 200 OK on success
+- **Security:**
+  - Signature verification per provider
+  - Idempotency via GatewayEventId
+  - Automatic retry handling
+- **Audit:** Webhook log created
+
+#### Get Webhook Logs
+- **Query:** `GetWebhookLogsQuery`
+- **Endpoint:** `GET /api/payments/webhooks/logs`
+- **Permission:** `payments:webhooks:read`
+- **Purpose:** View webhook processing history
+- **Query Params:**
+  - `provider` - Filter by provider
+  - `status` - Filter by ProcessingStatus
+  - `paymentTransactionId` - Filter by transaction
+- **Returns:** PagedResult<WebhookLogDto>
+
+---
+
+### Payment Enums
+
+#### PaymentStatus
+| Value | Description |
+|-------|-------------|
+| `Pending` | Payment created, awaiting user action |
+| `Processing` | Payment being processed by gateway |
+| `RequiresAction` | Additional action needed (3DS, OTP) |
+| `Authorized` | Payment authorized, not yet captured |
+| `Paid` | Payment successfully completed |
+| `Failed` | Payment failed |
+| `Cancelled` | Payment cancelled by user/system |
+| `Expired` | Payment expired before completion |
+| `Refunded` | Fully refunded |
+| `PartialRefund` | Partially refunded |
+| `CodPending` | COD payment awaiting collection |
+| `CodCollected` | COD payment collected |
+
+#### PaymentMethod
+| Value | Description |
+|-------|-------------|
+| `CreditCard` | Credit card payment |
+| `DebitCard` | Debit card payment |
+| `EWallet` | Digital wallet (MoMo, ZaloPay, etc.) |
+| `QRCode` | QR code payment |
+| `BankTransfer` | Bank transfer |
+| `Installment` | Installment payment |
+| `COD` | Cash on delivery |
+| `BuyNowPayLater` | BNPL services |
+
+#### RefundStatus
+| Value | Description |
+|-------|-------------|
+| `Pending` | Refund requested, awaiting approval |
+| `Approved` | Refund approved, awaiting processing |
+| `Processing` | Refund being processed by gateway |
+| `Completed` | Refund completed |
+| `Rejected` | Refund rejected |
+| `Failed` | Refund processing failed |
+
+---
+
 ## Feature Matrix
 
 ### Feature Availability by Role
@@ -1139,6 +1446,7 @@ Similar structure to Categories:
 | **Roles** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Permissions** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Tenants** | ✅ CRUD | ❌ | ❌ |
+| **Payments** | ✅ All tenants | ✅ Own tenant | ✅ Own orders |
 | **Audit Logs** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Notifications** | ❌ (system-level) | ✅ | ✅ |
 | **Email Templates** | ✅ Platform defaults | ✅ Tenant overrides | ❌ |
@@ -1157,6 +1465,7 @@ Similar structure to Categories:
 | `/api/roles` | 4 | Role CRUD |
 | `/api/permissions` | 4 | Permission assignment |
 | `/api/tenants` | 6 | Tenant management |
+| `/api/payments` | 15 | ⭐ **NEW:** Transactions, gateways, refunds, webhooks, COD |
 | `/api/audit` | 3 | Audit logs, entity history, export |
 | `/api/notifications` | 4 | Notification CRUD |
 | `/api/email-templates` | 4 | Template customization |
@@ -1166,7 +1475,7 @@ Similar structure to Categories:
 | `/api/blog/posts` | 6 | Blog post CRUD |
 | `/api/blog/categories` | 4 | Category CRUD |
 | `/api/blog/tags` | 4 | Tag CRUD |
-| **Total** | **63** | |
+| **Total** | **78** | |
 
 ### Commands vs Queries
 
@@ -1177,6 +1486,7 @@ Similar structure to Categories:
 | Roles | 3 | 2 | 5 |
 | Permissions | 2 | 2 | 4 |
 | Tenants | 4 | 4 | 8 |
+| **Payments** | **9** | **9** | **18** |
 | Audit | 1 | 2 | 3 |
 | Notifications | 3 | 2 | 5 |
 | Email Templates | 1 | 3 | 4 |
@@ -1186,7 +1496,7 @@ Similar structure to Categories:
 | Blog Categories | 3 | 1 | 4 |
 | Blog Tags | 3 | 1 | 4 |
 | Developer Logs | 0 | 1 | 1 |
-| **Total** | **39** | **27** | **66** |
+| **Total** | **48** | **36** | **84** |
 
 ---
 
@@ -1200,5 +1510,21 @@ Similar structure to Categories:
 
 ---
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-01-25
+**Version:** 2.2
 **Maintainer:** NOIR Team
+
+---
+
+## Changelog
+
+### Version 2.2 (2026-01-25)
+- Added **Payment Processing** feature section with 9 commands, 9 queries
+- Added Payment gateway management documentation
+- Added Payment transaction lifecycle documentation
+- Added Refund workflow documentation
+- Added COD (Cash-on-Delivery) documentation
+- Added Webhook processing documentation
+- Updated Feature Matrix with Payments role access
+- Updated API Endpoints Summary (now 78 total endpoints)
+- Updated Commands vs Queries (now 84 total)

@@ -2,7 +2,7 @@
 
 > **Your comprehensive guide to navigating all NOIR documentation.**
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-25
 
 ---
 
@@ -75,12 +75,13 @@
 2. User Management (CRUD, Role Assignment)
 3. Role & Permission Management
 4. Multi-Tenancy
-5. Audit Logging
-6. Notifications (SignalR)
-7. Email Templates
-8. Media Management
-9. Blog CMS (Posts, Categories, Tags)
-10. Developer Tools (Log Streaming)
+5. **Payment Processing** ⭐ NEW (Gateways, Transactions, Refunds, Webhooks, COD)
+6. Audit Logging
+7. Notifications (SignalR)
+8. Email Templates
+9. Media Management
+10. Blog CMS (Posts, Categories, Tags)
+11. Developer Tools (Log Streaming)
 
 ---
 

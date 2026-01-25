@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-23
-**Version:** 2.3
+**Last Updated:** 2026-01-25
+**Version:** 2.4
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -640,6 +640,53 @@ All OTP-based features (Password Reset, Email Change, Phone Verification, etc.) 
 | Query | `GetTenantByIdQuery` | `Queries/GetById/` |
 
 **Related:** [TenantEndpoints](#tenant-endpoints)
+
+#### Payments Feature (NEW)
+**Path:** `Features/Payments/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreatePaymentCommand` | `Commands/CreatePayment/` |
+| Command | `CancelPaymentCommand` | `Commands/CancelPayment/` |
+| Command | `ConfigureGatewayCommand` | `Commands/ConfigureGateway/` |
+| Command | `UpdateGatewayCommand` | `Commands/UpdateGateway/` |
+| Command | `ProcessWebhookCommand` | `Commands/ProcessWebhook/` |
+| Command | `RequestRefundCommand` | `Commands/RequestRefund/` |
+| Command | `ApproveRefundCommand` | `Commands/ApproveRefund/` |
+| Command | `RejectRefundCommand` | `Commands/RejectRefund/` |
+| Command | `ConfirmCodCollectionCommand` | `Commands/ConfirmCodCollection/` |
+| Query | `GetPaymentTransactionsQuery` | `Queries/GetPaymentTransactions/` |
+| Query | `GetPaymentTransactionQuery` | `Queries/GetPaymentTransaction/` |
+| Query | `GetOrderPaymentsQuery` | `Queries/GetOrderPayments/` |
+| Query | `GetPaymentGatewaysQuery` | `Queries/GetPaymentGateways/` |
+| Query | `GetPaymentGatewayQuery` | `Queries/GetPaymentGateway/` |
+| Query | `GetActiveGatewaysQuery` | `Queries/GetActiveGateways/` |
+| Query | `GetRefundsQuery` | `Queries/GetRefunds/` |
+| Query | `GetPendingCodPaymentsQuery` | `Queries/GetPendingCodPayments/` |
+| Query | `GetWebhookLogsQuery` | `Queries/GetWebhookLogs/` |
+| DTO | `PaymentGatewayDto`, `PaymentTransactionDto`, `RefundDto`, `WebhookLogDto` | `DTOs/` |
+| Spec | `PaymentGatewaySpecs`, `PaymentTransactionSpecs`, `WebhookLogSpecs` | `Specifications/` |
+
+**Service Interfaces:**
+- `IPaymentService` - Payment orchestration
+- `IPaymentGatewayFactory` - Gateway provider instantiation
+- `IPaymentGatewayProvider` - Gateway-specific implementation
+- `ICredentialEncryptionService` - Secure credential storage
+
+**Domain Entities:**
+- `PaymentGateway` - Per-tenant gateway configuration with encrypted credentials
+- `PaymentTransaction` - Full payment lifecycle tracking
+- `PaymentWebhookLog` - Webhook audit trail with processing status
+- `Refund` - Refund tracking with approval workflow
+
+**Enums:**
+- `PaymentStatus` - Pending, Processing, Authorized, Paid, Failed, Cancelled, Refunded, CodPending
+- `PaymentMethod` - CreditCard, DebitCard, EWallet, QRCode, BankTransfer, COD, BuyNowPayLater
+- `RefundStatus` - Pending, Approved, Processing, Completed, Rejected, Failed
+- `GatewayEnvironment` - Sandbox, Production
+- `GatewayHealthStatus` - Unknown, Healthy, Degraded, Unhealthy
+
+**Related:** [PaymentEndpoints](#payment-endpoints), [FEATURE_CATALOG - Payment Processing](FEATURE_CATALOG.md#payment-processing)
 
 #### Blog Feature (CMS)
 **Path:** `Features/Blog/`

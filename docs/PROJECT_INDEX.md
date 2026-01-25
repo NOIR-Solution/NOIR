@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-01-24
+**Last Updated:** 2026-01-25
 
 ---
 
@@ -24,10 +24,11 @@
 
 ### Key Statistics
 
-- **Lines of Code:** ~160,000
-- **Test Coverage:** 5,374 tests across Unit, Integration, and Architecture layers
-- **Feature Modules:** 14 domain-driven modules
-- **API Endpoints:** 70+ REST endpoints (17 endpoint groups)
+- **Lines of Code:** ~165,000
+- **Test Coverage:** 5,374+ tests across Unit, Integration, and Architecture layers
+- **Feature Modules:** 15 domain-driven modules (including new Payments module)
+- **API Endpoints:** 80+ REST endpoints (18 endpoint groups)
+- **Domain Entities:** 26 entities, 11 enums, 8 domain events
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
 
 ### Directory Structure
@@ -80,11 +81,26 @@ NOIR.Domain/
 │   ├── MediaFile.cs                     # File storage tracking
 │   ├── Post.cs                          # Blog post
 │   ├── PostCategory.cs                  # Blog category
-│   └── PostTag.cs                       # Blog tag
+│   ├── PostTag.cs                       # Blog tag
+│   └── Payment/                         # ⭐ NEW: Payment domain
+│       ├── PaymentGateway.cs            # Gateway configuration (encrypted credentials)
+│       ├── PaymentTransaction.cs        # Payment lifecycle tracking
+│       ├── PaymentWebhookLog.cs         # Webhook audit trail
+│       └── Refund.cs                    # Refund tracking with approval workflow
 ├── Enums/                               # Domain enumerations
 │   ├── AuditOperationType.cs            # CRUD operations
 │   ├── NotificationType.cs              # Notification types
-│   └── PostStatus.cs                    # Draft, Published, Archived
+│   ├── PostStatus.cs                    # Draft, Published, Archived
+│   ├── PaymentStatus.cs                 # ⭐ NEW: Payment lifecycle states
+│   ├── PaymentMethod.cs                 # ⭐ NEW: Card, eWallet, COD, etc.
+│   ├── RefundStatus.cs                  # ⭐ NEW: Refund workflow states
+│   ├── RefundReason.cs                  # ⭐ NEW: Refund reasons
+│   ├── GatewayEnvironment.cs            # ⭐ NEW: Sandbox/Production
+│   ├── GatewayHealthStatus.cs           # ⭐ NEW: Gateway operational status
+│   └── WebhookProcessingStatus.cs       # ⭐ NEW: Webhook processing states
+├── Events/                              # ⭐ NEW: Domain events
+│   └── Payment/                         # Payment domain events
+│       └── PaymentEvents.cs             # Created, Succeeded, Failed, Refunded
 ├── Interfaces/
 │   ├── IRepository.cs                   # Generic repository
 │   ├── ISpecification.cs                # Specification pattern
@@ -147,6 +163,7 @@ NOIR.Application/
 │   ├── Roles/                           # Role management
 │   ├── Permissions/                     # Permission management
 │   ├── Tenants/                         # Tenant administration
+│   ├── Payments/                        # ⭐ NEW: Payment processing
 │   ├── Audit/                           # Audit log queries
 │   ├── Notifications/                   # User notifications
 │   ├── EmailTemplates/                  # Email template CRUD
@@ -191,6 +208,7 @@ Features/{Feature}/
 | **Roles** | CreateRole, UpdateRole, DeleteRole | GetRoles, GetRoleById | Role management |
 | **Permissions** | AssignToRole, RemoveFromRole | GetRolePermissions, GetUserPermissions | Permission assignment |
 | **Tenants** | CreateTenant, UpdateTenant, DeleteTenant, RestoreTenant | GetTenants, GetTenantById, GetTenantSettings, GetArchivedTenants | Multi-tenant administration |
+| **Payments** | CreatePayment, CancelPayment, ConfigureGateway, UpdateGateway, ProcessWebhook, RequestRefund, ApproveRefund, RejectRefund, ConfirmCodCollection | GetPaymentTransactions, GetPaymentTransaction, GetOrderPayments, GetPaymentGateways, GetPaymentGateway, GetActiveGateways, GetRefunds, GetPendingCodPayments, GetWebhookLogs | ⭐ **NEW:** Payment gateway integration, transactions, refunds |
 | **Audit** | BulkExport | GetAuditLogs, GetEntityHistory | Audit log queries and export |
 | **Notifications** | MarkAsRead, MarkAllAsRead, DeleteNotification | GetNotifications, GetUnreadCount | User notifications |
 | **EmailTemplates** | UpdateEmailTemplate | GetEmailTemplates, GetEmailTemplateById | Template customization |
@@ -308,6 +326,7 @@ NOIR.Web/
 │   ├── RoleEndpoints.cs                 # /api/roles/*
 │   ├── PermissionEndpoints.cs           # /api/permissions/*
 │   ├── TenantEndpoints.cs               # /api/tenants/*
+│   ├── PaymentEndpoints.cs              # ⭐ NEW: /api/payments/*
 │   ├── AuditEndpoints.cs                # /api/audit/*
 │   ├── NotificationEndpoints.cs         # /api/notifications/*
 │   ├── EmailTemplateEndpoints.cs        # /api/email-templates/*
@@ -347,6 +366,7 @@ NOIR.Web/
 | **Roles** | `/api/roles` | CRUD, permissions |
 | **Permissions** | `/api/permissions` | assign, remove, list |
 | **Tenants** | `/api/tenants` | CRUD, archive, restore |
+| **Payments** | `/api/payments` | ⭐ **NEW:** transactions, gateways, refunds, webhooks, COD |
 | **Audit** | `/api/audit` | logs, entity-history, export |
 | **Notifications** | `/api/notifications` | list, mark-read, delete |
 | **Email Templates** | `/api/email-templates` | CRUD, preview |
@@ -444,6 +464,46 @@ NOIR.Web/
 **Tests:** `tests/NOIR.IntegrationTests/Features/Tenants/`
 
 **Docs:** [Tenant ID Interceptor](backend/architecture/tenant-id-interceptor.md)
+
+---
+
+### Payment Processing (NEW)
+
+**Files:** `src/NOIR.Application/Features/Payments/`
+
+- **Gateway Configuration** - Multi-provider support with encrypted credentials
+- **Transactions** - Full payment lifecycle tracking (Pending → Paid/Failed)
+- **Refunds** - Request, approve/reject workflow with audit trail
+- **Webhooks** - Process payment provider callbacks with signature verification
+- **COD Support** - Cash-on-Delivery collection confirmation
+
+**Key Files:**
+- `Commands/CreatePayment/CreatePaymentCommand.cs` - Initiate payment (implements IAuditableCommand)
+- `Commands/ConfigureGateway/ConfigureGatewayCommand.cs` - Gateway setup
+- `Commands/ProcessWebhook/ProcessWebhookCommand.cs` - Webhook handling
+- `Commands/RequestRefund/RequestRefundCommand.cs` - Refund workflow
+- `Queries/GetPaymentTransactions/GetPaymentTransactionsQuery.cs` - Transaction list
+
+**Domain Entities:**
+- `PaymentGateway` - Gateway configuration (Provider, EncryptedCredentials, WebhookSecret)
+- `PaymentTransaction` - Transaction lifecycle (Amount, Status, PaymentMethod)
+- `PaymentWebhookLog` - Webhook audit (EventType, ProcessingStatus)
+- `Refund` - Refund tracking (Amount, Status, Reason, ApprovedBy)
+
+**Enums:**
+- `PaymentStatus` - Pending, Processing, Authorized, Paid, Failed, Cancelled, Refunded
+- `PaymentMethod` - Card, eWallet, QRCode, BankTransfer, COD, BuyNowPayLater
+- `RefundStatus` - Pending, Approved, Processing, Completed, Rejected, Failed
+- `GatewayEnvironment` - Sandbox, Production
+- `GatewayHealthStatus` - Unknown, Healthy, Degraded, Unhealthy
+
+**Services:**
+- `IPaymentService` - Payment orchestration abstraction
+- `IPaymentGatewayFactory` - Gateway provider instantiation
+- `IPaymentGatewayProvider` - Gateway-specific implementation interface
+- `ICredentialEncryptionService` - Credential encryption/decryption
+
+**Tests:** `tests/NOIR.Application.UnitTests/Features/Payments/`, `tests/NOIR.IntegrationTests/Features/Payments/`
 
 ---
 
@@ -777,6 +837,7 @@ public void Domain_Should_Not_HaveDependencyOn_Application()
 | [JSON Enum Serialization](backend/patterns/json-enum-serialization.md) | String-based enum serialization |
 | [JWT Refresh Token](backend/patterns/jwt-refresh-token.md) | Token rotation and security |
 | [Tenant Isolation](backend/architecture/tenant-id-interceptor.md) | Multi-tenancy implementation |
+| [Payment Gateway Pattern](backend/patterns/payment-gateway-abstraction.md) | ⭐ **NEW:** Payment provider abstraction |
 
 ### Frontend
 
@@ -854,6 +915,7 @@ npm run generate:api
 | **Validation** | `*Validator.cs` | [Validation Guide](backend/patterns/validation.md) |
 | **Email Templates** | `EmailTemplate` entity | Knowledge Base |
 | **SignalR Hubs** | `NotificationHub`, `DeveloperLogHub` | Knowledge Base |
+| **Payment Processing** | `Features/Payments/`, `Services/Payment/` | ⭐ NEW: [Payment Gateway](backend/patterns/payment-gateway-abstraction.md) |
 
 ---
 
@@ -907,7 +969,19 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-01-23
-**Version:** 2.1
+**Last Updated:** 2026-01-25
+**Version:** 2.2
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
+
+---
+
+## Changelog
+
+### Version 2.2 (2026-01-25)
+- Added **Payments** feature module with 9 commands, 9 queries
+- Added 4 new Payment domain entities (PaymentGateway, PaymentTransaction, PaymentWebhookLog, Refund)
+- Added 7 new Payment enums (PaymentStatus, PaymentMethod, RefundStatus, etc.)
+- Added Payment domain events
+- Updated statistics: 15 feature modules, 80+ endpoints, 26 entities
+- Added Payment Gateway pattern documentation reference
