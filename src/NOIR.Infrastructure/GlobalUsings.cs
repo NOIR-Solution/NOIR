@@ -168,7 +168,9 @@ global using NOIR.Infrastructure.Media;
 // NOIR Domain Entities
 global using NOIR.Domain.Entities;
 global using NOIR.Domain.Entities.Payment;
+global using NOIR.Domain.Entities.Product;
 global using NOIR.Domain.Events.Payment;
+global using NOIR.Domain.Events.Product;
 global using NOIR.Application.Features.Payments.Specifications;
 
 // Microsoft - Entity Framework Core Metadata

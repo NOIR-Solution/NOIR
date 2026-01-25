@@ -69,6 +69,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
     public DbSet<PaymentInstallment> PaymentInstallments => Set<PaymentInstallment>();
 
+    // E-commerce entities (Phase 8)
+    public DbSet<ProductCategory> ProductCategories => Set<ProductCategory>();
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
+    public DbSet<ProductImage> ProductImages => Set<ProductImage>();
+
     /// <summary>
     /// Configures global type conventions.
     /// This reduces repetitive configuration and ensures consistency.
