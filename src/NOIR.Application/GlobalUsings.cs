@@ -46,6 +46,8 @@ global using NOIR.Application.Features.Notifications.DTOs;
 global using NOIR.Application.Features.PlatformSettings.DTOs;
 global using NOIR.Application.Features.TenantSettings.DTOs;
 global using NOIR.Application.Features.Tenants.DTOs;
+global using NOIR.Application.Features.Payments.DTOs;
+global using NOIR.Application.Features.Payments.Specifications;
 global using NOIR.Application.Specifications;
 global using NOIR.Application.Specifications.Notifications;
 global using NOIR.Application.Specifications.PasswordResetOtps;
@@ -58,7 +60,9 @@ global using Finbuckle.MultiTenant.Abstractions;
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Entities.Payment;
 global using NOIR.Domain.Enums;
+global using NOIR.Domain.Events.Payment;
 global using NOIR.Domain.Interfaces;
 global using NOIR.Domain.Specifications;
 

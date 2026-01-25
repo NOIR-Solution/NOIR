@@ -157,6 +157,9 @@ public class LocalDbWebApplicationFactory : WebApplicationFactory<Program>, IAsy
                 });
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
+                // Suppress pending model changes warning for hand-written migrations
+                options.ConfigureWarnings(warnings =>
+                    warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
             });
 
             // Register interfaces

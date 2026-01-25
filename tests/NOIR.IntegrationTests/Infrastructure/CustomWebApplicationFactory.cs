@@ -173,6 +173,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
                 options.UseSqlServer(_connectionString);
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
+                // Suppress pending model changes warning for hand-written migrations
+                options.ConfigureWarnings(warnings =>
+                    warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
             });
 
             // Register interfaces

@@ -81,6 +81,16 @@ public static class Permissions
     public const string PlatformSettingsRead = "platform-settings:read";
     public const string PlatformSettingsManage = "platform-settings:manage";
 
+    // Payments
+    public const string PaymentsRead = "payments:read";
+    public const string PaymentsCreate = "payments:create";
+    public const string PaymentsManage = "payments:manage";
+    public const string PaymentGatewaysRead = "payment-gateways:read";
+    public const string PaymentGatewaysManage = "payment-gateways:manage";
+    public const string PaymentRefundsRead = "payment-refunds:read";
+    public const string PaymentRefundsManage = "payment-refunds:manage";
+    public const string PaymentWebhooksRead = "payment-webhooks:read";
+
     /// <summary>
     /// All permissions grouped by resource.
     /// </summary>
@@ -121,6 +131,10 @@ public static class Permissions
 
         public static readonly IReadOnlyList<string> PlatformSettings =
             [PlatformSettingsRead, PlatformSettingsManage];
+
+        public static readonly IReadOnlyList<string> Payments =
+            [PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
+             PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead];
     }
 
     /// <summary>
@@ -151,7 +165,10 @@ public static class Permissions
         // Tenant Settings
         TenantSettingsRead, TenantSettingsUpdate,
         // Platform Settings
-        PlatformSettingsRead, PlatformSettingsManage
+        PlatformSettingsRead, PlatformSettingsManage,
+        // Payments
+        PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
+        PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead
     ];
 
     /// <summary>
@@ -195,7 +212,10 @@ public static class Permissions
         // Blog within tenant
         BlogPostsRead, BlogPostsCreate, BlogPostsUpdate, BlogPostsDelete, BlogPostsPublish,
         BlogCategoriesRead, BlogCategoriesCreate, BlogCategoriesUpdate, BlogCategoriesDelete,
-        BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete
+        BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete,
+        // Payments within tenant
+        PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
+        PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead
     ];
 
     /// <summary>
@@ -275,7 +295,16 @@ public static class Permissions
             BlogTagsRead,
             BlogTagsCreate,
             BlogTagsUpdate,
-            BlogTagsDelete
+            BlogTagsDelete,
+            // Payments within tenant
+            PaymentsRead,
+            PaymentsCreate,
+            PaymentsManage,
+            PaymentGatewaysRead,
+            PaymentGatewaysManage,
+            PaymentRefundsRead,
+            PaymentRefundsManage,
+            PaymentWebhooksRead
         };
 
         /// <summary>

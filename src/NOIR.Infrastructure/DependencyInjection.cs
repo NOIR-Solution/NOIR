@@ -193,6 +193,10 @@ public static class DependencyInjection
         services.Configure<ApplicationSettings>(
             configuration.GetSection(ApplicationSettings.SectionName));
 
+        // Configure Payment settings
+        services.Configure<PaymentSettings>(
+            configuration.GetSection(PaymentSettings.SectionName));
+
         // Configure Image Processing settings
         services.AddOptions<ImageProcessingSettings>()
             .Bind(configuration.GetSection(ImageProcessingSettings.SectionName))

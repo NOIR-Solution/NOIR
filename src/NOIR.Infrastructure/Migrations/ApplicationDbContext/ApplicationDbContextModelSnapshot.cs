@@ -1293,6 +1293,555 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Payment.PaymentGateway", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EncryptedCredentials")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Environment")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("HealthStatus")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Unknown");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("LastHealthCheck")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal?>("MaxAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("MinAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("SupportedCurrencies")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)")
+                        .HasDefaultValue("[]");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("WebhookSecret")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebhookUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("Provider", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PaymentGateways_Provider_TenantId");
+
+                    b.HasIndex("TenantId", "IsActive", "SortOrder")
+                        .HasDatabaseName("IX_PaymentGateways_Tenant_Active_Sort");
+
+                    b.ToTable("PaymentGateways", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Payment.PaymentTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset?>("CodCollectedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CodCollectorName")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("ExchangeRate")
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("FailureCode")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(1000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal?>("GatewayFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("GatewayResponseJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GatewayTransactionId")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(45)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(45)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("MetadataJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("NetAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("PaidAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("PayerInfo")
+                        .HasMaxLength(1000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("PaymentGatewayId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("PaymentMethodDetail")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ReturnUrl")
+                        .HasMaxLength(2000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(30)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("TransactionNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GatewayTransactionId")
+                        .HasDatabaseName("IX_PaymentTransactions_GatewayTransactionId");
+
+                    b.HasIndex("IdempotencyKey", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PaymentTransactions_IdempotencyKey_TenantId")
+                        .HasFilter("[IdempotencyKey] IS NOT NULL");
+
+                    b.HasIndex("PaymentGatewayId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TransactionNumber", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PaymentTransactions_TransactionNumber_TenantId");
+
+                    b.HasIndex("OrderId", "TenantId")
+                        .HasDatabaseName("IX_PaymentTransactions_OrderId_TenantId");
+
+                    b.HasIndex("PaymentMethod", "Status")
+                        .HasDatabaseName("IX_PaymentTransactions_Method_Status");
+
+                    b.HasIndex("Status", "ExpiresAt")
+                        .HasDatabaseName("IX_PaymentTransactions_Status_Expires");
+
+                    b.HasIndex("TenantId", "Status", "CreatedAt")
+                        .HasDatabaseName("IX_PaymentTransactions_Tenant_Status_Created");
+
+                    b.ToTable("PaymentTransactions", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Payment.PaymentWebhookLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("GatewayEventId")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(45)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(45)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("PaymentGatewayId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PaymentTransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProcessingError")
+                        .HasMaxLength(2000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("ProcessingStatus")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Received");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RequestBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestHeaders")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RetryCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("SignatureValid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("SignatureValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GatewayEventId")
+                        .HasDatabaseName("IX_PaymentWebhookLogs_GatewayEventId");
+
+                    b.HasIndex("PaymentGatewayId")
+                        .HasDatabaseName("IX_PaymentWebhookLogs_GatewayId");
+
+                    b.HasIndex("PaymentTransactionId")
+                        .HasDatabaseName("IX_PaymentWebhookLogs_PaymentTransactionId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("ProcessingStatus", "RetryCount", "CreatedAt")
+                        .HasDatabaseName("IX_PaymentWebhookLogs_Status_Retry_Created");
+
+                    b.ToTable("PaymentWebhookLogs", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Payment.Refund", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("GatewayRefundId")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("GatewayResponseJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("PaymentTransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ProcessedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("ReasonDetail")
+                        .HasMaxLength(1000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("RefundNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RequestedBy")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentTransactionId")
+                        .HasDatabaseName("IX_Refunds_PaymentTransactionId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("Status", "TenantId", "CreatedAt")
+                        .HasDatabaseName("IX_Refunds_Status_Tenant_Created");
+
+                    b.ToTable("Refunds", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.Permission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2623,6 +3172,28 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
                     b.Navigation("Template");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Payment.PaymentTransaction", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Payment.PaymentGateway", "Gateway")
+                        .WithMany()
+                        .HasForeignKey("PaymentGatewayId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Gateway");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Payment.Refund", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Payment.PaymentTransaction", "PaymentTransaction")
+                        .WithMany("Refunds")
+                        .HasForeignKey("PaymentTransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PaymentTransaction");
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.Post", b =>
                 {
                     b.HasOne("NOIR.Domain.Entities.PostCategory", "Category")
@@ -2698,6 +3269,11 @@ namespace NOIR.Infrastructure.Migrations.ApplicationDbContext
             modelBuilder.Entity("NOIR.Domain.Entities.HttpRequestAuditLog", b =>
                 {
                     b.Navigation("HandlerAuditLogs");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Payment.PaymentTransaction", b =>
+                {
+                    b.Navigation("Refunds");
                 });
 
             modelBuilder.Entity("NOIR.Domain.Entities.Permission", b =>

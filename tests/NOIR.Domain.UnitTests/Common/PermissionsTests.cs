@@ -265,7 +265,8 @@ public class PermissionsTests
             + Permissions.Groups.PlatformSettings.Count
             + Permissions.Groups.BlogPosts.Count
             + Permissions.Groups.BlogCategories.Count
-            + Permissions.Groups.BlogTags.Count;
+            + Permissions.Groups.BlogTags.Count
+            + Permissions.Groups.Payments.Count;
 
         // Assert
         Permissions.All.Should().HaveCount(expectedCount);

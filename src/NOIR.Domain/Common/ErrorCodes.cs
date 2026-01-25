@@ -199,6 +199,55 @@ public static class ErrorCodes
         public const string Conflict = "NOIR-BIZ-3409";
     }
 
+
+    /// <summary>
+    /// Payment-related errors (PAY-xxx)
+    /// </summary>
+    public static class Payment
+    {
+        /// <summary>Payment transaction not found</summary>
+        public const string TransactionNotFound = "NOIR-PAY-001";
+
+        /// <summary>Payment gateway not found</summary>
+        public const string GatewayNotFound = "NOIR-PAY-002";
+
+        /// <summary>Payment gateway already exists</summary>
+        public const string GatewayAlreadyExists = "NOIR-PAY-003";
+
+        /// <summary>Payment gateway is not active</summary>
+        public const string GatewayNotActive = "NOIR-PAY-004";
+
+        /// <summary>Payment provider is not configured</summary>
+        public const string ProviderNotConfigured = "NOIR-PAY-005";
+
+        /// <summary>Payment initiation failed</summary>
+        public const string InitiationFailed = "NOIR-PAY-006";
+
+        /// <summary>Invalid payment status transition</summary>
+        public const string InvalidStatusTransition = "NOIR-PAY-007";
+
+        /// <summary>Refund not found</summary>
+        public const string RefundNotFound = "NOIR-PAY-008";
+
+        /// <summary>Invalid refund status</summary>
+        public const string InvalidRefundStatus = "NOIR-PAY-009";
+
+        /// <summary>Refund window has expired</summary>
+        public const string RefundWindowExpired = "NOIR-PAY-010";
+
+        /// <summary>Refund amount exceeds available balance</summary>
+        public const string RefundAmountExceedsBalance = "NOIR-PAY-011";
+
+        /// <summary>Invalid requester ID</summary>
+        public const string InvalidRequesterId = "NOIR-PAY-012";
+
+        /// <summary>Payment is not a COD payment</summary>
+        public const string NotCodPayment = "NOIR-PAY-013";
+
+        /// <summary>Invalid webhook signature</summary>
+        public const string InvalidWebhookSignature = "NOIR-PAY-014";
+    }
+
     /// <summary>
     /// External service errors (4xxx)
     /// </summary>
