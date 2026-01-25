@@ -312,7 +312,8 @@
     "ok": "OK",
     "resetPassword": "Reset Password",
     "selectAll": "Select All",
-    "clearAll": "Clear All"
+    "clearAll": "Clear All",
+    "configure": "Configure"
   },
   "labels": {
     "loading": "Loading...",
@@ -380,7 +381,8 @@
     "operationFailed": "Operation failed. Please try again.",
     "unauthorized": "You are not authorized to perform this action",
     "forbidden": "Access denied",
-    "serverError": "An unexpected error occurred. Please try again later."
+    "serverError": "An unexpected error occurred. Please try again later.",
+    "loadFailed": "Failed to load data"
   },
   "messages": {
     "saveSuccess": "Saved successfully",
@@ -507,7 +509,8 @@
       "regional": "Regional",
       "smtp": "SMTP",
       "emailTemplates": "Email Templates",
-      "legalPages": "Legal Pages"
+      "legalPages": "Legal Pages",
+      "paymentGateways": "Payment Gateways"
     },
     "branding": {
       "title": "Branding",
@@ -553,6 +556,61 @@
     "saveSuccess": "Settings saved successfully",
     "saveError": "Failed to save settings",
     "loadError": "Failed to load settings"
+  },
+  "paymentGateways": {
+    "title": "Payment Gateways",
+    "description": "Configure payment provider integrations for your tenant.",
+    "noGateways": "No payment gateways configured",
+    "noGatewaysDescription": "Configure payment gateways to start accepting payments from your customers.",
+    "configureGateway": "Configure Gateway",
+    "editConfiguration": "Edit Configuration",
+    "testConnection": "Test Connection",
+    "testing": "Testing...",
+    "connectionSuccess": "Connection successful",
+    "connectionFailed": "Connection failed",
+    "enable": "Enable",
+    "disable": "Disable",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "configured": "Configured",
+    "notConfigured": "Not Configured",
+    "lastCheck": "Last check",
+    "lastHealthCheck": "Last health check",
+    "never": "Never",
+    "environment": "Environment",
+    "sandbox": "Sandbox",
+    "production": "Production",
+    "productionWarning": "You are configuring production credentials. Ensure you have tested in sandbox first.",
+    "productionWarningTitle": "Switch to Production Mode",
+    "productionWarningMessage": "You are about to switch to production mode. Real transactions will be processed. Make sure your credentials are for the production environment.",
+    "confirmSwitch": "Confirm Switch",
+    "credentials": "Credentials",
+    "settings": "Settings",
+    "encryptedNote": "Credentials are encrypted at rest",
+    "saveConfiguration": "Save Configuration",
+    "saving": "Saving...",
+    "configureSuccess": "Gateway configured successfully",
+    "configureFailed": "Failed to configure gateway",
+    "updateSuccess": "Gateway updated successfully",
+    "updateFailed": "Failed to update gateway",
+    "toggleSuccess": "Gateway status updated",
+    "toggleFailed": "Failed to update gateway status",
+    "refreshed": "Gateway list refreshed",
+    "viewDocs": "View documentation",
+    "editTitle": "Edit {{name}}",
+    "configureTitle": "Configure {{name}}",
+    "editDescription": "Update your credentials",
+    "configureDescription": "Enter credentials to activate payments",
+    "status": {
+      "notConfigured": "Not Configured",
+      "active": "Active",
+      "configured": "Configured"
+    },
+    "fields": {
+      "displayName": "Display Name",
+      "displayNameHelp": "Shown to customers at checkout",
+      "environment": "Environment"
+    }
   },
   "audit": {
     "entityHistory": "Entity History",

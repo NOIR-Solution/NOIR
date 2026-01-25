@@ -466,7 +466,7 @@ This roadmap extends NOIR from an enterprise admin template to a **full e-commer
 | Phase | Feature | Priority | Complexity | Status |
 |-------|---------|----------|------------|--------|
 | **5** | Payment Foundation | Critical | High | ✅ Complete |
-| **6** | Vietnam Domestic Gateways + COD | Critical | High | ⏳ Pending |
+| **6** | Vietnam Domestic Gateways + COD | Critical | High | ✅ Complete |
 | **7** | International & Advanced | High | Medium | ⏳ Pending |
 | **8** | E-commerce Core | Critical | Very High | ⏳ Pending |
 | **9** | Customer Management | Medium | Medium | ⏳ Pending |
@@ -1149,7 +1149,10 @@ public static class Payment
 
 ---
 
-## Phase 6: Vietnam Domestic Gateways + COD
+## Phase 6: Vietnam Domestic Gateways + COD ✅ COMPLETE
+
+> **Status:** ✅ Complete (January 2026)
+> **Test Coverage:** All 5,421 tests passing (47 new payment signature tests added)
 
 ### 6.1 Gateway Priority & Settlement
 | Gateway | Users | Settlement | COD Support | Priority |
@@ -1157,7 +1160,10 @@ public static class Payment
 | **MoMo** | 60M+ | T+0/T+1 | No | 1 |
 | **VNPay** | Leader | T+1 | No | 2 |
 | **ZaloPay** | Growing | T+1 | No | 3 |
-| **COD** | 20-30% | Manual | Yes (core) | 4 |
+| **SePay** | QR/Bank Transfer | Instant (T+0) | No | 4 |
+| **COD** | 20-30% | Manual | Yes (core) | 5 |
+
+> **SePay Note:** Unlike redirect-based gateways, SePay uses VietQR + direct bank transfer + webhook confirmation. Lower fees (~50% reduction), instant settlement, 30+ banks supported.
 
 ### 6.2 Implementation Structure
 ```
@@ -1183,6 +1189,13 @@ src/NOIR.Infrastructure/Payment/Providers/
 │   ├── ZaloPayResponseParser.cs
 │   ├── ZaloPayClient.cs
 │   └── ZaloPayWebhookHandler.cs
+├── SePay/
+│   ├── SePayProvider.cs           # IPaymentGatewayProvider implementation
+│   ├── SePaySettings.cs           # ApiToken, BankAccount, BankCode, WebhookAuth
+│   ├── SePayClient.cs             # API client for transaction queries
+│   ├── SePayWebhookHandler.cs     # Webhook receiver + payment matching
+│   ├── SePayQrCodeGenerator.cs    # VietQR URL generation
+│   └── SePayTransactionMatcher.cs # Reference code matching logic
 └── COD/
     ├── CodProvider.cs
     ├── CodSettings.cs
@@ -1300,6 +1313,86 @@ public class ZaloPaySettings
 4. ZaloPay sends callback
 5. Verify MAC signature
 6. Update transaction status
+
+### 6.6a SePay Integration (QR + Bank Transfer)
+
+**API Version:** SePay User API
+**Authentication:** Bearer Token (API Key)
+**Methods:** VietQR Code + Direct Bank Transfer
+
+**Key Difference from Other Gateways:**
+SePay does NOT use redirect-based payment flow. Instead:
+- Generate VietQR code containing bank account + amount + reference
+- Customer scans QR and transfers directly from their banking app
+- SePay monitors merchant's bank account for incoming transfers
+- Webhook sent when payment detected (within ~10 seconds)
+
+**Flow:**
+1. Create PaymentTransaction with unique reference code (e.g., `NOIR-ABC-TXN123`)
+2. Generate VietQR URL: `https://qr.sepay.vn/img?acc={BankAccount}&bank={BankCode}&amount={Amount}&des={Reference}`
+3. Display QR to customer
+4. Customer scans QR with banking app (VCB, MB, ACB, etc.)
+5. Customer completes bank transfer
+6. SePay detects balance change, sends webhook to configured URL
+7. Webhook handler matches payment by reference code in transfer content
+8. Verify amount matches, update transaction to Paid
+
+**SePaySettings.cs:**
+```csharp
+public class SePaySettings
+{
+    public const string SectionName = "SePay";
+
+    [Required]
+    public string ApiToken { get; set; } = string.Empty;
+
+    [Required]
+    public string BankAccountNumber { get; set; } = string.Empty;
+
+    [Required]
+    public string BankCode { get; set; } = string.Empty;  // e.g., "MBBank", "VCB"
+
+    [Required]
+    [Url]
+    public string ApiBaseUrl { get; set; } = "https://my.sepay.vn/userapi";
+
+    public string QrBaseUrl { get; set; } = "https://qr.sepay.vn/img";
+
+    public SePayWebhookAuthType WebhookAuthType { get; set; } = SePayWebhookAuthType.ApiKey;
+
+    public string? WebhookApiKey { get; set; }
+}
+
+public enum SePayWebhookAuthType { None, ApiKey, OAuth2 }
+```
+
+**Webhook Payload:**
+```json
+{
+  "id": 123456,
+  "gateway": "MBBank",
+  "transactionDate": "2024-01-25 10:30:00",
+  "accountNumber": "1234567890",
+  "code": "TXN123",
+  "content": "NOIR-ABC-TXN123 Payment for Order",
+  "transferType": "in",
+  "transferAmount": 500000,
+  "accumulated": 1500000,
+  "referenceCode": "NOIR-ABC-TXN123"
+}
+```
+
+**Transaction Matching Logic:**
+1. Extract reference code from `content` or `referenceCode` field
+2. Query PaymentTransaction by reference (TransactionNumber)
+3. Verify `transferAmount` matches expected Amount
+4. If mismatch: flag for manual review, don't auto-confirm
+5. If match: mark as Paid, send SignalR notification
+
+**Timeout Handling:**
+- Background job queries SePay API every 5 minutes for transactions
+- Matches any pending transactions older than 30 minutes
+- Prevents missed webhooks from leaving transactions stuck
 
 ### 6.7 Signature Verification Tests
 

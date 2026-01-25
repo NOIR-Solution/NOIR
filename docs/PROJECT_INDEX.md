@@ -351,11 +351,29 @@ NOIR.Web/
 └── frontend/                            # React SPA (Vite)
     ├── src/
     │   ├── components/                  # Reusable components
+    │   │   └── ui/                      # shadcn/ui components
+    │   │       ├── combobox.tsx         # ⭐ Searchable dropdown with scroll, bank selection
+    │   │       └── ...                  # Button, Dialog, Input, etc.
     │   ├── contexts/                    # React contexts (Auth, Theme, Notification, Branding, Regional)
     │   ├── hooks/                       # Custom React hooks
+    │   │   ├── usePaymentGateways.ts    # ⭐ Payment gateway API hooks (TanStack Query)
+    │   │   └── ...                      # useLogin, useUsers, useRoles, etc.
     │   ├── layouts/                     # Layout components
     │   ├── pages/                       # Route pages
+    │   │   └── portal/admin/
+    │   │       ├── tenant-settings/     # Tabbed tenant settings
+    │   │       │   └── components/
+    │   │       │       └── PaymentGatewaysTab.tsx  # ⭐ Gateway configuration UI
+    │   │       └── payment-gateways/    # ⭐ Payment gateway management
+    │   │           └── components/
+    │   │               ├── GatewayCard.tsx           # Gateway provider cards
+    │   │               └── ConfigureGatewayDialog.tsx # Credential configuration
     │   ├── services/                    # API services
+    │   │   ├── paymentGateways.ts       # ⭐ Payment gateway API client
+    │   │   └── ...                      # auth, users, roles, etc.
+    │   ├── types/                       # TypeScript types
+    │   │   ├── payment.ts               # ⭐ Payment gateway types
+    │   │   └── ...                      # user, role, tenant types
     │   └── lib/                         # Utilities
     └── public/                          # Static assets
 ```
@@ -973,13 +991,22 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 ---
 
 **Last Updated:** 2026-01-25
-**Version:** 2.2
+**Version:** 2.3
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 2.3 (2026-01-25)
+- Updated frontend structure documentation with new components:
+  - `Combobox` component for searchable dropdowns (bank selection)
+  - `GatewayCard` component for payment gateway display
+  - `ConfigureGatewayDialog` component for credential configuration
+  - `PaymentGatewaysTab` component for tenant settings
+  - `usePaymentGateways` hook for payment gateway API integration
+- Added payment types and services documentation
 
 ### Version 2.2 (2026-01-25)
 - Added **Payments** feature module with 9 commands, 9 queries

@@ -78,6 +78,11 @@ public static class DependencyInjection
 #if DEBUG
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
+                // TODO: [TECH-DEBT] Remove after EF Core Roslyn tooling fix (2026-01-25)
+                // Issue: ReflectionTypeLoadException in dotnet ef migrations
+                // See: docs/KNOWLEDGE_BASE.md#ef-core-migration-tooling-workaround
+                options.ConfigureWarnings(warnings =>
+                    warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
 #endif
             });
 
@@ -196,6 +201,9 @@ public static class DependencyInjection
         // Configure Payment settings
         services.Configure<PaymentSettings>(
             configuration.GetSection(PaymentSettings.SectionName));
+
+        // Configure Payment Gateway providers (VNPay, MoMo, ZaloPay, COD)
+        services.AddPaymentGatewayServices(configuration);
 
         // Configure Image Processing settings
         services.AddOptions<ImageProcessingSettings>()

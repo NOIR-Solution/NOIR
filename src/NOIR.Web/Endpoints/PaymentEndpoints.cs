@@ -6,9 +6,11 @@ using NOIR.Application.Features.Payments.Commands.CreatePayment;
 using NOIR.Application.Features.Payments.Commands.ProcessWebhook;
 using NOIR.Application.Features.Payments.Commands.RejectRefund;
 using NOIR.Application.Features.Payments.Commands.RequestRefund;
+using NOIR.Application.Features.Payments.Commands.TestGatewayConnection;
 using NOIR.Application.Features.Payments.Commands.UpdateGateway;
 using NOIR.Application.Features.Payments.DTOs;
 using NOIR.Application.Features.Payments.Queries.GetActiveGateways;
+using NOIR.Application.Features.Payments.Queries.GetGatewaySchemas;
 using NOIR.Application.Features.Payments.Queries.GetOrderPayments;
 using NOIR.Application.Features.Payments.Queries.GetPaymentGateway;
 using NOIR.Application.Features.Payments.Queries.GetPaymentGateways;
@@ -285,6 +287,33 @@ public static class PaymentEndpoints
         .WithDescription("Updates gateway configuration. Pass null for fields to keep unchanged.")
         .Produces<PaymentGatewayDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Get gateway credential schemas
+        group.MapGet("/schemas", async (IMessageBus bus) =>
+        {
+            var query = new GetGatewaySchemasQuery();
+            var result = await bus.InvokeAsync<Result<GatewaySchemasDto>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PaymentGatewaysRead)
+        .WithName("GetGatewaySchemas")
+        .WithSummary("Get gateway credential schemas")
+        .WithDescription("Returns credential field definitions for all supported payment gateways.")
+        .Produces<GatewaySchemasDto>(StatusCodes.Status200OK);
+
+        // Test gateway connection
+        group.MapPost("/{id:guid}/test", async (Guid id, IMessageBus bus) =>
+        {
+            var command = new TestGatewayConnectionCommand(id);
+            var result = await bus.InvokeAsync<Result<TestConnectionResultDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PaymentGatewaysManage)
+        .WithName("TestGatewayConnection")
+        .WithSummary("Test gateway connection")
+        .WithDescription("Tests connectivity to a payment gateway using stored credentials.")
+        .Produces<TestConnectionResultDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 

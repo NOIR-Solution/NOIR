@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Editor } from '@tinymce/tinymce-react'
@@ -90,11 +90,14 @@ export default function EmailTemplateEditPage() {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const [searchParams, setSearchParams] = useSearchParams()
   const editorRef = useRef<TinyMCEEditor | null>(null)
 
   // Track editor initialization to prevent false "unsaved changes" from TinyMCE normalization
   const editorInitializedRef = useRef(false)
   const initialHtmlBodyRef = useRef<string | null>(null)
+  // Ref to handlePreview for use in useEffect without dependency cycle
+  const handlePreviewRef = useRef<(() => Promise<void>) | null>(null)
 
   // State
   const [template, setTemplate] = useState<EmailTemplateDto | null>(null)
@@ -154,6 +157,23 @@ export default function EmailTemplateEditPage() {
 
     loadTemplate()
   }, [id, navigate, t])
+
+  // Auto-open preview when navigated with ?mode=preview
+  useEffect(() => {
+    if (!template || loading) return
+
+    const mode = searchParams.get('mode')
+    if (mode === 'preview') {
+      // Clear the mode parameter from URL to prevent re-triggering
+      setSearchParams(prev => {
+        prev.delete('mode')
+        return prev
+      }, { replace: true })
+
+      // Trigger preview
+      handlePreviewRef.current?.()
+    }
+  }, [template, loading, searchParams, setSearchParams])
 
   // Track changes - compare against normalized initial values after TinyMCE initialization
   useEffect(() => {
@@ -242,6 +262,9 @@ export default function EmailTemplateEditPage() {
       setPreviewLoading(false)
     }
   }
+
+  // Assign to ref for use in auto-preview useEffect
+  handlePreviewRef.current = handlePreview
 
   // Handle revert to platform default
   const handleRevert = async () => {

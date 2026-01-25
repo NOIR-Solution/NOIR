@@ -35,7 +35,7 @@ const BlogCategoriesPage = lazy(() => import('@/pages/portal/blog/categories/Blo
 const BlogTagsPage = lazy(() => import('@/pages/portal/blog/tags/BlogTagsPage'))
 // Platform Settings
 const PlatformSettingsPage = lazy(() => import('@/pages/portal/admin/platform-settings/PlatformSettingsPage'))
-// Tenant Settings
+// Tenant Settings (includes Payment Gateways tab)
 const TenantSettingsPage = lazy(() => import('@/pages/portal/admin/tenant-settings/TenantSettingsPage'))
 // Email templates - edit page only (list is in Tenant Settings)
 import { EmailTemplateEditPage } from '@/pages/portal/email-templates'
@@ -104,6 +104,8 @@ function App() {
             {/* Admin Routes */}
             <Route path="admin/platform-settings" element={<Suspense fallback={<LazyFallback />}><PlatformSettingsPage /></Suspense>} />
             <Route path="admin/tenant-settings" element={<Suspense fallback={<LazyFallback />}><TenantSettingsPage /></Suspense>} />
+            {/* Payment Gateways redirect - now a tab in Tenant Settings */}
+            <Route path="admin/payment-gateways" element={<Navigate to="/portal/admin/tenant-settings?tab=paymentGateways" replace />} />
             <Route path="admin/tenants" element={<Suspense fallback={<LazyFallback />}><TenantsPage /></Suspense>} />
             <Route path="admin/tenants/:id" element={<Suspense fallback={<LazyFallback />}><TenantDetailPage /></Suspense>} />
             <Route path="admin/roles" element={<Suspense fallback={<LazyFallback />}><RolesPage /></Suspense>} />

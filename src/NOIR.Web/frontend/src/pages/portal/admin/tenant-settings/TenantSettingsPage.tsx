@@ -9,6 +9,7 @@ import {
   Mail,
   FileText,
   Scale,
+  CreditCard,
 } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
@@ -20,6 +21,7 @@ import {
   SmtpSettingsTab,
   EmailTemplatesTab,
   LegalPagesTab,
+  PaymentGatewaysTab,
 } from './components'
 
 /**
@@ -61,6 +63,7 @@ export default function TenantSettingsPage() {
       {/* Tabbed Content */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
         <TabsList className="flex-wrap h-auto">
+          {/* Core Identity & Business Info */}
           <TabsTrigger value="branding" className="cursor-pointer">
             <Palette className="h-4 w-4 mr-2" />
             {t('tenantSettings.tabs.branding')}
@@ -73,6 +76,12 @@ export default function TenantSettingsPage() {
             <Globe className="h-4 w-4 mr-2" />
             {t('tenantSettings.tabs.regional')}
           </TabsTrigger>
+          {/* Business Operations */}
+          <TabsTrigger value="paymentGateways" className="cursor-pointer">
+            <CreditCard className="h-4 w-4 mr-2" />
+            {t('tenantSettings.tabs.paymentGateways')}
+          </TabsTrigger>
+          {/* Communication Stack (SMTP before Templates - dependency order) */}
           <TabsTrigger value="smtp" className="cursor-pointer">
             <Mail className="h-4 w-4 mr-2" />
             {t('tenantSettings.tabs.smtp')}
@@ -81,12 +90,14 @@ export default function TenantSettingsPage() {
             <FileText className="h-4 w-4 mr-2" />
             {t('tenantSettings.tabs.emailTemplates')}
           </TabsTrigger>
+          {/* Compliance */}
           <TabsTrigger value="legalPages" className="cursor-pointer">
             <Scale className="h-4 w-4 mr-2" />
             {t('tenantSettings.tabs.legalPages')}
           </TabsTrigger>
         </TabsList>
 
+        {/* Core Identity & Business Info */}
         <TabsContent value="branding">
           <BrandingSettingsTab canEdit={canEdit} />
         </TabsContent>
@@ -96,15 +107,18 @@ export default function TenantSettingsPage() {
         <TabsContent value="regional">
           <RegionalSettingsTab canEdit={canEdit} />
         </TabsContent>
+        {/* Business Operations */}
+        <TabsContent value="paymentGateways">
+          <PaymentGatewaysTab />
+        </TabsContent>
+        {/* Communication Stack */}
         <TabsContent value="smtp">
           <SmtpSettingsTab canEdit={canEdit} />
         </TabsContent>
         <TabsContent value="emailTemplates">
-          <EmailTemplatesTab
-            onEdit={(id) => navigate(`/portal/email-templates/${id}`)}
-            onView={(id) => navigate(`/portal/email-templates/${id}?mode=preview`)}
-          />
+          <EmailTemplatesTab onEdit={(id) => navigate(`/portal/email-templates/${id}`)} />
         </TabsContent>
+        {/* Compliance */}
         <TabsContent value="legalPages">
           <LegalPagesTab onEdit={(id) => navigate(`/portal/legal-pages/${id}`)} />
         </TabsContent>

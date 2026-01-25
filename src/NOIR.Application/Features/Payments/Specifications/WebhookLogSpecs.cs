@@ -105,13 +105,14 @@ public sealed class RefundByIdSpec : Specification<Refund>
 }
 
 /// <summary>
-/// Get refund by ID for update (with tracking).
+/// Get refund by ID for update (with tracking and payment transaction included).
 /// </summary>
 public sealed class RefundByIdForUpdateSpec : Specification<Refund>
 {
     public RefundByIdForUpdateSpec(Guid id)
     {
         Query.Where(r => r.Id == id)
+             .Include(r => r.PaymentTransaction!)
              .AsTracking()
              .TagWith("RefundByIdForUpdate");
     }

@@ -159,6 +159,7 @@ global using NOIR.Infrastructure.Persistence.Configurations;
 global using NOIR.Infrastructure.Persistence.Interceptors;
 global using NOIR.Infrastructure.Persistence.Seeders;
 global using NOIR.Infrastructure.Services;
+global using NOIR.Infrastructure.Services.Payment;
 global using NOIR.Infrastructure.Storage;
 global using NOIR.Infrastructure.Localization;
 global using NOIR.Infrastructure.Caching;

@@ -263,7 +263,8 @@
       "regional": "Khu vực",
       "smtp": "SMTP",
       "emailTemplates": "Mẫu Email",
-      "legalPages": "Trang Pháp lý"
+      "legalPages": "Trang Pháp lý",
+      "paymentGateways": "Cổng thanh toán"
     },
     "branding": {
       "title": "Thương hiệu",
@@ -309,6 +310,61 @@
     "saveSuccess": "Đã lưu cài đặt thành công",
     "saveError": "Lưu cài đặt thất bại",
     "loadError": "Tải cài đặt thất bại"
+  },
+  "paymentGateways": {
+    "title": "Cổng Thanh toán",
+    "description": "Cấu hình tích hợp nhà cung cấp thanh toán cho tổ chức của bạn.",
+    "noGateways": "Chưa cấu hình cổng thanh toán",
+    "noGatewaysDescription": "Cấu hình cổng thanh toán để bắt đầu nhận thanh toán từ khách hàng.",
+    "configureGateway": "Cấu hình Cổng",
+    "editConfiguration": "Sửa Cấu hình",
+    "testConnection": "Kiểm tra Kết nối",
+    "testing": "Đang kiểm tra...",
+    "connectionSuccess": "Kết nối thành công",
+    "connectionFailed": "Kết nối thất bại",
+    "enable": "Bật",
+    "disable": "Tắt",
+    "enabled": "Đã bật",
+    "disabled": "Đã tắt",
+    "configured": "Đã cấu hình",
+    "notConfigured": "Chưa cấu hình",
+    "lastCheck": "Lần kiểm tra cuối",
+    "lastHealthCheck": "Kiểm tra sức khỏe lần cuối",
+    "never": "Chưa bao giờ",
+    "environment": "Môi trường",
+    "sandbox": "Sandbox",
+    "production": "Production",
+    "productionWarning": "Giao dịch thực sẽ được xử lý",
+    "productionWarningTitle": "Chuyển sang Chế độ Production",
+    "productionWarningMessage": "Bạn sắp chuyển sang chế độ production. Giao dịch thực sẽ được xử lý. Hãy đảm bảo thông tin xác thực của bạn là cho môi trường production.",
+    "confirmSwitch": "Xác nhận Chuyển đổi",
+    "credentials": "Thông tin xác thực",
+    "settings": "Cài đặt",
+    "encryptedNote": "Thông tin xác thực được mã hóa khi lưu trữ",
+    "saveConfiguration": "Lưu Cấu hình",
+    "saving": "Đang lưu...",
+    "configureSuccess": "Cấu hình cổng thành công",
+    "configureFailed": "Cấu hình cổng thất bại",
+    "updateSuccess": "Cập nhật cổng thành công",
+    "updateFailed": "Cập nhật cổng thất bại",
+    "toggleSuccess": "Đã cập nhật trạng thái cổng",
+    "toggleFailed": "Cập nhật trạng thái cổng thất bại",
+    "refreshed": "Đã làm mới danh sách cổng thanh toán",
+    "viewDocs": "Xem tài liệu",
+    "editTitle": "Sửa {{name}}",
+    "configureTitle": "Cấu hình {{name}}",
+    "editDescription": "Cập nhật thông tin xác thực của bạn",
+    "configureDescription": "Nhập thông tin xác thực để kích hoạt thanh toán",
+    "status": {
+      "notConfigured": "Chưa cấu hình",
+      "active": "Đang hoạt động",
+      "configured": "Đã cấu hình"
+    },
+    "fields": {
+      "displayName": "Tên hiển thị",
+      "displayNameHelp": "Hiển thị cho khách hàng khi thanh toán",
+      "environment": "Môi trường"
+    }
   },
   "legalPages": {
     "title": "Trang Pháp lý",
@@ -405,7 +461,8 @@
     "ok": "Đồng ý",
     "resetPassword": "Đặt lại mật khẩu",
     "selectAll": "Chọn tất cả",
-    "clearAll": "Bỏ chọn tất cả"
+    "clearAll": "Bỏ chọn tất cả",
+    "configure": "Cấu hình"
   },
   "labels": {
     "loading": "Đang tải...",
@@ -473,7 +530,8 @@
     "operationFailed": "Thao tác thất bại. Vui lòng thử lại.",
     "unauthorized": "Bạn không được phép thực hiện thao tác này",
     "forbidden": "Truy cập bị từ chối",
-    "serverError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
+    "serverError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
+    "loadFailed": "Không thể tải dữ liệu"
   },
   "messages": {
     "saveSuccess": "Lưu thành công",

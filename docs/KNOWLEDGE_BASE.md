@@ -26,7 +26,25 @@ A comprehensive cross-referenced guide to the NOIR codebase, patterns, and archi
 
 ## Recent Fixes & Improvements
 
-**Last Session:** 2026-01-23
+**Last Session:** 2026-01-25
+
+### EF Core Migration Tooling Workaround (2026-01-25)
+
+**Issue:** EF Core migration tools had a Roslyn compatibility issue (`ReflectionTypeLoadException` with `Microsoft.CodeAnalysis.VisualBasic.Workspaces`) that prevented:
+1. Creating new migrations via `dotnet ef migrations add`
+2. Application startup (failed with `PendingModelChangesWarning`)
+
+**Temporary Solution:** Suppressed `PendingModelChangesWarning` in DEBUG mode only:
+- Location: `src/NOIR.Infrastructure/DependencyInjection.cs:83-84`
+- Pattern already exists in test factories (`CustomWebApplicationFactory.cs`, `LocalDbWebApplicationFactory.cs`)
+- Allows development to continue while tooling issue is resolved
+
+**Follow-up Actions:**
+- Monitor EF Core/Roslyn package updates
+- Remove workaround once tooling is fixed
+- Test migration creation after each EF Core version update
+
+---
 
 ### Finbuckle.MultiTenant 10.0.2 Breaking Change Migration
 

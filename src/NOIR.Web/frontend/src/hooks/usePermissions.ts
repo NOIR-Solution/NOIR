@@ -171,6 +171,9 @@ export const Permissions = {
   // Platform Settings
   PlatformSettingsRead: 'platform-settings:read',
   PlatformSettingsManage: 'platform-settings:manage',
+  // Payment Gateways
+  PaymentGatewaysRead: 'payment-gateways:read',
+  PaymentGatewaysManage: 'payment-gateways:manage',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]
