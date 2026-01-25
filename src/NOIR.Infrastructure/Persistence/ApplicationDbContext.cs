@@ -64,6 +64,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<PaymentOperationLog> PaymentOperationLogs => Set<PaymentOperationLog>();
     public DbSet<Refund> Refunds => Set<Refund>();
 
+    // Subscription entities (Phase 7)
+    public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
+    public DbSet<Subscription> Subscriptions => Set<Subscription>();
+    public DbSet<PaymentInstallment> PaymentInstallments => Set<PaymentInstallment>();
+
     /// <summary>
     /// Configures global type conventions.
     /// This reduces repetitive configuration and ensures consistency.

@@ -154,6 +154,7 @@ public class PaymentTransaction : TenantAggregateRoot<Guid>
     // Navigation
     public virtual PaymentGateway? Gateway { get; private set; }
     public virtual ICollection<Refund> Refunds { get; private set; } = new List<Refund>();
+    public virtual ICollection<PaymentInstallment> Installments { get; private set; } = new List<PaymentInstallment>();
 
     public static PaymentTransaction Create(
         string transactionNumber,

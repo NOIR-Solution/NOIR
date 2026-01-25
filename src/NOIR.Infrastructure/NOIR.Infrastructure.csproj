@@ -80,6 +80,9 @@
         <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.2.0" />
         <PackageReference Include="NeoSolve.ImageSharp.AVIF" Version="1.3.0" />
         <PackageReference Include="ThumbHash" Version="2.1.1" />
+
+        <!-- Payment Gateways (Phase 7: International) -->
+        <PackageReference Include="Stripe.net" Version="48.0.0" />
     </ItemGroup>
 
     <ItemGroup>

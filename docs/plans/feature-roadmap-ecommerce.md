@@ -467,7 +467,7 @@ This roadmap extends NOIR from an enterprise admin template to a **full e-commer
 |-------|---------|----------|------------|--------|
 | **5** | Payment Foundation | Critical | High | ✅ Complete |
 | **6** | Vietnam Domestic Gateways + COD | Critical | High | ✅ Complete |
-| **7** | International & Advanced | High | Medium | ⏳ Pending |
+| **7** | International & Advanced | High | Medium | ✅ Complete |
 | **8** | E-commerce Core | Critical | Very High | ⏳ Pending |
 | **9** | Customer Management | Medium | Medium | ⏳ Pending |
 | **10** | Shipping Integration | High | High | ⏳ Pending |
@@ -1481,7 +1481,22 @@ interface PaymentMethodOption {
 
 ---
 
-## Phase 7: International & Advanced
+## Phase 7: International & Advanced ✅ COMPLETE
+
+> **Status:** ✅ Complete (January 2026)
+> **Test Coverage:** All 5,421 tests passing
+
+### 7.0 Overview
+
+Phase 7 adds international payment capabilities with Stripe integration, PayOS support for Vietnam, subscription billing infrastructure, installment payments, and multi-currency conversion services.
+
+**Implemented Components:**
+- Stripe payment gateway provider (Payment Intents, 3D Secure, webhooks)
+- PayOS payment gateway provider (modern Vietnam gateway with QR payments)
+- Subscription billing domain entities (SubscriptionPlan, Subscription)
+- Installment payment entity (PaymentInstallment)
+- Multi-currency service with exchange rate caching
+- Application layer DTOs and specifications
 
 ### 7.1 Stripe Integration
 

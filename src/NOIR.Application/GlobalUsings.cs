@@ -48,6 +48,8 @@ global using NOIR.Application.Features.TenantSettings.DTOs;
 global using NOIR.Application.Features.Tenants.DTOs;
 global using NOIR.Application.Features.Payments.DTOs;
 global using NOIR.Application.Features.Payments.Specifications;
+global using NOIR.Application.Features.Subscriptions.DTOs;
+global using NOIR.Application.Features.Subscriptions.Specifications;
 global using NOIR.Application.Specifications;
 global using NOIR.Application.Specifications.Notifications;
 global using NOIR.Application.Specifications.PasswordResetOtps;
