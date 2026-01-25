@@ -18,6 +18,7 @@ using NOIR.Application.Features.Payments.Queries.GetPaymentTransaction;
 using NOIR.Application.Features.Payments.Queries.GetPaymentTransactions;
 using NOIR.Application.Features.Payments.Queries.GetPendingCodPayments;
 using NOIR.Application.Features.Payments.Queries.GetRefunds;
+using NOIR.Application.Features.Payments.Queries.GetOperationLogs;
 using NOIR.Application.Features.Payments.Queries.GetWebhookLogs;
 using NOIR.Application.Common.Models;
 using PaymentPagedResult = NOIR.Application.Common.Models.PagedResult<NOIR.Application.Features.Payments.DTOs.PaymentTransactionListDto>;
@@ -478,6 +479,38 @@ public static class PaymentEndpoints
         .WithSummary("Get webhook logs")
         .WithDescription("Returns payment webhook processing logs for debugging and auditing.")
         .Produces<PagedResult<WebhookLogDto>>(StatusCodes.Status200OK);
+
+        // Operation logs endpoint for debugging gateway API calls
+        adminGroup.MapGet("/operations", async (
+            [FromQuery] string? provider,
+            [FromQuery] PaymentOperationType? operationType,
+            [FromQuery] bool? success,
+            [FromQuery] string? transactionNumber,
+            [FromQuery] string? correlationId,
+            [FromQuery] DateTimeOffset? fromDate,
+            [FromQuery] DateTimeOffset? toDate,
+            [FromQuery] int? page,
+            [FromQuery] int? pageSize,
+            IMessageBus bus) =>
+        {
+            var query = new GetOperationLogsQuery(
+                provider,
+                operationType,
+                success,
+                transactionNumber,
+                correlationId,
+                fromDate,
+                toDate,
+                page ?? 1,
+                pageSize ?? 20);
+            var result = await bus.InvokeAsync<Result<PagedResult<PaymentOperationLogDto>>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PaymentWebhooksRead)
+        .WithName("GetOperationLogs")
+        .WithSummary("Get payment operation logs")
+        .WithDescription("Returns payment gateway operation logs for debugging API calls, including request/response data and timing.")
+        .Produces<PagedResult<PaymentOperationLogDto>>(StatusCodes.Status200OK);
     }
 }
 

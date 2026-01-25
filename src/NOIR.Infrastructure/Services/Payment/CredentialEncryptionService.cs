@@ -31,14 +31,48 @@ public class CredentialEncryptionService : ICredentialEncryptionService, IScoped
     private byte[] GetEncryptionKey()
     {
         var keyId = _paymentSettings.Value.EncryptionKeyId;
-        var keyString = _configuration[$"Payment:EncryptionKeys:{keyId}"]
-            ?? throw new InvalidOperationException($"Encryption key '{keyId}' not found in configuration.");
+
+        // Priority 1: Environment variable (recommended for production)
+        // Format: PAYMENT_ENCRYPTION_KEY_{keyId} with keyId uppercased and hyphens replaced with underscores
+        var envVarName = $"PAYMENT_ENCRYPTION_KEY_{keyId.ToUpperInvariant().Replace('-', '_')}";
+        var keyString = Environment.GetEnvironmentVariable(envVarName);
+
+        // Priority 2: Configuration (appsettings.json or user secrets)
+        if (string.IsNullOrEmpty(keyString))
+        {
+            keyString = _configuration[$"Payment:EncryptionKeys:{keyId}"];
+        }
+
+        if (string.IsNullOrEmpty(keyString))
+        {
+            throw new InvalidOperationException(
+                $"Encryption key '{keyId}' not found. Set environment variable '{envVarName}' or configure 'Payment:EncryptionKeys:{keyId}'.");
+        }
+
+        // Validate it's not the placeholder value
+        if (keyString.Contains("REPLACE_") || keyString.Contains("_BEFORE_DEPLOYMENT"))
+        {
+            throw new InvalidOperationException(
+                $"Encryption key '{keyId}' is still set to placeholder value. " +
+                $"Generate a secure key with: openssl rand -base64 32");
+        }
 
         // Convert key to bytes (expecting base64 encoded 256-bit key)
-        var keyBytes = Convert.FromBase64String(keyString);
+        byte[] keyBytes;
+        try
+        {
+            keyBytes = Convert.FromBase64String(keyString);
+        }
+        catch (FormatException)
+        {
+            throw new InvalidOperationException(
+                $"Encryption key '{keyId}' is not valid base64. Generate with: openssl rand -base64 32");
+        }
+
         if (keyBytes.Length != 32)
         {
-            throw new InvalidOperationException("Encryption key must be 256 bits (32 bytes).");
+            throw new InvalidOperationException(
+                $"Encryption key must be 256 bits (32 bytes). Current key is {keyBytes.Length} bytes.");
         }
 
         return keyBytes;

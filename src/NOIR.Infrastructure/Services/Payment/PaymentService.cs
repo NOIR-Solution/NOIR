@@ -9,6 +9,7 @@ public class PaymentService : IPaymentService, IScopedService
     private readonly IRepository<PaymentGateway, Guid> _gatewayRepository;
     private readonly IRepository<Refund, Guid> _refundRepository;
     private readonly IPaymentGatewayFactory _gatewayFactory;
+    private readonly IPaymentOperationLogger _operationLogger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOptions<PaymentSettings> _paymentSettings;
     private readonly ILogger<PaymentService> _logger;
@@ -18,6 +19,7 @@ public class PaymentService : IPaymentService, IScopedService
         IRepository<PaymentGateway, Guid> gatewayRepository,
         IRepository<Refund, Guid> refundRepository,
         IPaymentGatewayFactory gatewayFactory,
+        IPaymentOperationLogger operationLogger,
         IUnitOfWork unitOfWork,
         IOptions<PaymentSettings> paymentSettings,
         ILogger<PaymentService> logger)
@@ -26,6 +28,7 @@ public class PaymentService : IPaymentService, IScopedService
         _gatewayRepository = gatewayRepository;
         _refundRepository = refundRepository;
         _gatewayFactory = gatewayFactory;
+        _operationLogger = operationLogger;
         _unitOfWork = unitOfWork;
         _paymentSettings = paymentSettings;
         _logger = logger;
@@ -135,6 +138,15 @@ public class PaymentService : IPaymentService, IScopedService
             "Processing refund {RefundNumber} for payment {TransactionNumber}, Amount: {Amount} {Currency}",
             refund.RefundNumber, payment.TransactionNumber, refund.Amount, refund.Currency);
 
+        // Log the refund operation
+        var operationLogId = await _operationLogger.StartOperationAsync(
+            PaymentOperationType.InitiateRefund,
+            payment.Provider,
+            payment.TransactionNumber,
+            payment.Id,
+            refundId,
+            cancellationToken);
+
         // Call the gateway with exception handling to ensure state is updated on failure
         try
         {
@@ -145,6 +157,8 @@ public class PaymentService : IPaymentService, IScopedService
                 Currency: refund.Currency,
                 Reason: refund.ReasonDetail);
 
+            await _operationLogger.SetRequestDataAsync(operationLogId, refundRequest, cancellationToken);
+
             var result = await gatewayProvider.RefundAsync(refundRequest, cancellationToken);
 
             if (result.Success && !string.IsNullOrEmpty(result.GatewayRefundId))
@@ -153,6 +167,8 @@ public class PaymentService : IPaymentService, IScopedService
                 _logger.LogInformation(
                     "Refund {RefundNumber} completed successfully. Gateway RefundId: {GatewayRefundId}",
                     refund.RefundNumber, result.GatewayRefundId);
+
+                await _operationLogger.CompleteSuccessAsync(operationLogId, result, cancellationToken: cancellationToken);
             }
             else
             {
@@ -160,6 +176,13 @@ public class PaymentService : IPaymentService, IScopedService
                 _logger.LogWarning(
                     "Refund {RefundNumber} failed: {ErrorMessage}",
                     refund.RefundNumber, result.ErrorMessage);
+
+                await _operationLogger.CompleteFailedAsync(
+                    operationLogId,
+                    ErrorCodes.Payment.RefundFailed,
+                    result.ErrorMessage,
+                    result,
+                    cancellationToken: cancellationToken);
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -171,6 +194,13 @@ public class PaymentService : IPaymentService, IScopedService
             _logger.LogError(ex,
                 "Exception occurred while processing refund {RefundNumber}",
                 refund.RefundNumber);
+
+            await _operationLogger.CompleteFailedAsync(
+                operationLogId,
+                ErrorCodes.Payment.GatewayError,
+                ex.Message,
+                exception: ex,
+                cancellationToken: cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NOIR.Application.Common.Interfaces;
 using NOIR.Infrastructure.Services.Payment.Providers.COD;
 using NOIR.Infrastructure.Services.Payment.Providers.MoMo;
+using NOIR.Infrastructure.Services.Payment.Providers.SePay;
 using NOIR.Infrastructure.Services.Payment.Providers.VnPay;
 using NOIR.Infrastructure.Services.Payment.Providers.ZaloPay;
 using Polly;
@@ -16,7 +17,7 @@ namespace NOIR.Infrastructure.Services.Payment;
 public static class PaymentGatewayExtensions
 {
     /// <summary>
-    /// Adds payment gateway services including VNPay, MoMo, ZaloPay, and COD providers.
+    /// Adds payment gateway services including VNPay, MoMo, ZaloPay, SePay, and COD providers.
     /// </summary>
     public static IServiceCollection AddPaymentGatewayServices(
         this IServiceCollection services,
@@ -26,6 +27,7 @@ public static class PaymentGatewayExtensions
         services.Configure<VnPaySettings>(configuration.GetSection(VnPaySettings.SectionName));
         services.Configure<MoMoSettings>(configuration.GetSection(MoMoSettings.SectionName));
         services.Configure<ZaloPaySettings>(configuration.GetSection(ZaloPaySettings.SectionName));
+        services.Configure<SePaySettings>(configuration.GetSection(SePaySettings.SectionName));
 
         // Configure VNPay HTTP client with resilience policies
         services.AddHttpClient<IVnPayClient, VnPayClient>((sp, client) =>
@@ -63,10 +65,23 @@ public static class PaymentGatewayExtensions
             .AddPolicyHandler(GetRetryPolicy())
             .AddPolicyHandler(GetCircuitBreakerPolicy());
 
+        // Configure SePay HTTP client with resilience policies
+        services.AddHttpClient<ISePayClient, SePayClient>((sp, client) =>
+            {
+                var settings = configuration.GetSection(SePaySettings.SectionName).Get<SePaySettings>()
+                    ?? new SePaySettings();
+                client.BaseAddress = new Uri(settings.ApiBaseUrl.TrimEnd('/') + '/');
+                client.Timeout = TimeSpan.FromSeconds(30);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            })
+            .AddPolicyHandler(GetRetryPolicy())
+            .AddPolicyHandler(GetCircuitBreakerPolicy());
+
         // Register payment gateway providers
         services.AddScoped<IPaymentGatewayProvider, VnPayProvider>();
         services.AddScoped<IPaymentGatewayProvider, MoMoProvider>();
         services.AddScoped<IPaymentGatewayProvider, ZaloPayProvider>();
+        services.AddScoped<IPaymentGatewayProvider, SePayProvider>();
         services.AddScoped<IPaymentGatewayProvider, CodProvider>();
 
         return services;

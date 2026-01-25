@@ -8,15 +8,18 @@ public class TestGatewayConnectionCommandHandler
 {
     private readonly IRepository<PaymentGateway, Guid> _gatewayRepository;
     private readonly IPaymentGatewayFactory _gatewayFactory;
+    private readonly IPaymentOperationLogger _operationLogger;
     private readonly ILogger<TestGatewayConnectionCommandHandler> _logger;
 
     public TestGatewayConnectionCommandHandler(
         IRepository<PaymentGateway, Guid> gatewayRepository,
         IPaymentGatewayFactory gatewayFactory,
+        IPaymentOperationLogger operationLogger,
         ILogger<TestGatewayConnectionCommandHandler> logger)
     {
         _gatewayRepository = gatewayRepository;
         _gatewayFactory = gatewayFactory;
+        _operationLogger = operationLogger;
         _logger = logger;
     }
 
@@ -41,6 +44,14 @@ public class TestGatewayConnectionCommandHandler
                 ErrorCode: "NO_CREDENTIALS"));
         }
 
+        // Start operation logging
+        var operationLogId = await _operationLogger.StartOperationAsync(
+            PaymentOperationType.TestConnection,
+            gateway.Provider,
+            cancellationToken: cancellationToken);
+
+        await _operationLogger.SetRequestDataAsync(operationLogId, new { GatewayId = command.GatewayId, Provider = gateway.Provider }, cancellationToken);
+
         try
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -51,6 +62,12 @@ public class TestGatewayConnectionCommandHandler
 
             if (provider == null)
             {
+                await _operationLogger.CompleteFailedAsync(
+                    operationLogId,
+                    "PROVIDER_UNAVAILABLE",
+                    $"Provider '{gateway.Provider}' is not available",
+                    cancellationToken: cancellationToken);
+
                 return Result.Success(new TestConnectionResultDto(
                     Success: false,
                     Message: $"Provider '{gateway.Provider}' is not available",
@@ -68,29 +85,40 @@ public class TestGatewayConnectionCommandHandler
                 healthStatus,
                 stopwatch.ElapsedMilliseconds);
 
-            return healthStatus switch
+            var result = healthStatus switch
             {
-                GatewayHealthStatus.Healthy => Result.Success(new TestConnectionResultDto(
+                GatewayHealthStatus.Healthy => new TestConnectionResultDto(
                     Success: true,
                     Message: "Connection successful",
-                    ResponseTimeMs: stopwatch.ElapsedMilliseconds)),
+                    ResponseTimeMs: stopwatch.ElapsedMilliseconds),
 
-                GatewayHealthStatus.Degraded => Result.Success(new TestConnectionResultDto(
+                GatewayHealthStatus.Degraded => new TestConnectionResultDto(
                     Success: true,
                     Message: "Connection successful but gateway reports degraded performance",
-                    ResponseTimeMs: stopwatch.ElapsedMilliseconds)),
+                    ResponseTimeMs: stopwatch.ElapsedMilliseconds),
 
-                GatewayHealthStatus.Unhealthy => Result.Success(new TestConnectionResultDto(
+                GatewayHealthStatus.Unhealthy => new TestConnectionResultDto(
                     Success: false,
                     Message: "Gateway is unhealthy - check credentials",
                     ResponseTimeMs: stopwatch.ElapsedMilliseconds,
-                    ErrorCode: "GATEWAY_UNHEALTHY")),
+                    ErrorCode: "GATEWAY_UNHEALTHY"),
 
-                _ => Result.Success(new TestConnectionResultDto(
+                _ => new TestConnectionResultDto(
                     Success: true,
                     Message: "Connection test completed (status unknown)",
-                    ResponseTimeMs: stopwatch.ElapsedMilliseconds))
+                    ResponseTimeMs: stopwatch.ElapsedMilliseconds)
             };
+
+            if (result.Success)
+            {
+                await _operationLogger.CompleteSuccessAsync(operationLogId, result, cancellationToken: cancellationToken);
+            }
+            else
+            {
+                await _operationLogger.CompleteFailedAsync(operationLogId, result.ErrorCode, result.Message, result, cancellationToken: cancellationToken);
+            }
+
+            return Result.Success(result);
         }
         catch (HttpRequestException ex)
         {
@@ -99,13 +127,27 @@ public class TestGatewayConnectionCommandHandler
                 command.GatewayId,
                 gateway.Provider);
 
+            await _operationLogger.CompleteFailedAsync(
+                operationLogId,
+                "CONNECTION_FAILED",
+                ex.Message,
+                exception: ex,
+                cancellationToken: cancellationToken);
+
             return Result.Success(new TestConnectionResultDto(
                 Success: false,
                 Message: $"Connection failed: {ex.Message}",
                 ErrorCode: "CONNECTION_FAILED"));
         }
-        catch (TaskCanceledException)
+        catch (TaskCanceledException ex)
         {
+            await _operationLogger.CompleteFailedAsync(
+                operationLogId,
+                "TIMEOUT",
+                "Connection timed out after 10 seconds",
+                exception: ex,
+                cancellationToken: cancellationToken);
+
             return Result.Success(new TestConnectionResultDto(
                 Success: false,
                 Message: "Connection timed out after 10 seconds",
@@ -117,6 +159,13 @@ public class TestGatewayConnectionCommandHandler
                 "Gateway {GatewayId} ({Provider}) connection test failed with unexpected error",
                 command.GatewayId,
                 gateway.Provider);
+
+            await _operationLogger.CompleteFailedAsync(
+                operationLogId,
+                "UNEXPECTED_ERROR",
+                ex.Message,
+                exception: ex,
+                cancellationToken: cancellationToken);
 
             return Result.Success(new TestConnectionResultDto(
                 Success: false,

@@ -9,6 +9,7 @@ public class ProcessWebhookCommandHandler
     private readonly IRepository<PaymentTransaction, Guid> _paymentRepository;
     private readonly IRepository<PaymentGateway, Guid> _gatewayRepository;
     private readonly IPaymentGatewayFactory _gatewayFactory;
+    private readonly IPaymentOperationLogger _operationLogger;
     private readonly IUnitOfWork _unitOfWork;
 
     public ProcessWebhookCommandHandler(
@@ -16,12 +17,14 @@ public class ProcessWebhookCommandHandler
         IRepository<PaymentTransaction, Guid> paymentRepository,
         IRepository<PaymentGateway, Guid> gatewayRepository,
         IPaymentGatewayFactory gatewayFactory,
+        IPaymentOperationLogger operationLogger,
         IUnitOfWork unitOfWork)
     {
         _webhookLogRepository = webhookLogRepository;
         _paymentRepository = paymentRepository;
         _gatewayRepository = gatewayRepository;
         _gatewayFactory = gatewayFactory;
+        _operationLogger = operationLogger;
         _unitOfWork = unitOfWork;
     }
 
@@ -46,10 +49,44 @@ public class ProcessWebhookCommandHandler
                 Error.NotFound($"Payment gateway '{command.Provider}' not found.", ErrorCodes.Payment.GatewayNotFound));
         }
 
-        // Validate webhook signature
-        var validationResult = await gatewayProvider.ValidateWebhookAsync(
-            new WebhookPayload(command.RawPayload, command.Signature, command.Headers ?? new Dictionary<string, string>()),
-            cancellationToken);
+        // Log and validate webhook signature
+        var operationLogId = await _operationLogger.StartOperationAsync(
+            PaymentOperationType.ValidateWebhook,
+            command.Provider,
+            cancellationToken: cancellationToken);
+
+        var webhookPayload = new WebhookPayload(command.RawPayload, command.Signature, command.Headers ?? new Dictionary<string, string>());
+        await _operationLogger.SetRequestDataAsync(operationLogId, new { EventType = "webhook", Provider = command.Provider, HasSignature = !string.IsNullOrEmpty(command.Signature) }, cancellationToken);
+
+        WebhookValidationResult validationResult;
+        try
+        {
+            validationResult = await gatewayProvider.ValidateWebhookAsync(webhookPayload, cancellationToken);
+
+            if (validationResult.IsValid)
+            {
+                await _operationLogger.CompleteSuccessAsync(operationLogId, validationResult, cancellationToken: cancellationToken);
+            }
+            else
+            {
+                await _operationLogger.CompleteFailedAsync(
+                    operationLogId,
+                    ErrorCodes.Payment.InvalidWebhookSignature,
+                    "Webhook signature validation failed",
+                    validationResult,
+                    cancellationToken: cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            await _operationLogger.CompleteFailedAsync(
+                operationLogId,
+                ErrorCodes.Payment.GatewayError,
+                ex.Message,
+                exception: ex,
+                cancellationToken: cancellationToken);
+            throw;
+        }
 
         // Parse the webhook payload
         var eventType = validationResult.EventType ?? "unknown";

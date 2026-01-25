@@ -86,6 +86,7 @@ NOIR.Domain/
 │       ├── PaymentGateway.cs            # Gateway configuration (encrypted credentials)
 │       ├── PaymentTransaction.cs        # Payment lifecycle tracking
 │       ├── PaymentWebhookLog.cs         # Webhook audit trail
+│       ├── PaymentOperationLog.cs       # ⭐ NEW: Gateway API call audit trail
 │       └── Refund.cs                    # Refund tracking with approval workflow
 ├── Enums/                               # Domain enumerations
 │   ├── AuditOperationType.cs            # CRUD operations
@@ -97,7 +98,8 @@ NOIR.Domain/
 │   ├── RefundReason.cs                  # ⭐ NEW: Refund reasons
 │   ├── GatewayEnvironment.cs            # ⭐ NEW: Sandbox/Production
 │   ├── GatewayHealthStatus.cs           # ⭐ NEW: Gateway operational status
-│   └── WebhookProcessingStatus.cs       # ⭐ NEW: Webhook processing states
+│   ├── WebhookProcessingStatus.cs       # ⭐ NEW: Webhook processing states
+│   └── PaymentOperationType.cs          # ⭐ NEW: Operation types for logging
 ├── Events/                              # ⭐ NEW: Domain events
 │   └── Payment/                         # Payment domain events
 │       └── PaymentEvents.cs             # Created, Succeeded, Failed, Refunded
@@ -497,6 +499,7 @@ NOIR.Web/
 - **Refunds** - Request, approve/reject workflow with audit trail
 - **Webhooks** - Process payment provider callbacks with signature verification
 - **COD Support** - Cash-on-Delivery collection confirmation
+- **Operation Logging** - ⭐ NEW: Database audit trail for all gateway API calls
 
 **Key Files:**
 - `Commands/CreatePayment/CreatePaymentCommand.cs` - Initiate payment (implements IAuditableCommand)
@@ -504,11 +507,13 @@ NOIR.Web/
 - `Commands/ProcessWebhook/ProcessWebhookCommand.cs` - Webhook handling
 - `Commands/RequestRefund/RequestRefundCommand.cs` - Refund workflow
 - `Queries/GetPaymentTransactions/GetPaymentTransactionsQuery.cs` - Transaction list
+- `Queries/GetOperationLogs/GetOperationLogsQuery.cs` - ⭐ NEW: Query gateway API call logs
 
 **Domain Entities:**
 - `PaymentGateway` - Gateway configuration (Provider, EncryptedCredentials, WebhookSecret)
 - `PaymentTransaction` - Transaction lifecycle (Amount, Status, PaymentMethod)
 - `PaymentWebhookLog` - Webhook audit (EventType, ProcessingStatus)
+- `PaymentOperationLog` - ⭐ NEW: Gateway API call audit (Request/Response, Duration, Errors)
 - `Refund` - Refund tracking (Amount, Status, Reason, ApprovedBy)
 
 **Enums:**
@@ -517,12 +522,17 @@ NOIR.Web/
 - `RefundStatus` - Pending, Approved, Processing, Completed, Rejected, Failed
 - `GatewayEnvironment` - Sandbox, Production
 - `GatewayHealthStatus` - Unknown, Healthy, Degraded, Unhealthy
+- `PaymentOperationType` - ⭐ NEW: InitiatePayment, ValidateWebhook, InitiateRefund, TestConnection, etc.
 
 **Services:**
 - `IPaymentService` - Payment orchestration abstraction
 - `IPaymentGatewayFactory` - Gateway provider instantiation
 - `IPaymentGatewayProvider` - Gateway-specific implementation interface
 - `ICredentialEncryptionService` - Credential encryption/decryption
+- `IPaymentOperationLogger` - ⭐ NEW: Database logging for gateway API operations
+
+**Endpoints:**
+- `GET /api/payment-webhooks/operations` - ⭐ NEW: Query operation logs with filtering
 
 **Tests:** `tests/NOIR.Application.UnitTests/Features/Payments/`, `tests/NOIR.IntegrationTests/Features/Payments/`
 
@@ -991,13 +1001,23 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 ---
 
 **Last Updated:** 2026-01-25
-**Version:** 2.3
+**Version:** 2.4
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 2.4 (2026-01-25)
+- Added **PaymentOperationLog** entity for database audit trail of gateway API calls
+- Added **PaymentOperationType** enum (InitiatePayment, ValidateWebhook, InitiateRefund, TestConnection, etc.)
+- Added **IPaymentOperationLogger** service interface with Start/Complete pattern
+- Added **GetOperationLogsQuery** for querying operation logs with filtering
+- Added `GET /api/payment-webhooks/operations` endpoint for admin operation log access
+- Added sensitive data sanitization with compiled regex patterns
+- Integrated operation logging into all payment handlers (CreatePayment, ProcessWebhook, TestConnection, Refund)
+- Added new error codes: GatewayError (NOIR-PAY-015), RefundFailed (NOIR-PAY-016)
 
 ### Version 2.3 (2026-01-25)
 - Updated frontend structure documentation with new components:

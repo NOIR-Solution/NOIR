@@ -57,6 +57,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<PostCategory> PostCategories => Set<PostCategory>();
     public DbSet<PostTag> PostTags => Set<PostTag>();
 
+    // Payment entities
+    public DbSet<PaymentGateway> PaymentGateways => Set<PaymentGateway>();
+    public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
+    public DbSet<PaymentWebhookLog> PaymentWebhookLogs => Set<PaymentWebhookLog>();
+    public DbSet<PaymentOperationLog> PaymentOperationLogs => Set<PaymentOperationLog>();
+    public DbSet<Refund> Refunds => Set<Refund>();
+
     /// <summary>
     /// Configures global type conventions.
     /// This reduces repetitive configuration and ensures consistency.

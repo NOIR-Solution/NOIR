@@ -9,6 +9,7 @@ public class CreatePaymentCommandHandler
     private readonly IRepository<PaymentGateway, Guid> _gatewayRepository;
     private readonly IPaymentGatewayFactory _gatewayFactory;
     private readonly IPaymentService _paymentService;
+    private readonly IPaymentOperationLogger _operationLogger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
     private readonly IOptions<PaymentSettings> _paymentSettings;
@@ -18,6 +19,7 @@ public class CreatePaymentCommandHandler
         IRepository<PaymentGateway, Guid> gatewayRepository,
         IPaymentGatewayFactory gatewayFactory,
         IPaymentService paymentService,
+        IPaymentOperationLogger operationLogger,
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser,
         IOptions<PaymentSettings> paymentSettings)
@@ -26,6 +28,7 @@ public class CreatePaymentCommandHandler
         _gatewayRepository = gatewayRepository;
         _gatewayFactory = gatewayFactory;
         _paymentService = paymentService;
+        _operationLogger = operationLogger;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
         _paymentSettings = paymentSettings;
@@ -117,16 +120,49 @@ public class CreatePaymentCommandHandler
             command.ReturnUrl ?? string.Empty,
             command.Metadata ?? new Dictionary<string, string>());
 
-        var initiationResult = await gatewayProvider.InitiatePaymentAsync(initiationRequest, cancellationToken);
+        // Log the payment initiation operation
+        var operationLogId = await _operationLogger.StartOperationAsync(
+            PaymentOperationType.InitiatePayment,
+            command.Provider,
+            transactionNumber,
+            payment.Id,
+            cancellationToken: cancellationToken);
 
-        if (!initiationResult.Success)
+        await _operationLogger.SetRequestDataAsync(operationLogId, initiationRequest, cancellationToken);
+
+        PaymentInitiationResult initiationResult;
+        try
         {
-            payment.MarkAsFailed(initiationResult.ErrorMessage ?? "Payment initiation failed");
-            await _paymentRepository.AddAsync(payment, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            initiationResult = await gatewayProvider.InitiatePaymentAsync(initiationRequest, cancellationToken);
 
-            return Result.Failure<PaymentTransactionDto>(
-                Error.Failure(initiationResult.ErrorMessage ?? "Payment initiation failed", ErrorCodes.Payment.InitiationFailed));
+            if (!initiationResult.Success)
+            {
+                await _operationLogger.CompleteFailedAsync(
+                    operationLogId,
+                    ErrorCodes.Payment.InitiationFailed,
+                    initiationResult.ErrorMessage,
+                    initiationResult,
+                    cancellationToken: cancellationToken);
+
+                payment.MarkAsFailed(initiationResult.ErrorMessage ?? "Payment initiation failed");
+                await _paymentRepository.AddAsync(payment, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return Result.Failure<PaymentTransactionDto>(
+                    Error.Failure(initiationResult.ErrorMessage ?? "Payment initiation failed", ErrorCodes.Payment.InitiationFailed));
+            }
+
+            await _operationLogger.CompleteSuccessAsync(operationLogId, initiationResult, cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await _operationLogger.CompleteFailedAsync(
+                operationLogId,
+                ErrorCodes.Payment.GatewayError,
+                ex.Message,
+                exception: ex,
+                cancellationToken: cancellationToken);
+            throw;
         }
 
         // Update payment with gateway response

@@ -246,6 +246,12 @@ public static class ErrorCodes
 
         /// <summary>Invalid webhook signature</summary>
         public const string InvalidWebhookSignature = "NOIR-PAY-014";
+
+        /// <summary>Payment gateway communication error</summary>
+        public const string GatewayError = "NOIR-PAY-015";
+
+        /// <summary>Refund processing failed</summary>
+        public const string RefundFailed = "NOIR-PAY-016";
     }
 
     /// <summary>
