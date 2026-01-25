@@ -7,13 +7,19 @@ public class ConfirmCodCollectionCommandHandler
 {
     private readonly IRepository<PaymentTransaction, Guid> _paymentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPaymentHubContext _paymentHubContext;
+    private readonly ICurrentUser _currentUser;
 
     public ConfirmCodCollectionCommandHandler(
         IRepository<PaymentTransaction, Guid> paymentRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IPaymentHubContext paymentHubContext,
+        ICurrentUser currentUser)
     {
         _paymentRepository = paymentRepository;
         _unitOfWork = unitOfWork;
+        _paymentHubContext = paymentHubContext;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<PaymentTransactionDto>> Handle(
@@ -52,6 +58,19 @@ public class ConfirmCodCollectionCommandHandler
 
         payment.ConfirmCodCollection(command.UserId);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Send real-time notification for COD collection
+        if (!string.IsNullOrEmpty(_currentUser.TenantId))
+        {
+            await _paymentHubContext.SendCodCollectionUpdateAsync(
+                _currentUser.TenantId,
+                payment.Id,
+                payment.TransactionNumber,
+                payment.CodCollectorName ?? command.UserId,
+                payment.Amount,
+                payment.Currency,
+                cancellationToken);
+        }
 
         return Result.Success(MapToDto(payment));
     }

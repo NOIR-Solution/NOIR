@@ -7,13 +7,16 @@ public class CancelPaymentCommandHandler
 {
     private readonly IRepository<PaymentTransaction, Guid> _paymentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPaymentHubContext _paymentHubContext;
 
     public CancelPaymentCommandHandler(
         IRepository<PaymentTransaction, Guid> paymentRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IPaymentHubContext paymentHubContext)
     {
         _paymentRepository = paymentRepository;
         _unitOfWork = unitOfWork;
+        _paymentHubContext = paymentHubContext;
     }
 
     public async Task<Result<PaymentTransactionDto>> Handle(
@@ -36,8 +39,30 @@ public class CancelPaymentCommandHandler
                 Error.Validation("Status", "Only pending payments can be cancelled.", ErrorCodes.Payment.InvalidStatusTransition));
         }
 
+        var oldStatus = payment.Status.ToString();
         payment.MarkAsCancelled();
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Send real-time notification for payment status change
+        await _paymentHubContext.SendPaymentStatusUpdateAsync(
+            payment.Id,
+            payment.TransactionNumber,
+            oldStatus,
+            payment.Status.ToString(),
+            "Payment cancelled by user",
+            payment.GatewayTransactionId,
+            cancellationToken);
+
+        // Also notify order tracking if applicable
+        if (payment.OrderId.HasValue)
+        {
+            await _paymentHubContext.SendOrderPaymentUpdateAsync(
+                payment.OrderId.Value,
+                payment.Id,
+                payment.TransactionNumber,
+                payment.Status.ToString(),
+                cancellationToken);
+        }
 
         return Result.Success(MapToDto(payment));
     }

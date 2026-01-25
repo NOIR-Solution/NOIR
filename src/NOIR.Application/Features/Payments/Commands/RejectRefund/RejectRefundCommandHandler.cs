@@ -7,13 +7,16 @@ public class RejectRefundCommandHandler
 {
     private readonly IRepository<Refund, Guid> _refundRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPaymentHubContext _paymentHubContext;
 
     public RejectRefundCommandHandler(
         IRepository<Refund, Guid> refundRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IPaymentHubContext paymentHubContext)
     {
         _refundRepository = refundRepository;
         _unitOfWork = unitOfWork;
+        _paymentHubContext = paymentHubContext;
     }
 
     public async Task<Result<RefundDto>> Handle(
@@ -42,8 +45,19 @@ public class RejectRefundCommandHandler
                 Error.Validation("UserId", "Invalid user ID.", ErrorCodes.Payment.InvalidRequesterId));
         }
 
-        refund.Reject(command.RejectionReason ?? "Rejected");
+        var rejectionReason = command.RejectionReason ?? "Rejected";
+        refund.Reject(rejectionReason);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Send real-time notification for refund rejection
+        await _paymentHubContext.SendRefundStatusUpdateAsync(
+            refund.Id,
+            refund.RefundNumber,
+            refund.PaymentTransactionId,
+            refund.Status.ToString(),
+            refund.Amount,
+            rejectionReason,
+            cancellationToken);
 
         return Result.Success(MapToDto(refund));
     }
