@@ -97,12 +97,12 @@ const Pagination: React.FC<PaginationProps> = ({
           <div className="flex items-center gap-2 ml-4">
             <span className="text-sm text-muted-foreground">Rows per page:</span>
             <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
-              <SelectTrigger className="h-8 w-[70px]">
+              <SelectTrigger className="h-8 w-[70px] cursor-pointer">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {pageSizeOptions.map((size) => (
-                  <SelectItem key={size} value={size.toString()}>
+                  <SelectItem key={size} value={size.toString()} className="cursor-pointer">
                     {size}
                   </SelectItem>
                 ))}
@@ -116,7 +116,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(1)}
           disabled={currentPage === 1}
         >
@@ -125,7 +125,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
@@ -150,7 +150,7 @@ const Pagination: React.FC<PaginationProps> = ({
                 key={page}
                 variant={currentPage === page ? 'default' : 'outline'}
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 cursor-pointer"
                 onClick={() => handlePageChange(page)}
               >
                 {page}
@@ -162,7 +162,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
@@ -171,7 +171,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages}
         >

@@ -253,7 +253,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
+            <div className="p-2 bg-primary/10 rounded-xl shadow-sm">
               <UserPlus className="h-5 w-5 text-primary" />
             </div>
             <div>
@@ -422,6 +422,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                               handleToggleRole(role.name)
                             }
                           }}
+                          className="cursor-pointer"
                         />
                         <div className="flex-1 flex items-center gap-2">
                           <span className="font-medium text-sm">

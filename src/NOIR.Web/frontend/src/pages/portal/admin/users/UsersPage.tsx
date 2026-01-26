@@ -71,10 +71,10 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
+          <div className="p-2 bg-primary/10 rounded-xl shadow-sm">
             <Users className="h-6 w-6 text-primary" />
           </div>
           <div>
@@ -90,8 +90,8 @@ export default function UsersPage() {
         )}
       </div>
 
-      <Card>
-        <CardHeader className="pb-4">
+      <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
+        <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <CardTitle>{t('users.listTitle', 'All Users')}</CardTitle>
@@ -105,14 +105,14 @@ export default function UsersPage() {
                 value={params.role || 'all'}
                 onValueChange={(value) => setRoleFilter(value === 'all' ? '' : value)}
               >
-                <SelectTrigger className="w-[140px]">
+                <SelectTrigger className="w-[140px] cursor-pointer">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder={t('users.filterByRole', 'Filter by role')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t('labels.all', 'All')}</SelectItem>
+                  <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
                   {availableRoles.map((role) => (
-                    <SelectItem key={role.id} value={role.name}>
+                    <SelectItem key={role.id} value={role.name} className="cursor-pointer">
                       {role.name}
                     </SelectItem>
                   ))}
@@ -128,13 +128,13 @@ export default function UsersPage() {
                   else setLockedFilter(false)
                 }}
               >
-                <SelectTrigger className="w-[120px]">
+                <SelectTrigger className="w-[120px] cursor-pointer">
                   <SelectValue placeholder={t('users.filterByStatus', 'Status')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t('labels.all', 'All')}</SelectItem>
-                  <SelectItem value="active">{t('labels.active', 'Active')}</SelectItem>
-                  <SelectItem value="locked">{t('users.locked', 'Locked')}</SelectItem>
+                  <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                  <SelectItem value="active" className="cursor-pointer">{t('labels.active', 'Active')}</SelectItem>
+                  <SelectItem value="locked" className="cursor-pointer">{t('users.locked', 'Locked')}</SelectItem>
                 </SelectContent>
               </Select>
 
