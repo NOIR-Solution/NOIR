@@ -280,14 +280,14 @@ public static class ProductEndpoints
             {
                 UserId = currentUser.UserId
             };
-            var result = await bus.InvokeAsync<Result<ProductVariantDto>>(command);
+            var result = await bus.InvokeAsync<Result<ProductDto>>(command);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.ProductsUpdate)
         .WithName("UpdateProductVariant")
         .WithSummary("Update a product variant")
-        .WithDescription("Updates variant details including pricing, stock, and options.")
-        .Produces<ProductVariantDto>(StatusCodes.Status200OK)
+        .WithDescription("Updates variant details including pricing, stock, and options. Returns full product with updated variant.")
+        .Produces<ProductDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
@@ -358,14 +358,14 @@ public static class ProductEndpoints
             {
                 UserId = currentUser.UserId
             };
-            var result = await bus.InvokeAsync<Result<ProductImageDto>>(command);
+            var result = await bus.InvokeAsync<Result<ProductDto>>(command);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.ProductsUpdate)
         .WithName("UpdateProductImage")
         .WithSummary("Update a product image")
-        .WithDescription("Updates image URL, alt text, and sort order.")
-        .Produces<ProductImageDto>(StatusCodes.Status200OK)
+        .WithDescription("Updates image URL, alt text, and sort order. Returns full product with updated image.")
+        .Produces<ProductDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 

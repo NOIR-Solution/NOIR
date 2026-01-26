@@ -16,7 +16,7 @@ public class UpdateProductVariantCommandHandler
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<ProductVariantDto>> Handle(
+    public async Task<Result<ProductDto>> Handle(
         UpdateProductVariantCommand command,
         CancellationToken cancellationToken)
     {
@@ -26,7 +26,7 @@ public class UpdateProductVariantCommandHandler
 
         if (product is null)
         {
-            return Result.Failure<ProductVariantDto>(
+            return Result.Failure<ProductDto>(
                 Error.NotFound($"Product with ID '{command.ProductId}' not found.", "NOIR-PRODUCT-022"));
         }
 
@@ -34,7 +34,7 @@ public class UpdateProductVariantCommandHandler
         var variant = product.Variants.FirstOrDefault(v => v.Id == command.VariantId);
         if (variant is null)
         {
-            return Result.Failure<ProductVariantDto>(
+            return Result.Failure<ProductDto>(
                 Error.NotFound($"Variant with ID '{command.VariantId}' not found.", "NOIR-PRODUCT-023"));
         }
 
@@ -51,6 +51,9 @@ public class UpdateProductVariantCommandHandler
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Success(ProductMapper.ToDto(variant));
+        return Result.Success(ProductMapper.ToDtoWithCollections(
+            product,
+            product.Category?.Name,
+            product.Category?.Slug));
     }
 }

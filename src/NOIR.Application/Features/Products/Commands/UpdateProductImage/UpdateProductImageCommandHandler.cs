@@ -16,7 +16,7 @@ public class UpdateProductImageCommandHandler
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<ProductImageDto>> Handle(
+    public async Task<Result<ProductDto>> Handle(
         UpdateProductImageCommand command,
         CancellationToken cancellationToken)
     {
@@ -26,7 +26,7 @@ public class UpdateProductImageCommandHandler
 
         if (product is null)
         {
-            return Result.Failure<ProductImageDto>(
+            return Result.Failure<ProductDto>(
                 Error.NotFound($"Product with ID '{command.ProductId}' not found.", "NOIR-PRODUCT-027"));
         }
 
@@ -34,7 +34,7 @@ public class UpdateProductImageCommandHandler
         var image = product.Images.FirstOrDefault(i => i.Id == command.ImageId);
         if (image is null)
         {
-            return Result.Failure<ProductImageDto>(
+            return Result.Failure<ProductDto>(
                 Error.NotFound($"Image with ID '{command.ImageId}' not found.", "NOIR-PRODUCT-028"));
         }
 
@@ -44,6 +44,9 @@ public class UpdateProductImageCommandHandler
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Success(ProductMapper.ToDto(image));
+        return Result.Success(ProductMapper.ToDtoWithCollections(
+            product,
+            product.Category?.Name,
+            product.Category?.Slug));
     }
 }

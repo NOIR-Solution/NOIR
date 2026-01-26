@@ -8,13 +8,13 @@ public sealed record UpdateProductImageCommand(
     Guid ImageId,
     string Url,
     string? AltText,
-    int SortOrder) : IAuditableCommand<ProductImageDto>
+    int SortOrder) : IAuditableCommand<ProductDto>
 {
     [System.Text.Json.Serialization.JsonIgnore]
     public string? UserId { get; init; }
 
     public AuditOperationType OperationType => AuditOperationType.Update;
-    public object? GetTargetId() => ImageId;
+    public object? GetTargetId() => ProductId;
     public string? GetTargetDisplayName() => AltText ?? "Image";
     public string? GetActionDescription() => $"Updated product image";
 }

@@ -12,13 +12,13 @@ public sealed record UpdateProductVariantCommand(
     decimal? CompareAtPrice,
     int StockQuantity,
     Dictionary<string, string>? Options,
-    int SortOrder) : IAuditableCommand<ProductVariantDto>
+    int SortOrder) : IAuditableCommand<ProductDto>
 {
     [System.Text.Json.Serialization.JsonIgnore]
     public string? UserId { get; init; }
 
     public AuditOperationType OperationType => AuditOperationType.Update;
-    public object? GetTargetId() => VariantId;
+    public object? GetTargetId() => ProductId;
     public string? GetTargetDisplayName() => Name;
     public string? GetActionDescription() => $"Updated variant '{Name}'";
 }
