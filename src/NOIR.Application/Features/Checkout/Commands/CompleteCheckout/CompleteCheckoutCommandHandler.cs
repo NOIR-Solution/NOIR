@@ -150,14 +150,17 @@ public class CompleteCheckoutCommandHandler
             // Add order items from cart
             foreach (var cartItem in cart.Items)
             {
-                order.AddItem(
+                // TODO: [TECH-DEBT] SKU and optionsSnapshot should be populated from CartItem
+            // CartItem should store SKU during AddToCart operation for inventory tracking
+            // See: Phase 8 Sprint 4 - Enhance CartItem with SKU and product options
+            order.AddItem(
                     productId: cartItem.ProductId,
                     productVariantId: cartItem.ProductVariantId,
                     productName: cartItem.ProductName,
                     variantName: cartItem.VariantName,
                     unitPrice: cartItem.UnitPrice,
                     quantity: cartItem.Quantity,
-                    sku: null, // Would need to look up from product
+                    sku: null,
                     imageUrl: cartItem.ImageUrl,
                     optionsSnapshot: null);
             }
