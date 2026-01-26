@@ -55,6 +55,7 @@ npm run lint
 | Document | Description |
 |----------|-------------|
 | [Architecture](architecture.md) | Project structure and patterns |
+| [UI/UX Patterns](architecture.md#uiux-standardization-patterns) | Required UI standardization patterns |
 | [API Types](api-types.md) | Type generation from backend |
 | [Localization Guide](localization-guide.md) | Managing translations and adding languages |
 

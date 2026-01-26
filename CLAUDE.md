@@ -484,6 +484,17 @@ usePageContext('Customers')  // Required for Activity Timeline
 
 When creating or modifying UI components in `src/components/ui/`, always verify `cursor-pointer` is included in the className for interactive elements.
 
+### 🎯 UI/UX Standardization Patterns (CRITICAL)
+
+All UI components MUST follow standardized patterns. See [docs/frontend/architecture.md#uiux-standardization-patterns](docs/frontend/architecture.md#uiux-standardization-patterns) for complete patterns.
+
+**Quick Reference:**
+- **aria-label**: ALL icon-only buttons must have contextual aria-labels (e.g., `aria-label={`Delete ${item.name}`}`)
+- **AlertDialog destructive pattern**: Use `border-destructive/30`, icon container with `p-2 rounded-xl bg-destructive/10 border border-destructive/20`, and `cursor-pointer` on all buttons
+- **Confirmation dialogs**: Required for ALL destructive actions (delete, remove)
+- **Card shadows**: `shadow-sm hover:shadow-lg transition-all duration-300`
+- **Gradient text**: MUST include `text-transparent` with `bg-clip-text`
+
 ### 📝 Multi-Select Dropdowns Must Stay Open
 
 For dropdown menus that allow multi-selection (checkboxes), add `onSelect={(e) => e.preventDefault()}` to prevent the dropdown from closing on each click:

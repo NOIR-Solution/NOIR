@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -13,8 +14,11 @@ import {
   ImagePlus,
   Star,
   Pencil,
+  AlertTriangle,
+  Loader2,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -38,6 +42,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useProduct, useProductCategories } from '@/hooks/useProducts'
 import {
   createProduct,
@@ -91,11 +105,17 @@ const variantSchema = z.object({
 type VariantFormData = z.infer<typeof variantSchema>
 
 export default function ProductFormPage() {
+  const { t } = useTranslation('common')
+  const { hasPermission } = usePermissions()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const location = useLocation()
   const isEditing = !!id
   const isViewMode = isEditing && !location.pathname.endsWith('/edit')
+
+  // Permission checks
+  const canUpdateProducts = hasPermission(Permissions.ProductsUpdate)
+  const canPublishProducts = hasPermission(Permissions.ProductsPublish)
 
   usePageContext(isViewMode ? 'View Product' : isEditing ? 'Edit Product' : 'New Product')
 
@@ -109,6 +129,10 @@ export default function ProductFormPage() {
   const [newVariant, setNewVariant] = useState<VariantFormData | null>(null)
   const [editingVariantId, setEditingVariantId] = useState<string | null>(null)
   const [newImageUrl, setNewImageUrl] = useState('')
+  const [variantToDelete, setVariantToDelete] = useState<ProductVariant | null>(null)
+  const [imageToDelete, setImageToDelete] = useState<ProductImage | null>(null)
+  const [isDeletingVariant, setIsDeletingVariant] = useState(false)
+  const [isDeletingImage, setIsDeletingImage] = useState(false)
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -253,16 +277,20 @@ export default function ProductFormPage() {
     }
   }
 
-  const handleDeleteVariant = async (variantId: string) => {
-    if (!id) return
+  const handleConfirmDeleteVariant = async () => {
+    if (!id || !variantToDelete) return
 
+    setIsDeletingVariant(true)
     try {
-      await deleteProductVariant(id, variantId)
-      toast.success('Variant deleted successfully')
+      await deleteProductVariant(id, variantToDelete.id)
+      toast.success(`Variant "${variantToDelete.name}" deleted successfully`)
+      setVariantToDelete(null)
       await refreshProduct()
     } catch (err) {
       const message = err instanceof ApiError ? err.message : 'Failed to delete variant'
       toast.error(message)
+    } finally {
+      setIsDeletingVariant(false)
     }
   }
 
@@ -286,16 +314,20 @@ export default function ProductFormPage() {
     }
   }
 
-  const handleDeleteImage = async (imageId: string) => {
-    if (!id) return
+  const handleConfirmDeleteImage = async () => {
+    if (!id || !imageToDelete) return
 
+    setIsDeletingImage(true)
     try {
-      await deleteProductImage(id, imageId)
+      await deleteProductImage(id, imageToDelete.id)
       toast.success('Image deleted successfully')
+      setImageToDelete(null)
       await refreshProduct()
     } catch (err) {
       const message = err instanceof ApiError ? err.message : 'Failed to delete image'
       toast.error(message)
+    } finally {
+      setIsDeletingImage(false)
     }
   }
 
@@ -331,7 +363,12 @@ export default function ProductFormPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
           <Link to="/portal/ecommerce/products">
-            <Button variant="ghost" size="icon" className="hover:bg-muted transition-all duration-300 hover:scale-105">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="cursor-pointer hover:bg-muted transition-all duration-300 hover:scale-105"
+              aria-label="Go back to products list"
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
@@ -339,7 +376,7 @@ export default function ProductFormPage() {
             <Package className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
               {isViewMode ? 'View Product' : isEditing ? 'Edit Product' : 'New Product'}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
@@ -357,10 +394,10 @@ export default function ProductFormPage() {
             </Link>
           ) : (
             <>
-              {isEditing && product?.status === 'Draft' && (
+              {isEditing && product?.status === 'Draft' && canPublishProducts && (
                 <Button variant="outline" onClick={handlePublish} disabled={isPublishing}>
                   <Send className="h-4 w-4 mr-2" />
-                  {isPublishing ? 'Publishing...' : 'Publish'}
+                  {isPublishing ? t('labels.publishing', 'Publishing...') : t('labels.publish', 'Publish')}
                 </Button>
               )}
               <Button onClick={form.handleSubmit(onSubmit)} disabled={isSaving}>
@@ -378,7 +415,7 @@ export default function ProductFormPage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Basic Information */}
-              <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
+              <Card className="shadow-sm hover:shadow-lg transition-shadow duration-300">
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle>Basic Information</CardTitle>
                   <CardDescription>Product name, description, and identifiers</CardDescription>
@@ -659,6 +696,7 @@ export default function ProductFormPage() {
                     <Button
                       variant="outline"
                       size="sm"
+                      className="cursor-pointer"
                       onClick={() => setNewVariant({ name: '', price: 0, sku: '', compareAtPrice: null, stockQuantity: 0, sortOrder: 0 })}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -698,10 +736,10 @@ export default function ProductFormPage() {
                         />
                       </div>
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => setNewVariant(null)}>
+                        <Button variant="ghost" size="sm" className="cursor-pointer" onClick={() => setNewVariant(null)}>
                           Cancel
                         </Button>
-                        <Button size="sm" onClick={handleAddVariant}>
+                        <Button size="sm" className="cursor-pointer" onClick={handleAddVariant}>
                           Add
                         </Button>
                       </div>
@@ -749,7 +787,9 @@ export default function ProductFormPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleDeleteVariant(variant.id)}
+                              className="cursor-pointer"
+                              onClick={() => setVariantToDelete(variant)}
+                              aria-label={`Delete variant ${variant.name}`}
                             >
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
@@ -834,20 +874,20 @@ export default function ProductFormPage() {
                 {/* Image Grid - 21st.dev pattern */}
                 {images.length > 0 && (
                   <div className="grid grid-cols-2 gap-3">
-                    {images.map((image) => (
+                    {images.map((image, index) => (
                       <div
                         key={image.id}
                         className="relative aspect-square rounded-xl border overflow-hidden group shadow-sm hover:shadow-md transition-all duration-300"
                       >
                         <img
                           src={image.url}
-                          alt={image.altText || 'Product image'}
+                          alt={image.altText || `${form.getValues('name') || t('products.product', 'Product')} - ${t('products.imageNumber', { number: index + 1, defaultValue: `Image ${index + 1}` })}`}
                           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                         {image.isPrimary && (
                           <Badge className="absolute top-2 left-2 text-xs shadow-md backdrop-blur-sm bg-primary/90">
                             <Star className="h-3 w-3 mr-1 fill-current" />
-                            Primary
+                            {t('products.primaryImage', 'Primary')}
                           </Badge>
                         )}
                         {!isViewMode && (
@@ -856,8 +896,9 @@ export default function ProductFormPage() {
                               <Button
                                 size="icon"
                                 variant="secondary"
-                                className="h-8 w-8 shadow-lg backdrop-blur-sm bg-white/90 hover:bg-white transition-all duration-200 hover:scale-110"
+                                className="h-8 w-8 shadow-lg backdrop-blur-sm bg-white/90 hover:bg-white transition-all duration-200 hover:scale-110 cursor-pointer"
                                 onClick={() => handleSetPrimaryImage(image.id)}
+                                aria-label="Set as primary image"
                               >
                                 <Star className="h-4 w-4" />
                               </Button>
@@ -865,8 +906,9 @@ export default function ProductFormPage() {
                             <Button
                               size="icon"
                               variant="destructive"
-                              className="h-8 w-8 shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200"
-                              onClick={() => handleDeleteImage(image.id)}
+                              className="h-8 w-8 shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 cursor-pointer"
+                              onClick={() => setImageToDelete(image)}
+                              aria-label="Delete image"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -885,12 +927,15 @@ export default function ProductFormPage() {
                         placeholder="Image URL"
                         value={newImageUrl}
                         onChange={(e) => setNewImageUrl(e.target.value)}
+                        aria-label="Image URL"
                       />
                       <Button
                         variant="outline"
                         size="icon"
+                        className="cursor-pointer"
                         onClick={handleAddImage}
                         disabled={!newImageUrl}
+                        aria-label="Add image"
                       >
                         <ImagePlus className="h-4 w-4" />
                       </Button>
@@ -905,6 +950,66 @@ export default function ProductFormPage() {
           )}
         </div>
       </div>
+
+      {/* Delete Variant Confirmation Dialog */}
+      <AlertDialog open={!!variantToDelete} onOpenChange={(open) => !open && setVariantToDelete(null)}>
+        <AlertDialogContent className="border-destructive/30">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              </div>
+              <AlertDialogTitle>Delete Variant</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="pt-2">
+              Are you sure you want to delete the variant "{variantToDelete?.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeletingVariant} className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDeleteVariant}
+              disabled={isDeletingVariant}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+            >
+              {isDeletingVariant && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isDeletingVariant ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Image Confirmation Dialog */}
+      <AlertDialog open={!!imageToDelete} onOpenChange={(open) => !open && setImageToDelete(null)}>
+        <AlertDialogContent className="border-destructive/30">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              </div>
+              <AlertDialogTitle>Delete Image</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="pt-2">
+              Are you sure you want to delete this image? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeletingImage} className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDeleteImage}
+              disabled={isDeletingImage}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+            >
+              {isDeletingImage && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isDeletingImage ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

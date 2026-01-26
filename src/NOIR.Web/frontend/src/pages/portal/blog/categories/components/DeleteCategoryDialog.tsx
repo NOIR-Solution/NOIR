@@ -45,10 +45,10 @@ export function DeleteCategoryDialog({ category, open, onOpenChange, onConfirm }
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="border-destructive/30">
         <AlertDialogHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-destructive/10 rounded-lg">
+            <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
@@ -86,13 +86,13 @@ export function DeleteCategoryDialog({ category, open, onOpenChange, onConfirm }
         )}
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>
+          <AlertDialogCancel disabled={loading} className="cursor-pointer">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={loading || !canDelete}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
           >
             {loading ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>

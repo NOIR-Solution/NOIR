@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-01-25
-**Version:** 2.4
+**Last Updated:** 2026-01-26
+**Version:** 2.5
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -26,7 +26,41 @@ A comprehensive cross-referenced guide to the NOIR codebase, patterns, and archi
 
 ## Recent Fixes & Improvements
 
-**Last Session:** 2026-01-25
+**Last Session:** 2026-01-26
+
+### UI/UX Standardization (2026-01-26)
+
+**Scope:** Portal-wide consistency audit and fixes across e-commerce and admin sections.
+
+**Changes Applied:**
+
+1. **AlertDialog Pattern Standardization**
+   - Added `border-destructive/30` to all destructive AlertDialogContent
+   - Changed icon containers from various styles to `p-2 rounded-xl bg-destructive/10 border border-destructive/20`
+   - Added `cursor-pointer` to all Cancel and Action buttons
+
+2. **Accessibility Improvements**
+   - Added `aria-label` to all icon-only buttons (View, Edit, Delete, Back navigation)
+   - Labels are contextual: `aria-label={`View ${product.name} details`}`
+
+3. **Confirmation Dialogs**
+   - Added confirmation dialogs for variant deletion in ProductFormPage
+   - Added confirmation dialogs for image deletion in ProductFormPage
+   - Pattern: State variable for item-to-delete, separate dialog component
+
+4. **Visual Consistency**
+   - Standardized card shadows: `shadow-sm hover:shadow-lg transition-all duration-300`
+   - Fixed gradient text requiring `text-transparent` class with `bg-clip-text`
+
+**Files Modified:**
+- E-commerce: `ProductFormPage.tsx`, `ProductsPage.tsx`, `ProductCategoriesPage.tsx`, `EnhancedProductCard.tsx`, `DeleteProductDialog.tsx`
+- Admin: `DeleteRoleDialog.tsx`
+- Blog: `DeletePostDialog.tsx`, `DeleteCategoryDialog.tsx`, `DeleteTagDialog.tsx`
+- Settings: `SessionManagement.tsx`
+
+**Documentation:** See [Frontend Architecture - UI/UX Standardization Patterns](frontend/architecture.md#uiux-standardization-patterns)
+
+---
 
 ### EF Core Migration Tooling Workaround (2026-01-25)
 

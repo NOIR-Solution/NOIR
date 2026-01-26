@@ -165,7 +165,8 @@ export function SessionManagement() {
                       size="sm"
                       onClick={() => setSessionToRevoke(session)}
                       disabled={isRevoking === session.id}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10"
+                      aria-label={`Revoke session on ${getDeviceInfo(session)}`}
                     >
                       {isRevoking === session.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -183,7 +184,7 @@ export function SessionManagement() {
 
       {/* Revoke Confirmation Dialog */}
       <AlertDialog open={!!sessionToRevoke} onOpenChange={() => setSessionToRevoke(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="border-destructive/30">
           <AlertDialogHeader>
             <AlertDialogTitle>{t('sessions.revokeTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
@@ -193,10 +194,10 @@ export function SessionManagement() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel className="cursor-pointer">{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleRevoke}
-              className="border border-destructive bg-transparent text-destructive hover:bg-destructive hover:text-white"
+              className="cursor-pointer border border-destructive bg-transparent text-destructive hover:bg-destructive hover:text-white"
             >
               {t('sessions.revoke')}
             </AlertDialogAction>

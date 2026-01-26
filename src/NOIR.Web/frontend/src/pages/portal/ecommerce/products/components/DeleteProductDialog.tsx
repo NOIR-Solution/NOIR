@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import {
   AlertDialog,
@@ -26,6 +27,7 @@ export function DeleteProductDialog({
   onOpenChange,
   onConfirm,
 }: DeleteProductDialogProps) {
+  const { t } = useTranslation('common')
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleConfirm = async () => {
@@ -36,10 +38,10 @@ export function DeleteProductDialog({
     setIsDeleting(false)
 
     if (result.success) {
-      toast.success(`Product "${product.name}" deleted successfully`)
+      toast.success(t('products.deleteSuccess', { name: product.name, defaultValue: `Product "${product.name}" deleted successfully` }))
       onOpenChange(false)
     } else {
-      toast.error(result.error || 'Failed to delete product')
+      toast.error(result.error || t('products.deleteFailed', 'Failed to delete product'))
     }
   }
 
@@ -51,17 +53,18 @@ export function DeleteProductDialog({
             <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <AlertDialogTitle>Delete Product</AlertDialogTitle>
+            <AlertDialogTitle>{t('products.deleteProduct', 'Delete Product')}</AlertDialogTitle>
           </div>
           <AlertDialogDescription className="pt-2">
-            Are you sure you want to delete{' '}
-            <span className="font-semibold text-foreground">"{product?.name}"</span>?
-            This action cannot be undone.
+            {t('products.deleteConfirmation', {
+              name: product?.name,
+              defaultValue: `Are you sure you want to delete "${product?.name}"? This action cannot be undone.`
+            })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting} className="cursor-pointer">
-            Cancel
+            {t('labels.cancel', 'Cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
@@ -69,7 +72,7 @@ export function DeleteProductDialog({
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
           >
             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            {isDeleting ? t('labels.deleting', 'Deleting...') : t('labels.delete', 'Delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

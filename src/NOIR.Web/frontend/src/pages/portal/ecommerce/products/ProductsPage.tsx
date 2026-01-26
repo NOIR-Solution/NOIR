@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   Search,
   Package,
@@ -18,6 +19,7 @@ import {
   List,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -58,8 +60,16 @@ import { formatCurrency } from '@/lib/utils/currency'
 import { PRODUCT_STATUS_CONFIG, DEFAULT_PRODUCT_PAGE_SIZE } from '@/lib/constants/product'
 
 export default function ProductsPage() {
+  const { t } = useTranslation('common')
+  const { hasPermission } = usePermissions()
   usePageContext('Products')
   const navigate = useNavigate()
+
+  // Permission checks
+  const canCreateProducts = hasPermission(Permissions.ProductsCreate)
+  const canUpdateProducts = hasPermission(Permissions.ProductsUpdate)
+  const canDeleteProducts = hasPermission(Permissions.ProductsDelete)
+  const canPublishProducts = hasPermission(Permissions.ProductsPublish)
 
   const {
     data,
@@ -127,18 +137,20 @@ export default function ProductsPage() {
             <Package className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-              Products
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              {t('products.title', 'Products')}
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">Manage your product catalog</p>
+            <p className="text-sm text-muted-foreground mt-1">{t('products.description', 'Manage your product catalog')}</p>
           </div>
         </div>
-        <Link to="/portal/ecommerce/products/new">
-          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
-            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-            New Product
-          </Button>
-        </Link>
+        {canCreateProducts && (
+          <Link to="/portal/ecommerce/products/new">
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
+              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+              {t('products.newProduct', 'New Product')}
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Stats Dashboard */}
@@ -147,13 +159,13 @@ export default function ProductsPage() {
         hasActiveFilters={!!(params.search || params.status || params.categoryId || params.inStockOnly)}
       />
 
-      <Card className="shadow-md hover:shadow-xl transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/95">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/95">
         <CardHeader className="pb-4 space-y-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-xl">All Products</CardTitle>
+              <CardTitle className="text-xl">{t('products.allProducts', 'All Products')}</CardTitle>
               <CardDescription className="text-sm">
-                {data ? `Showing ${data.items.length} of ${data.totalCount} products` : 'Loading...'}
+                {data ? t('labels.showingOfItems', { showing: data.items.length, total: data.totalCount, defaultValue: `Showing ${data.items.length} of ${data.totalCount} products` }) : t('labels.loading', 'Loading...')}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -194,37 +206,37 @@ export default function ProductsPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                 <Input
-                  placeholder="Search products..."
+                  placeholder={t('products.searchPlaceholder', 'Search products...')}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                  aria-label="Search products"
+                  aria-label={t('products.searchProducts', 'Search products')}
                 />
               </div>
               <Button type="submit" variant="secondary" size="sm" className="cursor-pointer">
-                Search
+                {t('labels.search', 'Search')}
               </Button>
             </form>
 
             <Select onValueChange={handleStatusChange} defaultValue="all">
               <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={t('labels.status', 'Status')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all" className="cursor-pointer">All Status</SelectItem>
-                <SelectItem value="Draft" className="cursor-pointer">Draft</SelectItem>
-                <SelectItem value="Active" className="cursor-pointer">Active</SelectItem>
-                <SelectItem value="Archived" className="cursor-pointer">Archived</SelectItem>
-                <SelectItem value="OutOfStock" className="cursor-pointer">Out of Stock</SelectItem>
+                <SelectItem value="all" className="cursor-pointer">{t('labels.allStatus', 'All Status')}</SelectItem>
+                <SelectItem value="Draft" className="cursor-pointer">{t('products.status.draft', 'Draft')}</SelectItem>
+                <SelectItem value="Active" className="cursor-pointer">{t('products.status.active', 'Active')}</SelectItem>
+                <SelectItem value="Archived" className="cursor-pointer">{t('products.status.archived', 'Archived')}</SelectItem>
+                <SelectItem value="OutOfStock" className="cursor-pointer">{t('products.status.outOfStock', 'Out of Stock')}</SelectItem>
               </SelectContent>
             </Select>
 
             <Select onValueChange={handleCategoryChange} defaultValue="all">
               <SelectTrigger className="w-full sm:w-40 cursor-pointer transition-all duration-200 hover:border-primary/50">
-                <SelectValue placeholder="Category" />
+                <SelectValue placeholder={t('labels.category', 'Category')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all" className="cursor-pointer">All Categories</SelectItem>
+                <SelectItem value="all" className="cursor-pointer">{t('labels.allCategories', 'All Categories')}</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
                     {cat.name}
@@ -235,11 +247,11 @@ export default function ProductsPage() {
 
             <Select onValueChange={handleStockFilterChange} defaultValue="all">
               <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50">
-                <SelectValue placeholder="Stock" />
+                <SelectValue placeholder={t('labels.stock', 'Stock')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all" className="cursor-pointer">All Stock</SelectItem>
-                <SelectItem value="inStock" className="cursor-pointer">In Stock</SelectItem>
+                <SelectItem value="all" className="cursor-pointer">{t('labels.allStock', 'All Stock')}</SelectItem>
+                <SelectItem value="inStock" className="cursor-pointer">{t('products.inStock', 'In Stock')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -270,20 +282,23 @@ export default function ProductsPage() {
             ) : data?.items.length === 0 ? (
               <EmptyState
                 icon={Package}
-                title="No products found"
-                description="Get started by creating your first product to build your catalog."
-                action={{
-                  label: 'Add Product',
+                title={t('products.noProductsFound', 'No products found')}
+                description={t('products.noProductsDescription', 'Get started by creating your first product to build your catalog.')}
+                action={canCreateProducts ? {
+                  label: t('products.addProduct', 'Add Product'),
                   onClick: () => navigate('/portal/ecommerce/products/new'),
-                }}
+                } : undefined}
                 className="border-0 rounded-none py-12"
               />
             ) : (
               <EnhancedProductGridView
                 products={data?.items || []}
-                onDelete={setProductToDelete}
-                onPublish={onPublish}
-                onArchive={onArchive}
+                onDelete={canDeleteProducts ? setProductToDelete : undefined}
+                onPublish={canPublishProducts ? onPublish : undefined}
+                onArchive={canUpdateProducts ? onArchive : undefined}
+                canEdit={canUpdateProducts}
+                canDelete={canDeleteProducts}
+                canPublish={canPublishProducts}
               />
             )
           ) : (
@@ -292,13 +307,13 @@ export default function ProductsPage() {
               <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableHead className="w-[35%] font-semibold">Product</TableHead>
-                  <TableHead className="font-semibold">Status</TableHead>
-                  <TableHead className="font-semibold">Category</TableHead>
-                  <TableHead className="text-right font-semibold">Price</TableHead>
-                  <TableHead className="text-right font-semibold">Stock</TableHead>
-                  <TableHead className="font-semibold">Created</TableHead>
-                  <TableHead className="text-right font-semibold">Actions</TableHead>
+                  <TableHead className="w-[35%] font-semibold">{t('products.product', 'Product')}</TableHead>
+                  <TableHead className="font-semibold">{t('labels.status', 'Status')}</TableHead>
+                  <TableHead className="font-semibold">{t('labels.category', 'Category')}</TableHead>
+                  <TableHead className="text-right font-semibold">{t('products.price', 'Price')}</TableHead>
+                  <TableHead className="text-right font-semibold">{t('labels.stock', 'Stock')}</TableHead>
+                  <TableHead className="font-semibold">{t('labels.created', 'Created')}</TableHead>
+                  <TableHead className="text-right font-semibold">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -328,12 +343,12 @@ export default function ProductsPage() {
                     <TableCell colSpan={7} className="p-0">
                       <EmptyState
                         icon={Package}
-                        title="No products found"
-                        description="Get started by creating your first product to build your catalog."
-                        action={{
-                          label: 'Add Product',
+                        title={t('products.noProductsFound', 'No products found')}
+                        description={t('products.noProductsDescription', 'Get started by creating your first product to build your catalog.')}
+                        action={canCreateProducts ? {
+                          label: t('products.addProduct', 'Add Product'),
                           onClick: () => navigate('/portal/ecommerce/products/new'),
-                        }}
+                        } : undefined}
                         className="border-0 rounded-none py-12"
                       />
                     </TableCell>
@@ -422,42 +437,48 @@ export default function ProductsPage() {
                               <DropdownMenuItem className="cursor-pointer" asChild>
                                 <Link to={`/portal/ecommerce/products/${product.id}`}>
                                   <Eye className="h-4 w-4 mr-2" />
-                                  View Details
+                                  {t('labels.viewDetails', 'View Details')}
                                 </Link>
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="cursor-pointer" asChild>
-                                <Link to={`/portal/ecommerce/products/${product.id}/edit`}>
-                                  <Pencil className="h-4 w-4 mr-2" />
-                                  Edit Product
-                                </Link>
-                              </DropdownMenuItem>
+                              {canUpdateProducts && (
+                                <DropdownMenuItem className="cursor-pointer" asChild>
+                                  <Link to={`/portal/ecommerce/products/${product.id}/edit`}>
+                                    <Pencil className="h-4 w-4 mr-2" />
+                                    {t('products.editProduct', 'Edit Product')}
+                                  </Link>
+                                </DropdownMenuItem>
+                              )}
                               <DropdownMenuSeparator />
-                              {product.status === 'Draft' && (
+                              {canPublishProducts && product.status === 'Draft' && (
                                 <DropdownMenuItem
                                   className="cursor-pointer text-emerald-600 dark:text-emerald-400"
                                   onClick={() => onPublish(product)}
                                 >
                                   <Send className="h-4 w-4 mr-2" />
-                                  Publish
+                                  {t('labels.publish', 'Publish')}
                                 </DropdownMenuItem>
                               )}
-                              {product.status === 'Active' && (
+                              {canUpdateProducts && product.status === 'Active' && (
                                 <DropdownMenuItem
                                   className="cursor-pointer text-amber-600 dark:text-amber-400"
                                   onClick={() => onArchive(product)}
                                 >
                                   <Archive className="h-4 w-4 mr-2" />
-                                  Archive
+                                  {t('labels.archive', 'Archive')}
                                 </DropdownMenuItem>
                               )}
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="cursor-pointer text-destructive focus:text-destructive"
-                                onClick={() => setProductToDelete(product)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
+                              {canDeleteProducts && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="cursor-pointer text-destructive focus:text-destructive"
+                                    onClick={() => setProductToDelete(product)}
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    {t('labels.delete', 'Delete')}
+                                  </DropdownMenuItem>
+                                </>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>

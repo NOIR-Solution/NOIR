@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
@@ -67,6 +68,7 @@ export function CategoryDialog({
   categories,
   onSuccess,
 }: CategoryDialogProps) {
+  const { t } = useTranslation('common')
   const isEditing = !!category
   const [isSaving, setIsSaving] = useState(false)
 
@@ -86,13 +88,16 @@ export function CategoryDialog({
 
   useEffect(() => {
     if (category) {
+      // TODO: ProductCategoryListItem doesn't include metaTitle, metaDescription, imageUrl
+      // To preserve these on edit, extend the type and backend DTO to include these fields
+      // For now, these will reset to empty when editing
       form.reset({
         name: category.name,
         slug: category.slug,
         description: category.description || '',
-        metaTitle: '',
-        metaDescription: '',
-        imageUrl: '',
+        metaTitle: (category as unknown as Record<string, string>).metaTitle || '',
+        metaDescription: (category as unknown as Record<string, string>).metaDescription || '',
+        imageUrl: (category as unknown as Record<string, string>).imageUrl || '',
         sortOrder: category.sortOrder,
         parentId: category.parentId || null,
       })
@@ -125,18 +130,18 @@ export function CategoryDialog({
           ...data,
           parentId: data.parentId || null,
         })
-        toast.success('Category updated successfully')
+        toast.success(t('categories.updateSuccess', 'Category updated successfully'))
       } else {
         await createProductCategory({
           ...data,
           parentId: data.parentId || null,
         })
-        toast.success('Category created successfully')
+        toast.success(t('categories.createSuccess', 'Category created successfully'))
       }
       onOpenChange(false)
       onSuccess()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to save category'
+      const message = err instanceof ApiError ? err.message : t('categories.saveFailed', 'Failed to save category')
       toast.error(message)
     } finally {
       setIsSaving(false)
@@ -150,9 +155,9 @@ export function CategoryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Edit Category' : 'New Category'}</DialogTitle>
+          <DialogTitle>{isEditing ? t('categories.editCategory', 'Edit Category') : t('categories.newCategory', 'New Category')}</DialogTitle>
           <DialogDescription>
-            {isEditing ? 'Update category details' : 'Create a new product category'}
+            {isEditing ? t('categories.editDescription', 'Update category details') : t('categories.createDescription', 'Create a new product category')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -162,12 +167,12 @@ export function CategoryDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t('labels.name', 'Name')}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       onChange={(e) => handleNameChange(e.target.value)}
-                      placeholder="Category name"
+                      placeholder={t('categories.namePlaceholder', 'Category name')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -180,11 +185,11 @@ export function CategoryDialog({
               name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel>{t('labels.slug', 'Slug')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="category-slug" />
+                    <Input {...field} placeholder={t('categories.slugPlaceholder', 'category-slug')} />
                   </FormControl>
-                  <FormDescription>URL-friendly identifier</FormDescription>
+                  <FormDescription>{t('categories.slugDescription', 'URL-friendly identifier')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -195,12 +200,12 @@ export function CategoryDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t('labels.description', 'Description')}</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
                       value={field.value || ''}
-                      placeholder="Category description"
+                      placeholder={t('categories.descriptionPlaceholder', 'Category description')}
                       rows={3}
                     />
                   </FormControl>
@@ -214,19 +219,19 @@ export function CategoryDialog({
               name="parentId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Parent Category</FormLabel>
+                  <FormLabel>{t('categories.parentCategory', 'Parent Category')}</FormLabel>
                   <Select
                     onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
                     value={field.value || 'none'}
                   >
                     <FormControl>
                       <SelectTrigger className="cursor-pointer">
-                        <SelectValue placeholder="Select parent category" />
+                        <SelectValue placeholder={t('categories.selectParent', 'Select parent category')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="none" className="cursor-pointer">
-                        No parent (top level)
+                        {t('categories.noParent', 'No parent (top level)')}
                       </SelectItem>
                       {parentOptions.map((cat) => (
                         <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
@@ -245,22 +250,22 @@ export function CategoryDialog({
               name="sortOrder"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sort Order</FormLabel>
+                  <FormLabel>{t('labels.sortOrder', 'Sort Order')}</FormLabel>
                   <FormControl>
                     <Input {...field} type="number" min="0" />
                   </FormControl>
-                  <FormDescription>Lower numbers appear first</FormDescription>
+                  <FormDescription>{t('categories.sortOrderDescription', 'Lower numbers appear first')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
+                {t('labels.cancel', 'Cancel')}
               </Button>
-              <Button type="submit" disabled={isSaving}>
-                {isSaving ? 'Saving...' : isEditing ? 'Update' : 'Create'}
+              <Button type="submit" disabled={isSaving} className="cursor-pointer">
+                {isSaving ? t('labels.saving', 'Saving...') : isEditing ? t('labels.update', 'Update') : t('labels.create', 'Create')}
               </Button>
             </DialogFooter>
           </form>

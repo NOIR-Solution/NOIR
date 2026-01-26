@@ -260,6 +260,141 @@ NOIR/
 3. **Shared component:** Add to `/components`
 4. **Global state:** Add context in `/contexts`
 
+## UI/UX Standardization Patterns
+
+**Last Updated:** 2026-01-26
+
+### Interactive Elements - cursor-pointer
+
+All clickable/interactive elements MUST have `cursor-pointer` class:
+
+```tsx
+// Buttons in dialogs
+<AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+<AlertDialogAction className="cursor-pointer">Confirm</AlertDialogAction>
+
+// Icon buttons
+<Button variant="ghost" size="icon" className="cursor-pointer">
+  <Trash2 className="h-4 w-4" />
+</Button>
+```
+
+### Accessibility - aria-labels
+
+All icon-only buttons MUST have descriptive `aria-label`:
+
+```tsx
+// Good - describes the action and context
+<Button
+  variant="ghost"
+  size="icon"
+  className="cursor-pointer"
+  aria-label={`View ${product.name} details`}
+>
+  <Eye className="h-4 w-4" />
+</Button>
+
+// Good - back navigation
+<Button
+  variant="ghost"
+  size="icon"
+  aria-label="Go back to products list"
+>
+  <ArrowLeft className="h-5 w-5" />
+</Button>
+```
+
+### AlertDialog Pattern
+
+Standard destructive dialog pattern:
+
+```tsx
+<AlertDialog open={open} onOpenChange={onOpenChange}>
+  <AlertDialogContent className="border-destructive/30">
+    <AlertDialogHeader>
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+          <AlertTriangle className="h-5 w-5 text-destructive" />
+        </div>
+        <div>
+          <AlertDialogTitle>Delete Item</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure? This action cannot be undone.
+          </AlertDialogDescription>
+        </div>
+      </div>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel disabled={loading} className="cursor-pointer">
+        Cancel
+      </AlertDialogCancel>
+      <AlertDialogAction
+        onClick={handleConfirm}
+        disabled={loading}
+        className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+      >
+        {loading ? 'Deleting...' : 'Delete'}
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+**Key Elements:**
+- `border-destructive/30` on `AlertDialogContent`
+- Icon container: `p-2 rounded-xl bg-destructive/10 border border-destructive/20`
+- `cursor-pointer` on both Cancel and Action buttons
+- Disabled state during async operations
+
+### Card Shadow Standardization
+
+Consistent card hover effect pattern:
+
+```tsx
+<Card className="shadow-sm hover:shadow-lg transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/95">
+  {/* content */}
+</Card>
+```
+
+### Gradient Text
+
+Gradient text requires `text-transparent` class:
+
+```tsx
+// Correct
+<h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+  Page Title
+</h1>
+
+// Wrong - gradient won't show
+<h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+  Page Title
+</h1>
+```
+
+### Confirmation Dialogs for Destructive Actions
+
+All destructive actions (delete, remove) should use confirmation dialogs:
+
+```tsx
+// State for confirmation dialog
+const [itemToDelete, setItemToDelete] = useState<ItemType | null>(null)
+const [isDeleting, setIsDeleting] = useState(false)
+
+// Trigger confirmation
+<Button onClick={() => setItemToDelete(item)}>
+  <Trash2 className="h-4 w-4" />
+</Button>
+
+// Confirmation dialog
+<AlertDialog
+  open={!!itemToDelete}
+  onOpenChange={(open) => !open && setItemToDelete(null)}
+>
+  {/* Standard AlertDialog pattern above */}
+</AlertDialog>
+```
+
 ## Code Quality
 
 - Run `npm run lint` before committing

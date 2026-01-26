@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Eye,
@@ -17,9 +18,12 @@ import { ProductActionsMenu } from './ProductActionsMenu'
 
 interface EnhancedProductCardProps {
   product: ProductListItem
-  onDelete: (product: ProductListItem) => void
-  onPublish: (product: ProductListItem) => void
-  onArchive: (product: ProductListItem) => void
+  onDelete?: (product: ProductListItem) => void
+  onPublish?: (product: ProductListItem) => void
+  onArchive?: (product: ProductListItem) => void
+  canEdit?: boolean
+  canDelete?: boolean
+  canPublish?: boolean
 }
 
 export function EnhancedProductCard({
@@ -27,7 +31,11 @@ export function EnhancedProductCard({
   onDelete,
   onPublish,
   onArchive,
+  canEdit = true,
+  canDelete = true,
+  canPublish = true,
 }: EnhancedProductCardProps) {
+  const { t } = useTranslation('common')
   const [isHovered, setIsHovered] = useState(false)
 
   const status = PRODUCT_STATUS_CONFIG[product.status]
@@ -102,7 +110,7 @@ export function EnhancedProductCard({
           {isLowStock && (
             <Badge className="absolute top-3 right-3 bg-orange-500/90 text-white border-0 shadow-lg gap-1 backdrop-blur-sm">
               <AlertTriangle className="h-3 w-3" />
-              Low Stock
+              {t('products.lowStock', 'Low Stock')}
             </Badge>
           )}
 
@@ -126,29 +134,33 @@ export function EnhancedProductCard({
                   size="icon"
                   variant="secondary"
                   className="h-9 w-9 rounded-full bg-background/90 backdrop-blur-md border-border shadow-lg hover:bg-background cursor-pointer"
+                  aria-label={`View ${product.name} details`}
                 >
                   <Eye className="h-4 w-4" />
                 </Button>
               </motion.div>
             </Link>
-            <Link to={`/portal/ecommerce/products/${product.id}/edit`}>
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="h-9 w-9 rounded-full bg-background/90 backdrop-blur-md border-border shadow-lg hover:bg-background cursor-pointer"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </motion.div>
-            </Link>
+            {canEdit && (
+              <Link to={`/portal/ecommerce/products/${product.id}/edit`}>
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="h-9 w-9 rounded-full bg-background/90 backdrop-blur-md border-border shadow-lg hover:bg-background cursor-pointer"
+                    aria-label={`Edit ${product.name}`}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              </Link>
+            )}
           </motion.div>
 
           {/* Out of Stock Overlay */}
           {!product.inStock && (
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
               <Badge variant="secondary" className="text-lg px-6 py-2 shadow-xl">
-                Out of Stock
+                {t('products.outOfStock', 'Out of Stock')}
               </Badge>
             </div>
           )}
@@ -177,7 +189,7 @@ export function EnhancedProductCard({
 
           {/* Stock Info */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Stock:</span>
+            <span className="text-sm text-muted-foreground">{t('labels.stock', 'Stock')}:</span>
             <Badge
               variant={product.inStock ? 'default' : 'destructive'}
               className="transition-all duration-200 hover:scale-105"
@@ -207,13 +219,16 @@ export function EnhancedProductCard({
             onDelete={onDelete}
             onPublish={onPublish}
             onArchive={onArchive}
+            canEdit={canEdit}
+            canDelete={canDelete}
+            canPublish={canPublish}
             trigger={
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
                   variant="outline"
                   className="w-full cursor-pointer bg-background/50 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground transition-all duration-200"
                 >
-                  Actions
+                  {t('labels.actions', 'Actions')}
                 </Button>
               </motion.div>
             }
