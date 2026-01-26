@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-01-26
 
 ---
 
@@ -20,15 +20,15 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,370+ tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,571+ tests.
 
 ### Key Statistics
 
-- **Lines of Code:** ~165,000
-- **Test Coverage:** 5,374+ tests across Unit, Integration, and Architecture layers
-- **Feature Modules:** 15 domain-driven modules (including new Payments module)
-- **API Endpoints:** 80+ REST endpoints (18 endpoint groups)
-- **Domain Entities:** 26 entities, 11 enums, 8 domain events
+- **Lines of Code:** ~175,000
+- **Test Coverage:** 5,571+ tests across Unit, Integration, and Architecture layers
+- **Feature Modules:** 17 domain-driven modules (including E-commerce: Products, Cart)
+- **API Endpoints:** 90+ REST endpoints (21 endpoint groups)
+- **Domain Entities:** 32 entities, 13 enums, 10 domain events
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
 
 ### Directory Structure
@@ -41,12 +41,12 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 5,374 tests across 4 projects
+├── tests/                        # ✅ 5,571 tests across 4 projects
 │   ├── NOIR.Domain.UnitTests/    # 841 domain logic tests
-│   ├── NOIR.Application.UnitTests/ # 3,903 handler/service tests
+│   ├── NOIR.Application.UnitTests/ # 4,100 handler/service tests
 │   ├── NOIR.IntegrationTests/    # 605 API integration tests
 │   └── NOIR.ArchitectureTests/   # 25 architectural rule tests
-├── docs/                         # 📚 39 documentation files
+├── docs/                         # 📚 46 documentation files
 └── .github/                      # ⚙️  CI/CD workflows
 
 ```
@@ -82,12 +82,20 @@ NOIR.Domain/
 │   ├── Post.cs                          # Blog post
 │   ├── PostCategory.cs                  # Blog category
 │   ├── PostTag.cs                       # Blog tag
-│   └── Payment/                         # ⭐ NEW: Payment domain
-│       ├── PaymentGateway.cs            # Gateway configuration (encrypted credentials)
-│       ├── PaymentTransaction.cs        # Payment lifecycle tracking
-│       ├── PaymentWebhookLog.cs         # Webhook audit trail
-│       ├── PaymentOperationLog.cs       # ⭐ NEW: Gateway API call audit trail
-│       └── Refund.cs                    # Refund tracking with approval workflow
+│   ├── Payment/                         # Payment domain
+│   │   ├── PaymentGateway.cs            # Gateway configuration (encrypted credentials)
+│   │   ├── PaymentTransaction.cs        # Payment lifecycle tracking
+│   │   ├── PaymentWebhookLog.cs         # Webhook audit trail
+│   │   ├── PaymentOperationLog.cs       # Gateway API call audit trail
+│   │   └── Refund.cs                    # Refund tracking with approval workflow
+│   ├── Product/                         # ⭐ NEW: Product domain (Phase 8)
+│   │   ├── Product.cs                   # Product aggregate root with variants
+│   │   ├── ProductVariant.cs            # SKU, price, inventory
+│   │   ├── ProductImage.cs              # Product images
+│   │   └── ProductCategory.cs           # Hierarchical categories
+│   └── Cart/                            # ⭐ NEW: Shopping Cart domain (Phase 8)
+│       ├── Cart.cs                      # Cart aggregate root (user/guest)
+│       └── CartItem.cs                  # Cart line items
 ├── Enums/                               # Domain enumerations
 │   ├── AuditOperationType.cs            # CRUD operations
 │   ├── NotificationType.cs              # Notification types
@@ -99,10 +107,16 @@ NOIR.Domain/
 │   ├── GatewayEnvironment.cs            # ⭐ NEW: Sandbox/Production
 │   ├── GatewayHealthStatus.cs           # ⭐ NEW: Gateway operational status
 │   ├── WebhookProcessingStatus.cs       # ⭐ NEW: Webhook processing states
-│   └── PaymentOperationType.cs          # ⭐ NEW: Operation types for logging
-├── Events/                              # ⭐ NEW: Domain events
-│   └── Payment/                         # Payment domain events
-│       └── PaymentEvents.cs             # Created, Succeeded, Failed, Refunded
+│   ├── PaymentOperationType.cs          # Operation types for logging
+│   ├── ProductStatus.cs                 # ⭐ NEW: Draft, Active, Archived
+│   └── CartStatus.cs                    # ⭐ NEW: Active, Merged, Abandoned, Converted
+├── Events/                              # Domain events
+│   ├── Payment/                         # Payment domain events
+│   │   └── PaymentEvents.cs             # Created, Succeeded, Failed, Refunded
+│   ├── Product/                         # ⭐ NEW: Product domain events
+│   │   └── ProductEvents.cs             # Created, Published, Archived
+│   └── Cart/                            # ⭐ NEW: Cart domain events
+│       └── CartEvents.cs                # ItemAdded, ItemUpdated, ItemRemoved, Cleared
 ├── Interfaces/
 │   ├── IRepository.cs                   # Generic repository
 │   ├── ISpecification.cs                # Specification pattern
@@ -220,6 +234,8 @@ Features/{Feature}/
 | **DeveloperLogs** | - | StreamLogs | Real-time Serilog streaming |
 | **TenantSettings** | UpdateBranding, UpdateContact, UpdateSmtp, UpdateRegional | GetTenantSettings, GetBranding | Tenant configuration |
 | **PlatformSettings** | UpdatePlatformSettings | GetPlatformSettings | Platform-level config |
+| **Products** | CreateProduct, UpdateProduct, ArchiveProduct, PublishProduct, CreateProductCategory, UpdateProductCategory, DeleteProductCategory | GetProducts, GetProductById, GetProductCategories, GetProductCategoryById | ⭐ **NEW:** Product catalog management |
+| **Cart** | AddToCart, UpdateCartItem, RemoveCartItem, ClearCart, MergeCart | GetCart, GetCartSummary | ⭐ **NEW:** Shopping cart with guest support |
 
 #### Navigation
 
@@ -401,6 +417,9 @@ NOIR.Web/
 | **Developer Logs** | `/api/developer-logs` | Serilog streaming, error clusters |
 | **Tenant Settings** | `/api/tenant-settings` | Branding, SMTP, regional, contact |
 | **Platform Settings** | `/api/platform-settings` | Platform-level configuration |
+| **Products** | `/api/products` | ⭐ **NEW:** CRUD, variants, publish, archive |
+| **Product Categories** | `/api/product-categories` | ⭐ **NEW:** CRUD, hierarchical |
+| **Cart** | `/api/cart` | ⭐ **NEW:** add, update, remove, clear, get, merge |
 | **Hangfire** | `/hangfire` | Dashboard (requires `system:hangfire` permission) |
 
 #### Navigation
@@ -1000,14 +1019,30 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-01-25
-**Version:** 2.4
+**Last Updated:** 2026-01-26
+**Version:** 2.5
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 2.5 (2026-01-26) - Phase 8 E-commerce Sprint 1
+- **NEW: Product Catalog** - Complete product management with variants, pricing, inventory
+  - Product entity with variants, images, and categories
+  - ProductStatus workflow (Draft, Active, Archived)
+  - 6 commands: CreateProduct, UpdateProduct, ArchiveProduct, PublishProduct, CreateProductCategory, UpdateProductCategory, DeleteProductCategory
+  - 4 queries: GetProducts, GetProductById, GetProductCategories, GetProductCategoryById
+- **NEW: Shopping Cart** - Full cart functionality with guest support
+  - Cart aggregate root with CartItem child entities
+  - Guest cart support via SessionId (merge on login)
+  - 5 commands: AddToCart, UpdateCartItem, RemoveCartItem, ClearCart, MergeCart
+  - 2 queries: GetCart, GetCartSummary
+  - IAuditableCommand on all cart commands for Activity Timeline
+- **Infrastructure**: EF Core migrations restructured (Migrations/App, Migrations/Tenant)
+- **Tests**: 5,571 tests (up from 5,431)
+- **Statistics**: 17 feature modules, 90+ endpoints, 32 entities, 13 enums
 
 ### Version 2.4 (2026-01-25)
 - Added **PaymentOperationLog** entity for database audit trail of gateway API calls

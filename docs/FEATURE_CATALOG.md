@@ -2,7 +2,7 @@
 
 > **Complete reference of all features, commands, queries, and endpoints in the NOIR platform.**
 
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-01-26
 
 ---
 
@@ -13,7 +13,9 @@
 - [User Management](#user-management)
 - [Role & Permission Management](#role--permission-management)
 - [Multi-Tenancy](#multi-tenancy)
-- [Payment Processing](#payment-processing) ⭐ **NEW**
+- [Payment Processing](#payment-processing)
+- [Product Catalog](#product-catalog) ⭐ **NEW**
+- [Shopping Cart](#shopping-cart) ⭐ **NEW**
 - [Audit Logging](#audit-logging)
 - [Notifications](#notifications)
 - [Email Templates](#email-templates)
@@ -509,6 +511,233 @@ GET /api/users?search=john&roleFilter=Admin&pageNumber=1&pageSize=10
 - **Permission:** `tenants:read`
 - **Purpose:** Get tenant configuration
 - **Returns:** TenantSettingsDto (from TenantSettings table)
+
+---
+
+## Product Catalog
+
+**Namespace:** `NOIR.Application.Features.Products`
+**Endpoint:** `/api/products`, `/api/product-categories`
+**Permissions:** `products:*`
+
+### Features
+
+#### Create Product
+- **Command:** `CreateProductCommand`
+- **Endpoint:** `POST /api/products`
+- **Permission:** `products:create`
+- **Purpose:** Create new product with variants, images, and categories
+- **Returns:** ProductDto
+- **Validation:**
+  - Name: Required, max 200 chars
+  - Slug: Required, unique within tenant
+  - At least one variant required
+- **Audit:** IAuditableCommand
+
+**Example Request:**
+```json
+{
+  "name": "Premium T-Shirt",
+  "slug": "premium-t-shirt",
+  "description": "High-quality cotton t-shirt",
+  "shortDescription": "Premium cotton tee",
+  "categoryId": "123e4567-e89b-12d3-a456-426614174000",
+  "variants": [
+    {
+      "name": "Small / Black",
+      "sku": "TSHIRT-S-BLK",
+      "price": 29.99,
+      "compareAtPrice": 39.99,
+      "stockQuantity": 100
+    }
+  ]
+}
+```
+
+#### Update Product
+- **Command:** `UpdateProductCommand`
+- **Endpoint:** `PUT /api/products/{id}`
+- **Permission:** `products:update`
+- **Purpose:** Update product details
+- **Returns:** ProductDto
+- **Audit:** IAuditableCommand with before-state resolver
+
+#### Publish Product
+- **Command:** `PublishProductCommand`
+- **Endpoint:** `POST /api/products/{id}/publish`
+- **Permission:** `products:update`
+- **Purpose:** Change product status from Draft to Active
+- **Returns:** ProductDto
+
+#### Archive Product
+- **Command:** `ArchiveProductCommand`
+- **Endpoint:** `POST /api/products/{id}/archive`
+- **Permission:** `products:update`
+- **Purpose:** Mark product as archived (soft archive)
+- **Returns:** ProductDto
+
+#### Get Products
+- **Query:** `GetProductsQuery`
+- **Endpoint:** `GET /api/products`
+- **Permission:** `products:read`
+- **Purpose:** List products with pagination, filtering, search
+- **Returns:** PaginatedList<ProductDto>
+- **Query Parameters:**
+  - `search`: Full-text search on name/description
+  - `categoryId`: Filter by category
+  - `status`: Filter by ProductStatus (Draft, Active, Archived)
+  - `page`, `pageSize`: Pagination
+
+#### Get Product By Id
+- **Query:** `GetProductByIdQuery`
+- **Endpoint:** `GET /api/products/{id}`
+- **Permission:** `products:read`
+- **Purpose:** Get product details with variants and images
+- **Returns:** ProductDto
+
+### Product Categories
+
+#### Create Product Category
+- **Command:** `CreateProductCategoryCommand`
+- **Endpoint:** `POST /api/product-categories`
+- **Permission:** `products:create`
+- **Purpose:** Create product category (supports hierarchy)
+- **Returns:** ProductCategoryDto
+
+#### Update Product Category
+- **Command:** `UpdateProductCategoryCommand`
+- **Endpoint:** `PUT /api/product-categories/{id}`
+- **Permission:** `products:update`
+- **Returns:** ProductCategoryDto
+
+#### Delete Product Category
+- **Command:** `DeleteProductCategoryCommand`
+- **Endpoint:** `DELETE /api/product-categories/{id}`
+- **Permission:** `products:delete`
+- **Purpose:** Soft delete category
+- **Returns:** Success
+
+#### Get Product Categories
+- **Query:** `GetProductCategoriesQuery`
+- **Endpoint:** `GET /api/product-categories`
+- **Permission:** `products:read`
+- **Purpose:** List all categories (hierarchical)
+- **Returns:** List<ProductCategoryDto>
+
+### Domain Entities
+
+- **Product** - Aggregate root with variants, images, categories
+- **ProductVariant** - SKU, price, inventory, attributes
+- **ProductImage** - Image URL, alt text, display order
+- **ProductCategory** - Hierarchical category structure
+
+### Enums
+
+- **ProductStatus** - Draft, Active, Archived
+
+---
+
+## Shopping Cart
+
+**Namespace:** `NOIR.Application.Features.Cart`
+**Endpoint:** `/api/cart`
+**Permissions:** No auth required (guest support)
+
+### Features
+
+#### Add to Cart
+- **Command:** `AddToCartCommand`
+- **Endpoint:** `POST /api/cart/items`
+- **Auth:** Optional (supports guest users via SessionId)
+- **Purpose:** Add product variant to cart
+- **Returns:** CartDto
+- **Validation:**
+  - ProductId: Required, must exist
+  - ProductVariantId: Required, must exist
+  - Quantity: Min 1
+  - Stock check: Must have sufficient inventory
+- **Audit:** IAuditableCommand (Create)
+
+**Example Request:**
+```json
+{
+  "productId": "123e4567-e89b-12d3-a456-426614174000",
+  "productVariantId": "223e4567-e89b-12d3-a456-426614174000",
+  "quantity": 2
+}
+```
+
+#### Update Cart Item
+- **Command:** `UpdateCartItemCommand`
+- **Endpoint:** `PUT /api/cart/items/{itemId}`
+- **Purpose:** Update quantity of cart item
+- **Returns:** CartDto
+- **Validation:**
+  - Quantity: 0 or more (0 removes item)
+  - Stock check on increase
+- **Audit:** IAuditableCommand (Update)
+
+#### Remove Cart Item
+- **Command:** `RemoveCartItemCommand`
+- **Endpoint:** `DELETE /api/cart/items/{itemId}`
+- **Purpose:** Remove item from cart
+- **Returns:** CartDto
+- **Audit:** IAuditableCommand (Delete)
+
+#### Clear Cart
+- **Command:** `ClearCartCommand`
+- **Endpoint:** `DELETE /api/cart`
+- **Purpose:** Remove all items from cart
+- **Returns:** CartDto
+- **Audit:** IAuditableCommand (Delete)
+
+#### Merge Cart
+- **Command:** `MergeCartCommand`
+- **Endpoint:** `POST /api/cart/merge`
+- **Auth:** Required (merge guest cart on login)
+- **Purpose:** Merge guest session cart into authenticated user's cart
+- **Returns:** CartDto
+- **Behavior:**
+  - Combines items from guest and user carts
+  - Updates quantities for matching variants
+  - Marks guest cart as Merged
+
+#### Get Cart
+- **Query:** `GetCartQuery`
+- **Endpoint:** `GET /api/cart`
+- **Purpose:** Get current cart with all items
+- **Returns:** CartDto with full item details
+
+#### Get Cart Summary
+- **Query:** `GetCartSummaryQuery`
+- **Endpoint:** `GET /api/cart/summary`
+- **Purpose:** Get cart totals only (lightweight)
+- **Returns:** CartSummaryDto (itemCount, subtotal)
+
+### Guest Cart Support
+
+Shopping cart supports both authenticated and guest users:
+
+1. **Authenticated Users**: Cart linked to UserId
+2. **Guest Users**: Cart linked to SessionId (stored in cookie/header)
+3. **Cart Merge**: When guest logs in, their cart merges with any existing user cart
+
+### Domain Entities
+
+- **Cart** - Aggregate root (UserId or SessionId, CartStatus)
+- **CartItem** - Product variant reference, quantity, unit price
+
+### Enums
+
+- **CartStatus** - Active, Merged, Abandoned, Converted
+
+### Domain Events
+
+- **CartItemAddedEvent** - Fired when item added
+- **CartItemUpdatedEvent** - Fired when quantity changed
+- **CartItemRemovedEvent** - Fired when item removed
+- **CartClearedEvent** - Fired when cart cleared
+- **CartMergedEvent** - Fired when guest cart merged
 
 ---
 
