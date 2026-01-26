@@ -6,7 +6,27 @@
 
 *Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).*
 
+**Last Updated:** 2026-01-26 | **Version:** 2.0
+
 </div>
+
+---
+
+## Table of Contents
+
+- [SuperClaude Framework](#superclaude-framework)
+- [Critical Rules](#-critical-rules) (22 rules organized by category)
+- [Quick Reference](#-quick-reference) (Build, Test, Database, Credentials)
+- [Running the Website](#-running-the-website-important)
+- [Project Structure](#-project-structure)
+- [Code Patterns](#-code-patterns) (Backend patterns with examples)
+- [Naming Conventions](#-naming-conventions)
+- [Performance Rules](#-performance-rules)
+- [Frontend Rules](#-frontend-rules-reacttypescript) (UI, Validation, Forms)
+- [E-commerce Patterns](#-e-commerce-patterns) (Products, Cart, Checkout, Orders)
+- [Task Management](#-task-management)
+- [Documentation](#-documentation)
+- [File Boundaries](#-file-boundaries)
 
 ---
 
@@ -45,11 +65,11 @@ Quick reference: `/sc:help` | `/sc:recommend "your task"`
 ### Audit & Activity Timeline
 
 11. ✅ **Audit logging for user actions** - Commands that create, update, or delete data via frontend MUST implement `IAuditableCommand`. See `docs/backend/patterns/hierarchical-audit-logging.md` for the checklist and pattern. Requires: (a) Command implements `IAuditableCommand<TResult>`, (b) Endpoint sets `UserId` on command, (c) Frontend page calls `usePageContext('PageName')`.
-13. ✅ **Register before-state resolvers for Update commands** - Commands implementing `IAuditableCommand<TDto>` with `OperationType.Update` MUST have a before-state resolver registered in `DependencyInjection.cs`. Without this, the Activity Timeline's Handler tab shows "No handler diff available". See `docs/backend/patterns/before-state-resolver.md`. Add: `services.AddBeforeStateResolver<YourDto, GetYourEntityQuery>(targetId => new GetYourEntityQuery(...));`
+12. ✅ **Register before-state resolvers for Update commands** - Commands implementing `IAuditableCommand<TDto>` with `OperationType.Update` MUST have a before-state resolver registered in `DependencyInjection.cs`. Without this, the Activity Timeline's Handler tab shows "No handler diff available". See `docs/backend/patterns/before-state-resolver.md`. Add: `services.AddBeforeStateResolver<YourDto, GetYourEntityQuery>(targetId => new GetYourEntityQuery(...));`
 
 ### Serialization
 
-12. ✅ **Enums serialize as strings** - All C# enums are serialized as strings (not integers) for JavaScript compatibility. This is configured in HTTP JSON, SignalR, and Source Generator. See `docs/backend/patterns/json-enum-serialization.md`.
+13. ✅ **Enums serialize as strings** - All C# enums are serialized as strings (not integers) for JavaScript compatibility. This is configured in HTTP JSON, SignalR, and Source Generator. See `docs/backend/patterns/json-enum-serialization.md`.
 
 ### Security Patterns
 
@@ -74,17 +94,17 @@ Quick reference: `/sc:help` | `/sc:recommend "your task"`
 
 17. ✅ **System users must have TenantId = null** - Platform admins and system processes MUST have `IsSystemUser = true` and `TenantId = null` for cross-tenant access. The `TenantIdSetterInterceptor` protects system users from accidental tenant assignment by checking `IsSystemUser` BEFORE any entity state checks. NEVER manually set `TenantId` on system users. The database seeder automatically creates platform admin with correct values and fixes any drift on startup. Verification: Check logs for "Created platform admin user: {Email} (TenantId = null)". See `docs/backend/architecture/tenant-id-interceptor.md`.
 
-19. ✅ **Unique constraints MUST include TenantId** - For multi-tenant entities (`TenantAggregateRoot`, `TenantEntity`, `PlatformTenantAggregateRoot`, `PlatformTenantEntity`), unique constraints MUST include TenantId to allow the same value in different tenants. Pattern: `builder.HasIndex(e => new { e.Slug, e.TenantId }).IsUnique()`. **Exceptions:** (1) Security tokens (RefreshToken.Token, SessionToken) must be globally unique; (2) Correlation IDs for distributed tracing must be globally unique; (3) System-level entities (Permission) that are not tenant-scoped; (4) Junction tables referencing tenant-scoped FKs (the FK implicitly enforces tenant scope). **For performance**, frequently-queried lookup indexes SHOULD include TenantId as a leading column when the tenant filter is always applied (via Finbuckle): `builder.HasIndex(e => new { e.TenantId, e.UserId })`.
+18. ✅ **Unique constraints MUST include TenantId** - For multi-tenant entities (`TenantAggregateRoot`, `TenantEntity`, `PlatformTenantAggregateRoot`, `PlatformTenantEntity`), unique constraints MUST include TenantId to allow the same value in different tenants. Pattern: `builder.HasIndex(e => new { e.Slug, e.TenantId }).IsUnique()`. **Exceptions:** (1) Security tokens (RefreshToken.Token, SessionToken) must be globally unique; (2) Correlation IDs for distributed tracing must be globally unique; (3) System-level entities (Permission) that are not tenant-scoped; (4) Junction tables referencing tenant-scoped FKs (the FK implicitly enforces tenant scope). **For performance**, frequently-queried lookup indexes SHOULD include TenantId as a leading column when the tenant filter is always applied (via Finbuckle): `builder.HasIndex(e => new { e.TenantId, e.UserId })`.
 
 ### Testing Requirements
 
-20. ✅ **All code changes must pass existing tests** - Run `dotnet test src/NOIR.sln` after any code change. All tests MUST pass before considering a task complete. Never leave failing tests.
-21. ✅ **New features MUST have test coverage** - Every new feature (Commands, Queries, Handlers, Validators, Services) MUST have corresponding unit tests. Integration tests are required for endpoint-level verification. Test projects: `tests/NOIR.Application.UnitTests` for handlers/validators, `tests/NOIR.Domain.UnitTests` for domain logic, `tests/NOIR.IntegrationTests` for API endpoints.
-22. ✅ **Repository implementations need DI verification** - When creating a new entity with a Repository, always create the corresponding `{Entity}Repository.cs` in `Infrastructure/Persistence/Repositories/` AND add a test verifying the DI registration resolves correctly.
+19. ✅ **All code changes must pass existing tests** - Run `dotnet test src/NOIR.sln` after any code change. All tests MUST pass before considering a task complete. Never leave failing tests.
+20. ✅ **New features MUST have test coverage** - Every new feature (Commands, Queries, Handlers, Validators, Services) MUST have corresponding unit tests. Integration tests are required for endpoint-level verification. Test projects: `tests/NOIR.Application.UnitTests` for handlers/validators, `tests/NOIR.Domain.UnitTests` for domain logic, `tests/NOIR.IntegrationTests` for API endpoints.
+21. ✅ **Repository implementations need DI verification** - When creating a new entity with a Repository, always create the corresponding `{Entity}Repository.cs` in `Infrastructure/Persistence/Repositories/` AND add a test verifying the DI registration resolves correctly.
 
 ### Database Migrations
 
-18. ✅ **EF Core migrations MUST specify --context** - ALWAYS use `--context ApplicationDbContext` or `--context TenantStoreDbContext` when running `dotnet ef migrations` commands. This project has multiple DbContexts and omitting `--context` will cause errors. Specify `--output-dir Migrations/App` for ApplicationDbContext or `--output-dir Migrations/Tenant` for TenantStoreDbContext. See Quick Reference for examples.
+22. ✅ **EF Core migrations MUST specify --context** - ALWAYS use `--context ApplicationDbContext` or `--context TenantStoreDbContext` when running `dotnet ef migrations` commands. This project has multiple DbContexts and omitting `--context` will cause errors. Specify `--output-dir Migrations/App` for ApplicationDbContext or `--output-dir Migrations/Tenant` for TenantStoreDbContext. See Quick Reference for examples.
 
 ---
 
@@ -106,7 +126,7 @@ dotnet watch --project src/NOIR.Web
 ### Testing
 
 ```bash
-# All tests (5,370+ tests)
+# All tests (5,597+ tests)
 dotnet test src/NOIR.sln
 
 # Specific project
@@ -419,30 +439,38 @@ usePageContext('Customers')  // Required for Activity Timeline
 
 ## ⚛️ Frontend Rules (React/TypeScript)
 
-### 🎨 21st.dev Component Standard (MANDATORY)
+### 🎨 UI Component Building (MANDATORY)
 
-**All frontend UI components and pages MUST use 21st.dev for consistency and best UI/UX.**
+**✅ We use `/ui-ux-pro-max` skill for ALL frontend UI/UX work.**
 
 ```typescript
-// When building new UI components, use 21st.dev MCP tool:
-// Claude Code: Use the mcp__magic__21st_magic_component_builder tool
-// This ensures consistent, production-quality UI with:
-// - Modern design patterns (glassmorphism, animations, micro-interactions)
-// - Accessible components (WCAG compliant)
-// - Responsive layouts (mobile-first)
-// - Consistent spacing, typography, and color schemes
+// ✅ CORRECT: Use /ui-ux-pro-max skill for both research AND implementation
+// The skill handles:
+//    - Design research (color palettes, typography, style guidelines)
+//    - UX best practices and design patterns
+//    - Component generation (React/TypeScript with shadcn/ui)
+//    - Component refinement and improvements
+//    - Accessibility and responsive design
 ```
 
-**Do NOT:**
-- Hand-build pagination, page headers, empty states, or other common UI patterns
-- Create custom form validation state management (use react-hook-form + FormField)
-- Write inline gradient/focus styling (extract to design tokens)
+**Workflow:**
+1. For any UI/UX work, invoke the `/ui-ux-pro-max` skill via the Skill tool
+2. Provide clear requirements (research question or component specs)
+3. The skill will handle both design guidance AND code implementation
 
-**Components requiring 21st.dev rebuild (existing debt):**
-- Pagination in TenantsPage, RolesPage
-- Page headers across admin pages
-- CreateUserDialog form validation
-- Empty state components in tables
+**When to Use:**
+- **Research**: "What color palette for e-commerce?", "UX best practices for forms"
+- **Implementation**: "Build a product card component", "Create a checkout page"
+- **Refinement**: "Improve this modal dialog", "Add accessibility to navbar"
+- **Review**: "Review my component for UX issues"
+
+**Benefits:**
+- Unified workflow for all UI/UX tasks
+- Production-ready React/TypeScript components
+- Built-in shadcn/ui integration
+- Proper accessibility (ARIA labels, keyboard navigation)
+- Responsive design patterns
+- Consistent with project design system
 
 ### 🖱️ Interactive Elements Must Have cursor-pointer
 
@@ -596,6 +624,107 @@ const handleToggleRole = (roleName: string) => {
 roleNames: selectedRoles.size > 0 ? Array.from(selectedRoles) : null
 ```
 
+### 🔄 TanStack Query Hooks Pattern
+
+```typescript
+// All API calls use TanStack Query hooks for caching, refetching, and state management
+// Hooks are in: src/NOIR.Web/frontend/src/hooks/
+
+// Query hook pattern (GET)
+export function useProducts(params?: ProductsParams) {
+  return useQuery({
+    queryKey: ['products', params],
+    queryFn: () => productsApi.getProducts(params),
+  })
+}
+
+// Mutation hook pattern (POST/PUT/DELETE)
+export function useCreateProduct() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: productsApi.createProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+    },
+  })
+}
+
+// Usage in components:
+const { data: products, isLoading } = useProducts({ status: 'Active' })
+const createProduct = useCreateProduct()
+await createProduct.mutateAsync(productData)
+```
+
+---
+
+## 🛒 E-commerce Patterns
+
+> **Phase 8 Complete:** Product Catalog, Shopping Cart, Checkout, Orders are fully implemented.
+
+### Product Management
+
+```typescript
+// Products use variant pattern with SKU-level inventory
+// Location: src/NOIR.Application/Features/Products/
+
+// Product → ProductVariant (1:N) with SKU, price, inventory
+// Product → ProductImage (1:N) with display order
+// Product → ProductCategory (N:1) hierarchical categories
+
+// ProductStatus workflow: Draft → Active → Archived
+// Use PublishProductCommand to activate, ArchiveProductCommand to archive
+```
+
+### Shopping Cart
+
+```typescript
+// Cart supports both authenticated users and guests
+// Location: src/NOIR.Application/Features/Cart/
+
+// Guest carts use SessionId (cookie/header)
+// On login, use MergeCartCommand to combine guest + user carts
+
+// CartStatus: Active → Converted (on checkout) or Abandoned (cleanup)
+```
+
+### Checkout Flow
+
+```typescript
+// Hybrid accordion pattern: Address → Shipping → Payment → Complete
+// Location: src/NOIR.Application/Features/Checkout/
+
+// 1. InitiateCheckoutCommand - Creates session from cart
+// 2. SetCheckoutAddressCommand - Shipping/billing address
+// 3. SelectShippingCommand - Shipping method
+// 4. SelectPaymentCommand - Payment gateway + method
+// 5. CompleteCheckoutCommand - Creates Order, reserves inventory
+
+// Session expires after 30 minutes (configurable)
+```
+
+### Order Lifecycle
+
+```typescript
+// OrderStatus workflow:
+// Pending → Confirmed → Processing → Shipped → Delivered → Completed
+//    ↓
+// Cancelled (with inventory release)
+
+// Location: src/NOIR.Application/Features/Orders/
+// OrderItem captures product snapshot (name, price, image) at order time
+```
+
+### Inventory Management
+
+```typescript
+// Inventory tracked at ProductVariant level
+// Reservation on checkout initiation
+// Deduction on order ship
+// Release on order cancel
+
+// InventoryMovementType: StockIn, StockOut, Adjustment, Return, Reserved, Released
+```
+
 ---
 
 ## 📊 Task Management
@@ -650,3 +779,19 @@ For detailed documentation, see the `docs/` folder:
 [📚 Documentation](docs/) • [🤖 AGENTS.md](AGENTS.md) • [🌟 Star on GitHub](https://github.com/NOIR-Solution/NOIR)
 
 </div>
+
+---
+
+## 📝 Changelog
+
+### Version 2.0 (2026-01-26)
+- **Fixed:** Rule numbering now sequential (1-22)
+- **Added:** Table of Contents for navigation
+- **Added:** E-commerce Patterns section (Products, Cart, Checkout, Orders)
+- **Added:** TanStack Query hooks pattern for frontend data fetching
+- **Updated:** Test count from 5,370+ to 5,597+
+- **Added:** Version tracking and changelog
+
+### Version 1.0 (Initial)
+- Original CLAUDE.md with 22 critical rules
+- Backend patterns, frontend rules, quick reference

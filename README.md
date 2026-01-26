@@ -4,13 +4,13 @@
 
 **Enterprise-ready .NET 10 + React 19 SaaS Foundation**
 
-*Multi-tenancy • Clean Architecture • Comprehensive Testing*
+*Multi-tenancy • E-commerce • Clean Architecture • 5,597+ Tests*
 
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-2100+-green.svg?style=flat-square)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-5597+-green.svg?style=flat-square)](tests/)
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Tech Stack](#-tech-stack) • [Contributing](#-contributing)
 
@@ -24,6 +24,7 @@ NOIR is a **production-ready foundation** for building modern SaaS applications.
 
 **Built for:**
 - 🏢 Multi-tenant B2B SaaS applications
+- 🛒 E-commerce platforms with payments
 - 🚀 Startups needing to ship fast with quality
 - 👥 Teams seeking best-practice patterns
 - 🎓 Developers learning enterprise architecture
@@ -139,6 +140,23 @@ dotnet run --project src/NOIR.Web -c Release
 - **Type-Safe API** - Auto-generated TypeScript types
 - **Form Validation** - React Hook Form + Zod schemas
 
+### 🛒 E-commerce (Phase 8 Complete)
+
+- **Product Catalog** - Products with variants, SKUs, and hierarchical categories
+- **Shopping Cart** - Guest and authenticated user support with cart merge
+- **Checkout Flow** - Hybrid accordion pattern (Address → Shipping → Payment)
+- **Order Management** - Full lifecycle with inventory integration
+- **Inventory Tracking** - Real-time stock with reservation system
+
+### 💳 Payment Processing
+
+- **Multi-Gateway Support** - Pluggable payment provider architecture
+- **Transaction Tracking** - Full payment lifecycle with status transitions
+- **Refund Management** - Request, approve/reject workflow
+- **Webhook Processing** - Secure callback handling with signature verification
+- **COD Support** - Cash-on-delivery with collection confirmation
+- **Real-Time Updates** - SignalR payment status notifications
+
 ### 📦 Content Management
 
 - **Blog CMS** - Posts, categories, tags with rich editor
@@ -149,9 +167,10 @@ dotnet run --project src/NOIR.Web -c Release
 
 - **Hot Reload** - Backend and frontend live reloading
 - **Type Generation** - Swagger → TypeScript types
-- **5,370+ Tests** - Unit, Integration, Architecture
+- **5,597 Tests** - Unit, Integration, Architecture
 - **Architecture Tests** - Enforce layer boundaries
-- **Comprehensive Docs** - 9,500+ lines of documentation
+- **Comprehensive Docs** - 15,000+ lines of documentation
+- **AI-Assisted** - SuperClaude Framework integration
 
 ---
 
@@ -257,8 +276,8 @@ NOIR/
 │   ├── NOIR.Infrastructure/   # 🔧 EF Core, services, persistence
 │   └── NOIR.Web/              # 🌐 API endpoints, middleware, SPA host
 │       └── frontend/          # ⚛️  React application
-├── ✅ tests/                  # 5,370+ tests (Unit, Integration, Architecture)
-├── 📚 docs/                   # 9,500+ lines of documentation
+├── ✅ tests/                  # 5,597 tests (Unit, Integration, Architecture)
+├── 📚 docs/                   # 15,000+ lines of documentation
 └── ⚙️  .github/               # CI/CD workflows and templates
 ```
 
@@ -270,10 +289,11 @@ NOIR/
 
 | Test Type | Project | Count | Coverage |
 |-----------|---------|-------|----------|
-| **Unit Tests** | Domain.UnitTests | 841 | Domain logic |
-| **Unit Tests** | Application.UnitTests | 3,903 | Application logic |
+| **Unit Tests** | Domain.UnitTests | 842 | Domain logic |
+| **Unit Tests** | Application.UnitTests | 4,125 | Application logic |
 | **Integration** | IntegrationTests | 605 | API endpoints |
 | **Architecture** | ArchitectureTests | 25 | Layer boundaries |
+| **Total** | **All Projects** | **5,597** | **Full coverage** |
 
 ### Running Tests
 
@@ -412,7 +432,8 @@ NOIR builds on the shoulders of giants:
 
 | Aspect | NOIR Advantage |
 |--------|----------------|
-| **Production-Ready** | Battle-tested patterns, comprehensive testing, security built-in |
+| **Production-Ready** | Battle-tested patterns, 5,597+ tests, security built-in |
+| **E-commerce Ready** | Products, cart, checkout, orders, payments - all included |
 | **Developer-Friendly** | Hot reload, type generation, extensive docs, AI-assisted development |
 | **Performance** | Source generators, compiled queries, hybrid caching, optimized builds |
 | **Scalability** | Multi-tenancy, horizontal scaling, efficient data access patterns |
