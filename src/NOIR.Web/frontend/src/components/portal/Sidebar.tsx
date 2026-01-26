@@ -30,6 +30,8 @@ import {
   Tag,
   SlidersHorizontal,
   Palette,
+  Package,
+  Layers,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -89,6 +91,14 @@ const navSections: NavSection[] = [
     // Primary - Dashboard (no section label)
     items: [
       { titleKey: 'dashboard.title', icon: LayoutDashboard, path: '/portal' },
+    ],
+  },
+  {
+    // E-commerce - Product management
+    labelKey: 'nav.ecommerce',
+    items: [
+      { titleKey: 'ecommerce.products', icon: Package, path: '/portal/ecommerce/products', permission: Permissions.ProductsRead },
+      { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead },
     ],
   },
   {

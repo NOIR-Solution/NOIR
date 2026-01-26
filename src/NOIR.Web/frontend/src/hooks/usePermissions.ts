@@ -174,6 +174,17 @@ export const Permissions = {
   // Payment Gateways
   PaymentGatewaysRead: 'payment-gateways:read',
   PaymentGatewaysManage: 'payment-gateways:manage',
+  // Products
+  ProductsRead: 'products:read',
+  ProductsCreate: 'products:create',
+  ProductsUpdate: 'products:update',
+  ProductsDelete: 'products:delete',
+  ProductsPublish: 'products:publish',
+  // Product Categories
+  ProductCategoriesRead: 'product-categories:read',
+  ProductCategoriesCreate: 'product-categories:create',
+  ProductCategoriesUpdate: 'product-categories:update',
+  ProductCategoriesDelete: 'product-categories:delete',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

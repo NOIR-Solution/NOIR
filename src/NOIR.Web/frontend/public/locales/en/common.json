@@ -28,7 +28,16 @@
     "system": "System",
     "configuration": "Configuration",
     "accessControl": "Access Control",
-    "monitoring": "Monitoring"
+    "monitoring": "Monitoring",
+    "ecommerce": "E-commerce"
+  },
+  "ecommerce": {
+    "products": "Products",
+    "categories": "Categories",
+    "orders": "Orders",
+    "newProduct": "New Product",
+    "allProducts": "All Products",
+    "allCategories": "All Categories"
   },
   "blog": {
     "posts": "Blog Posts",

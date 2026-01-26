@@ -28,7 +28,16 @@
     "system": "Hệ thống",
     "configuration": "Cấu hình",
     "accessControl": "Kiểm soát truy cập",
-    "monitoring": "Giám sát"
+    "monitoring": "Giám sát",
+    "ecommerce": "Thương mại điện tử"
+  },
+  "ecommerce": {
+    "products": "Sản phẩm",
+    "categories": "Danh mục",
+    "orders": "Đơn hàng",
+    "newProduct": "Sản phẩm mới",
+    "allProducts": "Tất cả sản phẩm",
+    "allCategories": "Tất cả danh mục"
   },
   "blog": {
     "posts": "Bài viết Blog",
