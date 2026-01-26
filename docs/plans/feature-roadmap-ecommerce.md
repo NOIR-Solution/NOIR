@@ -34,7 +34,7 @@ All frontend UI components and pages MUST use **21st.dev** (Magic MCP component 
 - Payment method selectors, checkout flows, admin dashboards
 - Product catalog, cart, order management pages
 - Analytics dashboards, customer management UI
-- Use `mcp__magic__21st_magic_component_builder` for consistent, production-quality components
+- Use `proxy_mcp__magic__21st_magic_component_builder` for consistent, production-quality components
 - Ensure WCAG accessibility, responsive layouts, micro-interactions
 - Reference existing NOIR patterns: shadcn/ui base + 21st.dev enhancements
 

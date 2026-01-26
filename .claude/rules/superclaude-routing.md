@@ -42,6 +42,21 @@ When multiple patterns match, the HIGHEST priority wins:
 
 ---
 
+## UI/UX Routing (Priority Override)
+
+**✅ We use `/ui-ux-pro-max` skill for ALL UI/UX work (research AND implementation).**
+
+| Context | Route To | Triggers |
+|---------|----------|----------|
+| **UI Research** | `/ui-ux-pro-max` | "what style should", "design inspiration", "color palette for", "best practices for", "UX guidelines" |
+| **Build UI** | `/ui-ux-pro-max` | "build component", "create page", "implement UI", "add modal", "design form" |
+| **Refine UI** | `/ui-ux-pro-max` | "improve component", "refactor UI", "enhance design", "fix accessibility" |
+| **Review UI** | `/ui-ux-pro-max` | "review component", "audit UI", "check accessibility", "UX review" |
+
+**When user says:**
+- "implement feature X" → `/sc:implement` (generic backend/logic)
+- "build UI for feature X" → `/ui-ux-pro-max` (UI-specific, higher priority)
+
 ## Additional Skills (Explicit Invocation)
 
 These are invoked when user intent clearly matches:
