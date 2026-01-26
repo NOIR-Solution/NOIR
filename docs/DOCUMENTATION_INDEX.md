@@ -2,7 +2,7 @@
 
 > **Your comprehensive guide to navigating all NOIR documentation.**
 
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-01-26
 
 ---
 
@@ -75,13 +75,17 @@
 2. User Management (CRUD, Role Assignment)
 3. Role & Permission Management
 4. Multi-Tenancy
-5. **Payment Processing** ⭐ NEW (Gateways, Transactions, Refunds, Webhooks, COD)
-6. Audit Logging
-7. Notifications (SignalR)
-8. Email Templates
-9. Media Management
-10. Blog CMS (Posts, Categories, Tags)
-11. Developer Tools (Log Streaming)
+5. **Payment Processing** (Gateways, Transactions, Refunds, Webhooks, COD)
+6. **Product Catalog** ⭐ (Products, Categories, Variants, Images)
+7. **Shopping Cart** ⭐ (Guest support, Merge on login)
+8. **Checkout** ⭐ **NEW** (Hybrid accordion flow, Address, Shipping, Payment)
+9. **Orders** ⭐ **NEW** (Full lifecycle, Inventory integration)
+10. Audit Logging
+11. Notifications (SignalR)
+12. Email Templates
+13. Media Management
+14. Blog CMS (Posts, Categories, Tags)
+15. Developer Tools (Log Streaming)
 
 ---
 
@@ -211,10 +215,13 @@ Architecture Decision Records documenting key technical choices:
 
 ### Feature Roadmap (`plans/`)
 
-| Document | Purpose |
-|----------|---------|
-| [feature-roadmap-basic.md](plans/feature-roadmap-basic.md) | Phases 1-4: Caching, Image Processing, Blog CMS, Performance |
-| [feature-roadmap-ecommerce.md](plans/feature-roadmap-ecommerce.md) | Phases 5-12: E-commerce & Payment Gateways |
+| Document | Purpose | Status |
+|----------|---------|--------|
+| [feature-roadmap-basic.md](plans/feature-roadmap-basic.md) | Phases 1-4: Caching, Image Processing, Blog CMS, Performance | ✅ Complete |
+| [feature-roadmap-ecommerce.md](plans/feature-roadmap-ecommerce.md) | Phases 5-12: E-commerce & Payment Gateways | 🔄 Phase 8 Backend Complete |
+| [phase8-requirements-specification.md](plans/phase8-requirements-specification.md) | Phase 8 E-commerce Core requirements | 🔄 Backend Complete |
+| [phase8-architecture-design.md](plans/phase8-architecture-design.md) | Phase 8 architecture and system design | 🔄 Backend Complete |
+| [phase8-sprint1-workflow.md](plans/phase8-sprint1-workflow.md) | Phase 8 Sprint 1 workflow (Products) | ✅ Complete |
 
 ---
 
@@ -224,13 +231,13 @@ Architecture Decision Records documenting key technical choices:
 
 | Type | Count | Total Lines |
 |------|-------|-------------|
-| **Core Docs** | 6 | ~4,000 |
+| **Core Docs** | 6 | ~4,500 |
 | **Backend Patterns** | 9 | ~2,000 |
 | **Backend Research** | 6 | ~2,000 |
 | **Frontend Guides** | 7 | ~1,500 |
-| **Plans & Roadmaps** | 2 | ~3,400 |
+| **Plans & Roadmaps** | 5 | ~4,500 |
 | **ADRs** | 3 | ~800 |
-| **Total** | **33** | **~13,700** |
+| **Total** | **36** | **~15,300** |
 
 ### Coverage
 

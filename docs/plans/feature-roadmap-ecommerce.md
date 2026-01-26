@@ -468,11 +468,21 @@ This roadmap extends NOIR from an enterprise admin template to a **full e-commer
 | **5** | Payment Foundation | Critical | High | ✅ Complete |
 | **6** | Vietnam Domestic Gateways + COD | Critical | High | ✅ Complete |
 | **7** | International & Advanced | High | Medium | ✅ Complete |
-| **8** | E-commerce Core | Critical | Very High | ⏳ Pending |
+| **8** | E-commerce Core | Critical | Very High | 🔄 Backend Complete (Frontend Pending) |
 | **9** | Customer Management | Medium | Medium | ⏳ Pending |
 | **10** | Shipping Integration | High | High | ⏳ Pending |
 | **11** | Marketing & Promotions | Medium | Medium | ⏳ Pending |
 | **12** | Analytics & Reporting | Medium | Medium | ⏳ Pending |
+
+### Phase 8 Detailed Status (Updated: January 26, 2026)
+| Sprint | Scope | Backend | Frontend | Status |
+|--------|-------|---------|----------|--------|
+| Sprint 1 | Enums, Address VO, ProductCategory, Product | ✅ | N/A | ✅ Complete |
+| Sprint 2 | Cart, Checkout, Order | ✅ | N/A | ✅ Complete |
+| Sprint 3 | Admin Product UI | ⏳ | ⏳ | Pending |
+| Sprint 4 | Storefront UI (Catalog, Cart, Checkout) | N/A | ⏳ | Pending |
+
+**Test Coverage:** 5,597 tests passing (842 Domain + 4,125 Application + 25 Architecture + 605 Integration)
 
 ---
 
@@ -1665,7 +1675,12 @@ public interface ICurrencyService : IScopedService
 
 ---
 
-## Phase 8: E-commerce Core
+## Phase 8: E-commerce Core 🔄 BACKEND COMPLETE
+
+> **Status:** Backend Complete (January 26, 2026), Frontend Pending
+> **Test Coverage:** 18 test files, all passing
+> **What's Done:** Domain entities, Application layer, API endpoints
+> **What's Pending:** Admin Product UI, Storefront UI (Catalog, Cart, Checkout pages)
 
 ### 8.1 E-commerce Enums
 

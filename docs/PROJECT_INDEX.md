@@ -20,15 +20,15 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,571+ tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,597+ tests.
 
 ### Key Statistics
 
-- **Lines of Code:** ~175,000
-- **Test Coverage:** 5,571+ tests across Unit, Integration, and Architecture layers
-- **Feature Modules:** 17 domain-driven modules (including E-commerce: Products, Cart)
-- **API Endpoints:** 90+ REST endpoints (21 endpoint groups)
-- **Domain Entities:** 32 entities, 13 enums, 10 domain events
+- **Lines of Code:** ~180,000
+- **Test Coverage:** 5,597+ tests across Unit, Integration, and Architecture layers
+- **Feature Modules:** 19 domain-driven modules (including complete E-commerce: Products, Cart, Checkout, Orders)
+- **API Endpoints:** 100+ REST endpoints (23 endpoint groups)
+- **Domain Entities:** 36 entities, 21 enums, 12 domain events
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
 
 ### Directory Structure
@@ -41,9 +41,9 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 5,571 tests across 4 projects
-│   ├── NOIR.Domain.UnitTests/    # 841 domain logic tests
-│   ├── NOIR.Application.UnitTests/ # 4,100 handler/service tests
+├── tests/                        # ✅ 5,597 tests across 4 projects
+│   ├── NOIR.Domain.UnitTests/    # 842 domain logic tests
+│   ├── NOIR.Application.UnitTests/ # 4,125 handler/service tests
 │   ├── NOIR.IntegrationTests/    # 605 API integration tests
 │   └── NOIR.ArchitectureTests/   # 25 architectural rule tests
 ├── docs/                         # 📚 46 documentation files
@@ -93,9 +93,14 @@ NOIR.Domain/
 │   │   ├── ProductVariant.cs            # SKU, price, inventory
 │   │   ├── ProductImage.cs              # Product images
 │   │   └── ProductCategory.cs           # Hierarchical categories
-│   └── Cart/                            # ⭐ NEW: Shopping Cart domain (Phase 8)
-│       ├── Cart.cs                      # Cart aggregate root (user/guest)
-│       └── CartItem.cs                  # Cart line items
+│   ├── Cart/                            # ⭐ NEW: Shopping Cart domain (Phase 8)
+│   │   ├── Cart.cs                      # Cart aggregate root (user/guest)
+│   │   └── CartItem.cs                  # Cart line items
+│   ├── Checkout/                        # ⭐ NEW: Checkout domain (Phase 8 Sprint 2)
+│   │   └── CheckoutSession.cs           # Checkout session aggregate (address, shipping, payment)
+│   └── Order/                           # ⭐ NEW: Order domain (Phase 8 Sprint 2)
+│       ├── Order.cs                     # Order aggregate root with lifecycle
+│       └── OrderItem.cs                 # Order line items (product snapshot)
 ├── Enums/                               # Domain enumerations
 │   ├── AuditOperationType.cs            # CRUD operations
 │   ├── NotificationType.cs              # Notification types
@@ -109,14 +114,22 @@ NOIR.Domain/
 │   ├── WebhookProcessingStatus.cs       # ⭐ NEW: Webhook processing states
 │   ├── PaymentOperationType.cs          # Operation types for logging
 │   ├── ProductStatus.cs                 # ⭐ NEW: Draft, Active, Archived
-│   └── CartStatus.cs                    # ⭐ NEW: Active, Merged, Abandoned, Converted
+│   ├── CartStatus.cs                    # ⭐ NEW: Active, Merged, Abandoned, Converted
+│   ├── OrderStatus.cs                   # ⭐ NEW: Pending, Confirmed, Processing, Shipped, Delivered, etc.
+│   ├── CheckoutSessionStatus.cs         # ⭐ NEW: Active, Completed, Expired, Abandoned
+│   ├── ReservationStatus.cs             # ⭐ NEW: Pending, Reserved, Released, Expired
+│   └── InventoryMovementType.cs         # ⭐ NEW: StockIn, StockOut, Adjustment, Return, etc.
 ├── Events/                              # Domain events
 │   ├── Payment/                         # Payment domain events
 │   │   └── PaymentEvents.cs             # Created, Succeeded, Failed, Refunded
 │   ├── Product/                         # ⭐ NEW: Product domain events
 │   │   └── ProductEvents.cs             # Created, Published, Archived
-│   └── Cart/                            # ⭐ NEW: Cart domain events
-│       └── CartEvents.cs                # ItemAdded, ItemUpdated, ItemRemoved, Cleared
+│   ├── Cart/                            # ⭐ NEW: Cart domain events
+│   │   └── CartEvents.cs                # ItemAdded, ItemUpdated, ItemRemoved, Cleared
+│   ├── Checkout/                        # ⭐ NEW: Checkout domain events
+│   │   └── CheckoutEvents.cs            # Started, AddressSet, ShippingSelected, PaymentSelected, Completed
+│   └── Order/                           # ⭐ NEW: Order domain events
+│       └── OrderEvents.cs               # Created, Confirmed, Shipped, Delivered, Cancelled
 ├── Interfaces/
 │   ├── IRepository.cs                   # Generic repository
 │   ├── ISpecification.cs                # Specification pattern
@@ -234,8 +247,10 @@ Features/{Feature}/
 | **DeveloperLogs** | - | StreamLogs | Real-time Serilog streaming |
 | **TenantSettings** | UpdateBranding, UpdateContact, UpdateSmtp, UpdateRegional | GetTenantSettings, GetBranding | Tenant configuration |
 | **PlatformSettings** | UpdatePlatformSettings | GetPlatformSettings | Platform-level config |
-| **Products** | CreateProduct, UpdateProduct, ArchiveProduct, PublishProduct, CreateProductCategory, UpdateProductCategory, DeleteProductCategory | GetProducts, GetProductById, GetProductCategories, GetProductCategoryById | ⭐ **NEW:** Product catalog management |
-| **Cart** | AddToCart, UpdateCartItem, RemoveCartItem, ClearCart, MergeCart | GetCart, GetCartSummary | ⭐ **NEW:** Shopping cart with guest support |
+| **Products** | CreateProduct, UpdateProduct, ArchiveProduct, PublishProduct, AddProductVariant, UpdateProductVariant, DeleteProductVariant, AddProductImage, UpdateProductImage, DeleteProductImage, SetPrimaryProductImage, CreateProductCategory, UpdateProductCategory, DeleteProductCategory | GetProducts, GetProductById, GetProductCategories, GetProductCategoryById | ⭐ Product catalog with variants & images |
+| **Cart** | AddToCart, UpdateCartItem, RemoveCartItem, ClearCart, MergeCart | GetCart, GetCartSummary | ⭐ Shopping cart with guest support |
+| **Checkout** | InitiateCheckout, SetCheckoutAddress, SelectShipping, SelectPayment, CompleteCheckout | GetCheckoutSession | ⭐ **NEW:** Hybrid accordion checkout flow |
+| **Orders** | CreateOrder, ConfirmOrder, ShipOrder, CancelOrder | GetOrders, GetOrderById | ⭐ **NEW:** Order lifecycle management |
 
 #### Navigation
 
@@ -417,9 +432,11 @@ NOIR.Web/
 | **Developer Logs** | `/api/developer-logs` | Serilog streaming, error clusters |
 | **Tenant Settings** | `/api/tenant-settings` | Branding, SMTP, regional, contact |
 | **Platform Settings** | `/api/platform-settings` | Platform-level configuration |
-| **Products** | `/api/products` | ⭐ **NEW:** CRUD, variants, publish, archive |
-| **Product Categories** | `/api/product-categories` | ⭐ **NEW:** CRUD, hierarchical |
-| **Cart** | `/api/cart` | ⭐ **NEW:** add, update, remove, clear, get, merge |
+| **Products** | `/api/products` | ⭐ CRUD, variants, images, publish, archive |
+| **Product Categories** | `/api/product-categories` | ⭐ CRUD, hierarchical |
+| **Cart** | `/api/cart` | ⭐ add, update, remove, clear, get, merge |
+| **Checkout** | `/api/checkout` | ⭐ **NEW:** initiate, address, shipping, payment, complete |
+| **Orders** | `/api/orders` | ⭐ **NEW:** create, confirm, ship, cancel, list, details |
 | **Hangfire** | `/hangfire` | Dashboard (requires `system:hangfire` permission) |
 
 #### Navigation
@@ -788,8 +805,8 @@ public static partial class UserMapper
 
 ```
 tests/
-├── NOIR.Domain.UnitTests/           # Domain logic tests (841 tests)
-├── NOIR.Application.UnitTests/      # Handler, service, validator tests (3,903 tests)
+├── NOIR.Domain.UnitTests/           # Domain logic tests (842 tests)
+├── NOIR.Application.UnitTests/      # Handler, service, validator tests (4,125 tests)
 ├── NOIR.IntegrationTests/           # API integration tests (605 tests)
 ├── NOIR.ArchitectureTests/          # Architecture rule validation (25 tests)
 └── coverage.runsettings             # Test coverage configuration
@@ -1028,7 +1045,24 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ## Changelog
 
-### Version 2.5 (2026-01-26) - Phase 8 E-commerce Sprint 1
+### Version 2.6 (2026-01-26) - Phase 8 E-commerce Backend Complete
+- **Phase 8 Status:** Backend 100% Complete, Frontend Pending
+- **NEW: Checkout Flow** - Complete checkout session management
+  - CheckoutSession entity with hybrid accordion pattern
+  - 5 commands: InitiateCheckout, SetCheckoutAddress, SelectShipping, SelectPayment, CompleteCheckout
+  - 1 query: GetCheckoutSession
+  - Inventory reservation with configurable timeout
+- **NEW: Order Management** - Complete order lifecycle
+  - Order aggregate with OrderItem child entities
+  - 4 commands: CreateOrder, ConfirmOrder, ShipOrder, CancelOrder
+  - 2 queries: GetOrders, GetOrderById
+  - Full OrderStatus workflow (Pending → Confirmed → Shipped → Delivered)
+- **Enhanced Products** - Added variant and image management
+  - 6 new commands: AddProductVariant, UpdateProductVariant, DeleteProductVariant, AddProductImage, UpdateProductImage, DeleteProductImage, SetPrimaryProductImage
+- **Tests**: 5,597 tests (up from 5,571)
+- **Statistics**: 19 feature modules, 100+ endpoints, 36 entities, 21 enums
+
+### Version 2.5 (2026-01-25) - Phase 8 E-commerce Sprint 1
 - **NEW: Product Catalog** - Complete product management with variants, pricing, inventory
   - Product entity with variants, images, and categories
   - ProductStatus workflow (Draft, Active, Archived)

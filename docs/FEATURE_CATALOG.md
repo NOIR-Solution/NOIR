@@ -14,8 +14,10 @@
 - [Role & Permission Management](#role--permission-management)
 - [Multi-Tenancy](#multi-tenancy)
 - [Payment Processing](#payment-processing)
-- [Product Catalog](#product-catalog) ⭐ **NEW**
-- [Shopping Cart](#shopping-cart) ⭐ **NEW**
+- [Product Catalog](#product-catalog) ⭐
+- [Shopping Cart](#shopping-cart) ⭐
+- [Checkout](#checkout) ⭐ **NEW**
+- [Orders](#orders) ⭐ **NEW**
 - [Audit Logging](#audit-logging)
 - [Notifications](#notifications)
 - [Email Templates](#email-templates)
@@ -738,6 +740,335 @@ Shopping cart supports both authenticated and guest users:
 - **CartItemRemovedEvent** - Fired when item removed
 - **CartClearedEvent** - Fired when cart cleared
 - **CartMergedEvent** - Fired when guest cart merged
+
+---
+
+## Checkout
+
+**Namespace:** `NOIR.Application.Features.Checkout`
+**Endpoint:** `/api/checkout`
+**Permissions:** `checkout:*`
+
+> ⭐ **NEW FEATURE:** Complete checkout flow with hybrid accordion pattern supporting address, shipping, payment method selection.
+
+### Features
+
+#### Initiate Checkout
+- **Command:** `InitiateCheckoutCommand`
+- **Endpoint:** `POST /api/checkout`
+- **Auth:** Required
+- **Purpose:** Create a checkout session from user's cart
+- **Returns:** CheckoutSessionDto
+- **Validation:**
+  - Cart must have items
+  - All items must be in stock
+  - Session expires in 30 minutes (configurable)
+- **Audit:** IAuditableCommand (Create)
+
+**Example Request:**
+```json
+{
+  "cartId": "123e4567-e89b-12d3-a456-426614174000"
+}
+```
+
+**Example Response:**
+```json
+{
+  "id": "session-789",
+  "status": "Active",
+  "expiresAt": "2026-01-26T12:30:00Z",
+  "cartId": "cart-123",
+  "items": [...],
+  "subtotal": 99.99,
+  "currentStep": "Address"
+}
+```
+
+#### Set Checkout Address
+- **Command:** `SetCheckoutAddressCommand`
+- **Endpoint:** `PUT /api/checkout/{id}/address`
+- **Purpose:** Set shipping and billing address
+- **Returns:** CheckoutSessionDto
+- **Validation:**
+  - Session must be active
+  - Address fields validated
+- **Audit:** IAuditableCommand (Update)
+
+**Example Request:**
+```json
+{
+  "shippingAddress": {
+    "fullName": "John Doe",
+    "phone": "+84901234567",
+    "addressLine1": "123 Main St",
+    "ward": "Ward 1",
+    "district": "District 1",
+    "province": "Ho Chi Minh City",
+    "country": "Vietnam"
+  },
+  "billingAddressSameAsShipping": true
+}
+```
+
+#### Select Shipping Method
+- **Command:** `SelectShippingCommand`
+- **Endpoint:** `PUT /api/checkout/{id}/shipping`
+- **Purpose:** Select shipping method and calculate cost
+- **Returns:** CheckoutSessionDto with updated totals
+- **Validation:**
+  - Address must be set first
+  - Shipping method must be available for address
+- **Audit:** IAuditableCommand (Update)
+
+**Example Request:**
+```json
+{
+  "shippingMethodId": "express-delivery",
+  "shippingNotes": "Please call before delivery"
+}
+```
+
+#### Select Payment Method
+- **Command:** `SelectPaymentCommand`
+- **Endpoint:** `PUT /api/checkout/{id}/payment`
+- **Purpose:** Select payment method for order
+- **Returns:** CheckoutSessionDto
+- **Validation:**
+  - Shipping must be selected first
+  - Payment gateway must be active
+- **Audit:** IAuditableCommand (Update)
+
+**Example Request:**
+```json
+{
+  "paymentGatewayId": "gateway-456",
+  "paymentMethod": "CreditCard"
+}
+```
+
+#### Complete Checkout
+- **Command:** `CompleteCheckoutCommand`
+- **Endpoint:** `POST /api/checkout/{id}/complete`
+- **Purpose:** Create order from checkout session
+- **Returns:** OrderDto with payment redirect URL (if applicable)
+- **Validation:**
+  - All steps must be complete
+  - Stock must still be available
+  - Session must not be expired
+- **Side Effects:**
+  - Creates Order entity
+  - Reserves inventory
+  - Initiates payment (if not COD)
+  - Marks cart as Converted
+- **Audit:** IAuditableCommand (Create)
+
+#### Get Checkout Session
+- **Query:** `GetCheckoutSessionQuery`
+- **Endpoint:** `GET /api/checkout/{id}`
+- **Purpose:** Get checkout session details
+- **Returns:** CheckoutSessionDto with current state
+
+### Domain Entities
+
+- **CheckoutSession** - Aggregate root tracking checkout progress
+  - `CartId` - Source cart
+  - `UserId` - Authenticated user
+  - `Status` - Active, Completed, Expired, Abandoned
+  - `ShippingAddress` - Address value object
+  - `BillingAddress` - Address value object (optional)
+  - `ShippingMethodId` - Selected shipping
+  - `PaymentGatewayId` - Selected payment gateway
+  - `PaymentMethod` - Selected payment method
+  - `ExpiresAt` - Session expiry time
+  - `CompletedAt` - When checkout was completed
+
+### Enums
+
+- **CheckoutSessionStatus** - Active, Completed, Expired, Abandoned
+
+### Domain Events
+
+- **CheckoutStartedEvent** - Session created
+- **CheckoutAddressSetEvent** - Address saved
+- **CheckoutShippingSelectedEvent** - Shipping method selected
+- **CheckoutPaymentSelectedEvent** - Payment method selected
+- **CheckoutCompletedEvent** - Order created
+
+---
+
+## Orders
+
+**Namespace:** `NOIR.Application.Features.Orders`
+**Endpoint:** `/api/orders`
+**Permissions:** `orders:*`
+
+> ⭐ **NEW FEATURE:** Complete order lifecycle management with status transitions, inventory management, and fulfillment tracking.
+
+### Features
+
+#### Create Order
+- **Command:** `CreateOrderCommand`
+- **Endpoint:** `POST /api/orders`
+- **Permission:** Internal (created via checkout completion)
+- **Purpose:** Create order from completed checkout
+- **Returns:** OrderDto
+- **Side Effects:**
+  - Reserves inventory (InventoryMovement)
+  - Generates order number
+  - Sets initial status to Pending
+- **Audit:** IAuditableCommand (Create)
+
+#### Confirm Order
+- **Command:** `ConfirmOrderCommand`
+- **Endpoint:** `POST /api/orders/{id}/confirm`
+- **Permission:** `orders:update`
+- **Purpose:** Confirm order after payment verification
+- **Returns:** OrderDto
+- **Validation:**
+  - Order must be in Pending status
+  - Payment must be verified
+- **Audit:** IAuditableCommand (Update)
+
+#### Ship Order
+- **Command:** `ShipOrderCommand`
+- **Endpoint:** `POST /api/orders/{id}/ship`
+- **Permission:** `orders:update`
+- **Purpose:** Mark order as shipped
+- **Returns:** OrderDto
+- **Validation:**
+  - Order must be in Confirmed or Processing status
+  - Tracking number optional
+- **Audit:** IAuditableCommand (Update)
+
+**Example Request:**
+```json
+{
+  "trackingNumber": "VN123456789",
+  "carrier": "GHTK",
+  "estimatedDelivery": "2026-01-28"
+}
+```
+
+#### Cancel Order
+- **Command:** `CancelOrderCommand`
+- **Endpoint:** `POST /api/orders/{id}/cancel`
+- **Permission:** `orders:update`
+- **Purpose:** Cancel order and release inventory
+- **Returns:** OrderDto
+- **Validation:**
+  - Order must be cancellable (not shipped/delivered)
+- **Side Effects:**
+  - Releases inventory reservation
+  - Triggers refund if paid
+- **Audit:** IAuditableCommand (Update)
+
+**Example Request:**
+```json
+{
+  "reason": "Customer requested cancellation",
+  "refundRequested": true
+}
+```
+
+#### Get Orders
+- **Query:** `GetOrdersQuery`
+- **Endpoint:** `GET /api/orders`
+- **Permission:** `orders:read`
+- **Purpose:** List orders with filtering
+- **Returns:** PagedResult<OrderListDto>
+- **Query Parameters:**
+  - `status` - Filter by OrderStatus
+  - `dateFrom` / `dateTo` - Date range
+  - `search` - Order number, customer name
+  - `page`, `pageSize` - Pagination
+- **Sorting:** CreatedAt (descending)
+
+#### Get Order By Id
+- **Query:** `GetOrderByIdQuery`
+- **Endpoint:** `GET /api/orders/{id}`
+- **Permission:** `orders:read`
+- **Purpose:** Get full order details with items
+- **Returns:** OrderDto
+
+**Example Response:**
+```json
+{
+  "id": "order-123",
+  "orderNumber": "ORD-2026-000456",
+  "status": "Confirmed",
+  "createdAt": "2026-01-26T10:00:00Z",
+  "shippingAddress": {...},
+  "items": [
+    {
+      "id": "item-1",
+      "productId": "prod-123",
+      "productName": "Premium T-Shirt",
+      "variantId": "var-456",
+      "variantName": "Small / Black",
+      "sku": "TSHIRT-S-BLK",
+      "quantity": 2,
+      "unitPrice": 29.99,
+      "totalPrice": 59.98
+    }
+  ],
+  "subtotal": 59.98,
+  "shippingCost": 5.00,
+  "taxAmount": 6.50,
+  "total": 71.48,
+  "paymentStatus": "Paid",
+  "paymentMethod": "CreditCard"
+}
+```
+
+### Domain Entities
+
+- **Order** - Aggregate root for order lifecycle
+  - `OrderNumber` - Human-readable number (ORD-YYYY-NNNNNN)
+  - `UserId` - Customer
+  - `Status` - OrderStatus enum
+  - `ShippingAddress` - Delivery address (snapshot)
+  - `BillingAddress` - Billing address (snapshot)
+  - `Items` - Collection of OrderItem
+  - `Subtotal`, `ShippingCost`, `TaxAmount`, `Total`
+  - `PaymentTransactionId` - Linked payment
+  - `TrackingNumber`, `Carrier` - Shipping info
+  - `CancelledAt`, `CancellationReason`
+
+- **OrderItem** - Product snapshot at time of order
+  - `ProductId`, `ProductName` - Product reference + snapshot
+  - `VariantId`, `VariantName`, `Sku` - Variant snapshot
+  - `Quantity`, `UnitPrice`, `TotalPrice`
+  - `ImageUrl` - Product image snapshot
+
+### Enums
+
+- **OrderStatus**
+| Value | Description |
+|-------|-------------|
+| `Pending` | Order created, awaiting payment confirmation |
+| `Confirmed` | Payment verified, ready for processing |
+| `Processing` | Order being prepared |
+| `Shipped` | Order shipped, in transit |
+| `Delivered` | Order delivered to customer |
+| `Completed` | Order fulfilled, review period ended |
+| `Cancelled` | Order cancelled |
+| `Refunded` | Order refunded |
+
+### Domain Events
+
+- **OrderCreatedEvent** - Order created from checkout
+- **OrderConfirmedEvent** - Payment verified
+- **OrderShippedEvent** - Order dispatched
+- **OrderDeliveredEvent** - Order delivered
+- **OrderCancelledEvent** - Order cancelled
+
+### Inventory Integration
+
+Orders integrate with inventory through:
+1. **Reservation on Checkout** - Inventory reserved when checkout initiated
+2. **Deduction on Ship** - Actual inventory deducted when shipped
+3. **Release on Cancel** - Reservation released if cancelled before ship
 
 ---
 
@@ -1701,6 +2032,8 @@ Similar structure to Categories:
 | **Permissions** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Tenants** | ✅ CRUD | ❌ | ❌ |
 | **Payments** | ✅ All tenants | ✅ Own tenant | ✅ Own orders |
+| **Checkout** | ✅ All tenants | ✅ Own tenant | ✅ Own sessions |
+| **Orders** | ✅ All tenants | ✅ Own tenant | ✅ Own orders |
 | **Audit Logs** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Notifications** | ❌ (system-level) | ✅ | ✅ |
 | **Email Templates** | ✅ Platform defaults | ✅ Tenant overrides | ❌ |
@@ -1719,7 +2052,9 @@ Similar structure to Categories:
 | `/api/roles` | 4 | Role CRUD |
 | `/api/permissions` | 4 | Permission assignment |
 | `/api/tenants` | 6 | Tenant management |
-| `/api/payments` | 15 | ⭐ **NEW:** Transactions, gateways, refunds, webhooks, COD |
+| `/api/payments` | 15 | Transactions, gateways, refunds, webhooks, COD |
+| `/api/checkout` | 6 | ⭐ **NEW:** initiate, address, shipping, payment, complete |
+| `/api/orders` | 6 | ⭐ **NEW:** create, confirm, ship, cancel, list, details |
 | `/api/audit` | 3 | Audit logs, entity history, export |
 | `/api/notifications` | 4 | Notification CRUD |
 | `/api/email-templates` | 4 | Template customization |
@@ -1729,7 +2064,7 @@ Similar structure to Categories:
 | `/api/blog/posts` | 6 | Blog post CRUD |
 | `/api/blog/categories` | 4 | Category CRUD |
 | `/api/blog/tags` | 4 | Tag CRUD |
-| **Total** | **78** | |
+| **Total** | **90** | |
 
 ### Commands vs Queries
 
@@ -1741,6 +2076,8 @@ Similar structure to Categories:
 | Permissions | 2 | 2 | 4 |
 | Tenants | 4 | 4 | 8 |
 | **Payments** | **9** | **9** | **18** |
+| **Checkout** | **5** | **1** | **6** |
+| **Orders** | **4** | **2** | **6** |
 | Audit | 1 | 2 | 3 |
 | Notifications | 3 | 2 | 5 |
 | Email Templates | 1 | 3 | 4 |
@@ -1750,7 +2087,7 @@ Similar structure to Categories:
 | Blog Categories | 3 | 1 | 4 |
 | Blog Tags | 3 | 1 | 4 |
 | Developer Logs | 0 | 1 | 1 |
-| **Total** | **48** | **36** | **84** |
+| **Total** | **57** | **39** | **96** |
 
 ---
 
@@ -1764,13 +2101,20 @@ Similar structure to Categories:
 
 ---
 
-**Last Updated:** 2026-01-25
-**Version:** 2.2
+**Last Updated:** 2026-01-26
+**Version:** 2.3
 **Maintainer:** NOIR Team
 
 ---
 
 ## Changelog
+
+### Version 2.3 (2026-01-26)
+- Added **Checkout** feature section with 5 commands, 1 query (hybrid accordion pattern)
+- Added **Orders** feature section with 4 commands, 2 queries (full lifecycle management)
+- Updated Feature Matrix with Checkout and Orders permissions
+- Updated API Endpoints Summary (now 90 total endpoints)
+- Updated Commands vs Queries (now 96 total)
 
 ### Version 2.2 (2026-01-25)
 - Added **Payment Processing** feature section with 9 commands, 9 queries
