@@ -82,6 +82,11 @@ public static class Permissions
     public const string ProductCategoriesUpdate = "product-categories:update";
     public const string ProductCategoriesDelete = "product-categories:delete";
 
+    // Orders
+    public const string OrdersRead = "orders:read";
+    public const string OrdersWrite = "orders:write";
+    public const string OrdersManage = "orders:manage";
+
     // Legal Pages
     public const string LegalPagesRead = "legal-pages:read";
     public const string LegalPagesUpdate = "legal-pages:update";
@@ -142,6 +147,9 @@ public static class Permissions
         public static readonly IReadOnlyList<string> ProductCategories =
             [ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete];
 
+        public static readonly IReadOnlyList<string> Orders =
+            [OrdersRead, OrdersWrite, OrdersManage];
+
         public static readonly IReadOnlyList<string> LegalPages =
             [LegalPagesRead, LegalPagesUpdate];
 
@@ -183,6 +191,8 @@ public static class Permissions
         ProductsRead, ProductsCreate, ProductsUpdate, ProductsDelete, ProductsPublish,
         // Product Categories
         ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete,
+        // Orders
+        OrdersRead, OrdersWrite, OrdersManage,
         // Legal Pages
         LegalPagesRead, LegalPagesUpdate,
         // Tenant Settings
@@ -239,6 +249,8 @@ public static class Permissions
         // Products within tenant
         ProductsRead, ProductsCreate, ProductsUpdate, ProductsDelete, ProductsPublish,
         ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete,
+        // Orders within tenant
+        OrdersRead, OrdersWrite, OrdersManage,
         // Payments within tenant
         PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
         PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead
@@ -332,6 +344,10 @@ public static class Permissions
             ProductCategoriesCreate,
             ProductCategoriesUpdate,
             ProductCategoriesDelete,
+            // Orders within tenant
+            OrdersRead,
+            OrdersWrite,
+            OrdersManage,
             // Payments within tenant
             PaymentsRead,
             PaymentsCreate,

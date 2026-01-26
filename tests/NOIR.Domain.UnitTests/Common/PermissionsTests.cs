@@ -246,6 +246,16 @@ public class PermissionsTests
         Permissions.Groups.Audit.Should().Contain(Permissions.AuditStream);
     }
 
+    [Fact]
+    public void Groups_Orders_ShouldContainAllOrderPermissions()
+    {
+        // Assert
+        Permissions.Groups.Orders.Should().HaveCount(3);
+        Permissions.Groups.Orders.Should().Contain(Permissions.OrdersRead);
+        Permissions.Groups.Orders.Should().Contain(Permissions.OrdersWrite);
+        Permissions.Groups.Orders.Should().Contain(Permissions.OrdersManage);
+    }
+
     #endregion
 
     #region All Permissions Tests
@@ -268,6 +278,7 @@ public class PermissionsTests
             + Permissions.Groups.BlogTags.Count
             + Permissions.Groups.Products.Count
             + Permissions.Groups.ProductCategories.Count
+            + Permissions.Groups.Orders.Count
             + Permissions.Groups.Payments.Count;
 
         // Assert
