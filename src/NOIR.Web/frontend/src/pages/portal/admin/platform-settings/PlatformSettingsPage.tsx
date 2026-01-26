@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { PageHeader } from '@/components/ui/page-header'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -92,16 +93,11 @@ export default function PlatformSettingsPage() {
 
   return (
     <div className="container max-w-4xl py-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Settings className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('platformSettings.title')}</h1>
-          <p className="text-muted-foreground">{t('platformSettings.description')}</p>
-        </div>
-      </div>
+      <PageHeader
+        icon={Settings}
+        title={t('platformSettings.title')}
+        description={t('platformSettings.description')}
+      />
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
@@ -165,6 +161,7 @@ function SmtpSettingsTab() {
 
   const testForm = useForm<TestEmailFormData>({
     resolver: zodResolver(testEmailSchema),
+    mode: 'onBlur',
     defaultValues: {
       recipientEmail: '',
     },
@@ -248,8 +245,8 @@ function SmtpSettingsTab() {
 
   return (
     <>
-      <Card>
-        <CardHeader>
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-md bg-blue-500/10 flex items-center justify-center">
@@ -527,15 +524,15 @@ function EmailTemplatesTab({ onEdit }: { onEdit: (id: string) => void }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
         <CardTitle className="text-lg">{t('emailTemplates.title')}</CardTitle>
         <CardDescription>{t('emailTemplates.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2">
           {templates.map((template) => (
-            <Card key={template.id} className="overflow-hidden">
+            <Card key={template.id} className="overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
@@ -608,15 +605,15 @@ function LegalPagesTab({ onEdit }: { onEdit: (id: string) => void }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
         <CardTitle className="text-lg">{t('legalPages.title')}</CardTitle>
         <CardDescription>{t('legalPages.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2">
           {pages.map((page) => (
-            <Card key={page.id} className="overflow-hidden">
+            <Card key={page.id} className="overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">

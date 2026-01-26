@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Search, Tag, Plus, Pencil, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { PageHeader } from '@/components/ui/page-header'
+import { EmptyState } from '@/components/ui/empty-state'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -55,23 +57,19 @@ export default function BlogTagsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-xl shadow-sm">
-            <Tag className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tags</h1>
-            <p className="text-muted-foreground">Label and organize your content</p>
-          </div>
-        </div>
-        <Button onClick={handleCreateClick}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Tag
-        </Button>
-      </div>
+      <PageHeader
+        icon={Tag}
+        title="Tags"
+        description="Label and organize your content"
+        action={
+          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={handleCreateClick}>
+            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+            New Tag
+          </Button>
+        }
+      />
 
-      <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
@@ -103,7 +101,7 @@ export default function BlogTagsPage() {
             </div>
           )}
 
-          <div className="rounded-md border">
+          <div className="rounded-xl border border-border/50 overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -123,8 +121,17 @@ export default function BlogTagsPage() {
                   </TableRow>
                 ) : data.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                      No tags found
+                    <TableCell colSpan={5} className="p-0">
+                      <EmptyState
+                        icon={Tag}
+                        title="No tags found"
+                        description="Get started by creating your first tag to label and organize your content."
+                        action={{
+                          label: 'New Tag',
+                          onClick: handleCreateClick,
+                        }}
+                        className="border-0 rounded-none px-4 py-12"
+                      />
                     </TableCell>
                   </TableRow>
                 ) : (

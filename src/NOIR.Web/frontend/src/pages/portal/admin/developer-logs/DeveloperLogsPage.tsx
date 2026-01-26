@@ -21,6 +21,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { PageHeader } from '@/components/ui/page-header'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { isPlatformAdmin } from '@/lib/roles'
 import { useAuthContext } from '@/contexts/AuthContext'
@@ -200,22 +201,12 @@ export default function DeveloperLogsPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-48px)] overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Terminal className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Developer Logs</h1>
-            <p className="text-muted-foreground">
-              Real-time server log streaming and analysis
-            </p>
-          </div>
-        </div>
-
-        {/* Connection status */}
-        <div className="flex items-center gap-2">
+      <PageHeader
+        icon={Terminal}
+        title="Developer Logs"
+        description="Real-time server log streaming and analysis"
+        action={
+          <div className="flex items-center gap-2">
           {isConnected ? (
             <Badge variant="outline" className="gap-1 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400">
               <Wifi className="h-3 w-3" />
@@ -232,8 +223,9 @@ export default function DeveloperLogsPage() {
               Disconnected
             </Badge>
           )}
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {/* Main tabs */}
       <Tabs value={mainTab} onValueChange={setMainTab} className="flex-1 flex flex-col mt-4 overflow-hidden">

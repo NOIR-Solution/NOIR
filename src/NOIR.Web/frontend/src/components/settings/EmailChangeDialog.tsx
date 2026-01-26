@@ -274,13 +274,13 @@ export function EmailChangeDialog({
                   />
                 </div>
                 {emailForm.form.formState.errors.newEmail && (
-                  <p className="text-sm text-destructive">{translateError(emailForm.form.formState.errors.newEmail.message)}</p>
+                  <p className="text-sm font-medium text-destructive">{translateError(emailForm.form.formState.errors.newEmail.message)}</p>
                 )}
               </div>
 
               {emailForm.serverError && (
                 <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm text-destructive">{emailForm.serverError}</p>
+                  <p className="text-sm font-medium text-destructive">{emailForm.serverError}</p>
                 </div>
               )}
 

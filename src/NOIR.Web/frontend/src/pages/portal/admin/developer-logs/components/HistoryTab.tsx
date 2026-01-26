@@ -17,8 +17,6 @@ import {
   ArrowUp,
   History,
   FileText,
-  Loader2,
-  Maximize2,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -422,7 +420,7 @@ export function HistoryTab() {
           ))}
         </div>
       ) : filteredDates.length === 0 ? (
-        <Card>
+        <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
           <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
             <History className="h-12 w-12 mb-4 opacity-50" />
             <p>No historical log files found</p>

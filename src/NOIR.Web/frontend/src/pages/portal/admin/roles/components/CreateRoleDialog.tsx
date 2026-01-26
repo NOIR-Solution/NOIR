@@ -61,6 +61,7 @@ export function CreateRoleDialog({ onSuccess }: CreateRoleDialogProps) {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    mode: 'onBlur',
     defaultValues: {
       name: '',
       description: '',
@@ -108,8 +109,8 @@ export function CreateRoleDialog({ onSuccess }: CreateRoleDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
+        <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
+          <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
           {t('roles.create', 'Create Role')}
         </Button>
       </DialogTrigger>

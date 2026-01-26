@@ -40,8 +40,8 @@ function StatsCard({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Buffer Statistics</span>
-        <Button variant="ghost" size="sm" onClick={onRefresh}>
-          <RefreshCw className="h-3 w-3" />
+        <Button variant="ghost" size="sm" onClick={onRefresh} className="group">
+          <RefreshCw className="h-3 w-3 transition-transform duration-300 group-hover:rotate-180" />
         </Button>
       </div>
 
@@ -99,8 +99,8 @@ function StatsCard({
 export function StatsTab({ stats, onRefresh }: StatsTabProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Card className="lg:col-span-2">
-        <CardHeader>
+      <Card className="lg:col-span-2 shadow-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
           <CardTitle className="flex items-center gap-2">
             <Database className="h-5 w-5" />
             Buffer Overview
@@ -111,8 +111,8 @@ export function StatsTab({ stats, onRefresh }: StatsTabProps) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
             Time Range

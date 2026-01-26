@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Search, FileText, Plus, Eye, Pencil, Trash2, Send } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
+import { PageHeader } from '@/components/ui/page-header'
 import { ImageLightbox } from '@/components/ui/image-lightbox'
 import { usePageContext } from '@/hooks/usePageContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,7 +34,7 @@ import { usePosts, useCategories } from '@/hooks/useBlog'
 import { DeletePostDialog } from './components/DeletePostDialog'
 import type { PostListItem, PostStatus } from '@/types'
 import { formatDistanceToNow } from 'date-fns'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const statusColors: Record<PostStatus, string> = {
   Draft: 'bg-gray-100 text-gray-800',
@@ -43,6 +45,7 @@ const statusColors: Record<PostStatus, string> = {
 
 export default function BlogPostsPage() {
   usePageContext('Blog Posts')
+  const navigate = useNavigate()
 
   const { data, loading, error, setPage, setSearch, setStatus, setCategoryId, handleDelete, params } = usePosts()
   const { data: categories } = useCategories()
@@ -65,25 +68,21 @@ export default function BlogPostsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-xl shadow-sm">
-            <FileText className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Blog Posts</h1>
-            <p className="text-muted-foreground">Manage your blog content</p>
-          </div>
-        </div>
-        <Link to="/portal/blog/posts/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            New Post
-          </Button>
-        </Link>
-      </div>
+      <PageHeader
+        icon={FileText}
+        title="Blog Posts"
+        description="Manage your blog content"
+        action={
+          <Link to="/portal/blog/posts/new">
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
+              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+              New Post
+            </Button>
+          </Link>
+        }
+      />
 
-      <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
@@ -142,7 +141,7 @@ export default function BlogPostsPage() {
             </div>
           )}
 
-          <div className="rounded-md border">
+          <div className="rounded-xl border border-border/50 overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -163,8 +162,17 @@ export default function BlogPostsPage() {
                   </TableRow>
                 ) : data?.items.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                      No posts found
+                    <TableCell colSpan={6} className="p-0">
+                      <EmptyState
+                        icon={FileText}
+                        title="No posts found"
+                        description="Get started by creating your first blog post to share with your audience."
+                        action={{
+                          label: 'New Post',
+                          onClick: () => navigate('/portal/blog/posts/new'),
+                        }}
+                        className="border-0 rounded-none px-4 py-12"
+                      />
                     </TableCell>
                   </TableRow>
                 ) : (

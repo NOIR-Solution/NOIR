@@ -159,8 +159,8 @@ export default function TenantDetailPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
+        <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+          <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
             <CardTitle>{t('tenants.details.basicInfo')}</CardTitle>
             <CardDescription>{t('tenants.details.basicInfoDescription')}</CardDescription>
           </CardHeader>
@@ -182,8 +182,8 @@ export default function TenantDetailPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
+        <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+          <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
             <CardTitle>{t('tenants.details.timestamps')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

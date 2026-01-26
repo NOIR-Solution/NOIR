@@ -116,7 +116,7 @@ export function TestEmailDialog({
                 aria-invalid={!!form.formState.errors.recipientEmail}
               />
               {form.formState.errors.recipientEmail && (
-                <p className="text-sm text-destructive">{translateError(form.formState.errors.recipientEmail.message)}</p>
+                <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.recipientEmail.message)}</p>
               )}
             </div>
 
@@ -146,7 +146,7 @@ export function TestEmailDialog({
             {/* Server Error */}
             {serverError && (
               <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                <p className="text-sm text-destructive">{serverError}</p>
+                <p className="text-sm font-medium text-destructive">{serverError}</p>
               </div>
             )}
           </div>

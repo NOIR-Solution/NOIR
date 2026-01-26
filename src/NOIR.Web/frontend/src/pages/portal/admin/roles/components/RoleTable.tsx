@@ -59,7 +59,7 @@ export function RoleTable({ roles, onEdit, onDelete, onPermissions, loading }: R
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-xl border border-border/50 overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>

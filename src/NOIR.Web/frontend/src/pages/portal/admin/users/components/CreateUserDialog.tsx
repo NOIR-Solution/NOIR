@@ -269,7 +269,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
             <div className="grid gap-4">
               {/* Email */}
               <div className="grid gap-2">
-                <Label htmlFor="email">{t('labels.email', 'Email')} *</Label>
+                <Label htmlFor="email" className={touched.email && errors.email ? 'text-destructive' : ''}>{t('labels.email', 'Email')} *</Label>
                 <Input
                   id="email"
                   type="text"
@@ -281,13 +281,13 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                   className={touched.email && errors.email ? 'border-destructive' : ''}
                 />
                 {touched.email && errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
+                  <p className="text-sm font-medium text-destructive">{errors.email}</p>
                 )}
               </div>
 
               {/* Password */}
               <div className="grid gap-2">
-                <Label htmlFor="password">{t('labels.password', 'Password')} *</Label>
+                <Label htmlFor="password" className={touched.password && errors.password ? 'text-destructive' : ''}>{t('labels.password', 'Password')} *</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -314,13 +314,13 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                   </Button>
                 </div>
                 {touched.password && errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
+                  <p className="text-sm font-medium text-destructive">{errors.password}</p>
                 )}
               </div>
 
               {/* Confirm Password */}
               <div className="grid gap-2">
-                <Label htmlFor="confirmPassword">{t('labels.confirmPassword', 'Confirm Password')} *</Label>
+                <Label htmlFor="confirmPassword" className={touched.confirmPassword && errors.confirmPassword ? 'text-destructive' : ''}>{t('labels.confirmPassword', 'Confirm Password')} *</Label>
                 <Input
                   id="confirmPassword"
                   type={showPassword ? 'text' : 'password'}
@@ -332,14 +332,14 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                   className={touched.confirmPassword && errors.confirmPassword ? 'border-destructive' : ''}
                 />
                 {touched.confirmPassword && errors.confirmPassword && (
-                  <p className="text-sm text-destructive">{errors.confirmPassword}</p>
+                  <p className="text-sm font-medium text-destructive">{errors.confirmPassword}</p>
                 )}
               </div>
 
               {/* First Name & Last Name */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="firstName">{t('users.form.firstName', 'First Name')}</Label>
+                  <Label htmlFor="firstName" className={touched.firstName && errors.firstName ? 'text-destructive' : ''}>{t('users.form.firstName', 'First Name')}</Label>
                   <Input
                     id="firstName"
                     value={firstName}
@@ -349,11 +349,11 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                     className={touched.firstName && errors.firstName ? 'border-destructive' : ''}
                   />
                   {touched.firstName && errors.firstName && (
-                    <p className="text-sm text-destructive">{errors.firstName}</p>
+                    <p className="text-sm font-medium text-destructive">{errors.firstName}</p>
                   )}
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="lastName">{t('users.form.lastName', 'Last Name')}</Label>
+                  <Label htmlFor="lastName" className={touched.lastName && errors.lastName ? 'text-destructive' : ''}>{t('users.form.lastName', 'Last Name')}</Label>
                   <Input
                     id="lastName"
                     value={lastName}
@@ -363,14 +363,14 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                     className={touched.lastName && errors.lastName ? 'border-destructive' : ''}
                   />
                   {touched.lastName && errors.lastName && (
-                    <p className="text-sm text-destructive">{errors.lastName}</p>
+                    <p className="text-sm font-medium text-destructive">{errors.lastName}</p>
                   )}
                 </div>
               </div>
 
               {/* Display Name */}
               <div className="grid gap-2">
-                <Label htmlFor="displayName">{t('users.form.displayName', 'Display Name')}</Label>
+                <Label htmlFor="displayName" className={touched.displayName && errors.displayName ? 'text-destructive' : ''}>{t('users.form.displayName', 'Display Name')}</Label>
                 <Input
                   id="displayName"
                   value={displayName}
@@ -383,7 +383,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                   {t('users.form.displayNameHint', 'Optional. Overrides first/last name display.')}
                 </p>
                 {touched.displayName && errors.displayName && (
-                  <p className="text-sm text-destructive">{errors.displayName}</p>
+                  <p className="text-sm font-medium text-destructive">{errors.displayName}</p>
                 )}
               </div>
 

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, type WheelEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Info, Loader2 } from 'lucide-react'
 import { TippyTooltip } from '@/components/ui/tippy-tooltip'
@@ -21,6 +21,20 @@ export function RolePermissionInfo({ role, permissionsCache, onPermissionsLoaded
   const [allPermissions, setAllPermissions] = useState<Permission[]>(sharedPermissionDetails.current || [])
   // Track if we're already loading to prevent duplicate requests
   const loadingRef = useRef(false)
+  // Ref for scroll container
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Handle mouse wheel scrolling explicitly (Radix Tooltip can block wheel events)
+  const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
+    const container = scrollRef.current
+    if (!container) return
+
+    // Prevent the event from bubbling to prevent Tooltip issues
+    e.stopPropagation()
+
+    // Manually scroll the container
+    container.scrollTop += e.deltaY
+  }
 
   const loadPermissions = useCallback(async () => {
     // Check cache first
@@ -55,10 +69,16 @@ export function RolePermissionInfo({ role, permissionsCache, onPermissionsLoaded
     }
   }, [role.id, permissionsCache, onPermissionsLoaded, permissions])
 
+  // Translate category name
+  const translateCategory = (category: string): string => {
+    const categoryKey = category.toLowerCase().replace(/\s+/g, '')
+    return t(`permissions.categories.${categoryKey}`, category)
+  }
+
   // Group permissions by category for display
   const groupedPermissions = permissions?.reduce((groups, permName) => {
     const permDetail = allPermissions.find((p) => p.name === permName)
-    const category = permDetail?.category || 'Other'
+    const category = permDetail?.category || t('permissions.categories.other', 'Other')
     if (!groups[category]) {
       groups[category] = []
     }
@@ -72,69 +92,50 @@ export function RolePermissionInfo({ role, permissionsCache, onPermissionsLoaded
   const totalCount = permissions?.length || 0
 
   const tooltipContent = (
-    <div style={{ minWidth: '220px' }}>
-      {/* Header - Primary theme color */}
-      <div
-        style={{
-          padding: '10px 14px',
-          background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-          fontWeight: 600,
-          fontSize: '13px',
-          color: '#ffffff',
-          letterSpacing: '-0.01em',
-        }}
-      >
+    <div className="min-w-[200px] max-w-[280px]">
+      {/* Header */}
+      <div className="px-3 py-2 bg-primary text-primary-foreground font-semibold text-xs rounded-t-md -mx-3 -mt-1.5">
         {t('roles.permissions', 'Permissions')} ({totalCount})
       </div>
       {/* Content */}
-      <div style={{ padding: '10px 14px' }}>
+      <div className="pt-2">
         {loading ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 0' }}>
-            <Loader2 className="h-4 w-4 animate-spin" style={{ color: '#6b7280' }} />
+          <div className="flex items-center justify-center py-2">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         ) : totalCount === 0 ? (
-          <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>
+          <p className="text-xs text-muted-foreground">
             {t('roles.noPermissions', 'No permissions assigned')}
           </p>
         ) : (
-          <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+          <div
+            ref={scrollRef}
+            className="max-h-[200px] overflow-y-auto space-y-2 pr-1 overscroll-contain"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'hsl(var(--muted-foreground) / 0.3) transparent',
+            }}
+            onWheel={handleWheel}
+          >
             {groupedPermissions &&
-              Object.entries(groupedPermissions).map(([category, perms], idx) => (
-                <div key={category} style={{ marginTop: idx > 0 ? '12px' : 0 }}>
-                  <div style={{
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    color: '#6b7280',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: '6px',
-                  }}>
-                    {category} ({perms.length})
+              Object.entries(groupedPermissions).map(([category, perms]) => (
+                <div key={category}>
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                    {translateCategory(category)} ({perms.length})
                   </div>
-                  <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                  <ul className="space-y-0.5">
                     {perms.slice(0, 5).map((perm) => (
                       <li
                         key={perm.name}
-                        style={{
-                          fontSize: '13px',
-                          color: '#374151',
-                          paddingLeft: '12px',
-                          position: 'relative',
-                          lineHeight: 1.6,
-                        }}
+                        className="text-xs text-foreground pl-3 relative"
                       >
-                        <span style={{ position: 'absolute', left: 0, color: '#9ca3af' }}>•</span>
+                        <span className="absolute left-0 text-muted-foreground">•</span>
                         {perm.displayName}
                       </li>
                     ))}
                     {perms.length > 5 && (
-                      <li style={{
-                        fontSize: '12px',
-                        color: '#9ca3af',
-                        paddingLeft: '12px',
-                        fontStyle: 'italic',
-                      }}>
-                        + {perms.length - 5} {t('labels.more', 'more')}...
+                      <li className="text-[11px] text-muted-foreground pl-3 italic">
+                        {t('labels.andMore', '+ {{count}} more...', { count: perms.length - 5 })}
                       </li>
                     )}
                   </ul>
@@ -153,7 +154,7 @@ export function RolePermissionInfo({ role, permissionsCache, onPermissionsLoaded
       interactive={true}
       onShow={() => { loadPermissions() }}
       delay={[100, 0]}
-      theme="custom rich"
+      contentClassName="bg-popover text-popover-foreground border shadow-lg"
     >
       <button
         type="button"

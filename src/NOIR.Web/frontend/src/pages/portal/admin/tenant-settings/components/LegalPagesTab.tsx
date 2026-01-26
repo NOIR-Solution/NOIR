@@ -43,15 +43,15 @@ export function LegalPagesTab({ onEdit }: LegalPagesTabProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
         <CardTitle className="text-lg">{t('legalPages.title')}</CardTitle>
         <CardDescription>{t('legalPages.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2">
           {pages.map((page) => (
-            <Card key={page.id} className="overflow-hidden">
+            <Card key={page.id} className="overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">

@@ -35,8 +35,8 @@ function ErrorClusters({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Error Patterns</span>
-        <Button variant="ghost" size="sm" onClick={onRefresh}>
-          <RefreshCw className="h-3 w-3" />
+        <Button variant="ghost" size="sm" onClick={onRefresh} className="group">
+          <RefreshCw className="h-3 w-3 transition-transform duration-300 group-hover:rotate-180" />
         </Button>
       </div>
 
@@ -94,8 +94,8 @@ function ErrorClusters({
 
 export function ErrorClustersTab({ clusters, onRefresh }: ErrorClustersTabProps) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
         <CardTitle className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-red-500" />
           Error Pattern Analysis

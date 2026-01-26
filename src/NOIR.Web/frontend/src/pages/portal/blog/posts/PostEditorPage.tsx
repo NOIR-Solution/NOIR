@@ -59,6 +59,8 @@ import { toast } from 'sonner'
 import { getPostById, createPost, updatePost, publishPost, unpublishPost } from '@/services/blog'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
+import { DatePicker } from '@/components/ui/date-picker'
+import { TimePicker } from '@/components/ui/time-picker'
 import { uploadMedia } from '@/services/media'
 import { useCategories, useTags } from '@/hooks/useBlog'
 import { ApiError } from '@/services/apiClient'
@@ -99,7 +101,7 @@ export default function PostEditorPage() {
   // Publishing options state
   type PublishOption = 'draft' | 'publish' | 'schedule'
   const [publishOption, setPublishOption] = useState<PublishOption>('draft')
-  const [scheduledDate, setScheduledDate] = useState('')
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined)
   const [scheduledTime, setScheduledTime] = useState('09:00')
 
   const { data: categories } = useCategories()
@@ -107,6 +109,7 @@ export default function PostEditorPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
+    mode: 'onBlur',
     defaultValues: {
       title: '',
       slug: '',
@@ -189,7 +192,9 @@ export default function PostEditorPage() {
         toast.error('Please select a date for scheduling')
         return
       }
-      const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`)
+      const [hours, minutes] = scheduledTime.split(':').map(Number)
+      const scheduledDateTime = new Date(scheduledDate)
+      scheduledDateTime.setHours(hours, minutes, 0, 0)
       if (scheduledDateTime <= new Date()) {
         toast.error('Scheduled date must be in the future')
         return
@@ -242,7 +247,9 @@ export default function PostEditorPage() {
         }
       } else if (publishOption === 'schedule') {
         // Schedule for future
-        const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`)
+        const [hours, minutes] = scheduledTime.split(':').map(Number)
+        const scheduledDateTime = new Date(scheduledDate!)
+        scheduledDateTime.setHours(hours, minutes, 0, 0)
         await publishPost(savedPost.id, { scheduledPublishAt: scheduledDateTime.toISOString() })
         toast.success(`Post scheduled for ${formatDateTime(scheduledDateTime)}`)
       }
@@ -363,8 +370,8 @@ export default function PostEditorPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Content Area */}
             <div className="lg:col-span-2 space-y-6">
-              <Card>
-                <CardHeader>
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle>Content</CardTitle>
                   <CardDescription>Write your blog post content</CardDescription>
                 </CardHeader>
@@ -536,81 +543,81 @@ export default function PostEditorPage() {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Publishing Options */}
-              <Card>
-                <CardHeader>
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     Publishing
                   </CardTitle>
                   <CardDescription>Choose when to publish your post</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <RadioGroup value={publishOption} onValueChange={(v) => setPublishOption(v as PublishOption)}>
-                    <div className="flex items-start space-x-3 rounded-md border p-3 hover:bg-accent/50 cursor-pointer">
-                      <RadioGroupItem value="draft" id="draft" className="mt-0.5" />
-                      <div className="space-y-1">
-                        <Label htmlFor="draft" className="font-medium cursor-pointer">
-                          Save as Draft
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
+                <CardContent className="space-y-3">
+                  <RadioGroup value={publishOption} onValueChange={(v) => setPublishOption(v as PublishOption)} className="space-y-2">
+                    <label
+                      htmlFor="draft"
+                      className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent/50 cursor-pointer transition-colors"
+                    >
+                      <RadioGroupItem value="draft" id="draft" />
+                      <div className="space-y-0.5">
+                        <span className="font-medium text-sm">Save as Draft</span>
+                        <p className="text-xs text-muted-foreground">
                           Post won't be visible to public
                         </p>
                       </div>
-                    </div>
+                    </label>
 
-                    <div className="flex items-start space-x-3 rounded-md border p-3 hover:bg-accent/50 cursor-pointer">
-                      <RadioGroupItem value="publish" id="publish" className="mt-0.5" />
-                      <div className="space-y-1">
-                        <Label htmlFor="publish" className="font-medium cursor-pointer">
-                          Publish Now
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
+                    <label
+                      htmlFor="publish"
+                      className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent/50 cursor-pointer transition-colors"
+                    >
+                      <RadioGroupItem value="publish" id="publish" />
+                      <div className="space-y-0.5">
+                        <span className="font-medium text-sm">Publish Now</span>
+                        <p className="text-xs text-muted-foreground">
                           Post will be visible immediately
                         </p>
                       </div>
-                    </div>
+                    </label>
 
-                    <div className="flex items-start space-x-3 rounded-md border p-3 hover:bg-accent/50 cursor-pointer">
-                      <RadioGroupItem value="schedule" id="schedule" className="mt-0.5" />
-                      <div className="space-y-1">
-                        <Label htmlFor="schedule" className="font-medium cursor-pointer">
-                          Schedule
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
+                    <label
+                      htmlFor="schedule"
+                      className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent/50 cursor-pointer transition-colors"
+                    >
+                      <RadioGroupItem value="schedule" id="schedule" />
+                      <div className="space-y-0.5">
+                        <span className="font-medium text-sm">Schedule</span>
+                        <p className="text-xs text-muted-foreground">
                           Post will auto-publish at the set time
                         </p>
                       </div>
-                    </div>
+                    </label>
                   </RadioGroup>
 
                   {/* Schedule date/time picker */}
                   {publishOption === 'schedule' && (
-                    <div className="space-y-3 pt-2 border-t">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                          <Label htmlFor="scheduledDate" className="text-sm">Date</Label>
-                          <Input
-                            type="date"
-                            id="scheduledDate"
+                    <div className="pt-4 mt-2 border-t space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Date</Label>
+                          <DatePicker
                             value={scheduledDate}
-                            onChange={(e) => setScheduledDate(e.target.value)}
-                            min={new Date().toISOString().split('T')[0]}
-                            className="cursor-pointer"
+                            onChange={setScheduledDate}
+                            minDate={new Date()}
+                            placeholder="Select date"
                           />
                         </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="scheduledTime" className="text-sm">Time</Label>
-                          <Input
-                            type="time"
-                            id="scheduledTime"
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Time</Label>
+                          <TimePicker
                             value={scheduledTime}
-                            onChange={(e) => setScheduledTime(e.target.value)}
-                            className="cursor-pointer"
+                            onChange={(time) => setScheduledTime(time)}
+                            placeholder="Select time"
+                            interval={30}
                           />
                         </div>
                       </div>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Info className="h-3 w-3" />
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        <Info className="h-3.5 w-3.5 flex-shrink-0" />
                         Uses your local timezone
                       </p>
                     </div>
@@ -629,8 +636,8 @@ export default function PostEditorPage() {
               </Card>
 
               {/* Organization */}
-              <Card>
-                <CardHeader>
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle>Organization</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -704,8 +711,8 @@ export default function PostEditorPage() {
               </Card>
 
               {/* Featured Image */}
-              <Card>
-                <CardHeader>
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle>Featured Image</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -789,8 +796,8 @@ export default function PostEditorPage() {
               </Card>
 
               {/* SEO */}
-              <Card>
-                <CardHeader>
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle>SEO</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">

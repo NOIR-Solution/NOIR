@@ -88,7 +88,7 @@ export function LiveLogsToolbar({
   const hasActiveFilters = searchTerm || exceptionsOnly || selectedLevels.size > 0
 
   return (
-    <Card>
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
       <CardContent className="p-4 space-y-3">
         {/* Row 1: Main controls */}
         <div className="flex items-center gap-2">

@@ -376,7 +376,33 @@
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "openMenu": "Open menu",
-    "permissions": "permissions"
+    "permissions": "permissions",
+    "andMore": "+ {{count}} more...",
+    "more": "more"
+  },
+  "permissions": {
+    "categories": {
+      "other": "Other",
+      "uncategorized": "Uncategorized",
+      "usermanagement": "User Management",
+      "rolemanagement": "Role Management",
+      "tenantmanagement": "Tenant Management",
+      "audit": "Audit",
+      "settings": "Settings",
+      "content": "Content",
+      "blog": "Blog",
+      "ecommerce": "E-commerce",
+      "e-commerce": "E-commerce",
+      "orders": "Orders",
+      "products": "Products",
+      "categories": "Categories",
+      "reports": "Reports",
+      "system": "System",
+      "emailtemplates": "Email Templates",
+      "legalpages": "Legal Pages",
+      "platform": "Platform",
+      "payments": "Payments"
+    }
   },
   "theme": {
     "light": "Light",

@@ -242,7 +242,7 @@ export default function LoginPage() {
                           />
                         </div>
                         {emailError && (
-                          <p className="text-sm text-destructive">{emailError}</p>
+                          <p className="text-sm font-medium text-destructive">{emailError}</p>
                         )}
                       </div>
 
@@ -275,7 +275,7 @@ export default function LoginPage() {
                           </button>
                         </div>
                         {passwordError && (
-                          <p className="text-sm text-destructive">{passwordError}</p>
+                          <p className="text-sm font-medium text-destructive">{passwordError}</p>
                         )}
                         {/* Forgot Password Link */}
                         <div className="flex justify-end mt-1">

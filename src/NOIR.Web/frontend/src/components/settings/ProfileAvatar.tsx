@@ -161,7 +161,7 @@ export function ProfileAvatar({
 
       {/* Error Message */}
       {uploadError && (
-        <p className="text-sm text-destructive">{uploadError}</p>
+        <p className="text-sm font-medium text-destructive">{uploadError}</p>
       )}
 
       {/* Action Buttons */}

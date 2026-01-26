@@ -14,6 +14,7 @@ import {
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PageHeader } from '@/components/ui/page-header'
 import {
   BrandingSettingsTab,
   ContactSettingsTab,
@@ -45,20 +46,11 @@ export default function TenantSettingsPage() {
 
   return (
     <div className="container max-w-4xl py-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Settings className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {t('tenantSettings.title')}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('tenantSettings.description')}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon={Settings}
+        title={t('tenantSettings.title')}
+        description={t('tenantSettings.description')}
+      />
 
       {/* Tabbed Content */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">

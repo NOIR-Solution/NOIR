@@ -160,7 +160,7 @@ export function ImageUploadField({
 
       {/* Error message */}
       {error && (
-        <p className="text-sm text-destructive">{error}</p>
+        <p className="text-sm font-medium text-destructive">{error}</p>
       )}
     </div>
   )

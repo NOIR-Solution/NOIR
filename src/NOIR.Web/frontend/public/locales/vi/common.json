@@ -525,7 +525,33 @@
     "password": "Mật khẩu",
     "confirmPassword": "Xác nhận Mật khẩu",
     "openMenu": "Mở menu",
-    "permissions": "quyền hạn"
+    "permissions": "quyền hạn",
+    "andMore": "+ {{count}} thêm...",
+    "more": "thêm"
+  },
+  "permissions": {
+    "categories": {
+      "other": "Khác",
+      "uncategorized": "Chưa phân loại",
+      "usermanagement": "Quản lý Người dùng",
+      "rolemanagement": "Quản lý Vai trò",
+      "tenantmanagement": "Quản lý Tenant",
+      "audit": "Kiểm toán",
+      "settings": "Cài đặt",
+      "content": "Nội dung",
+      "blog": "Blog",
+      "ecommerce": "Thương mại điện tử",
+      "e-commerce": "Thương mại điện tử",
+      "orders": "Đơn hàng",
+      "products": "Sản phẩm",
+      "categories": "Danh mục",
+      "reports": "Báo cáo",
+      "system": "Hệ thống",
+      "emailtemplates": "Mẫu Email",
+      "legalpages": "Trang Pháp lý",
+      "platform": "Nền tảng",
+      "payments": "Thanh toán"
+    }
   },
   "theme": {
     "light": "Sáng",

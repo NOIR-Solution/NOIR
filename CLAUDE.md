@@ -564,31 +564,24 @@ if (!result.success) {
 result.error.errors.forEach(...)  // ❌ .errors does not exist
 ```
 
-### 📋 Real-Time Form Validation
+### 📋 Form Validation Mode: `mode: 'onBlur'` (REQUIRED)
+
+All forms MUST use `mode: 'onBlur'` for consistent real-time validation:
 
 ```typescript
-// Use onBlur + touched state for inline validation (not browser tooltips)
-const [errors, setErrors] = useState<Record<string, string>>({})
-const [touched, setTouched] = useState<Record<string, boolean>>({})
-
-const handleBlur = (field: string, value: string) => {
-  setTouched(prev => ({ ...prev, [field]: true }))
-  const error = validateField(field, value)
-  setErrors(prev => ({ ...prev, [field]: error }))
-}
-
-// In JSX:
-<form noValidate>  {/* Disable browser validation */}
-  <Input
-    type="text"  {/* Use text, not email - avoids browser popup */}
-    onBlur={(e) => handleBlur('email', e.target.value)}
-    className={touched.email && errors.email ? 'border-destructive' : ''}
-  />
-  {touched.email && errors.email && (
-    <p className="text-sm text-destructive">{errors.email}</p>
-  )}
-</form>
+const form = useForm<FormData>({
+  resolver: zodResolver(schema),
+  mode: 'onBlur',  // REQUIRED - validates when field loses focus
+  defaultValues: { ... },
+})
 ```
+
+**Why `onBlur`:**
+- Validates after user finishes typing (not during)
+- Shows errors before submit
+- Consistent behavior across all forms
+
+**See:** [docs/frontend/architecture.md#form-validation-standards](docs/frontend/architecture.md#form-validation-standards) for complete patterns.
 
 ### 💬 Dialog Form Layout (Focus Ring Clipping)
 

@@ -62,6 +62,7 @@ export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRole
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    mode: 'onBlur',
     defaultValues: {
       name: '',
       description: '',

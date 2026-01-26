@@ -314,8 +314,8 @@ export default function LegalPageEditPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardHeader>
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
               <CardTitle className="text-base">Content</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -450,8 +450,8 @@ export default function LegalPageEditPage() {
 
         {/* Sidebar */}
         <div className="space-y-4">
-          <Card>
-            <CardHeader>
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
               <CardTitle className="text-base">SEO</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -514,8 +514,8 @@ export default function LegalPageEditPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
               <CardTitle className="text-base">Info</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">

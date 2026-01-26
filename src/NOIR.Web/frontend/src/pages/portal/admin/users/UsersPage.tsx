@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Users, Filter, UserPlus } from 'lucide-react'
+import { Search, Users, Filter, Plus } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { PageHeader } from '@/components/ui/page-header'
 import {
   Select,
   SelectContent,
@@ -72,25 +73,21 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-xl shadow-sm">
-            <Users className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{t('users.title', 'Users')}</h1>
-            <p className="text-muted-foreground">{t('users.description', 'Manage platform users and their roles')}</p>
-          </div>
-        </div>
-        {canCreateUsers && (
-          <Button onClick={() => setCreateDialogOpen(true)}>
-            <UserPlus className="mr-2 h-4 w-4" />
-            {t('users.createUser', 'Create User')}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        icon={Users}
+        title={t('users.title', 'Users')}
+        description={t('users.description', 'Manage platform users and their roles')}
+        action={
+          canCreateUsers && (
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+              {t('users.createUser', 'Create User')}
+            </Button>
+          )
+        }
+      />
 
-      <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">

@@ -120,7 +120,7 @@ export function ChangePasswordForm() {
               </button>
             </div>
             {form.formState.errors.currentPassword && (
-              <p className="text-sm text-destructive">{translateError(form.formState.errors.currentPassword.message)}</p>
+              <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.currentPassword.message)}</p>
             )}
           </div>
 
@@ -151,7 +151,7 @@ export function ChangePasswordForm() {
               </button>
             </div>
             {form.formState.errors.newPassword && (
-              <p className="text-sm text-destructive">{translateError(form.formState.errors.newPassword.message)}</p>
+              <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.newPassword.message)}</p>
             )}
           </div>
 
@@ -184,7 +184,7 @@ export function ChangePasswordForm() {
               </button>
             </div>
             {form.formState.errors.confirmPassword && (
-              <p className="text-sm text-destructive">{translateError(form.formState.errors.confirmPassword.message)}</p>
+              <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.confirmPassword.message)}</p>
             )}
             {confirmPassword && !form.formState.errors.confirmPassword && newPassword === confirmPassword && (
               <p className="text-xs text-green-600">

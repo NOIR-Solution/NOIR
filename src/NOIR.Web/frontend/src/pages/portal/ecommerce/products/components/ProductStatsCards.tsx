@@ -66,7 +66,7 @@ const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <Card
-      className={`relative overflow-hidden border-border/40 backdrop-blur-xl bg-background/40 transition-all duration-700 hover:scale-[1.02] hover:shadow-2xl ${
+      className={`relative overflow-hidden border-border/40 backdrop-blur-xl bg-background/40 shadow-sm hover:shadow-lg transition-all duration-300 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
       style={{

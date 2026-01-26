@@ -54,7 +54,7 @@ export function TenantTable({ tenants, onEdit, onDelete, onResetPassword, loadin
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-xl border border-border/50 overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>

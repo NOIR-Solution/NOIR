@@ -27,6 +27,7 @@ import { useProductCategories } from '@/hooks/useProducts'
 import { CategoryDialog } from './components/CategoryDialog'
 import { DeleteCategoryDialog } from './components/DeleteCategoryDialog'
 import type { ProductCategoryListItem } from '@/types/product'
+import { PageHeader } from '@/components/ui/page-header'
 
 export default function ProductCategoriesPage() {
   const { t } = useTranslation('common')
@@ -52,28 +53,22 @@ export default function ProductCategoriesPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-      {/* Page Header with Glassmorphism */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 backdrop-blur-sm border border-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-105">
-            <FolderTree className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              {t('categories.title', 'Product Categories')}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">{t('categories.description', 'Organize products into categories')}</p>
-          </div>
-        </div>
-        {canCreateCategories && (
-          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setShowCreateDialog(true)}>
-            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-            {t('categories.newCategory', 'New Category')}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        icon={FolderTree}
+        title={t('categories.title', 'Product Categories')}
+        description={t('categories.description', 'Organize products into categories')}
+        responsive
+        action={
+          canCreateCategories && (
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setShowCreateDialog(true)}>
+              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+              {t('categories.newCategory', 'New Category')}
+            </Button>
+          )
+        }
+      />
 
-      <Card className="shadow-sm hover:shadow-lg transition-shadow duration-300">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
@@ -147,7 +142,7 @@ export default function ProductCategoriesPage() {
                           label: t('categories.addCategory', 'Add Category'),
                           onClick: () => setShowCreateDialog(true),
                         } : undefined}
-                        className="border-0 rounded-none"
+                        className="border-0 rounded-none px-4 py-12"
                       />
                     </TableCell>
                   </TableRow>

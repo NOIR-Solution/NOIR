@@ -125,7 +125,7 @@ export default function NotificationPreferences() {
         {/* Cards skeleton - matches actual content structure */}
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Card key={i}>
+            <Card key={i} className="shadow-sm hover:shadow-lg transition-all duration-300">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-10 w-10 rounded-lg" />
@@ -196,7 +196,7 @@ export default function NotificationPreferences() {
           const Icon = config.icon
 
           return (
-            <Card key={pref.category}>
+            <Card key={pref.category} className="shadow-sm hover:shadow-lg transition-all duration-300">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">

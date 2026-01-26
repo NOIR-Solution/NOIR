@@ -43,7 +43,7 @@ export function ProductGridView({ products, onDelete, onPublish, onArchive }: Pr
         return (
           <Card
             key={product.id}
-            className="group relative overflow-hidden border-border/60 bg-card/50 backdrop-blur-xl hover:border-border transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+            className="group relative overflow-hidden border-border/60 bg-card/50 backdrop-blur-xl hover:border-border shadow-sm hover:shadow-lg transition-all duration-300"
           >
             {/* Image Container */}
             <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted to-muted/50">

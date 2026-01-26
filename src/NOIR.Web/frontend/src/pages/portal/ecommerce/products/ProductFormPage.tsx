@@ -78,6 +78,7 @@ const productSchema = z.object({
   description: z.string().optional().nullable(),
   descriptionHtml: z.string().optional().nullable(),
   basePrice: z.coerce.number().min(0, 'Price must be non-negative'),
+  // Currency hardcoded to VND for Vietnam market - UI selector intentionally removed
   currency: z.string().default('VND'),
   categoryId: z.string().optional().nullable(),
   brand: z.string().optional().nullable(),
@@ -136,6 +137,7 @@ export default function ProductFormPage() {
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
+    mode: 'onBlur',
     defaultValues: {
       name: '',
       slug: '',
@@ -194,12 +196,14 @@ export default function ProductFormPage() {
       if (isEditing && id) {
         await updateProduct(id, {
           ...data,
+          currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
           categoryId: data.categoryId || null,
         })
         toast.success('Product updated successfully')
       } else {
         const newProduct = await createProduct({
           ...data,
+          currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
           categoryId: data.categoryId || null,
           variants: [],
           images: [],
@@ -524,66 +528,41 @@ export default function ProductFormPage() {
               </Card>
 
               {/* Pricing */}
-              <Card>
-                <CardHeader>
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle>Pricing</CardTitle>
-                  <CardDescription>Set the product price and currency</CardDescription>
+                  <CardDescription>Set the product base price (VND)</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="basePrice"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Base Price</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              type="number"
-                              min="0"
-                              step="1000"
-                              placeholder="0"
-                              disabled={isViewMode}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="currency"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Currency</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                  <FormField
+                    control={form.control}
+                    name="basePrice"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Base Price (VND)</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="number"
+                            min="0"
+                            step="1000"
+                            placeholder="0"
                             disabled={isViewMode}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="cursor-pointer">
-                                <SelectValue placeholder="Select currency" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="VND" className="cursor-pointer">VND</SelectItem>
-                              <SelectItem value="USD" className="cursor-pointer">USD</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Enter price in Vietnamese Dong (VND)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
               </Card>
 
               {/* Inventory */}
-              <Card>
-                <CardHeader>
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle>Inventory</CardTitle>
                   <CardDescription>Manage stock tracking and weight</CardDescription>
                 </CardHeader>
@@ -638,55 +617,13 @@ export default function ProductFormPage() {
                 </CardContent>
               </Card>
 
-              {/* SEO */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>SEO</CardTitle>
-                  <CardDescription>Search engine optimization settings</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="metaTitle"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Meta Title</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={field.value || ''} placeholder="SEO title" disabled={isViewMode} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="metaDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Meta Description</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            value={field.value || ''}
-                            placeholder="SEO description"
-                            rows={3}
-                            disabled={isViewMode}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
             </form>
           </Form>
 
           {/* Variants Section (only show when editing) */}
           {isEditing && (
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>Variants</CardTitle>
@@ -808,8 +745,8 @@ export default function ProductFormPage() {
         <div className="space-y-6">
           {/* Status */}
           {isEditing && product && (
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                 <CardTitle>Status</CardTitle>
               </CardHeader>
               <CardContent>
@@ -824,8 +761,8 @@ export default function ProductFormPage() {
           )}
 
           {/* Category */}
-          <Card>
-            <CardHeader>
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
               <CardTitle>Organization</CardTitle>
             </CardHeader>
             <CardContent>
@@ -863,10 +800,68 @@ export default function ProductFormPage() {
             </CardContent>
           </Card>
 
+          {/* SEO */}
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+              <CardTitle>SEO</CardTitle>
+              <CardDescription>Search engine optimization</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Form {...form}>
+                <FormField
+                  control={form.control}
+                  name="metaTitle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Meta Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          value={field.value || ''}
+                          placeholder="SEO title"
+                          maxLength={60}
+                          disabled={isViewMode}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {(field.value || '').length}/60 characters
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="metaDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Meta Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          value={field.value || ''}
+                          placeholder="SEO description"
+                          maxLength={160}
+                          rows={3}
+                          disabled={isViewMode}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {(field.value || '').length}/160 characters
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </Form>
+            </CardContent>
+          </Card>
+
           {/* Images (only show when editing) */}
           {isEditing && (
-            <Card>
-              <CardHeader>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                 <CardTitle>Images</CardTitle>
                 <CardDescription>Product gallery images</CardDescription>
               </CardHeader>

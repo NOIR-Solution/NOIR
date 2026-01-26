@@ -58,6 +58,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/utils/currency'
 import { PRODUCT_STATUS_CONFIG, DEFAULT_PRODUCT_PAGE_SIZE } from '@/lib/constants/product'
+import { PageHeader } from '@/components/ui/page-header'
 
 export default function ProductsPage() {
   const { t } = useTranslation('common')
@@ -130,28 +131,22 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-      {/* Page Header with Glassmorphism */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 backdrop-blur-sm border border-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-105">
-            <Package className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              {t('products.title', 'Products')}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">{t('products.description', 'Manage your product catalog')}</p>
-          </div>
-        </div>
-        {canCreateProducts && (
-          <Link to="/portal/ecommerce/products/new">
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
-              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-              {t('products.newProduct', 'New Product')}
-            </Button>
-          </Link>
-        )}
-      </div>
+      <PageHeader
+        icon={Package}
+        title={t('products.title', 'Products')}
+        description={t('products.description', 'Manage your product catalog')}
+        responsive
+        action={
+          canCreateProducts && (
+            <Link to="/portal/ecommerce/products/new">
+              <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
+                <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+                {t('products.newProduct', 'New Product')}
+              </Button>
+            </Link>
+          )
+        }
+      />
 
       {/* Stats Dashboard */}
       <ProductStatsCards
@@ -288,7 +283,7 @@ export default function ProductsPage() {
                   label: t('products.addProduct', 'Add Product'),
                   onClick: () => navigate('/portal/ecommerce/products/new'),
                 } : undefined}
-                className="border-0 rounded-none py-12"
+                className="border-0 rounded-none px-4 py-12"
               />
             ) : (
               <EnhancedProductGridView
@@ -349,7 +344,7 @@ export default function ProductsPage() {
                           label: t('products.addProduct', 'Add Product'),
                           onClick: () => navigate('/portal/ecommerce/products/new'),
                         } : undefined}
-                        className="border-0 rounded-none py-12"
+                        className="border-0 rounded-none px-4 py-12"
                       />
                     </TableCell>
                   </TableRow>

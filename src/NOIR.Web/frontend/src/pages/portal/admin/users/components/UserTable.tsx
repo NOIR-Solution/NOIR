@@ -85,7 +85,7 @@ export function UserTable({
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-xl border border-border/50 overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>

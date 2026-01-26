@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { usePaymentGateways } from '@/hooks/usePaymentGateways'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -78,8 +79,8 @@ export function PaymentGatewaysTab() {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-64" />
         </CardHeader>
@@ -96,8 +97,8 @@ export function PaymentGatewaysTab() {
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
           <CardTitle>{t('paymentGateways.title', 'Payment Gateways')}</CardTitle>
           <CardDescription>
             {t('paymentGateways.description', 'Configure payment methods for your store')}
@@ -111,9 +112,9 @@ export function PaymentGatewaysTab() {
               variant="outline"
               size="sm"
               onClick={refresh}
-              className="mt-4 cursor-pointer"
+              className="mt-4 cursor-pointer group hover:shadow-md transition-all duration-300"
             >
-              <RefreshCw className="h-4 w-4 mr-2" />
+              <RefreshCw className="h-4 w-4 mr-2 transition-transform duration-300 group-hover:rotate-180" />
               {t('buttons.retry', 'Retry')}
             </Button>
           </div>
@@ -123,8 +124,8 @@ export function PaymentGatewaysTab() {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>{t('paymentGateways.title', 'Payment Gateways')}</CardTitle>
@@ -137,12 +138,12 @@ export function PaymentGatewaysTab() {
             size="sm"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="cursor-pointer"
+            className="cursor-pointer group hover:shadow-md transition-all duration-300"
           >
             {isRefreshing ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
-              <RefreshCw className="h-4 w-4 mr-2" />
+              <RefreshCw className={cn('h-4 w-4 mr-2 transition-transform duration-300', !isRefreshing && 'group-hover:rotate-180')} />
             )}
             {t('buttons.refresh', 'Refresh')}
           </Button>

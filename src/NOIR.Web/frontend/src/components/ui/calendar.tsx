@@ -49,7 +49,7 @@ function Calendar({
         range_end: 'day-range-end',
         selected:
           'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground font-semibold',
-        today: 'bg-accent text-accent-foreground font-semibold',
+        today: 'bg-primary/20 text-primary font-semibold border-2 border-primary',
         outside:
           'day-outside text-muted-foreground/40 aria-selected:bg-accent/50 aria-selected:text-muted-foreground',
         disabled: 'text-muted-foreground opacity-50',

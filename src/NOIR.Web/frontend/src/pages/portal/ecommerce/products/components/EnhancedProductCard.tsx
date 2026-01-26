@@ -52,7 +52,7 @@ export function EnhancedProductCard({
       className="w-full"
     >
       <Card
-        className="group relative overflow-hidden border-border/60 bg-background/50 backdrop-blur-xl shadow-lg hover:shadow-2xl transition-all duration-500 p-0"
+        className="group relative overflow-hidden border-border/60 bg-background/50 backdrop-blur-xl shadow-sm hover:shadow-lg transition-all duration-300 p-0"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -159,7 +159,7 @@ export function EnhancedProductCard({
           {/* Out of Stock Overlay */}
           {!product.inStock && (
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-              <Badge variant="secondary" className="text-lg px-6 py-2 shadow-xl">
+              <Badge variant="secondary" className="text-lg px-6 py-2 shadow-lg">
                 {t('products.outOfStock', 'Out of Stock')}
               </Badge>
             </div>

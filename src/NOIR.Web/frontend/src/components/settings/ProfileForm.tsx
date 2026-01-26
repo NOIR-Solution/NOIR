@@ -190,7 +190,7 @@ export function ProfileForm() {
                   aria-invalid={!!form.formState.errors.firstName}
                 />
                 {form.formState.errors.firstName && (
-                  <p className="text-sm text-destructive">{translateError(form.formState.errors.firstName.message)}</p>
+                  <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.firstName.message)}</p>
                 )}
               </div>
 
@@ -206,7 +206,7 @@ export function ProfileForm() {
                   aria-invalid={!!form.formState.errors.lastName}
                 />
                 {form.formState.errors.lastName && (
-                  <p className="text-sm text-destructive">{translateError(form.formState.errors.lastName.message)}</p>
+                  <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.lastName.message)}</p>
                 )}
               </div>
             </div>
@@ -224,7 +224,7 @@ export function ProfileForm() {
                 aria-invalid={!!form.formState.errors.displayName}
               />
               {form.formState.errors.displayName && (
-                <p className="text-sm text-destructive">{translateError(form.formState.errors.displayName.message)}</p>
+                <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.displayName.message)}</p>
               )}
               <p className="text-xs text-muted-foreground">
                 {t('profile.displayNameHelp')}
@@ -273,7 +273,7 @@ export function ProfileForm() {
                 />
               </div>
               {form.formState.errors.phoneNumber && (
-                <p className="text-sm text-destructive">{translateError(form.formState.errors.phoneNumber.message)}</p>
+                <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.phoneNumber.message)}</p>
               )}
             </div>
           </div>

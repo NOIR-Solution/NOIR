@@ -5,6 +5,7 @@ import { usePageContext } from '@/hooks/usePageContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { PageHeader } from '@/components/ui/page-header'
 import { Pagination } from '@/components/ui/pagination'
 import { TenantTable } from './components/TenantTable'
 import { CreateTenantDialog } from './components/CreateTenantDialog'
@@ -43,20 +44,14 @@ export default function TenantsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-xl shadow-sm">
-            <Building className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{t('tenants.title')}</h1>
-            <p className="text-muted-foreground">{t('tenants.description')}</p>
-          </div>
-        </div>
-        <CreateTenantDialog onSuccess={refresh} />
-      </div>
+      <PageHeader
+        icon={Building}
+        title={t('tenants.title')}
+        description={t('tenants.description')}
+        action={<CreateTenantDialog onSuccess={refresh} />}
+      />
 
-      <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">

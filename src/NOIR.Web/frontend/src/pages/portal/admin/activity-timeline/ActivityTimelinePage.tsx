@@ -45,6 +45,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
+import { PageHeader } from '@/components/ui/page-header'
+import { EmptyState } from '@/components/ui/empty-state'
 import {
   searchActivityTimeline,
   getPageContexts,
@@ -315,29 +317,20 @@ export default function ActivityTimelinePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Activity className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {t('activityTimeline.title', 'Activity Timeline')}
-            </h1>
-            <p className="text-muted-foreground">
-              {t('activityTimeline.description', 'Track and audit all user actions')}
-            </p>
-          </div>
-        </div>
-        <Button variant="outline" onClick={handleRefresh} disabled={loading}>
-          <RefreshCw className={cn('mr-2 h-4 w-4', loading && 'animate-spin')} />
-          {t('buttons.refresh', 'Refresh')}
-        </Button>
-      </div>
+      <PageHeader
+        icon={Activity}
+        title={t('activityTimeline.title', 'Activity Timeline')}
+        description={t('activityTimeline.description', 'Track and audit all user actions')}
+        action={
+          <Button variant="outline" className="group hover:shadow-md transition-all duration-300" onClick={handleRefresh} disabled={loading}>
+            <RefreshCw className={cn('mr-2 h-4 w-4 transition-transform duration-300', loading ? 'animate-spin' : 'group-hover:rotate-180')} />
+            {t('buttons.refresh', 'Refresh')}
+          </Button>
+        }
+      />
 
       {/* Filters Card */}
-      <Card>
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4">
           <div className="space-y-3">
             {/* Header with title and results count */}
@@ -544,10 +537,11 @@ export default function ActivityTimelinePage() {
                 </div>
               ))
             ) : entries.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{t('activityTimeline.noActivity', 'No activity found')}</p>
-              </div>
+              <EmptyState
+                icon={Activity}
+                title={t('activityTimeline.noActivity', 'No activity found')}
+                description={t('activityTimeline.noActivityDescription', 'Activity will appear here when users perform actions in the system.')}
+              />
             ) : (
               entries.map((entry, index) => (
                 <TimelineEntry

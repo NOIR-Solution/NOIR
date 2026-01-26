@@ -61,6 +61,7 @@ export function CategoryDialog({ open, onOpenChange, category, onSuccess }: Cate
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
+    mode: 'onBlur',
     defaultValues: {
       name: '',
       slug: '',

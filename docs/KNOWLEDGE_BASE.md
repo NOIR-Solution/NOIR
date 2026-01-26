@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
 **Last Updated:** 2026-01-26
-**Version:** 2.5
+**Version:** 2.6
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -1184,6 +1184,70 @@ The `apiClient.ts` provides user-friendly error messages for HTTP status codes:
 - **403 Forbidden**: Shows "You don't have permission to perform this action." (i18n: `messages.permissionDenied`)
 - **401 Unauthorized**: Shows "Your session has expired. Please sign in again." (i18n: `messages.sessionExpired`)
 
+#### Form Validation Standards
+
+**Standard Pattern:** All forms MUST use `react-hook-form` + Zod + shadcn/ui Form components with `mode: 'onBlur'`.
+
+**Why `onBlur`:**
+- Validates after user finishes typing (better UX)
+- Immediate feedback before form submission
+- Less intrusive than `onChange`
+- Consistent behavior across all forms
+
+**Required Pattern:**
+
+```tsx
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+
+// 1. Define Zod schema
+const formSchema = z.object({
+  email: z.string().min(1, 'Email is required').email('Invalid email'),
+})
+
+// 2. Initialize form with mode: 'onBlur'
+const form = useForm<z.infer<typeof formSchema>>({
+  resolver: zodResolver(formSchema),
+  mode: 'onBlur',  // REQUIRED
+  defaultValues: { email: '' },
+})
+
+// 3. Use FormField components
+<Form {...form}>
+  <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
+    <FormField
+      control={form.control}
+      name="email"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Email *</FormLabel>
+          <FormControl>
+            <Input type="text" {...field} />
+          </FormControl>
+          <FormMessage /> {/* Auto-displays errors */}
+        </FormItem>
+      )}
+    />
+  </form>
+</Form>
+```
+
+**Key Benefits:**
+- `FormLabel` auto-turns red on error
+- `FormMessage` auto-displays validation errors
+- Type safety from Zod schema
+- Consistent validation timing
+
+**Anti-Pattern (DEPRECATED):** Manual `useState` for errors/touched state.
+
+**Hook:** Use `useValidatedForm` for complex forms (defaults to `mode: 'onBlur'`).
+
+**Error Message Styling:** All error messages use `text-sm font-medium text-destructive` for consistency with `FormMessage`.
+
+**Full Documentation:** [Frontend Architecture - Form Validation Standards](frontend/architecture.md#form-validation-standards)
+
 ---
 
 ## Cross-Cutting Concerns
@@ -1544,4 +1608,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-01-19 | Total Tests: 2,050+ | Features: 11 | Endpoints: 14 | Entities: 19*
+*Updated: 2026-01-26 | Total Tests: 5,597+ | Features: 19 | Endpoints: 100+ | Entities: 36*

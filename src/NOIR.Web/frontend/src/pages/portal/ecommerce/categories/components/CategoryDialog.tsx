@@ -74,6 +74,7 @@ export function CategoryDialog({
 
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
+    mode: 'onBlur',
     defaultValues: {
       name: '',
       slug: '',

@@ -438,8 +438,8 @@ export default function EmailTemplateEditPage() {
         {/* Main Editor */}
         <div className="lg:col-span-2 space-y-6">
           {/* Subject */}
-          <Card>
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="pb-3 backdrop-blur-sm bg-background/95 rounded-t-lg">
               <CardTitle className="text-base">{t('emailTemplates.subject')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -492,14 +492,14 @@ export default function EmailTemplateEditPage() {
                 </DropdownMenu>
               </div>
               {errors.subject && (
-                <p className="text-sm text-destructive">{errors.subject}</p>
+                <p className="text-sm font-medium text-destructive">{errors.subject}</p>
               )}
             </CardContent>
           </Card>
 
           {/* HTML Body Editor */}
-          <Card>
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="pb-3 backdrop-blur-sm bg-background/95 rounded-t-lg">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">{t('emailTemplates.htmlBody')}</CardTitle>
                 <DropdownMenu>
@@ -633,15 +633,15 @@ export default function EmailTemplateEditPage() {
                 }}
               />
               {errors.htmlBody && (
-                <p className="text-sm text-destructive mt-2">{errors.htmlBody}</p>
+                <p className="text-sm font-medium text-destructive mt-2">{errors.htmlBody}</p>
               )}
             </CardContent>
           </Card>
 
           {/* Plain Text Body (Collapsible) */}
-          <Card>
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader
-              className="pb-3 cursor-pointer"
+              className="pb-3 cursor-pointer backdrop-blur-sm bg-background/95 rounded-t-lg"
               onClick={() => setShowPlainText(!showPlainText)}
             >
               <div className="flex items-center justify-between">
@@ -678,8 +678,8 @@ export default function EmailTemplateEditPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Template Info */}
-          <Card>
-            <CardHeader>
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
               <CardTitle className="text-base">Template Info</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
@@ -729,8 +729,8 @@ export default function EmailTemplateEditPage() {
           </Card>
 
           {/* Available Variables */}
-          <Card>
-            <CardHeader>
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
               <CardTitle className="text-base">{t('emailTemplates.variables')}</CardTitle>
               <CardDescription>
                 {t('emailTemplates.variablesHint', 'Drag to editor or click to copy. Type {{ in editor for autocomplete.')}
@@ -769,8 +769,8 @@ export default function EmailTemplateEditPage() {
           </Card>
 
           {/* Description */}
-          <Card>
-            <CardHeader>
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
               <CardTitle className="text-base">{t('labels.description')}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -784,7 +784,7 @@ export default function EmailTemplateEditPage() {
                 className={`w-full h-24 p-3 border rounded-lg resize-none text-sm bg-background text-foreground ${errors.description ? 'border-destructive' : ''}`}
               />
               {errors.description && (
-                <p className="text-sm text-destructive mt-2">{errors.description}</p>
+                <p className="text-sm font-medium text-destructive mt-2">{errors.description}</p>
               )}
             </CardContent>
           </Card>

@@ -395,6 +395,157 @@ const [isDeleting, setIsDeleting] = useState(false)
 </AlertDialog>
 ```
 
+## Form Validation Standards
+
+**Last Updated:** 2026-01-26
+
+### Validation Timing: `mode: 'onBlur'`
+
+All forms MUST use `mode: 'onBlur'` for consistent real-time validation. This validates fields when the user leaves (blurs) each input, providing immediate feedback without interrupting typing.
+
+**Why `onBlur` is the standard:**
+- **Better UX**: Validates after user finishes typing, not during
+- **Immediate feedback**: Shows errors before form submission
+- **Less intrusive**: Doesn't show errors while user is still typing
+- **Consistent behavior**: All forms behave the same way
+
+**Available modes (for reference):**
+| Mode | When it validates | Use case |
+|------|-------------------|----------|
+| `onBlur` | When field loses focus | **Standard - use this** |
+| `onChange` | Every keystroke | Too aggressive, poor UX |
+| `onSubmit` | Only on form submit | Too late, poor feedback |
+| `onTouched` | After first blur, then onChange | Alternative option |
+| `all` | All of the above | Too aggressive |
+
+### Standard Pattern: react-hook-form + Zod + FormField
+
+All forms MUST use react-hook-form with Zod validation and shadcn/ui Form components:
+
+```tsx
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+
+// 1. Define Zod schema
+const formSchema = z.object({
+  email: z.string().min(1, 'Email is required').email('Invalid email'),
+  name: z.string().min(1, 'Name is required').max(100, 'Max 100 characters'),
+})
+
+type FormValues = z.infer<typeof formSchema>
+
+// 2. Initialize form with mode: 'onBlur'
+const form = useForm<FormValues>({
+  resolver: zodResolver(formSchema),
+  mode: 'onBlur',  // REQUIRED - validates on blur
+  defaultValues: {
+    email: '',
+    name: '',
+  },
+})
+
+// 3. Use FormField components (labels auto-turn red on error)
+<Form {...form}>
+  <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
+    <FormField
+      control={form.control}
+      name="email"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Email *</FormLabel>
+          <FormControl>
+            <Input type="text" placeholder="user@example.com" {...field} />
+          </FormControl>
+          <FormMessage /> {/* Auto-displays validation errors */}
+        </FormItem>
+      )}
+    />
+  </form>
+</Form>
+```
+
+### Benefits of This Pattern
+
+1. **Auto red labels**: `FormLabel` automatically adds `text-destructive` class on error
+2. **Auto error messages**: `FormMessage` displays validation errors automatically
+3. **Type safety**: Form values inferred from Zod schema
+4. **Consistent validation**: Same behavior across all forms
+5. **Less boilerplate**: No manual error/touched state management
+
+### Anti-Pattern: Manual Error State (DEPRECATED)
+
+Do NOT use manual `useState` for errors/touched state:
+
+```tsx
+// ❌ WRONG - Don't do this
+const [errors, setErrors] = useState({})
+const [touched, setTouched] = useState({})
+
+const handleBlur = (field, value) => {
+  setTouched(prev => ({ ...prev, [field]: true }))
+  const error = validateField(field, value)
+  setErrors(prev => ({ ...prev, [field]: error }))
+}
+
+<Label className={touched.email && errors.email ? 'text-destructive' : ''}>
+  Email
+</Label>
+```
+
+This pattern requires:
+- 100+ lines of boilerplate code
+- Manual label color management
+- Manual error state tracking
+- More bugs and inconsistencies
+
+### Custom Hook: useValidatedForm
+
+For complex forms, use the `useValidatedForm` hook which defaults to `mode: 'onBlur'`:
+
+```tsx
+import { useValidatedForm } from '@/hooks/useValidatedForm'
+import { createTenantSchema } from '@/validation/schemas.generated'
+
+const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm({
+  schema: createTenantSchema,
+  defaultValues: { identifier: '', name: '' },
+  // mode: 'onBlur' is the default
+  onSubmit: async (data) => {
+    await createTenant(data)
+  },
+})
+```
+
+### Checklist for New Forms
+
+- [ ] Uses `react-hook-form` with `zodResolver`
+- [ ] Has `mode: 'onBlur'` in useForm options
+- [ ] Uses `Form`, `FormField`, `FormLabel`, `FormControl`, `FormMessage` components
+- [ ] Has `noValidate` on form element (disables browser validation)
+- [ ] Uses `type="text"` for email fields (avoids browser tooltip)
+- [ ] Zod schema matches backend FluentValidation rules
+
+### Migration Guide for Manual Forms
+
+If you encounter a form using manual error state, migrate it to the standard pattern:
+
+1. Replace `useState` for errors/touched with `useForm`
+2. Add `mode: 'onBlur'` to useForm options
+3. Replace `<Label>` with `<FormLabel>` inside `<FormField>`
+4. Replace manual error display with `<FormMessage />`
+5. Remove manual `handleBlur` and validation functions
+6. Remove className conditionals for error styling
+
 ## Code Quality
 
 - Run `npm run lint` before committing

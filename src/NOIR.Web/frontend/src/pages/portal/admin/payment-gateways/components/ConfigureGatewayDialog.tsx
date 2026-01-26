@@ -143,6 +143,7 @@ export function ConfigureGatewayDialog({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const form = useForm<FieldValues>({
     resolver: zodResolver(formSchema) as any,
+    mode: 'onBlur',
     defaultValues: buildDefaultValues(),
   })
 

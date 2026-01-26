@@ -115,7 +115,7 @@ export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
 
   if (loading) {
     return (
-      <Card>
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardContent className="py-8">
           <div className="animate-pulse space-y-4">
             <div className="h-4 w-48 bg-muted rounded" />
@@ -129,8 +129,8 @@ export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
         <CardTitle>{t('tenantSettings.regional.title')}</CardTitle>
         <CardDescription>{t('tenantSettings.regional.description')}</CardDescription>
       </CardHeader>

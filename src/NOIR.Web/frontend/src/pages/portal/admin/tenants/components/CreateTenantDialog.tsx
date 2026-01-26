@@ -68,8 +68,8 @@ export function CreateTenantDialog({ onSuccess }: CreateTenantDialogProps) {
   return (
     <Credenza open={open} onOpenChange={setOpen}>
       <CredenzaTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
+        <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
+          <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
           {t('tenants.createNew')}
         </Button>
       </CredenzaTrigger>
