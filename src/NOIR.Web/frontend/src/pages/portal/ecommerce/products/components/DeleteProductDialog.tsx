@@ -34,14 +34,17 @@ export function DeleteProductDialog({
     if (!product) return
 
     setIsDeleting(true)
-    const result = await onConfirm(product.id)
-    setIsDeleting(false)
+    try {
+      const result = await onConfirm(product.id)
 
-    if (result.success) {
-      toast.success(t('products.deleteSuccess', { name: product.name, defaultValue: `Product "${product.name}" deleted successfully` }))
-      onOpenChange(false)
-    } else {
-      toast.error(result.error || t('products.deleteFailed', 'Failed to delete product'))
+      if (result.success) {
+        toast.success(t('products.deleteSuccess', { name: product.name, defaultValue: `Product "${product.name}" deleted successfully` }))
+        onOpenChange(false)
+      } else {
+        toast.error(result.error || t('products.deleteFailed', 'Failed to delete product'))
+      }
+    } finally {
+      setIsDeleting(false)
     }
   }
 

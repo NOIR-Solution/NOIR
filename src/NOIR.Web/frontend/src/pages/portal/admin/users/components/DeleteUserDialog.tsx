@@ -28,18 +28,21 @@ export function DeleteUserDialog({ user, open, onOpenChange, onConfirm }: Delete
     if (!user) return
 
     setLoading(true)
-    const result = await onConfirm(user.id)
-    setLoading(false)
+    try {
+      const result = await onConfirm(user.id)
 
-    if (result.success) {
-      toast.success(
-        user.isLocked
-          ? t('users.unlockSuccess', 'User unlocked successfully')
-          : t('users.lockSuccess', 'User locked successfully')
-      )
-      onOpenChange(false)
-    } else {
-      toast.error(result.error || t('messages.operationFailed', 'Operation failed'))
+      if (result.success) {
+        toast.success(
+          user.isLocked
+            ? t('users.unlockSuccess', 'User unlocked successfully')
+            : t('users.lockSuccess', 'User locked successfully')
+        )
+        onOpenChange(false)
+      } else {
+        toast.error(result.error || t('messages.operationFailed', 'Operation failed'))
+      }
+    } finally {
+      setLoading(false)
     }
   }
 

@@ -32,14 +32,17 @@ export function DeleteCategoryDialog({
     if (!category) return
 
     setIsDeleting(true)
-    const result = await onConfirm(category.id)
-    setIsDeleting(false)
+    try {
+      const result = await onConfirm(category.id)
 
-    if (result.success) {
-      toast.success(`Category "${category.name}" deleted successfully`)
-      onOpenChange(false)
-    } else {
-      toast.error(result.error || 'Failed to delete category')
+      if (result.success) {
+        toast.success(`Category "${category.name}" deleted successfully`)
+        onOpenChange(false)
+      } else {
+        toast.error(result.error || 'Failed to delete category')
+      }
+    } finally {
+      setIsDeleting(false)
     }
   }
 
