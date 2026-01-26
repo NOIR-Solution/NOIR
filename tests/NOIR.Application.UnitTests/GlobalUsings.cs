@@ -102,9 +102,12 @@ global using NOIR.Domain.Specifications;
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
 global using NOIR.Domain.Entities.Cart;
+global using NOIR.Domain.Entities.Checkout;
+global using NOIR.Domain.Entities.Order;
 global using NOIR.Domain.Entities.Product;
 global using NOIR.Domain.Enums;
 global using NOIR.Domain.Interfaces;
+// Note: NOIR.Domain.ValueObjects excluded due to Address conflict with FluentEmail.Core.Models.Address
 
 // NOIR Infrastructure
 global using NOIR.Infrastructure;

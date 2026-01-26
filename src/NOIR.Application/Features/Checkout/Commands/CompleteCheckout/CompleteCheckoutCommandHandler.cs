@@ -91,8 +91,8 @@ public class CompleteCheckoutCommandHandler
                 session.MarkAsPaymentProcessing();
             }
 
-            // Generate order number
-            var orderNumber = GenerateOrderNumber();
+            // Generate order number using sequence
+            var orderNumber = await GenerateOrderNumberAsync(_tenantInfo.Id, cancellationToken);
 
             // Create order
             var order = Domain.Entities.Order.Order.Create(
@@ -182,11 +182,27 @@ public class CompleteCheckoutCommandHandler
         }
     }
 
-    private static string GenerateOrderNumber()
+    private async Task<string> GenerateOrderNumberAsync(string? tenantId, CancellationToken cancellationToken)
     {
-        // Format: ORD-YYYYMMDD-XXXX (where XXXX is random hex)
-        var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");
-        var randomPart = Guid.NewGuid().ToString("N")[..4].ToUpperInvariant();
-        return $"ORD-{datePart}-{randomPart}";
+        // Format: ORD-YYYYMMDD-XXXX where XXXX is a daily sequence number
+        var today = DateTime.UtcNow;
+        var datePrefix = $"ORD-{today:yyyyMMdd}-";
+
+        // Get latest order number for today
+        var spec = new LatestOrderNumberTodaySpec(datePrefix, tenantId);
+        var latestOrder = await _orderRepository.FirstOrDefaultAsync(spec, cancellationToken);
+
+        int sequence = 1;
+        if (latestOrder is not null)
+        {
+            // Extract sequence number from latest order
+            var lastSequence = latestOrder.OrderNumber.Split('-').Last();
+            if (int.TryParse(lastSequence, out var lastNum))
+            {
+                sequence = lastNum + 1;
+            }
+        }
+
+        return $"{datePrefix}{sequence:D4}";
     }
 }

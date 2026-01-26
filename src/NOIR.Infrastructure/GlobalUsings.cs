@@ -131,6 +131,8 @@ global using NOIR.Application.Features.LegalPages.Queries.GetLegalPage;
 global using NOIR.Application.Features.Products.DTOs;
 global using NOIR.Application.Features.Products.Queries.GetProductById;
 global using NOIR.Application.Features.Products.Queries.GetProductCategoryById;
+global using NOIR.Application.Features.Orders.DTOs;
+global using NOIR.Application.Features.Orders.Queries.GetOrderById;
 global using NOIR.Application.Features.PlatformSettings.DTOs;
 global using NOIR.Application.Features.PlatformSettings.Queries.GetSmtpSettings;
 global using NOIR.Application.Features.TenantSettings.DTOs;
