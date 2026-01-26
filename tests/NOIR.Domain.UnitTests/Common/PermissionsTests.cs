@@ -266,6 +266,8 @@ public class PermissionsTests
             + Permissions.Groups.BlogPosts.Count
             + Permissions.Groups.BlogCategories.Count
             + Permissions.Groups.BlogTags.Count
+            + Permissions.Groups.Products.Count
+            + Permissions.Groups.ProductCategories.Count
             + Permissions.Groups.Payments.Count;
 
         // Assert

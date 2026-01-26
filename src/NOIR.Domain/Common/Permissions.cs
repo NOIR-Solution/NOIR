@@ -69,6 +69,19 @@ public static class Permissions
     public const string BlogTagsUpdate = "blog-tags:update";
     public const string BlogTagsDelete = "blog-tags:delete";
 
+    // Products
+    public const string ProductsRead = "products:read";
+    public const string ProductsCreate = "products:create";
+    public const string ProductsUpdate = "products:update";
+    public const string ProductsDelete = "products:delete";
+    public const string ProductsPublish = "products:publish";
+
+    // Product Categories
+    public const string ProductCategoriesRead = "product-categories:read";
+    public const string ProductCategoriesCreate = "product-categories:create";
+    public const string ProductCategoriesUpdate = "product-categories:update";
+    public const string ProductCategoriesDelete = "product-categories:delete";
+
     // Legal Pages
     public const string LegalPagesRead = "legal-pages:read";
     public const string LegalPagesUpdate = "legal-pages:update";
@@ -123,6 +136,12 @@ public static class Permissions
         public static readonly IReadOnlyList<string> BlogTags =
             [BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete];
 
+        public static readonly IReadOnlyList<string> Products =
+            [ProductsRead, ProductsCreate, ProductsUpdate, ProductsDelete, ProductsPublish];
+
+        public static readonly IReadOnlyList<string> ProductCategories =
+            [ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete];
+
         public static readonly IReadOnlyList<string> LegalPages =
             [LegalPagesRead, LegalPagesUpdate];
 
@@ -160,6 +179,10 @@ public static class Permissions
         BlogCategoriesRead, BlogCategoriesCreate, BlogCategoriesUpdate, BlogCategoriesDelete,
         // Blog Tags
         BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete,
+        // Products
+        ProductsRead, ProductsCreate, ProductsUpdate, ProductsDelete, ProductsPublish,
+        // Product Categories
+        ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete,
         // Legal Pages
         LegalPagesRead, LegalPagesUpdate,
         // Tenant Settings
@@ -213,6 +236,9 @@ public static class Permissions
         BlogPostsRead, BlogPostsCreate, BlogPostsUpdate, BlogPostsDelete, BlogPostsPublish,
         BlogCategoriesRead, BlogCategoriesCreate, BlogCategoriesUpdate, BlogCategoriesDelete,
         BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete,
+        // Products within tenant
+        ProductsRead, ProductsCreate, ProductsUpdate, ProductsDelete, ProductsPublish,
+        ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete,
         // Payments within tenant
         PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
         PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead
@@ -296,6 +322,16 @@ public static class Permissions
             BlogTagsCreate,
             BlogTagsUpdate,
             BlogTagsDelete,
+            // Products within tenant
+            ProductsRead,
+            ProductsCreate,
+            ProductsUpdate,
+            ProductsDelete,
+            ProductsPublish,
+            ProductCategoriesRead,
+            ProductCategoriesCreate,
+            ProductCategoriesUpdate,
+            ProductCategoriesDelete,
             // Payments within tenant
             PaymentsRead,
             PaymentsCreate,

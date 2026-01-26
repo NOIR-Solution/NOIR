@@ -177,7 +177,7 @@
     "test": "dotnet test src/NOIR.sln",
     "test_coverage": "dotnet test src/NOIR.sln --collect:\"XPlat Code Coverage\"",
     "start_dev": "./start-dev.sh",
-    "migrations_add": "dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/ApplicationDbContext",
+    "migrations_add": "dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/App",
     "migrations_update": "dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext",
     "frontend_install": "cd src/NOIR.Web/frontend && npm install",
     "frontend_dev": "cd src/NOIR.Web/frontend && npm run dev",

@@ -290,6 +290,12 @@ public static class DependencyInjection
         services.AddBeforeStateResolver<LegalPageDto, GetLegalPageQuery>(
             targetId => new GetLegalPageQuery(Guid.Parse(targetId.ToString()!)));
 
+        services.AddBeforeStateResolver<ProductDto, GetProductByIdQuery>(
+            targetId => new GetProductByIdQuery(Id: Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<ProductCategoryDto, GetProductCategoryByIdQuery>(
+            targetId => new GetProductCategoryByIdQuery(Guid.Parse(targetId.ToString()!)));
+
         // Settings DTOs use parameterless query resolvers (tenant-scoped singletons, no ID needed)
         services.AddSettingsBeforeStateResolver<SmtpSettingsDto, GetSmtpSettingsQuery>();
         services.AddSettingsBeforeStateResolver<BrandingSettingsDto, GetBrandingSettingsQuery>();

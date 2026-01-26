@@ -84,7 +84,7 @@ Quick reference: `/sc:help` | `/sc:recommend "your task"`
 
 ### Database Migrations
 
-18. ✅ **EF Core migrations MUST specify --context** - ALWAYS use `--context ApplicationDbContext` or `--context TenantStoreDbContext` when running `dotnet ef migrations` commands. This project has multiple DbContexts and omitting `--context` will cause errors. Also specify `--output-dir Migrations/ApplicationDbContext` or `--output-dir Migrations/TenantStoreDb` to organize migrations properly. **IMPORTANT:** After generating migrations, the auto-generated files will have a namespace conflict (`NOIR.Infrastructure.Migrations.ApplicationDbContext` namespace vs `ApplicationDbContext` class name). You MUST manually fix the `[DbContext(typeof(ApplicationDbContext))]` attributes to use `typeof(Persistence.ApplicationDbContext)` instead. See Quick Reference for examples.
+18. ✅ **EF Core migrations MUST specify --context** - ALWAYS use `--context ApplicationDbContext` or `--context TenantStoreDbContext` when running `dotnet ef migrations` commands. This project has multiple DbContexts and omitting `--context` will cause errors. Specify `--output-dir Migrations/App` for ApplicationDbContext or `--output-dir Migrations/Tenant` for TenantStoreDbContext. See Quick Reference for examples.
 
 ---
 
@@ -121,21 +121,26 @@ dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
 **CRITICAL: Always specify `--context`**
 
 ```bash
-# ApplicationDbContext (main database)
+# ApplicationDbContext (main database) -> Migrations/App/
 dotnet ef migrations add NAME \
   --project src/NOIR.Infrastructure \
   --startup-project src/NOIR.Web \
   --context ApplicationDbContext \
-  --output-dir Migrations/ApplicationDbContext
+  --output-dir Migrations/App
 
-# TenantStoreDbContext (tenant store)
+# TenantStoreDbContext (tenant store) -> Migrations/Tenant/
 dotnet ef migrations add NAME \
   --project src/NOIR.Infrastructure \
   --startup-project src/NOIR.Web \
   --context TenantStoreDbContext \
-  --output-dir Migrations/TenantStoreDb
+  --output-dir Migrations/Tenant
 
-# Update database
+# Update database (apply both contexts)
+dotnet ef database update \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context TenantStoreDbContext
+
 dotnet ef database update \
   --project src/NOIR.Infrastructure \
   --startup-project src/NOIR.Web \
@@ -148,19 +153,21 @@ dotnet ef database drop \
   --context ApplicationDbContext \
   --force
 
-rm -rf src/NOIR.Infrastructure/Migrations/ApplicationDbContext/*.cs
+rm -rf src/NOIR.Infrastructure/Migrations/App/*.cs
+rm -rf src/NOIR.Infrastructure/Migrations/Tenant/*.cs
+
+dotnet ef migrations add InitialCreate \
+  --project src/NOIR.Infrastructure \
+  --startup-project src/NOIR.Web \
+  --context TenantStoreDbContext \
+  --output-dir Migrations/Tenant
 
 dotnet ef migrations add InitialCreate \
   --project src/NOIR.Infrastructure \
   --startup-project src/NOIR.Web \
   --context ApplicationDbContext \
-  --output-dir Migrations/ApplicationDbContext
+  --output-dir Migrations/App
 ```
-
-**⚠️ IMPORTANT:** After migration generation, manually fix namespace conflict in generated files:
-- Change: `[DbContext(typeof(ApplicationDbContext))]`
-- To: `[DbContext(typeof(Persistence.ApplicationDbContext))]`
-- Files: `*_InitialCreate.Designer.cs` and `ApplicationDbContextModelSnapshot.cs`
 
 ### Admin Credentials
 

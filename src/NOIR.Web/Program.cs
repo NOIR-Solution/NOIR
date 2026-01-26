@@ -457,6 +457,9 @@ app.MapDeveloperLogEndpoints();
 app.MapBlogEndpoints();
 app.MapFeedEndpoints();
 app.MapPaymentEndpoints();
+app.MapProductCategoryEndpoints();
+app.MapProductEndpoints();
+app.MapCartEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");

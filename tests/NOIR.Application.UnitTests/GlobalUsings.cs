@@ -101,6 +101,8 @@ global using NOIR.Domain.Specifications;
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Entities.Cart;
+global using NOIR.Domain.Entities.Product;
 global using NOIR.Domain.Enums;
 global using NOIR.Domain.Interfaces;
 

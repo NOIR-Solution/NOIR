@@ -128,6 +128,9 @@ global using NOIR.Application.Features.EmailTemplates.DTOs;
 global using NOIR.Application.Features.EmailTemplates.Queries.GetEmailTemplate;
 global using NOIR.Application.Features.LegalPages.DTOs;
 global using NOIR.Application.Features.LegalPages.Queries.GetLegalPage;
+global using NOIR.Application.Features.Products.DTOs;
+global using NOIR.Application.Features.Products.Queries.GetProductById;
+global using NOIR.Application.Features.Products.Queries.GetProductCategoryById;
 global using NOIR.Application.Features.PlatformSettings.DTOs;
 global using NOIR.Application.Features.PlatformSettings.Queries.GetSmtpSettings;
 global using NOIR.Application.Features.TenantSettings.DTOs;
@@ -167,8 +170,10 @@ global using NOIR.Infrastructure.Media;
 
 // NOIR Domain Entities
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Entities.Cart;
 global using NOIR.Domain.Entities.Payment;
 global using NOIR.Domain.Entities.Product;
+global using NOIR.Domain.Events.Cart;
 global using NOIR.Domain.Events.Payment;
 global using NOIR.Domain.Events.Product;
 global using NOIR.Application.Features.Payments.Specifications;

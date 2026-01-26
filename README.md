@@ -325,7 +325,7 @@ dotnet ef migrations add NAME \
   --project src/NOIR.Infrastructure \
   --startup-project src/NOIR.Web \
   --context ApplicationDbContext \
-  --output-dir Migrations/ApplicationDbContext
+  --output-dir Migrations/App
 
 # Update database
 dotnet ef database update \

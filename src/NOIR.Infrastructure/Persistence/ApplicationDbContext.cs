@@ -75,6 +75,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     public DbSet<ProductImage> ProductImages => Set<ProductImage>();
 
+    // Shopping Cart entities (Phase 8 - Sprint 3)
+    public DbSet<Cart> Carts => Set<Cart>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
+
     /// <summary>
     /// Configures global type conventions.
     /// This reduces repetitive configuration and ensures consistency.

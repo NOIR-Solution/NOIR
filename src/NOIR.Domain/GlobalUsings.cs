@@ -18,9 +18,11 @@ global using Finbuckle.MultiTenant.Abstractions;
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Entities.Cart;
 global using NOIR.Domain.Entities.Payment;
 global using NOIR.Domain.Entities.Product;
 global using NOIR.Domain.Enums;
+global using NOIR.Domain.Events.Cart;
 global using NOIR.Domain.Events.Payment;
 global using NOIR.Domain.Events.Product;
 global using NOIR.Domain.Specifications;

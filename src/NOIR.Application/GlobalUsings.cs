@@ -48,6 +48,12 @@ global using NOIR.Application.Features.TenantSettings.DTOs;
 global using NOIR.Application.Features.Tenants.DTOs;
 global using NOIR.Application.Features.Payments.DTOs;
 global using NOIR.Application.Features.Payments.Specifications;
+global using NOIR.Application.Features.Cart.Common;
+global using NOIR.Application.Features.Cart.DTOs;
+global using NOIR.Application.Features.Cart.Specifications;
+global using NOIR.Application.Features.Products.Common;
+global using NOIR.Application.Features.Products.DTOs;
+global using NOIR.Application.Features.Products.Specifications;
 global using NOIR.Application.Features.Subscriptions.DTOs;
 global using NOIR.Application.Features.Subscriptions.Specifications;
 global using NOIR.Application.Specifications;
@@ -62,9 +68,13 @@ global using Finbuckle.MultiTenant.Abstractions;
 // NOIR Domain
 global using NOIR.Domain.Common;
 global using NOIR.Domain.Entities;
+global using NOIR.Domain.Entities.Cart;
 global using NOIR.Domain.Entities.Payment;
+global using NOIR.Domain.Entities.Product;
 global using NOIR.Domain.Enums;
+global using NOIR.Domain.Events.Cart;
 global using NOIR.Domain.Events.Payment;
+global using NOIR.Domain.Events.Product;
 global using NOIR.Domain.Interfaces;
 global using NOIR.Domain.Specifications;
 
