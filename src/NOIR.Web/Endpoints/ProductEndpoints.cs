@@ -1,7 +1,15 @@
+using NOIR.Application.Features.Products.Commands.AddProductImage;
+using NOIR.Application.Features.Products.Commands.AddProductVariant;
 using NOIR.Application.Features.Products.Commands.ArchiveProduct;
 using NOIR.Application.Features.Products.Commands.CreateProduct;
+using NOIR.Application.Features.Products.Commands.DeleteProduct;
+using NOIR.Application.Features.Products.Commands.DeleteProductImage;
+using NOIR.Application.Features.Products.Commands.DeleteProductVariant;
 using NOIR.Application.Features.Products.Commands.PublishProduct;
+using NOIR.Application.Features.Products.Commands.SetPrimaryProductImage;
 using NOIR.Application.Features.Products.Commands.UpdateProduct;
+using NOIR.Application.Features.Products.Commands.UpdateProductImage;
+using NOIR.Application.Features.Products.Commands.UpdateProductVariant;
 using NOIR.Application.Features.Products.DTOs;
 using NOIR.Application.Features.Products.Queries.GetProductById;
 using NOIR.Application.Features.Products.Queries.GetProducts;
@@ -199,6 +207,207 @@ public static class ProductEndpoints
         .WithName("ArchiveProduct")
         .WithSummary("Archive a product")
         .WithDescription("Archives a product, removing it from active listings but preserving data.")
+        .Produces<ProductDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Delete product (soft delete)
+        group.MapDelete("/{id:guid}", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new DeleteProductCommand(id) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsDelete)
+        .WithName("DeleteProduct")
+        .WithSummary("Soft-delete a product")
+        .WithDescription("Soft-deletes a product. It can be restored later.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // ===== Variant Management Endpoints =====
+
+        // Add variant
+        group.MapPost("/{productId:guid}/variants", async (
+            Guid productId,
+            AddProductVariantRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new AddProductVariantCommand(
+                productId,
+                request.Name,
+                request.Price,
+                request.Sku,
+                request.CompareAtPrice,
+                request.StockQuantity,
+                request.Options,
+                request.SortOrder)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductVariantDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("AddProductVariant")
+        .WithSummary("Add a variant to a product")
+        .WithDescription("Adds a new variant with pricing and stock information.")
+        .Produces<ProductVariantDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Update variant
+        group.MapPut("/{productId:guid}/variants/{variantId:guid}", async (
+            Guid productId,
+            Guid variantId,
+            UpdateProductVariantRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new UpdateProductVariantCommand(
+                productId,
+                variantId,
+                request.Name,
+                request.Price,
+                request.Sku,
+                request.CompareAtPrice,
+                request.StockQuantity,
+                request.Options,
+                request.SortOrder)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductVariantDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("UpdateProductVariant")
+        .WithSummary("Update a product variant")
+        .WithDescription("Updates variant details including pricing, stock, and options.")
+        .Produces<ProductVariantDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Delete variant
+        group.MapDelete("/{productId:guid}/variants/{variantId:guid}", async (
+            Guid productId,
+            Guid variantId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new DeleteProductVariantCommand(productId, variantId)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("DeleteProductVariant")
+        .WithSummary("Delete a product variant")
+        .WithDescription("Removes a variant from the product.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // ===== Image Management Endpoints =====
+
+        // Add image
+        group.MapPost("/{productId:guid}/images", async (
+            Guid productId,
+            AddProductImageRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new AddProductImageCommand(
+                productId,
+                request.Url,
+                request.AltText,
+                request.SortOrder,
+                request.IsPrimary)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductImageDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("AddProductImage")
+        .WithSummary("Add an image to a product")
+        .WithDescription("Adds a new image to the product gallery.")
+        .Produces<ProductImageDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Update image
+        group.MapPut("/{productId:guid}/images/{imageId:guid}", async (
+            Guid productId,
+            Guid imageId,
+            UpdateProductImageRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new UpdateProductImageCommand(
+                productId,
+                imageId,
+                request.Url,
+                request.AltText,
+                request.SortOrder)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductImageDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("UpdateProductImage")
+        .WithSummary("Update a product image")
+        .WithDescription("Updates image URL, alt text, and sort order.")
+        .Produces<ProductImageDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Delete image
+        group.MapDelete("/{productId:guid}/images/{imageId:guid}", async (
+            Guid productId,
+            Guid imageId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new DeleteProductImageCommand(productId, imageId)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("DeleteProductImage")
+        .WithSummary("Delete a product image")
+        .WithDescription("Removes an image from the product gallery.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Set primary image
+        group.MapPost("/{productId:guid}/images/{imageId:guid}/set-primary", async (
+            Guid productId,
+            Guid imageId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new SetPrimaryProductImageCommand(productId, imageId)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("SetPrimaryProductImage")
+        .WithSummary("Set an image as primary")
+        .WithDescription("Sets the specified image as the primary product image.")
         .Produces<ProductDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }

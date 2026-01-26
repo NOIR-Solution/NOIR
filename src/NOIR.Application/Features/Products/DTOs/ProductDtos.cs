@@ -220,3 +220,48 @@ public sealed record CreateProductImageDto(
     string? AltText,
     int SortOrder,
     bool IsPrimary);
+
+// ===== Variant Management Request DTOs =====
+
+/// <summary>
+/// Request to add a variant to a product.
+/// </summary>
+public sealed record AddProductVariantRequest(
+    string Name,
+    decimal Price,
+    string? Sku,
+    decimal? CompareAtPrice,
+    int StockQuantity,
+    Dictionary<string, string>? Options,
+    int SortOrder);
+
+/// <summary>
+/// Request to update a product variant.
+/// </summary>
+public sealed record UpdateProductVariantRequest(
+    string Name,
+    decimal Price,
+    string? Sku,
+    decimal? CompareAtPrice,
+    int StockQuantity,
+    Dictionary<string, string>? Options,
+    int SortOrder);
+
+// ===== Image Management Request DTOs =====
+
+/// <summary>
+/// Request to add an image to a product.
+/// </summary>
+public sealed record AddProductImageRequest(
+    string Url,
+    string? AltText,
+    int SortOrder,
+    bool IsPrimary);
+
+/// <summary>
+/// Request to update a product image.
+/// </summary>
+public sealed record UpdateProductImageRequest(
+    string Url,
+    string? AltText,
+    int SortOrder);
