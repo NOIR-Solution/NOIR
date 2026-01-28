@@ -7,6 +7,7 @@ public sealed record ProductDto(
     Guid Id,
     string Name,
     string Slug,
+    string? ShortDescription,
     string? Description,
     string? DescriptionHtml,
     decimal BasePrice,
@@ -27,6 +28,7 @@ public sealed record ProductDto(
     bool InStock,
     List<ProductVariantDto> Variants,
     List<ProductImageDto> Images,
+    List<ProductOptionDto> Options,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt);
 
@@ -37,6 +39,7 @@ public sealed record ProductListDto(
     Guid Id,
     string Name,
     string Slug,
+    string? ShortDescription,
     decimal BasePrice,
     string Currency,
     ProductStatus Status,
@@ -62,7 +65,8 @@ public sealed record ProductVariantDto(
     bool LowStock,
     bool OnSale,
     Dictionary<string, string>? Options,
-    int SortOrder);
+    int SortOrder,
+    Guid? ImageId);
 
 /// <summary>
 /// Product image details.
@@ -141,6 +145,7 @@ public sealed record UpdateProductCategoryRequest(
 public sealed record CreateProductRequest(
     string Name,
     string Slug,
+    string? ShortDescription,
     string? Description,
     string? DescriptionHtml,
     decimal BasePrice,
@@ -163,6 +168,7 @@ public sealed record CreateProductRequest(
 public sealed record UpdateProductRequest(
     string Name,
     string Slug,
+    string? ShortDescription,
     string? Description,
     string? DescriptionHtml,
     decimal BasePrice,
@@ -264,4 +270,100 @@ public sealed record AddProductImageRequest(
 public sealed record UpdateProductImageRequest(
     string Url,
     string? AltText,
+    int SortOrder);
+
+// ===== Upload Result DTOs =====
+
+/// <summary>
+/// Result of uploading a product image.
+/// Includes the created image info plus processing metadata.
+/// </summary>
+public sealed record ProductImageUploadResultDto(
+    Guid Id,
+    string Url,
+    string? AltText,
+    int SortOrder,
+    bool IsPrimary,
+    string? ThumbUrl,
+    string? MediumUrl,
+    string? LargeUrl,
+    int? Width,
+    int? Height,
+    string? ThumbHash,
+    string? DominantColor,
+    string Message);
+
+/// <summary>
+/// Request to reorder product images in bulk.
+/// </summary>
+public sealed record ReorderProductImagesRequest(
+    List<ImageSortOrderItem> Items);
+
+/// <summary>
+/// Single item for image reordering.
+/// </summary>
+public sealed record ImageSortOrderItem(
+    Guid ImageId,
+    int SortOrder);
+
+// ===== Option DTOs =====
+
+/// <summary>
+/// Product option details (e.g., "Color", "Size").
+/// </summary>
+public sealed record ProductOptionDto(
+    Guid Id,
+    string Name,
+    string? DisplayName,
+    int SortOrder,
+    List<ProductOptionValueDto> Values);
+
+/// <summary>
+/// Product option value details (e.g., "Red", "Large").
+/// </summary>
+public sealed record ProductOptionValueDto(
+    Guid Id,
+    string Value,
+    string? DisplayValue,
+    string? ColorCode,
+    string? SwatchUrl,
+    int SortOrder);
+
+// ===== Option Management Request DTOs =====
+
+/// <summary>
+/// Request to add an option to a product.
+/// </summary>
+public sealed record AddProductOptionRequest(
+    string Name,
+    string? DisplayName,
+    int SortOrder,
+    List<AddProductOptionValueRequest>? Values);
+
+/// <summary>
+/// Request to update a product option.
+/// </summary>
+public sealed record UpdateProductOptionRequest(
+    string Name,
+    string? DisplayName,
+    int SortOrder);
+
+/// <summary>
+/// Request to add a value to a product option.
+/// </summary>
+public sealed record AddProductOptionValueRequest(
+    string Value,
+    string? DisplayValue,
+    string? ColorCode,
+    string? SwatchUrl,
+    int SortOrder);
+
+/// <summary>
+/// Request to update an option value.
+/// </summary>
+public sealed record UpdateProductOptionValueRequest(
+    string Value,
+    string? DisplayValue,
+    string? ColorCode,
+    string? SwatchUrl,
     int SortOrder);

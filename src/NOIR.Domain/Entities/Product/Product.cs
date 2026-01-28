@@ -8,6 +8,7 @@ public class Product : TenantAggregateRoot<Guid>
     // Basic Info
     public string Name { get; private set; } = string.Empty;
     public string Slug { get; private set; } = string.Empty;
+    public string? ShortDescription { get; private set; }
     public string? Description { get; private set; }
     public string? DescriptionHtml { get; private set; }
 
@@ -43,9 +44,11 @@ public class Product : TenantAggregateRoot<Guid>
     public virtual ProductCategory? Category { get; private set; }
     public virtual ICollection<ProductVariant> Variants { get; private set; } = new List<ProductVariant>();
     public virtual ICollection<ProductImage> Images { get; private set; } = new List<ProductImage>();
+    public virtual ICollection<ProductOption> Options { get; private set; } = new List<ProductOption>();
 
     // Computed
     public bool HasVariants => Variants.Any();
+    public bool HasOptions => Options.Any();
     public int TotalStock => Variants.Sum(v => v.StockQuantity);
     public bool InStock => TotalStock > 0;
     public ProductImage? PrimaryImage => Images.FirstOrDefault(i => i.IsPrimary) ?? Images.FirstOrDefault();
@@ -85,11 +88,13 @@ public class Product : TenantAggregateRoot<Guid>
     public void UpdateBasicInfo(
         string name,
         string slug,
+        string? shortDescription,
         string? description,
         string? descriptionHtml)
     {
         Name = name;
         Slug = slug.ToLowerInvariant();
+        ShortDescription = shortDescription?.Trim();
         Description = description;
         DescriptionHtml = descriptionHtml;
     }
@@ -265,6 +270,29 @@ public class Product : TenantAggregateRoot<Guid>
                 img.SetAsPrimary();
             else
                 img.ClearPrimary();
+        }
+    }
+
+    /// <summary>
+    /// Adds a new option to the product (e.g., "Color", "Size").
+    /// </summary>
+    public ProductOption AddOption(string name, string? displayName = null)
+    {
+        var sortOrder = Options.Any() ? Options.Max(o => o.SortOrder) + 1 : 0;
+        var option = ProductOption.Create(Id, name, displayName, sortOrder, TenantId);
+        Options.Add(option);
+        return option;
+    }
+
+    /// <summary>
+    /// Removes an option from the product.
+    /// </summary>
+    public void RemoveOption(Guid optionId)
+    {
+        var option = Options.FirstOrDefault(o => o.Id == optionId);
+        if (option != null)
+        {
+            Options.Remove(option);
         }
     }
 }

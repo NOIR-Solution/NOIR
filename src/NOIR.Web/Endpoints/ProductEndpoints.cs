@@ -1,15 +1,23 @@
 using NOIR.Application.Features.Products.Commands.AddProductImage;
+using NOIR.Application.Features.Products.Commands.AddProductOption;
+using NOIR.Application.Features.Products.Commands.AddProductOptionValue;
 using NOIR.Application.Features.Products.Commands.AddProductVariant;
 using NOIR.Application.Features.Products.Commands.ArchiveProduct;
 using NOIR.Application.Features.Products.Commands.CreateProduct;
 using NOIR.Application.Features.Products.Commands.DeleteProduct;
 using NOIR.Application.Features.Products.Commands.DeleteProductImage;
+using NOIR.Application.Features.Products.Commands.DeleteProductOption;
+using NOIR.Application.Features.Products.Commands.DeleteProductOptionValue;
 using NOIR.Application.Features.Products.Commands.DeleteProductVariant;
 using NOIR.Application.Features.Products.Commands.PublishProduct;
+using NOIR.Application.Features.Products.Commands.ReorderProductImages;
 using NOIR.Application.Features.Products.Commands.SetPrimaryProductImage;
 using NOIR.Application.Features.Products.Commands.UpdateProduct;
 using NOIR.Application.Features.Products.Commands.UpdateProductImage;
+using NOIR.Application.Features.Products.Commands.UpdateProductOption;
+using NOIR.Application.Features.Products.Commands.UpdateProductOptionValue;
 using NOIR.Application.Features.Products.Commands.UpdateProductVariant;
+using NOIR.Application.Features.Products.Commands.UploadProductImage;
 using NOIR.Application.Features.Products.DTOs;
 using NOIR.Application.Features.Products.Queries.GetProductById;
 using NOIR.Application.Features.Products.Queries.GetProducts;
@@ -107,6 +115,7 @@ public static class ProductEndpoints
             var command = new CreateProductCommand(
                 request.Name,
                 request.Slug,
+                request.ShortDescription,
                 request.Description,
                 request.DescriptionHtml,
                 request.BasePrice,
@@ -147,6 +156,7 @@ public static class ProductEndpoints
                 id,
                 request.Name,
                 request.Slug,
+                request.ShortDescription,
                 request.Description,
                 request.DescriptionHtml,
                 request.BasePrice,
@@ -314,7 +324,7 @@ public static class ProductEndpoints
 
         // ===== Image Management Endpoints =====
 
-        // Add image
+        // Add image (by URL)
         group.MapPost("/{productId:guid}/images", async (
             Guid productId,
             AddProductImageRequest request,
@@ -338,6 +348,64 @@ public static class ProductEndpoints
         .WithSummary("Add an image to a product")
         .WithDescription("Adds a new image to the product gallery.")
         .Produces<ProductImageDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Upload image (file upload with processing)
+        group.MapPost("/{productId:guid}/images/upload", async (
+            Guid productId,
+            IFormFile file,
+            [FromQuery] string? altText,
+            [FromQuery] bool isPrimary,
+            [FromServices] ICurrentUser currentUser,
+            [FromServices] UploadProductImageCommandHandler handler,
+            CancellationToken cancellationToken) =>
+        {
+            await using var stream = file.OpenReadStream();
+            var command = new UploadProductImageCommand(
+                productId,
+                file.FileName,
+                stream,
+                file.ContentType,
+                file.Length,
+                altText,
+                isPrimary)
+            {
+                UserId = currentUser.UserId
+            };
+            return (await handler.Handle(command, cancellationToken)).ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("UploadProductImage")
+        .WithSummary("Upload an image to a product")
+        .WithDescription("Uploads and processes an image (resize, optimize). Max 10MB. Supports JPEG, PNG, GIF, WebP, AVIF.")
+        .RequireRateLimiting("fixed")
+        .DisableAntiforgery()
+        .Produces<ProductImageUploadResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Reorder images (bulk update sortOrder)
+        group.MapPut("/{productId:guid}/images/reorder", async (
+            Guid productId,
+            ReorderProductImagesRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new ReorderProductImagesCommand(
+                productId,
+                request.Items.Select(i => new ImageSortOrderItem(i.ImageId, i.SortOrder)).ToList())
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("ReorderProductImages")
+        .WithSummary("Reorder product images")
+        .WithDescription("Updates the sort order of multiple images in a single request. Returns the updated product.")
+        .Produces<ProductDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
@@ -409,6 +477,170 @@ public static class ProductEndpoints
         .WithSummary("Set an image as primary")
         .WithDescription("Sets the specified image as the primary product image.")
         .Produces<ProductDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // ===== Option Management Endpoints =====
+
+        // Add option
+        group.MapPost("/{productId:guid}/options", async (
+            Guid productId,
+            AddProductOptionRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new AddProductOptionCommand(
+                productId,
+                request.Name,
+                request.DisplayName,
+                request.SortOrder,
+                request.Values)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductOptionDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("AddProductOption")
+        .WithSummary("Add an option to a product")
+        .WithDescription("Adds a new option type (e.g., Color, Size) with optional values.")
+        .Produces<ProductOptionDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Update option
+        group.MapPut("/{productId:guid}/options/{optionId:guid}", async (
+            Guid productId,
+            Guid optionId,
+            UpdateProductOptionRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new UpdateProductOptionCommand(
+                productId,
+                optionId,
+                request.Name,
+                request.DisplayName,
+                request.SortOrder)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductOptionDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("UpdateProductOption")
+        .WithSummary("Update a product option")
+        .WithDescription("Updates option name, display name, or sort order.")
+        .Produces<ProductOptionDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Delete option
+        group.MapDelete("/{productId:guid}/options/{optionId:guid}", async (
+            Guid productId,
+            Guid optionId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new DeleteProductOptionCommand(productId, optionId)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("DeleteProductOption")
+        .WithSummary("Delete a product option")
+        .WithDescription("Removes an option and all its values from the product.")
+        .Produces(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // ===== Option Value Management Endpoints =====
+
+        // Add option value
+        group.MapPost("/{productId:guid}/options/{optionId:guid}/values", async (
+            Guid productId,
+            Guid optionId,
+            AddProductOptionValueRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new AddProductOptionValueCommand(
+                productId,
+                optionId,
+                request.Value,
+                request.DisplayValue,
+                request.ColorCode,
+                request.SwatchUrl,
+                request.SortOrder)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductOptionValueDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("AddProductOptionValue")
+        .WithSummary("Add a value to a product option")
+        .WithDescription("Adds a new value (e.g., Red, Large) to an existing option.")
+        .Produces<ProductOptionValueDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Update option value
+        group.MapPut("/{productId:guid}/options/{optionId:guid}/values/{valueId:guid}", async (
+            Guid productId,
+            Guid optionId,
+            Guid valueId,
+            UpdateProductOptionValueRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new UpdateProductOptionValueCommand(
+                productId,
+                optionId,
+                valueId,
+                request.Value,
+                request.DisplayValue,
+                request.ColorCode,
+                request.SwatchUrl,
+                request.SortOrder)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductOptionValueDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("UpdateProductOptionValue")
+        .WithSummary("Update a product option value")
+        .WithDescription("Updates value details including color code and swatch URL.")
+        .Produces<ProductOptionValueDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Delete option value
+        group.MapDelete("/{productId:guid}/options/{optionId:guid}/values/{valueId:guid}", async (
+            Guid productId,
+            Guid optionId,
+            Guid valueId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new DeleteProductOptionValueCommand(productId, optionId, valueId)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("DeleteProductOptionValue")
+        .WithSummary("Delete a product option value")
+        .WithDescription("Removes a value from the product option.")
+        .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 }

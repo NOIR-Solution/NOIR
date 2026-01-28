@@ -25,6 +25,9 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsUnique()
             .HasDatabaseName("IX_Products_TenantId_Slug");
 
+        builder.Property(e => e.ShortDescription)
+            .HasMaxLength(300);
+
         builder.Property(e => e.Description)
             .HasMaxLength(2000);
 
@@ -100,6 +103,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         // Ignore computed properties
         builder.Ignore(e => e.HasVariants);
+        builder.Ignore(e => e.HasOptions);
         builder.Ignore(e => e.TotalStock);
         builder.Ignore(e => e.InStock);
         builder.Ignore(e => e.PrimaryImage);

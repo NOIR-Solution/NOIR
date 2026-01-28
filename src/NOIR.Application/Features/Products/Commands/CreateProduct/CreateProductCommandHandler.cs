@@ -77,6 +77,7 @@ public class CreateProductCommandHandler
         product.UpdateBasicInfo(
             command.Name,
             command.Slug,
+            command.ShortDescription,
             command.Description,
             command.DescriptionHtml);
 

@@ -327,6 +327,7 @@ public class ArchiveProductCommandHandlerTests
         existingProduct.UpdateBasicInfo(
             "Specific Product",
             "specific-product",
+            "Short description",
             "Product description",
             "<p>HTML description</p>");
         existingProduct.SetBrand("Test Brand");

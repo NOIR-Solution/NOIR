@@ -7,6 +7,7 @@ public sealed record UpdateProductCommand(
     Guid Id,
     string Name,
     string Slug,
+    string? ShortDescription,
     string? Description,
     string? DescriptionHtml,
     decimal BasePrice,

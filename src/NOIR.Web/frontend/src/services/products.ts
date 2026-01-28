@@ -12,6 +12,8 @@ import type {
   ProductImage,
   ProductCategory,
   ProductCategoryListItem,
+  ProductOption,
+  ProductOptionValue,
   ProductStatus,
   CreateProductRequest,
   UpdateProductRequest,
@@ -21,6 +23,10 @@ import type {
   UpdateProductImageRequest,
   CreateProductCategoryRequest,
   UpdateProductCategoryRequest,
+  AddProductOptionRequest,
+  UpdateProductOptionRequest,
+  AddProductOptionValueRequest,
+  UpdateProductOptionValueRequest,
 } from '@/types/product'
 
 // ============================================================================
@@ -208,6 +214,80 @@ export async function setPrimaryProductImage(productId: string, imageId: string)
   })
 }
 
+/**
+ * Upload result from the upload endpoint
+ */
+export interface ProductImageUploadResult {
+  id: string
+  url: string
+  altText?: string | null
+  sortOrder: number
+  isPrimary: boolean
+  thumbUrl?: string | null
+  mediumUrl?: string | null
+  largeUrl?: string | null
+  width?: number | null
+  height?: number | null
+  thumbHash?: string | null
+  dominantColor?: string | null
+  message: string
+}
+
+/**
+ * Upload an image to a product (with processing)
+ */
+export async function uploadProductImage(
+  productId: string,
+  file: File,
+  altText?: string,
+  isPrimary: boolean = false
+): Promise<ProductImageUploadResult> {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const queryParams = new URLSearchParams()
+  if (altText) queryParams.append('altText', altText)
+  queryParams.append('isPrimary', String(isPrimary))
+
+  const query = queryParams.toString()
+  const url = `/products/${productId}/images/upload${query ? `?${query}` : ''}`
+
+  // Use fetch directly for FormData upload (apiClient uses JSON)
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api'
+  const response = await fetch(`${baseUrl}${url}`, {
+    method: 'POST',
+    body: formData,
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: 'Upload failed' }))
+    throw new Error(error.message || 'Upload failed')
+  }
+
+  return response.json()
+}
+
+/**
+ * Request to reorder images
+ */
+export interface ReorderImagesRequest {
+  items: { imageId: string; sortOrder: number }[]
+}
+
+/**
+ * Reorder product images in bulk
+ */
+export async function reorderProductImages(
+  productId: string,
+  items: { imageId: string; sortOrder: number }[]
+): Promise<Product> {
+  return apiClient<Product>(`/products/${productId}/images/reorder`, {
+    method: 'PUT',
+    body: JSON.stringify({ items }),
+  })
+}
+
 // ============================================================================
 // Categories
 // ============================================================================
@@ -270,6 +350,95 @@ export async function updateProductCategory(
  */
 export async function deleteProductCategory(id: string): Promise<void> {
   return apiClient<void>(`/products/categories/${id}`, {
+    method: 'DELETE',
+  })
+}
+
+// ============================================================================
+// Options
+// ============================================================================
+
+/**
+ * Add an option to a product
+ */
+export async function addProductOption(
+  productId: string,
+  request: AddProductOptionRequest
+): Promise<ProductOption> {
+  return apiClient<ProductOption>(`/products/${productId}/options`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Update a product option
+ */
+export async function updateProductOption(
+  productId: string,
+  optionId: string,
+  request: UpdateProductOptionRequest
+): Promise<ProductOption> {
+  return apiClient<ProductOption>(`/products/${productId}/options/${optionId}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Delete a product option
+ */
+export async function deleteProductOption(productId: string, optionId: string): Promise<void> {
+  return apiClient<void>(`/products/${productId}/options/${optionId}`, {
+    method: 'DELETE',
+  })
+}
+
+// ============================================================================
+// Option Values
+// ============================================================================
+
+/**
+ * Add a value to a product option
+ */
+export async function addProductOptionValue(
+  productId: string,
+  optionId: string,
+  request: AddProductOptionValueRequest
+): Promise<ProductOptionValue> {
+  return apiClient<ProductOptionValue>(`/products/${productId}/options/${optionId}/values`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Update a product option value
+ */
+export async function updateProductOptionValue(
+  productId: string,
+  optionId: string,
+  valueId: string,
+  request: UpdateProductOptionValueRequest
+): Promise<ProductOptionValue> {
+  return apiClient<ProductOptionValue>(
+    `/products/${productId}/options/${optionId}/values/${valueId}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(request),
+    }
+  )
+}
+
+/**
+ * Delete a product option value
+ */
+export async function deleteProductOptionValue(
+  productId: string,
+  optionId: string,
+  valueId: string
+): Promise<void> {
+  return apiClient<void>(`/products/${productId}/options/${optionId}/values/${valueId}`, {
     method: 'DELETE',
   })
 }

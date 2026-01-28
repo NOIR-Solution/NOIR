@@ -6,6 +6,7 @@ namespace NOIR.Application.Features.Products.Commands.CreateProduct;
 public sealed record CreateProductCommand(
     string Name,
     string Slug,
+    string? ShortDescription,
     string? Description,
     string? DescriptionHtml,
     decimal BasePrice,

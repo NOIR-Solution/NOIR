@@ -40,6 +40,7 @@ public class CreateProductCommandHandlerTests
     private static CreateProductCommand CreateTestCommand(
         string name = "Test Product",
         string slug = "test-product",
+        string? shortDescription = null,
         string? description = "Test description",
         string? descriptionHtml = null,
         decimal basePrice = 99.99m,
@@ -59,6 +60,7 @@ public class CreateProductCommandHandlerTests
         return new CreateProductCommand(
             name,
             slug,
+            shortDescription,
             description,
             descriptionHtml,
             basePrice,

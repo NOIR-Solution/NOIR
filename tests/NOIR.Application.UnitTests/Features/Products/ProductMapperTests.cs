@@ -39,7 +39,7 @@ public class ProductMapperTests
     {
         // Arrange
         var product = CreateTestProduct();
-        product.UpdateBasicInfo("Test Product", "test-product", "Description", "<p>HTML</p>");
+        product.UpdateBasicInfo("Test Product", "test-product", "Short desc", "Description", "<p>HTML</p>");
         product.SetBrand("TestBrand");
         product.UpdateIdentification("SKU-001", "BARCODE-001");
         product.SetWeight(1.5m);

@@ -306,7 +306,7 @@ public class GetProductByIdQueryHandlerTests
         // Arrange
         var productId = Guid.NewGuid();
         var existingProduct = CreateTestProduct("Full Product", "full-product");
-        existingProduct.UpdateBasicInfo("Full Product", "full-product", "Description", "<p>HTML</p>");
+        existingProduct.UpdateBasicInfo("Full Product", "full-product", "Short desc", "Description", "<p>HTML</p>");
         existingProduct.SetBrand("Test Brand");
         existingProduct.UpdateIdentification("SKU-001", "BARCODE-001");
         existingProduct.SetWeight(2.5m);

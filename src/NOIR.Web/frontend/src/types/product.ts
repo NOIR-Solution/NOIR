@@ -20,6 +20,7 @@ export interface Product {
   id: string
   name: string
   slug: string
+  shortDescription?: string | null
   description?: string | null
   descriptionHtml?: string | null
   basePrice: number
@@ -40,6 +41,7 @@ export interface Product {
   inStock: boolean
   variants: ProductVariant[]
   images: ProductImage[]
+  options: ProductOption[]
   createdAt: string
   modifiedAt?: string | null
 }
@@ -51,6 +53,7 @@ export interface ProductListItem {
   id: string
   name: string
   slug: string
+  shortDescription?: string | null
   basePrice: number
   currency: string
   status: ProductStatus
@@ -78,6 +81,30 @@ export interface ProductVariant {
   lowStock: boolean
   onSale: boolean
   options?: Record<string, string> | null
+  sortOrder: number
+  imageId?: string | null
+}
+
+/**
+ * Product option type (e.g., "Color", "Size")
+ */
+export interface ProductOption {
+  id: string
+  name: string
+  displayName?: string | null
+  sortOrder: number
+  values: ProductOptionValue[]
+}
+
+/**
+ * Product option value (e.g., "Red", "Large")
+ */
+export interface ProductOptionValue {
+  id: string
+  value: string
+  displayValue?: string | null
+  colorCode?: string | null
+  swatchUrl?: string | null
   sortOrder: number
 }
 
@@ -138,6 +165,7 @@ export interface ProductCategoryListItem {
 export interface CreateProductRequest {
   name: string
   slug: string
+  shortDescription?: string | null
   description?: string | null
   descriptionHtml?: string | null
   basePrice: number
@@ -158,6 +186,7 @@ export interface CreateProductRequest {
 export interface UpdateProductRequest {
   name: string
   slug: string
+  shortDescription?: string | null
   description?: string | null
   descriptionHtml?: string | null
   basePrice: number
@@ -243,6 +272,39 @@ export interface UpdateProductCategoryRequest {
   imageUrl?: string | null
   sortOrder: number
   parentId?: string | null
+}
+
+// ============================================================================
+// Option Request Types
+// ============================================================================
+
+export interface AddProductOptionRequest {
+  name: string
+  displayName?: string | null
+  sortOrder: number
+  values?: AddProductOptionValueRequest[] | null
+}
+
+export interface UpdateProductOptionRequest {
+  name: string
+  displayName?: string | null
+  sortOrder: number
+}
+
+export interface AddProductOptionValueRequest {
+  value: string
+  displayValue?: string | null
+  colorCode?: string | null
+  swatchUrl?: string | null
+  sortOrder: number
+}
+
+export interface UpdateProductOptionValueRequest {
+  value: string
+  displayValue?: string | null
+  colorCode?: string | null
+  swatchUrl?: string | null
+  sortOrder: number
 }
 
 // ============================================================================

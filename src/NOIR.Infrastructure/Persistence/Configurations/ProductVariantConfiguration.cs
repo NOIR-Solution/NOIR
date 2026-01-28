@@ -39,11 +39,17 @@ public class ProductVariantConfiguration : IEntityTypeConfiguration<ProductVaria
         builder.Property(e => e.SortOrder)
             .HasDefaultValue(0);
 
-        // Relationship
+        // Relationship to Product
         builder.HasOne(e => e.Product)
             .WithMany(p => p.Variants)
             .HasForeignKey(e => e.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Optional relationship to ProductImage
+        builder.HasOne(e => e.Image)
+            .WithMany()
+            .HasForeignKey(e => e.ImageId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         // Stock filtering index
         builder.HasIndex(e => new { e.TenantId, e.StockQuantity })

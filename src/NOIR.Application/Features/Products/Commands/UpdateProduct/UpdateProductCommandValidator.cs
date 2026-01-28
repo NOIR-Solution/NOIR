@@ -7,6 +7,7 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
 {
     private const int MaxNameLength = 500;
     private const int MaxSlugLength = 500;
+    private const int MaxShortDescriptionLength = 300;
     private const int MaxDescriptionLength = 10000;
     private const int MaxBrandLength = 200;
     private const int MaxSkuLength = 100;
@@ -27,6 +28,10 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
             .NotEmpty().WithMessage("Slug is required.")
             .MaximumLength(MaxSlugLength).WithMessage($"Slug cannot exceed {MaxSlugLength} characters.")
             .Matches(@"^[a-z0-9]+(?:-[a-z0-9]+)*$").WithMessage("Slug must be lowercase and contain only letters, numbers, and hyphens.");
+
+        RuleFor(x => x.ShortDescription)
+            .MaximumLength(MaxShortDescriptionLength).WithMessage($"Short description cannot exceed {MaxShortDescriptionLength} characters.")
+            .When(x => x.ShortDescription is not null);
 
         RuleFor(x => x.Description)
             .MaximumLength(MaxDescriptionLength).WithMessage($"Description cannot exceed {MaxDescriptionLength} characters.")

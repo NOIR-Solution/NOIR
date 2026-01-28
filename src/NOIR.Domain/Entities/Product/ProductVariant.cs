@@ -24,8 +24,14 @@ public class ProductVariant : TenantEntity<Guid>
 
     public int SortOrder { get; private set; }
 
+    /// <summary>
+    /// Optional association with a specific product image for this variant.
+    /// </summary>
+    public Guid? ImageId { get; private set; }
+
     // Navigation
     public virtual Product Product { get; private set; } = null!;
+    public virtual ProductImage? Image { get; private set; }
 
     // Computed
     public bool InStock => StockQuantity > 0;
@@ -146,5 +152,13 @@ public class ProductVariant : TenantEntity<Guid>
     public void SetSortOrder(int sortOrder)
     {
         SortOrder = sortOrder;
+    }
+
+    /// <summary>
+    /// Associates this variant with a specific product image.
+    /// </summary>
+    public void SetImage(Guid? imageId)
+    {
+        ImageId = imageId;
     }
 }

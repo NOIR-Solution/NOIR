@@ -1,9 +1,36 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Editor } from '@tinymce/tinymce-react'
+import type { Editor as TinyMCEEditor } from 'tinymce'
+
+// Import TinyMCE 6 for self-hosted usage
+/* eslint-disable import/no-unresolved */
+import 'tinymce/tinymce'
+import 'tinymce/models/dom'
+import 'tinymce/themes/silver'
+import 'tinymce/icons/default'
+import 'tinymce/plugins/advlist'
+import 'tinymce/plugins/autolink'
+import 'tinymce/plugins/lists'
+import 'tinymce/plugins/link'
+import 'tinymce/plugins/image'
+import 'tinymce/plugins/charmap'
+import 'tinymce/plugins/preview'
+import 'tinymce/plugins/anchor'
+import 'tinymce/plugins/searchreplace'
+import 'tinymce/plugins/visualblocks'
+import 'tinymce/plugins/code'
+import 'tinymce/plugins/fullscreen'
+import 'tinymce/plugins/insertdatetime'
+import 'tinymce/plugins/media'
+import 'tinymce/plugins/table'
+import 'tinymce/plugins/wordcount'
+/* eslint-enable import/no-unresolved */
+
 import {
   ArrowLeft,
   Package,
@@ -61,9 +88,14 @@ import {
   updateProductVariant,
   deleteProductVariant,
   addProductImage,
+  updateProductImage,
   deleteProductImage,
   setPrimaryProductImage,
+  uploadProductImage,
+  reorderProductImages,
 } from '@/services/products'
+import { ImageUploadZone } from '@/components/products/ImageUploadZone'
+import { SortableImageGallery } from '@/components/products/SortableImageGallery'
 import { toast } from 'sonner'
 import { ApiError } from '@/services/apiClient'
 import type { ProductVariant, ProductImage, CreateProductVariantRequest } from '@/types/product'
@@ -75,6 +107,7 @@ const productSchema = z.object({
   name: z.string().min(1, 'Name is required').max(200, 'Name must be less than 200 characters'),
   slug: z.string().min(1, 'Slug is required').max(200, 'Slug must be less than 200 characters')
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase letters, numbers, and hyphens only'),
+  shortDescription: z.string().max(300, 'Short description must be less than 300 characters').optional().nullable(),
   description: z.string().optional().nullable(),
   descriptionHtml: z.string().optional().nullable(),
   basePrice: z.coerce.number().min(0, 'Price must be non-negative'),
@@ -105,6 +138,77 @@ const variantSchema = z.object({
 
 type VariantFormData = z.infer<typeof variantSchema>
 
+// Inline edit form for variants
+function EditVariantForm({
+  variant,
+  onSave,
+  onCancel,
+}: {
+  variant: ProductVariant
+  onSave: (data: VariantFormData) => void
+  onCancel: () => void
+}) {
+  const { t } = useTranslation('common')
+  const [formData, setFormData] = useState<VariantFormData>({
+    name: variant.name,
+    price: variant.price,
+    sku: variant.sku || '',
+    compareAtPrice: variant.compareAtPrice || null,
+    stockQuantity: variant.stockQuantity,
+    sortOrder: variant.sortOrder,
+  })
+
+  return (
+    <div className="p-4 border border-primary/30 rounded-lg bg-primary/5 space-y-4">
+      <h4 className="font-medium">{t('products.editVariant')}</h4>
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          placeholder={t('products.variantName')}
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+        <Input
+          type="number"
+          placeholder={t('products.variantPrice')}
+          value={formData.price}
+          onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+        />
+        <Input
+          placeholder={t('products.variantSku')}
+          value={formData.sku || ''}
+          onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+        />
+        <Input
+          type="number"
+          placeholder={t('products.variantStock')}
+          value={formData.stockQuantity}
+          onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value) || 0 })}
+        />
+        <Input
+          type="number"
+          placeholder={t('products.variantCompareAtPrice')}
+          value={formData.compareAtPrice || ''}
+          onChange={(e) => setFormData({ ...formData, compareAtPrice: e.target.value ? parseFloat(e.target.value) : null })}
+        />
+        <Input
+          type="number"
+          placeholder={t('products.variantSortOrder')}
+          value={formData.sortOrder}
+          onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
+        />
+      </div>
+      <div className="flex justify-end gap-2">
+        <Button variant="ghost" size="sm" className="cursor-pointer" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button size="sm" className="cursor-pointer" onClick={() => onSave(formData)}>
+          Save
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export default function ProductFormPage() {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
@@ -134,6 +238,10 @@ export default function ProductFormPage() {
   const [imageToDelete, setImageToDelete] = useState<ProductImage | null>(null)
   const [isDeletingVariant, setIsDeletingVariant] = useState(false)
   const [isDeletingImage, setIsDeletingImage] = useState(false)
+  const [descriptionHtml, setDescriptionHtml] = useState('')
+  const editorRef = useRef<TinyMCEEditor | null>(null)
+  const [editingImageId, setEditingImageId] = useState<string | null>(null)
+  const [editingAltText, setEditingAltText] = useState('')
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -141,6 +249,7 @@ export default function ProductFormPage() {
     defaultValues: {
       name: '',
       slug: '',
+      shortDescription: '',
       description: '',
       descriptionHtml: '',
       basePrice: 0,
@@ -163,6 +272,7 @@ export default function ProductFormPage() {
       form.reset({
         name: product.name,
         slug: product.slug,
+        shortDescription: product.shortDescription || '',
         description: product.description || '',
         descriptionHtml: product.descriptionHtml || '',
         basePrice: product.basePrice,
@@ -179,6 +289,7 @@ export default function ProductFormPage() {
       })
       setVariants(product.variants || [])
       setImages(product.images || [])
+      setDescriptionHtml(product.descriptionHtml || '')
     }
   }, [product, form])
 
@@ -196,6 +307,7 @@ export default function ProductFormPage() {
       if (isEditing && id) {
         await updateProduct(id, {
           ...data,
+          descriptionHtml, // Use TinyMCE editor state
           currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
           categoryId: data.categoryId || null,
         })
@@ -203,6 +315,7 @@ export default function ProductFormPage() {
       } else {
         const newProduct = await createProduct({
           ...data,
+          descriptionHtml, // Use TinyMCE editor state
           currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
           categoryId: data.categoryId || null,
           variants: [],
@@ -348,6 +461,98 @@ export default function ProductFormPage() {
     }
   }
 
+  const handleStartEditAltText = (image: ProductImage) => {
+    setEditingImageId(image.id)
+    setEditingAltText(image.altText || '')
+  }
+
+  const handleSaveAltText = async () => {
+    if (!id || !editingImageId) return
+
+    const image = images.find(img => img.id === editingImageId)
+    if (!image) return
+
+    try {
+      await updateProductImage(id, editingImageId, {
+        url: image.url,
+        altText: editingAltText || null,
+        sortOrder: image.sortOrder,
+      })
+      toast.success('Alt text updated successfully')
+      setEditingImageId(null)
+      setEditingAltText('')
+      await refreshProduct()
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Failed to update alt text'
+      toast.error(message)
+    }
+  }
+
+  const handleCancelEditAltText = () => {
+    setEditingImageId(null)
+    setEditingAltText('')
+  }
+
+  // New image upload handler
+  const handleUploadImage = async (file: File) => {
+    if (!id) return
+
+    try {
+      await uploadProductImage(id, file, undefined, images.length === 0)
+      toast.success(t('messages.uploadSuccess', 'Image uploaded successfully'))
+      await refreshProduct()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to upload image'
+      toast.error(message)
+      throw err // Re-throw to let ImageUploadZone show error state
+    }
+  }
+
+  // Image reorder handler
+  const handleReorderImages = async (reorderedImages: ProductImage[]) => {
+    if (!id) return
+
+    // Optimistically update local state
+    setImages(reorderedImages)
+
+    try {
+      await reorderProductImages(
+        id,
+        reorderedImages.map((img, index) => ({
+          imageId: img.id,
+          sortOrder: index,
+        }))
+      )
+      toast.success(t('products.imagesReordered', 'Images reordered successfully'))
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Failed to reorder images'
+      toast.error(message)
+      // Revert on error
+      await refreshProduct()
+    }
+  }
+
+  // Handler for SortableImageGallery's onUpdateAltText
+  const handleGalleryUpdateAltText = async (imageId: string, altText: string) => {
+    if (!id) return
+
+    const image = images.find(img => img.id === imageId)
+    if (!image) return
+
+    try {
+      await updateProductImage(id, imageId, {
+        url: image.url,
+        altText: altText || null,
+        sortOrder: image.sortOrder,
+      })
+      toast.success('Alt text updated successfully')
+      await refreshProduct()
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Failed to update alt text'
+      toast.error(message)
+    }
+  }
+
   if (productLoading) {
     return (
       <div className="flex items-center justify-center h-96 animate-in fade-in-0 duration-300">
@@ -463,23 +668,92 @@ export default function ProductFormPage() {
 
                   <FormField
                     control={form.control}
-                    name="description"
+                    name="shortDescription"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>{t('products.shortDescription')}</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
                             value={field.value || ''}
-                            placeholder="Enter product description"
-                            rows={4}
+                            placeholder={t('products.shortDescriptionPlaceholder')}
+                            rows={2}
+                            maxLength={300}
                             disabled={isViewMode}
                           />
                         </FormControl>
+                        <FormDescription>
+                          {t('products.shortDescriptionHelper', { count: (field.value || '').length })}
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  <div>
+                    <FormLabel className="mb-2 block">{t('products.richDescription')}</FormLabel>
+                    {isViewMode ? (
+                      <div
+                        className="prose prose-sm max-w-none border rounded-md p-4 bg-muted/30"
+                        dangerouslySetInnerHTML={{ __html: descriptionHtml || `<p class="text-muted-foreground">${t('products.noDescription')}</p>` }}
+                      />
+                    ) : (
+                      <Editor
+                        onInit={(_evt, editor) => {
+                          editorRef.current = editor
+                        }}
+                        value={descriptionHtml}
+                        onEditorChange={(content) => setDescriptionHtml(content)}
+                        init={{
+                          height: 400,
+                          menubar: false,
+                          skin_url: '/tinymce/skins/ui/oxide',
+                          content_css: '/tinymce/skins/content/default/content.min.css',
+                          plugins: [
+                            'advlist',
+                            'autolink',
+                            'lists',
+                            'link',
+                            'image',
+                            'charmap',
+                            'preview',
+                            'anchor',
+                            'searchreplace',
+                            'visualblocks',
+                            'code',
+                            'fullscreen',
+                            'insertdatetime',
+                            'media',
+                            'table',
+                            'wordcount',
+                          ],
+                          toolbar:
+                            'undo redo | blocks | ' +
+                            'bold italic forecolor | alignleft aligncenter ' +
+                            'alignright alignjustify | bullist numlist outdent indent | ' +
+                            'link image | code preview',
+                          content_style: `
+                            body {
+                              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                              font-size: 14px;
+                              line-height: 1.6;
+                              color: #333;
+                              padding: 12px;
+                              max-width: 100%;
+                              margin: 0;
+                            }
+                            p { margin: 0.75em 0; }
+                            h1, h2, h3, h4, h5, h6 { margin-top: 1.25em; margin-bottom: 0.5em; font-weight: 600; }
+                            img { max-width: 100%; height: auto; }
+                            ul, ol { margin: 0.75em 0; padding-left: 1.5em; }
+                          `,
+                        }}
+                      />
+                    )}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {t('products.richDescriptionHelper')}
+                    </p>
+                  </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
@@ -691,47 +965,67 @@ export default function ProductFormPage() {
                   ) : (
                     <div className="space-y-2">
                       {variants.map((variant) => (
-                        <div
-                          key={variant.id}
-                          className="flex items-center gap-4 p-4 border rounded-xl bg-background hover:bg-muted/50 hover:shadow-sm transition-all duration-200 group"
-                        >
-                          <div className="flex-1">
-                            <div className="font-medium">{variant.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {variant.sku && `SKU: ${variant.sku} • `}
-                              Stock: {variant.stockQuantity}
+                        editingVariantId === variant.id ? (
+                          <EditVariantForm
+                            key={variant.id}
+                            variant={variant}
+                            onSave={(data) => handleUpdateVariant(variant.id, data)}
+                            onCancel={() => setEditingVariantId(null)}
+                          />
+                        ) : (
+                          <div
+                            key={variant.id}
+                            className="flex items-center gap-4 p-4 border rounded-xl bg-background hover:bg-muted/50 hover:shadow-sm transition-all duration-200 group"
+                          >
+                            <div className="flex-1">
+                              <div className="font-medium">{variant.name}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {variant.sku && `SKU: ${variant.sku} • `}
+                                Stock: {variant.stockQuantity}
+                              </div>
                             </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-medium">
-                              {formatCurrency(variant.price)}
+                            <div className="text-right">
+                              <div className="font-medium">
+                                {formatCurrency(variant.price)}
+                              </div>
+                              {variant.onSale && variant.compareAtPrice && (
+                                <div className="text-sm text-muted-foreground line-through">
+                                  {formatCurrency(variant.compareAtPrice)}
+                                </div>
+                              )}
                             </div>
-                            {variant.onSale && variant.compareAtPrice && (
-                              <div className="text-sm text-muted-foreground line-through">
-                                {formatCurrency(variant.compareAtPrice)}
+                            <div className="flex items-center gap-1">
+                              {variant.lowStock && (
+                                <Badge variant="destructive" className="text-xs">Low Stock</Badge>
+                              )}
+                              {!variant.inStock && (
+                                <Badge variant="secondary" className="text-xs">Out of Stock</Badge>
+                              )}
+                            </div>
+                            {!isViewMode && (
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="cursor-pointer"
+                                  onClick={() => setEditingVariantId(variant.id)}
+                                  aria-label={`Edit variant ${variant.name}`}
+                                >
+                                  <Pencil className="h-4 w-4 text-muted-foreground" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="cursor-pointer"
+                                  onClick={() => setVariantToDelete(variant)}
+                                  aria-label={`Delete variant ${variant.name}`}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
                               </div>
                             )}
                           </div>
-                          <div className="flex items-center gap-1">
-                            {variant.lowStock && (
-                              <Badge variant="destructive" className="text-xs">Low Stock</Badge>
-                            )}
-                            {!variant.inStock && (
-                              <Badge variant="secondary" className="text-xs">Out of Stock</Badge>
-                            )}
-                          </div>
-                          {!isViewMode && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="cursor-pointer"
-                              onClick={() => setVariantToDelete(variant)}
-                              aria-label={`Delete variant ${variant.name}`}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          )}
-                        </div>
+                        )
                       ))}
                     </div>
                   )}
@@ -866,57 +1160,30 @@ export default function ProductFormPage() {
                 <CardDescription>Product gallery images</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Image Grid - 21st.dev pattern */}
-                {images.length > 0 && (
-                  <div className="grid grid-cols-2 gap-3">
-                    {images.map((image, index) => (
-                      <div
-                        key={image.id}
-                        className="relative aspect-square rounded-xl border overflow-hidden group shadow-sm hover:shadow-md transition-all duration-300"
-                      >
-                        <img
-                          src={image.url}
-                          alt={image.altText || `${form.getValues('name') || t('products.product', 'Product')} - ${t('products.imageNumber', { number: index + 1, defaultValue: `Image ${index + 1}` })}`}
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                        {image.isPrimary && (
-                          <Badge className="absolute top-2 left-2 text-xs shadow-md backdrop-blur-sm bg-primary/90">
-                            <Star className="h-3 w-3 mr-1 fill-current" />
-                            {t('products.primaryImage', 'Primary')}
-                          </Badge>
-                        )}
-                        {!isViewMode && (
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center gap-2 pb-3">
-                            {!image.isPrimary && (
-                              <Button
-                                size="icon"
-                                variant="secondary"
-                                className="h-8 w-8 shadow-lg backdrop-blur-sm bg-white/90 hover:bg-white transition-all duration-200 hover:scale-110 cursor-pointer"
-                                onClick={() => handleSetPrimaryImage(image.id)}
-                                aria-label="Set as primary image"
-                              >
-                                <Star className="h-4 w-4" />
-                              </Button>
-                            )}
-                            <Button
-                              size="icon"
-                              variant="destructive"
-                              className="h-8 w-8 shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 cursor-pointer"
-                              onClick={() => setImageToDelete(image)}
-                              aria-label="Delete image"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                {/* Drag & Drop Upload Zone */}
+                {!isViewMode && (
+                  <ImageUploadZone
+                    onUpload={handleUploadImage}
+                    disabled={false}
+                    maxSizeMB={10}
+                  />
                 )}
 
-                {/* Add Image */}
+                {/* Sortable Image Gallery */}
+                <SortableImageGallery
+                  images={images}
+                  productName={form.getValues('name')}
+                  isViewMode={isViewMode}
+                  onReorder={handleReorderImages}
+                  onSetPrimary={handleSetPrimaryImage}
+                  onDelete={(image) => setImageToDelete(image)}
+                  onUpdateAltText={handleGalleryUpdateAltText}
+                />
+
+                {/* Fallback: Add Image by URL */}
                 {!isViewMode && (
-                  <div className="space-y-2">
+                  <div className="space-y-2 pt-4 border-t">
+                    <p className="text-xs font-medium text-muted-foreground">Or add by URL</p>
                     <div className="flex gap-2">
                       <Input
                         placeholder="Image URL"
@@ -935,9 +1202,6 @@ export default function ProductFormPage() {
                         <ImagePlus className="h-4 w-4" />
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      Enter image URL to add to gallery
-                    </p>
                   </div>
                 )}
               </CardContent>

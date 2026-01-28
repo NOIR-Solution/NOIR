@@ -19,6 +19,7 @@ public sealed class ProductsSpec : Specification<Product>
         // Search filter
         Query.Where(p => string.IsNullOrEmpty(search) ||
                          p.Name.Contains(search) ||
+                         (p.ShortDescription != null && p.ShortDescription.Contains(search)) ||
                          (p.Description != null && p.Description.Contains(search)) ||
                          (p.Sku != null && p.Sku.Contains(search)));
 
@@ -96,6 +97,7 @@ public sealed class ProductsCountSpec : Specification<Product>
         // Search filter
         Query.Where(p => string.IsNullOrEmpty(search) ||
                          p.Name.Contains(search) ||
+                         (p.ShortDescription != null && p.ShortDescription.Contains(search)) ||
                          (p.Description != null && p.Description.Contains(search)) ||
                          (p.Sku != null && p.Sku.Contains(search)));
 
@@ -142,6 +144,7 @@ public sealed class ProductByIdSpec : Specification<Product>
              .Include(p => p.Category!)
              .Include(p => p.Variants)
              .Include(p => p.Images)
+             .Include("Options.Values")
              .TagWith("GetProductById");
     }
 }
@@ -157,8 +160,24 @@ public sealed class ProductByIdForUpdateSpec : Specification<Product>
              .Include(p => p.Category!)
              .Include(p => p.Variants)
              .Include(p => p.Images)
+             .Include("Options.Values")
              .AsTracking()
              .TagWith("GetProductByIdForUpdate");
+    }
+}
+
+/// <summary>
+/// Specification to find a product by ID for option updates (with tracking).
+/// Only loads options and values, not variants or images for better performance.
+/// </summary>
+public sealed class ProductByIdForOptionUpdateSpec : Specification<Product>
+{
+    public ProductByIdForOptionUpdateSpec(Guid id)
+    {
+        Query.Where(p => p.Id == id)
+             .Include("Options.Values")
+             .AsTracking()
+             .TagWith("GetProductByIdForOptionUpdate");
     }
 }
 
@@ -174,6 +193,7 @@ public sealed class ProductBySlugSpec : Specification<Product>
              .Include(p => p.Category!)
              .Include(p => p.Variants)
              .Include(p => p.Images)
+             .Include("Options.Values")
              .TagWith("GetProductBySlug");
     }
 }

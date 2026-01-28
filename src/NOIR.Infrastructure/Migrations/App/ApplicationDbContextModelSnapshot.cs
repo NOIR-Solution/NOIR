@@ -315,6 +315,180 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Checkout.CheckoutSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("BillingSameAsShipping")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CouponCode")
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)")
+                        .HasDefaultValue("VND");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("CustomerName")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("CustomerNotes")
+                        .HasMaxLength(1000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("CustomerPhone")
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<DateTimeOffset?>("EstimatedDeliveryAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("GrandTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset>("LastActivityAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OrderNumber")
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid?>("PaymentGatewayId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<decimal>("ShippingCost")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("ShippingMethod")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TaxAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("IX_CheckoutSessions_OrderId")
+                        .HasFilter("[OrderId] IS NOT NULL");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("Status", "ExpiresAt")
+                        .HasDatabaseName("IX_CheckoutSessions_Status_ExpiresAt");
+
+                    b.HasIndex("TenantId", "CartId")
+                        .HasDatabaseName("IX_CheckoutSessions_TenantId_CartId");
+
+                    b.HasIndex("TenantId", "Status")
+                        .HasDatabaseName("IX_CheckoutSessions_TenantId_Status");
+
+                    b.HasIndex("TenantId", "UserId")
+                        .HasDatabaseName("IX_CheckoutSessions_TenantId_UserId")
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("CheckoutSessions", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.EmailChangeOtp", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1321,6 +1495,286 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasDatabaseName("IX_NotificationPreferences_UserId_Category");
 
                     b.ToTable("NotificationPreferences", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Order.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("CancelledAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("CheckoutSessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ConfirmedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CouponCode")
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)")
+                        .HasDefaultValue("VND");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CustomerName")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("CustomerNotes")
+                        .HasMaxLength(1000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("CustomerPhone")
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeliveredAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<DateTimeOffset?>("EstimatedDeliveryAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("GrandTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("InternalNotes")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("OrderNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset?>("ShippedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("ShippingAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("ShippingCarrier")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ShippingMethod")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TaxAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("TrackingNumber")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CheckoutSessionId")
+                        .HasDatabaseName("IX_Orders_CheckoutSessionId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("OrderNumber", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Orders_OrderNumber_TenantId");
+
+                    b.HasIndex("TenantId", "CreatedAt")
+                        .HasDatabaseName("IX_Orders_TenantId_CreatedAt");
+
+                    b.HasIndex("TenantId", "CustomerEmail")
+                        .HasDatabaseName("IX_Orders_TenantId_CustomerEmail");
+
+                    b.HasIndex("TenantId", "CustomerId")
+                        .HasDatabaseName("IX_Orders_TenantId_CustomerId");
+
+                    b.HasIndex("TenantId", "Status")
+                        .HasDatabaseName("IX_Orders_TenantId_Status");
+
+                    b.HasIndex("TenantId", "Status", "CreatedAt")
+                        .HasDatabaseName("IX_Orders_TenantId_Status_CreatedAt");
+
+                    b.ToTable("Orders", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Order.OrderItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("OptionsSnapshot")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("ProductVariantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Sku")
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("TaxAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("VariantName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_OrderItems_ProductId");
+
+                    b.HasIndex("ProductVariantId")
+                        .HasDatabaseName("IX_OrderItems_ProductVariantId");
+
+                    b.ToTable("OrderItems", (string)null);
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
@@ -3099,6 +3553,11 @@ namespace NOIR.Infrastructure.Migrations.App
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("ShortDescription")
+                        .HasMaxLength(300)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(300)");
+
                     b.Property<string>("Sku")
                         .HasMaxLength(50)
                         .IsUnicode(true)
@@ -4072,6 +4531,184 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Navigation("Cart");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Checkout.CheckoutSession", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Cart.Cart", "Cart")
+                        .WithMany()
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NOIR.Domain.Entities.Order.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.OwnsOne("NOIR.Domain.ValueObjects.Address", "BillingAddress", b1 =>
+                        {
+                            b1.Property<Guid>("CheckoutSessionId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("AddressLine1")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("BillingAddressLine1");
+
+                            b1.Property<string>("AddressLine2")
+                                .HasMaxLength(200)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("BillingAddressLine2");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingCountry");
+
+                            b1.Property<string>("District")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingDistrict");
+
+                            b1.Property<string>("FullName")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingFullName");
+
+                            b1.Property<bool>("IsDefault")
+                                .HasColumnType("bit")
+                                .HasColumnName("BillingIsDefault");
+
+                            b1.Property<string>("Phone")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(20)")
+                                .HasColumnName("BillingPhone");
+
+                            b1.Property<string>("PostalCode")
+                                .HasMaxLength(20)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(20)")
+                                .HasColumnName("BillingPostalCode");
+
+                            b1.Property<string>("Province")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingProvince");
+
+                            b1.Property<string>("Ward")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingWard");
+
+                            b1.HasKey("CheckoutSessionId");
+
+                            b1.ToTable("CheckoutSessions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CheckoutSessionId");
+                        });
+
+                    b.OwnsOne("NOIR.Domain.ValueObjects.Address", "ShippingAddress", b1 =>
+                        {
+                            b1.Property<Guid>("CheckoutSessionId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("AddressLine1")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("ShippingAddressLine1");
+
+                            b1.Property<string>("AddressLine2")
+                                .HasMaxLength(200)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("ShippingAddressLine2");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingCountry");
+
+                            b1.Property<string>("District")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingDistrict");
+
+                            b1.Property<string>("FullName")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingFullName");
+
+                            b1.Property<bool>("IsDefault")
+                                .HasColumnType("bit")
+                                .HasColumnName("ShippingIsDefault");
+
+                            b1.Property<string>("Phone")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(20)")
+                                .HasColumnName("ShippingPhone");
+
+                            b1.Property<string>("PostalCode")
+                                .HasMaxLength(20)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(20)")
+                                .HasColumnName("ShippingPostalCode");
+
+                            b1.Property<string>("Province")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingProvince");
+
+                            b1.Property<string>("Ward")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingWard");
+
+                            b1.HasKey("CheckoutSessionId");
+
+                            b1.ToTable("CheckoutSessions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CheckoutSessionId");
+                        });
+
+                    b.Navigation("BillingAddress");
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("ShippingAddress");
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.EntityAuditLog", b =>
                 {
                     b.HasOne("NOIR.Domain.Entities.HandlerAuditLog", "HandlerAuditLog")
@@ -4092,6 +4729,180 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Navigation("HttpRequestAuditLog");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Order.Order", b =>
+                {
+                    b.OwnsOne("NOIR.Domain.ValueObjects.Address", "BillingAddress", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("AddressLine1")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("BillingAddressLine1");
+
+                            b1.Property<string>("AddressLine2")
+                                .HasMaxLength(200)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("BillingAddressLine2");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingCountry");
+
+                            b1.Property<string>("District")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingDistrict");
+
+                            b1.Property<string>("FullName")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingFullName");
+
+                            b1.Property<bool>("IsDefault")
+                                .HasColumnType("bit")
+                                .HasColumnName("BillingIsDefault");
+
+                            b1.Property<string>("Phone")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(20)")
+                                .HasColumnName("BillingPhone");
+
+                            b1.Property<string>("PostalCode")
+                                .HasMaxLength(20)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(20)")
+                                .HasColumnName("BillingPostalCode");
+
+                            b1.Property<string>("Province")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingProvince");
+
+                            b1.Property<string>("Ward")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("BillingWard");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.OwnsOne("NOIR.Domain.ValueObjects.Address", "ShippingAddress", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("AddressLine1")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("ShippingAddressLine1");
+
+                            b1.Property<string>("AddressLine2")
+                                .HasMaxLength(200)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(200)")
+                                .HasColumnName("ShippingAddressLine2");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingCountry");
+
+                            b1.Property<string>("District")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingDistrict");
+
+                            b1.Property<string>("FullName")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingFullName");
+
+                            b1.Property<bool>("IsDefault")
+                                .HasColumnType("bit")
+                                .HasColumnName("ShippingIsDefault");
+
+                            b1.Property<string>("Phone")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(20)")
+                                .HasColumnName("ShippingPhone");
+
+                            b1.Property<string>("PostalCode")
+                                .HasMaxLength(20)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(20)")
+                                .HasColumnName("ShippingPostalCode");
+
+                            b1.Property<string>("Province")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingProvince");
+
+                            b1.Property<string>("Ward")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .IsUnicode(true)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("ShippingWard");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("BillingAddress");
+
+                    b.Navigation("ShippingAddress");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Order.OrderItem", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Order.Order", "Order")
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.Payment.PaymentInstallment", b =>
                 {
                     b.HasOne("NOIR.Domain.Entities.Payment.PaymentTransaction", "PaymentTransaction")
@@ -4105,6 +4916,10 @@ namespace NOIR.Infrastructure.Migrations.App
 
             modelBuilder.Entity("NOIR.Domain.Entities.Payment.PaymentTransaction", b =>
                 {
+                    b.HasOne("NOIR.Domain.Entities.Order.Order", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("OrderId");
+
                     b.HasOne("NOIR.Domain.Entities.Payment.PaymentGateway", "Gateway")
                         .WithMany()
                         .HasForeignKey("PaymentGatewayId")
@@ -4277,6 +5092,13 @@ namespace NOIR.Infrastructure.Migrations.App
             modelBuilder.Entity("NOIR.Domain.Entities.HttpRequestAuditLog", b =>
                 {
                     b.Navigation("HandlerAuditLogs");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Order.Order", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("NOIR.Domain.Entities.Payment.PaymentTransaction", b =>

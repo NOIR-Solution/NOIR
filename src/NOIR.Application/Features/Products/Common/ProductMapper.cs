@@ -15,12 +15,14 @@ public static class ProductMapper
         string? categoryName,
         string? categorySlug,
         List<ProductVariantDto> variants,
-        List<ProductImageDto> images)
+        List<ProductImageDto> images,
+        List<ProductOptionDto>? options = null)
     {
         return new ProductDto(
             product.Id,
             product.Name,
             product.Slug,
+            product.ShortDescription,
             product.Description,
             product.DescriptionHtml,
             product.BasePrice,
@@ -41,6 +43,7 @@ public static class ProductMapper
             product.InStock,
             variants,
             images,
+            options ?? [],
             product.CreatedAt,
             product.ModifiedAt);
     }
@@ -61,10 +64,16 @@ public static class ProductMapper
             .Select(ToDto)
             .ToList();
 
+        var options = product.Options
+            .OrderBy(o => o.SortOrder)
+            .Select(ToDto)
+            .ToList();
+
         return new ProductDto(
             product.Id,
             product.Name,
             product.Slug,
+            product.ShortDescription,
             product.Description,
             product.DescriptionHtml,
             product.BasePrice,
@@ -85,12 +94,13 @@ public static class ProductMapper
             product.InStock,
             variants,
             images,
+            options,
             product.CreatedAt,
             product.ModifiedAt);
     }
 
     /// <summary>
-    /// Maps a Product entity to ProductDto, automatically mapping variants and images.
+    /// Maps a Product entity to ProductDto, automatically mapping variants, images, and options.
     /// Use when collections are already loaded.
     /// </summary>
     public static ProductDto ToDtoWithCollections(
@@ -108,7 +118,12 @@ public static class ProductMapper
             .Select(ToDto)
             .ToList();
 
-        return ToDto(product, categoryName, categorySlug, variants, images);
+        var options = product.Options
+            .OrderBy(o => o.SortOrder)
+            .Select(ToDto)
+            .ToList();
+
+        return ToDto(product, categoryName, categorySlug, variants, images, options);
     }
 
     /// <summary>
@@ -127,7 +142,8 @@ public static class ProductMapper
             variant.LowStock,
             variant.OnSale,
             variant.GetOptions(),
-            variant.SortOrder);
+            variant.SortOrder,
+            variant.ImageId);
     }
 
     /// <summary>
@@ -156,6 +172,7 @@ public static class ProductMapper
             product.Id,
             product.Name,
             product.Slug,
+            product.ShortDescription,
             product.BasePrice,
             product.Currency,
             product.Status,
@@ -254,5 +271,37 @@ public static class ProductMapper
             category.ParentId,
             category.Parent?.Name,
             category.Children?.Count ?? 0);
+    }
+
+    /// <summary>
+    /// Maps a ProductOption entity to ProductOptionDto.
+    /// </summary>
+    public static ProductOptionDto ToDto(ProductOption option)
+    {
+        var values = option.Values
+            .OrderBy(v => v.SortOrder)
+            .Select(ToDto)
+            .ToList();
+
+        return new ProductOptionDto(
+            option.Id,
+            option.Name,
+            option.DisplayName,
+            option.SortOrder,
+            values);
+    }
+
+    /// <summary>
+    /// Maps a ProductOptionValue entity to ProductOptionValueDto.
+    /// </summary>
+    public static ProductOptionValueDto ToDto(ProductOptionValue value)
+    {
+        return new ProductOptionValueDto(
+            value.Id,
+            value.Value,
+            value.DisplayValue,
+            value.ColorCode,
+            value.SwatchUrl,
+            value.SortOrder);
     }
 }
