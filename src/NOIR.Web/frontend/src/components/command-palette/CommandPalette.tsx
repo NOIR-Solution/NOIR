@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Command } from 'cmdk'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -81,6 +81,17 @@ export function CommandPalette() {
   const { setTheme, resolvedTheme } = useTheme()
   const { hasPermission } = usePermissions()
   const [search, setSearch] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Auto-focus input when palette opens
+  useEffect(() => {
+    if (isOpen) {
+      // Small delay to ensure DOM is ready
+      requestAnimationFrame(() => {
+        inputRef.current?.focus()
+      })
+    }
+  }, [isOpen])
 
   // Register keyboard shortcuts
   useKeyboardShortcuts([
@@ -175,6 +186,7 @@ export function CommandPalette() {
           <div className="flex items-center border-b px-3">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <Command.Input
+              ref={inputRef}
               value={search}
               onValueChange={setSearch}
               placeholder={t('commandPalette.placeholder', 'Type a command or search...')}
