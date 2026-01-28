@@ -1,10 +1,17 @@
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  type ReactNode,
+} from 'react'
 
-type Theme = 'light' | 'dark' | 'system'
-type ResolvedTheme = 'light' | 'dark'
+type Theme = 'light' | 'dark' | 'system' | 'high-contrast'
+type ResolvedTheme = 'light' | 'dark' | 'high-contrast'
 
 interface ThemeContextType {
-  /** Current theme setting (light, dark, or system) */
+  /** Current theme setting (light, dark, system, or high-contrast) */
   theme: Theme
   /** Actual applied theme after resolving system preference */
   resolvedTheme: ResolvedTheme
@@ -14,6 +21,8 @@ interface ThemeContextType {
   toggleTheme: () => void
   /** Whether the user has explicitly set a theme preference */
   hasUserPreference: boolean
+  /** Whether high contrast mode is active */
+  isHighContrast: boolean
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -21,11 +30,19 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 const STORAGE_KEY = 'noir-theme'
 
 /**
- * Get system color scheme preference
+ * Get system color scheme preference, including high contrast detection
  */
 function getSystemTheme(): ResolvedTheme {
   if (typeof window === 'undefined') return 'light'
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+
+  // Check high contrast preference first
+  if (window.matchMedia('(prefers-contrast: more)').matches) {
+    return 'high-contrast'
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light'
 }
 
 /**
@@ -33,10 +50,12 @@ function getSystemTheme(): ResolvedTheme {
  */
 function applyTheme(resolvedTheme: ResolvedTheme) {
   const root = document.documentElement
+  root.classList.remove('dark', 'high-contrast')
+
   if (resolvedTheme === 'dark') {
     root.classList.add('dark')
-  } else {
-    root.classList.remove('dark')
+  } else if (resolvedTheme === 'high-contrast') {
+    root.classList.add('high-contrast')
   }
 }
 
@@ -46,7 +65,10 @@ interface ThemeProviderProps {
   defaultTheme?: Theme
 }
 
-export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProviderProps) {
+export function ThemeProvider({
+  children,
+  defaultTheme = 'system',
+}: ThemeProviderProps) {
   const [hasUserPreference, setHasUserPreference] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
     return localStorage.getItem(STORAGE_KEY) !== null
@@ -62,12 +84,25 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
     if (typeof window === 'undefined') return 'light'
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null
     const currentTheme = stored || defaultTheme
-    return currentTheme === 'system' ? getSystemTheme() : currentTheme
+    if (currentTheme === 'system') {
+      return getSystemTheme()
+    }
+    if (currentTheme === 'high-contrast') {
+      return 'high-contrast'
+    }
+    return currentTheme as ResolvedTheme
   })
 
   // Apply theme on mount and when theme changes
   useEffect(() => {
-    const resolved = theme === 'system' ? getSystemTheme() : theme
+    let resolved: ResolvedTheme
+    if (theme === 'system') {
+      resolved = getSystemTheme()
+    } else if (theme === 'high-contrast') {
+      resolved = 'high-contrast'
+    } else {
+      resolved = theme
+    }
     setResolvedTheme(resolved)
     applyTheme(resolved)
   }, [theme])
@@ -76,16 +111,22 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
   useEffect(() => {
     if (theme !== 'system') return
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const contrastQuery = window.matchMedia('(prefers-contrast: more)')
 
-    const handleChange = (e: MediaQueryListEvent) => {
-      const newResolved = e.matches ? 'dark' : 'light'
+    const handleChange = () => {
+      const newResolved = getSystemTheme()
       setResolvedTheme(newResolved)
       applyTheme(newResolved)
     }
 
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
+    darkModeQuery.addEventListener('change', handleChange)
+    contrastQuery.addEventListener('change', handleChange)
+
+    return () => {
+      darkModeQuery.removeEventListener('change', handleChange)
+      contrastQuery.removeEventListener('change', handleChange)
+    }
   }, [theme])
 
   const setTheme = useCallback((newTheme: Theme) => {
@@ -95,13 +136,31 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
   }, [])
 
   const toggleTheme = useCallback(() => {
-    // Toggle between light and dark (sets explicit preference)
-    const newTheme = resolvedTheme === 'dark' ? 'light' : 'dark'
-    setTheme(newTheme)
+    // Cycle: light -> dark -> high-contrast -> light
+    // Or simple toggle between light and dark if not using high contrast
+    if (resolvedTheme === 'light') {
+      setTheme('dark')
+    } else if (resolvedTheme === 'dark') {
+      setTheme('light')
+    } else {
+      // From high-contrast, go to light
+      setTheme('light')
+    }
   }, [resolvedTheme, setTheme])
 
+  const isHighContrast = resolvedTheme === 'high-contrast'
+
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, toggleTheme, hasUserPreference }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        resolvedTheme,
+        setTheme,
+        toggleTheme,
+        hasUserPreference,
+        isHighContrast,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   )

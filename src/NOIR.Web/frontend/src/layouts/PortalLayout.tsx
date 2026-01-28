@@ -1,7 +1,11 @@
 import { useState, Suspense } from 'react'
-import { Outlet } from 'react-router-dom'
 import { Sidebar, MobileSidebarTrigger } from '@/components/portal/Sidebar'
 import { PageLoader } from '@/components/ui/page-loader'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs'
+import { SkipLink } from '@/components/accessibility/SkipLink'
+import { OfflineIndicator } from '@/components/network/OfflineIndicator'
+import { AnimatedOutlet } from '@/components/layout/AnimatedOutlet'
 
 export function PortalLayout() {
   // Use lazy initialization to read from localStorage on mount (avoids extra render)
@@ -10,6 +14,7 @@ export function PortalLayout() {
     return saved !== null ? JSON.parse(saved) : false
   })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const breadcrumbs = useBreadcrumbs()
 
   const handleSidebarToggle = () => {
     const newState = !sidebarCollapsed
@@ -19,6 +24,9 @@ export function PortalLayout() {
 
   return (
     <div className="flex h-screen w-full bg-background">
+      {/* Skip Link for Accessibility */}
+      <SkipLink targetId="main-content" />
+
       {/* Desktop Sidebar - Headerless design */}
       <Sidebar
         collapsed={sidebarCollapsed}
@@ -36,12 +44,21 @@ export function PortalLayout() {
         </div>
 
         {/* Main Content - Full vertical space on desktop */}
-        <main className="flex-1 overflow-auto p-4 lg:p-6">
+        <main id="main-content" className="flex-1 overflow-auto p-4 lg:p-6">
+          {/* Breadcrumb Navigation */}
+          {breadcrumbs.length > 1 && (
+            <div className="mb-4">
+              <Breadcrumb items={breadcrumbs} />
+            </div>
+          )}
           <Suspense fallback={<PageLoader text="Loading..." />}>
-            <Outlet />
+            <AnimatedOutlet />
           </Suspense>
         </main>
       </div>
+
+      {/* Offline Indicator */}
+      <OfflineIndicator />
     </div>
   )
 }

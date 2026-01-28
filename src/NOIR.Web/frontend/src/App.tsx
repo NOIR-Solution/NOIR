@@ -6,9 +6,11 @@ import { BrandingProvider } from '@/contexts/BrandingContext'
 import { RegionalSettingsProvider } from '@/contexts/RegionalSettingsContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import { AccessibilityProvider } from '@/contexts/AccessibilityContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { PortalLayout } from '@/layouts/PortalLayout'
 import { PageSkeleton } from '@/components/ui/page-loader'
+import { CommandProvider, CommandPalette } from '@/components/command-palette'
 
 import LoginPage from '@/pages/Login'
 import LandingPage from '@/pages/Landing'
@@ -58,86 +60,93 @@ import SuccessPage from '@/pages/forgot-password/Success'
 function App() {
   return (
     <ThemeProvider defaultTheme="system">
-      <AuthProvider>
-        <BrandingProvider>
-        <RegionalSettingsProvider>
-        <NotificationProvider>
-          <BrowserRouter>
-        <Toaster
-          position="top-center"
-          richColors
-          toastOptions={{
-            classNames: {
-              success: 'bg-green-50 border-green-200 text-green-800',
-              error: 'bg-red-50 border-red-200 text-red-800',
-              info: 'bg-blue-50 border-blue-200 text-blue-800',
-            }
-          }}
-        />
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
+      <AccessibilityProvider>
+        <AuthProvider>
+          <BrandingProvider>
+            <RegionalSettingsProvider>
+              <NotificationProvider>
+                <BrowserRouter>
+                  <CommandProvider>
+                    <Toaster
+                      position="top-center"
+                      richColors
+                      toastOptions={{
+                        classNames: {
+                          success: 'bg-green-50 border-green-200 text-green-800',
+                          error: 'bg-red-50 border-red-200 text-red-800',
+                          info: 'bg-blue-50 border-blue-200 text-blue-800',
+                        },
+                      }}
+                    />
+                    <Routes>
+                      {/* Public Routes */}
+                      <Route path="/" element={<LandingPage />} />
+                      <Route path="/login" element={<LoginPage />} />
 
-          {/* Public Legal Pages */}
-          <Route path="/terms" element={<Suspense fallback={<LazyFallback />}><TermsPage /></Suspense>} />
-          <Route path="/privacy" element={<Suspense fallback={<LazyFallback />}><PrivacyPage /></Suspense>} />
+                      {/* Public Legal Pages */}
+                      <Route path="/terms" element={<Suspense fallback={<LazyFallback />}><TermsPage /></Suspense>} />
+                      <Route path="/privacy" element={<Suspense fallback={<LazyFallback />}><PrivacyPage /></Suspense>} />
 
-          {/* Forgot Password Flow */}
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/forgot-password/verify" element={<VerifyOtpPage />} />
-          <Route path="/forgot-password/reset" element={<ResetPasswordPage />} />
-          <Route path="/forgot-password/success" element={<SuccessPage />} />
+                      {/* Forgot Password Flow */}
+                      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                      <Route path="/forgot-password/verify" element={<VerifyOtpPage />} />
+                      <Route path="/forgot-password/reset" element={<ResetPasswordPage />} />
+                      <Route path="/forgot-password/success" element={<SuccessPage />} />
 
-          {/* Protected Portal Routes */}
-          <Route
-            path="/portal"
-            element={
-              <ProtectedRoute>
-                <PortalLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Suspense fallback={<LazyFallback />}><Dashboard /></Suspense>} />
-            <Route path="settings" element={<Suspense fallback={<LazyFallback />}><SettingsPage /></Suspense>} />
-            {/* Email templates and Legal pages edit routes - list views are in Tenant Settings */}
-            <Route path="email-templates/:id" element={<EmailTemplateEditPage />} />
-            <Route path="legal-pages/:id" element={<Suspense fallback={<LazyFallback />}><LegalPageEditPage /></Suspense>} />
-            <Route path="notifications" element={<Suspense fallback={<LazyFallback />}><Notifications /></Suspense>} />
-            <Route path="settings/notifications" element={<Suspense fallback={<LazyFallback />}><NotificationPreferences /></Suspense>} />
-            {/* Admin Routes */}
-            <Route path="admin/platform-settings" element={<Suspense fallback={<LazyFallback />}><PlatformSettingsPage /></Suspense>} />
-            <Route path="admin/tenant-settings" element={<Suspense fallback={<LazyFallback />}><TenantSettingsPage /></Suspense>} />
-            {/* Payment Gateways redirect - now a tab in Tenant Settings */}
-            <Route path="admin/payment-gateways" element={<Navigate to="/portal/admin/tenant-settings?tab=paymentGateways" replace />} />
-            <Route path="admin/tenants" element={<Suspense fallback={<LazyFallback />}><TenantsPage /></Suspense>} />
-            <Route path="admin/tenants/:id" element={<Suspense fallback={<LazyFallback />}><TenantDetailPage /></Suspense>} />
-            <Route path="admin/roles" element={<Suspense fallback={<LazyFallback />}><RolesPage /></Suspense>} />
-            <Route path="admin/users" element={<Suspense fallback={<LazyFallback />}><UsersPage /></Suspense>} />
-            <Route path="activity-timeline" element={<Suspense fallback={<LazyFallback />}><ActivityTimelinePage /></Suspense>} />
-            <Route path="developer-logs" element={<Suspense fallback={<LazyFallback />}><DeveloperLogsPage /></Suspense>} />
-            {/* Blog CMS */}
-            <Route path="blog/posts" element={<Suspense fallback={<LazyFallback />}><BlogPostsPage /></Suspense>} />
-            <Route path="blog/posts/new" element={<Suspense fallback={<LazyFallback />}><PostEditorPage /></Suspense>} />
-            <Route path="blog/posts/:id/edit" element={<Suspense fallback={<LazyFallback />}><PostEditorPage /></Suspense>} />
-            <Route path="blog/categories" element={<Suspense fallback={<LazyFallback />}><BlogCategoriesPage /></Suspense>} />
-            <Route path="blog/tags" element={<Suspense fallback={<LazyFallback />}><BlogTagsPage /></Suspense>} />
-            {/* E-commerce */}
-            <Route path="ecommerce/products" element={<Suspense fallback={<LazyFallback />}><ProductsPage /></Suspense>} />
-            <Route path="ecommerce/products/new" element={<Suspense fallback={<LazyFallback />}><ProductFormPage /></Suspense>} />
-            <Route path="ecommerce/products/:id" element={<Suspense fallback={<LazyFallback />}><ProductFormPage /></Suspense>} />
-            <Route path="ecommerce/products/:id/edit" element={<Suspense fallback={<LazyFallback />}><ProductFormPage /></Suspense>} />
-            <Route path="ecommerce/categories" element={<Suspense fallback={<LazyFallback />}><ProductCategoriesPage /></Suspense>} />
-          </Route>
+                      {/* Protected Portal Routes */}
+                      <Route
+                        path="/portal"
+                        element={
+                          <ProtectedRoute>
+                            <PortalLayout />
+                          </ProtectedRoute>
+                        }
+                      >
+                        <Route index element={<Suspense fallback={<LazyFallback />}><Dashboard /></Suspense>} />
+                        <Route path="settings" element={<Suspense fallback={<LazyFallback />}><SettingsPage /></Suspense>} />
+                        {/* Email templates and Legal pages edit routes - list views are in Tenant Settings */}
+                        <Route path="email-templates/:id" element={<EmailTemplateEditPage />} />
+                        <Route path="legal-pages/:id" element={<Suspense fallback={<LazyFallback />}><LegalPageEditPage /></Suspense>} />
+                        <Route path="notifications" element={<Suspense fallback={<LazyFallback />}><Notifications /></Suspense>} />
+                        <Route path="settings/notifications" element={<Suspense fallback={<LazyFallback />}><NotificationPreferences /></Suspense>} />
+                        {/* Admin Routes */}
+                        <Route path="admin/platform-settings" element={<Suspense fallback={<LazyFallback />}><PlatformSettingsPage /></Suspense>} />
+                        <Route path="admin/tenant-settings" element={<Suspense fallback={<LazyFallback />}><TenantSettingsPage /></Suspense>} />
+                        {/* Payment Gateways redirect - now a tab in Tenant Settings */}
+                        <Route path="admin/payment-gateways" element={<Navigate to="/portal/admin/tenant-settings?tab=paymentGateways" replace />} />
+                        <Route path="admin/tenants" element={<Suspense fallback={<LazyFallback />}><TenantsPage /></Suspense>} />
+                        <Route path="admin/tenants/:id" element={<Suspense fallback={<LazyFallback />}><TenantDetailPage /></Suspense>} />
+                        <Route path="admin/roles" element={<Suspense fallback={<LazyFallback />}><RolesPage /></Suspense>} />
+                        <Route path="admin/users" element={<Suspense fallback={<LazyFallback />}><UsersPage /></Suspense>} />
+                        <Route path="activity-timeline" element={<Suspense fallback={<LazyFallback />}><ActivityTimelinePage /></Suspense>} />
+                        <Route path="developer-logs" element={<Suspense fallback={<LazyFallback />}><DeveloperLogsPage /></Suspense>} />
+                        {/* Blog CMS */}
+                        <Route path="blog/posts" element={<Suspense fallback={<LazyFallback />}><BlogPostsPage /></Suspense>} />
+                        <Route path="blog/posts/new" element={<Suspense fallback={<LazyFallback />}><PostEditorPage /></Suspense>} />
+                        <Route path="blog/posts/:id/edit" element={<Suspense fallback={<LazyFallback />}><PostEditorPage /></Suspense>} />
+                        <Route path="blog/categories" element={<Suspense fallback={<LazyFallback />}><BlogCategoriesPage /></Suspense>} />
+                        <Route path="blog/tags" element={<Suspense fallback={<LazyFallback />}><BlogTagsPage /></Suspense>} />
+                        {/* E-commerce */}
+                        <Route path="ecommerce/products" element={<Suspense fallback={<LazyFallback />}><ProductsPage /></Suspense>} />
+                        <Route path="ecommerce/products/new" element={<Suspense fallback={<LazyFallback />}><ProductFormPage /></Suspense>} />
+                        <Route path="ecommerce/products/:id" element={<Suspense fallback={<LazyFallback />}><ProductFormPage /></Suspense>} />
+                        <Route path="ecommerce/products/:id/edit" element={<Suspense fallback={<LazyFallback />}><ProductFormPage /></Suspense>} />
+                        <Route path="ecommerce/categories" element={<Suspense fallback={<LazyFallback />}><ProductCategoriesPage /></Suspense>} />
+                      </Route>
 
-          {/* Catch-all redirect to landing */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          </BrowserRouter>
-        </NotificationProvider>
-        </RegionalSettingsProvider>
-        </BrandingProvider>
-      </AuthProvider>
+                      {/* Catch-all redirect to landing */}
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+
+                    {/* Global Command Palette (Cmd+K / Ctrl+K) */}
+                    <CommandPalette />
+                  </CommandProvider>
+                </BrowserRouter>
+              </NotificationProvider>
+            </RegionalSettingsProvider>
+          </BrandingProvider>
+        </AuthProvider>
+      </AccessibilityProvider>
     </ThemeProvider>
   )
 }

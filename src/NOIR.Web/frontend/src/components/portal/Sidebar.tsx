@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -32,7 +32,10 @@ import {
   Palette,
   Package,
   Layers,
+  Search,
+  X,
 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { TippyTooltip } from '@/components/ui/tippy-tooltip'
@@ -356,6 +359,8 @@ interface SidebarContentProps {
   pathname: string
   user?: UserData | null
   logoUrl?: string | null
+  searchQuery?: string
+  onSearchChange?: (query: string) => void
 }
 
 
@@ -655,17 +660,31 @@ function SidebarContent({
   pathname,
   user,
   logoUrl,
+  searchQuery = '',
+  onSearchChange,
 }: SidebarContentProps) {
   const isActive = (path: string) => isActivePath(pathname, path)
   const { hasPermission } = usePermissions()
 
-  // Filter sections and items based on permissions
-  const visibleSections = navSections
-    .map(section => ({
-      ...section,
-      items: section.items.filter(item => !item.permission || hasPermission(item.permission)),
-    }))
-    .filter(section => section.items.length > 0)
+  // Filter sections and items based on permissions and search query
+  const visibleSections = useMemo(() => {
+    const searchLower = searchQuery.toLowerCase().trim()
+
+    return navSections
+      .map(section => ({
+        ...section,
+        items: section.items.filter(item => {
+          // First check permissions
+          if (item.permission && !hasPermission(item.permission)) return false
+
+          // Then check search query
+          if (!searchLower) return true
+          const itemLabel = t(item.titleKey).toLowerCase()
+          return itemLabel.includes(searchLower)
+        }),
+      }))
+      .filter(section => section.items.length > 0)
+  }, [searchQuery, hasPermission, t])
 
   const renderNavItem = (item: NavItem) => {
     const Icon = item.icon
@@ -753,6 +772,37 @@ function SidebarContent({
         </Button>
       </div>
 
+      {/* Search Input (only when expanded) */}
+      {isExpanded && onSearchChange && (
+        <div className="px-3 py-2 border-b border-sidebar-border">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              type="text"
+              placeholder={t('nav.searchMenu')}
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="h-9 pl-8 pr-8 bg-sidebar-accent/50 border-sidebar-border text-sm placeholder:text-muted-foreground/70"
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground hover:text-foreground"
+                onClick={() => onSearchChange('')}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+          {searchQuery && visibleSections.length === 0 && (
+            <p className="text-xs text-muted-foreground mt-2 text-center">
+              {t('nav.noResults')}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Navigation - Task-based sections */}
       <nav className="flex-1 overflow-y-auto py-4">
         {visibleSections.map((section, index) => (
@@ -811,6 +861,14 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
   const location = useLocation()
   const { user } = useAuthContext()
   const { branding } = useBranding()
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Clear search when sidebar collapses
+  useEffect(() => {
+    if (collapsed) {
+      setSearchQuery('')
+    }
+  }, [collapsed])
 
   return (
     <aside
@@ -826,6 +884,8 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
         pathname={location.pathname}
         user={user}
         logoUrl={branding?.logoUrl}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
     </aside>
   )

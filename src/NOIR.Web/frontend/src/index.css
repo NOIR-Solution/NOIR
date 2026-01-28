@@ -117,6 +117,58 @@
   --sidebar-ring: oklch(0.60 0.20 250);
 }
 
+/*
+ * High Contrast Theme
+ * - Minimum 7:1 contrast ratio for all text (WCAG AAA)
+ * - Increased border widths for better visibility
+ * - Stronger focus indicators
+ */
+.high-contrast {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0 0 0);
+  /* High contrast blue - darker for maximum contrast */
+  --primary: oklch(0.35 0.25 250);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0 0);
+  --secondary-foreground: oklch(0 0 0);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.25 0 0);
+  --accent: oklch(0.95 0 0);
+  --accent-foreground: oklch(0 0 0);
+  --destructive: oklch(0.45 0.3 27);
+  --border: oklch(0 0 0);
+  --input: oklch(0 0 0);
+  --ring: oklch(0 0 0);
+  /* Sidebar - high contrast */
+  --sidebar: oklch(0.98 0 0);
+  --sidebar-foreground: oklch(0 0 0);
+  --sidebar-primary: oklch(0.35 0.25 250);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.95 0 0);
+  --sidebar-accent-foreground: oklch(0 0 0);
+  --sidebar-border: oklch(0 0 0);
+  --sidebar-ring: oklch(0 0 0);
+}
+
+/* High contrast mode enhancements */
+.high-contrast *:focus-visible {
+  outline-width: 3px !important;
+  outline-offset: 2px !important;
+  outline-color: oklch(0 0 0) !important;
+}
+
+.high-contrast .border {
+  border-width: 2px;
+}
+
+.high-contrast a:not([class]) {
+  text-decoration: underline;
+}
+
 /* Tailwind base styles */
 @layer base {
   * {
@@ -270,4 +322,24 @@
 /* Dark mode adjustments */
 .dark .tox .tox-autocompleter {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Respect user's motion preferences (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-blob,
+  .animate-gradient-shift,
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-bounce {
+    animation: none !important;
+  }
 }

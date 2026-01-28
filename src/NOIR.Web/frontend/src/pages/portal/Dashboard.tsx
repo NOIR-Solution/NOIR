@@ -18,7 +18,7 @@ export default function Dashboard() {
 
       {/* Quick Links - Icon color coding: blue=documentation, cyan=system tools, teal=user info */}
       <div className="max-w-md">
-        <Card className="border-blue-600/10 shadow-sm shadow-blue-600/5">
+        <Card className="shadow-sm hover:shadow-lg transition-all duration-300 border-border/50">
           <CardHeader>
             <CardTitle className="text-foreground">{t('dashboard.quickLinks')}</CardTitle>
             <CardDescription>{t('dashboard.quickLinksDescription')}</CardDescription>
