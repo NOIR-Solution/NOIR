@@ -6,7 +6,7 @@
 
 *Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).*
 
-**Last Updated:** 2026-01-26 | **Version:** 2.0
+**Last Updated:** 2026-01-29 | **Version:** 2.1
 
 </div>
 
@@ -126,7 +126,7 @@ dotnet watch --project src/NOIR.Web
 ### Testing
 
 ```bash
-# All tests (5,597+ tests)
+# All tests (5,188+ tests)
 dotnet test src/NOIR.sln
 
 # Specific project
@@ -663,7 +663,24 @@ await createProduct.mutateAsync(productData)
 
 ## 🛒 E-commerce Patterns
 
-> **Phase 8 Complete:** Product Catalog, Shopping Cart, Checkout, Orders are fully implemented.
+> **Phase 8 Complete:** Product Catalog, Shopping Cart, Checkout, Orders, Product Attributes.
+
+### Product Attributes
+
+```typescript
+// Dynamic attribute system with 13 types
+// Location: src/NOIR.Application/Features/ProductAttributes/
+
+// AttributeType: Select, MultiSelect, Text, TextArea, Number, Decimal,
+//               Boolean, Date, DateTime, Color, Range, Url, File
+
+// ProductAttribute → ProductAttributeValue (1:N) - predefined options
+// Category → CategoryAttribute (M:N) - attributes assigned to categories
+// Product → ProductAttributeAssignment (1:N) - actual values on products
+
+// ProductFilterIndex - Denormalized for fast faceted filtering
+// FilterAnalyticsEvent - Track filter usage for analytics
+```
 
 ### Product Management
 
@@ -788,12 +805,18 @@ For detailed documentation, see the `docs/` folder:
 
 ## 📝 Changelog
 
+### Version 2.1 (2026-01-29)
+- **Added:** Product Attribute System patterns (13 attribute types)
+- **Added:** ProductFilterIndex for faceted filtering
+- **Added:** FilterAnalyticsEvent for usage tracking
+- **Updated:** Test count to 5,188+ (accurate after Weight removal)
+- **Cleaned:** Documentation structure (42 files, removed obsolete plans)
+
 ### Version 2.0 (2026-01-26)
 - **Fixed:** Rule numbering now sequential (1-22)
 - **Added:** Table of Contents for navigation
 - **Added:** E-commerce Patterns section (Products, Cart, Checkout, Orders)
 - **Added:** TanStack Query hooks pattern for frontend data fetching
-- **Updated:** Test count from 5,370+ to 5,597+
 - **Added:** Version tracking and changelog
 
 ### Version 1.0 (Initial)

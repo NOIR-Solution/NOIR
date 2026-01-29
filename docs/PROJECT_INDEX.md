@@ -20,7 +20,7 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,597+ tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,188+ tests.
 
 ### Key Statistics
 
@@ -1082,7 +1082,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
   - Full OrderStatus workflow (Pending → Confirmed → Shipped → Delivered)
 - **Enhanced Products** - Added variant and image management
   - 6 new commands: AddProductVariant, UpdateProductVariant, DeleteProductVariant, AddProductImage, UpdateProductImage, DeleteProductImage, SetPrimaryProductImage
-- **Tests**: 5,597 tests (up from 5,571)
+- **Tests**: 5,188 tests (up from 5,571)
 - **Statistics**: 19 feature modules, 100+ endpoints, 36 entities, 21 enums
 
 ### Version 2.5 (2026-01-25) - Phase 8 E-commerce Sprint 1
