@@ -18,6 +18,7 @@ import type {
   UpdateCategoryAttributeRequest,
   ProductAttributeAssignment,
   ProductAttributeFormSchema,
+  CategoryAttributeFormSchema,
   SetProductAttributeValueRequest,
   BulkUpdateProductAttributesRequest,
 } from '@/types/productAttribute'
@@ -171,6 +172,17 @@ export async function removeProductAttributeValue(
  */
 export async function getCategoryAttributes(categoryId: string): Promise<CategoryAttribute[]> {
   return apiClient<CategoryAttribute[]>(`/products/categories/${categoryId}/attributes`)
+}
+
+/**
+ * Get attribute form schema for a category (for new product creation).
+ * Unlike getProductAttributeFormSchema, this does NOT require a productId.
+ * Returns form fields with default values but no currentValue.
+ */
+export async function getCategoryAttributeFormSchema(
+  categoryId: string
+): Promise<CategoryAttributeFormSchema> {
+  return apiClient<CategoryAttributeFormSchema>(`/products/categories/${categoryId}/attribute-form-schema`)
 }
 
 /**

@@ -6,7 +6,7 @@
 import { apiClient } from './apiClient'
 import type { MediaFile, MediaUploadResult } from '@/types'
 
-export type MediaFolder = 'blog' | 'content' | 'avatars' | 'branding'
+export type MediaFolder = 'blog' | 'content' | 'avatars' | 'branding' | 'products'
 
 /**
  * Upload a file to the media service

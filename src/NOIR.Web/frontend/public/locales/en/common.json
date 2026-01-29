@@ -795,7 +795,21 @@
     "allStock": "All Stock",
     "viewDetails": "View Details",
     "created": "Created",
-    "showingOfItems": "Showing {{from}}-{{to}} of {{total}} items"
+    "showingOfItems": "Showing {{from}}-{{to}} of {{total}} items",
+    "logo": "Logo",
+    "logoUploaded": "Logo uploaded",
+    "removeLogo": "Remove logo",
+    "uploadLogo": "Upload logo",
+    "uploading": "Uploading...",
+    "dragOrClick": "Drag & drop or click to select",
+    "searchType": "Search type...",
+    "types": "types",
+    "noTypeFound": "No type found",
+    "slug": "Slug",
+    "sortOrder": "Sort Order",
+    "websiteUrl": "Website URL",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "permissions": {
     "categories": {
@@ -834,7 +848,10 @@
     "unauthorized": "You are not authorized to perform this action",
     "forbidden": "Access denied",
     "serverError": "An unexpected error occurred. Please try again later.",
-    "loadFailed": "Failed to load data"
+    "loadFailed": "Failed to load data",
+    "invalidFileType": "Invalid file type",
+    "fileTooLarge": "File must be less than {{maxSize}}MB",
+    "uploadFailed": "Upload failed"
   },
   "messages": {
     "saveSuccess": "Saved successfully",

@@ -2,6 +2,7 @@ namespace NOIR.Application.Features.Products.Commands.BulkImportProducts;
 
 /// <summary>
 /// Command to bulk import products from parsed CSV data.
+/// Supports variants, images, and attributes in a flat CSV format.
 /// </summary>
 public sealed record BulkImportProductsCommand(
     List<ImportProductDto> Products)
@@ -11,7 +12,8 @@ public sealed record BulkImportProductsCommand(
 }
 
 /// <summary>
-/// Single product data for import.
+/// Single product/variant row data for import.
+/// Flat format where multiple rows with same ProductSlug create variants.
 /// </summary>
 public sealed record ImportProductDto(
     string Name,
@@ -23,7 +25,13 @@ public sealed record ImportProductDto(
     string? Barcode,
     string? CategoryName,
     string? Brand,
-    int? Stock);
+    int? Stock,
+    // New fields for enhanced import
+    string? VariantName,
+    decimal? VariantPrice,
+    decimal? CompareAtPrice,
+    string? Images,              // Pipe-separated URLs: "url1|url2|url3"
+    Dictionary<string, string>? Attributes);  // attr_code -> value
 
 /// <summary>
 /// Result of bulk import operation.

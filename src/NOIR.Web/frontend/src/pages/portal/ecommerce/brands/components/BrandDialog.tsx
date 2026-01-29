@@ -24,7 +24,9 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { LogoUploadField } from '@/components/ui/logo-upload-field'
 import { useCreateBrand, useUpdateBrand } from '@/hooks/useBrands'
+import { uploadMedia } from '@/services/media'
 import type { BrandListItem } from '@/types/brand'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
@@ -34,7 +36,7 @@ const brandSchema = z.object({
   slug: z.string().min(1, 'Slug is required').max(100, 'Slug must be 100 characters or less')
     .regex(/^[a-z0-9-]+$/, 'Slug must only contain lowercase letters, numbers, and hyphens'),
   description: z.string().max(500, 'Description must be 500 characters or less').optional().nullable(),
-  logoUrl: z.string().url('Must be a valid URL').optional().nullable().or(z.literal('')),
+  logoUrl: z.string().optional().nullable(),
   bannerUrl: z.string().url('Must be a valid URL').optional().nullable().or(z.literal('')),
   websiteUrl: z.string().url('Must be a valid URL').optional().nullable().or(z.literal('')),
   isActive: z.boolean(),
@@ -225,12 +227,16 @@ export function BrandDialog({ open, onOpenChange, brand, onSuccess }: BrandDialo
               name="logoUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('labels.logoUrl', 'Logo URL')}</FormLabel>
+                  <FormLabel>{t('labels.logo', 'Logo')}</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder={t('brands.logoUrlPlaceholder', 'https://example.com/logo.png')}
+                    <LogoUploadField
+                      value={field.value}
+                      onChange={field.onChange}
+                      onUpload={async (file) => {
+                        const result = await uploadMedia(file, 'branding')
+                        return result.url
+                      }}
+                      placeholder={t('brands.uploadLogo', 'Upload brand logo')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -280,13 +286,8 @@ export function BrandDialog({ open, onOpenChange, brand, onSuccess }: BrandDialo
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>{t('labels.active', 'Active')}</FormLabel>
-                      <FormDescription className="text-xs">
-                        {t('brands.activeDescription', 'Show in dropdowns')}
-                      </FormDescription>
-                    </div>
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 h-[58px]">
+                    <FormLabel className="cursor-pointer">{t('labels.active', 'Active')}</FormLabel>
                     <FormControl>
                       <Switch
                         checked={field.value}

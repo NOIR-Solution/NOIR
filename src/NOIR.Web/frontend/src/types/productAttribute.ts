@@ -242,6 +242,16 @@ export interface ProductAttributeFormField {
 }
 
 /**
+ * Form schema for category attributes (used for new product creation).
+ * Unlike ProductAttributeFormSchema, this does NOT require a productId.
+ */
+export interface CategoryAttributeFormSchema {
+  categoryId: string
+  categoryName: string
+  fields: ProductAttributeFormField[]
+}
+
+/**
  * Request to set a single attribute value
  */
 export interface SetProductAttributeValueRequest {

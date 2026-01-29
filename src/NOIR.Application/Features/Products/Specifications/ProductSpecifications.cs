@@ -470,3 +470,45 @@ public sealed class ProductByOptionValueIdSpec : Specification<Product>
              .TagWith("GetProductByOptionValueId");
     }
 }
+
+/// <summary>
+/// Specification to get products with all related data for export.
+/// </summary>
+public sealed class ProductsForExportSpec : Specification<Product>
+{
+    public ProductsForExportSpec(
+        string? status,
+        string? categoryId,
+        bool includeAttributes,
+        bool includeImages)
+    {
+        // Include variants
+        Query.Include(p => p.Variants);
+
+        if (includeImages)
+        {
+            Query.Include(p => p.Images);
+        }
+
+        if (includeAttributes)
+        {
+            // Include attribute assignments (we'll load attributes separately for the lookup)
+            Query.Include(p => p.AttributeAssignments);
+        }
+
+        // Filter by status
+        if (!string.IsNullOrEmpty(status) && Enum.TryParse<ProductStatus>(status, true, out var productStatus))
+        {
+            Query.Where(p => p.Status == productStatus);
+        }
+
+        // Filter by category
+        if (!string.IsNullOrEmpty(categoryId) && Guid.TryParse(categoryId, out var catId))
+        {
+            Query.Where(p => p.CategoryId == catId);
+        }
+
+        Query.OrderBy(p => p.Name)
+             .TagWith("ExportProducts");
+    }
+}

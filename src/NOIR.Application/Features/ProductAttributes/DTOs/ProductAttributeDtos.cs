@@ -198,6 +198,15 @@ public sealed record ProductAttributeFormFieldDto(
     string? CurrentDisplayValue);
 
 /// <summary>
+/// Form schema for a category's attributes (used for new product creation).
+/// Unlike ProductAttributeFormSchemaDto, this does NOT require a productId.
+/// </summary>
+public sealed record CategoryAttributeFormSchemaDto(
+    Guid CategoryId,
+    string CategoryName,
+    IReadOnlyCollection<ProductAttributeFormFieldDto> Fields);
+
+/// <summary>
 /// Request to set a single attribute value for a product.
 /// </summary>
 public sealed record SetProductAttributeValueRequest(

@@ -946,7 +946,21 @@
     "allStock": "Tất cả tồn kho",
     "viewDetails": "Xem chi tiết",
     "created": "Đã tạo",
-    "showingOfItems": "Hiển thị {{from}}-{{to}} trong số {{total}} mục"
+    "showingOfItems": "Hiển thị {{from}}-{{to}} trong số {{total}} mục",
+    "logo": "Logo",
+    "logoUploaded": "Đã tải lên logo",
+    "removeLogo": "Xóa logo",
+    "uploadLogo": "Tải lên logo",
+    "uploading": "Đang tải lên...",
+    "dragOrClick": "Kéo thả hoặc nhấp để chọn",
+    "searchType": "Tìm kiếm loại...",
+    "types": "loại",
+    "noTypeFound": "Không tìm thấy loại",
+    "slug": "Đường dẫn",
+    "sortOrder": "Thứ tự sắp xếp",
+    "websiteUrl": "URL Website",
+    "save": "Lưu",
+    "cancel": "Hủy"
   },
   "permissions": {
     "categories": {
@@ -985,7 +999,10 @@
     "unauthorized": "Bạn không được phép thực hiện thao tác này",
     "forbidden": "Truy cập bị từ chối",
     "serverError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
-    "loadFailed": "Không thể tải dữ liệu"
+    "loadFailed": "Không thể tải dữ liệu",
+    "invalidFileType": "Loại tệp không hợp lệ",
+    "fileTooLarge": "Tệp phải nhỏ hơn {{maxSize}}MB",
+    "uploadFailed": "Tải lên thất bại"
   },
   "messages": {
     "saveSuccess": "Lưu thành công",

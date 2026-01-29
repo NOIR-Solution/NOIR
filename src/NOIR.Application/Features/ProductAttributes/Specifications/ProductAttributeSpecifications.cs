@@ -257,3 +257,23 @@ public sealed class ProductAttributesByIdsSpec : Specification<ProductAttribute>
              .TagWith("GetProductAttributesByIds");
     }
 }
+
+/// <summary>
+/// Specification to retrieve active product attributes by a list of codes.
+/// Used for bulk import attribute lookup.
+/// </summary>
+public sealed class ProductAttributesByCodesSpec : Specification<ProductAttribute>
+{
+    public ProductAttributesByCodesSpec(IEnumerable<string> codes, bool includeValues = true)
+    {
+        var codeList = codes.Select(c => c.ToLowerInvariant().Replace(" ", "_")).ToList();
+        Query.Where(a => a.IsActive && codeList.Contains(a.Code));
+
+        if (includeValues)
+        {
+            Query.Include(a => a.Values.Where(v => v.IsActive));
+        }
+
+        Query.TagWith("GetProductAttributesByCodes");
+    }
+}

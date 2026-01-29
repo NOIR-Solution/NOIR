@@ -14,6 +14,7 @@ import {
   updateProductAttributeValue,
   removeProductAttributeValue,
   getCategoryAttributes,
+  getCategoryAttributeFormSchema,
   assignCategoryAttribute,
   updateCategoryAttribute,
   removeCategoryAttribute,
@@ -35,6 +36,7 @@ import type {
   AssignCategoryAttributeRequest,
   UpdateCategoryAttributeRequest,
   ProductAttributeFormSchema,
+  CategoryAttributeFormSchema,
   ProductAttributeFormField,
   ProductAttributeAssignment,
   SetProductAttributeValueRequest,
@@ -668,6 +670,62 @@ export function useProductAttributeForm(
       setState((prev) => ({ ...prev, loading: false, error: message }))
     }
   }, [productId, variantId])
+
+  useEffect(() => {
+    fetchFormSchema()
+  }, [fetchFormSchema])
+
+  return {
+    ...state,
+    refresh: fetchFormSchema,
+  }
+}
+
+// ============================================================================
+// Category Attribute Form Hook (for new product creation)
+// ============================================================================
+
+interface UseCategoryAttributeFormState {
+  data: CategoryAttributeFormSchema | null
+  loading: boolean
+  error: string | null
+}
+
+interface UseCategoryAttributeFormReturn extends UseCategoryAttributeFormState {
+  refresh: () => Promise<void>
+}
+
+/**
+ * Hook to fetch the attribute form schema for a category.
+ * Used for new product creation - returns form fields without requiring a productId.
+ * Unlike useProductAttributeForm, this works before the product is saved.
+ */
+export function useCategoryAttributeForm(
+  categoryId: string | null | undefined
+): UseCategoryAttributeFormReturn {
+  const [state, setState] = useState<UseCategoryAttributeFormState>({
+    data: null,
+    loading: !!categoryId,
+    error: null,
+  })
+
+  const fetchFormSchema = useCallback(async () => {
+    if (!categoryId) {
+      setState({ data: null, loading: false, error: null })
+      return
+    }
+
+    setState((prev) => ({ ...prev, loading: true, error: null }))
+
+    try {
+      const data = await getCategoryAttributeFormSchema(categoryId)
+      setState({ data, loading: false, error: null })
+    } catch (err) {
+      const message =
+        err instanceof ApiError ? err.message : 'Failed to load category attributes'
+      setState((prev) => ({ ...prev, loading: false, error: message }))
+    }
+  }, [categoryId])
 
   useEffect(() => {
     fetchFormSchema()

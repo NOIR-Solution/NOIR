@@ -20,13 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -313,27 +307,21 @@ export function ProductAttributeDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('labels.type', 'Type')}</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={isEditing}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="cursor-pointer">
-                            <SelectValue placeholder={t('productAttributes.selectType', 'Select type')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {ATTRIBUTE_TYPES.map((type) => (
-                            <SelectItem key={type} value={type} className="cursor-pointer">
-                              {getTypeLabel(type)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        {t('productAttributes.typeDescription', 'Determines how values are entered and displayed')}
-                      </FormDescription>
+                      <FormControl>
+                        <Combobox
+                          options={ATTRIBUTE_TYPES.map((type) => ({
+                            value: type,
+                            label: getTypeLabel(type),
+                          }))}
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder={t('productAttributes.selectType', 'Select type')}
+                          searchPlaceholder={t('labels.searchType', 'Search type...')}
+                          emptyText={t('labels.noTypeFound', 'No type found')}
+                          disabled={isEditing}
+                          countLabel={t('labels.types', 'types')}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -384,13 +372,8 @@ export function ProductAttributeDialog({
                     control={form.control}
                     name="isActive"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('labels.active', 'Active')}</FormLabel>
-                          <FormDescription className="text-xs">
-                            {t('productAttributes.activeDescription', 'Enable this attribute')}
-                          </FormDescription>
-                        </div>
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 h-[58px]">
+                        <FormLabel className="cursor-pointer">{t('labels.active', 'Active')}</FormLabel>
                         <FormControl>
                           <Switch
                             checked={field.value}

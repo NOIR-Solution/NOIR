@@ -6,7 +6,7 @@ namespace NOIR.Web.Endpoints;
 /// </summary>
 public static class MediaEndpoints
 {
-    private static readonly string[] AllowedFolders = ["blog", "content", "avatars", "branding"];
+    private static readonly string[] AllowedFolders = ["blog", "content", "avatars", "branding", "products"];
     private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
 
     public static void MapMediaEndpoints(this WebApplication app)
@@ -67,6 +67,13 @@ public static class MediaEndpoints
                 // Use tenant ID for branding assets
                 var tenantId = multiTenantContext.MultiTenantContext?.TenantInfo?.Id ?? "default";
                 storageFolder = $"{targetFolder}/{tenantId}";
+            }
+            else if (targetFolder == "products")
+            {
+                // Products: use entityId (productId or temp_{sessionId} for new products)
+                // For new products, entityId should be "temp_{sessionId}" to allow cleanup
+                var productRef = !string.IsNullOrEmpty(entityId) ? entityId : $"temp_{Guid.NewGuid():N}";
+                storageFolder = $"{targetFolder}/{productRef}";
             }
 
             try
@@ -202,6 +209,8 @@ public static class MediaEndpoints
             - blog: Blog post images (full processing)
             - content: General content images (full processing)
             - avatars: User profile pictures (optimized - fewer variants)
+            - products: Product images (thumb/medium/large + dominant color)
+              Use entityId=temp_{sessionId} for new products (before save)
             """)
         .DisableAntiforgery()
         .Produces<MediaUploadResultDto>(StatusCodes.Status200OK)
@@ -523,6 +532,16 @@ public static class MediaEndpoints
                 Formats = [OutputFormat.WebP], // Skip JPEG - faster upload
                 GenerateThumbHash = true,
                 ExtractDominantColor = false,
+                PreserveOriginal = false,
+                StorageFolder = storageFolder
+            },
+            "products" => new ImageProcessingOptions
+            {
+                // Products: Thumb (gallery), Medium (detail), Large (zoom), WebP + JPEG fallback
+                Variants = [ImageVariant.Thumb, ImageVariant.Medium, ImageVariant.Large],
+                Formats = [OutputFormat.WebP, OutputFormat.Jpeg],
+                GenerateThumbHash = true,
+                ExtractDominantColor = true,
                 PreserveOriginal = false,
                 StorageFolder = storageFolder
             },

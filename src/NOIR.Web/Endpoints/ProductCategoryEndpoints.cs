@@ -3,6 +3,7 @@ using NOIR.Application.Features.ProductAttributes.Commands.RemoveCategoryAttribu
 using NOIR.Application.Features.ProductAttributes.Commands.UpdateCategoryAttribute;
 using NOIR.Application.Features.ProductAttributes.DTOs;
 using NOIR.Application.Features.ProductAttributes.Queries.GetCategoryAttributes;
+using NOIR.Application.Features.ProductAttributes.Queries.GetCategoryAttributeFormSchema;
 using NOIR.Application.Features.Products.Commands.CreateProductCategory;
 using NOIR.Application.Features.Products.Commands.DeleteProductCategory;
 using NOIR.Application.Features.Products.Commands.UpdateProductCategory;
@@ -148,6 +149,24 @@ public static class ProductCategoryEndpoints
         .WithSummary("Get attributes assigned to a category")
         .WithDescription("Returns all attributes assigned to the specified category.")
         .Produces<IReadOnlyList<CategoryAttributeDto>>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Get category's attribute form schema (for new product creation)
+        group.MapGet("/{id:guid}/attribute-form-schema", async (Guid id, IMessageBus bus) =>
+        {
+            var query = new GetCategoryAttributeFormSchemaQuery(id);
+            var result = await bus.InvokeAsync<Result<CategoryAttributeFormSchemaDto>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductCategoriesRead)
+        .WithName("GetCategoryAttributeFormSchema")
+        .WithSummary("Get attribute form schema for a category")
+        .WithDescription("""
+            Returns all attributes applicable to products in this category with their form field definitions.
+            Used for new product creation - provides form schema without requiring a productId.
+            Unlike GetProductAttributeFormSchema, currentValue and currentDisplayValue will be null.
+            """)
+        .Produces<CategoryAttributeFormSchemaDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Assign attribute to category

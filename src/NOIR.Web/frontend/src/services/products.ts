@@ -6,7 +6,6 @@
 import { apiClient } from './apiClient'
 import type {
   Product,
-  ProductListItem,
   ProductPagedResult,
   ProductVariant,
   ProductImage,
@@ -180,7 +179,8 @@ export async function duplicateProduct(
 // ============================================================================
 
 /**
- * Single product data for import
+ * Single product/variant row data for import.
+ * Flat format where multiple rows with same slug create variants.
  */
 export interface ImportProductDto {
   name: string
@@ -193,6 +193,12 @@ export interface ImportProductDto {
   categoryName?: string
   brand?: string
   stock?: number
+  // Enhanced fields for variants
+  variantName?: string
+  variantPrice?: number
+  compareAtPrice?: number
+  images?: string  // Pipe-separated URLs: "url1|url2|url3"
+  attributes?: Record<string, string>  // attr_code -> value
 }
 
 /**
@@ -214,6 +220,54 @@ export async function bulkImportProducts(
     method: 'POST',
     body: JSON.stringify({ products }),
   })
+}
+
+/**
+ * Export product row (flat format for CSV)
+ */
+export interface ExportProductRowDto {
+  name: string
+  slug: string
+  sku?: string | null
+  barcode?: string | null
+  basePrice: number
+  currency: string
+  status: string
+  categoryName?: string | null
+  brand?: string | null
+  shortDescription?: string | null
+  variantName?: string | null
+  variantPrice?: number | null
+  compareAtPrice?: number | null
+  stock: number
+  images?: string | null
+  attributes: Record<string, string>
+}
+
+/**
+ * Result of export operation
+ */
+export interface ExportProductsResult {
+  rows: ExportProductRowDto[]
+  attributeColumns: string[]
+}
+
+/**
+ * Export products as flat rows
+ */
+export async function exportProducts(params?: {
+  categoryId?: string
+  status?: string
+  includeAttributes?: boolean
+  includeImages?: boolean
+}): Promise<ExportProductsResult> {
+  const queryParams = new URLSearchParams()
+  if (params?.categoryId) queryParams.append('categoryId', params.categoryId)
+  if (params?.status) queryParams.append('status', params.status)
+  queryParams.append('includeAttributes', String(params?.includeAttributes ?? true))
+  queryParams.append('includeImages', String(params?.includeImages ?? true))
+
+  return apiClient<ExportProductsResult>(`/products/export?${queryParams.toString()}`)
 }
 
 /**

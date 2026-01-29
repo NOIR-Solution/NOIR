@@ -1,24 +1,15 @@
 /**
  * ProductImportExport Component
  *
- * Provides CSV import/export functionality for products.
- * - Export: Downloads current products as CSV (fully functional)
- * - Import: Upload CSV file to bulk create/update products
- *
- * TODO: Backend Integration Required for Import
- * Currently import simulates processing. To complete:
- * 1. Create POST /api/products/import bulk endpoint
- * 2. Replace setTimeout simulation with actual API calls
- * 3. Consider using papaparse for robust CSV parsing
+ * Provides enhanced CSV import/export functionality for products.
+ * Supports variants, images (pipe-separated), and dynamic attributes.
  */
 import { useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'framer-motion'
 import {
   Download,
   Upload,
   FileSpreadsheet,
-  X,
   Check,
   AlertTriangle,
   Loader2,
@@ -43,6 +34,7 @@ import {
 import { Progress } from '@/components/ui/progress'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { ProductListItem } from '@/types/product'
+import { bulkImportProducts, exportProducts, type ImportProductDto } from '@/services/products'
 import { toast } from 'sonner'
 
 interface ProductImportExportProps {
@@ -55,8 +47,8 @@ interface ImportResult {
   errors: { row: number; message: string }[]
 }
 
-// CSV export fields
-const EXPORT_FIELDS = [
+// Base CSV export fields
+const BASE_EXPORT_FIELDS = [
   'name',
   'slug',
   'sku',
@@ -66,9 +58,13 @@ const EXPORT_FIELDS = [
   'status',
   'categoryName',
   'brand',
-  'totalStock',
   'shortDescription',
-] as const
+  'variantName',
+  'variantPrice',
+  'compareAtPrice',
+  'stock',
+  'images',
+]
 
 export function ProductImportExport({
   products,
@@ -82,27 +78,54 @@ export function ProductImportExport({
   const [importResult, setImportResult] = useState<ImportResult | null>(null)
   const [showImportDialog, setShowImportDialog] = useState(false)
 
-  // Export products to CSV
+  // Export products to CSV using the API
   const handleExport = async () => {
     setIsExporting(true)
 
     try {
-      // Build CSV content
-      const headers = EXPORT_FIELDS.join(',')
-      const rows = products.map((product) => {
-        return EXPORT_FIELDS.map((field) => {
-          const value = product[field as keyof ProductListItem]
-          if (value === null || value === undefined) return ''
-          // Escape quotes and wrap in quotes if contains comma
-          const stringValue = String(value)
-          if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
-            return `"${stringValue.replace(/"/g, '""')}"`
-          }
-          return stringValue
-        }).join(',')
+      // Fetch export data from API
+      const result = await exportProducts({
+        includeAttributes: true,
+        includeImages: true,
       })
 
-      const csvContent = [headers, ...rows].join('\n')
+      // Build headers with dynamic attribute columns
+      const allHeaders = [...BASE_EXPORT_FIELDS]
+      result.attributeColumns.forEach(attrCode => {
+        allHeaders.push(`attr_${attrCode}`)
+      })
+      const headerRow = allHeaders.join(',')
+
+      // Build rows
+      const dataRows = result.rows.map((row) => {
+        const values: string[] = []
+
+        // Base fields
+        values.push(escapeCSV(row.name))
+        values.push(escapeCSV(row.slug))
+        values.push(escapeCSV(row.sku || ''))
+        values.push(escapeCSV(row.barcode || ''))
+        values.push(String(row.basePrice))
+        values.push(escapeCSV(row.currency))
+        values.push(escapeCSV(row.status))
+        values.push(escapeCSV(row.categoryName || ''))
+        values.push(escapeCSV(row.brand || ''))
+        values.push(escapeCSV(row.shortDescription || ''))
+        values.push(escapeCSV(row.variantName || ''))
+        values.push(row.variantPrice != null ? String(row.variantPrice) : '')
+        values.push(row.compareAtPrice != null ? String(row.compareAtPrice) : '')
+        values.push(String(row.stock))
+        values.push(escapeCSV(row.images || ''))
+
+        // Dynamic attribute columns
+        result.attributeColumns.forEach(attrCode => {
+          values.push(escapeCSV(row.attributes[attrCode] || ''))
+        })
+
+        return values.join(',')
+      })
+
+      const csvContent = [headerRow, ...dataRows].join('\n')
 
       // Download file
       const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' })
@@ -115,32 +138,26 @@ export function ProductImportExport({
       document.body.removeChild(link)
       URL.revokeObjectURL(url)
 
-      toast.success(t('products.export.success', { count: products.length, defaultValue: `${products.length} products exported` }))
+      toast.success(t('products.export.success', { count: result.rows.length, defaultValue: `${result.rows.length} products exported` }))
     } catch (error) {
+      console.error('Export error:', error)
       toast.error(t('products.export.failed', 'Failed to export products'))
     } finally {
       setIsExporting(false)
     }
   }
 
-  // Download CSV template
+  // Download CSV template with enhanced fields
   const handleDownloadTemplate = () => {
-    const headers = EXPORT_FIELDS.join(',')
-    const exampleRow = [
-      'Example Product',
-      'example-product',
-      'SKU-001',
-      '',
-      '29.99',
-      'VND',
-      'Draft',
-      'Category Name',
-      'Brand Name',
-      '100',
-      'Short description here',
-    ].join(',')
+    const headers = [...BASE_EXPORT_FIELDS, 'attr_color', 'attr_material'].join(',')
+    const exampleRows = [
+      // Product row
+      'Example Product,example-product,SKU-001,,29990000,VND,Draft,Electronics,Apple,Short description,Default,29990000,,100,https://example.com/img1.jpg|https://example.com/img2.jpg,Silver,Aluminum',
+      // Variant row (same product slug)
+      'Example Product,example-product,SKU-002,,29990000,VND,Draft,Electronics,Apple,,128GB Variant,32990000,34990000,50,,Silver,Aluminum',
+    ].join('\n')
 
-    const csvContent = [headers, exampleRow].join('\n')
+    const csvContent = [headers, exampleRows].join('\n')
     const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -174,63 +191,87 @@ export function ProductImportExport({
 
     try {
       const text = await file.text()
-      const lines = text.split('\n').filter(line => line.trim())
+      const { headers, rows } = parseCSV(text)
 
-      if (lines.length < 2) {
-        throw new Error('CSV file must have at least a header row and one data row')
+      if (rows.length === 0) {
+        throw new Error(t('products.import.invalidFile', 'CSV file must have at least a header row and one data row'))
       }
-
-      // Parse header
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
 
       // Validate required fields
       const requiredFields = ['name', 'baseprice']
-      const missingFields = requiredFields.filter(f => !headers.includes(f))
+      const lowerHeaders = headers.map(h => h.toLowerCase())
+      const missingFields = requiredFields.filter(f => !lowerHeaders.includes(f))
       if (missingFields.length > 0) {
-        throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
+        throw new Error(t('products.import.missingFields', { fields: missingFields.join(', '), defaultValue: `Missing required fields: ${missingFields.join(', ')}` }))
       }
 
-      // Parse rows
-      const result: ImportResult = { success: 0, errors: [] }
-      const totalRows = lines.length - 1
-
-      for (let i = 1; i < lines.length; i++) {
-        const row = lines[i]
-        const rowNumber = i + 1
-
-        try {
-          // Simple CSV parsing (doesn't handle all edge cases)
-          const values = row.split(',').map(v => v.trim().replace(/^"|"$/g, ''))
-
-          // Create product object
-          const product: Record<string, string> = {}
-          headers.forEach((header, index) => {
-            product[header] = values[index] || ''
-          })
-
-          // Validate row
-          if (!product.name) {
-            result.errors.push({ row: rowNumber, message: 'Name is required' })
-            continue
-          }
-
-          // Note: In a real implementation, you would call the API here to create/update the product
-          // For now, we just simulate the import
-          await new Promise(resolve => setTimeout(resolve, 50)) // Simulate API call
-
-          result.success++
-        } catch (err) {
-          result.errors.push({
-            row: rowNumber,
-            message: err instanceof Error ? err.message : 'Unknown error',
+      // Find attribute columns (start with attr_)
+      const attrColumnIndexes: { index: number; code: string }[] = []
+      headers.forEach((header, index) => {
+        if (header.toLowerCase().startsWith('attr_')) {
+          attrColumnIndexes.push({
+            index,
+            code: header.substring(5).toLowerCase(),
           })
         }
+      })
 
-        // Update progress
-        setImportProgress(Math.round((i / totalRows) * 100))
-      }
+      // Map column indexes for known fields
+      const columnMap = new Map<string, number>()
+      lowerHeaders.forEach((h, i) => columnMap.set(h, i))
 
-      setImportResult(result)
+      // Convert rows to ImportProductDto
+      const products: ImportProductDto[] = rows.map(row => {
+        const getValue = (field: string): string | undefined => {
+          const index = columnMap.get(field.toLowerCase())
+          return index !== undefined ? row[index]?.trim() || undefined : undefined
+        }
+
+        const getNumberValue = (field: string): number | undefined => {
+          const val = getValue(field)
+          if (!val) return undefined
+          const num = parseFloat(val)
+          return isNaN(num) ? undefined : num
+        }
+
+        // Parse attributes
+        const attributes: Record<string, string> = {}
+        attrColumnIndexes.forEach(({ index, code }) => {
+          const value = row[index]?.trim()
+          if (value) {
+            attributes[code] = value
+          }
+        })
+
+        return {
+          name: getValue('name') || '',
+          slug: getValue('slug'),
+          basePrice: getNumberValue('baseprice') || 0,
+          currency: getValue('currency'),
+          shortDescription: getValue('shortdescription'),
+          sku: getValue('sku'),
+          barcode: getValue('barcode'),
+          categoryName: getValue('categoryname'),
+          brand: getValue('brand'),
+          stock: getNumberValue('stock') ? Math.floor(getNumberValue('stock')!) : undefined,
+          variantName: getValue('variantname'),
+          variantPrice: getNumberValue('variantprice'),
+          compareAtPrice: getNumberValue('compareatprice'),
+          images: getValue('images'),
+          attributes: Object.keys(attributes).length > 0 ? attributes : undefined,
+        }
+      })
+
+      setImportProgress(50)
+
+      // Call the API to import products
+      const result = await bulkImportProducts(products)
+
+      setImportProgress(100)
+      setImportResult({
+        success: result.success,
+        errors: result.errors,
+      })
 
       if (result.success > 0) {
         toast.success(t('products.import.success', { count: result.success, defaultValue: `${result.success} products imported` }))
@@ -241,7 +282,7 @@ export function ProductImportExport({
         toast.warning(t('products.import.partialSuccess', { errors: result.errors.length, defaultValue: `${result.errors.length} rows had errors` }))
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to import products'
+      const message = error instanceof Error ? error.message : t('products.import.failed', 'Failed to import products')
       toast.error(message)
       setShowImportDialog(false)
     } finally {
@@ -262,7 +303,7 @@ export function ProductImportExport({
           <DropdownMenuItem
             className="cursor-pointer"
             onClick={handleExport}
-            disabled={isExporting || products.length === 0}
+            disabled={isExporting}
           >
             {isExporting ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -391,4 +432,87 @@ export function ProductImportExport({
       </Dialog>
     </>
   )
+}
+
+/**
+ * Escape a value for CSV output
+ */
+function escapeCSV(value: string): string {
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`
+  }
+  return value
+}
+
+/**
+ * Parse CSV text into headers and rows
+ * Handles quoted fields with commas and newlines
+ */
+function parseCSV(text: string): { headers: string[]; rows: string[][] } {
+  const lines: string[] = []
+  let currentLine = ''
+  let inQuotes = false
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    if (char === '"') {
+      // Check for escaped quote
+      if (inQuotes && text[i + 1] === '"') {
+        currentLine += '"'
+        i++ // Skip next quote
+      } else {
+        inQuotes = !inQuotes
+      }
+    } else if (char === '\n' && !inQuotes) {
+      if (currentLine.trim()) {
+        lines.push(currentLine)
+      }
+      currentLine = ''
+    } else if (char === '\r' && !inQuotes) {
+      // Skip carriage return
+    } else {
+      currentLine += char
+    }
+  }
+
+  // Don't forget the last line
+  if (currentLine.trim()) {
+    lines.push(currentLine)
+  }
+
+  if (lines.length === 0) {
+    return { headers: [], rows: [] }
+  }
+
+  // Parse a single line into values
+  const parseLine = (line: string): string[] => {
+    const values: string[] = []
+    let currentValue = ''
+    let inQuotes = false
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i]
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          currentValue += '"'
+          i++
+        } else {
+          inQuotes = !inQuotes
+        }
+      } else if (char === ',' && !inQuotes) {
+        values.push(currentValue)
+        currentValue = ''
+      } else {
+        currentValue += char
+      }
+    }
+    values.push(currentValue)
+
+    return values
+  }
+
+  const headers = parseLine(lines[0])
+  const rows = lines.slice(1).map(parseLine)
+
+  return { headers, rows }
 }

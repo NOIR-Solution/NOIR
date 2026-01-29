@@ -98,11 +98,32 @@ import {
 import { ImageUploadZone } from '@/components/products/ImageUploadZone'
 import { SortableImageGallery } from '@/components/products/SortableImageGallery'
 import { ProductAttributesSection } from '@/components/products/ProductAttributesSection'
+import { ProductAttributesSectionCreate } from '@/components/products/ProductAttributesSectionCreate'
 import { ProductActivityLog } from './components/ProductActivityLog'
 import { useBulkUpdateProductAttributes } from '@/hooks/useProductAttributes'
+import { uploadMedia } from '@/services/media'
 import { toast } from 'sonner'
 import { ApiError } from '@/services/apiClient'
-import type { ProductVariant, ProductImage, CreateProductVariantRequest } from '@/types/product'
+import type { ProductVariant, ProductImage, CreateProductVariantRequest, CreateProductImageRequest } from '@/types/product'
+
+// Local types for create mode (before product exists)
+interface LocalVariant {
+  tempId: string
+  name: string
+  price: number
+  sku: string | null
+  compareAtPrice: number | null
+  stockQuantity: number
+  sortOrder: number
+}
+
+interface TempImage {
+  tempId: string
+  url: string
+  altText: string | null
+  sortOrder: number
+  isPrimary: boolean
+}
 import { generateSlug } from '@/lib/utils/slug'
 import { formatCurrency } from '@/lib/utils/currency'
 
@@ -249,6 +270,12 @@ export default function ProductFormPage() {
   const [editingAltText, setEditingAltText] = useState('')
   const [pendingAttributeValues, setPendingAttributeValues] = useState<Record<string, unknown>>({})
 
+  // Local state for create mode (before product exists)
+  const [localVariants, setLocalVariants] = useState<LocalVariant[]>([])
+  const [tempImages, setTempImages] = useState<TempImage[]>([])
+  const [localVariantToDelete, setLocalVariantToDelete] = useState<LocalVariant | null>(null)
+  const [tempImageToDelete, setTempImageToDelete] = useState<TempImage | null>(null)
+
   // Attribute bulk update hook
   const { bulkUpdate: bulkUpdateAttributes } = useBulkUpdateProductAttributes()
 
@@ -328,13 +355,32 @@ export default function ProductFormPage() {
           categoryId: data.categoryId || null,
         })
       } else {
+        // Convert local variants to CreateProductVariantRequest format
+        const variantsToCreate: CreateProductVariantRequest[] = localVariants.map((v) => ({
+          name: v.name,
+          price: v.price,
+          sku: v.sku,
+          compareAtPrice: v.compareAtPrice,
+          stockQuantity: v.stockQuantity,
+          options: null,
+          sortOrder: v.sortOrder,
+        }))
+
+        // Convert temp images to CreateProductImageRequest format
+        const imagesToCreate: CreateProductImageRequest[] = tempImages.map((img) => ({
+          url: img.url,
+          altText: img.altText,
+          sortOrder: img.sortOrder,
+          isPrimary: img.isPrimary,
+        }))
+
         const newProduct = await createProduct({
           ...data,
           descriptionHtml, // Use TinyMCE editor state
           currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
           categoryId: data.categoryId || null,
-          variants: [],
-          images: [],
+          variants: variantsToCreate.length > 0 ? variantsToCreate : [],
+          images: imagesToCreate.length > 0 ? imagesToCreate : [],
         })
         productId = newProduct.id
       }
@@ -451,6 +497,122 @@ export default function ProductFormPage() {
     } finally {
       setIsDeletingVariant(false)
     }
+  }
+
+  // Local variant management (for create mode)
+  const handleAddLocalVariant = () => {
+    if (!newVariant) return
+
+    const localVariant: LocalVariant = {
+      tempId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      name: newVariant.name,
+      price: newVariant.price,
+      sku: newVariant.sku || null,
+      compareAtPrice: newVariant.compareAtPrice || null,
+      stockQuantity: newVariant.stockQuantity,
+      sortOrder: newVariant.sortOrder || localVariants.length,
+    }
+
+    setLocalVariants((prev) => [...prev, localVariant])
+    setNewVariant(null)
+    toast.success('Variant added (will be saved with product)')
+  }
+
+  const handleUpdateLocalVariant = (tempId: string, data: VariantFormData) => {
+    setLocalVariants((prev) =>
+      prev.map((v) =>
+        v.tempId === tempId
+          ? {
+              ...v,
+              name: data.name,
+              price: data.price,
+              sku: data.sku || null,
+              compareAtPrice: data.compareAtPrice || null,
+              stockQuantity: data.stockQuantity,
+              sortOrder: data.sortOrder,
+            }
+          : v
+      )
+    )
+    setEditingVariantId(null)
+    toast.success('Variant updated')
+  }
+
+  const handleConfirmDeleteLocalVariant = () => {
+    if (!localVariantToDelete) return
+
+    setLocalVariants((prev) => prev.filter((v) => v.tempId !== localVariantToDelete.tempId))
+    toast.success(`Variant "${localVariantToDelete.name}" removed`)
+    setLocalVariantToDelete(null)
+  }
+
+  // Temp image management (for create mode)
+  const handleUploadTempImage = async (file: File) => {
+    try {
+      const result = await uploadMedia(file, 'products')
+      const tempImage: TempImage = {
+        tempId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        url: result.url,
+        altText: null,
+        sortOrder: tempImages.length,
+        isPrimary: tempImages.length === 0,
+      }
+      setTempImages((prev) => [...prev, tempImage])
+      toast.success(t('messages.uploadSuccess', 'Image uploaded successfully'))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to upload image'
+      toast.error(message)
+      throw err
+    }
+  }
+
+  const handleAddTempImageByUrl = () => {
+    if (!newImageUrl) return
+
+    const tempImage: TempImage = {
+      tempId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      url: newImageUrl,
+      altText: null,
+      sortOrder: tempImages.length,
+      isPrimary: tempImages.length === 0,
+    }
+    setTempImages((prev) => [...prev, tempImage])
+    setNewImageUrl('')
+    toast.success('Image added (will be saved with product)')
+  }
+
+  const handleSetPrimaryTempImage = (tempId: string) => {
+    setTempImages((prev) =>
+      prev.map((img) => ({
+        ...img,
+        isPrimary: img.tempId === tempId,
+      }))
+    )
+    toast.success('Primary image set')
+  }
+
+  const handleConfirmDeleteTempImage = () => {
+    if (!tempImageToDelete) return
+
+    setTempImages((prev) => {
+      const filtered = prev.filter((img) => img.tempId !== tempImageToDelete.tempId)
+      // If we deleted the primary image, make the first remaining image primary
+      if (tempImageToDelete.isPrimary && filtered.length > 0) {
+        filtered[0].isPrimary = true
+      }
+      return filtered
+    })
+    toast.success('Image removed')
+    setTempImageToDelete(null)
+  }
+
+  const handleReorderTempImages = (reorderedImages: TempImage[]) => {
+    setTempImages(
+      reorderedImages.map((img, index) => ({
+        ...img,
+        sortOrder: index,
+      }))
+    )
   }
 
   // Image management
@@ -952,71 +1114,72 @@ export default function ProductFormPage() {
             </form>
           </Form>
 
-          {/* Variants Section (only show when editing) */}
-          {isEditing && (
-            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-              <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Variants</CardTitle>
-                    <CardDescription>Product variations like size, color</CardDescription>
-                  </div>
-                  {!isViewMode && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="cursor-pointer"
-                      onClick={() => setNewVariant({ name: '', price: 0, sku: '', compareAtPrice: null, stockQuantity: 0, sortOrder: 0 })}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Variant
-                    </Button>
-                  )}
+          {/* Variants Section - works in both create and edit modes */}
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Variants</CardTitle>
+                  <CardDescription>Product variations like size, color</CardDescription>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* New Variant Form */}
-                  {newVariant && (
-                    <div className="p-4 border rounded-lg bg-muted/50 space-y-4">
-                      <h4 className="font-medium">New Variant</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        <Input
-                          placeholder="Variant name"
-                          value={newVariant.name}
-                          onChange={(e) => setNewVariant({ ...newVariant, name: e.target.value })}
-                        />
-                        <Input
-                          type="number"
-                          placeholder="Price"
-                          value={newVariant.price}
-                          onChange={(e) => setNewVariant({ ...newVariant, price: parseFloat(e.target.value) || 0 })}
-                        />
-                        <Input
-                          placeholder="SKU"
-                          value={newVariant.sku || ''}
-                          onChange={(e) => setNewVariant({ ...newVariant, sku: e.target.value })}
-                        />
-                        <Input
-                          type="number"
-                          placeholder="Stock"
-                          value={newVariant.stockQuantity}
-                          onChange={(e) => setNewVariant({ ...newVariant, stockQuantity: parseInt(e.target.value) || 0 })}
-                        />
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="sm" className="cursor-pointer" onClick={() => setNewVariant(null)}>
-                          Cancel
-                        </Button>
-                        <Button size="sm" className="cursor-pointer" onClick={handleAddVariant}>
-                          Add
-                        </Button>
-                      </div>
+                {!isViewMode && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="cursor-pointer"
+                    onClick={() => setNewVariant({ name: '', price: 0, sku: '', compareAtPrice: null, stockQuantity: 0, sortOrder: 0 })}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Variant
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* New Variant Form */}
+                {newVariant && (
+                  <div className="p-4 border rounded-lg bg-muted/50 space-y-4">
+                    <h4 className="font-medium">New Variant</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input
+                        placeholder="Variant name"
+                        value={newVariant.name}
+                        onChange={(e) => setNewVariant({ ...newVariant, name: e.target.value })}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Price"
+                        value={newVariant.price}
+                        onChange={(e) => setNewVariant({ ...newVariant, price: parseFloat(e.target.value) || 0 })}
+                      />
+                      <Input
+                        placeholder="SKU"
+                        value={newVariant.sku || ''}
+                        onChange={(e) => setNewVariant({ ...newVariant, sku: e.target.value })}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Stock"
+                        value={newVariant.stockQuantity}
+                        onChange={(e) => setNewVariant({ ...newVariant, stockQuantity: parseInt(e.target.value) || 0 })}
+                      />
                     </div>
-                  )}
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" size="sm" className="cursor-pointer" onClick={() => setNewVariant(null)}>
+                        Cancel
+                      </Button>
+                      <Button size="sm" className="cursor-pointer" onClick={isEditing ? handleAddVariant : handleAddLocalVariant}>
+                        Add
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
-                  {/* Existing Variants */}
-                  {variants.length === 0 && !newVariant ? (
+                {/* Display variants - local in create mode, from API in edit mode */}
+                {isEditing ? (
+                  // Edit mode: show variants from API
+                  variants.length === 0 && !newVariant ? (
                     <p className="text-center text-muted-foreground py-8">
                       No variants yet. Add variants for different sizes, colors, etc.
                     </p>
@@ -1086,11 +1249,81 @@ export default function ProductFormPage() {
                         )
                       ))}
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                  )
+                ) : (
+                  // Create mode: show local variants
+                  localVariants.length === 0 && !newVariant ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      No variants yet. Add variants for different sizes, colors, etc.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {localVariants.map((variant) => (
+                        editingVariantId === variant.tempId ? (
+                          <EditVariantForm
+                            key={variant.tempId}
+                            variant={{
+                              id: variant.tempId,
+                              name: variant.name,
+                              price: variant.price,
+                              sku: variant.sku,
+                              compareAtPrice: variant.compareAtPrice,
+                              stockQuantity: variant.stockQuantity,
+                              sortOrder: variant.sortOrder,
+                              inStock: true,
+                              lowStock: false,
+                              onSale: false,
+                            }}
+                            onSave={(data) => handleUpdateLocalVariant(variant.tempId, data)}
+                            onCancel={() => setEditingVariantId(null)}
+                          />
+                        ) : (
+                          <div
+                            key={variant.tempId}
+                            className="flex items-center gap-4 p-4 border rounded-xl bg-background hover:bg-muted/50 hover:shadow-sm transition-all duration-200 group"
+                          >
+                            <div className="flex-1">
+                              <div className="font-medium">{variant.name}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {variant.sku && `SKU: ${variant.sku} • `}
+                                Stock: {variant.stockQuantity}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-medium">
+                                {formatCurrency(variant.price)}
+                              </div>
+                            </div>
+                            <Badge variant="outline" className="text-xs">Pending</Badge>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="cursor-pointer"
+                                onClick={() => setEditingVariantId(variant.tempId)}
+                                aria-label={`Edit variant ${variant.name}`}
+                              >
+                                <Pencil className="h-4 w-4 text-muted-foreground" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="cursor-pointer"
+                                onClick={() => setLocalVariantToDelete(variant)}
+                                aria-label={`Delete variant ${variant.name}`}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        )
+                      ))}
+                    </div>
+                  )
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Sidebar */}
@@ -1152,10 +1385,16 @@ export default function ProductFormPage() {
             </CardContent>
           </Card>
 
-          {/* Product Attributes - Only show when editing and has category */}
-          {isEditing && id && (
+          {/* Product Attributes - works in both create and edit modes */}
+          {isEditing && id ? (
             <ProductAttributesSection
               productId={id}
+              categoryId={form.watch('categoryId') || null}
+              isViewMode={isViewMode}
+              onAttributesChange={handleAttributesChange}
+            />
+          ) : (
+            <ProductAttributesSectionCreate
               categoryId={form.watch('categoryId') || null}
               isViewMode={isViewMode}
               onAttributesChange={handleAttributesChange}
@@ -1220,36 +1459,120 @@ export default function ProductFormPage() {
             </CardContent>
           </Card>
 
-          {/* Images (only show when editing) */}
-          {isEditing && (
-            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-              <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                <CardTitle>Images</CardTitle>
-                <CardDescription>Product gallery images</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Drag & Drop Upload Zone */}
-                {!isViewMode && (
+          {/* Images - works in both create and edit modes */}
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+              <CardTitle>Images</CardTitle>
+              <CardDescription>Product gallery images</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {isEditing ? (
+                // Edit mode: full sortable gallery with API
+                <>
+                  {/* Drag & Drop Upload Zone */}
+                  {!isViewMode && (
+                    <ImageUploadZone
+                      onUpload={handleUploadImage}
+                      disabled={false}
+                      maxSizeMB={10}
+                    />
+                  )}
+
+                  {/* Sortable Image Gallery */}
+                  <SortableImageGallery
+                    images={images}
+                    productName={form.getValues('name')}
+                    isViewMode={isViewMode}
+                    onReorder={handleReorderImages}
+                    onSetPrimary={handleSetPrimaryImage}
+                    onDelete={(image) => setImageToDelete(image)}
+                    onUpdateAltText={handleGalleryUpdateAltText}
+                  />
+
+                  {/* Fallback: Add Image by URL */}
+                  {!isViewMode && (
+                    <div className="space-y-2 pt-4 border-t">
+                      <p className="text-xs font-medium text-muted-foreground">Or add by URL</p>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Image URL"
+                          value={newImageUrl}
+                          onChange={(e) => setNewImageUrl(e.target.value)}
+                          aria-label="Image URL"
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="cursor-pointer"
+                          onClick={handleAddImage}
+                          disabled={!newImageUrl}
+                          aria-label="Add image"
+                        >
+                          <ImagePlus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                // Create mode: upload to temp storage
+                <>
+                  {/* Drag & Drop Upload Zone for temp images */}
                   <ImageUploadZone
-                    onUpload={handleUploadImage}
+                    onUpload={handleUploadTempImage}
                     disabled={false}
                     maxSizeMB={10}
                   />
-                )}
 
-                {/* Sortable Image Gallery */}
-                <SortableImageGallery
-                  images={images}
-                  productName={form.getValues('name')}
-                  isViewMode={isViewMode}
-                  onReorder={handleReorderImages}
-                  onSetPrimary={handleSetPrimaryImage}
-                  onDelete={(image) => setImageToDelete(image)}
-                  onUpdateAltText={handleGalleryUpdateAltText}
-                />
+                  {/* Display temp images */}
+                  {tempImages.length > 0 && (
+                    <div className="grid grid-cols-2 gap-3">
+                      {tempImages.map((img) => (
+                        <div
+                          key={img.tempId}
+                          className={`relative group rounded-lg overflow-hidden border-2 ${
+                            img.isPrimary ? 'border-primary' : 'border-border'
+                          }`}
+                        >
+                          <img
+                            src={img.url}
+                            alt={img.altText || 'Product image'}
+                            className="w-full aspect-square object-cover"
+                          />
+                          {img.isPrimary && (
+                            <div className="absolute top-2 left-2">
+                              <Badge className="bg-primary text-primary-foreground text-xs">
+                                <Star className="h-3 w-3 mr-1" />
+                                Primary
+                              </Badge>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            {!img.isPrimary && (
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                className="cursor-pointer"
+                                onClick={() => handleSetPrimaryTempImage(img.tempId)}
+                              >
+                                <Star className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="cursor-pointer"
+                              onClick={() => setTempImageToDelete(img)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-                {/* Fallback: Add Image by URL */}
-                {!isViewMode && (
+                  {/* Add Image by URL */}
                   <div className="space-y-2 pt-4 border-t">
                     <p className="text-xs font-medium text-muted-foreground">Or add by URL</p>
                     <div className="flex gap-2">
@@ -1263,7 +1586,7 @@ export default function ProductFormPage() {
                         variant="outline"
                         size="icon"
                         className="cursor-pointer"
-                        onClick={handleAddImage}
+                        onClick={handleAddTempImageByUrl}
                         disabled={!newImageUrl}
                         aria-label="Add image"
                       >
@@ -1271,10 +1594,10 @@ export default function ProductFormPage() {
                       </Button>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+                </>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Activity Log (only show when editing) */}
           {isEditing && id && (
@@ -1341,6 +1664,58 @@ export default function ProductFormPage() {
             >
               {isDeletingImage && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isDeletingImage ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Local Variant Confirmation Dialog (create mode) */}
+      <AlertDialog open={!!localVariantToDelete} onOpenChange={(open) => !open && setLocalVariantToDelete(null)}>
+        <AlertDialogContent className="border-destructive/30">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              </div>
+              <AlertDialogTitle>Remove Variant</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="pt-2">
+              Are you sure you want to remove the variant "{localVariantToDelete?.name}"?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDeleteLocalVariant}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Temp Image Confirmation Dialog (create mode) */}
+      <AlertDialog open={!!tempImageToDelete} onOpenChange={(open) => !open && setTempImageToDelete(null)}>
+        <AlertDialogContent className="border-destructive/30">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              </div>
+              <AlertDialogTitle>Remove Image</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="pt-2">
+              Are you sure you want to remove this image?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDeleteTempImage}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+            >
+              Remove
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
