@@ -57,12 +57,42 @@ When multiple patterns match, the HIGHEST priority wins:
 - "implement feature X" → `/sc:implement` (generic backend/logic)
 - "build UI for feature X" → `/ui-ux-pro-max` (UI-specific, higher priority)
 
+---
+
+## .NET/C# Backend Routing (Priority Override)
+
+**✅ Use `dotnet-backend-patterns` skill for ALL .NET/C# backend development work.**
+
+| Context | Route To | Triggers |
+|---------|----------|----------|
+| **API Development** | `dotnet-backend-patterns` | "create endpoint", "add API", "implement controller", "build API", "REST endpoint" |
+| **C# Patterns** | `dotnet-backend-patterns` | "async/await", "dependency injection", "DI pattern", "repository pattern", "CQRS" |
+| **EF Core / Data** | `dotnet-backend-patterns` | "Entity Framework", "EF Core", "DbContext", "migration", "Dapper", "database query" |
+| **Backend Services** | `dotnet-backend-patterns` | "create service", "add handler", "implement validator", "build command" |
+| **Testing (.NET)** | `dotnet-backend-patterns` | "xUnit", "unit test C#", "test handler", "mock repository" |
+| **Configuration** | `dotnet-backend-patterns` | "appsettings", "configuration", "options pattern", "IOptions" |
+
+**When user says:**
+- "implement feature X" (backend context) → `dotnet-backend-patterns` (C#/.NET specific)
+- "create a service for X" → `dotnet-backend-patterns`
+- "add an endpoint for X" → `dotnet-backend-patterns`
+- "write a handler for X" → `dotnet-backend-patterns`
+
+**Detection hints for .NET context:**
+- Mentions C#, .NET, ASP.NET, Entity Framework, EF Core
+- References files in `src/NOIR.Domain/`, `src/NOIR.Application/`, `src/NOIR.Infrastructure/`, `src/NOIR.Web/`
+- Uses terms: Command, Query, Handler, Specification, Repository, Validator
+- References project conventions from CLAUDE.md (IUnitOfWork, IScopedService, etc.)
+
+---
+
 ## Additional Skills (Explicit Invocation)
 
 These are invoked when user intent clearly matches:
 
 | Skill | Triggers |
 |-------|----------|
+| `dotnet-backend-patterns` | C#/.NET backend, API development, EF Core, DI, async patterns, handlers, validators, xUnit testing |
 | `/sc:implement` | "code this", "write code", "implement this" (when requirements are already clear) |
 | `/sc:analyze` | "analyze", "audit", "code review", "scan", "check quality", "lint", "metrics" |
 | `/sc:reflect` | "reflect", "retrospective", "lessons learned", "review session" |
@@ -137,4 +167,12 @@ Users can append flags to any skill invocation:
 "How long will SSO take?" → P8 estimate (how long)
 "Commit my changes" → P9 git (commit)
 "Build failed, fix it" → P1 troubleshoot (failed wins over build - P1 > P10)
+
+# .NET Backend Examples (Priority Override)
+"Create a handler for UpdateProduct" → dotnet-backend-patterns (handler + .NET context)
+"Add an endpoint for orders" → dotnet-backend-patterns (endpoint + API)
+"Write a specification for active customers" → dotnet-backend-patterns (specification pattern)
+"Implement async service method" → dotnet-backend-patterns (async + service)
+"Add EF Core migration" → dotnet-backend-patterns (EF Core)
+"Create unit test for the validator" → dotnet-backend-patterns (xUnit + validator)
 ```
