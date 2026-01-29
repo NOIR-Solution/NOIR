@@ -11,5 +11,7 @@ public sealed record GetProductsQuery(
     decimal? MinPrice = null,
     decimal? MaxPrice = null,
     bool? InStockOnly = null,
+    bool? LowStockOnly = null,
     int Page = 1,
-    int PageSize = 20);
+    int PageSize = 20,
+    Dictionary<string, List<string>>? AttributeFilters = null);

@@ -27,19 +27,26 @@ public class GetProductsQueryHandler
             query.MinPrice,
             query.MaxPrice,
             query.InStockOnly,
+            query.LowStockOnly,
+            ProductConstants.LowStockThreshold,
             skip,
-            query.PageSize);
+            query.PageSize,
+            query.AttributeFilters);
 
         var products = await _productRepository.ListAsync(spec, cancellationToken);
 
-        // Get total count for pagination (without skip/take)
+        // Get total count for pagination (without skip/take, but with same filters)
         var countSpec = new ProductsCountSpec(
             query.Search,
             query.Status,
             query.CategoryId,
             query.Brand,
             query.MinPrice,
-            query.MaxPrice);
+            query.MaxPrice,
+            query.InStockOnly,
+            query.LowStockOnly,
+            ProductConstants.LowStockThreshold,
+            query.AttributeFilters);
 
         var totalCount = await _productRepository.CountAsync(countSpec, cancellationToken);
 

@@ -39,6 +39,8 @@ const BlogTagsPage = lazy(() => import('@/pages/portal/blog/tags/BlogTagsPage'))
 const ProductsPage = lazy(() => import('@/pages/portal/ecommerce/products/ProductsPage'))
 const ProductFormPage = lazy(() => import('@/pages/portal/ecommerce/products/ProductFormPage'))
 const ProductCategoriesPage = lazy(() => import('@/pages/portal/ecommerce/categories/ProductCategoriesPage'))
+const BrandsPage = lazy(() => import('@/pages/portal/ecommerce/brands/BrandsPage'))
+const ProductAttributesPage = lazy(() => import('@/pages/portal/ecommerce/attributes/ProductAttributesPage'))
 // Platform Settings
 const PlatformSettingsPage = lazy(() => import('@/pages/portal/admin/platform-settings/PlatformSettingsPage'))
 // Tenant Settings (includes Payment Gateways tab)
@@ -132,6 +134,8 @@ function App() {
                         <Route path="ecommerce/products/:id" element={<Suspense fallback={<LazyFallback />}><ProductFormPage /></Suspense>} />
                         <Route path="ecommerce/products/:id/edit" element={<Suspense fallback={<LazyFallback />}><ProductFormPage /></Suspense>} />
                         <Route path="ecommerce/categories" element={<Suspense fallback={<LazyFallback />}><ProductCategoriesPage /></Suspense>} />
+                        <Route path="ecommerce/brands" element={<Suspense fallback={<LazyFallback />}><BrandsPage /></Suspense>} />
+                        <Route path="ecommerce/attributes" element={<Suspense fallback={<LazyFallback />}><ProductAttributesPage /></Suspense>} />
                       </Route>
 
                       {/* Catch-all redirect to landing */}

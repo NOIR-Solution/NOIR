@@ -34,20 +34,19 @@ public class DeleteCategoryCommandHandler
                 Error.NotFound($"Category with ID '{command.Id}' not found.", "NOIR-BLOG-007"));
         }
 
-        // Check for child categories
-        var childrenSpec = new CategoriesSpec();
-        var children = await _categoryRepository.ListAsync(childrenSpec, cancellationToken);
-        var hasChildren = children.Any(c => c.ParentId == command.Id);
+        // Check for child categories (efficient EXISTS query)
+        var childrenSpec = new CategoryHasChildrenSpec(command.Id);
+        var hasChildren = await _categoryRepository.AnyAsync(childrenSpec, cancellationToken);
         if (hasChildren)
         {
             return Result.Failure<bool>(
                 Error.Conflict("Cannot delete a category that has child categories. Please delete or reassign child categories first.", "NOIR-BLOG-009"));
         }
 
-        // Check for posts in this category
+        // Check for posts in this category (efficient EXISTS query)
         var postsSpec = new CategoryHasPostsSpec(command.Id);
-        var postsInCategory = await _postRepository.ListAsync(postsSpec, cancellationToken);
-        if (postsInCategory.Any())
+        var hasPosts = await _postRepository.AnyAsync(postsSpec, cancellationToken);
+        if (hasPosts)
         {
             return Result.Failure<bool>(
                 Error.Conflict("Cannot delete a category that has posts. Please reassign posts to another category first.", "NOIR-BLOG-010"));

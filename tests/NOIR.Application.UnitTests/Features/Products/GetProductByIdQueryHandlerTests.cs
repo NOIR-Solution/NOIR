@@ -309,7 +309,6 @@ public class GetProductByIdQueryHandlerTests
         existingProduct.UpdateBasicInfo("Full Product", "full-product", "Short desc", "Description", "<p>HTML</p>");
         existingProduct.SetBrand("Test Brand");
         existingProduct.UpdateIdentification("SKU-001", "BARCODE-001");
-        existingProduct.SetWeight(2.5m);
         existingProduct.SetInventoryTracking(true);
         existingProduct.UpdateSeo("SEO Title", "SEO Description");
         var query = CreateTestQuery(id: productId);
@@ -333,7 +332,6 @@ public class GetProductByIdQueryHandlerTests
         dto.Brand.Should().Be("Test Brand");
         dto.Sku.Should().Be("SKU-001");
         dto.Barcode.Should().Be("BARCODE-001");
-        dto.Weight.Should().Be(2.5m);
         dto.TrackInventory.Should().BeTrue();
         dto.MetaTitle.Should().Be("SEO Title");
         dto.MetaDescription.Should().Be("SEO Description");

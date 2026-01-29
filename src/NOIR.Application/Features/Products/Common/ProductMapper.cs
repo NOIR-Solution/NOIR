@@ -16,7 +16,9 @@ public static class ProductMapper
         string? categorySlug,
         List<ProductVariantDto> variants,
         List<ProductImageDto> images,
-        List<ProductOptionDto>? options = null)
+        List<ProductOptionDto>? options = null,
+        string? brandName = null,
+        IReadOnlyCollection<ProductAttributes.DTOs.ProductAttributeAssignmentDto>? attributes = null)
     {
         return new ProductDto(
             product.Id,
@@ -31,10 +33,11 @@ public static class ProductMapper
             product.CategoryId,
             categoryName,
             categorySlug,
+            product.BrandId,
+            brandName ?? product.BrandEntity?.Name,
             product.Brand,
             product.Sku,
             product.Barcode,
-            product.Weight,
             product.TrackInventory,
             product.MetaTitle,
             product.MetaDescription,
@@ -44,6 +47,7 @@ public static class ProductMapper
             variants,
             images,
             options ?? [],
+            attributes,
             product.CreatedAt,
             product.ModifiedAt);
     }
@@ -69,6 +73,11 @@ public static class ProductMapper
             .Select(ToDto)
             .ToList();
 
+        var attributes = product.AttributeAssignments
+            .Where(a => a.Attribute != null)
+            .Select(ToAttributeAssignmentDto)
+            .ToList();
+
         return new ProductDto(
             product.Id,
             product.Name,
@@ -82,10 +91,11 @@ public static class ProductMapper
             product.CategoryId,
             product.Category?.Name,
             product.Category?.Slug,
+            product.BrandId,
+            product.BrandEntity?.Name,
             product.Brand,
             product.Sku,
             product.Barcode,
-            product.Weight,
             product.TrackInventory,
             product.MetaTitle,
             product.MetaDescription,
@@ -95,6 +105,7 @@ public static class ProductMapper
             variants,
             images,
             options,
+            attributes,
             product.CreatedAt,
             product.ModifiedAt);
     }
@@ -162,11 +173,18 @@ public static class ProductMapper
     /// <summary>
     /// Maps a Product entity to ProductListDto for list/grid views.
     /// Selects primary image or first available image.
+    /// Includes display attributes (only those with showInProductCard=true).
     /// </summary>
     public static ProductListDto ToListDto(Product product)
     {
         var primaryImage = product.Images.FirstOrDefault(i => i.IsPrimary)
                         ?? product.Images.FirstOrDefault();
+
+        // Only include attributes where showInProductCard=true
+        var displayAttributes = product.AttributeAssignments
+            .Where(a => a.Attribute != null && a.Attribute.ShowInProductCard)
+            .Select(ToDisplayDto)
+            .ToList();
 
         return new ProductListDto(
             product.Id,
@@ -177,11 +195,14 @@ public static class ProductMapper
             product.Currency,
             product.Status,
             product.Category?.Name,
+            product.BrandId,
+            product.BrandEntity?.Name,
             product.Brand,
             product.Sku,
             product.TotalStock,
             product.InStock,
             primaryImage?.Url,
+            displayAttributes.Count > 0 ? displayAttributes : null,
             product.CreatedAt);
     }
 
@@ -303,5 +324,49 @@ public static class ProductMapper
             value.ColorCode,
             value.SwatchUrl,
             value.SortOrder);
+    }
+
+    /// <summary>
+    /// Maps a ProductAttributeAssignment entity to ProductAttributeAssignmentDto.
+    /// Use when full attribute details are needed (product detail view).
+    /// </summary>
+    public static ProductAttributes.DTOs.ProductAttributeAssignmentDto ToAttributeAssignmentDto(ProductAttributeAssignment assignment)
+    {
+        return new ProductAttributes.DTOs.ProductAttributeAssignmentDto(
+            assignment.Id,
+            assignment.ProductId,
+            assignment.AttributeId,
+            assignment.Attribute.Code,
+            assignment.Attribute.Name,
+            assignment.Attribute.Type.ToString(),
+            assignment.VariantId,
+            assignment.GetTypedValue(),
+            assignment.DisplayValue,
+            assignment.Attribute.IsRequired);
+    }
+
+    /// <summary>
+    /// Maps a ProductAttributeAssignment entity to ProductAttributeDisplayDto.
+    /// Use for simplified display in product cards (only showInProductCard=true).
+    /// </summary>
+    public static ProductAttributeDisplayDto ToDisplayDto(ProductAttributeAssignment assignment)
+    {
+        // Get color code from the selected value if it's a Select type with a color
+        string? colorCode = null;
+        if (assignment.SelectedValue != null)
+        {
+            colorCode = assignment.SelectedValue.ColorCode;
+        }
+        else if (!string.IsNullOrEmpty(assignment.ColorValue))
+        {
+            colorCode = assignment.ColorValue;
+        }
+
+        return new ProductAttributeDisplayDto(
+            assignment.Attribute.Code,
+            assignment.Attribute.Name,
+            assignment.Attribute.Type.ToString(),
+            assignment.DisplayValue,
+            colorCode);
     }
 }

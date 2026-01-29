@@ -1,10 +1,22 @@
+using NOIR.Application.Features.ProductAttributes.Commands.BulkUpdateProductAttributes;
+using NOIR.Application.Features.ProductAttributes.Commands.SetProductAttributeValue;
+using NOIR.Application.Features.ProductAttributes.DTOs;
+using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeAssignments;
+using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeFormSchema;
 using NOIR.Application.Features.Products.Commands.AddProductImage;
+using NOIR.Application.Features.Products.Specifications;
+using NOIR.Domain.Entities.Product;
 using NOIR.Application.Features.Products.Commands.AddProductOption;
 using NOIR.Application.Features.Products.Commands.AddProductOptionValue;
 using NOIR.Application.Features.Products.Commands.AddProductVariant;
 using NOIR.Application.Features.Products.Commands.ArchiveProduct;
+using NOIR.Application.Features.Products.Commands.BulkArchiveProducts;
+using NOIR.Application.Features.Products.Commands.BulkDeleteProducts;
+using NOIR.Application.Features.Products.Commands.BulkImportProducts;
+using NOIR.Application.Features.Products.Commands.BulkPublishProducts;
 using NOIR.Application.Features.Products.Commands.CreateProduct;
 using NOIR.Application.Features.Products.Commands.DeleteProduct;
+using NOIR.Application.Features.Products.Commands.DuplicateProduct;
 using NOIR.Application.Features.Products.Commands.DeleteProductImage;
 using NOIR.Application.Features.Products.Commands.DeleteProductOption;
 using NOIR.Application.Features.Products.Commands.DeleteProductOptionValue;
@@ -21,6 +33,7 @@ using NOIR.Application.Features.Products.Commands.UploadProductImage;
 using NOIR.Application.Features.Products.DTOs;
 using NOIR.Application.Features.Products.Queries.GetProductById;
 using NOIR.Application.Features.Products.Queries.GetProducts;
+using NOIR.Application.Features.Products.Queries.GetProductStats;
 using ProductPagedResult = NOIR.Application.Features.Products.Queries.GetProducts.PagedResult<NOIR.Application.Features.Products.DTOs.ProductListDto>;
 
 namespace NOIR.Web.Endpoints;
@@ -46,10 +59,27 @@ public static class ProductEndpoints
             [FromQuery] decimal? minPrice,
             [FromQuery] decimal? maxPrice,
             [FromQuery] bool? inStockOnly,
+            [FromQuery] bool? lowStockOnly,
             [FromQuery] int? page,
             [FromQuery] int? pageSize,
+            [FromQuery] string? attributeFilters,
             IMessageBus bus) =>
         {
+            // Parse attribute filters from JSON string
+            // Format: {"attributeCode": ["value1", "value2"], ...}
+            Dictionary<string, List<string>>? parsedFilters = null;
+            if (!string.IsNullOrEmpty(attributeFilters))
+            {
+                try
+                {
+                    parsedFilters = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(attributeFilters);
+                }
+                catch
+                {
+                    // Ignore invalid JSON, treat as no filter
+                }
+            }
+
             var query = new GetProductsQuery(
                 search,
                 status,
@@ -58,16 +88,31 @@ public static class ProductEndpoints
                 minPrice,
                 maxPrice,
                 inStockOnly,
+                lowStockOnly,
                 page ?? 1,
-                pageSize ?? 20);
+                pageSize ?? 20,
+                parsedFilters);
             var result = await bus.InvokeAsync<Result<ProductPagedResult>>(query);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.ProductsRead)
         .WithName("GetProducts")
         .WithSummary("Get paginated list of products")
-        .WithDescription("Returns products with optional filtering by search, status, category, brand, price range, and stock availability.")
+        .WithDescription("Returns products with optional filtering by search, status, category, brand, price range, stock availability, low stock items, and attribute values. The attributeFilters parameter accepts a JSON string like {\"color\": [\"Red\", \"Blue\"]}.")
         .Produces<ProductPagedResult>(StatusCodes.Status200OK);
+
+        // Get product stats (dashboard)
+        group.MapGet("/stats", async (IMessageBus bus) =>
+        {
+            var query = new GetProductStatsQuery();
+            var result = await bus.InvokeAsync<Result<ProductStatsDto>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsRead)
+        .WithName("GetProductStats")
+        .WithSummary("Get product statistics")
+        .WithDescription("Returns global product counts by status for dashboard display.")
+        .Produces<ProductStatsDto>(StatusCodes.Status200OK);
 
         // Get product by ID
         group.MapGet("/{id:guid}", async (Guid id, IMessageBus bus) =>
@@ -121,10 +166,10 @@ public static class ProductEndpoints
                 request.BasePrice,
                 request.Currency,
                 request.CategoryId,
+                request.BrandId,
                 request.Brand,
                 request.Sku,
                 request.Barcode,
-                request.Weight,
                 request.TrackInventory,
                 request.MetaTitle,
                 request.MetaDescription,
@@ -162,10 +207,10 @@ public static class ProductEndpoints
                 request.BasePrice,
                 request.Currency,
                 request.CategoryId,
+                request.BrandId,
                 request.Brand,
                 request.Sku,
                 request.Barcode,
-                request.Weight,
                 request.TrackInventory,
                 request.MetaTitle,
                 request.MetaDescription,
@@ -219,6 +264,99 @@ public static class ProductEndpoints
         .WithDescription("Archives a product, removing it from active listings but preserving data.")
         .Produces<ProductDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Duplicate product
+        group.MapPost("/{id:guid}/duplicate", async (
+            Guid id,
+            DuplicateProductRequest? request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new DuplicateProductCommand(
+                id,
+                request?.CopyVariants ?? false,
+                request?.CopyImages ?? false,
+                request?.CopyOptions ?? false)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsCreate)
+        .WithName("DuplicateProduct")
+        .WithSummary("Duplicate a product")
+        .WithDescription("Creates a copy of a product as a new draft. Optionally copies variants, images, and options.")
+        .Produces<ProductDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Bulk import products
+        group.MapPost("/import", async (
+            BulkImportProductsCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var commandWithUser = command with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<BulkImportResultDto>>(commandWithUser);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsCreate)
+        .WithName("BulkImportProducts")
+        .WithSummary("Bulk import products")
+        .WithDescription("Import multiple products from parsed CSV data. Maximum 1000 products per request.")
+        .Produces<BulkImportResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
+
+        // Bulk publish products
+        group.MapPost("/bulk-publish", async (
+            BulkPublishProductsCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var commandWithUser = command with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<BulkOperationResultDto>>(commandWithUser);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsPublish)
+        .WithName("BulkPublishProducts")
+        .WithSummary("Bulk publish products")
+        .WithDescription("Publishes multiple draft products in a single operation.")
+        .Produces<BulkOperationResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
+
+        // Bulk archive products
+        group.MapPost("/bulk-archive", async (
+            BulkArchiveProductsCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var commandWithUser = command with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<BulkOperationResultDto>>(commandWithUser);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("BulkArchiveProducts")
+        .WithSummary("Bulk archive products")
+        .WithDescription("Archives multiple active products in a single operation.")
+        .Produces<BulkOperationResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
+
+        // Bulk delete products
+        group.MapPost("/bulk-delete", async (
+            BulkDeleteProductsCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var commandWithUser = command with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<BulkOperationResultDto>>(commandWithUser);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsDelete)
+        .WithName("BulkDeleteProducts")
+        .WithSummary("Bulk delete products")
+        .WithDescription("Soft-deletes multiple products in a single operation.")
+        .Produces<BulkOperationResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
 
         // Delete product (soft delete)
         group.MapDelete("/{id:guid}", async (
@@ -541,9 +679,16 @@ public static class ProductEndpoints
             Guid productId,
             Guid optionId,
             [FromServices] ICurrentUser currentUser,
-            IMessageBus bus) =>
+            [FromServices] IRepository<Product, Guid> productRepository,
+            IMessageBus bus,
+            CancellationToken ct) =>
         {
-            var command = new DeleteProductOptionCommand(productId, optionId)
+            // Fetch option name for audit log display
+            var spec = new ProductByIdForOptionUpdateSpec(productId);
+            var product = await productRepository.FirstOrDefaultAsync(spec, ct);
+            var optionName = product?.Options.FirstOrDefault(o => o.Id == optionId)?.DisplayName;
+
+            var command = new DeleteProductOptionCommand(productId, optionId, optionName)
             {
                 UserId = currentUser.UserId
             };
@@ -642,5 +787,119 @@ public static class ProductEndpoints
         .WithDescription("Removes a value from the product option.")
         .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // ===== Product Attribute Endpoints =====
+
+        // Get product's attribute form schema (for dynamic form rendering)
+        group.MapGet("/{productId:guid}/attributes/form-schema", async (
+            Guid productId,
+            [FromQuery] Guid? variantId,
+            IMessageBus bus) =>
+        {
+            var query = new GetProductAttributeFormSchemaQuery(productId, variantId);
+            var result = await bus.InvokeAsync<Result<ProductAttributeFormSchemaDto>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsRead)
+        .WithName("GetProductAttributeFormSchema")
+        .WithSummary("Get attribute form schema for a product")
+        .WithDescription("Returns all applicable attributes for the product (based on category) with current values. Used for dynamic form generation.")
+        .Produces<ProductAttributeFormSchemaDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Get product's attribute values
+        group.MapGet("/{productId:guid}/attributes", async (
+            Guid productId,
+            [FromQuery] Guid? variantId,
+            IMessageBus bus) =>
+        {
+            var query = new GetProductAttributeAssignmentsQuery(productId, variantId);
+            var result = await bus.InvokeAsync<Result<IReadOnlyCollection<ProductAttributeAssignmentDto>>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsRead)
+        .WithName("GetProductAttributeAssignments")
+        .WithSummary("Get a product's attribute values")
+        .WithDescription("Returns all attribute values assigned to the product or a specific variant.")
+        .Produces<IReadOnlyCollection<ProductAttributeAssignmentDto>>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Set a single attribute value
+        group.MapPut("/{productId:guid}/attributes/{attributeId:guid}", async (
+            Guid productId,
+            Guid attributeId,
+            SetProductAttributeValueEndpointRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new SetProductAttributeValueCommand(
+                productId,
+                attributeId,
+                request.VariantId,
+                request.Value)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProductAttributeAssignmentDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("SetProductAttributeValue")
+        .WithSummary("Set a product's attribute value")
+        .WithDescription("Sets the value for a single attribute on the product or a specific variant.")
+        .Produces<ProductAttributeAssignmentDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Bulk update multiple attribute values
+        group.MapPut("/{productId:guid}/attributes", async (
+            Guid productId,
+            BulkUpdateProductAttributesEndpointRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var values = request.Values?.Select(v => new AttributeValueItem(v.AttributeId, v.Value)).ToList()
+                         ?? new List<AttributeValueItem>();
+
+            var command = new BulkUpdateProductAttributesCommand(
+                productId,
+                request.VariantId,
+                values)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<IReadOnlyCollection<ProductAttributeAssignmentDto>>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsUpdate)
+        .WithName("BulkUpdateProductAttributes")
+        .WithSummary("Bulk update product attribute values")
+        .WithDescription("Updates multiple attribute values for the product or a specific variant in a single request.")
+        .Produces<IReadOnlyCollection<ProductAttributeAssignmentDto>>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 }
+
+// ===== Request Records for Product Attribute Endpoints =====
+
+/// <summary>
+/// Request to set a single attribute value for a product.
+/// </summary>
+public sealed record SetProductAttributeValueEndpointRequest(
+    Guid? VariantId,
+    object? Value);
+
+/// <summary>
+/// Request to bulk update multiple attribute values for a product.
+/// </summary>
+public sealed record BulkUpdateProductAttributesEndpointRequest(
+    Guid? VariantId,
+    List<AttributeValueEndpointItem>? Values);
+
+/// <summary>
+/// Individual attribute value item for bulk update.
+/// </summary>
+public sealed record AttributeValueEndpointItem(
+    Guid AttributeId,
+    object? Value);

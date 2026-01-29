@@ -87,20 +87,18 @@ public class CreateProductCommandHandler
             product.SetCategory(command.CategoryId);
         }
 
-        // Set brand
-        if (!string.IsNullOrWhiteSpace(command.Brand))
+        // Set brand (prefer BrandId over legacy Brand string)
+        if (command.BrandId.HasValue)
+        {
+            product.SetBrandId(command.BrandId);
+        }
+        else if (!string.IsNullOrWhiteSpace(command.Brand))
         {
             product.SetBrand(command.Brand);
         }
 
         // Set identification
         product.UpdateIdentification(command.Sku, command.Barcode);
-
-        // Set weight
-        if (command.Weight.HasValue)
-        {
-            product.SetWeight(command.Weight);
-        }
 
         // Set inventory tracking
         product.SetInventoryTracking(command.TrackInventory);

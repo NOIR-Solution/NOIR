@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using NOIR.Domain.Entities.Analytics;
 
 namespace NOIR.Application.Common.Interfaces;
 
@@ -27,8 +28,43 @@ public interface IApplicationDbContext
     DbSet<LegalPage> LegalPages { get; }
 
     /// <summary>
-    /// Attaches an entity to the context for tracking.
+    /// Product categories DbSet for direct access.
+    /// Used by ProductFilter for category hierarchy lookups.
     /// </summary>
+    DbSet<ProductCategory> ProductCategories { get; }
+
+    /// <summary>
+    /// Product attributes DbSet for direct access.
+    /// Used by ProductFilter for facet calculations.
+    /// </summary>
+    DbSet<ProductAttribute> ProductAttributes { get; }
+
+    /// <summary>
+    /// Category attributes DbSet for direct access.
+    /// Junction table linking categories to their assigned product attributes.
+    /// </summary>
+    DbSet<CategoryAttribute> CategoryAttributes { get; }
+
+    /// <summary>
+    /// Product attribute assignments DbSet for direct access.
+    /// Stores a product's actual attribute values with polymorphic value storage.
+    /// </summary>
+    DbSet<ProductAttributeAssignment> ProductAttributeAssignments { get; }
+
+    /// <summary>
+    /// Product filter indexes DbSet for direct access.
+    /// Denormalized table for high-performance product filtering.
+    /// </summary>
+    DbSet<ProductFilterIndex> ProductFilterIndexes { get; }
+
+    /// <summary>
+    /// Filter analytics events DbSet for direct access.
+    /// Used for tracking and analyzing filter usage patterns.
+    /// </summary>
+    DbSet<FilterAnalyticsEvent> FilterAnalyticsEvents { get; }
+
+    /// <summary>
+    /// Attaches an entity to the context for tracking.
     EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
 
     /// <summary>

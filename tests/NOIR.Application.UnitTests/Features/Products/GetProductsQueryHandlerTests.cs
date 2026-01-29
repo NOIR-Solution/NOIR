@@ -33,6 +33,7 @@ public class GetProductsQueryHandlerTests
         decimal? minPrice = null,
         decimal? maxPrice = null,
         bool? inStockOnly = null,
+        bool? lowStockOnly = null,
         int page = 1,
         int pageSize = 20)
     {
@@ -44,6 +45,7 @@ public class GetProductsQueryHandlerTests
             minPrice,
             maxPrice,
             inStockOnly,
+            lowStockOnly,
             page,
             pageSize);
     }

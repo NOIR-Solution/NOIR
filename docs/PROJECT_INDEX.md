@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-01-29
 
 ---
 
@@ -24,11 +24,12 @@
 
 ### Key Statistics
 
-- **Lines of Code:** ~180,000
-- **Test Coverage:** 5,597+ tests across Unit, Integration, and Architecture layers
-- **Feature Modules:** 19 domain-driven modules (including complete E-commerce: Products, Cart, Checkout, Orders)
-- **API Endpoints:** 100+ REST endpoints (23 endpoint groups)
-- **Domain Entities:** 36 entities, 21 enums, 12 domain events
+- **Lines of Code:** ~200,000
+- **Test Coverage:** 5,188+ tests across Unit, Integration, and Architecture layers
+- **Feature Modules:** 25 domain-driven modules (E-commerce, CMS, Auth, Multi-tenant, Payments)
+- **API Endpoints:** 200+ REST endpoints (27 endpoint groups)
+- **Domain Entities:** 47 entities, 22 enums, 8 domain event files
+- **Application Layer:** 126 Commands, 74 Queries, 39 Common Interfaces
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
 
 ### Directory Structure
@@ -41,10 +42,10 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 5,597 tests across 4 projects
+├── tests/                        # ✅ 5,188+ tests across 4 projects
 │   ├── NOIR.Domain.UnitTests/    # 842 domain logic tests
-│   ├── NOIR.Application.UnitTests/ # 4,125 handler/service tests
-│   ├── NOIR.IntegrationTests/    # 605 API integration tests
+│   ├── NOIR.Application.UnitTests/ # 4,321 handler/service tests
+│   ├── NOIR.IntegrationTests/    # ~605 API integration tests (requires DB)
 │   └── NOIR.ArchitectureTests/   # 25 architectural rule tests
 ├── docs/                         # 📚 46 documentation files
 └── .github/                      # ⚙️  CI/CD workflows
@@ -1036,14 +1037,36 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-01-26
-**Version:** 2.5
+**Last Updated:** 2026-01-29
+**Version:** 2.7
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 2.7 (2026-01-29) - Product Attribute System Complete
+
+- **Product Attribute System** - 9 phases fully implemented
+  - Phase 1: Brand Entity - Product brands with logo, banner, SEO
+  - Phase 2: Attribute Entities - ProductAttribute, ProductAttributeValue, CategoryAttribute (13 attribute types)
+  - Phase 3: CategoryAttribute Management UI - Assign attributes to categories
+  - Phase 4: ProductAttributeAssignment Entity - Product-level attribute values
+  - Phase 5: ProductFilterIndex + Sync - Denormalized search/filter index
+  - Phase 6: Filter API Endpoints - Faceted filtering with `FilterProductsQuery`, `GetCategoryFiltersQuery`
+  - Phase 7: Analytics Events - `FilterAnalyticsEvent` for usage tracking
+  - Phase 8: Frontend Filter UI - `FilterSidebar`, `FilterMobileDrawer`, facet components
+  - Phase 9: Product Form Integration - `ProductAttributesSection` with dynamic attribute inputs
+- **NEW: Product Attribute Components**
+  - `AttributeInputFactory` - Routes to correct input by AttributeType (13 types)
+  - `FacetCheckbox`, `FacetColorSwatch`, `FacetPriceRange` - Filter facet components
+  - `AppliedFilters` - Removable filter chips
+- **NEW: Filter Analytics**
+  - `CreateFilterEventCommand` - Track filter usage
+  - `GetPopularFiltersQuery` - Analytics for admin dashboard
+- **Updated Statistics**: 47 entities, 22 enums, 25 features, 200+ CQRS operations
+- **Tests**: Fixed Weight property removal from Product entity (5,188 tests passing)
 
 ### Version 2.6 (2026-01-26) - Phase 8 E-commerce Backend Complete
 - **Phase 8 Status:** Backend 100% Complete, Frontend Pending

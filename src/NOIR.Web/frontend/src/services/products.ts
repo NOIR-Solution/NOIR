@@ -41,8 +41,11 @@ export interface GetProductsParams {
   minPrice?: number
   maxPrice?: number
   inStockOnly?: boolean
+  lowStockOnly?: boolean
   page?: number
   pageSize?: number
+  /** Attribute filters: key is attribute code, value is array of display values to match */
+  attributeFilters?: Record<string, string[]>
 }
 
 /**
@@ -57,11 +60,35 @@ export async function getProducts(params: GetProductsParams = {}): Promise<Produ
   if (params.minPrice !== undefined) queryParams.append('minPrice', params.minPrice.toString())
   if (params.maxPrice !== undefined) queryParams.append('maxPrice', params.maxPrice.toString())
   if (params.inStockOnly) queryParams.append('inStockOnly', 'true')
+  if (params.lowStockOnly) queryParams.append('lowStockOnly', 'true')
   if (params.page) queryParams.append('page', params.page.toString())
   if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString())
+  if (params.attributeFilters && Object.keys(params.attributeFilters).length > 0) {
+    queryParams.append('attributeFilters', JSON.stringify(params.attributeFilters))
+  }
 
   const query = queryParams.toString()
   return apiClient<ProductPagedResult>(`/products${query ? `?${query}` : ''}`)
+}
+
+/**
+ * Product statistics for dashboard display
+ */
+export interface ProductStatsDto {
+  total: number
+  active: number
+  draft: number
+  archived: number
+  outOfStock: number
+  lowStock: number
+}
+
+/**
+ * Fetch global product statistics
+ * Returns counts by status independent of current filters
+ */
+export async function getProductStats(): Promise<ProductStatsDto> {
+  return apiClient<ProductStatsDto>('/products/stats')
 }
 
 /**
@@ -122,6 +149,109 @@ export async function publishProduct(id: string): Promise<Product> {
 export async function archiveProduct(id: string): Promise<Product> {
   return apiClient<Product>(`/products/${id}/archive`, {
     method: 'POST',
+  })
+}
+
+/**
+ * Options for duplicating a product
+ */
+export interface DuplicateProductOptions {
+  copyVariants?: boolean
+  copyImages?: boolean
+  copyOptions?: boolean
+}
+
+/**
+ * Duplicate a product
+ * Creates a copy of the product as a new draft on the server
+ */
+export async function duplicateProduct(
+  id: string,
+  options?: DuplicateProductOptions
+): Promise<Product> {
+  return apiClient<Product>(`/products/${id}/duplicate`, {
+    method: 'POST',
+    body: JSON.stringify(options || {}),
+  })
+}
+
+// ============================================================================
+// Bulk Operations
+// ============================================================================
+
+/**
+ * Single product data for import
+ */
+export interface ImportProductDto {
+  name: string
+  slug?: string
+  basePrice: number
+  currency?: string
+  shortDescription?: string
+  sku?: string
+  barcode?: string
+  categoryName?: string
+  brand?: string
+  stock?: number
+}
+
+/**
+ * Result of bulk import operation
+ */
+export interface BulkImportResult {
+  success: number
+  failed: number
+  errors: { row: number; message: string }[]
+}
+
+/**
+ * Bulk import products from parsed CSV data
+ */
+export async function bulkImportProducts(
+  products: ImportProductDto[]
+): Promise<BulkImportResult> {
+  return apiClient<BulkImportResult>('/products/import', {
+    method: 'POST',
+    body: JSON.stringify({ products }),
+  })
+}
+
+/**
+ * Result of bulk operation (publish/archive/delete)
+ */
+export interface BulkOperationResult {
+  success: number
+  failed: number
+  errors: { productId: string; message: string }[]
+}
+
+/**
+ * Bulk publish products
+ */
+export async function bulkPublishProducts(productIds: string[]): Promise<BulkOperationResult> {
+  return apiClient<BulkOperationResult>('/products/bulk-publish', {
+    method: 'POST',
+    body: JSON.stringify({ productIds }),
+  })
+}
+
+/**
+ * Bulk archive products
+ */
+export async function bulkArchiveProducts(productIds: string[]): Promise<BulkOperationResult> {
+  return apiClient<BulkOperationResult>('/products/bulk-archive', {
+    method: 'POST',
+    body: JSON.stringify({ productIds }),
+  })
+}
+
+/**
+ * Bulk delete products
+ */
+export async function bulkDeleteProducts(productIds: string[]): Promise<BulkOperationResult> {
+  return apiClient<BulkOperationResult>('/products/bulk-delete', {
+    method: 'POST',
+    body: JSON.stringify({ productIds }),
   })
 }
 

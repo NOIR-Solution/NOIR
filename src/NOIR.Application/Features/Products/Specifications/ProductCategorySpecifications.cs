@@ -103,3 +103,16 @@ public sealed class ProductCategoryHasProductsSpec : Specification<Product>
              .TagWith("CheckProductCategoryHasProducts");
     }
 }
+
+/// <summary>
+/// Specification to check if a product category has any child categories.
+/// More efficient than loading all categories and filtering in memory.
+/// </summary>
+public sealed class ProductCategoryHasChildrenSpec : Specification<ProductCategory>
+{
+    public ProductCategoryHasChildrenSpec(Guid parentId)
+    {
+        Query.Where(c => c.ParentId == parentId)
+             .TagWith("CheckProductCategoryHasChildren");
+    }
+}

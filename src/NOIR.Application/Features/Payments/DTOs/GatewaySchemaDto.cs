@@ -36,7 +36,7 @@ public record GatewaySchemaDto(
     string Provider,
     string DisplayName,
     string Description,
-    string IconUrl,
+    string? IconUrl,
     List<CredentialFieldDto> Fields,
     EnvironmentDefaultsDto Environments,
     bool SupportsCod,

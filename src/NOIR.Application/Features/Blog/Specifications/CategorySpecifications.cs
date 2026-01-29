@@ -105,6 +105,18 @@ public sealed class CategoryHasPostsSpec : Specification<Post>
 }
 
 /// <summary>
+/// Specification to check if a category has any child categories.
+/// </summary>
+public sealed class CategoryHasChildrenSpec : Specification<PostCategory>
+{
+    public CategoryHasChildrenSpec(Guid parentId)
+    {
+        Query.Where(c => c.ParentId == parentId)
+             .TagWith("CheckCategoryHasChildren");
+    }
+}
+
+/// <summary>
 /// Specification to retrieve all active (non-deleted) categories for sitemap.
 /// </summary>
 public sealed class ActiveCategoriesSpec : Specification<PostCategory>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, MoreHorizontal } from 'lucide-react'
+import { useDebouncedCallback } from 'use-debounce'
+import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, MoreHorizontal, List, GitBranch, Tags } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -26,8 +27,18 @@ import {
 import { useProductCategories } from '@/hooks/useProducts'
 import { CategoryDialog } from './components/CategoryDialog'
 import { DeleteCategoryDialog } from './components/DeleteCategoryDialog'
+import { CategoryAttributesDialog } from './components/CategoryAttributesDialog'
+import { CategoryTreeView, type TreeCategory } from '@/components/ui/category-tree-view'
 import type { ProductCategoryListItem } from '@/types/product'
 import { PageHeader } from '@/components/ui/page-header'
+
+// Adapter to map ProductCategoryListItem to TreeCategory
+function toTreeCategory(category: ProductCategoryListItem): TreeCategory & ProductCategoryListItem {
+  return {
+    ...category,
+    itemCount: category.productCount,
+  }
+}
 
 export default function ProductCategoriesPage() {
   const { t } = useTranslation('common')
@@ -44,12 +55,28 @@ export default function ProductCategoriesPage() {
   const [searchInput, setSearchInput] = useState('')
   const [categoryToEdit, setCategoryToEdit] = useState<ProductCategoryListItem | null>(null)
   const [categoryToDelete, setCategoryToDelete] = useState<ProductCategoryListItem | null>(null)
+  const [categoryToManageAttributes, setCategoryToManageAttributes] = useState<ProductCategoryListItem | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
+
+  // Debounced search
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    setSearch(value)
+  }, 300)
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSearchInput(value)
+    debouncedSearch(value)
+  }
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setSearch(searchInput)
   }
+
+  // Map categories to tree format
+  const treeCategories = categories.map(toTreeCategory)
 
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
@@ -77,21 +104,43 @@ export default function ProductCategoriesPage() {
                 {t('categories.totalCount', { count: categories.length, defaultValue: `${categories.length} categories total` })}
               </CardDescription>
             </div>
-            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('categories.searchPlaceholder', 'Search categories...')}
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="pl-10 w-full sm:w-48"
-                  aria-label={t('categories.searchCategories', 'Search categories')}
-                />
+            <div className="flex items-center gap-3">
+              {/* View Toggle */}
+              <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
+                <Button
+                  variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('table')}
+                  className="cursor-pointer h-8 px-3"
+                  aria-label={t('labels.tableView', 'Table view')}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'tree' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('tree')}
+                  className="cursor-pointer h-8 px-3"
+                  aria-label={t('labels.treeView', 'Tree view')}
+                >
+                  <GitBranch className="h-4 w-4" />
+                </Button>
               </div>
-              <Button type="submit" variant="secondary" size="sm" className="cursor-pointer">
-                {t('labels.search', 'Search')}
-              </Button>
-            </form>
+
+              {/* Search */}
+              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder={t('categories.searchPlaceholder', 'Search categories...')}
+                    value={searchInput}
+                    onChange={handleSearchChange}
+                    className="pl-10 w-full sm:w-48"
+                    aria-label={t('categories.searchCategories', 'Search categories')}
+                  />
+                </div>
+              </form>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -101,6 +150,22 @@ export default function ProductCategoriesPage() {
             </div>
           )}
 
+          {viewMode === 'tree' ? (
+            <div className="rounded-xl border border-border/50 p-4">
+              <CategoryTreeView
+                categories={treeCategories}
+                loading={loading}
+                onEdit={(cat) => setCategoryToEdit(cat as ProductCategoryListItem)}
+                onDelete={(cat) => setCategoryToDelete(cat as ProductCategoryListItem)}
+                canEdit={canUpdateCategories}
+                canDelete={canDeleteCategories}
+                itemCountLabel={t('labels.products', 'products')}
+                emptyMessage={t('categories.noCategoriesFound', 'No categories found')}
+                emptyDescription={t('categories.noCategoriesDescription', 'Get started by creating your first category to organize products.')}
+                onCreateClick={canCreateCategories ? () => setShowCreateDialog(true) : undefined}
+              />
+            </div>
+          ) : (
           <div className="rounded-xl border border-border/50 overflow-hidden">
             <Table>
               <TableHeader>
@@ -207,6 +272,15 @@ export default function ProductCategoriesPage() {
                                 {t('labels.edit', 'Edit')}
                               </DropdownMenuItem>
                             )}
+                            {canUpdateCategories && (
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setCategoryToManageAttributes(category)}
+                              >
+                                <Tags className="h-4 w-4 mr-2" />
+                                {t('categoryAttributes.manageAttributes', 'Manage Attributes')}
+                              </DropdownMenuItem>
+                            )}
                             {canDeleteCategories && (
                               <DropdownMenuItem
                                 className="text-destructive cursor-pointer"
@@ -225,6 +299,7 @@ export default function ProductCategoriesPage() {
               </TableBody>
             </Table>
           </div>
+          )}
         </CardContent>
       </Card>
 
@@ -248,6 +323,13 @@ export default function ProductCategoriesPage() {
         open={!!categoryToDelete}
         onOpenChange={(open) => !open && setCategoryToDelete(null)}
         onConfirm={handleDelete}
+      />
+
+      {/* Category Attributes Dialog */}
+      <CategoryAttributesDialog
+        open={!!categoryToManageAttributes}
+        onOpenChange={(open) => !open && setCategoryToManageAttributes(null)}
+        category={categoryToManageAttributes}
       />
     </div>
   )

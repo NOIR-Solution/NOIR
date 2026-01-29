@@ -88,9 +88,24 @@ public class UpdateProductCommandHandler
 
         product.UpdatePricing(command.BasePrice, command.Currency);
         product.SetCategory(command.CategoryId);
-        product.SetBrand(command.Brand);
+
+        // Set brand (prefer BrandId over legacy Brand string)
+        if (command.BrandId.HasValue)
+        {
+            product.SetBrandId(command.BrandId);
+            product.SetBrand(null); // Clear legacy brand text
+        }
+        else if (!string.IsNullOrWhiteSpace(command.Brand))
+        {
+            product.SetBrand(command.Brand);
+        }
+        else
+        {
+            product.SetBrandId(null);
+            product.SetBrand(null);
+        }
+
         product.UpdateIdentification(command.Sku, command.Barcode);
-        product.SetWeight(command.Weight);
         product.SetInventoryTracking(command.TrackInventory);
         product.UpdateSeo(command.MetaTitle, command.MetaDescription);
 

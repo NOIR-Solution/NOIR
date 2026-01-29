@@ -150,4 +150,12 @@ public class ProductCategory : TenantAggregateRoot<Guid>
         if (ProductCount > 0)
             ProductCount--;
     }
+
+    /// <summary>
+    /// Marks the category for deletion (raises ProductCategoryDeletedEvent).
+    /// </summary>
+    public void MarkAsDeleted()
+    {
+        AddDomainEvent(new ProductCategoryDeletedEvent(Id));
+    }
 }

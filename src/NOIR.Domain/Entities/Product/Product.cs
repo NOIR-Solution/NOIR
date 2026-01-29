@@ -21,14 +21,12 @@ public class Product : TenantAggregateRoot<Guid>
 
     // Organization
     public Guid? CategoryId { get; private set; }
+    public Guid? BrandId { get; private set; }
     public string? Brand { get; private set; }
 
     // Identification
     public string? Sku { get; private set; }
     public string? Barcode { get; private set; }
-
-    // Physical
-    public decimal? Weight { get; private set; }
 
     // Inventory
     public bool TrackInventory { get; private set; } = true;
@@ -42,9 +40,11 @@ public class Product : TenantAggregateRoot<Guid>
 
     // Navigation
     public virtual ProductCategory? Category { get; private set; }
+    public virtual Brand? BrandEntity { get; private set; }
     public virtual ICollection<ProductVariant> Variants { get; private set; } = new List<ProductVariant>();
     public virtual ICollection<ProductImage> Images { get; private set; } = new List<ProductImage>();
     public virtual ICollection<ProductOption> Options { get; private set; } = new List<ProductOption>();
+    public virtual ICollection<ProductAttributeAssignment> AttributeAssignments { get; private set; } = new List<ProductAttributeAssignment>();
 
     // Computed
     public bool HasVariants => Variants.Any();
@@ -97,6 +97,7 @@ public class Product : TenantAggregateRoot<Guid>
         ShortDescription = shortDescription?.Trim();
         Description = description;
         DescriptionHtml = descriptionHtml;
+        AddDomainEvent(new ProductUpdatedEvent(Id, Name));
     }
 
     /// <summary>
@@ -106,6 +107,7 @@ public class Product : TenantAggregateRoot<Guid>
     {
         BasePrice = basePrice;
         Currency = currency;
+        AddDomainEvent(new ProductUpdatedEvent(Id, Name));
     }
 
     /// <summary>
@@ -114,14 +116,24 @@ public class Product : TenantAggregateRoot<Guid>
     public void SetCategory(Guid? categoryId)
     {
         CategoryId = categoryId;
+        AddDomainEvent(new ProductUpdatedEvent(Id, Name));
     }
 
     /// <summary>
-    /// Sets the product brand.
+    /// Sets the product brand (legacy string field).
     /// </summary>
     public void SetBrand(string? brand)
     {
         Brand = brand;
+    }
+
+    /// <summary>
+    /// Sets the product brand by ID (new Brand entity reference).
+    /// </summary>
+    public void SetBrandId(Guid? brandId)
+    {
+        BrandId = brandId;
+        AddDomainEvent(new ProductUpdatedEvent(Id, Name));
     }
 
     /// <summary>
@@ -140,14 +152,6 @@ public class Product : TenantAggregateRoot<Guid>
     {
         MetaTitle = metaTitle;
         MetaDescription = metaDescription;
-    }
-
-    /// <summary>
-    /// Sets the product weight.
-    /// </summary>
-    public void SetWeight(decimal? weight)
-    {
-        Weight = weight;
     }
 
     /// <summary>

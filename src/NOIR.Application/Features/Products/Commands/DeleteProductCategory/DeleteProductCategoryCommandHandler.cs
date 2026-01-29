@@ -33,26 +33,26 @@ public class DeleteProductCategoryCommandHandler
                 Error.NotFound($"Product category with ID '{command.Id}' not found.", "NOIR-PRODUCT-003"));
         }
 
-        // Check for child categories
-        var childrenSpec = new ProductCategoriesSpec();
-        var categories = await _categoryRepository.ListAsync(childrenSpec, cancellationToken);
-        var hasChildren = categories.Any(c => c.ParentId == command.Id);
+        // Check for child categories (efficient query - doesn't load all categories)
+        var childrenSpec = new ProductCategoryHasChildrenSpec(command.Id);
+        var hasChildren = await _categoryRepository.AnyAsync(childrenSpec, cancellationToken);
         if (hasChildren)
         {
             return Result.Failure<bool>(
                 Error.Conflict("Cannot delete a category that has child categories. Please delete or reassign child categories first.", "NOIR-PRODUCT-005"));
         }
 
-        // Check for products in this category
+        // Check for products in this category (efficient query - doesn't load all products)
         var productsSpec = new ProductCategoryHasProductsSpec(command.Id);
-        var productsInCategory = await _productRepository.ListAsync(productsSpec, cancellationToken);
-        if (productsInCategory.Any())
+        var hasProducts = await _productRepository.AnyAsync(productsSpec, cancellationToken);
+        if (hasProducts)
         {
             return Result.Failure<bool>(
                 Error.Conflict("Cannot delete a category that has products. Please reassign products to another category first.", "NOIR-PRODUCT-006"));
         }
 
-        // Soft delete the category (handled by interceptor)
+        // Raise domain event and soft delete the category (handled by interceptor)
+        category.MarkAsDeleted();
         _categoryRepository.Remove(category);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -9,13 +9,19 @@ import type {
 import {
   getProducts,
   getProductById,
+  getProductStats,
   deleteProduct,
   publishProduct,
   archiveProduct,
+  duplicateProduct,
+  bulkPublishProducts,
+  bulkArchiveProducts,
+  bulkDeleteProducts,
   getProductCategories,
   deleteProductCategory,
   type GetProductsParams,
   type GetProductCategoriesParams,
+  type BulkOperationResult,
 } from '@/services/products'
 import { ApiError } from '@/services/apiClient'
 import { DEFAULT_PRODUCT_PAGE_SIZE } from '@/lib/constants/product'
@@ -28,7 +34,9 @@ interface ProductStats {
   total: number
   active: number
   draft: number
+  archived: number
   outOfStock: number
+  lowStock: number
 }
 
 interface UseProductsState {
@@ -47,16 +55,22 @@ interface UseProductsReturn extends UseProductsState {
   setCategoryId: (categoryId: string | undefined) => void
   setBrand: (brand: string | undefined) => void
   setInStockOnly: (inStockOnly: boolean | undefined) => void
+  setLowStockOnly: (lowStockOnly: boolean | undefined) => void
+  setAttributeFilters: (filters: Record<string, string[]> | undefined) => void
   handleDelete: (id: string) => Promise<{ success: boolean; error?: string }>
   handlePublish: (id: string) => Promise<{ success: boolean; error?: string }>
   handleArchive: (id: string) => Promise<{ success: boolean; error?: string }>
+  handleDuplicate: (id: string) => Promise<{ success: boolean; newId?: string; error?: string }>
+  handleBulkPublish: (ids: string[]) => Promise<{ success: boolean; result?: BulkOperationResult; error?: string }>
+  handleBulkArchive: (ids: string[]) => Promise<{ success: boolean; result?: BulkOperationResult; error?: string }>
+  handleBulkDelete: (ids: string[]) => Promise<{ success: boolean; result?: BulkOperationResult; error?: string }>
   params: GetProductsParams
 }
 
 export function useProducts(initialParams: GetProductsParams = {}): UseProductsReturn {
   const [state, setState] = useState<UseProductsState>({
     data: null,
-    stats: { total: 0, active: 0, draft: 0, outOfStock: 0 },
+    stats: { total: 0, active: 0, draft: 0, archived: 0, outOfStock: 0, lowStock: 0 },
     loading: true,
     error: null,
   })
@@ -71,16 +85,20 @@ export function useProducts(initialParams: GetProductsParams = {}): UseProductsR
     setState((prev) => ({ ...prev, loading: true, error: null }))
 
     try {
-      const data = await getProducts(params)
+      // Fetch products and stats in parallel for optimal performance
+      const [data, statsData] = await Promise.all([
+        getProducts(params),
+        getProductStats()
+      ])
 
-      // TODO: Backend should provide aggregate stats in API response
-      // Current limitation: Stats only reflect the current page/filter context
-      // For accurate global stats, we need a dedicated /products/stats endpoint
+      // Use backend stats for accurate global counts
       const stats: ProductStats = {
-        total: data.totalCount, // ✅ Accurate from backend totalCount
-        active: data.items.filter(p => p.status === 'Active').length, // ⚠️ Limited to current page
-        draft: data.items.filter(p => p.status === 'Draft').length, // ⚠️ Limited to current page
-        outOfStock: data.items.filter(p => p.status === 'OutOfStock').length, // ⚠️ Limited to current page
+        total: statsData.total,
+        active: statsData.active,
+        draft: statsData.draft,
+        archived: statsData.archived,
+        outOfStock: statsData.outOfStock,
+        lowStock: statsData.lowStock,
       }
 
       setState({ data, stats, loading: false, error: null })
@@ -121,6 +139,14 @@ export function useProducts(initialParams: GetProductsParams = {}): UseProductsR
 
   const setInStockOnly = useCallback((inStockOnly: boolean | undefined) => {
     setParams((prev) => ({ ...prev, inStockOnly, page: 1 }))
+  }, [])
+
+  const setLowStockOnly = useCallback((lowStockOnly: boolean | undefined) => {
+    setParams((prev) => ({ ...prev, lowStockOnly, page: 1 }))
+  }, [])
+
+  const setAttributeFilters = useCallback((attributeFilters: Record<string, string[]> | undefined) => {
+    setParams((prev) => ({ ...prev, attributeFilters, page: 1 }))
   }, [])
 
   const handleDelete = useCallback(
@@ -168,6 +194,66 @@ export function useProducts(initialParams: GetProductsParams = {}): UseProductsR
     [fetchProducts]
   )
 
+  const handleDuplicate = useCallback(
+    async (id: string): Promise<{ success: boolean; newId?: string; error?: string }> => {
+      try {
+        const newProduct = await duplicateProduct(id)
+        await fetchProducts()
+        return { success: true, newId: newProduct.id }
+      } catch (err) {
+        const message =
+          err instanceof ApiError ? err.message : 'Failed to duplicate product'
+        return { success: false, error: message }
+      }
+    },
+    [fetchProducts]
+  )
+
+  const handleBulkPublish = useCallback(
+    async (ids: string[]): Promise<{ success: boolean; result?: BulkOperationResult; error?: string }> => {
+      try {
+        const result = await bulkPublishProducts(ids)
+        await fetchProducts()
+        return { success: true, result }
+      } catch (err) {
+        const message =
+          err instanceof ApiError ? err.message : 'Failed to bulk publish products'
+        return { success: false, error: message }
+      }
+    },
+    [fetchProducts]
+  )
+
+  const handleBulkArchive = useCallback(
+    async (ids: string[]): Promise<{ success: boolean; result?: BulkOperationResult; error?: string }> => {
+      try {
+        const result = await bulkArchiveProducts(ids)
+        await fetchProducts()
+        return { success: true, result }
+      } catch (err) {
+        const message =
+          err instanceof ApiError ? err.message : 'Failed to bulk archive products'
+        return { success: false, error: message }
+      }
+    },
+    [fetchProducts]
+  )
+
+  const handleBulkDelete = useCallback(
+    async (ids: string[]): Promise<{ success: boolean; result?: BulkOperationResult; error?: string }> => {
+      try {
+        const result = await bulkDeleteProducts(ids)
+        await fetchProducts()
+        return { success: true, result }
+      } catch (err) {
+        const message =
+          err instanceof ApiError ? err.message : 'Failed to bulk delete products'
+        return { success: false, error: message }
+      }
+    },
+    [fetchProducts]
+  )
+
   return {
     ...state,
     refresh: fetchProducts,
@@ -178,9 +264,15 @@ export function useProducts(initialParams: GetProductsParams = {}): UseProductsR
     setCategoryId,
     setBrand,
     setInStockOnly,
+    setLowStockOnly,
+    setAttributeFilters,
     handleDelete,
     handlePublish,
     handleArchive,
+    handleDuplicate,
+    handleBulkPublish,
+    handleBulkArchive,
+    handleBulkDelete,
     params,
   }
 }

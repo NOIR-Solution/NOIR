@@ -7,33 +7,42 @@ import {
   Pencil,
   Package,
   AlertTriangle,
+  Send,
+  Archive,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import type { ProductListItem } from '@/types/product'
+import type { ProductListItem, ProductAttributeDisplay } from '@/types/product'
 import { formatCurrency } from '@/lib/utils/currency'
 import { PRODUCT_STATUS_CONFIG, LOW_STOCK_THRESHOLD } from '@/lib/constants/product'
 import { ProductActionsMenu } from './ProductActionsMenu'
+import { AttributeBadges } from './AttributeBadges'
 
 interface EnhancedProductCardProps {
   product: ProductListItem
+  displayAttributes?: ProductAttributeDisplay[]
   onDelete?: (product: ProductListItem) => void
   onPublish?: (product: ProductListItem) => void
   onArchive?: (product: ProductListItem) => void
+  onDuplicate?: (product: ProductListItem) => void
   canEdit?: boolean
   canDelete?: boolean
   canPublish?: boolean
+  canCreate?: boolean
 }
 
 export function EnhancedProductCard({
   product,
+  displayAttributes,
   onDelete,
   onPublish,
   onArchive,
+  onDuplicate,
   canEdit = true,
   canDelete = true,
   canPublish = true,
+  canCreate = true,
 }: EnhancedProductCardProps) {
   const { t } = useTranslation('common')
   const [isHovered, setIsHovered] = useState(false)
@@ -128,6 +137,42 @@ export function EnhancedProductCard({
             animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 20 }}
             transition={{ duration: 0.3 }}
           >
+            {/* Status Quick Actions */}
+            {canPublish && product.status === 'Draft' && onPublish && (
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="h-9 w-9 rounded-full bg-emerald-500/90 text-white backdrop-blur-md border-0 shadow-lg hover:bg-emerald-600 cursor-pointer"
+                  aria-label={`Publish ${product.name}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onPublish(product)
+                  }}
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </motion.div>
+            )}
+            {canEdit && product.status === 'Active' && onArchive && (
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="h-9 w-9 rounded-full bg-amber-500/90 text-white backdrop-blur-md border-0 shadow-lg hover:bg-amber-600 cursor-pointer"
+                  aria-label={`Archive ${product.name}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onArchive(product)
+                  }}
+                >
+                  <Archive className="h-4 w-4" />
+                </Button>
+              </motion.div>
+            )}
+            {/* Navigation Actions */}
             <Link to={`/portal/ecommerce/products/${product.id}`}>
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                 <Button
@@ -170,9 +215,9 @@ export function EnhancedProductCard({
         <div className="p-4 space-y-3 bg-background/30 backdrop-blur-md">
           {/* Brand & SKU */}
           <div className="flex items-center justify-between gap-2">
-            {product.brand && (
+            {(product.brandName || product.brand) && (
               <div className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-                {product.brand}
+                {product.brandName || product.brand}
               </div>
             )}
             {product.sku && (
@@ -213,15 +258,22 @@ export function EnhancedProductCard({
             )}
           </div>
 
+          {/* Attribute Badges */}
+          {displayAttributes && displayAttributes.length > 0 && (
+            <AttributeBadges displayAttributes={displayAttributes} maxColors={5} />
+          )}
+
           {/* Actions Dropdown */}
           <ProductActionsMenu
             product={product}
             onDelete={onDelete}
             onPublish={onPublish}
             onArchive={onArchive}
+            onDuplicate={onDuplicate}
             canEdit={canEdit}
             canDelete={canDelete}
             canPublish={canPublish}
+            canCreate={canCreate}
             trigger={
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button

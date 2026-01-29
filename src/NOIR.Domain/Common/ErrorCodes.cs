@@ -255,6 +255,114 @@ public static class ErrorCodes
     }
 
     /// <summary>
+    /// Brand-related errors (BRAND-xxx)
+    /// </summary>
+    public static class Brand
+    {
+        /// <summary>Brand not found</summary>
+        public const string NotFound = "NOIR-BRAND-001";
+
+        /// <summary>Brand slug already exists</summary>
+        public const string DuplicateSlug = "NOIR-BRAND-002";
+
+        /// <summary>Cannot delete brand with products</summary>
+        public const string HasProducts = "NOIR-BRAND-003";
+    }
+
+    /// <summary>
+    /// Product-related errors (PRODUCT-xxx)
+    /// </summary>
+    public static class Product
+    {
+        /// <summary>Product not found</summary>
+        public const string NotFound = "NOIR-PRODUCT-001";
+
+        /// <summary>Category not found</summary>
+        public const string CategoryNotFound = "NOIR-PRODUCT-002";
+
+        /// <summary>Product category not found</summary>
+        public const string ProductCategoryNotFound = "NOIR-PRODUCT-003";
+
+        /// <summary>Product variant not found</summary>
+        public const string VariantNotFound = "NOIR-PRODUCT-004";
+
+        /// <summary>Cannot delete category with children</summary>
+        public const string CategoryHasChildren = "NOIR-PRODUCT-005";
+
+        /// <summary>Cannot delete category with products</summary>
+        public const string CategoryHasProducts = "NOIR-PRODUCT-006";
+
+        /// <summary>Product slug already exists</summary>
+        public const string DuplicateSlug = "NOIR-PRODUCT-010";
+
+        /// <summary>Product SKU already exists</summary>
+        public const string DuplicateSku = "NOIR-PRODUCT-011";
+
+        /// <summary>Product not found (general query)</summary>
+        public const string NotFoundById = "NOIR-PRODUCT-012";
+
+        /// <summary>Invalid status for operation</summary>
+        public const string InvalidStatus = "NOIR-PRODUCT-013";
+
+        /// <summary>Either ID or Slug must be provided</summary>
+        public const string IdOrSlugRequired = "NOIR-PRODUCT-014";
+
+        /// <summary>Product not found for deletion</summary>
+        public const string NotFoundForDelete = "NOIR-PRODUCT-020";
+
+        /// <summary>Product not found for option operations</summary>
+        public const string NotFoundForOptions = "NOIR-PRODUCT-021";
+
+        /// <summary>Option not found</summary>
+        public const string OptionNotFound = "NOIR-PRODUCT-051";
+
+        /// <summary>Option value not found or already exists</summary>
+        public const string OptionValueNotFound = "NOIR-PRODUCT-052";
+
+        /// <summary>Option value not found for deletion</summary>
+        public const string OptionValueNotFoundForDelete = "NOIR-PRODUCT-053";
+    }
+
+    /// <summary>
+    /// Attribute-related errors (ATTR-xxx)
+    /// </summary>
+    public static class Attribute
+    {
+        /// <summary>Attribute not found</summary>
+        public const string NotFound = "NOIR-ATTR-001";
+
+        /// <summary>Attribute code already exists</summary>
+        public const string DuplicateCode = "NOIR-ATTR-002";
+
+        /// <summary>Values can only be added to Select or MultiSelect types</summary>
+        public const string ValuesOnlyForSelectTypes = "NOIR-ATTR-003";
+
+        /// <summary>Attribute value already exists</summary>
+        public const string ValueAlreadyExists = "NOIR-ATTR-004";
+
+        /// <summary>Attribute value not found</summary>
+        public const string ValueNotFound = "NOIR-ATTR-005";
+
+        /// <summary>Cannot delete attribute with product associations</summary>
+        public const string HasProducts = "NOIR-ATTR-006";
+
+        /// <summary>Cannot change attribute type when products are assigned</summary>
+        public const string CannotChangeTypeWithProducts = "NOIR-ATTR-007";
+
+        /// <summary>Attribute is required for this category</summary>
+        public const string RequiredForCategory = "NOIR-ATTR-008";
+
+        /// <summary>Invalid attribute value for type</summary>
+        public const string InvalidValueForType = "NOIR-ATTR-009";
+
+        /// <summary>Category attribute link not found</summary>
+        public const string CategoryLinkNotFound = "NOIR-ATTR-010";
+
+        /// <summary>Attribute is already linked to category</summary>
+        public const string AlreadyLinkedToCategory = "NOIR-ATTR-011";
+    }
+
+    /// <summary>
     /// External service errors (4xxx)
     /// </summary>
     public static class External

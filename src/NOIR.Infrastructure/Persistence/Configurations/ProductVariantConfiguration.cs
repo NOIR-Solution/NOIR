@@ -46,10 +46,11 @@ public class ProductVariantConfiguration : IEntityTypeConfiguration<ProductVaria
             .OnDelete(DeleteBehavior.Cascade);
 
         // Optional relationship to ProductImage
+        // Note: Using NoAction to avoid SQL Server cascade path conflicts
         builder.HasOne(e => e.Image)
             .WithMany()
             .HasForeignKey(e => e.ImageId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
 
         // Stock filtering index
         builder.HasIndex(e => new { e.TenantId, e.StockQuantity })

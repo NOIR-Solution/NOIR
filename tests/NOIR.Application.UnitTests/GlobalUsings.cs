@@ -198,6 +198,15 @@ global using NOIR.Application.Features.TenantSettings.DTOs;
 // NOIR Application - Developer Logs
 global using NOIR.Application.Features.DeveloperLogs.DTOs;
 
+// NOIR Application - Brands
+global using NOIR.Application.Features.Brands.Commands.CreateBrand;
+global using NOIR.Application.Features.Brands.Commands.UpdateBrand;
+global using NOIR.Application.Features.Brands.Commands.DeleteBrand;
+global using NOIR.Application.Features.Brands.Queries.GetBrandById;
+global using NOIR.Application.Features.Brands.Queries.GetBrands;
+global using NOIR.Application.Features.Brands.DTOs;
+global using NOIR.Application.Features.Brands.Specifications;
+
 // NOIR Infrastructure - Logging
 global using NOIR.Infrastructure.Logging;
 

@@ -185,6 +185,16 @@ export const Permissions = {
   ProductCategoriesCreate: 'product-categories:create',
   ProductCategoriesUpdate: 'product-categories:update',
   ProductCategoriesDelete: 'product-categories:delete',
+  // Brands
+  BrandsRead: 'brands:read',
+  BrandsCreate: 'brands:create',
+  BrandsUpdate: 'brands:update',
+  BrandsDelete: 'brands:delete',
+  // Product Attributes
+  AttributesRead: 'attributes:read',
+  AttributesCreate: 'attributes:create',
+  AttributesUpdate: 'attributes:update',
+  AttributesDelete: 'attributes:delete',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

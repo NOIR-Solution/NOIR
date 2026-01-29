@@ -56,10 +56,6 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
             .MaximumLength(MaxBarcodeLength).WithMessage($"Barcode cannot exceed {MaxBarcodeLength} characters.")
             .When(x => x.Barcode is not null);
 
-        RuleFor(x => x.Weight)
-            .GreaterThanOrEqualTo(0).WithMessage("Weight must be a non-negative number.")
-            .When(x => x.Weight.HasValue);
-
         RuleFor(x => x.MetaTitle)
             .MaximumLength(MaxMetaTitleLength).WithMessage($"Meta title cannot exceed {MaxMetaTitleLength} characters.")
             .When(x => x.MetaTitle is not null);

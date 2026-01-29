@@ -74,10 +74,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     public DbSet<ProductImage> ProductImages => Set<ProductImage>();
+    public DbSet<Brand> Brands => Set<Brand>();
+
+    // Product Attribute entities (Phase 8 - Product Attribute System)
+    public DbSet<ProductAttribute> ProductAttributes => Set<ProductAttribute>();
+    public DbSet<ProductAttributeValue> ProductAttributeValues => Set<ProductAttributeValue>();
+    public DbSet<CategoryAttribute> CategoryAttributes => Set<CategoryAttribute>();
+    public DbSet<ProductAttributeAssignment> ProductAttributeAssignments => Set<ProductAttributeAssignment>();
+    public DbSet<ProductFilterIndex> ProductFilterIndexes => Set<ProductFilterIndex>();
 
     // Shopping Cart entities (Phase 8 - Sprint 3)
     public DbSet<Cart> Carts => Set<Cart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
+
+    // Analytics entities (Phase 7)
+    public DbSet<FilterAnalyticsEvent> FilterAnalyticsEvents => Set<FilterAnalyticsEvent>();
 
     /// <summary>
     /// Configures global type conventions.

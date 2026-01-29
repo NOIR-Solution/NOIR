@@ -42,7 +42,6 @@ public class ProductMapperTests
         product.UpdateBasicInfo("Test Product", "test-product", "Short desc", "Description", "<p>HTML</p>");
         product.SetBrand("TestBrand");
         product.UpdateIdentification("SKU-001", "BARCODE-001");
-        product.SetWeight(1.5m);
         product.SetInventoryTracking(true);
         product.UpdateSeo("Meta Title", "Meta Description");
 
@@ -67,7 +66,6 @@ public class ProductMapperTests
         dto.Brand.Should().Be("TestBrand");
         dto.Sku.Should().Be("SKU-001");
         dto.Barcode.Should().Be("BARCODE-001");
-        dto.Weight.Should().Be(1.5m);
         dto.TrackInventory.Should().BeTrue();
         dto.MetaTitle.Should().Be("Meta Title");
         dto.MetaDescription.Should().Be("Meta Description");

@@ -81,16 +81,16 @@ public class DeleteCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<CategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<CategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<PostCategory>()); // No children
+            .ReturnsAsync(false); // No children
 
         _postRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<CategoryHasPostsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Post>()); // No posts
+            .ReturnsAsync(false); // No posts
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -127,16 +127,16 @@ public class DeleteCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<CategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<CategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<PostCategory>());
+            .ReturnsAsync(false);
 
         _postRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<CategoryHasPostsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Post>());
+            .ReturnsAsync(false);
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -192,9 +192,7 @@ public class DeleteCategoryCommandHandlerTests
     {
         // Arrange
         var parentId = Guid.NewGuid();
-        var childId = Guid.NewGuid();
         var parentCategory = CreateTestCategory(parentId, "Parent Category");
-        var childCategory = CreateTestCategory(childId, "Child Category", parentId: parentId);
         var command = CreateTestCommand(id: parentId);
 
         _categoryRepositoryMock
@@ -204,10 +202,10 @@ public class DeleteCategoryCommandHandlerTests
             .ReturnsAsync(parentCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<CategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<CategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<PostCategory> { childCategory }); // Has children
+            .ReturnsAsync(true); // Has children
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -233,9 +231,6 @@ public class DeleteCategoryCommandHandlerTests
         var existingCategory = CreateTestCategory(categoryId);
         var command = CreateTestCommand(id: categoryId);
 
-        // Create a real Post instance instead of mocking (Post has no parameterless constructor)
-        var testPost = Post.Create("Test Post", "test-post", Guid.NewGuid(), TestTenantId);
-
         _categoryRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
                 It.IsAny<CategoryByIdForUpdateSpec>(),
@@ -243,16 +238,16 @@ public class DeleteCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<CategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<CategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<PostCategory>()); // No children
+            .ReturnsAsync(false); // No children
 
         _postRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<CategoryHasPostsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Post> { testPost }); // Has posts
+            .ReturnsAsync(true); // Has posts
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -275,9 +270,7 @@ public class DeleteCategoryCommandHandlerTests
     {
         // Arrange - Children check happens first
         var parentId = Guid.NewGuid();
-        var childId = Guid.NewGuid();
         var parentCategory = CreateTestCategory(parentId, "Parent Category");
-        var childCategory = CreateTestCategory(childId, "Child Category", parentId: parentId);
         var command = CreateTestCommand(id: parentId);
 
         _categoryRepositoryMock
@@ -287,10 +280,10 @@ public class DeleteCategoryCommandHandlerTests
             .ReturnsAsync(parentCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<CategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<CategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<PostCategory> { childCategory }); // Has children
+            .ReturnsAsync(true); // Has children
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -301,7 +294,7 @@ public class DeleteCategoryCommandHandlerTests
 
         // Posts should not be checked since children check fails first
         _postRepositoryMock.Verify(
-            x => x.ListAsync(It.IsAny<CategoryHasPostsSpec>(), It.IsAny<CancellationToken>()),
+            x => x.AnyAsync(It.IsAny<CategoryHasPostsSpec>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -326,16 +319,16 @@ public class DeleteCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<CategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<CategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<PostCategory>());
+            .ReturnsAsync(false);
 
         _postRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<CategoryHasPostsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Post>());
+            .ReturnsAsync(false);
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -349,10 +342,10 @@ public class DeleteCategoryCommandHandlerTests
             x => x.FirstOrDefaultAsync(It.IsAny<CategoryByIdForUpdateSpec>(), token),
             Times.Once);
         _categoryRepositoryMock.Verify(
-            x => x.ListAsync(It.IsAny<CategoriesSpec>(), token),
+            x => x.AnyAsync(It.IsAny<CategoryHasChildrenSpec>(), token),
             Times.Once);
         _postRepositoryMock.Verify(
-            x => x.ListAsync(It.IsAny<CategoryHasPostsSpec>(), token),
+            x => x.AnyAsync(It.IsAny<CategoryHasPostsSpec>(), token),
             Times.Once);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(token),
@@ -375,16 +368,16 @@ public class DeleteCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<CategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<CategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<PostCategory>());
+            .ReturnsAsync(false);
 
         _postRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<CategoryHasPostsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Post>());
+            .ReturnsAsync(false);
 
         _categoryRepositoryMock
             .Setup(x => x.Remove(It.IsAny<PostCategory>()))
@@ -417,19 +410,17 @@ public class DeleteCategoryCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingCategory);
 
-        // Return other categories that are NOT children of this one
-        var unrelatedCategory = CreateTestCategory(Guid.NewGuid(), "Unrelated");
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<CategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<CategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<PostCategory> { unrelatedCategory }); // No children of target
+            .ReturnsAsync(false); // No children
 
         _postRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<CategoryHasPostsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Post>()); // No posts
+            .ReturnsAsync(false); // No posts
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -448,9 +439,7 @@ public class DeleteCategoryCommandHandlerTests
     {
         // Arrange
         var categoryId = Guid.NewGuid();
-        var otherId = Guid.NewGuid();
         var existingCategory = CreateTestCategory(categoryId, "Target Category");
-        var otherCategory = CreateTestCategory(otherId, "Other Category");
         var command = CreateTestCommand(id: categoryId);
 
         _categoryRepositoryMock
@@ -459,18 +448,18 @@ public class DeleteCategoryCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingCategory);
 
-        // Return categories, but none are children of the target
+        // AnyAsync with CategoryHasChildrenSpec now targets specific parent ID
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<CategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<CategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<PostCategory> { existingCategory, otherCategory });
+            .ReturnsAsync(false);
 
         _postRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<CategoryHasPostsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Post>());
+            .ReturnsAsync(false);
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))

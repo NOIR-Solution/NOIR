@@ -140,8 +140,12 @@ public class LayerDependencyTests
     public void Application_Core_ShouldNotDependOn_EntityFrameworkCore()
     {
         // Act
-        // Note: EmailTemplates and LegalPages use IApplicationDbContext for copy-on-write
-        // pattern which requires direct EF Core access for tenant override queries
+        // Note: Some features use IApplicationDbContext for direct EF Core access:
+        // - EmailTemplates and LegalPages: copy-on-write pattern for tenant override queries
+        // - FilterAnalytics: analytics aggregation queries
+        // - ProductFilter: faceted search and filter queries
+        // - ProductFilterIndex: sync handler for denormalized filter indexes
+        // - ProductAttributes: complex attribute assignment queries
         var result = Types
             .InAssembly(ApplicationAssembly)
             .That()
@@ -150,6 +154,14 @@ public class LayerDependencyTests
             .DoNotResideInNamespace("NOIR.Application.Features.EmailTemplates")
             .And()
             .DoNotResideInNamespace("NOIR.Application.Features.LegalPages")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.FilterAnalytics")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.ProductFilter")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.ProductFilterIndex")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.ProductAttributes")
             .ShouldNot()
             .HaveDependencyOn("Microsoft.EntityFrameworkCore")
             .GetResult();
@@ -406,7 +418,8 @@ public class LayerDependencyTests
     {
         // Join entities (many-to-many relationships) don't need Entity<> base
         // Tenant inherits from TenantInfo (Finbuckle requirement for EFCoreStore)
-        var joinEntityNames = new HashSet<string> { "RolePermission", "Tenant" };
+        // AttributeType is an enum, not an entity
+        var joinEntityNames = new HashSet<string> { "RolePermission", "Tenant", "AttributeType" };
 
         // Act
         var entityTypes = Types

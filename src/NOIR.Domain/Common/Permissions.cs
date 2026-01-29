@@ -82,6 +82,18 @@ public static class Permissions
     public const string ProductCategoriesUpdate = "product-categories:update";
     public const string ProductCategoriesDelete = "product-categories:delete";
 
+    // Brands
+    public const string BrandsRead = "brands:read";
+    public const string BrandsCreate = "brands:create";
+    public const string BrandsUpdate = "brands:update";
+    public const string BrandsDelete = "brands:delete";
+
+    // Product Attributes
+    public const string AttributesRead = "attributes:read";
+    public const string AttributesCreate = "attributes:create";
+    public const string AttributesUpdate = "attributes:update";
+    public const string AttributesDelete = "attributes:delete";
+
     // Orders
     public const string OrdersRead = "orders:read";
     public const string OrdersWrite = "orders:write";
@@ -147,6 +159,12 @@ public static class Permissions
         public static readonly IReadOnlyList<string> ProductCategories =
             [ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete];
 
+        public static readonly IReadOnlyList<string> Brands =
+            [BrandsRead, BrandsCreate, BrandsUpdate, BrandsDelete];
+
+        public static readonly IReadOnlyList<string> Attributes =
+            [AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete];
+
         public static readonly IReadOnlyList<string> Orders =
             [OrdersRead, OrdersWrite, OrdersManage];
 
@@ -191,6 +209,10 @@ public static class Permissions
         ProductsRead, ProductsCreate, ProductsUpdate, ProductsDelete, ProductsPublish,
         // Product Categories
         ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete,
+        // Brands
+        BrandsRead, BrandsCreate, BrandsUpdate, BrandsDelete,
+        // Product Attributes
+        AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
         // Orders
         OrdersRead, OrdersWrite, OrdersManage,
         // Legal Pages
@@ -249,6 +271,8 @@ public static class Permissions
         // Products within tenant
         ProductsRead, ProductsCreate, ProductsUpdate, ProductsDelete, ProductsPublish,
         ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete,
+        BrandsRead, BrandsCreate, BrandsUpdate, BrandsDelete,
+        AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
         // Orders within tenant
         OrdersRead, OrdersWrite, OrdersManage,
         // Payments within tenant
@@ -344,6 +368,14 @@ public static class Permissions
             ProductCategoriesCreate,
             ProductCategoriesUpdate,
             ProductCategoriesDelete,
+            BrandsRead,
+            BrandsCreate,
+            BrandsUpdate,
+            BrandsDelete,
+            AttributesRead,
+            AttributesCreate,
+            AttributesUpdate,
+            AttributesDelete,
             // Orders within tenant
             OrdersRead,
             OrdersWrite,

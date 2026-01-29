@@ -29,7 +29,9 @@ export interface Product {
   categoryId?: string | null
   categoryName?: string | null
   categorySlug?: string | null
-  brand?: string | null
+  brandId?: string | null
+  brandName?: string | null
+  brand?: string | null // Legacy text field, prefer brandId/brandName
   sku?: string | null
   barcode?: string | null
   weight?: number | null
@@ -42,8 +44,26 @@ export interface Product {
   variants: ProductVariant[]
   images: ProductImage[]
   options: ProductOption[]
+  attributes?: ProductAttributeAssignment[] | null
   createdAt: string
   modifiedAt?: string | null
+}
+
+/**
+ * Product attribute assignment (full details)
+ * Re-exported from productAttribute.ts for convenience
+ */
+export interface ProductAttributeAssignment {
+  id: string
+  productId: string
+  attributeId: string
+  attributeCode: string
+  attributeName: string
+  attributeType: string
+  variantId?: string | null
+  value?: unknown
+  displayValue?: string | null
+  isRequired: boolean
 }
 
 /**
@@ -58,11 +78,14 @@ export interface ProductListItem {
   currency: string
   status: ProductStatus
   categoryName?: string | null
-  brand?: string | null
+  brandId?: string | null
+  brandName?: string | null
+  brand?: string | null // Legacy text field, prefer brandId/brandName
   sku?: string | null
   totalStock: number
   inStock: boolean
   primaryImageUrl?: string | null
+  displayAttributes?: ProductAttributeDisplay[] | null
   discountPercentage?: number | null
   createdAt: string
 }
@@ -171,7 +194,8 @@ export interface CreateProductRequest {
   basePrice: number
   currency: string
   categoryId?: string | null
-  brand?: string | null
+  brandId?: string | null
+  brand?: string | null // Legacy, prefer brandId
   sku?: string | null
   barcode?: string | null
   weight?: number | null
@@ -192,7 +216,8 @@ export interface UpdateProductRequest {
   basePrice: number
   currency: string
   categoryId?: string | null
-  brand?: string | null
+  brandId?: string | null
+  brand?: string | null // Legacy, prefer brandId
   sku?: string | null
   barcode?: string | null
   weight?: number | null
@@ -317,4 +342,21 @@ export interface ProductPagedResult {
   pageSize: number
   totalCount: number
   totalPages: number
+}
+
+// ============================================================================
+// Display Types (for UI rendering)
+// ============================================================================
+
+/**
+ * Attribute display info for product cards
+ * Used by AttributeBadges component to render attribute badges
+ */
+export interface ProductAttributeDisplay {
+  code: string
+  name: string
+  type: string
+  displayValue?: string | null
+  colorCode?: string | null
+  unit?: string | null
 }

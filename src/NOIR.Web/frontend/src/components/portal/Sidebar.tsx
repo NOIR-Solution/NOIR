@@ -34,6 +34,8 @@ import {
   Layers,
   Search,
   X,
+  Award,
+  Tags,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -102,6 +104,8 @@ const navSections: NavSection[] = [
     items: [
       { titleKey: 'ecommerce.products', icon: Package, path: '/portal/ecommerce/products', permission: Permissions.ProductsRead },
       { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead },
+      { titleKey: 'ecommerce.brands', icon: Award, path: '/portal/ecommerce/brands', permission: Permissions.BrandsRead },
+      { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead },
     ],
   },
   {

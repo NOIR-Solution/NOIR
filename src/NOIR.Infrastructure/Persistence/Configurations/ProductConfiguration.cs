@@ -54,6 +54,15 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(e => e.Brand)
             .HasMaxLength(100);
 
+        // Brand entity relationship (new - replaces string Brand)
+        builder.HasOne(e => e.BrandEntity)
+            .WithMany(b => b.Products)
+            .HasForeignKey(e => e.BrandId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(e => new { e.TenantId, e.BrandId })
+            .HasDatabaseName("IX_Products_TenantId_BrandId");
+
         // Identification
         builder.Property(e => e.Sku)
             .HasMaxLength(50);
@@ -65,10 +74,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.Property(e => e.Barcode)
             .HasMaxLength(50);
-
-        // Physical
-        builder.Property(e => e.Weight)
-            .HasPrecision(10, 2);
 
         // SEO
         builder.Property(e => e.MetaTitle)

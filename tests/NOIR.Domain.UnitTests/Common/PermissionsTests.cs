@@ -278,6 +278,8 @@ public class PermissionsTests
             + Permissions.Groups.BlogTags.Count
             + Permissions.Groups.Products.Count
             + Permissions.Groups.ProductCategories.Count
+            + Permissions.Groups.Brands.Count
+            + Permissions.Groups.Attributes.Count
             + Permissions.Groups.Orders.Count
             + Permissions.Groups.Payments.Count;
 

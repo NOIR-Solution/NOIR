@@ -22,6 +22,13 @@ public record ProductArchivedEvent(
     Guid ProductId) : DomainEvent;
 
 /// <summary>
+/// Raised when a product's basic info is updated (name, price, category, etc.).
+/// </summary>
+public record ProductUpdatedEvent(
+    Guid ProductId,
+    string Name) : DomainEvent;
+
+/// <summary>
 /// Raised when a product's stock changes.
 /// </summary>
 public record ProductStockChangedEvent(
@@ -30,3 +37,10 @@ public record ProductStockChangedEvent(
     int OldQuantity,
     int NewQuantity,
     InventoryMovementType MovementType) : DomainEvent;
+
+/// <summary>
+/// Raised when a product's attribute assignments change (value added/updated/removed).
+/// </summary>
+public record ProductAttributeAssignmentChangedEvent(
+    Guid ProductId,
+    Guid? VariantId) : DomainEvent;

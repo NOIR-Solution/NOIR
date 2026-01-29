@@ -1,0 +1,266 @@
+/**
+ * Product Attributes API Service
+ *
+ * Provides methods for managing product attributes.
+ */
+import { apiClient } from './apiClient'
+import type {
+  ProductAttribute,
+  ProductAttributeListItem,
+  ProductAttributePagedResult,
+  ProductAttributeValue,
+  CreateProductAttributeRequest,
+  UpdateProductAttributeRequest,
+  AddProductAttributeValueRequest,
+  UpdateProductAttributeValueRequest,
+  CategoryAttribute,
+  AssignCategoryAttributeRequest,
+  UpdateCategoryAttributeRequest,
+  ProductAttributeAssignment,
+  ProductAttributeFormSchema,
+  SetProductAttributeValueRequest,
+  BulkUpdateProductAttributesRequest,
+} from '@/types/productAttribute'
+
+// ============================================================================
+// Product Attributes
+// ============================================================================
+
+export interface GetProductAttributesParams {
+  search?: string
+  isActive?: boolean
+  isFilterable?: boolean
+  isVariantAttribute?: boolean
+  type?: string
+  page?: number
+  pageSize?: number
+}
+
+/**
+ * Fetch paginated list of product attributes
+ */
+export async function getProductAttributes(
+  params: GetProductAttributesParams = {}
+): Promise<ProductAttributePagedResult> {
+  const queryParams = new URLSearchParams()
+  if (params.search) queryParams.append('search', params.search)
+  if (params.isActive !== undefined) queryParams.append('isActive', String(params.isActive))
+  if (params.isFilterable !== undefined) queryParams.append('isFilterable', String(params.isFilterable))
+  if (params.isVariantAttribute !== undefined) queryParams.append('isVariantAttribute', String(params.isVariantAttribute))
+  if (params.type) queryParams.append('type', params.type)
+  if (params.page) queryParams.append('pageNumber', params.page.toString())
+  if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString())
+
+  const query = queryParams.toString()
+  return apiClient<ProductAttributePagedResult>(`/product-attributes${query ? `?${query}` : ''}`)
+}
+
+/**
+ * Fetch all active product attributes (for dropdowns)
+ */
+export async function getActiveProductAttributes(): Promise<ProductAttributeListItem[]> {
+  const result = await getProductAttributes({ isActive: true, pageSize: 1000 })
+  return result.items
+}
+
+/**
+ * Fetch all filterable product attributes with their values (for admin product filters)
+ */
+export async function getFilterableAttributesWithValues(): Promise<ProductAttribute[]> {
+  const result = await getProductAttributes({ isActive: true, isFilterable: true, pageSize: 1000 })
+  // Fetch full details for each filterable attribute to get values
+  const attributesWithValues = await Promise.all(
+    result.items.map(item => getProductAttributeById(item.id))
+  )
+  // Filter to only Select/MultiSelect types (they have predefined values)
+  return attributesWithValues.filter(
+    attr => (attr.type === 'Select' || attr.type === 'MultiSelect') && attr.values.length > 0
+  )
+}
+
+/**
+ * Fetch a single product attribute by ID
+ */
+export async function getProductAttributeById(id: string): Promise<ProductAttribute> {
+  return apiClient<ProductAttribute>(`/product-attributes/${id}`)
+}
+
+/**
+ * Create a new product attribute
+ */
+export async function createProductAttribute(
+  request: CreateProductAttributeRequest
+): Promise<ProductAttribute> {
+  return apiClient<ProductAttribute>('/product-attributes', {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Update an existing product attribute
+ */
+export async function updateProductAttribute(
+  id: string,
+  request: UpdateProductAttributeRequest
+): Promise<ProductAttribute> {
+  return apiClient<ProductAttribute>(`/product-attributes/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Delete a product attribute (soft delete)
+ */
+export async function deleteProductAttribute(id: string): Promise<void> {
+  return apiClient<void>(`/product-attributes/${id}`, {
+    method: 'DELETE',
+  })
+}
+
+// ============================================================================
+// Attribute Values
+// ============================================================================
+
+/**
+ * Add a value to a product attribute
+ */
+export async function addProductAttributeValue(
+  attributeId: string,
+  request: AddProductAttributeValueRequest
+): Promise<ProductAttributeValue> {
+  return apiClient<ProductAttributeValue>(`/product-attributes/${attributeId}/values`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Update an attribute value
+ */
+export async function updateProductAttributeValue(
+  attributeId: string,
+  valueId: string,
+  request: UpdateProductAttributeValueRequest
+): Promise<ProductAttributeValue> {
+  return apiClient<ProductAttributeValue>(`/product-attributes/${attributeId}/values/${valueId}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Remove an attribute value
+ */
+export async function removeProductAttributeValue(
+  attributeId: string,
+  valueId: string
+): Promise<void> {
+  return apiClient<void>(`/product-attributes/${attributeId}/values/${valueId}`, {
+    method: 'DELETE',
+  })
+}
+
+// ============================================================================
+// Category Attributes
+// ============================================================================
+
+/**
+ * Get all attributes assigned to a category
+ */
+export async function getCategoryAttributes(categoryId: string): Promise<CategoryAttribute[]> {
+  return apiClient<CategoryAttribute[]>(`/products/categories/${categoryId}/attributes`)
+}
+
+/**
+ * Assign an attribute to a category
+ */
+export async function assignCategoryAttribute(
+  categoryId: string,
+  request: AssignCategoryAttributeRequest
+): Promise<CategoryAttribute> {
+  return apiClient<CategoryAttribute>(`/products/categories/${categoryId}/attributes`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Update category attribute settings
+ */
+export async function updateCategoryAttribute(
+  categoryId: string,
+  attributeId: string,
+  request: UpdateCategoryAttributeRequest
+): Promise<CategoryAttribute> {
+  return apiClient<CategoryAttribute>(`/products/categories/${categoryId}/attributes/${attributeId}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Remove an attribute from a category
+ */
+export async function removeCategoryAttribute(
+  categoryId: string,
+  attributeId: string
+): Promise<void> {
+  return apiClient<void>(`/products/categories/${categoryId}/attributes/${attributeId}`, {
+    method: 'DELETE',
+  })
+}
+
+// ============================================================================
+// Product Attribute Assignments (Product's actual values)
+// ============================================================================
+
+/**
+ * Get attribute form schema for a product (for dynamic form rendering)
+ */
+export async function getProductAttributeFormSchema(
+  productId: string,
+  variantId?: string
+): Promise<ProductAttributeFormSchema> {
+  const params = variantId ? `?variantId=${variantId}` : ''
+  return apiClient<ProductAttributeFormSchema>(`/products/${productId}/attributes/form-schema${params}`)
+}
+
+/**
+ * Get a product's attribute values
+ */
+export async function getProductAttributeAssignments(
+  productId: string,
+  variantId?: string
+): Promise<ProductAttributeAssignment[]> {
+  const params = variantId ? `?variantId=${variantId}` : ''
+  return apiClient<ProductAttributeAssignment[]>(`/products/${productId}/attributes${params}`)
+}
+
+/**
+ * Set a single attribute value for a product
+ */
+export async function setProductAttributeValue(
+  productId: string,
+  attributeId: string,
+  request: SetProductAttributeValueRequest
+): Promise<ProductAttributeAssignment> {
+  return apiClient<ProductAttributeAssignment>(`/products/${productId}/attributes/${attributeId}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}
+
+/**
+ * Bulk update multiple attribute values for a product
+ */
+export async function bulkUpdateProductAttributes(
+  productId: string,
+  request: BulkUpdateProductAttributesRequest
+): Promise<ProductAttributeAssignment[]> {
+  return apiClient<ProductAttributeAssignment[]>(`/products/${productId}/attributes`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}

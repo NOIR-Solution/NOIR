@@ -23,6 +23,7 @@ global using NOIR.Domain.Entities.Payment;
 global using NOIR.Domain.Entities.Checkout;
 global using NOIR.Domain.Entities.Order;
 global using NOIR.Domain.Entities.Product;
+global using NOIR.Domain.Entities.Analytics;
 global using NOIR.Domain.Enums;
 global using NOIR.Domain.Events.Cart;
 global using NOIR.Domain.Events.Checkout;

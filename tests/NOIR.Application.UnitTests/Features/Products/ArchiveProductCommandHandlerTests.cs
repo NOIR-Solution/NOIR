@@ -332,7 +332,6 @@ public class ArchiveProductCommandHandlerTests
             "<p>HTML description</p>");
         existingProduct.SetBrand("Test Brand");
         existingProduct.UpdateIdentification("SKU-001", "BARCODE-001");
-        existingProduct.SetWeight(2.5m);
         existingProduct.UpdateSeo("SEO Title", "SEO Description");
         var command = CreateTestCommand(id: productId);
 
@@ -358,7 +357,6 @@ public class ArchiveProductCommandHandlerTests
         result.Value.Brand.Should().Be("Test Brand");
         result.Value.Sku.Should().Be("SKU-001");
         result.Value.Barcode.Should().Be("BARCODE-001");
-        result.Value.Weight.Should().Be(2.5m);
         result.Value.MetaTitle.Should().Be("SEO Title");
         result.Value.MetaDescription.Should().Be("SEO Description");
         result.Value.Status.Should().Be(ProductStatus.Archived);

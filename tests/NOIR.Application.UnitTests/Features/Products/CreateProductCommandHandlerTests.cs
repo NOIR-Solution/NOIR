@@ -46,10 +46,10 @@ public class CreateProductCommandHandlerTests
         decimal basePrice = 99.99m,
         string currency = "VND",
         Guid? categoryId = null,
+        Guid? brandId = null,
         string? brand = null,
         string? sku = null,
         string? barcode = null,
-        decimal? weight = null,
         bool trackInventory = true,
         string? metaTitle = null,
         string? metaDescription = null,
@@ -66,10 +66,10 @@ public class CreateProductCommandHandlerTests
             basePrice,
             currency,
             categoryId,
+            brandId,
             brand,
             sku,
             barcode,
-            weight,
             trackInventory,
             metaTitle,
             metaDescription,
@@ -602,34 +602,6 @@ public class CreateProductCommandHandlerTests
         _categoryRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<ProductCategoryByIdSpec>(), It.IsAny<CancellationToken>()),
             Times.Never);
-    }
-
-    [Fact]
-    public async Task Handle_WithWeight_ShouldSetWeight()
-    {
-        // Arrange
-        var command = CreateTestCommand(weight: 2.5m);
-
-        _productRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductSlugExistsSpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Product?)null);
-
-        _productRepositoryMock
-            .Setup(x => x.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Product p, CancellationToken _) => p);
-
-        _unitOfWorkMock
-            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
-
-        // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Weight.Should().Be(2.5m);
     }
 
     [Fact]

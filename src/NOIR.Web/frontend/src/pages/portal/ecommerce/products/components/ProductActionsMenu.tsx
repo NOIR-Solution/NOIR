@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Eye, Pencil, Trash2, Send, Archive } from 'lucide-react'
+import { Eye, Pencil, Trash2, Send, Archive, Copy } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,11 +15,13 @@ interface ProductActionsMenuProps {
   onDelete?: (product: ProductListItem) => void
   onPublish?: (product: ProductListItem) => void
   onArchive?: (product: ProductListItem) => void
+  onDuplicate?: (product: ProductListItem) => void
   trigger: React.ReactNode
   align?: 'start' | 'center' | 'end'
   canEdit?: boolean
   canDelete?: boolean
   canPublish?: boolean
+  canCreate?: boolean
 }
 
 /**
@@ -31,11 +33,13 @@ export function ProductActionsMenu({
   onDelete,
   onPublish,
   onArchive,
+  onDuplicate,
   trigger,
   align = 'center',
   canEdit = true,
   canDelete = true,
   canPublish = true,
+  canCreate = true,
 }: ProductActionsMenuProps) {
   const { t } = useTranslation('common')
 
@@ -55,6 +59,15 @@ export function ProductActionsMenu({
               <Pencil className="h-4 w-4 mr-2" />
               {t('products.editProduct', 'Edit Product')}
             </Link>
+          </DropdownMenuItem>
+        )}
+        {canCreate && onDuplicate && (
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => onDuplicate(product)}
+          >
+            <Copy className="h-4 w-4 mr-2" />
+            {t('products.duplicate', 'Duplicate')}
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />

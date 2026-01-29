@@ -14,7 +14,7 @@ public sealed record UpdateProductOptionCommand(
     public string? UserId { get; init; }
 
     public AuditOperationType OperationType => AuditOperationType.Update;
-    public object? GetTargetId() => ProductId;
+    public object? GetTargetId() => OptionId;
     public string? GetTargetDisplayName() => DisplayName ?? Name;
     public string? GetActionDescription() => $"Updated option '{DisplayName ?? Name}'";
 }

@@ -131,6 +131,10 @@ global using NOIR.Application.Features.LegalPages.Queries.GetLegalPage;
 global using NOIR.Application.Features.Products.DTOs;
 global using NOIR.Application.Features.Products.Queries.GetProductById;
 global using NOIR.Application.Features.Products.Queries.GetProductCategoryById;
+global using NOIR.Application.Features.Products.Queries.GetProductOptionById;
+global using NOIR.Application.Features.Products.Queries.GetProductOptionValueById;
+global using NOIR.Application.Features.Brands.DTOs;
+global using NOIR.Application.Features.Brands.Queries.GetBrandById;
 global using NOIR.Application.Features.Orders.DTOs;
 global using NOIR.Application.Features.Orders.Queries.GetOrderById;
 global using NOIR.Application.Features.PlatformSettings.DTOs;
@@ -177,12 +181,14 @@ global using NOIR.Domain.Entities.Checkout;
 global using NOIR.Domain.Entities.Order;
 global using NOIR.Domain.Entities.Payment;
 global using NOIR.Domain.Entities.Product;
+global using NOIR.Domain.Entities.Analytics;
 global using NOIR.Domain.Events.Cart;
 global using NOIR.Domain.Events.Checkout;
 global using NOIR.Domain.Events.Order;
 global using NOIR.Domain.Events.Payment;
 global using NOIR.Domain.Events.Product;
 global using NOIR.Application.Features.Payments.Specifications;
+global using NOIR.Application.Features.ProductFilterIndex.Services;
 
 // Microsoft - Entity Framework Core Metadata
 global using Microsoft.EntityFrameworkCore.Metadata;

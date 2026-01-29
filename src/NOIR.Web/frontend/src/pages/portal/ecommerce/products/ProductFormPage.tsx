@@ -80,6 +80,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useProduct, useProductCategories } from '@/hooks/useProducts'
+import { useActiveBrands } from '@/hooks/useBrands'
 import {
   createProduct,
   updateProduct,
@@ -96,6 +97,9 @@ import {
 } from '@/services/products'
 import { ImageUploadZone } from '@/components/products/ImageUploadZone'
 import { SortableImageGallery } from '@/components/products/SortableImageGallery'
+import { ProductAttributesSection } from '@/components/products/ProductAttributesSection'
+import { ProductActivityLog } from './components/ProductActivityLog'
+import { useBulkUpdateProductAttributes } from '@/hooks/useProductAttributes'
 import { toast } from 'sonner'
 import { ApiError } from '@/services/apiClient'
 import type { ProductVariant, ProductImage, CreateProductVariantRequest } from '@/types/product'
@@ -114,7 +118,7 @@ const productSchema = z.object({
   // Currency hardcoded to VND for Vietnam market - UI selector intentionally removed
   currency: z.string().default('VND'),
   categoryId: z.string().optional().nullable(),
-  brand: z.string().optional().nullable(),
+  brandId: z.string().optional().nullable(),
   sku: z.string().optional().nullable(),
   barcode: z.string().optional().nullable(),
   weight: z.coerce.number().optional().nullable(),
@@ -226,6 +230,7 @@ export default function ProductFormPage() {
 
   const { data: product, loading: productLoading, refresh: refreshProduct } = useProduct(id)
   const { data: categories } = useProductCategories()
+  const { data: brands = [] } = useActiveBrands()
 
   const [isSaving, setIsSaving] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
@@ -242,6 +247,15 @@ export default function ProductFormPage() {
   const editorRef = useRef<TinyMCEEditor | null>(null)
   const [editingImageId, setEditingImageId] = useState<string | null>(null)
   const [editingAltText, setEditingAltText] = useState('')
+  const [pendingAttributeValues, setPendingAttributeValues] = useState<Record<string, unknown>>({})
+
+  // Attribute bulk update hook
+  const { bulkUpdate: bulkUpdateAttributes } = useBulkUpdateProductAttributes()
+
+  // Handler for attribute value changes
+  const handleAttributesChange = (values: Record<string, unknown>) => {
+    setPendingAttributeValues(values)
+  }
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -255,7 +269,7 @@ export default function ProductFormPage() {
       basePrice: 0,
       currency: 'VND',
       categoryId: null,
-      brand: '',
+      brandId: null,
       sku: '',
       barcode: '',
       weight: null,
@@ -278,7 +292,7 @@ export default function ProductFormPage() {
         basePrice: product.basePrice,
         currency: product.currency,
         categoryId: product.categoryId || null,
-        brand: product.brand || '',
+        brandId: product.brandId || null,
         sku: product.sku || '',
         barcode: product.barcode || '',
         weight: product.weight || null,
@@ -304,6 +318,8 @@ export default function ProductFormPage() {
   const onSubmit = async (data: ProductFormData) => {
     setIsSaving(true)
     try {
+      let productId = id
+
       if (isEditing && id) {
         await updateProduct(id, {
           ...data,
@@ -311,7 +327,6 @@ export default function ProductFormPage() {
           currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
           categoryId: data.categoryId || null,
         })
-        toast.success('Product updated successfully')
       } else {
         const newProduct = await createProduct({
           ...data,
@@ -321,8 +336,35 @@ export default function ProductFormPage() {
           variants: [],
           images: [],
         })
-        toast.success('Product created successfully')
-        navigate(`/portal/ecommerce/products/${newProduct.id}/edit`)
+        productId = newProduct.id
+      }
+
+      // Save attribute values if any pending changes
+      if (productId && Object.keys(pendingAttributeValues).length > 0) {
+        const attributeItems = Object.entries(pendingAttributeValues)
+          .filter(([, value]) => value !== undefined)
+          .map(([attributeId, value]) => ({
+            attributeId,
+            value,
+          }))
+
+        if (attributeItems.length > 0) {
+          const result = await bulkUpdateAttributes(productId, {
+            variantId: null,
+            values: attributeItems,
+          })
+
+          if (!result.success) {
+            toast.error(result.error || 'Failed to save attributes')
+            return
+          }
+        }
+      }
+
+      toast.success(isEditing ? 'Product updated successfully' : 'Product created successfully')
+
+      if (!isEditing && productId) {
+        navigate(`/portal/ecommerce/products/${productId}/edit`)
       }
     } catch (err) {
       const message = err instanceof ApiError ? err.message : 'Failed to save product'
@@ -640,7 +682,7 @@ export default function ProductFormPage() {
                           <Input
                             {...field}
                             onChange={(e) => handleNameChange(e.target.value)}
-                            placeholder="Enter product name"
+                            placeholder={t('products.productNamePlaceholder')}
                             disabled={isViewMode}
                           />
                         </FormControl>
@@ -656,7 +698,7 @@ export default function ProductFormPage() {
                       <FormItem>
                         <FormLabel>URL Slug</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="product-url-slug" disabled={isViewMode} />
+                          <Input {...field} placeholder={t('products.urlSlugPlaceholder')} disabled={isViewMode} />
                         </FormControl>
                         <FormDescription>
                           Used in the product URL. Auto-generated from name.
@@ -763,7 +805,7 @@ export default function ProductFormPage() {
                         <FormItem>
                           <FormLabel>SKU</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ''} placeholder="SKU-001" disabled={isViewMode} />
+                            <Input {...field} value={field.value || ''} placeholder={t('products.skuPlaceholder')} disabled={isViewMode} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -787,13 +829,29 @@ export default function ProductFormPage() {
 
                   <FormField
                     control={form.control}
-                    name="brand"
+                    name="brandId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Brand</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={field.value || ''} placeholder="Brand name" disabled={isViewMode} />
-                        </FormControl>
+                        <FormLabel>{t('labels.brand', 'Brand')}</FormLabel>
+                        <Select
+                          onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
+                          value={field.value || 'none'}
+                          disabled={isViewMode}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="cursor-pointer">
+                              <SelectValue placeholder={t('products.selectBrand', 'Select brand')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="none" className="cursor-pointer">{t('products.noBrand', 'No brand')}</SelectItem>
+                            {brands.map((brand) => (
+                              <SelectItem key={brand.id} value={brand.id} className="cursor-pointer">
+                                {brand.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -1074,7 +1132,7 @@ export default function ProductFormPage() {
                       >
                         <FormControl>
                           <SelectTrigger className="cursor-pointer">
-                            <SelectValue placeholder="Select category" />
+                            <SelectValue placeholder={t('categories.selectParent')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -1093,6 +1151,16 @@ export default function ProductFormPage() {
               </Form>
             </CardContent>
           </Card>
+
+          {/* Product Attributes - Only show when editing and has category */}
+          {isEditing && id && (
+            <ProductAttributesSection
+              productId={id}
+              categoryId={form.watch('categoryId') || null}
+              isViewMode={isViewMode}
+              onAttributesChange={handleAttributesChange}
+            />
+          )}
 
           {/* SEO */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
@@ -1206,6 +1274,14 @@ export default function ProductFormPage() {
                 )}
               </CardContent>
             </Card>
+          )}
+
+          {/* Activity Log (only show when editing) */}
+          {isEditing && id && (
+            <ProductActivityLog
+              productId={id}
+              productName={form.getValues('name')}
+            />
           )}
         </div>
       </div>

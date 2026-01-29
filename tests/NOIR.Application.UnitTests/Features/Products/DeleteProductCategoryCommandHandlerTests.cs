@@ -69,16 +69,16 @@ public class DeleteProductCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<ProductCategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<ProductCategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ProductCategory>()); // No child categories
+            .ReturnsAsync(false); // No child categories
 
         _productRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<ProductCategoryHasProductsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Product>()); // No products
+            .ReturnsAsync(false); // No products
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -142,7 +142,6 @@ public class DeleteProductCategoryCommandHandlerTests
         // Arrange
         var categoryId = Guid.NewGuid();
         var existingCategory = CreateTestCategory();
-        var childCategory = CreateTestCategory("Child Category", "child-category", parentId: categoryId);
         var command = CreateTestCommand(id: categoryId);
 
         _categoryRepositoryMock
@@ -152,10 +151,10 @@ public class DeleteProductCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<ProductCategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<ProductCategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ProductCategory> { childCategory }); // Has child category
+            .ReturnsAsync(true); // Has child category
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -180,7 +179,6 @@ public class DeleteProductCategoryCommandHandlerTests
         // Arrange
         var categoryId = Guid.NewGuid();
         var existingCategory = CreateTestCategory();
-        var product = CreateTestProduct();
         var command = CreateTestCommand(id: categoryId);
 
         _categoryRepositoryMock
@@ -190,16 +188,16 @@ public class DeleteProductCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<ProductCategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<ProductCategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ProductCategory>()); // No child categories
+            .ReturnsAsync(false); // No child categories
 
         _productRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<ProductCategoryHasProductsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Product> { product }); // Has products
+            .ReturnsAsync(true); // Has products
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -239,16 +237,16 @@ public class DeleteProductCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<ProductCategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<ProductCategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ProductCategory>());
+            .ReturnsAsync(false);
 
         _productRepositoryMock
-            .Setup(x => x.ListAsync(
+            .Setup(x => x.AnyAsync(
                 It.IsAny<ProductCategoryHasProductsSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Product>());
+            .ReturnsAsync(false);
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -262,10 +260,10 @@ public class DeleteProductCategoryCommandHandlerTests
             x => x.FirstOrDefaultAsync(It.IsAny<ProductCategoryByIdForUpdateSpec>(), token),
             Times.Once);
         _categoryRepositoryMock.Verify(
-            x => x.ListAsync(It.IsAny<ProductCategoriesSpec>(), token),
+            x => x.AnyAsync(It.IsAny<ProductCategoryHasChildrenSpec>(), token),
             Times.Once);
         _productRepositoryMock.Verify(
-            x => x.ListAsync(It.IsAny<ProductCategoryHasProductsSpec>(), token),
+            x => x.AnyAsync(It.IsAny<ProductCategoryHasProductsSpec>(), token),
             Times.Once);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(token),
@@ -278,7 +276,6 @@ public class DeleteProductCategoryCommandHandlerTests
         // Arrange - Category has both children and products
         var categoryId = Guid.NewGuid();
         var existingCategory = CreateTestCategory();
-        var childCategory = CreateTestCategory("Child Category", "child-category", parentId: categoryId);
         var command = CreateTestCommand(id: categoryId);
 
         _categoryRepositoryMock
@@ -288,10 +285,10 @@ public class DeleteProductCategoryCommandHandlerTests
             .ReturnsAsync(existingCategory);
 
         _categoryRepositoryMock
-            .Setup(x => x.ListAsync(
-                It.IsAny<ProductCategoriesSpec>(),
+            .Setup(x => x.AnyAsync(
+                It.IsAny<ProductCategoryHasChildrenSpec>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ProductCategory> { childCategory }); // Has child
+            .ReturnsAsync(true); // Has child
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -303,7 +300,7 @@ public class DeleteProductCategoryCommandHandlerTests
 
         // Should not check for products if children exist
         _productRepositoryMock.Verify(
-            x => x.ListAsync(It.IsAny<ProductCategoryHasProductsSpec>(), It.IsAny<CancellationToken>()),
+            x => x.AnyAsync(It.IsAny<ProductCategoryHasProductsSpec>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 

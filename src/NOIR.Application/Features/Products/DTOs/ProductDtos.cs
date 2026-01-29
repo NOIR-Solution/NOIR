@@ -16,10 +16,11 @@ public sealed record ProductDto(
     Guid? CategoryId,
     string? CategoryName,
     string? CategorySlug,
+    Guid? BrandId,
+    string? BrandName,
     string? Brand,
     string? Sku,
     string? Barcode,
-    decimal? Weight,
     bool TrackInventory,
     string? MetaTitle,
     string? MetaDescription,
@@ -29,6 +30,7 @@ public sealed record ProductDto(
     List<ProductVariantDto> Variants,
     List<ProductImageDto> Images,
     List<ProductOptionDto> Options,
+    IReadOnlyCollection<ProductAttributes.DTOs.ProductAttributeAssignmentDto>? Attributes,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt);
 
@@ -44,12 +46,25 @@ public sealed record ProductListDto(
     string Currency,
     ProductStatus Status,
     string? CategoryName,
+    Guid? BrandId,
+    string? BrandName,
     string? Brand,
     string? Sku,
     int TotalStock,
     bool InStock,
     string? PrimaryImageUrl,
+    IReadOnlyCollection<ProductAttributeDisplayDto>? DisplayAttributes,
     DateTimeOffset CreatedAt);
+
+/// <summary>
+/// Simplified attribute display for product cards (only showInProductCard=true).
+/// </summary>
+public sealed record ProductAttributeDisplayDto(
+    string Code,
+    string Name,
+    string Type,
+    string? DisplayValue,
+    string? ColorCode);
 
 /// <summary>
 /// Product variant details.
@@ -151,10 +166,10 @@ public sealed record CreateProductRequest(
     decimal BasePrice,
     string Currency,
     Guid? CategoryId,
+    Guid? BrandId,
     string? Brand,
     string? Sku,
     string? Barcode,
-    decimal? Weight,
     bool TrackInventory,
     string? MetaTitle,
     string? MetaDescription,
@@ -174,10 +189,10 @@ public sealed record UpdateProductRequest(
     decimal BasePrice,
     string Currency,
     Guid? CategoryId,
+    Guid? BrandId,
     string? Brand,
     string? Sku,
     string? Barcode,
-    decimal? Weight,
     bool TrackInventory,
     string? MetaTitle,
     string? MetaDescription,
@@ -367,3 +382,35 @@ public sealed record UpdateProductOptionValueRequest(
     string? ColorCode,
     string? SwatchUrl,
     int SortOrder);
+
+// ===== Stats DTOs =====
+
+/// <summary>
+/// Product statistics for dashboard display.
+/// Provides accurate global counts independent of current filters/pagination.
+/// </summary>
+public sealed record ProductStatsDto(
+    int Total,
+    int Active,
+    int Draft,
+    int Archived,
+    int OutOfStock,
+    int LowStock);
+
+// ===== Bulk Operation DTOs =====
+
+/// <summary>
+/// Result of a bulk operation (publish, archive, delete).
+/// </summary>
+public sealed record BulkOperationResultDto(
+    int Success,
+    int Failed,
+    List<BulkOperationErrorDto> Errors);
+
+/// <summary>
+/// Error details for a failed bulk operation item.
+/// </summary>
+public sealed record BulkOperationErrorDto(
+    Guid ProductId,
+    string? ProductName,
+    string Message);
