@@ -1,3 +1,5 @@
+using NOIR.Application.Common.Extensions;
+
 namespace NOIR.Infrastructure;
 
 /// <summary>
@@ -157,26 +159,8 @@ public static class DependencyInjection
         // Default: In-memory only (L1). Optional: Add Redis for distributed cache (L2).
         services.AddFusionCaching(configuration);
 
-        // Auto-register services using Scrutor via marker interfaces
-        // Services implement IScopedService, ITransientService, or ISingletonService
-        services.Scan(scan => scan
-            .FromAssemblyOf<ApplicationDbContext>()
-
-            // Register IScopedService implementations
-            .AddClasses(c => c.AssignableTo<IScopedService>(), publicOnly: false)
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-
-            // Register ITransientService implementations
-            .AddClasses(c => c.AssignableTo<ITransientService>(), publicOnly: false)
-            .AsImplementedInterfaces()
-            .WithTransientLifetime()
-
-            // Register ISingletonService implementations
-            .AddClasses(c => c.AssignableTo<ISingletonService>(), publicOnly: false)
-            .AsImplementedInterfaces()
-            .WithSingletonLifetime()
-        );
+        // Auto-register Infrastructure services using shared Scrutor extension
+        services.ScanMarkerInterfaces(typeof(ApplicationDbContext).Assembly);
 
         // Explicitly register Application layer handlers that are used with [FromServices] injection
         services.AddScoped<NOIR.Application.Features.Auth.Commands.UploadAvatar.UploadAvatarCommandHandler>();

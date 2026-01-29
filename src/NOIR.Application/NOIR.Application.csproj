@@ -19,6 +19,9 @@
         <!-- Object Mapping -->
         <PackageReference Include="Riok.Mapperly" Version="4.3.1" />
 
+        <!-- DI Auto-Registration -->
+        <PackageReference Include="Scrutor" Version="7.0.0" />
+
         <!-- EF Core Abstractions (for IQueryable extensions) -->
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
         <PackageReference Include="WolverineFx.FluentValidation" Version="5.11.0" />

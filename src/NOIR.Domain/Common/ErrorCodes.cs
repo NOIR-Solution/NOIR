@@ -360,6 +360,9 @@ public static class ErrorCodes
 
         /// <summary>Attribute is already linked to category</summary>
         public const string AlreadyLinkedToCategory = "NOIR-ATTR-011";
+
+        /// <summary>Cannot delete attribute with category associations</summary>
+        public const string HasCategories = "NOIR-ATTR-012";
     }
 
     /// <summary>

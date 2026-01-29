@@ -160,6 +160,91 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Analytics.FilterAnalyticsEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CategorySlug")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("ClickedProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FilterCode")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FilterValue")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("ProductCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SearchQuery")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "CreatedAt")
+                        .HasDatabaseName("IX_FilterAnalyticsEvents_TenantId_CreatedAt");
+
+                    b.HasIndex("TenantId", "SessionId")
+                        .HasDatabaseName("IX_FilterAnalyticsEvents_TenantId_SessionId");
+
+                    b.HasIndex("TenantId", "CategorySlug", "CreatedAt")
+                        .HasDatabaseName("IX_FilterAnalyticsEvents_TenantId_Category_CreatedAt");
+
+                    b.HasIndex("TenantId", "EventType", "CreatedAt")
+                        .HasDatabaseName("IX_FilterAnalyticsEvents_TenantId_EventType_CreatedAt");
+
+                    b.HasIndex("TenantId", "FilterCode", "FilterValue")
+                        .HasDatabaseName("IX_FilterAnalyticsEvents_TenantId_FilterCode_FilterValue");
+
+                    b.HasIndex("TenantId", "UserId", "CreatedAt")
+                        .HasDatabaseName("IX_FilterAnalyticsEvents_TenantId_UserId_CreatedAt");
+
+                    b.ToTable("FilterAnalyticsEvents", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.Cart.Cart", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3767,10 +3852,6 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<bool>("TrackInventory")
                         .HasColumnType("bit");
 
-                    b.Property<decimal?>("Weight")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BrandId");
@@ -3854,6 +3935,11 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasDefaultValue(false);
 
                     b.Property<bool>("IsFilterable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsGlobal")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -3952,6 +4038,9 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("TenantId", "IsFilterable")
                         .HasDatabaseName("IX_ProductAttributes_TenantId_IsFilterable");
+
+                    b.HasIndex("TenantId", "IsGlobal")
+                        .HasDatabaseName("IX_ProductAttributes_TenantId_IsGlobal");
 
                     b.HasIndex("TenantId", "IsVariantAttribute")
                         .HasDatabaseName("IX_ProductAttributes_TenantId_IsVariantAttribute");
@@ -5849,7 +5938,7 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.HasOne("NOIR.Domain.Entities.Product.ProductAttribute", "Attribute")
                         .WithMany()
                         .HasForeignKey("AttributeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NOIR.Domain.Entities.Product.ProductCategory", "Category")
@@ -5885,7 +5974,7 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.HasOne("NOIR.Domain.Entities.Product.ProductAttribute", "Attribute")
                         .WithMany()
                         .HasForeignKey("AttributeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NOIR.Domain.Entities.Product.ProductAttributeValue", "SelectedValue")
@@ -5894,7 +5983,7 @@ namespace NOIR.Infrastructure.Migrations.App
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("NOIR.Domain.Entities.Product.Product", "Product")
-                        .WithMany()
+                        .WithMany("AttributeAssignments")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -5902,7 +5991,7 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.HasOne("NOIR.Domain.Entities.Product.ProductVariant", "Variant")
                         .WithMany()
                         .HasForeignKey("VariantId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Attribute");
 
@@ -6085,6 +6174,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
             modelBuilder.Entity("NOIR.Domain.Entities.Product.Product", b =>
                 {
+                    b.Navigation("AttributeAssignments");
+
                     b.Navigation("Images");
 
                     b.Navigation("Options");

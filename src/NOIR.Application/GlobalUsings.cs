@@ -101,5 +101,8 @@ global using System.Text.Json;
 // Wolverine
 global using Wolverine;
 
+// Scrutor (DI auto-registration)
+global using Scrutor;
+
 // Diagnostics
 global using System.Diagnostics;

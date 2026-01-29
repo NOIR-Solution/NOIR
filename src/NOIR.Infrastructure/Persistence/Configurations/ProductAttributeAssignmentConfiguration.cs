@@ -83,10 +83,12 @@ public class ProductAttributeAssignmentConfiguration : IEntityTypeConfiguration<
             .OnDelete(DeleteBehavior.Cascade);
 
         // Navigation to ProductAttribute
+        // Using Restrict to avoid multiple cascade paths (SQL Server limitation)
+        // Attributes with assignments cannot be deleted directly
         builder.HasOne(e => e.Attribute)
             .WithMany()
             .HasForeignKey(e => e.AttributeId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Navigation to ProductAttributeValue (for Select type)
         builder.HasOne(e => e.SelectedValue)
@@ -95,10 +97,13 @@ public class ProductAttributeAssignmentConfiguration : IEntityTypeConfiguration<
             .OnDelete(DeleteBehavior.SetNull);
 
         // Navigation to ProductVariant (optional, for variant-specific attributes)
+        // Using Restrict to avoid multiple cascade paths (SQL Server limitation)
+        // Product → ProductVariant → ProductAttributeAssignment would conflict with
+        // Product → ProductAttributeAssignment cascade path
         builder.HasOne(e => e.Variant)
             .WithMany()
             .HasForeignKey(e => e.VariantId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Indexes for filtering and querying
         builder.HasIndex(e => new { e.TenantId, e.ProductId })

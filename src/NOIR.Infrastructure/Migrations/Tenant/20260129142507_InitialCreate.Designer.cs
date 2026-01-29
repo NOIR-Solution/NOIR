@@ -12,7 +12,7 @@ using NOIR.Infrastructure.Persistence;
 namespace NOIR.Infrastructure.Migrations.Tenant
 {
     [DbContext(typeof(TenantStoreDbContext))]
-    [Migration("20260126004724_InitialCreate")]
+    [Migration("20260129142507_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

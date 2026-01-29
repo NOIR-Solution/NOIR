@@ -91,6 +91,37 @@ namespace NOIR.Infrastructure.Migrations.App
                 });
 
             migrationBuilder.CreateTable(
+                name: "Brands",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    LogoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    BannerUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Description = table.Column<string>(type: "text", maxLength: 500, nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    MetaTitle = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    MetaDescription = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsFeatured = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    ProductCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Brands", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Carts",
                 columns: table => new
                 {
@@ -171,6 +202,29 @@ namespace NOIR.Infrastructure.Migrations.App
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_EmailTemplates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FilterAnalyticsEvents",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SessionId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    EventType = table.Column<int>(type: "int", nullable: false),
+                    CategorySlug = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    FilterCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    FilterValue = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ProductCount = table.Column<int>(type: "int", nullable: false),
+                    SearchQuery = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ClickedProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FilterAnalyticsEvents", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -322,6 +376,71 @@ namespace NOIR.Infrastructure.Migrations.App
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Notifications", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    SubTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    ShippingAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    GrandTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, defaultValue: "VND"),
+                    ShippingFullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ShippingAddressLine1 = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ShippingAddressLine2 = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ShippingWard = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingDistrict = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingProvince = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingCountry = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingPostalCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ShippingIsDefault = table.Column<bool>(type: "bit", nullable: true),
+                    BillingFullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    BillingAddressLine1 = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    BillingAddressLine2 = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    BillingWard = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingDistrict = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingProvince = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingCountry = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingPostalCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    BillingIsDefault = table.Column<bool>(type: "bit", nullable: true),
+                    ShippingMethod = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    TrackingNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingCarrier = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    EstimatedDeliveryAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CustomerEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    CustomerPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    CustomerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    CustomerNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    InternalNotes = table.Column<string>(type: "nvarchar(max)", maxLength: 500, nullable: true),
+                    CancellationReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CancelledAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ConfirmedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ShippedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeliveredAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CompletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CouponCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CheckoutSessionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -558,6 +677,45 @@ namespace NOIR.Infrastructure.Migrations.App
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PostTags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductAttributes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsFilterable = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsSearchable = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsRequired = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsVariantAttribute = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    ShowInProductCard = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    ShowInSpecifications = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    Unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ValidationRegex = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    MinValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: true),
+                    MaxValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: true),
+                    MaxLength = table.Column<int>(type: "int", nullable: true),
+                    DefaultValue = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Placeholder = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    HelpText = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsGlobal = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductAttributes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -879,6 +1037,112 @@ namespace NOIR.Infrastructure.Migrations.App
                 });
 
             migrationBuilder.CreateTable(
+                name: "CheckoutSessions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastActivityAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CustomerEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    CustomerPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    CustomerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ShippingFullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ShippingAddressLine1 = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ShippingAddressLine2 = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ShippingWard = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingDistrict = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingProvince = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingCountry = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingPostalCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ShippingIsDefault = table.Column<bool>(type: "bit", nullable: true),
+                    BillingFullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    BillingAddressLine1 = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    BillingAddressLine2 = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    BillingWard = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingDistrict = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingProvince = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingCountry = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BillingPostalCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    BillingIsDefault = table.Column<bool>(type: "bit", nullable: true),
+                    BillingSameAsShipping = table.Column<bool>(type: "bit", nullable: false),
+                    ShippingMethod = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingCost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    EstimatedDeliveryAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    PaymentGatewayId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SubTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    GrandTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, defaultValue: "VND"),
+                    CouponCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CustomerNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    OrderNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CheckoutSessions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CheckoutSessions_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CheckoutSessions_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductVariantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    VariantName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Sku = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    OptionsSnapshot = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderItems_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PaymentTransactions",
                 columns: table => new
                 {
@@ -922,6 +1186,11 @@ namespace NOIR.Infrastructure.Migrations.App
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PaymentTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaymentTransactions_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PaymentTransactions_PaymentGateways_PaymentGatewayId",
                         column: x => x.PaymentGatewayId,
@@ -1034,22 +1303,82 @@ namespace NOIR.Infrastructure.Migrations.App
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductAttributeValues",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AttributeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DisplayValue = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ColorCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    SwatchUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    IconUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    ProductCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductAttributeValues", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductAttributeValues_ProductAttributes_AttributeId",
+                        column: x => x.AttributeId,
+                        principalTable: "ProductAttributes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CategoryAttributes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AttributeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsRequired = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoryAttributes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CategoryAttributes_ProductAttributes_AttributeId",
+                        column: x => x.AttributeId,
+                        principalTable: "ProductAttributes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CategoryAttributes_ProductCategories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "ProductCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Slug = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ShortDescription = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     DescriptionHtml = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     BasePrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, defaultValue: "VND"),
                     Status = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    BrandId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Brand = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Sku = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Barcode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Weight = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
                     TrackInventory = table.Column<bool>(type: "bit", nullable: false),
                     MetaTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     MetaDescription = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
@@ -1066,6 +1395,12 @@ namespace NOIR.Infrastructure.Migrations.App
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Products_Brands_BrandId",
+                        column: x => x.BrandId,
+                        principalTable: "Brands",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Products_ProductCategories_CategoryId",
                         column: x => x.CategoryId,
@@ -1239,6 +1574,51 @@ namespace NOIR.Infrastructure.Migrations.App
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductFilterIndexes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ProductSlug = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Sku = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CategoryPath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CategoryName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    CategorySlug = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    BrandId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    BrandName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BrandSlug = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    MinPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    MaxPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, defaultValue: "VND"),
+                    InStock = table.Column<bool>(type: "bit", nullable: false),
+                    TotalStock = table.Column<int>(type: "int", nullable: false),
+                    AverageRating = table.Column<decimal>(type: "decimal(3,2)", precision: 3, scale: 2, nullable: true),
+                    ReviewCount = table.Column<int>(type: "int", nullable: false),
+                    AttributesJson = table.Column<string>(type: "nvarchar(max)", maxLength: 500, nullable: false),
+                    SearchText = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    PrimaryImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    SortOrder = table.Column<int>(type: "int", nullable: false),
+                    LastSyncedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProductUpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductFilterIndexes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductFilterIndexes_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductImages",
                 columns: table => new
                 {
@@ -1264,6 +1644,30 @@ namespace NOIR.Infrastructure.Migrations.App
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductOptions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductOptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductOptions_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductVariants",
                 columns: table => new
                 {
@@ -1276,6 +1680,7 @@ namespace NOIR.Infrastructure.Migrations.App
                     StockQuantity = table.Column<int>(type: "int", nullable: false),
                     OptionsJson = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    ImageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
@@ -1284,7 +1689,91 @@ namespace NOIR.Infrastructure.Migrations.App
                 {
                     table.PrimaryKey("PK_ProductVariants", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_ProductVariants_ProductImages_ImageId",
+                        column: x => x.ImageId,
+                        principalTable: "ProductImages",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_ProductVariants_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductOptionValues",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    DisplayValue = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ColorCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    SwatchUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductOptionValues", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductOptionValues_ProductOptions_OptionId",
+                        column: x => x.OptionId,
+                        principalTable: "ProductOptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductAttributeAssignments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AttributeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VariantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    AttributeValueId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    AttributeValueIds = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    TextValue = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    NumberValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 2, nullable: true),
+                    BoolValue = table.Column<bool>(type: "bit", nullable: true),
+                    DateValue = table.Column<DateTime>(type: "date", nullable: true),
+                    DateTimeValue = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ColorValue = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    MinRangeValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 2, nullable: true),
+                    MaxRangeValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 2, nullable: true),
+                    FileUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    DisplayValue = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductAttributeAssignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductAttributeAssignments_ProductAttributeValues_AttributeValueId",
+                        column: x => x.AttributeValueId,
+                        principalTable: "ProductAttributeValues",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_ProductAttributeAssignments_ProductAttributes_AttributeId",
+                        column: x => x.AttributeId,
+                        principalTable: "ProductAttributes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProductAttributeAssignments_ProductVariants_VariantId",
+                        column: x => x.VariantId,
+                        principalTable: "ProductVariants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProductAttributeAssignments_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -1353,6 +1842,32 @@ namespace NOIR.Infrastructure.Migrations.App
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Brands_TenantId",
+                table: "Brands",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Brands_TenantId_IsActive",
+                table: "Brands",
+                columns: new[] { "TenantId", "IsActive" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Brands_TenantId_IsFeatured",
+                table: "Brands",
+                columns: new[] { "TenantId", "IsFeatured" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Brands_TenantId_Slug",
+                table: "Brands",
+                columns: new[] { "TenantId", "Slug" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Brands_TenantId_SortOrder_Name",
+                table: "Brands",
+                columns: new[] { "TenantId", "SortOrder", "Name" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CartItems_CartId_ProductVariantId",
                 table: "CartItems",
                 columns: new[] { "CartId", "ProductVariantId" });
@@ -1386,6 +1901,69 @@ namespace NOIR.Infrastructure.Migrations.App
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_TenantId_UserId",
                 table: "Carts",
+                columns: new[] { "TenantId", "UserId" },
+                filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryAttributes_AttributeId",
+                table: "CategoryAttributes",
+                column: "AttributeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryAttributes_CategoryId",
+                table: "CategoryAttributes",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryAttributes_TenantId_AttributeId",
+                table: "CategoryAttributes",
+                columns: new[] { "TenantId", "AttributeId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryAttributes_TenantId_CategoryId_AttributeId",
+                table: "CategoryAttributes",
+                columns: new[] { "TenantId", "CategoryId", "AttributeId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryAttributes_TenantId_CategoryId_SortOrder",
+                table: "CategoryAttributes",
+                columns: new[] { "TenantId", "CategoryId", "SortOrder" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CheckoutSessions_CartId",
+                table: "CheckoutSessions",
+                column: "CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CheckoutSessions_OrderId",
+                table: "CheckoutSessions",
+                column: "OrderId",
+                filter: "[OrderId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CheckoutSessions_Status_ExpiresAt",
+                table: "CheckoutSessions",
+                columns: new[] { "Status", "ExpiresAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CheckoutSessions_TenantId",
+                table: "CheckoutSessions",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CheckoutSessions_TenantId_CartId",
+                table: "CheckoutSessions",
+                columns: new[] { "TenantId", "CartId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CheckoutSessions_TenantId_Status",
+                table: "CheckoutSessions",
+                columns: new[] { "TenantId", "Status" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CheckoutSessions_TenantId_UserId",
+                table: "CheckoutSessions",
                 columns: new[] { "TenantId", "UserId" },
                 filter: "[UserId] IS NOT NULL");
 
@@ -1482,6 +2060,41 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "IX_EntityAuditLogs_Timestamp",
                 table: "EntityAuditLogs",
                 column: "Timestamp");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FilterAnalyticsEvents_TenantId",
+                table: "FilterAnalyticsEvents",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FilterAnalyticsEvents_TenantId_Category_CreatedAt",
+                table: "FilterAnalyticsEvents",
+                columns: new[] { "TenantId", "CategorySlug", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FilterAnalyticsEvents_TenantId_CreatedAt",
+                table: "FilterAnalyticsEvents",
+                columns: new[] { "TenantId", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FilterAnalyticsEvents_TenantId_EventType_CreatedAt",
+                table: "FilterAnalyticsEvents",
+                columns: new[] { "TenantId", "EventType", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FilterAnalyticsEvents_TenantId_FilterCode_FilterValue",
+                table: "FilterAnalyticsEvents",
+                columns: new[] { "TenantId", "FilterCode", "FilterValue" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FilterAnalyticsEvents_TenantId_SessionId",
+                table: "FilterAnalyticsEvents",
+                columns: new[] { "TenantId", "SessionId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FilterAnalyticsEvents_TenantId_UserId_CreatedAt",
+                table: "FilterAnalyticsEvents",
+                columns: new[] { "TenantId", "UserId", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_HandlerAuditLogs_CorrelationId",
@@ -1649,6 +2262,62 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "IX_Notifications_UserId_IsRead_CreatedAt",
                 table: "Notifications",
                 columns: new[] { "UserId", "IsRead", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_OrderId",
+                table: "OrderItems",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_ProductId",
+                table: "OrderItems",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_ProductVariantId",
+                table: "OrderItems",
+                column: "ProductVariantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_CheckoutSessionId",
+                table: "Orders",
+                column: "CheckoutSessionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_OrderNumber_TenantId",
+                table: "Orders",
+                columns: new[] { "OrderNumber", "TenantId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_TenantId",
+                table: "Orders",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_TenantId_CreatedAt",
+                table: "Orders",
+                columns: new[] { "TenantId", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_TenantId_CustomerEmail",
+                table: "Orders",
+                columns: new[] { "TenantId", "CustomerEmail" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_TenantId_CustomerId",
+                table: "Orders",
+                columns: new[] { "TenantId", "CustomerId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_TenantId_Status",
+                table: "Orders",
+                columns: new[] { "TenantId", "Status" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_TenantId_Status_CreatedAt",
+                table: "Orders",
+                columns: new[] { "TenantId", "Status", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PasswordResetOtps_Email",
@@ -1942,6 +2611,110 @@ namespace NOIR.Infrastructure.Migrations.App
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeAssignments_AttributeId",
+                table: "ProductAttributeAssignments",
+                column: "AttributeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeAssignments_AttributeValueId",
+                table: "ProductAttributeAssignments",
+                column: "AttributeValueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeAssignments_ProductId",
+                table: "ProductAttributeAssignments",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeAssignments_TenantId_AttributeId",
+                table: "ProductAttributeAssignments",
+                columns: new[] { "TenantId", "AttributeId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeAssignments_TenantId_AttributeValueId",
+                table: "ProductAttributeAssignments",
+                columns: new[] { "TenantId", "AttributeValueId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeAssignments_TenantId_ProductId",
+                table: "ProductAttributeAssignments",
+                columns: new[] { "TenantId", "ProductId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeAssignments_TenantId_ProductId_AttributeId_VariantId",
+                table: "ProductAttributeAssignments",
+                columns: new[] { "TenantId", "ProductId", "AttributeId", "VariantId" },
+                unique: true,
+                filter: "[TenantId] IS NOT NULL AND [VariantId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeAssignments_VariantId",
+                table: "ProductAttributeAssignments",
+                column: "VariantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_TenantId",
+                table: "ProductAttributes",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_TenantId_Code",
+                table: "ProductAttributes",
+                columns: new[] { "TenantId", "Code" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_TenantId_IsActive",
+                table: "ProductAttributes",
+                columns: new[] { "TenantId", "IsActive" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_TenantId_IsFilterable",
+                table: "ProductAttributes",
+                columns: new[] { "TenantId", "IsFilterable" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_TenantId_IsGlobal",
+                table: "ProductAttributes",
+                columns: new[] { "TenantId", "IsGlobal" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_TenantId_IsVariantAttribute",
+                table: "ProductAttributes",
+                columns: new[] { "TenantId", "IsVariantAttribute" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_TenantId_SortOrder_Name",
+                table: "ProductAttributes",
+                columns: new[] { "TenantId", "SortOrder", "Name" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributes_TenantId_Type",
+                table: "ProductAttributes",
+                columns: new[] { "TenantId", "Type" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeValues_AttributeId",
+                table: "ProductAttributeValues",
+                column: "AttributeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeValues_TenantId_AttributeId_IsActive",
+                table: "ProductAttributeValues",
+                columns: new[] { "TenantId", "AttributeId", "IsActive" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeValues_TenantId_AttributeId_SortOrder",
+                table: "ProductAttributeValues",
+                columns: new[] { "TenantId", "AttributeId", "SortOrder" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductAttributeValues_TenantId_AttributeId_Value",
+                table: "ProductAttributeValues",
+                columns: new[] { "TenantId", "AttributeId", "Value" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductCategories_ParentId",
                 table: "ProductCategories",
                 column: "ParentId");
@@ -1963,6 +2736,68 @@ namespace NOIR.Infrastructure.Migrations.App
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_ProductId",
+                table: "ProductFilterIndexes",
+                column: "ProductId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId",
+                table: "ProductFilterIndexes",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_BrandId",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "BrandId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_Category_Status_Sort",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "CategoryId", "Status", "SortOrder" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_CategoryId",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "CategoryId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_CategoryPath",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "CategoryPath" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_InStock",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "InStock" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_LastSynced",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "LastSyncedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_Price",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "MinPrice", "MaxPrice" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_ProductId",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "ProductId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_Rating",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "AverageRating" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductFilterIndexes_TenantId_Status_Sort",
+                table: "ProductFilterIndexes",
+                columns: new[] { "TenantId", "Status", "SortOrder" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductImages_Product_Primary",
                 table: "ProductImages",
                 columns: new[] { "ProductId", "IsPrimary" });
@@ -1971,6 +2806,43 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "IX_ProductImages_Product_Sort",
                 table: "ProductImages",
                 columns: new[] { "ProductId", "SortOrder" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductOptions_Product_Name",
+                table: "ProductOptions",
+                columns: new[] { "ProductId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductOptions_Product_Sort",
+                table: "ProductOptions",
+                columns: new[] { "ProductId", "SortOrder" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductOptions_TenantId",
+                table: "ProductOptions",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductOptionValues_Option_Sort",
+                table: "ProductOptionValues",
+                columns: new[] { "OptionId", "SortOrder" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductOptionValues_Option_Value",
+                table: "ProductOptionValues",
+                columns: new[] { "OptionId", "Value" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductOptionValues_TenantId",
+                table: "ProductOptionValues",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_BrandId",
+                table: "Products",
+                column: "BrandId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_CategoryId",
@@ -1986,6 +2858,11 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "IX_Products_TenantId_Brand",
                 table: "Products",
                 columns: new[] { "TenantId", "Brand" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_TenantId_BrandId",
+                table: "Products",
+                columns: new[] { "TenantId", "BrandId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_TenantId_Price",
@@ -2009,6 +2886,11 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "IX_Products_TenantId_Status_Category",
                 table: "Products",
                 columns: new[] { "TenantId", "Status", "CategoryId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductVariants_ImageId",
+                table: "ProductVariants",
+                column: "ImageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductVariants_Product_Sort",
@@ -2218,6 +3100,12 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "CartItems");
 
             migrationBuilder.DropTable(
+                name: "CategoryAttributes");
+
+            migrationBuilder.DropTable(
+                name: "CheckoutSessions");
+
+            migrationBuilder.DropTable(
                 name: "EmailChangeOtps");
 
             migrationBuilder.DropTable(
@@ -2227,6 +3115,9 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "EntityAuditLogs");
 
             migrationBuilder.DropTable(
+                name: "FilterAnalyticsEvents");
+
+            migrationBuilder.DropTable(
                 name: "LegalPages");
 
             migrationBuilder.DropTable(
@@ -2234,6 +3125,9 @@ namespace NOIR.Infrastructure.Migrations.App
 
             migrationBuilder.DropTable(
                 name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "OrderItems");
 
             migrationBuilder.DropTable(
                 name: "PasswordResetOtps");
@@ -2254,10 +3148,13 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "PostTagAssignments");
 
             migrationBuilder.DropTable(
-                name: "ProductImages");
+                name: "ProductAttributeAssignments");
 
             migrationBuilder.DropTable(
-                name: "ProductVariants");
+                name: "ProductFilterIndexes");
+
+            migrationBuilder.DropTable(
+                name: "ProductOptionValues");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
@@ -2299,7 +3196,13 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "Posts");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "ProductAttributeValues");
+
+            migrationBuilder.DropTable(
+                name: "ProductVariants");
+
+            migrationBuilder.DropTable(
+                name: "ProductOptions");
 
             migrationBuilder.DropTable(
                 name: "PaymentTransactions");
@@ -2320,10 +3223,25 @@ namespace NOIR.Infrastructure.Migrations.App
                 name: "PostCategories");
 
             migrationBuilder.DropTable(
-                name: "ProductCategories");
+                name: "ProductAttributes");
+
+            migrationBuilder.DropTable(
+                name: "ProductImages");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "PaymentGateways");
+
+            migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Brands");
+
+            migrationBuilder.DropTable(
+                name: "ProductCategories");
         }
     }
 }
