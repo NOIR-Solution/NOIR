@@ -7,13 +7,16 @@ public class AddProductVariantCommandHandler
 {
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IInventoryMovementLogger _movementLogger;
 
     public AddProductVariantCommandHandler(
         IRepository<Product, Guid> productRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IInventoryMovementLogger movementLogger)
     {
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
+        _movementLogger = movementLogger;
     }
 
     public async Task<Result<ProductVariantDto>> Handle(
@@ -51,6 +54,20 @@ public class AddProductVariantCommandHandler
         variant.SetSortOrder(command.SortOrder);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Log initial stock as StockIn if quantity > 0
+        if (command.StockQuantity > 0)
+        {
+            await _movementLogger.LogMovementAsync(
+                variant,
+                InventoryMovementType.StockIn,
+                quantityBefore: 0,
+                quantityMoved: command.StockQuantity,
+                reference: $"SKU: {variant.Sku}",
+                notes: "Initial stock on variant creation",
+                userId: command.UserId,
+                cancellationToken: cancellationToken);
+        }
 
         return Result.Success(ProductMapper.ToDto(variant));
     }

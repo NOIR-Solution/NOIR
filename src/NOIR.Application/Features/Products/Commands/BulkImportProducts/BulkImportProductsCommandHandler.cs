@@ -13,6 +13,7 @@ public partial class BulkImportProductsCommandHandler
     private readonly IRepository<ProductCategory, Guid> _categoryRepository;
     private readonly IRepository<ProductAttribute, Guid> _attributeRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IInventoryMovementLogger _movementLogger;
     private readonly ILogger<BulkImportProductsCommandHandler> _logger;
 
     public BulkImportProductsCommandHandler(
@@ -20,12 +21,14 @@ public partial class BulkImportProductsCommandHandler
         IRepository<ProductCategory, Guid> categoryRepository,
         IRepository<ProductAttribute, Guid> attributeRepository,
         IUnitOfWork unitOfWork,
+        IInventoryMovementLogger movementLogger,
         ILogger<BulkImportProductsCommandHandler> logger)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _attributeRepository = attributeRepository;
         _unitOfWork = unitOfWork;
+        _movementLogger = movementLogger;
         _logger = logger;
     }
 
@@ -35,6 +38,7 @@ public partial class BulkImportProductsCommandHandler
     {
         var successCount = 0;
         var errors = new List<ImportErrorDto>();
+        var importedProducts = new List<Product>();
 
         // Pre-load categories for lookup (single query)
         var categoriesSpec = new AllProductCategoriesSpec();
@@ -193,6 +197,7 @@ public partial class BulkImportProductsCommandHandler
                 }
 
                 await _productRepository.AddAsync(product, cancellationToken);
+                importedProducts.Add(product);
                 successCount++;
 
                 // Report attribute warnings (product was imported but some attributes failed)
@@ -219,6 +224,23 @@ public partial class BulkImportProductsCommandHandler
 
         // Save all at once
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Log initial stock as StockIn for all imported variants with stock > 0
+        foreach (var product in importedProducts)
+        {
+            foreach (var variant in product.Variants.Where(v => v.StockQuantity > 0))
+            {
+                await _movementLogger.LogMovementAsync(
+                    variant,
+                    InventoryMovementType.StockIn,
+                    quantityBefore: 0,
+                    quantityMoved: variant.StockQuantity,
+                    reference: $"SKU: {variant.Sku}",
+                    notes: "Initial stock on bulk import",
+                    userId: null,
+                    cancellationToken: cancellationToken);
+            }
+        }
 
         _logger.LogInformation(
             "Completed bulk import: {SuccessCount} products imported, {ErrorCount} errors",

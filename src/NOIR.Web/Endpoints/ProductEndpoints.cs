@@ -479,6 +479,29 @@ public static class ProductEndpoints
         .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
+        // Get stock history for variant
+        group.MapGet("/{productId:guid}/variants/{variantId:guid}/stock-history", async (
+            Guid productId,
+            Guid variantId,
+            [FromQuery] int? page,
+            [FromQuery] int? pageSize,
+            IMessageBus bus) =>
+        {
+            var query = new Application.Features.Inventory.Queries.GetStockHistory.GetStockHistoryQuery(
+                productId,
+                variantId,
+                page ?? 1,
+                pageSize ?? 20);
+            var result = await bus.InvokeAsync<Result<Application.Features.Products.Queries.GetProducts.PagedResult<Application.Features.Inventory.DTOs.InventoryMovementDto>>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsRead)
+        .WithName("GetStockHistory")
+        .WithSummary("Get stock movement history for a product variant")
+        .WithDescription("Returns paginated stock movement history including reservations, releases, adjustments, and other inventory changes.")
+        .Produces<Application.Features.Products.Queries.GetProducts.PagedResult<Application.Features.Inventory.DTOs.InventoryMovementDto>>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
         // ===== Image Management Endpoints =====
 
         // Add image (by URL)

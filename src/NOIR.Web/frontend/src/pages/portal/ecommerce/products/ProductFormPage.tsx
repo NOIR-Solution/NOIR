@@ -101,6 +101,9 @@ import { ProductAttributesSection } from '@/components/products/ProductAttribute
 import { ProductAttributesSectionCreate } from '@/components/products/ProductAttributesSectionCreate'
 import { ProductActivityLog } from './components/ProductActivityLog'
 import { useBulkUpdateProductAttributes } from '@/hooks/useProductAttributes'
+import { useStockHistory } from '@/hooks/useStockHistory'
+import { StockHistoryTimeline, type StockMovement, type StockMovementType } from '@/components/products/StockHistoryTimeline'
+import type { InventoryMovement, InventoryMovementType } from '@/types/inventory'
 import { uploadMedia } from '@/services/media'
 import { toast } from 'sonner'
 import { ApiError } from '@/services/apiClient'
@@ -278,6 +281,40 @@ export default function ProductFormPage() {
 
   // Attribute bulk update hook
   const { bulkUpdate: bulkUpdateAttributes } = useBulkUpdateProductAttributes()
+
+  // Stock history state
+  const [selectedVariantForHistory, setSelectedVariantForHistory] = useState<string | null>(null)
+  const effectiveVariantId = selectedVariantForHistory ?? variants[0]?.id
+  const { data: stockHistory, loading: stockHistoryLoading } = useStockHistory(
+    id,
+    effectiveVariantId
+  )
+
+  // Map backend InventoryMovement to frontend StockMovement type
+  const mapToStockMovements = (movements: InventoryMovement[]): StockMovement[] => {
+    const typeMapping: Record<InventoryMovementType, StockMovementType> = {
+      StockIn: 'restock',
+      StockOut: 'sale',
+      Adjustment: 'adjustment',
+      Return: 'return',
+      Reservation: 'reserved',
+      ReservationRelease: 'released',
+      Damaged: 'adjustment',
+      Expired: 'adjustment',
+    }
+
+    return movements.map((m) => ({
+      id: m.id,
+      type: typeMapping[m.movementType] || 'adjustment',
+      quantity: m.quantityMoved,
+      previousStock: m.quantityBefore,
+      newStock: m.quantityAfter,
+      reason: m.notes ?? undefined,
+      orderId: m.reference ?? undefined,
+      createdAt: m.createdAt,
+      createdBy: m.userId ?? undefined,
+    }))
+  }
 
   // Handler for attribute value changes
   const handleAttributesChange = (values: Record<string, unknown>) => {
@@ -1605,6 +1642,57 @@ export default function ProductFormPage() {
               productId={id}
               productName={form.getValues('name')}
             />
+          )}
+
+          {/* Stock History (only show when editing and variants exist) */}
+          {isEditing && id && variants.length > 0 && (
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardHeader>
+                <CardTitle>{t('products.stock.history', 'Stock History')}</CardTitle>
+                <CardDescription>
+                  {t('products.stock.historyDescription', 'Movement history for inventory')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* Variant selector if multiple variants */}
+                {variants.length > 1 && (
+                  <Select
+                    value={selectedVariantForHistory ?? variants[0]?.id}
+                    onValueChange={setSelectedVariantForHistory}
+                  >
+                    <SelectTrigger className="mb-4 cursor-pointer">
+                      <SelectValue placeholder={t('products.selectVariant', 'Select variant')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {variants.map((v) => (
+                        <SelectItem key={v.id} value={v.id} className="cursor-pointer">
+                          {v.name} ({v.stockQuantity} {t('products.inStock', 'in stock')})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                {stockHistoryLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <StockHistoryTimeline
+                    movements={mapToStockMovements(stockHistory?.items ?? [])}
+                    currentStock={
+                      variants.find((v) => v.id === effectiveVariantId)?.stockQuantity ?? 0
+                    }
+                    variantName={
+                      variants.length > 1
+                        ? variants.find((v) => v.id === effectiveVariantId)?.name
+                        : undefined
+                    }
+                    maxHeight="400px"
+                  />
+                )}
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

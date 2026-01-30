@@ -145,6 +145,8 @@
       }
     },
     "stock": {
+      "history": "Stock History",
+      "historyDescription": "Movement history for inventory",
       "noHistory": "No stock history",
       "noHistoryHint": "Stock changes will appear here when inventory is adjusted.",
       "currentStock": "Current Stock",
@@ -157,7 +159,11 @@
         "restock": "Restock",
         "return": "Return",
         "reserved": "Reserved",
-        "released": "Released"
+        "released": "Released",
+        "stockIn": "Stock In",
+        "stockOut": "Stock Out",
+        "damaged": "Damaged",
+        "expired": "Expired"
       }
     },
     "activityLog": "Activity Log",

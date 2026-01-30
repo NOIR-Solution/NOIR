@@ -626,3 +626,25 @@ export async function deleteProductOptionValue(
     method: 'DELETE',
   })
 }
+
+// ============================================================================
+// Stock History
+// ============================================================================
+
+import type { StockHistoryPagedResult, GetStockHistoryParams } from '@/types/inventory'
+
+/**
+ * Get stock movement history for a product variant
+ */
+export async function getStockHistory(
+  params: GetStockHistoryParams
+): Promise<StockHistoryPagedResult> {
+  const queryParams = new URLSearchParams()
+  if (params.page) queryParams.append('page', params.page.toString())
+  if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString())
+
+  const query = queryParams.toString()
+  return apiClient<StockHistoryPagedResult>(
+    `/products/${params.productId}/variants/${params.variantId}/stock-history${query ? `?${query}` : ''}`
+  )
+}

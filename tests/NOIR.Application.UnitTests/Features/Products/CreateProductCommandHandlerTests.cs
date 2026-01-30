@@ -16,6 +16,7 @@ public class CreateProductCommandHandlerTests
     private readonly Mock<IRepository<ProductCategory, Guid>> _categoryRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IInventoryMovementLogger> _movementLoggerMock;
     private readonly CreateProductCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -26,6 +27,7 @@ public class CreateProductCommandHandlerTests
         _categoryRepositoryMock = new Mock<IRepository<ProductCategory, Guid>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _currentUserMock = new Mock<ICurrentUser>();
+        _movementLoggerMock = new Mock<IInventoryMovementLogger>();
 
         // Setup default tenant
         _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
@@ -34,7 +36,8 @@ public class CreateProductCommandHandlerTests
             _productRepositoryMock.Object,
             _categoryRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _movementLoggerMock.Object);
     }
 
     private static CreateProductCommand CreateTestCommand(

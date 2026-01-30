@@ -145,6 +145,8 @@
       }
     },
     "stock": {
+      "history": "Lịch sử tồn kho",
+      "historyDescription": "Lịch sử biến động tồn kho",
       "noHistory": "Không có lịch sử tồn kho",
       "noHistoryHint": "Thay đổi tồn kho sẽ xuất hiện ở đây khi kho được điều chỉnh.",
       "currentStock": "Tồn kho hiện tại",
@@ -157,7 +159,11 @@
         "restock": "Nhập kho",
         "return": "Trả hàng",
         "reserved": "Đã đặt trước",
-        "released": "Đã giải phóng"
+        "released": "Đã giải phóng",
+        "stockIn": "Nhập kho",
+        "stockOut": "Xuất kho",
+        "damaged": "Hư hỏng",
+        "expired": "Hết hạn"
       }
     },
     "activityLog": "Nhật ký hoạt động",

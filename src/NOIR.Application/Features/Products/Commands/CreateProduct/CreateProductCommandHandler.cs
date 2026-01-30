@@ -9,17 +9,20 @@ public class CreateProductCommandHandler
     private readonly IRepository<ProductCategory, Guid> _categoryRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IInventoryMovementLogger _movementLogger;
 
     public CreateProductCommandHandler(
         IRepository<Product, Guid> productRepository,
         IRepository<ProductCategory, Guid> categoryRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IInventoryMovementLogger movementLogger)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _movementLogger = movementLogger;
     }
 
     public async Task<Result<ProductDto>> Handle(
@@ -149,6 +152,20 @@ public class CreateProductCommandHandler
 
         await _productRepository.AddAsync(product, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Log initial stock as StockIn for all variants with stock > 0
+        foreach (var variant in product.Variants.Where(v => v.StockQuantity > 0))
+        {
+            await _movementLogger.LogMovementAsync(
+                variant,
+                InventoryMovementType.StockIn,
+                quantityBefore: 0,
+                quantityMoved: variant.StockQuantity,
+                reference: $"SKU: {variant.Sku}",
+                notes: "Initial stock on product creation",
+                userId: command.UserId,
+                cancellationToken: cancellationToken);
+        }
 
         return Result.Success(ProductMapper.ToDto(product, categoryName, categorySlug, variantDtos, imageDtos));
     }
