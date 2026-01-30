@@ -104,6 +104,7 @@ global using NOIR.Domain.Entities;
 global using NOIR.Domain.Entities.Cart;
 global using NOIR.Domain.Entities.Checkout;
 global using NOIR.Domain.Entities.Order;
+global using NOIR.Domain.Entities.Payment;
 global using NOIR.Domain.Entities.Product;
 global using NOIR.Domain.Enums;
 global using NOIR.Domain.Interfaces;
@@ -209,6 +210,16 @@ global using NOIR.Application.Features.Brands.Specifications;
 
 // NOIR Infrastructure - Logging
 global using NOIR.Infrastructure.Logging;
+
+// NOIR Application - Shipping
+global using NOIR.Application.Features.Shipping.Commands.CreateShippingOrder;
+global using NOIR.Application.Features.Shipping.Commands.CancelShippingOrder;
+global using NOIR.Application.Features.Shipping.Queries.CalculateShippingRates;
+global using NOIR.Application.Features.Shipping.Queries.GetShippingTracking;
+global using NOIR.Application.Features.Shipping.Queries.GetShippingOrder;
+global using NOIR.Application.Features.Shipping.DTOs;
+global using NOIR.Application.Features.Shipping.Specifications;
+global using NOIR.Domain.Entities.Shipping;
 
 // NOIR Test Helpers
 global using NOIR.Application.UnitTests.Common;

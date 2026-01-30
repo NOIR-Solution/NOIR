@@ -255,6 +255,48 @@ public static class ErrorCodes
     }
 
     /// <summary>
+    /// Shipping-related errors (SHIP-xxx)
+    /// </summary>
+    public static class Shipping
+    {
+        /// <summary>Shipping provider not found</summary>
+        public const string ProviderNotFound = "NOIR-SHIP-001";
+
+        /// <summary>Shipping provider already exists for this tenant</summary>
+        public const string ProviderAlreadyExists = "NOIR-SHIP-002";
+
+        /// <summary>Shipping provider is not active</summary>
+        public const string ProviderNotActive = "NOIR-SHIP-003";
+
+        /// <summary>Shipping provider is not configured</summary>
+        public const string ProviderNotConfigured = "NOIR-SHIP-004";
+
+        /// <summary>Invalid shipping provider credentials</summary>
+        public const string InvalidCredentials = "NOIR-SHIP-005";
+
+        /// <summary>Shipping rate calculation failed</summary>
+        public const string RateCalculationFailed = "NOIR-SHIP-006";
+
+        /// <summary>Shipment creation failed</summary>
+        public const string ShipmentCreationFailed = "NOIR-SHIP-007";
+
+        /// <summary>Invalid shipment status transition</summary>
+        public const string InvalidStatusTransition = "NOIR-SHIP-008";
+
+        /// <summary>Shipment not found</summary>
+        public const string ShipmentNotFound = "NOIR-SHIP-009";
+
+        /// <summary>Tracking information unavailable</summary>
+        public const string TrackingUnavailable = "NOIR-SHIP-010";
+
+        /// <summary>Invalid webhook signature</summary>
+        public const string InvalidWebhookSignature = "NOIR-SHIP-011";
+
+        /// <summary>Shipping provider communication error</summary>
+        public const string ProviderError = "NOIR-SHIP-012";
+    }
+
+    /// <summary>
     /// Brand-related errors (BRAND-xxx)
     /// </summary>
     public static class Brand

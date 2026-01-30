@@ -24,12 +24,14 @@ global using NOIR.Domain.Entities.Checkout;
 global using NOIR.Domain.Entities.Order;
 global using NOIR.Domain.Entities.Product;
 global using NOIR.Domain.Entities.Analytics;
+global using NOIR.Domain.Entities.Shipping;
 global using NOIR.Domain.Enums;
 global using NOIR.Domain.Events.Cart;
 global using NOIR.Domain.Events.Checkout;
 global using NOIR.Domain.Events.Order;
 global using NOIR.Domain.Events.Payment;
 global using NOIR.Domain.Events.Product;
+global using NOIR.Domain.Events.Shipping;
 global using NOIR.Domain.Specifications;
 global using NOIR.Domain.ValueObjects;
 

@@ -149,3 +149,6 @@ global using NOIR.Application.Features.DeveloperLogs.DTOs;
 
 // NOIR Application - Media
 global using NOIR.Application.Features.Media.Dtos;
+
+// NOIR Application - Shipping
+global using NOIR.Application.Features.Shipping.DTOs;

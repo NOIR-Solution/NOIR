@@ -466,6 +466,8 @@ app.MapProductAttributeEndpoints();
 app.MapCartEndpoints();
 app.MapOrderEndpoints();
 app.MapCheckoutEndpoints();
+app.MapShippingProviderEndpoints();
+app.MapShippingEndpoints();
 
 // Map SignalR Hubs
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");

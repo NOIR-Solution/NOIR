@@ -64,10 +64,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<PaymentOperationLog> PaymentOperationLogs => Set<PaymentOperationLog>();
     public DbSet<Refund> Refunds => Set<Refund>();
 
-    // Subscription entities (Phase 7)
-    public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
-    public DbSet<Subscription> Subscriptions => Set<Subscription>();
+    // Payment installments (Phase 7)
     public DbSet<PaymentInstallment> PaymentInstallments => Set<PaymentInstallment>();
+
+    // Shipping entities
+    public DbSet<ShippingProvider> ShippingProviders => Set<ShippingProvider>();
+    public DbSet<ShippingOrder> ShippingOrders => Set<ShippingOrder>();
+    public DbSet<ShippingTrackingEvent> ShippingTrackingEvents => Set<ShippingTrackingEvent>();
+    public DbSet<ShippingWebhookLog> ShippingWebhookLogs => Set<ShippingWebhookLog>();
 
     // E-commerce entities (Phase 8)
     public DbSet<ProductCategory> ProductCategories => Set<ProductCategory>();
