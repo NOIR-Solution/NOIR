@@ -7,10 +7,12 @@ namespace NOIR.Infrastructure.Persistence.Interceptors;
 public class DomainEventInterceptor : SaveChangesInterceptor
 {
     private readonly IMessageBus _messageBus;
+    private readonly ILogger<DomainEventInterceptor> _logger;
 
-    public DomainEventInterceptor(IMessageBus messageBus)
+    public DomainEventInterceptor(IMessageBus messageBus, ILogger<DomainEventInterceptor> logger)
     {
         _messageBus = messageBus;
+        _logger = logger;
     }
 
     /// <summary>
@@ -49,9 +51,24 @@ public class DomainEventInterceptor : SaveChangesInterceptor
 
         aggregateRoots.ForEach(e => e.ClearDomainEvents());
 
-        foreach (var domainEvent in domainEvents)
+        // Skip event publishing if no events or if Wolverine hasn't started yet
+        // (occurs during database seeding before host is fully started)
+        if (domainEvents.Count == 0) return;
+
+        try
         {
-            await _messageBus.PublishAsync(domainEvent);
+            foreach (var domainEvent in domainEvents)
+            {
+                await _messageBus.PublishAsync(domainEvent);
+            }
+        }
+        catch (Wolverine.WolverineHasNotStartedException)
+        {
+            // Wolverine hasn't started yet (occurs during database seeding in integration tests)
+            // Log and skip - events during seeding are not critical for application startup
+            _logger.LogDebug(
+                "Skipping {Count} domain event(s) - Wolverine message bus not yet started (likely during database seeding)",
+                domainEvents.Count);
         }
     }
 }

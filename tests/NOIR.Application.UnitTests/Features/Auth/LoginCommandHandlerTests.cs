@@ -103,8 +103,8 @@ public class LoginCommandHandlerTests
             .ReturnsAsync(new PasswordSignInResult(Succeeded: true, IsLockedOut: false, IsNotAllowed: false, RequiresTwoFactor: false));
 
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId))
-            .Returns("test-access-token");
+            .Setup(x => x.GenerateAccessTokenAsync(user.Id, user.Email, user.TenantId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync("test-access-token");
 
         var refreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, user.TenantId);
         _refreshTokenServiceMock
@@ -192,7 +192,7 @@ public class LoginCommandHandlerTests
 
         // Assert
         _tokenServiceMock.Verify(
-            x => x.GenerateAccessToken(user.Id, user.Email, TestTenantId),
+            x => x.GenerateAccessTokenAsync(user.Id, user.Email, TestTenantId, It.IsAny<CancellationToken>()),
             Times.Once);
 
         _refreshTokenServiceMock.Verify(
@@ -223,7 +223,7 @@ public class LoginCommandHandlerTests
 
         // TenantId comes from ICurrentUser context, not from user entity
         _tokenServiceMock.Verify(
-            x => x.GenerateAccessToken(user.Id, user.Email, TestTenantId),
+            x => x.GenerateAccessTokenAsync(user.Id, user.Email, TestTenantId, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -571,8 +571,8 @@ public class LoginCommandHandlerTests
             .ReturnsAsync(new PasswordSignInResult(Succeeded: true, IsLockedOut: false, IsNotAllowed: false, RequiresTwoFactor: false));
 
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Email, user.TenantId))
-            .Returns("test-access-token");
+            .Setup(x => x.GenerateAccessTokenAsync(user.Id, user.Email, user.TenantId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync("test-access-token");
 
         var refreshToken = RefreshToken.Create(GenerateTestToken(), user.Id, 7, user.TenantId);
         _refreshTokenServiceMock
@@ -634,8 +634,8 @@ public class LoginCommandHandlerTests
 
         // Setup token services for tenant-a
         _tokenServiceMock
-            .Setup(x => x.GenerateAccessToken(user1.Id, user1.Email, user1.TenantId))
-            .Returns("test-access-token");
+            .Setup(x => x.GenerateAccessTokenAsync(user1.Id, user1.Email, user1.TenantId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync("test-access-token");
         var refreshToken = RefreshToken.Create(GenerateTestToken(), user1.Id, 7, user1.TenantId);
         _refreshTokenServiceMock
             .Setup(x => x.CreateTokenAsync(user1.Id, user1.TenantId, It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))

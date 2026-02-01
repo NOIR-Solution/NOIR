@@ -7,12 +7,14 @@ namespace NOIR.Application.UnitTests.Infrastructure;
 public class DomainEventDispatchingTests
 {
     private readonly Mock<IMessageBus> _messageBusMock;
+    private readonly Mock<ILogger<DomainEventInterceptor>> _loggerMock;
     private readonly DomainEventInterceptor _sut;
 
     public DomainEventDispatchingTests()
     {
         _messageBusMock = new Mock<IMessageBus>();
-        _sut = new DomainEventInterceptor(_messageBusMock.Object);
+        _loggerMock = new Mock<ILogger<DomainEventInterceptor>>();
+        _sut = new DomainEventInterceptor(_messageBusMock.Object, _loggerMock.Object);
     }
 
     #region Test Fixtures
@@ -272,6 +274,75 @@ public class DomainEventDispatchingTests
 
         // Assert
         result.Should().Be(expectedResult);
+    }
+
+    #endregion
+
+    #region Wolverine Not Started Tests
+
+    [Fact]
+    public async Task SavedChangesAsync_WhenWolverineNotStarted_ShouldNotThrow()
+    {
+        // Arrange
+        using var context = CreateTestContext();
+        var aggregate = TestAggregate.Create("Test Entity");
+        context.TestAggregates.Add(aggregate);
+
+        // Configure mock to throw WolverineHasNotStartedException
+        _messageBusMock
+            .Setup(x => x.PublishAsync(It.IsAny<IDomainEvent>(), default))
+            .ThrowsAsync(new Wolverine.WolverineHasNotStartedException());
+
+        var eventData = CreateEventDataWithContext(context);
+
+        // Act - Should NOT throw
+        var act = async () => await _sut.SavedChangesAsync(eventData, 1, CancellationToken.None);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task SavedChangesAsync_WhenWolverineNotStarted_ShouldReturnResult()
+    {
+        // Arrange
+        using var context = CreateTestContext();
+        var aggregate = TestAggregate.Create("Test Entity");
+        context.TestAggregates.Add(aggregate);
+
+        _messageBusMock
+            .Setup(x => x.PublishAsync(It.IsAny<IDomainEvent>(), default))
+            .ThrowsAsync(new Wolverine.WolverineHasNotStartedException());
+
+        var eventData = CreateEventDataWithContext(context);
+        var expectedResult = 5;
+
+        // Act
+        var result = await _sut.SavedChangesAsync(eventData, expectedResult, CancellationToken.None);
+
+        // Assert - Operation completes successfully with correct result
+        result.Should().Be(expectedResult);
+    }
+
+    [Fact]
+    public async Task SavedChangesAsync_WhenWolverineNotStarted_ShouldClearDomainEvents()
+    {
+        // Arrange
+        using var context = CreateTestContext();
+        var aggregate = TestAggregate.Create("Test Entity");
+        context.TestAggregates.Add(aggregate);
+
+        _messageBusMock
+            .Setup(x => x.PublishAsync(It.IsAny<IDomainEvent>(), default))
+            .ThrowsAsync(new Wolverine.WolverineHasNotStartedException());
+
+        var eventData = CreateEventDataWithContext(context);
+
+        // Act
+        await _sut.SavedChangesAsync(eventData, 1, CancellationToken.None);
+
+        // Assert - Events should still be cleared even when Wolverine not started
+        aggregate.DomainEvents.Should().BeEmpty();
     }
 
     #endregion

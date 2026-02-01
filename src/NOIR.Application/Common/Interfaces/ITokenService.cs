@@ -18,7 +18,7 @@ public interface ITokenService
     /// Roles and permissions are NOT stored in JWT - they're queried from database on each request.
     /// This ensures real-time authorization updates without requiring re-login.
     /// </summary>
-    string GenerateAccessToken(string userId, string email, string? tenantId = null);
+    Task<string> GenerateAccessTokenAsync(string userId, string email, string? tenantId = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a cryptographically secure refresh token.
@@ -28,7 +28,7 @@ public interface ITokenService
     /// <summary>
     /// Generates both access and refresh tokens as a pair.
     /// </summary>
-    TokenPair GenerateTokenPair(string userId, string email, string? tenantId = null);
+    Task<TokenPair> GenerateTokenPairAsync(string userId, string email, string? tenantId = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the expiration time for a new refresh token.

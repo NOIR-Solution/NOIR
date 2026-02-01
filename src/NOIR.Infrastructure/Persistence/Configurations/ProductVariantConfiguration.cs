@@ -65,6 +65,8 @@ public class ProductVariantConfiguration : IEntityTypeConfiguration<ProductVaria
         builder.Property(e => e.TenantId)
             .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
 
+        builder.HasIndex(e => e.TenantId);
+
         // Ignore computed properties
         builder.Ignore(e => e.InStock);
         builder.Ignore(e => e.LowStock);

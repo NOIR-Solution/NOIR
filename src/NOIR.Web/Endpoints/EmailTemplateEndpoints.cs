@@ -48,6 +48,7 @@ public static class EmailTemplateEndpoints
         group.MapPut("/{id:guid}", async (
             Guid id,
             UpdateEmailTemplateRequest request,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
             var command = new UpdateEmailTemplateCommand(
@@ -55,7 +56,10 @@ public static class EmailTemplateEndpoints
                 request.Subject,
                 request.HtmlBody,
                 request.PlainTextBody,
-                request.Description);
+                request.Description)
+            {
+                UserId = currentUser.UserId
+            };
             var result = await bus.InvokeAsync<Result<EmailTemplateDto>>(command);
             return result.ToHttpResult();
         })
@@ -139,9 +143,13 @@ public static class EmailTemplateEndpoints
         group.MapPatch("/{id:guid}/toggle-active", async (
             Guid id,
             ToggleActiveRequest request,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
-            var command = new ToggleEmailTemplateActiveCommand(id, request.IsActive);
+            var command = new ToggleEmailTemplateActiveCommand(id, request.IsActive)
+            {
+                UserId = currentUser.UserId
+            };
             var result = await bus.InvokeAsync<Result<EmailTemplateDto>>(command);
             return result.ToHttpResult();
         })

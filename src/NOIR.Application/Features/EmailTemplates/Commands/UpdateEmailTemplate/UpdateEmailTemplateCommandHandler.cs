@@ -11,17 +11,20 @@ public class UpdateEmailTemplateCommandHandler
     private readonly IRepository<EmailTemplate, Guid> _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly ICacheInvalidationService _cacheInvalidation;
 
     public UpdateEmailTemplateCommandHandler(
         IApplicationDbContext dbContext,
         IRepository<EmailTemplate, Guid> repository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        ICacheInvalidationService cacheInvalidation)
     {
         _dbContext = dbContext;
         _repository = repository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _cacheInvalidation = cacheInvalidation;
     }
 
     public async Task<Result<EmailTemplateDto>> Handle(
@@ -61,6 +64,10 @@ public class UpdateEmailTemplateCommandHandler
             await _repository.AddAsync(tenantCopy, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            // Invalidate cache for both platform and tenant template
+            await _cacheInvalidation.InvalidateEmailTemplateCacheAsync(template.Name, null, cancellationToken);
+            await _cacheInvalidation.InvalidateEmailTemplateCacheAsync(template.Name, currentTenantId, cancellationToken);
+
             resultTemplate = tenantCopy;
         }
         else
@@ -77,6 +84,9 @@ public class UpdateEmailTemplateCommandHandler
                 template.AvailableVariables); // Keep existing variables
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Invalidate cache for the updated template
+            await _cacheInvalidation.InvalidateEmailTemplateCacheAsync(template.Name, template.TenantId, cancellationToken);
 
             resultTemplate = template;
         }

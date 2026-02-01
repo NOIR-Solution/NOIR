@@ -20,16 +20,17 @@ import { changePasswordSchema } from '@/validation/schemas.generated'
 import { createValidationTranslator } from '@/lib/validation-i18n'
 import { z } from 'zod'
 
-// Extended schema with confirm password (client-side only validation)
-const changePasswordFormSchema = changePasswordSchema.extend({
-  confirmPassword: z.string().min(1, { message: 'Please confirm your new password' }),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-}).refine((data) => data.currentPassword !== data.newPassword, {
-  message: "New password must be different from current password",
-  path: ["newPassword"],
-})
+// Extended schema factory with confirm password (client-side only validation)
+const createChangePasswordFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  changePasswordSchema.extend({
+    confirmPassword: z.string().min(1, { message: t('validation.confirmNewPassword') }),
+  }).refine((data) => data.newPassword === data.confirmPassword, {
+    message: t('validation.passwordsMismatch'),
+    path: ["confirmPassword"],
+  }).refine((data) => data.currentPassword !== data.newPassword, {
+    message: t('validation.passwordSameAsCurrent'),
+    path: ["newPassword"],
+  })
 
 type ChangePasswordFormData = z.infer<typeof changePasswordFormSchema>
 
@@ -48,7 +49,7 @@ export function ChangePasswordForm() {
 
   // Use validated form with Zod schema
   const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<ChangePasswordFormData>({
-    schema: changePasswordFormSchema,
+    schema: createChangePasswordFormSchema(tCommon),
     defaultValues: {
       currentPassword: '',
       newPassword: '',

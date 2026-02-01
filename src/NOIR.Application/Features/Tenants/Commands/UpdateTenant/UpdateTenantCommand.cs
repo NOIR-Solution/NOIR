@@ -25,6 +25,9 @@ public sealed record UpdateTenantCommand(
     string? Note = null,
     bool IsActive = true) : IAuditableCommand<TenantDto>
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Update;
     public object? GetTargetId() => TenantId;
     public string? GetTargetDisplayName() => Name;

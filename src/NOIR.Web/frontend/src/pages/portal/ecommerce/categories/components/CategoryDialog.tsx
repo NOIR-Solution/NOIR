@@ -39,19 +39,20 @@ import { toast } from 'sonner'
 import { ApiError } from '@/services/apiClient'
 import { generateSlug } from '@/lib/utils/slug'
 
-const categorySchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
-  slug: z.string().min(1, 'Slug is required').max(100, 'Slug must be less than 100 characters')
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase letters, numbers, and hyphens only'),
-  description: z.string().optional().nullable(),
-  metaTitle: z.string().optional().nullable(),
-  metaDescription: z.string().optional().nullable(),
-  imageUrl: z.string().optional().nullable(),
-  sortOrder: z.coerce.number().default(0),
-  parentId: z.string().optional().nullable(),
-})
+const createCategorySchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    name: z.string().min(1, t('validation.required')).max(100, t('validation.maxLength', { count: 100 })),
+    slug: z.string().min(1, t('validation.required')).max(100, t('validation.maxLength', { count: 100 }))
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, t('validation.identifierFormat')),
+    description: z.string().optional().nullable(),
+    metaTitle: z.string().optional().nullable(),
+    metaDescription: z.string().optional().nullable(),
+    imageUrl: z.string().optional().nullable(),
+    sortOrder: z.coerce.number().default(0),
+    parentId: z.string().optional().nullable(),
+  })
 
-type CategoryFormData = z.infer<typeof categorySchema>
+type CategoryFormData = z.infer<ReturnType<typeof createCategorySchema>>
 
 interface CategoryDialogProps {
   open: boolean
@@ -73,7 +74,7 @@ export function CategoryDialog({
   const [isSaving, setIsSaving] = useState(false)
 
   const form = useForm<CategoryFormData>({
-    resolver: zodResolver(categorySchema),
+    resolver: zodResolver(createCategorySchema(t)),
     mode: 'onBlur',
     defaultValues: {
       name: '',

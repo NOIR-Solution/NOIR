@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-01-29
+**Last Updated:** 2026-02-01
 
 ---
 
@@ -27,9 +27,11 @@
 - **Lines of Code:** ~200,000
 - **Test Coverage:** 5,188+ tests across Unit, Integration, and Architecture layers
 - **Feature Modules:** 25 domain-driven modules (E-commerce, CMS, Auth, Multi-tenant, Payments)
-- **API Endpoints:** 200+ REST endpoints (27 endpoint groups)
+- **API Endpoints:** 200+ REST endpoints (29 endpoint groups)
 - **Domain Entities:** 47 entities, 22 enums, 8 domain event files
 - **Application Layer:** 126 Commands, 74 Queries, 39 Common Interfaces
+- **Source Files:** 1,143 C# files, 456 test files, 301 frontend TypeScript files
+- **Database Indexes:** 233+ indexes (including 14 new filtered indexes for sparse data)
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
 
 ### Directory Structure
@@ -1037,14 +1039,34 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-01-29
-**Version:** 2.7
+**Last Updated:** 2026-02-01
+**Version:** 2.8
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 2.8 (2026-02-01) - Database Index Optimization
+
+- **NEW: Filtered Indexes for Sparse Data** - Performance optimization for boolean columns
+  - `NotificationConfiguration.cs` - 3 filtered indexes:
+    - `IX_Notifications_Unread` - TenantId + UserId + CreatedAt WHERE IsRead = 0
+    - `IX_Notifications_PendingDigest` - TenantId + UserId + CreatedAt WHERE IncludedInDigest = 0
+    - `IX_Notifications_UnsentEmail` - TenantId + UserId + CreatedAt WHERE EmailSent = 0
+  - `PostConfiguration.cs` - Filtered index for scheduled posts:
+    - `IX_Posts_TenantId_ScheduledPublish` - TenantId + ScheduledPublishAt WHERE ScheduledPublishAt IS NOT NULL
+  - `ProductImageConfiguration.cs` - Filtered index for primary image lookup:
+    - `IX_ProductImages_TenantId_Primary` - TenantId + ProductId WHERE IsPrimary = 1
+  - `RefreshTokenConfiguration.cs` - Active token lookup:
+    - `IX_RefreshTokens_Active` - TenantId + UserId + ExpiresAt WHERE IsDeleted = 0
+  - `PasswordResetOtpConfiguration.cs` - Active OTP lookup:
+    - `IX_PasswordResetOtps_Active` - TenantId + Email + ExpiresAt WHERE IsUsed = 0 AND IsDeleted = 0
+- **TenantId as Leading Column** - All filtered indexes include TenantId as first column for Finbuckle multi-tenant query optimization
+- **233+ Database Indexes** - Comprehensive index coverage across all entity configurations
+- **Global Query Filters** - Soft delete handled via EF Core query filters (no standalone IsDeleted indexes needed)
+- **TagWith() for SQL Debugging** - All specifications tagged for SQL Profiler identification
 
 ### Version 2.7 (2026-01-29) - Product Attribute System Complete
 

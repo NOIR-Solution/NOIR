@@ -34,12 +34,18 @@ public class DeletePostCommandHandler
                 Error.NotFound($"Post with ID '{command.Id}' not found.", "NOIR-BLOG-003"));
         }
 
-        // Decrement tag counts before deleting
-        foreach (var assignment in post.TagAssignments)
+        // Batch fetch all tags in single query (fixes N+1)
+        if (post.TagAssignments.Any())
         {
-            var tagSpec = new TagByIdForUpdateSpec(assignment.TagId);
-            var tag = await _tagRepository.FirstOrDefaultAsync(tagSpec, cancellationToken);
-            tag?.DecrementPostCount();
+            var tagIds = post.TagAssignments.Select(a => a.TagId).ToList();
+            var tagsSpec = new TagsByIdsSpec(tagIds);
+            var tags = await _tagRepository.ListAsync(tagsSpec, cancellationToken);
+
+            // Decrement tag counts before deleting
+            foreach (var tag in tags)
+            {
+                tag.DecrementPostCount();
+            }
         }
 
         // Clear tag assignments (will be cascaded by EF)

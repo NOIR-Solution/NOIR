@@ -3,49 +3,6 @@ namespace NOIR.Infrastructure.Caching;
 using ZiggyCreatures.Caching.Fusion;
 
 /// <summary>
-/// Service for cache invalidation operations.
-/// Provides methods to invalidate cache entries by key, tag, or category.
-/// Implements IScopedService for auto-registration.
-/// </summary>
-public interface ICacheInvalidationService
-{
-    /// <summary>
-    /// Invalidate all cache entries for a specific user.
-    /// </summary>
-    Task InvalidateUserCacheAsync(string userId, CancellationToken ct = default);
-
-    /// <summary>
-    /// Invalidate all permission-related cache entries for a user.
-    /// </summary>
-    Task InvalidateUserPermissionsAsync(string userId, CancellationToken ct = default);
-
-    /// <summary>
-    /// Invalidate all cache entries for a specific role.
-    /// </summary>
-    Task InvalidateRoleCacheAsync(string roleId, CancellationToken ct = default);
-
-    /// <summary>
-    /// Invalidate all permission-related cache entries (e.g., when permissions are modified).
-    /// </summary>
-    Task InvalidateAllPermissionsAsync(CancellationToken ct = default);
-
-    /// <summary>
-    /// Invalidate all blog-related cache entries.
-    /// </summary>
-    Task InvalidateBlogCacheAsync(CancellationToken ct = default);
-
-    /// <summary>
-    /// Invalidate cache for a specific blog post.
-    /// </summary>
-    Task InvalidatePostCacheAsync(Guid postId, string? slug = null, CancellationToken ct = default);
-
-    /// <summary>
-    /// Invalidate tenant settings cache.
-    /// </summary>
-    Task InvalidateTenantSettingsAsync(string tenantId, CancellationToken ct = default);
-}
-
-/// <summary>
 /// Implementation of ICacheInvalidationService using FusionCache.
 /// Uses tag-based invalidation (FusionCache v2) for efficient bulk cache clearing.
 /// </summary>
@@ -163,5 +120,18 @@ public class CacheInvalidationService : ICacheInvalidationService, IScopedServic
         await _cache.RemoveAsync(CacheKeys.TenantById(tenantId), token: ct);
 
         _logger.LogDebug("Settings cache invalidated for tenant {TenantId}", tenantId);
+    }
+
+    /// <inheritdoc />
+    public async Task InvalidateEmailTemplateCacheAsync(string templateName, string? tenantId = null, CancellationToken ct = default)
+    {
+        var tenantKey = tenantId ?? "platform";
+        _logger.LogInformation("Invalidating email template cache for {TemplateName} (tenant: {TenantId})", templateName, tenantKey);
+
+        // Invalidate the cached template (uses centralized CacheKeys for consistency)
+        var cacheKey = CacheKeys.EmailTemplate(templateName, tenantId);
+        await _cache.RemoveAsync(cacheKey, token: ct);
+
+        _logger.LogDebug("Email template cache invalidated for {TemplateName}", templateName);
     }
 }

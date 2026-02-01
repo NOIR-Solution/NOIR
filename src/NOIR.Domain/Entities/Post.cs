@@ -126,12 +126,19 @@ public class Post : TenantAggregateRoot<Guid>
     /// <summary>
     /// Creates a new blog post as a draft.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when required parameters are invalid.</exception>
     public static Post Create(
         string title,
         string slug,
         Guid authorId,
         string? tenantId = null)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        ArgumentException.ThrowIfNullOrWhiteSpace(slug);
+
+        if (authorId == Guid.Empty)
+            throw new ArgumentException("AuthorId is required.", nameof(authorId));
+
         return new Post
         {
             Id = Guid.NewGuid(),

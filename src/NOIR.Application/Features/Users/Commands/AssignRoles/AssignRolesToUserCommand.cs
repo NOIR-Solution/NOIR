@@ -4,12 +4,15 @@ namespace NOIR.Application.Features.Users.Commands.AssignRoles;
 /// Command to assign roles to a user (replaces existing roles).
 /// </summary>
 public sealed record AssignRolesToUserCommand(
-    string UserId,
+    string TargetUserId,
     IReadOnlyList<string> RoleNames,
     string? UserEmail = null) : IAuditableCommand
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Update;
-    public object? GetTargetId() => UserId;
+    public object? GetTargetId() => TargetUserId;
     public string? GetTargetDisplayName() => UserEmail;
     public string? GetActionDescription()
     {

@@ -130,39 +130,40 @@ interface TempImage {
 import { generateSlug } from '@/lib/utils/slug'
 import { formatCurrency } from '@/lib/utils/currency'
 
-// Form validation schema
-const productSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(200, 'Name must be less than 200 characters'),
-  slug: z.string().min(1, 'Slug is required').max(200, 'Slug must be less than 200 characters')
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase letters, numbers, and hyphens only'),
-  shortDescription: z.string().max(300, 'Short description must be less than 300 characters').optional().nullable(),
-  description: z.string().optional().nullable(),
-  descriptionHtml: z.string().optional().nullable(),
-  basePrice: z.coerce.number().min(0, 'Price must be non-negative'),
-  // Currency hardcoded to VND for Vietnam market - UI selector intentionally removed
-  currency: z.string().default('VND'),
-  categoryId: z.string().optional().nullable(),
-  brandId: z.string().optional().nullable(),
-  sku: z.string().optional().nullable(),
-  barcode: z.string().optional().nullable(),
-  weight: z.coerce.number().optional().nullable(),
-  trackInventory: z.boolean().default(true),
-  metaTitle: z.string().optional().nullable(),
-  metaDescription: z.string().optional().nullable(),
-  sortOrder: z.coerce.number().default(0),
-})
+// Form validation schema factory
+const createProductSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    name: z.string().min(1, t('validation.required')).max(200, t('validation.maxLength', { count: 200 })),
+    slug: z.string().min(1, t('validation.required')).max(200, t('validation.maxLength', { count: 200 }))
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, t('validation.identifierFormat')),
+    shortDescription: z.string().max(300, t('validation.maxLength', { count: 300 })).optional().nullable(),
+    description: z.string().optional().nullable(),
+    descriptionHtml: z.string().optional().nullable(),
+    basePrice: z.coerce.number().min(0, t('validation.minValue', { value: 0 })),
+    // Currency hardcoded to VND for Vietnam market - UI selector intentionally removed
+    currency: z.string().default('VND'),
+    categoryId: z.string().optional().nullable(),
+    brandId: z.string().optional().nullable(),
+    sku: z.string().optional().nullable(),
+    barcode: z.string().optional().nullable(),
+    trackInventory: z.boolean().default(true),
+    metaTitle: z.string().optional().nullable(),
+    metaDescription: z.string().optional().nullable(),
+    sortOrder: z.coerce.number().default(0),
+  })
 
-type ProductFormData = z.infer<typeof productSchema>
+type ProductFormData = z.infer<ReturnType<typeof createProductSchema>>
 
-// Variant form schema
-const variantSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  price: z.coerce.number().min(0, 'Price must be non-negative'),
-  sku: z.string().optional().nullable(),
-  compareAtPrice: z.coerce.number().optional().nullable(),
-  stockQuantity: z.coerce.number().min(0, 'Stock must be non-negative').default(0),
-  sortOrder: z.coerce.number().default(0),
-})
+// Variant form schema factory
+const createVariantSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    name: z.string().min(1, t('validation.required')),
+    price: z.coerce.number().min(0, t('validation.minValue', { value: 0 })),
+    sku: z.string().optional().nullable(),
+    compareAtPrice: z.coerce.number().optional().nullable(),
+    stockQuantity: z.coerce.number().min(0, t('validation.minValue', { value: 0 })).default(0),
+    sortOrder: z.coerce.number().default(0),
+  })
 
 type VariantFormData = z.infer<typeof variantSchema>
 
@@ -322,7 +323,7 @@ export default function ProductFormPage() {
   }
 
   const form = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(createProductSchema(t)),
     mode: 'onBlur',
     defaultValues: {
       name: '',
@@ -336,7 +337,6 @@ export default function ProductFormPage() {
       brandId: null,
       sku: '',
       barcode: '',
-      weight: null,
       trackInventory: true,
       metaTitle: '',
       metaDescription: '',
@@ -359,7 +359,6 @@ export default function ProductFormPage() {
         brandId: product.brandId || null,
         sku: product.sku || '',
         barcode: product.barcode || '',
-        weight: product.weight || null,
         trackInventory: product.trackInventory,
         metaTitle: product.metaTitle || '',
         metaDescription: product.metaDescription || '',
@@ -1095,7 +1094,7 @@ export default function ProductFormPage() {
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle>Inventory</CardTitle>
-                  <CardDescription>Manage stock tracking and weight</CardDescription>
+                  <CardDescription>Manage stock tracking for this product</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -1117,31 +1116,6 @@ export default function ProductFormPage() {
                             disabled={isViewMode}
                           />
                         </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="weight"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Weight (kg)</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type="number"
-                            min="0"
-                            step="0.1"
-                            value={field.value || ''}
-                            placeholder="0.0"
-                            disabled={isViewMode}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Used for shipping calculations
-                        </FormDescription>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />

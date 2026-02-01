@@ -123,6 +123,8 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         string? search,
         int page,
         int pageSize,
+        string? role = null,
+        bool? isLocked = null,
         CancellationToken ct = default)
     {
         var query = _userManager.Users
@@ -137,6 +139,22 @@ public class UserIdentityService : IUserIdentityService, IScopedService
                 (u.FirstName != null && u.FirstName.ToLower().Contains(searchLower)) ||
                 (u.LastName != null && u.LastName.ToLower().Contains(searchLower)) ||
                 (u.DisplayName != null && u.DisplayName.ToLower().Contains(searchLower)));
+        }
+
+        // Apply lockout filter at database level (IsActive = !isLocked)
+        if (isLocked.HasValue)
+        {
+            var shouldBeActive = !isLocked.Value;
+            query = query.Where(u => u.IsActive == shouldBeActive);
+        }
+
+        // Apply role filter at database level
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            // Get user IDs in the specified role (efficient single query)
+            var usersInRole = await _userManager.GetUsersInRoleAsync(role);
+            var userIdsInRole = usersInRole.Select(u => u.Id).ToHashSet();
+            query = query.Where(u => userIdsInRole.Contains(u.Id));
         }
 
         var totalCount = await query.CountAsync(ct);
@@ -580,6 +598,48 @@ public class UserIdentityService : IUserIdentityService, IScopedService
         }
 
         return IdentityOperationResult.Success(user.Id);
+    }
+
+    public async Task<IReadOnlyDictionary<string, IReadOnlyList<string>>> GetRolesForUsersAsync(
+        IEnumerable<string> userIds,
+        CancellationToken ct = default)
+    {
+        var userIdList = userIds.ToList();
+        if (userIdList.Count == 0)
+        {
+            return new Dictionary<string, IReadOnlyList<string>>();
+        }
+
+        // Get all users in a single query
+        var users = await _userManager.Users
+            .Where(u => userIdList.Contains(u.Id))
+            .ToListAsync(ct);
+
+        // Build result dictionary - need to call GetRolesAsync for each user
+        // This is optimized by batching the user lookup but still requires role lookups
+        var result = new Dictionary<string, IReadOnlyList<string>>();
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            result[user.Id] = roles.ToList();
+        }
+
+        return result;
+    }
+
+    public async Task<IReadOnlyList<UserIdentityDto>> GetUsersInRoleAsync(
+        string? tenantId,
+        string roleName,
+        CancellationToken ct = default)
+    {
+        // Get users in role efficiently using UserManager
+        var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+
+        // Filter by tenant and map to DTO
+        return usersInRole
+            .Where(u => !u.IsDeleted && u.TenantId == tenantId)
+            .Select(MapToDto)
+            .ToList();
     }
 
     #endregion

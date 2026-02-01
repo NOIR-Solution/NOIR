@@ -137,6 +137,34 @@ public static class CacheKeys
 
     #endregion
 
+    #region Email Template Keys
+
+    /// <summary>
+    /// Cache key for email template by name and tenant.
+    /// Tags: ["email_template", "tenant:{tenantId}"]
+    /// </summary>
+    public static string EmailTemplate(string templateName, string? tenantId = null)
+    {
+        var tenantKey = tenantId ?? "platform";
+        return $"email_template:{templateName}:{tenantKey}";
+    }
+
+    #endregion
+
+    #region SMTP Settings Keys
+
+    /// <summary>
+    /// Cache key for SMTP settings by tenant.
+    /// Tags: ["smtp", "tenant:{tenantId}"]
+    /// </summary>
+    public static string SmtpSettings(string? tenantId = null)
+    {
+        var tenantKey = tenantId ?? "platform";
+        return $"smtp_settings:{tenantKey}";
+    }
+
+    #endregion
+
     #region Tag Helpers
 
     /// <summary>

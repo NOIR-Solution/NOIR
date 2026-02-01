@@ -37,9 +37,13 @@ public static class RoleEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Create role
-        group.MapPost("/", async (CreateRoleCommand command, IMessageBus bus) =>
+        group.MapPost("/", async (
+            CreateRoleCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result<RoleDto>>(command);
+            var auditableCommand = command with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<RoleDto>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.RolesCreate)
@@ -49,10 +53,14 @@ public static class RoleEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
 
         // Update role
-        group.MapPut("/{roleId}", async (string roleId, UpdateRoleCommand command, IMessageBus bus) =>
+        group.MapPut("/{roleId}", async (
+            string roleId,
+            UpdateRoleCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var cmd = command with { RoleId = roleId };
-            var result = await bus.InvokeAsync<Result<RoleDto>>(cmd);
+            var auditableCommand = command with { RoleId = roleId, UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<RoleDto>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.RolesUpdate)
@@ -63,9 +71,13 @@ public static class RoleEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Delete role
-        group.MapDelete("/{roleId}", async (string roleId, IMessageBus bus) =>
+        group.MapDelete("/{roleId}", async (
+            string roleId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result<bool>>(new DeleteRoleCommand(roleId));
+            var command = new DeleteRoleCommand(roleId) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.RolesDelete)
@@ -110,10 +122,11 @@ public static class RoleEndpoints
         group.MapPut("/{roleId}/permissions", async (
             string roleId,
             AssignPermissionToRoleCommand command,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
-            var cmd = command with { RoleId = roleId };
-            var result = await bus.InvokeAsync<Result<IReadOnlyList<string>>>(cmd);
+            var auditableCommand = command with { RoleId = roleId, UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<IReadOnlyList<string>>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.RolesManagePermissions)
@@ -127,10 +140,11 @@ public static class RoleEndpoints
         group.MapDelete("/{roleId}/permissions", async (
             string roleId,
             [FromBody] RemovePermissionFromRoleCommand command,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
-            var cmd = command with { RoleId = roleId };
-            var result = await bus.InvokeAsync<Result<IReadOnlyList<string>>>(cmd);
+            var auditableCommand = command with { RoleId = roleId, UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<IReadOnlyList<string>>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.RolesManagePermissions)

@@ -396,9 +396,19 @@ public class TenantSettingsServiceTests
 
         var context = new ApplicationDbContext(options);
 
+        // Create real FusionCache instance (extension methods can't be mocked)
+        var cache = new FusionCache(new FusionCacheOptions
+        {
+            DefaultEntryOptions = new FusionCacheEntryOptions
+            {
+                Duration = TimeSpan.FromMinutes(1)
+            }
+        });
+
         return new TenantSettingsService(
             context,
             _unitOfWorkMock.Object,
+            cache,
             _loggerMock.Object);
     }
 

@@ -142,20 +142,18 @@ public class MediaFileTests
     }
 
     [Fact]
-    public void AspectRatio_ZeroHeight_ShouldReturnZero()
+    public void Create_ZeroHeight_ShouldThrowArgumentOutOfRangeException()
     {
-        // This tests edge case protection - normally height should never be 0
-        // but the property should handle it gracefully
-        var mediaFile = MediaFile.Create(
+        // Domain validation enforces positive height
+        // Arrange & Act
+        var act = () => MediaFile.Create(
             "short123", "test_short123", "test.jpg", "blog", "/default.webp",
-            null, null, 1920, 0, "jpeg", "image/jpeg", 0L,
+            null, null, 1920, 0, "jpeg", "image/jpeg", 1024L,
             false, "[]", "{}", "user-123");
 
-        // Act
-        var aspectRatio = mediaFile.AspectRatio;
-
         // Assert
-        aspectRatio.Should().Be(0);
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("*Height must be positive*");
     }
 
     #endregion

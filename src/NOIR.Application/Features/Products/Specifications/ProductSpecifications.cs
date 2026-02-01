@@ -89,6 +89,9 @@ public sealed class ProductsSpec : Specification<Product>
             }
         }
 
+        // Use split query to prevent Cartesian explosion with multiple collections
+        Query.AsSplitQuery();
+
         // Include category for display
         Query.Include(p => p.Category!);
 
@@ -216,6 +219,7 @@ public sealed class ProductByIdSpec : Specification<Product>
     public ProductByIdSpec(Guid id)
     {
         Query.Where(p => p.Id == id)
+             .AsSplitQuery() // Prevent Cartesian explosion with multiple collections
              .Include(p => p.Category!)
              .Include(p => p.BrandEntity!)
              .Include(p => p.Variants)
@@ -234,6 +238,7 @@ public sealed class ProductByIdForUpdateSpec : Specification<Product>
     public ProductByIdForUpdateSpec(Guid id)
     {
         Query.Where(p => p.Id == id)
+             .AsSplitQuery() // Prevent Cartesian explosion with multiple collections
              .Include(p => p.Category!)
              .Include(p => p.BrandEntity!)
              .Include(p => p.Variants)
@@ -268,6 +273,7 @@ public sealed class ProductBySlugSpec : Specification<Product>
     {
         Query.Where(p => p.Slug == slug.ToLowerInvariant())
              .Where(p => tenantId == null || p.TenantId == tenantId)
+             .AsSplitQuery() // Prevent Cartesian explosion with multiple collections
              .Include(p => p.Category!)
              .Include(p => p.BrandEntity!)
              .Include(p => p.Variants)
@@ -397,6 +403,7 @@ public sealed class ProductByIdWithCollectionsSpec : Specification<Product>
     public ProductByIdWithCollectionsSpec(Guid id)
     {
         Query.Where(p => p.Id == id)
+             .AsSplitQuery() // Prevent Cartesian explosion with multiple collections
              .Include(p => p.Variants)
              .Include(p => p.Images)
              .Include("Options.Values")
@@ -482,6 +489,9 @@ public sealed class ProductsForExportSpec : Specification<Product>
         bool includeAttributes,
         bool includeImages)
     {
+        // Use split query to prevent Cartesian explosion with multiple collections
+        Query.AsSplitQuery();
+
         // Include variants
         Query.Include(p => p.Variants);
 

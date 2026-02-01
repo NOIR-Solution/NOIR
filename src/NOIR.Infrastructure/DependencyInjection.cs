@@ -295,6 +295,24 @@ public static class DependencyInjection
         services.AddBeforeStateResolver<ShippingProviderDto, GetShippingProviderByIdQuery>(
             targetId => new GetShippingProviderByIdQuery(Guid.Parse(targetId.ToString()!)));
 
+        services.AddBeforeStateResolver<PaymentTransactionDto, GetPaymentTransactionQuery>(
+            targetId => new GetPaymentTransactionQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<ProductAttributeDto, GetProductAttributeByIdQuery>(
+            targetId => new GetProductAttributeByIdQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<PaymentGatewayDto, GetPaymentGatewayQuery>(
+            targetId => new GetPaymentGatewayQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<CheckoutSessionDto, GetCheckoutSessionQuery>(
+            targetId => new GetCheckoutSessionQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<CartDto, GetCartByIdQuery>(
+            targetId => new GetCartByIdQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<ProductAttributeValueDto, GetProductAttributeValueByIdQuery>(
+            targetId => new GetProductAttributeValueByIdQuery(Guid.Parse(targetId.ToString()!)));
+
         // Settings DTOs use parameterless query resolvers (tenant-scoped singletons, no ID needed)
         services.AddSettingsBeforeStateResolver<SmtpSettingsDto, GetSmtpSettingsQuery>();
         services.AddSettingsBeforeStateResolver<BrandingSettingsDto, GetBrandingSettingsQuery>();

@@ -19,7 +19,9 @@ public sealed class ShippingWebhookLogRepository : IScopedService
 
     public async Task<ShippingWebhookLog?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        return await _dbContext.ShippingWebhookLogs.FindAsync(new object[] { id }, ct);
+        return await _dbContext.ShippingWebhookLogs
+            .TagWith("GetByIdAsync")
+            .FirstOrDefaultAsync(l => l.Id == id, ct);
     }
 
     public async Task AddAsync(ShippingWebhookLog log, CancellationToken ct = default)
@@ -35,6 +37,7 @@ public sealed class ShippingWebhookLogRepository : IScopedService
     public async Task<List<ShippingWebhookLog>> GetUnprocessedAsync(int maxAttempts = 3, int take = 100, CancellationToken ct = default)
     {
         return await _dbContext.ShippingWebhookLogs
+            .TagWith("GetUnprocessedAsync")
             .Where(l => !l.ProcessedSuccessfully && l.ProcessingAttempts < maxAttempts)
             .OrderBy(l => l.ReceivedAt)
             .Take(take)
@@ -44,6 +47,7 @@ public sealed class ShippingWebhookLogRepository : IScopedService
     public async Task<List<ShippingWebhookLog>> GetByTrackingNumberAsync(string trackingNumber, CancellationToken ct = default)
     {
         return await _dbContext.ShippingWebhookLogs
+            .TagWith("GetByTrackingNumberAsync")
             .Where(l => l.TrackingNumber == trackingNumber)
             .OrderByDescending(l => l.ReceivedAt)
             .ToListAsync(ct);

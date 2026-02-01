@@ -151,7 +151,7 @@ public class LoginCommandHandler
         CancellationToken cancellationToken)
     {
         // Generate access token using user's actual TenantId
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email, user.TenantId);
+        var accessToken = await _tokenService.GenerateAccessTokenAsync(user.Id, user.Email, user.TenantId, cancellationToken);
         var accessTokenExpiry = DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes);
 
         // Create refresh token with device tracking

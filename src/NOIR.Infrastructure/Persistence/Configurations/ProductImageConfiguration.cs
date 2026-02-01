@@ -35,12 +35,15 @@ public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
         builder.HasIndex(e => new { e.ProductId, e.SortOrder })
             .HasDatabaseName("IX_ProductImages_Product_Sort");
 
-        // Primary image lookup
-        builder.HasIndex(e => new { e.ProductId, e.IsPrimary })
-            .HasDatabaseName("IX_ProductImages_Product_Primary");
+        // Filtered index for primary image lookup (TenantId leading for Finbuckle)
+        builder.HasIndex(e => new { e.TenantId, e.ProductId })
+            .HasFilter("[IsPrimary] = 1")
+            .HasDatabaseName("IX_ProductImages_TenantId_Primary");
 
         // Tenant
         builder.Property(e => e.TenantId)
             .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
+        builder.HasIndex(e => e.TenantId)
+            .HasDatabaseName("IX_ProductImages_TenantId");
     }
 }

@@ -28,8 +28,12 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         // Token Family (for theft detection)
         builder.HasIndex(e => e.TokenFamily);
 
-        // Composite index for active tokens query
-        builder.HasIndex(e => new { e.UserId, e.IsDeleted });
+        // Filtered index for active tokens (TenantId leading for Finbuckle)
+        // Note: Token column is globally unique per CLAUDE.md Rule 18, but
+        // performance indexes benefit from TenantId as leading column
+        builder.HasIndex(e => new { e.TenantId, e.UserId, e.ExpiresAt })
+            .HasFilter("[IsDeleted] = 0")
+            .HasDatabaseName("IX_RefreshTokens_Active");
 
         // Expiration
         builder.Property(e => e.ExpiresAt).IsRequired();

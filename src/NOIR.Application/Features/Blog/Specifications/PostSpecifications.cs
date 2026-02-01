@@ -19,6 +19,7 @@ public sealed class PostsSpec : Specification<Post>
              .Where(p => status == null || p.Status == status)
              .Where(p => categoryId == null || p.CategoryId == categoryId)
              .Where(p => authorId == null || p.AuthorId == authorId)
+             .AsSplitQuery() // Prevent Cartesian explosion with multiple collections
              .Include(p => p.Category!)
              .Include(p => p.FeaturedImage!)
              .Include("TagAssignments.Tag")
@@ -50,6 +51,7 @@ public sealed class PublishedPostsSpec : Specification<Post>
                          p.Title.Contains(search) ||
                          (p.Excerpt != null && p.Excerpt.Contains(search)))
              .Where(p => categoryId == null || p.CategoryId == categoryId)
+             .AsSplitQuery() // Prevent Cartesian explosion with multiple collections
              .Include(p => p.Category!)
              .Include(p => p.FeaturedImage!)
              .Include("TagAssignments.Tag")
@@ -76,6 +78,7 @@ public sealed class PostByIdSpec : Specification<Post>
     public PostByIdSpec(Guid id)
     {
         Query.Where(p => p.Id == id)
+             .AsSplitQuery() // Prevent Cartesian explosion with multiple collections
              .Include(p => p.Category!)
              .Include(p => p.FeaturedImage!)
              .Include("TagAssignments.Tag")
@@ -107,6 +110,7 @@ public sealed class PostBySlugSpec : Specification<Post>
     {
         Query.Where(p => p.Slug == slug.ToLowerInvariant())
              .Where(p => tenantId == null || p.TenantId == tenantId)
+             .AsSplitQuery() // Prevent Cartesian explosion with multiple collections
              .Include(p => p.Category!)
              .Include(p => p.FeaturedImage!)
              .Include("TagAssignments.Tag")

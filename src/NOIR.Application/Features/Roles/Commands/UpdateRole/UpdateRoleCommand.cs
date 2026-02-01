@@ -12,6 +12,9 @@ public sealed record UpdateRoleCommand(
     string? IconName = null,
     string? Color = null) : IAuditableCommand
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Update;
     public object? GetTargetId() => RoleId;
     public string? GetTargetDisplayName() => Name;

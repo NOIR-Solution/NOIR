@@ -31,19 +31,20 @@ import type { BrandListItem } from '@/types/brand'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 
-const brandSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name must be 100 characters or less'),
-  slug: z.string().min(1, 'Slug is required').max(100, 'Slug must be 100 characters or less')
-    .regex(/^[a-z0-9-]+$/, 'Slug must only contain lowercase letters, numbers, and hyphens'),
-  description: z.string().max(500, 'Description must be 500 characters or less').optional().nullable(),
-  logoUrl: z.string().optional().nullable(),
-  bannerUrl: z.string().url('Must be a valid URL').optional().nullable().or(z.literal('')),
-  websiteUrl: z.string().url('Must be a valid URL').optional().nullable().or(z.literal('')),
-  isActive: z.boolean(),
-  sortOrder: z.number().int().min(0).default(0),
-})
+const createBrandSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    name: z.string().min(1, t('validation.required')).max(100, t('validation.maxLength', { count: 100 })),
+    slug: z.string().min(1, t('validation.required')).max(100, t('validation.maxLength', { count: 100 }))
+      .regex(/^[a-z0-9-]+$/, t('validation.identifierFormat')),
+    description: z.string().max(500, t('validation.maxLength', { count: 500 })).optional().nullable(),
+    logoUrl: z.string().optional().nullable(),
+    bannerUrl: z.string().url(t('validation.invalidFormat')).optional().nullable().or(z.literal('')),
+    websiteUrl: z.string().url(t('validation.invalidFormat')).optional().nullable().or(z.literal('')),
+    isActive: z.boolean(),
+    sortOrder: z.number().int().min(0).default(0),
+  })
 
-type BrandFormData = z.infer<typeof brandSchema>
+type BrandFormData = z.infer<ReturnType<typeof createBrandSchema>>
 
 interface BrandDialogProps {
   open: boolean
@@ -59,7 +60,7 @@ export function BrandDialog({ open, onOpenChange, brand, onSuccess }: BrandDialo
   const updateBrandHook = useUpdateBrand()
 
   const form = useForm<BrandFormData>({
-    resolver: zodResolver(brandSchema),
+    resolver: zodResolver(createBrandSchema(t)),
     mode: 'onBlur',
     defaultValues: {
       name: '',

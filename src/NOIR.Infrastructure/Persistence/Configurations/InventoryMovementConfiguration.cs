@@ -52,5 +52,17 @@ public class InventoryMovementConfiguration : IEntityTypeConfiguration<Inventory
 
         builder.HasIndex(e => new { e.TenantId, e.MovementType, e.CreatedAt })
             .HasDatabaseName("IX_InventoryMovements_TenantId_MovementType_CreatedAt");
+
+        // Standalone TenantId index
+        builder.HasIndex(e => e.TenantId);
+
+        // Audit fields
+        builder.Property(e => e.CreatedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.ModifiedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.DeletedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
+        builder.Property(e => e.IsDeleted).HasDefaultValue(false);
+
+        // Soft delete query filter
+        builder.HasQueryFilter("SoftDelete", e => !e.IsDeleted);
     }
 }

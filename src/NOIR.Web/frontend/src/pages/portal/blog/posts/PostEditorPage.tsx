@@ -56,6 +56,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { getPostById, createPost, updatePost, publishPost, unpublishPost } from '@/services/blog'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
@@ -66,24 +67,26 @@ import { useCategories, useTags } from '@/hooks/useBlog'
 import { ApiError } from '@/services/apiClient'
 import type { Post, CreatePostRequest } from '@/types'
 
-const formSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title cannot exceed 200 characters'),
-  slug: z.string().min(1, 'Slug is required').max(200, 'Slug cannot exceed 200 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
-  excerpt: z.string().max(500, 'Excerpt cannot exceed 500 characters').optional(),
-  categoryId: z.string().optional(),
-  tagIds: z.array(z.string()).optional(),
-  metaTitle: z.string().max(60, 'Meta title should be under 60 characters').optional(),
-  metaDescription: z.string().max(160, 'Meta description should be under 160 characters').optional(),
-  canonicalUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  allowIndexing: z.boolean().default(true),
-  featuredImageId: z.string().optional(),
-  featuredImageUrl: z.string().optional(),
-  featuredImageAlt: z.string().max(200, 'Alt text cannot exceed 200 characters').optional(),
-})
+const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    title: z.string().min(1, t('validation.required')).max(200, t('validation.maxLength', { count: 200 })),
+    slug: z.string().min(1, t('validation.required')).max(200, t('validation.maxLength', { count: 200 })).regex(/^[a-z0-9-]+$/, t('validation.identifierFormat')),
+    excerpt: z.string().max(500, t('validation.maxLength', { count: 500 })).optional(),
+    categoryId: z.string().optional(),
+    tagIds: z.array(z.string()).optional(),
+    metaTitle: z.string().max(60, t('validation.maxLength', { count: 60 })).optional(),
+    metaDescription: z.string().max(160, t('validation.maxLength', { count: 160 })).optional(),
+    canonicalUrl: z.string().url(t('validation.invalidFormat')).optional().or(z.literal('')),
+    allowIndexing: z.boolean().default(true),
+    featuredImageId: z.string().optional(),
+    featuredImageUrl: z.string().optional(),
+    featuredImageAlt: z.string().max(200, t('validation.maxLength', { count: 200 })).optional(),
+  })
 
-type FormValues = z.output<typeof formSchema>
+type FormValues = z.output<ReturnType<typeof createFormSchema>>
 
 export default function PostEditorPage() {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const isEdit = !!id
@@ -108,7 +111,7 @@ export default function PostEditorPage() {
   const { data: tags } = useTags()
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
+    resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
     defaultValues: {
       title: '',

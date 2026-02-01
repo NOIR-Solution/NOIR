@@ -26,7 +26,7 @@ public class AssignRolesToUserCommandHandler
     public async Task<Result<UserDto>> Handle(AssignRolesToUserCommand command, CancellationToken cancellationToken)
     {
         // Verify user exists
-        var user = await _userIdentityService.FindByIdAsync(command.UserId, cancellationToken);
+        var user = await _userIdentityService.FindByIdAsync(command.TargetUserId, cancellationToken);
         if (user is null)
         {
             return Result.Failure<UserDto>(
@@ -55,7 +55,7 @@ public class AssignRolesToUserCommandHandler
 
         // Assign roles (replaces existing)
         var result = await _userIdentityService.AssignRolesAsync(
-            command.UserId,
+            command.TargetUserId,
             command.RoleNames,
             replaceExisting: true,
             cancellationToken);
@@ -67,10 +67,10 @@ public class AssignRolesToUserCommandHandler
         }
 
         // Invalidate permission cache for this user
-        _cacheInvalidator.InvalidateUser(command.UserId);
+        _cacheInvalidator.InvalidateUser(command.TargetUserId);
 
         // Return updated user with roles
-        var updatedRoles = await _userIdentityService.GetRolesAsync(command.UserId, cancellationToken);
+        var updatedRoles = await _userIdentityService.GetRolesAsync(command.TargetUserId, cancellationToken);
 
         var userDto = new UserDto(
             user.Id,

@@ -46,9 +46,13 @@ public static class TenantEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Create tenant
-        group.MapPost("/", async (CreateTenantCommand command, IMessageBus bus) =>
+        group.MapPost("/", async (
+            CreateTenantCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result<TenantDto>>(command);
+            var auditableCommand = command with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<TenantDto>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.TenantsCreate)
@@ -59,9 +63,13 @@ public static class TenantEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
 
         // Provision tenant (create with admin user)
-        group.MapPost("/provision", async (ProvisionTenantCommand command, IMessageBus bus) =>
+        group.MapPost("/provision", async (
+            ProvisionTenantCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result<ProvisionTenantResult>>(command);
+            var auditableCommand = command with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<ProvisionTenantResult>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.TenantsCreate)
@@ -77,10 +85,12 @@ public static class TenantEndpoints
         group.MapPut("/{tenantId:guid}", async (
             Guid tenantId,
             UpdateTenantRequest request,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
             var cmd = UpdateTenantCommand.FromRequest(tenantId, request);
-            var result = await bus.InvokeAsync<Result<TenantDto>>(cmd);
+            var auditableCommand = cmd with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<TenantDto>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.TenantsUpdate)
@@ -91,9 +101,13 @@ public static class TenantEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Delete tenant (soft delete)
-        group.MapDelete("/{tenantId:guid}", async (Guid tenantId, IMessageBus bus) =>
+        group.MapDelete("/{tenantId:guid}", async (
+            Guid tenantId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result<bool>>(new DeleteTenantCommand(tenantId));
+            var command = new DeleteTenantCommand(tenantId) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.TenantsDelete)

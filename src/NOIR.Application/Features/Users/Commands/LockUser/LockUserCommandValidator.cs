@@ -4,7 +4,7 @@ public sealed class LockUserCommandValidator : AbstractValidator<LockUserCommand
 {
     public LockUserCommandValidator(ILocalizationService localization)
     {
-        RuleFor(x => x.UserId)
+        RuleFor(x => x.TargetUserId)
             .NotEmpty().WithMessage(localization["validation.userId.required"]);
     }
 }

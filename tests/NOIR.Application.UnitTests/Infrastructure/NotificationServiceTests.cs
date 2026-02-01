@@ -294,7 +294,7 @@ public class NotificationServiceTests
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Be("NOTIFICATION_SEND_FAILED");
+        result.Error.Code.Should().Be("NOTIFICATION_SEND_FAILED");
     }
 
     [Fact]
@@ -329,21 +329,16 @@ public class NotificationServiceTests
     public async Task SendToRoleAsync_WithUsersInRole_ShouldSendToAllRoleMembers()
     {
         // Arrange
-        var users = new List<UserIdentityDto>
+        var usersInRole = new List<UserIdentityDto>
         {
             CreateTestUser("user1"),
-            CreateTestUser("user2"),
-            CreateTestUser("user3")
+            CreateTestUser("user2")
         };
 
+        // Mock GetUsersInRoleAsync to return users directly in the role (batch fetching fixes N+1)
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 1000, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((users.AsReadOnly(), 3));
-
-        _userIdentityServiceMock
-            .Setup(x => x.IsInRoleAsync(It.IsAny<string>(), "Admin", It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string userId, string roleName, CancellationToken ct) =>
-                userId == "user1" || userId == "user2");
+            .Setup(x => x.GetUsersInRoleAsync(It.IsAny<string?>(), "Admin", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(usersInRole.AsReadOnly());
 
         SetupSuccessfulNotificationSend();
 
@@ -357,26 +352,16 @@ public class NotificationServiceTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(2); // Only user1 and user2 are in the Admin role
+        result.Value.Should().Be(2); // Both users in the Admin role
     }
 
     [Fact]
     public async Task SendToRoleAsync_WithNoUsersInRole_ShouldReturnZero()
     {
-        // Arrange
-        var users = new List<UserIdentityDto>
-        {
-            CreateTestUser("user1"),
-            CreateTestUser("user2")
-        };
-
+        // Arrange - GetUsersInRoleAsync returns empty list when no users in role
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 1000, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((users.AsReadOnly(), 2));
-
-        _userIdentityServiceMock
-            .Setup(x => x.IsInRoleAsync(It.IsAny<string>(), "SuperAdmin", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+            .Setup(x => x.GetUsersInRoleAsync(It.IsAny<string?>(), "SuperAdmin", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<UserIdentityDto>().AsReadOnly());
 
         // Act
         var result = await _sut.SendToRoleAsync(
@@ -396,7 +381,7 @@ public class NotificationServiceTests
     {
         // Arrange
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 1000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersInRoleAsync(It.IsAny<string?>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Service error"));
 
         // Act
@@ -409,7 +394,7 @@ public class NotificationServiceTests
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Be("NOTIFICATION_ROLE_SEND_FAILED");
+        result.Error.Code.Should().Be("NOTIFICATION_ROLE_SEND_FAILED");
     }
 
     #endregion
@@ -429,7 +414,7 @@ public class NotificationServiceTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 10000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 10000, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users.AsReadOnly(), 4));
 
         SetupSuccessfulNotificationSend();
@@ -457,7 +442,7 @@ public class NotificationServiceTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 10000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 10000, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users.AsReadOnly(), 2));
 
         // Act
@@ -477,7 +462,7 @@ public class NotificationServiceTests
     {
         // Arrange
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 10000, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(It.IsAny<string?>(), null, 1, 10000, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Service error"));
 
         // Act
@@ -489,7 +474,7 @@ public class NotificationServiceTests
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Be("NOTIFICATION_BROADCAST_FAILED");
+        result.Error.Code.Should().Be("NOTIFICATION_BROADCAST_FAILED");
     }
 
     #endregion

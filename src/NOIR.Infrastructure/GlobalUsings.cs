@@ -140,6 +140,11 @@ global using NOIR.Application.Features.Brands.Queries.GetBrandById;
 global using NOIR.Application.Features.Shipping.DTOs;
 global using NOIR.Application.Features.Shipping.Queries.GetShippingProviderById;
 global using NOIR.Application.Features.Shipping.Specifications;
+global using NOIR.Application.Features.Payments.DTOs;
+global using NOIR.Application.Features.Payments.Queries.GetPaymentTransaction;
+global using NOIR.Application.Features.Payments.Queries.GetPaymentGateway;
+global using NOIR.Application.Features.ProductAttributes.DTOs;
+global using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeById;
 global using NOIR.Application.Features.Orders.DTOs;
 global using NOIR.Application.Features.Orders.Queries.GetOrderById;
 global using NOIR.Application.Features.PlatformSettings.DTOs;
@@ -149,6 +154,13 @@ global using NOIR.Application.Features.TenantSettings.Queries.GetBrandingSetting
 global using NOIR.Application.Features.TenantSettings.Queries.GetContactSettings;
 global using NOIR.Application.Features.TenantSettings.Queries.GetRegionalSettings;
 global using NOIR.Application.Features.TenantSettings.Queries.GetTenantSmtpSettings;
+global using NOIR.Application.Features.Checkout.DTOs;
+global using NOIR.Application.Features.Checkout.Queries.GetCheckoutSession;
+global using NOIR.Application.Features.Cart.DTOs;
+global using NOIR.Application.Features.Cart.Queries.GetCartById;
+global using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeValueById;
+global using NOIR.Application.Features.ProductAttributes.Queries.GetCategoryAttributeById;
+global using NOIR.Application.Features.Shipping.Queries.GetShippingOrder;
 
 // NOIR Domain
 global using NOIR.Domain.Common;

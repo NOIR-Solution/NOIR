@@ -35,6 +35,7 @@ export interface ProductAttributeValue {
   iconUrl?: string | null
   sortOrder: number
   isActive: boolean
+  productCount: number
 }
 
 // ============================================================================
@@ -55,6 +56,7 @@ export interface ProductAttribute {
   isVariantAttribute: boolean
   showInProductCard: boolean
   showInSpecifications: boolean
+  isGlobal: boolean
   unit?: string | null
   validationRegex?: string | null
   minValue?: number | null
@@ -72,6 +74,7 @@ export interface ProductAttribute {
 
 /**
  * Simplified attribute for list views
+ * Mirrors backend ProductAttributeListDto
  */
 export interface ProductAttributeListItem {
   id: string
@@ -79,12 +82,8 @@ export interface ProductAttributeListItem {
   name: string
   type: AttributeType
   isFilterable: boolean
-  isSearchable: boolean
-  isRequired: boolean
   isVariantAttribute: boolean
-  showInProductCard: boolean
-  showInSpecifications: boolean
-  sortOrder: number
+  isGlobal: boolean
   isActive: boolean
   valueCount: number
 }
@@ -103,6 +102,7 @@ export interface CreateProductAttributeRequest {
   isVariantAttribute?: boolean
   showInProductCard?: boolean
   showInSpecifications?: boolean
+  isGlobal?: boolean
   unit?: string | null
   validationRegex?: string | null
   minValue?: number | null
@@ -122,6 +122,7 @@ export interface UpdateProductAttributeRequest {
   isVariantAttribute: boolean
   showInProductCard: boolean
   showInSpecifications: boolean
+  isGlobal: boolean
   unit?: string | null
   validationRegex?: string | null
   minValue?: number | null

@@ -266,7 +266,7 @@ public class ImageProcessorService : IImageProcessor, IScopedService
     }
 
     /// <inheritdoc />
-    public async Task<bool> IsValidImageAsync(Stream inputStream, string fileName)
+    public async Task<bool> IsValidImageAsync(Stream inputStream, string fileName, CancellationToken ct = default)
     {
         // Check extension first
         var extension = Path.GetExtension(fileName)?.ToLowerInvariant();
@@ -279,7 +279,7 @@ public class ImageProcessorService : IImageProcessor, IScopedService
             if (inputStream.CanSeek)
                 inputStream.Position = 0;
 
-            var info = await Image.IdentifyAsync(inputStream);
+            var info = await Image.IdentifyAsync(inputStream, ct);
             return info != null;
         }
         catch

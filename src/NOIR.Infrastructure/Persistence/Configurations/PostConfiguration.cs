@@ -23,9 +23,9 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .HasMaxLength(500)
             .IsRequired();
 
-        builder.HasIndex(e => new { e.Slug, e.TenantId })
+        builder.HasIndex(e => new { e.TenantId, e.Slug })
             .IsUnique()
-            .HasDatabaseName("IX_Posts_Slug_TenantId");
+            .HasDatabaseName("IX_Posts_TenantId_Slug");
 
         // Excerpt
         builder.Property(e => e.Excerpt)
@@ -90,18 +90,23 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(e => e.AuthorId)
             .IsRequired();
 
-        builder.HasIndex(e => e.AuthorId)
-            .HasDatabaseName("IX_Posts_AuthorId");
+        // TenantId as leading column for Finbuckle query optimization
+        builder.HasIndex(e => new { e.TenantId, e.AuthorId })
+            .HasDatabaseName("IX_Posts_TenantId_AuthorId");
 
-        // Indexes for common queries
-        builder.HasIndex(e => new { e.Status, e.PublishedAt, e.IsDeleted })
-            .HasDatabaseName("IX_Posts_Status_PublishedAt");
+        // Indexes for common queries (TenantId first for Finbuckle)
+        builder.HasIndex(e => new { e.TenantId, e.Status, e.PublishedAt, e.IsDeleted })
+            .HasDatabaseName("IX_Posts_TenantId_Status_PublishedAt");
 
-        builder.HasIndex(e => new { e.CategoryId, e.Status, e.IsDeleted })
-            .HasDatabaseName("IX_Posts_Category_Status");
+        builder.HasIndex(e => new { e.TenantId, e.CategoryId, e.Status, e.IsDeleted })
+            .HasDatabaseName("IX_Posts_TenantId_Category_Status");
 
-        builder.HasIndex(e => new { e.ScheduledPublishAt, e.Status })
-            .HasDatabaseName("IX_Posts_ScheduledPublish");
+        // Filtered index for scheduled posts (sparse - only drafts with scheduled dates)
+        // NOTE: Cannot filter by Status in filtered indexes when stored as string
+        // IS NOT NULL is sufficient as ScheduledPublishAt only exists on drafts
+        builder.HasIndex(e => new { e.TenantId, e.ScheduledPublishAt })
+            .HasFilter("[ScheduledPublishAt] IS NOT NULL")
+            .HasDatabaseName("IX_Posts_TenantId_ScheduledPublish");
 
         // Tenant ID
         builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);

@@ -12,7 +12,7 @@ public sealed record UpdateRegionalSettingsCommand(
     [System.Text.Json.Serialization.JsonIgnore]
     public string? UserId { get; init; }
 
-    public object? GetTargetId() => UserId;
+    public object? GetTargetId() => "RegionalSettings";
     public AuditOperationType OperationType => AuditOperationType.Update;
     public string? GetTargetDisplayName() => "Regional Settings";
     public string? GetActionDescription() => "Updated regional settings";

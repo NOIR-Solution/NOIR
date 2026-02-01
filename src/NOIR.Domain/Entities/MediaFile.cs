@@ -127,7 +127,23 @@ public class MediaFile : TenantAggregateRoot<Guid>
         string uploadedBy,
         string? tenantId = null)
     {
-        return new MediaFile
+        ArgumentException.ThrowIfNullOrWhiteSpace(shortId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(slug);
+        ArgumentException.ThrowIfNullOrWhiteSpace(originalFileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(folder);
+        ArgumentException.ThrowIfNullOrWhiteSpace(defaultUrl);
+        ArgumentException.ThrowIfNullOrWhiteSpace(format);
+        ArgumentException.ThrowIfNullOrWhiteSpace(mimeType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(uploadedBy);
+
+        if (width <= 0)
+            throw new ArgumentOutOfRangeException(nameof(width), "Width must be positive.");
+        if (height <= 0)
+            throw new ArgumentOutOfRangeException(nameof(height), "Height must be positive.");
+        if (sizeBytes <= 0)
+            throw new ArgumentOutOfRangeException(nameof(sizeBytes), "SizeBytes must be positive.");
+
+        var mediaFile = new MediaFile
         {
             Id = Guid.NewGuid(),
             ShortId = shortId,
@@ -148,6 +164,15 @@ public class MediaFile : TenantAggregateRoot<Guid>
             UploadedBy = uploadedBy,
             TenantId = tenantId
         };
+
+        mediaFile.AddDomainEvent(new Events.Media.MediaFileUploadedEvent(
+            mediaFile.Id,
+            originalFileName,
+            mimeType,
+            folder,
+            sizeBytes));
+
+        return mediaFile;
     }
 
     /// <summary>
@@ -156,5 +181,15 @@ public class MediaFile : TenantAggregateRoot<Guid>
     public void UpdateAltText(string? altText)
     {
         AltText = altText;
+
+        AddDomainEvent(new Events.Media.MediaFileAltTextUpdatedEvent(Id, altText));
+    }
+
+    /// <summary>
+    /// Marks the media file as deleted (soft delete).
+    /// </summary>
+    public void MarkAsDeleted()
+    {
+        AddDomainEvent(new Events.Media.MediaFileDeletedEvent(Id, OriginalFileName));
     }
 }

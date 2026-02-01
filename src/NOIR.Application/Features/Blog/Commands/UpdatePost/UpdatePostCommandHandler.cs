@@ -122,14 +122,24 @@ public class UpdatePostCommandHandler
 
         // Find tags to remove
         var toRemove = post.TagAssignments.Where(ta => !newIds.Contains(ta.TagId)).ToList();
-        foreach (var assignment in toRemove)
+        if (toRemove.Any())
         {
-            post.TagAssignments.Remove(assignment);
+            // Batch fetch all tags to remove in single query (fixes N+1)
+            var tagIdsToRemove = toRemove.Select(a => a.TagId).ToList();
+            var tagsToRemoveSpec = new TagsByIdsSpec(tagIdsToRemove);
+            var tagsToRemove = await _tagRepository.ListAsync(tagsToRemoveSpec, cancellationToken);
+            var tagsDict = tagsToRemove.ToDictionary(t => t.Id);
 
-            // Decrement tag count
-            var tagSpec = new TagByIdForUpdateSpec(assignment.TagId);
-            var tag = await _tagRepository.FirstOrDefaultAsync(tagSpec, cancellationToken);
-            tag?.DecrementPostCount();
+            foreach (var assignment in toRemove)
+            {
+                post.TagAssignments.Remove(assignment);
+
+                // Decrement tag count using pre-fetched tag
+                if (tagsDict.TryGetValue(assignment.TagId, out var tag))
+                {
+                    tag.DecrementPostCount();
+                }
+            }
         }
 
         // Find tags to add

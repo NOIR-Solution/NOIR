@@ -40,6 +40,12 @@ public interface IApplicationDbContext
     DbSet<ProductAttribute> ProductAttributes { get; }
 
     /// <summary>
+    /// Product attribute values DbSet for direct access.
+    /// Predefined values for select/multi-select type attributes.
+    /// </summary>
+    DbSet<ProductAttributeValue> ProductAttributeValues { get; }
+
+    /// <summary>
     /// Category attributes DbSet for direct access.
     /// Junction table linking categories to their assigned product attributes.
     /// </summary>

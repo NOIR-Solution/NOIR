@@ -191,9 +191,13 @@ global using NOIR.Application.Features.PlatformSettings.DTOs;
 global using NOIR.Application.Features.TenantSettings.Commands.UpdateBrandingSettings;
 global using NOIR.Application.Features.TenantSettings.Commands.UpdateContactSettings;
 global using NOIR.Application.Features.TenantSettings.Commands.UpdateRegionalSettings;
+global using NOIR.Application.Features.TenantSettings.Commands.UpdateTenantSmtpSettings;
+global using NOIR.Application.Features.TenantSettings.Commands.RevertTenantSmtpSettings;
+global using NOIR.Application.Features.TenantSettings.Commands.TestTenantSmtpConnection;
 global using NOIR.Application.Features.TenantSettings.Queries.GetBrandingSettings;
 global using NOIR.Application.Features.TenantSettings.Queries.GetContactSettings;
 global using NOIR.Application.Features.TenantSettings.Queries.GetRegionalSettings;
+global using NOIR.Application.Features.TenantSettings.Queries.GetTenantSmtpSettings;
 global using NOIR.Application.Features.TenantSettings.DTOs;
 
 // NOIR Application - Developer Logs

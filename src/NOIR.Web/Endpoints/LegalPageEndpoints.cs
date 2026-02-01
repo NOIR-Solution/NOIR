@@ -48,6 +48,7 @@ public static class LegalPageEndpoints
         group.MapPut("/{id:guid}", async (
             Guid id,
             UpdateLegalPageRequest request,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
             var command = new UpdateLegalPageCommand(
@@ -57,7 +58,10 @@ public static class LegalPageEndpoints
                 request.MetaTitle,
                 request.MetaDescription,
                 request.CanonicalUrl,
-                request.AllowIndexing);
+                request.AllowIndexing)
+            {
+                UserId = currentUser.UserId
+            };
             var result = await bus.InvokeAsync<Result<LegalPageDto>>(command);
             return result.ToHttpResult();
         })

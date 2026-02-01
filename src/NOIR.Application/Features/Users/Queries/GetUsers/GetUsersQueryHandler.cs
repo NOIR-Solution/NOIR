@@ -22,40 +22,34 @@ public class GetUsersQueryHandler
     {
         // Use the paginated method which handles EF Core translation properly
         // Users are scoped to the current tenant context
+        // Role and lockout filters are applied at the database level for accurate pagination
         var (users, totalCount) = await _userIdentityService.GetUsersPaginatedAsync(
             _currentUser.TenantId,
             query.Search,
             query.Page,
             query.PageSize,
+            query.Role,
+            query.IsLocked,
             cancellationToken);
 
-        // Map to UserListDto with roles
-        var userListDtos = new List<UserListDto>();
-        foreach (var user in users)
+        // Batch fetch roles for all users in a single operation (fixes N+1)
+        var userIds = users.Select(u => u.Id).ToList();
+        var rolesDict = await _userIdentityService.GetRolesForUsersAsync(userIds, cancellationToken);
+
+        // Map to UserListDto with roles (filtering already done at database level)
+        var userListDtos = users.Select(user =>
         {
-            var roles = await _userIdentityService.GetRolesAsync(user.Id, cancellationToken);
+            var roles = rolesDict.TryGetValue(user.Id, out var userRoles) ? userRoles : [];
             var isLocked = !user.IsActive;
 
-            // Apply role filter if specified
-            if (!string.IsNullOrWhiteSpace(query.Role) && !roles.Contains(query.Role, StringComparer.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            // Apply lockout filter if specified
-            if (query.IsLocked.HasValue && query.IsLocked.Value != isLocked)
-            {
-                continue;
-            }
-
-            userListDtos.Add(new UserListDto(
+            return new UserListDto(
                 user.Id,
                 user.Email,
                 user.DisplayName ?? user.FullName,
                 isLocked,
                 user.IsSystemUser,
-                roles));
-        }
+                roles);
+        }).ToList();
 
         var result = PaginatedList<UserListDto>.Create(
             userListDtos,

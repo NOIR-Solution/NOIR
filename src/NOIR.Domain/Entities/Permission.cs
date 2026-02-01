@@ -4,8 +4,18 @@ namespace NOIR.Domain.Entities;
 /// Permission entity for flexible, database-backed authorization.
 /// Format: "resource:action:scope" (e.g., "orders:read:own", "users:delete:all")
 /// </summary>
-public class Permission : Entity<Guid>
+public class Permission : Entity<Guid>, IAuditableEntity
 {
+    #region IAuditableEntity Implementation
+
+    public string? CreatedBy { get; protected set; }
+    public string? ModifiedBy { get; protected set; }
+    public bool IsDeleted { get; protected set; }
+    public DateTimeOffset? DeletedAt { get; protected set; }
+    public string? DeletedBy { get; protected set; }
+
+    #endregion
+
     /// <summary>
     /// Resource this permission applies to (e.g., "orders", "users", "reports").
     /// </summary>
@@ -75,6 +85,10 @@ public class Permission : Entity<Guid>
         bool isSystem = false,
         int sortOrder = 0)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(resource);
+        ArgumentException.ThrowIfNullOrWhiteSpace(action);
+        ArgumentException.ThrowIfNullOrWhiteSpace(displayName);
+
         return new Permission
         {
             Id = Guid.NewGuid(),

@@ -22,7 +22,7 @@ public class LockUserCommandHandler
     public async Task<Result<bool>> Handle(LockUserCommand command, CancellationToken cancellationToken)
     {
         // Verify user exists
-        var user = await _userIdentityService.FindByIdAsync(command.UserId, cancellationToken);
+        var user = await _userIdentityService.FindByIdAsync(command.TargetUserId, cancellationToken);
         if (user is null)
         {
             return Result.Failure<bool>(
@@ -30,7 +30,7 @@ public class LockUserCommandHandler
         }
 
         // Prevent self-locking
-        if (_currentUser.UserId == command.UserId)
+        if (_currentUser.UserId == command.TargetUserId)
         {
             return Result.Failure<bool>(
                 Error.Validation("userId", _localization["users.cannotLockSelf"], ErrorCodes.Business.CannotModify));
@@ -39,9 +39,9 @@ public class LockUserCommandHandler
         // Lock or unlock user
         var lockedBy = command.Lock ? (_currentUser.UserId ?? "system") : null;
         var result = await _userIdentityService.SetUserLockoutAsync(
-            command.UserId, 
-            command.Lock, 
-            lockedBy, 
+            command.TargetUserId,
+            command.Lock,
+            lockedBy,
             cancellationToken);
 
         if (!result.Succeeded)

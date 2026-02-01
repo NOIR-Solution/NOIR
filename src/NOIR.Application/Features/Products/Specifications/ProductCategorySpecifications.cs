@@ -44,6 +44,7 @@ public sealed class ProductCategoryByIdSpec : Specification<ProductCategory>
     public ProductCategoryByIdSpec(Guid id)
     {
         Query.Where(c => c.Id == id)
+             .AsSplitQuery() // Prevent Cartesian explosion with parent + children
              .Include(c => c.Parent!)
              .Include(c => c.Children)
              .TagWith("GetProductCategoryById");
@@ -72,6 +73,7 @@ public sealed class ProductCategoryBySlugSpec : Specification<ProductCategory>
     {
         Query.Where(c => c.Slug == slug.ToLowerInvariant())
              .Where(c => tenantId == null || c.TenantId == tenantId)
+             .AsSplitQuery() // Prevent Cartesian explosion with parent + children
              .Include(c => c.Parent!)
              .Include(c => c.Children)
              .TagWith("GetProductCategoryBySlug");

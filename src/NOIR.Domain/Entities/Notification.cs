@@ -101,7 +101,7 @@ public class Notification : TenantAggregateRoot<Guid>
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
         ArgumentException.ThrowIfNullOrWhiteSpace(message);
 
-        return new Notification
+        var notification = new Notification
         {
             Id = Guid.NewGuid(),
             UserId = userId,
@@ -117,6 +117,15 @@ public class Notification : TenantAggregateRoot<Guid>
             IncludedInDigest = false,
             TenantId = tenantId
         };
+
+        notification.AddDomainEvent(new Events.Notification.NotificationCreatedEvent(
+            notification.Id,
+            userId,
+            type,
+            category,
+            title));
+
+        return notification;
     }
 
     /// <summary>
@@ -148,6 +157,8 @@ public class Notification : TenantAggregateRoot<Guid>
         {
             IsRead = true;
             ReadAt = DateTimeOffset.UtcNow;
+
+            AddDomainEvent(new Events.Notification.NotificationMarkedAsReadEvent(Id, UserId));
         }
     }
 
@@ -156,8 +167,13 @@ public class Notification : TenantAggregateRoot<Guid>
     /// </summary>
     public void MarkAsUnread()
     {
-        IsRead = false;
-        ReadAt = null;
+        if (IsRead)
+        {
+            IsRead = false;
+            ReadAt = null;
+
+            AddDomainEvent(new Events.Notification.NotificationMarkedAsUnreadEvent(Id, UserId));
+        }
     }
 
     /// <summary>
@@ -165,7 +181,12 @@ public class Notification : TenantAggregateRoot<Guid>
     /// </summary>
     public void MarkEmailSent()
     {
-        EmailSent = true;
+        if (!EmailSent)
+        {
+            EmailSent = true;
+
+            AddDomainEvent(new Events.Notification.NotificationEmailSentEvent(Id, UserId));
+        }
     }
 
     /// <summary>

@@ -60,18 +60,14 @@ public class TenantSeeder : ISeeder
             return tenant;
         }
 
-        // Restore soft-deleted default tenant
+        // Restore soft-deleted default tenant using immutable pattern
         if (existingTenant.IsDeleted)
         {
-            existingTenant.IsDeleted = false;
-            existingTenant.DeletedAt = null;
-            existingTenant.DeletedBy = null;
-            existingTenant.IsActive = true;
-            existingTenant.ModifiedAt = DateTimeOffset.UtcNow;
-
+            var restoredTenant = existingTenant.CreateRestored();
+            context.TenantInfo.Entry(existingTenant).CurrentValues.SetValues(restoredTenant);
             await context.SaveChangesAsync(ct);
             logger.LogInformation("Restored soft-deleted default tenant: {Identifier}", settings.Identifier);
-            return existingTenant;
+            return restoredTenant;
         }
 
         // Update existing tenant with new settings if they've changed

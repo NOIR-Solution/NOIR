@@ -42,6 +42,7 @@ public class PostTag : TenantAggregateRoot<Guid>
     /// <summary>
     /// Creates a new post tag.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when required parameters are invalid.</exception>
     public static PostTag Create(
         string name,
         string slug,
@@ -49,6 +50,9 @@ public class PostTag : TenantAggregateRoot<Guid>
         string? color = null,
         string? tenantId = null)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(slug);
+
         return new PostTag
         {
             Id = Guid.NewGuid(),
@@ -129,11 +133,17 @@ public class PostTagAssignment : Entity<Guid>, ITenantEntity
     /// <summary>
     /// Creates a new post-tag assignment.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when required parameters are invalid.</exception>
     public static PostTagAssignment Create(
         Guid postId,
         Guid tagId,
         string? tenantId = null)
     {
+        if (postId == Guid.Empty)
+            throw new ArgumentException("PostId cannot be empty.", nameof(postId));
+        if (tagId == Guid.Empty)
+            throw new ArgumentException("TagId cannot be empty.", nameof(tagId));
+
         return new PostTagAssignment
         {
             Id = Guid.NewGuid(),

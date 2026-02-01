@@ -11,17 +11,20 @@ public class ToggleEmailTemplateActiveCommandHandler
     private readonly IRepository<EmailTemplate, Guid> _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly ICacheInvalidationService _cacheInvalidation;
 
     public ToggleEmailTemplateActiveCommandHandler(
         IApplicationDbContext dbContext,
         IRepository<EmailTemplate, Guid> repository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        ICacheInvalidationService cacheInvalidation)
     {
         _dbContext = dbContext;
         _repository = repository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _cacheInvalidation = cacheInvalidation;
     }
 
     public async Task<Result<EmailTemplateDto>> Handle(
@@ -66,6 +69,11 @@ public class ToggleEmailTemplateActiveCommandHandler
                     existingTenantCopy.Deactivate();
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                // Invalidate tenant cache
+                await _cacheInvalidation.InvalidateEmailTemplateCacheAsync(
+                    existingTenantCopy.Name, currentTenantId, cancellationToken);
+
                 resultTemplate = existingTenantCopy;
             }
             else
@@ -85,6 +93,11 @@ public class ToggleEmailTemplateActiveCommandHandler
 
                 await _repository.AddAsync(tenantCopy, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                // Invalidate tenant cache (new tenant override created)
+                await _cacheInvalidation.InvalidateEmailTemplateCacheAsync(
+                    template.Name, currentTenantId, cancellationToken);
+
                 resultTemplate = tenantCopy;
             }
         }
@@ -99,6 +112,11 @@ public class ToggleEmailTemplateActiveCommandHandler
                 template.Deactivate();
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Invalidate cache for the toggled template
+            await _cacheInvalidation.InvalidateEmailTemplateCacheAsync(
+                template.Name, template.TenantId, cancellationToken);
+
             resultTemplate = template;
         }
 

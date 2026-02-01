@@ -84,7 +84,7 @@ public class NotificationService : INotificationService, IScopedService
         {
             _logger.LogError(ex, "Failed to send notification to user {UserId}", userId);
             return Result.Failure<NotificationDto>(
-                Error.Failure($"Failed to send notification: {ex.Message}", "NOTIFICATION_SEND_FAILED"));
+                Error.Failure("NOTIFICATION_SEND_FAILED", $"Failed to send notification: {ex.Message}"));
         }
     }
 
@@ -200,7 +200,7 @@ public class NotificationService : INotificationService, IScopedService
         {
             _logger.LogError(ex, "Failed to send notification to user {UserId}", targetUser.Id);
             return Result.Failure<NotificationDto>(
-                Error.Failure($"Failed to send notification: {ex.Message}", "NOTIFICATION_SEND_FAILED"));
+                Error.Failure("NOTIFICATION_SEND_FAILED", $"Failed to send notification: {ex.Message}"));
         }
     }
 
@@ -219,20 +219,15 @@ public class NotificationService : INotificationService, IScopedService
     {
         try
         {
-            // Get users from current tenant and filter by role
-            // This is a simplified approach - for large user bases, consider a dedicated endpoint
-            var (users, _) = await _userIdentityService.GetUsersPaginatedAsync(_currentUser.TenantId, null, 1, 1000, ct);
+            // Get users in role directly in a single query (fixes N+1)
+            var usersInRole = await _userIdentityService.GetUsersInRoleAsync(_currentUser.TenantId, roleName, ct);
             var count = 0;
 
-            foreach (var user in users)
+            foreach (var user in usersInRole)
             {
-                // Skip platform admins early (performance optimization)
+                // Skip platform admins (they operate across all tenants)
                 if (user.IsSystemUser || user.TenantId is null)
                     continue;
-
-                // Check if user is in role
-                var isInRole = await _userIdentityService.IsInRoleAsync(user.Id, roleName, ct);
-                if (!isInRole) continue;
 
                 // Use internal method to avoid re-fetching user
                 var result = await SendToUserInternalAsync(
@@ -258,7 +253,7 @@ public class NotificationService : INotificationService, IScopedService
         {
             _logger.LogError(ex, "Failed to send notifications to role {RoleName}", roleName);
             return Result.Failure<int>(
-                Error.Failure($"Failed to send notifications to role: {ex.Message}", "NOTIFICATION_ROLE_SEND_FAILED"));
+                Error.Failure("NOTIFICATION_ROLE_SEND_FAILED", $"Failed to send notifications to role: {ex.Message}"));
         }
     }
 
@@ -277,7 +272,8 @@ public class NotificationService : INotificationService, IScopedService
         try
         {
             // Get all users in current tenant - for large user bases, consider background job batching
-            var (users, _) = await _userIdentityService.GetUsersPaginatedAsync(_currentUser.TenantId, null, 1, 10000, ct);
+            var (users, _) = await _userIdentityService.GetUsersPaginatedAsync(
+                _currentUser.TenantId, search: null, page: 1, pageSize: 10000, role: null, isLocked: null, ct);
             var count = 0;
 
             foreach (var user in users)
@@ -310,7 +306,7 @@ public class NotificationService : INotificationService, IScopedService
         {
             _logger.LogError(ex, "Failed to broadcast notification");
             return Result.Failure<int>(
-                Error.Failure($"Failed to broadcast notification: {ex.Message}", "NOTIFICATION_BROADCAST_FAILED"));
+                Error.Failure("NOTIFICATION_BROADCAST_FAILED", $"Failed to broadcast notification: {ex.Message}"));
         }
     }
 

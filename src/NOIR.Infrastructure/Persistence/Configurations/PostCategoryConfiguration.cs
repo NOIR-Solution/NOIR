@@ -23,9 +23,9 @@ public class PostCategoryConfiguration : IEntityTypeConfiguration<PostCategory>
             .HasMaxLength(200)
             .IsRequired();
 
-        builder.HasIndex(e => new { e.Slug, e.TenantId })
+        builder.HasIndex(e => new { e.TenantId, e.Slug })
             .IsUnique()
-            .HasDatabaseName("IX_PostCategories_Slug_TenantId");
+            .HasDatabaseName("IX_PostCategories_TenantId_Slug");
 
         // Description
         builder.Property(e => e.Description)
@@ -56,9 +56,9 @@ public class PostCategoryConfiguration : IEntityTypeConfiguration<PostCategory>
             .HasForeignKey(e => e.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Indexes
-        builder.HasIndex(e => new { e.ParentId, e.SortOrder })
-            .HasDatabaseName("IX_PostCategories_Parent_Sort");
+        // Indexes (TenantId first for Finbuckle query optimization)
+        builder.HasIndex(e => new { e.TenantId, e.ParentId, e.SortOrder })
+            .HasDatabaseName("IX_PostCategories_TenantId_Parent_Sort");
 
         // Tenant ID
         builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);

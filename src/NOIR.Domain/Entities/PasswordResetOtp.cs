@@ -120,7 +120,7 @@ public class PasswordResetOtp : TenantAggregateRoot<Guid>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionToken);
 
-        return new PasswordResetOtp
+        var otp = new PasswordResetOtp
         {
             Id = Guid.NewGuid(),
             Email = email.ToLowerInvariant(),
@@ -134,6 +134,22 @@ public class PasswordResetOtp : TenantAggregateRoot<Guid>
             ResendCount = 0,
             TenantId = tenantId
         };
+
+        if (userId != null)
+        {
+            // Mask email for privacy in event (show first 2 chars + domain)
+            var atIndex = email.IndexOf('@');
+            var maskedEmail = atIndex > 2
+                ? $"{email[..2]}***{email[atIndex..]}"
+                : $"***{email[atIndex..]}";
+
+            otp.AddDomainEvent(new Events.Auth.PasswordResetOtpCreatedEvent(
+                otp.Id,
+                userId,
+                maskedEmail));
+        }
+
+        return otp;
     }
 
     /// <summary>
@@ -142,6 +158,11 @@ public class PasswordResetOtp : TenantAggregateRoot<Guid>
     public void RecordFailedAttempt()
     {
         AttemptCount++;
+
+        if (UserId != null)
+        {
+            AddDomainEvent(new Events.Auth.PasswordResetOtpFailedEvent(Id, UserId, AttemptCount));
+        }
     }
 
     /// <summary>
@@ -157,6 +178,11 @@ public class PasswordResetOtp : TenantAggregateRoot<Guid>
         UsedAt = DateTimeOffset.UtcNow;
         ResetToken = resetToken;
         ResetTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(resetTokenExpiryMinutes);
+
+        if (UserId != null)
+        {
+            AddDomainEvent(new Events.Auth.PasswordResetOtpVerifiedEvent(Id, UserId));
+        }
     }
 
     /// <summary>
@@ -204,6 +230,11 @@ public class PasswordResetOtp : TenantAggregateRoot<Guid>
         ResendCount++;
         LastResendAt = DateTimeOffset.UtcNow;
         AttemptCount = 0; // Reset attempt count on resend
+
+        if (UserId != null)
+        {
+            AddDomainEvent(new Events.Auth.PasswordResetOtpResentEvent(Id, UserId));
+        }
     }
 
     /// <summary>

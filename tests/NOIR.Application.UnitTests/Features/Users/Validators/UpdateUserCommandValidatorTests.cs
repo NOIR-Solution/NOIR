@@ -28,10 +28,10 @@ public class UpdateUserCommandValidatorTests
         return mock.Object;
     }
 
-    #region UserId Validation
+    #region TargetUserId Validation
 
     [Fact]
-    public async Task Validate_WhenUserIdIsEmpty_ShouldHaveError()
+    public async Task Validate_WhenTargetUserIdIsEmpty_ShouldHaveError()
     {
         // Arrange
         var command = new UpdateUserCommand("", null, null, null, null);
@@ -40,12 +40,12 @@ public class UpdateUserCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.UserId)
+        result.ShouldHaveValidationErrorFor(x => x.TargetUserId)
             .WithErrorMessage("User ID is required");
     }
 
     [Fact]
-    public async Task Validate_WhenUserIdIsValid_ShouldNotHaveError()
+    public async Task Validate_WhenTargetUserIdIsValid_ShouldNotHaveError()
     {
         // Arrange
         var command = new UpdateUserCommand("user-id", null, null, null, null);
@@ -54,7 +54,7 @@ public class UpdateUserCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(x => x.UserId);
+        result.ShouldNotHaveValidationErrorFor(x => x.TargetUserId);
     }
 
     #endregion

@@ -40,8 +40,9 @@ public class Tenant : TenantInfo, IAuditableEntity
 
     /// <summary>
     /// Whether the tenant is active. Inactive tenants cannot log in.
+    /// Use CreateActivated/CreateDeactivated/CreateUpdated methods to change status.
     /// </summary>
-    public bool IsActive { get; set; } = true;
+    public bool IsActive { get; init; } = true;
 
     #endregion
 
@@ -52,17 +53,17 @@ public class Tenant : TenantInfo, IAuditableEntity
     /// Used for automatic tenant resolution from request host.
     /// If null, tenant can only be accessed via identifier or explicit selection.
     /// </summary>
-    public string? Domain { get; set; }
+    public string? Domain { get; init; }
 
     /// <summary>
     /// Description of the tenant for administrative purposes.
     /// </summary>
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 
     /// <summary>
     /// Internal notes about this tenant (not visible to tenant users).
     /// </summary>
-    public string? Note { get; set; }
+    public string? Note { get; init; }
 
     #endregion
 
@@ -71,12 +72,12 @@ public class Tenant : TenantInfo, IAuditableEntity
     /// <summary>
     /// Timestamp when the entity was created.
     /// </summary>
-    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Timestamp when the entity was last modified.
     /// </summary>
-    public DateTimeOffset? ModifiedAt { get; set; }
+    public DateTimeOffset? ModifiedAt { get; init; }
 
     #endregion
 
@@ -219,6 +220,28 @@ public class Tenant : TenantInfo, IAuditableEntity
             IsDeleted = true,
             DeletedAt = DateTimeOffset.UtcNow,
             DeletedBy = deletedBy ?? DeletedBy
+        };
+    }
+
+    /// <summary>
+    /// Creates a restored copy of this soft-deleted tenant.
+    /// Clears the soft-delete flags and activates the tenant.
+    /// </summary>
+    public Tenant CreateRestored()
+    {
+        return new Tenant(Id, Identifier, Name)
+        {
+            Domain = Domain,
+            Description = Description,
+            Note = Note,
+            IsActive = true,
+            ModifiedAt = DateTimeOffset.UtcNow,
+            CreatedAt = CreatedAt,
+            CreatedBy = CreatedBy,
+            ModifiedBy = ModifiedBy,
+            IsDeleted = false,
+            DeletedAt = null,
+            DeletedBy = null
         };
     }
 }

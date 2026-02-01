@@ -25,9 +25,13 @@ public static class UserEndpoints
         .Produces<PaginatedList<UserListDto>>(StatusCodes.Status200OK);
 
         // Create user
-        group.MapPost("/", async (CreateUserCommand command, IMessageBus bus) =>
+        group.MapPost("/", async (
+            CreateUserCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result<UserDto>>(command);
+            var auditableCommand = command with { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<UserDto>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.UsersCreate)
@@ -50,9 +54,13 @@ public static class UserEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Update user
-        group.MapPut("/{userId}", async (string userId, UpdateUserCommand command, IMessageBus bus) =>
+        group.MapPut("/{userId}", async (
+            string userId,
+            UpdateUserCommand command,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var cmd = command with { UserId = userId };
+            var cmd = command with { TargetUserId = userId, UserId = currentUser.UserId };
             var result = await bus.InvokeAsync<Result<UserDto>>(cmd);
             return result.ToHttpResult();
         })
@@ -64,9 +72,13 @@ public static class UserEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Delete user (soft delete)
-        group.MapDelete("/{userId}", async (string userId, IMessageBus bus) =>
+        group.MapDelete("/{userId}", async (
+            string userId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result<bool>>(new DeleteUserCommand(userId));
+            var command = new DeleteUserCommand(userId) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.UsersDelete)
@@ -77,9 +89,13 @@ public static class UserEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Lock user
-        group.MapPost("/{userId}/lock", async (string userId, IMessageBus bus) =>
+        group.MapPost("/{userId}/lock", async (
+            string userId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result<bool>>(new LockUserCommand(userId, Lock: true));
+            var command = new LockUserCommand(userId, Lock: true) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.UsersUpdate)
@@ -90,9 +106,13 @@ public static class UserEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // Unlock user
-        group.MapPost("/{userId}/unlock", async (string userId, IMessageBus bus) =>
+        group.MapPost("/{userId}/unlock", async (
+            string userId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
         {
-            var result = await bus.InvokeAsync<Result<bool>>(new LockUserCommand(userId, Lock: false));
+            var command = new LockUserCommand(userId, Lock: false) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<bool>>(command);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.UsersUpdate)
@@ -118,10 +138,11 @@ public static class UserEndpoints
         group.MapPut("/{userId}/roles", async (
             string userId,
             AssignRolesToUserCommand command,
+            [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
-            var cmd = command with { UserId = userId };
-            var result = await bus.InvokeAsync<Result<UserDto>>(cmd);
+            var auditableCommand = command with { TargetUserId = userId, UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<UserDto>>(auditableCommand);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.UsersManageRoles)

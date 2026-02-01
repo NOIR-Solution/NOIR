@@ -27,9 +27,9 @@ public class MediaFileConfiguration : IEntityTypeConfiguration<MediaFile>
             .HasMaxLength(500)
             .IsRequired();
 
-        builder.HasIndex(e => new { e.Slug, e.TenantId })
+        builder.HasIndex(e => new { e.TenantId, e.Slug })
             .IsUnique()
-            .HasDatabaseName("IX_MediaFiles_Slug_TenantId");
+            .HasDatabaseName("IX_MediaFiles_TenantId_Slug");
 
         // Original filename
         builder.Property(e => e.OriginalFileName)
@@ -41,8 +41,8 @@ public class MediaFileConfiguration : IEntityTypeConfiguration<MediaFile>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.HasIndex(e => new { e.Folder, e.TenantId })
-            .HasDatabaseName("IX_MediaFiles_Folder_TenantId");
+        builder.HasIndex(e => new { e.TenantId, e.Folder })
+            .HasDatabaseName("IX_MediaFiles_TenantId_Folder");
 
         // Default URL
         builder.Property(e => e.DefaultUrl)
@@ -92,8 +92,9 @@ public class MediaFileConfiguration : IEntityTypeConfiguration<MediaFile>
             .HasMaxLength(DatabaseConstants.UserIdMaxLength)
             .IsRequired();
 
-        builder.HasIndex(e => e.UploadedBy)
-            .HasDatabaseName("IX_MediaFiles_UploadedBy");
+        // TenantId as leading column for Finbuckle query optimization
+        builder.HasIndex(e => new { e.TenantId, e.UploadedBy })
+            .HasDatabaseName("IX_MediaFiles_TenantId_UploadedBy");
 
         // Tenant ID
         builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);

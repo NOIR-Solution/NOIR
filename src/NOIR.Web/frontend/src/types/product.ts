@@ -34,7 +34,6 @@ export interface Product {
   brand?: string | null // Legacy text field, prefer brandId/brandName
   sku?: string | null
   barcode?: string | null
-  weight?: number | null
   trackInventory: boolean
   metaTitle?: string | null
   metaDescription?: string | null
@@ -86,7 +85,6 @@ export interface ProductListItem {
   inStock: boolean
   primaryImageUrl?: string | null
   displayAttributes?: ProductAttributeDisplay[] | null
-  discountPercentage?: number | null
   createdAt: string
 }
 
@@ -198,7 +196,6 @@ export interface CreateProductRequest {
   brand?: string | null // Legacy, prefer brandId
   sku?: string | null
   barcode?: string | null
-  weight?: number | null
   trackInventory: boolean
   metaTitle?: string | null
   metaDescription?: string | null
@@ -220,7 +217,6 @@ export interface UpdateProductRequest {
   brand?: string | null // Legacy, prefer brandId
   sku?: string | null
   barcode?: string | null
-  weight?: number | null
   trackInventory: boolean
   metaTitle?: string | null
   metaDescription?: string | null
@@ -351,6 +347,7 @@ export interface ProductPagedResult {
 /**
  * Attribute display info for product cards
  * Used by AttributeBadges component to render attribute badges
+ * Mirrors backend ProductAttributeDisplayDto
  */
 export interface ProductAttributeDisplay {
   code: string
@@ -358,5 +355,4 @@ export interface ProductAttributeDisplay {
   type: string
   displayValue?: string | null
   colorCode?: string | null
-  unit?: string | null
 }

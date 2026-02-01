@@ -4,7 +4,7 @@ public sealed class AssignRolesToUserCommandValidator : AbstractValidator<Assign
 {
     public AssignRolesToUserCommandValidator(ILocalizationService localization)
     {
-        RuleFor(x => x.UserId)
+        RuleFor(x => x.TargetUserId)
             .NotEmpty().WithMessage(localization["validation.userId.required"]);
 
         RuleFor(x => x.RoleNames)

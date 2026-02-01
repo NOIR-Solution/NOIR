@@ -386,7 +386,7 @@ public class UpdatePostCommandHandlerTests
             .ReturnsAsync(post);
 
         _tagRepositoryMock
-            .Setup(x => x.ListAsync(It.IsAny<TagsByIdsSpec>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ListAsync(It.IsAny<ISpecification<PostTag>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<PostTag> { tag1, tag2 });
 
         _unitOfWorkMock
@@ -432,9 +432,10 @@ public class UpdatePostCommandHandlerTests
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<PostByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(post);
 
+        // Batch fetch tags to remove (tag2 only since tag1 is being kept)
         _tagRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(It.IsAny<TagByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(tag2);
+            .Setup(x => x.ListAsync(It.IsAny<ISpecification<PostTag>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<PostTag> { tag2 });
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -472,9 +473,10 @@ public class UpdatePostCommandHandlerTests
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<PostByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(post);
 
+        // Batch fetch tags to remove (all tags since empty tagIds)
         _tagRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(It.IsAny<TagByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(tag1);
+            .Setup(x => x.ListAsync(It.IsAny<ISpecification<PostTag>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<PostTag> { tag1 });
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))

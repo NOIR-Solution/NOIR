@@ -16,7 +16,7 @@ public sealed record UpdateGatewayCommand(
     public string? UserId { get; init; }
 
     public AuditOperationType OperationType => AuditOperationType.Update;
-    public object? GetTargetId() => UserId;
+    public object? GetTargetId() => GatewayId;
     public string? GetTargetDisplayName() => DisplayName ?? $"Gateway {GatewayId}";
     public string? GetActionDescription() => $"Updated payment gateway configuration";
 }

@@ -7,7 +7,7 @@ public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCom
 
     public UpdateUserCommandValidator(ILocalizationService localization)
     {
-        RuleFor(x => x.UserId)
+        RuleFor(x => x.TargetUserId)
             .NotEmpty().WithMessage(localization["validation.userId.required"]);
 
         RuleFor(x => x.DisplayName)

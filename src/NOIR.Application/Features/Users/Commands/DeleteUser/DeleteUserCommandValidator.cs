@@ -4,7 +4,7 @@ public sealed class DeleteUserCommandValidator : AbstractValidator<DeleteUserCom
 {
     public DeleteUserCommandValidator(ILocalizationService localization)
     {
-        RuleFor(x => x.UserId)
+        RuleFor(x => x.TargetUserId)
             .NotEmpty().WithMessage(localization["validation.userId.required"]);
     }
 }

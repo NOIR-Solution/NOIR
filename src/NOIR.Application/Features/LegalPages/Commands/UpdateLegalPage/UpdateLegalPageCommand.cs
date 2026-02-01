@@ -11,8 +11,11 @@ public sealed record UpdateLegalPageCommand(
     string? MetaTitle,
     string? MetaDescription,
     string? CanonicalUrl,
-    bool AllowIndexing = true) : IAuditableCommand
+    bool AllowIndexing = true) : IAuditableCommand<LegalPageDto>
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Update;
     public object? GetTargetId() => Id;
     public string? GetTargetDisplayName() => Title;

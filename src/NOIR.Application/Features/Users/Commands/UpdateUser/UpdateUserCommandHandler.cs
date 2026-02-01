@@ -20,7 +20,7 @@ public class UpdateUserCommandHandler
     public async Task<Result<UserDto>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
     {
         // Verify user exists
-        var existingUser = await _userIdentityService.FindByIdAsync(command.UserId, cancellationToken);
+        var existingUser = await _userIdentityService.FindByIdAsync(command.TargetUserId, cancellationToken);
         if (existingUser is null)
         {
             return Result.Failure<UserDto>(
@@ -42,7 +42,7 @@ public class UpdateUserCommandHandler
             IsActive: command.LockoutEnabled.HasValue ? !command.LockoutEnabled.Value : null);
 
         // Update user
-        var result = await _userIdentityService.UpdateUserAsync(command.UserId, updateDto, cancellationToken);
+        var result = await _userIdentityService.UpdateUserAsync(command.TargetUserId, updateDto, cancellationToken);
         if (!result.Succeeded)
         {
             return Result.Failure<UserDto>(
@@ -50,7 +50,7 @@ public class UpdateUserCommandHandler
         }
 
         // Get updated user
-        var updatedUser = await _userIdentityService.FindByIdAsync(command.UserId, cancellationToken);
+        var updatedUser = await _userIdentityService.FindByIdAsync(command.TargetUserId, cancellationToken);
         if (updatedUser is null)
         {
             return Result.Failure<UserDto>(
@@ -58,7 +58,7 @@ public class UpdateUserCommandHandler
         }
 
         // Get roles
-        var roles = await _userIdentityService.GetRolesAsync(command.UserId, cancellationToken);
+        var roles = await _userIdentityService.GetRolesAsync(command.TargetUserId, cancellationToken);
 
         var userDto = new UserDto(
             updatedUser.Id,

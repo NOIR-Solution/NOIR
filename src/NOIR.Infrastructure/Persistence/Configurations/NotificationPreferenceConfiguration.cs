@@ -33,10 +33,10 @@ public class NotificationPreferenceConfiguration : IEntityTypeConfiguration<Noti
             .HasConversion<int>()
             .HasDefaultValue(EmailFrequency.Daily);
 
-        // Unique constraint - one preference per user per category
-        builder.HasIndex(p => new { p.UserId, p.Category })
+        // Unique constraint - one preference per user per category per tenant (CLAUDE.md Rule 18)
+        builder.HasIndex(p => new { p.TenantId, p.UserId, p.Category })
             .IsUnique()
-            .HasDatabaseName("IX_NotificationPreferences_UserId_Category");
+            .HasDatabaseName("IX_NotificationPreferences_TenantId_UserId_Category");
 
         // Index for preference lookups
         builder.HasIndex(p => p.UserId)

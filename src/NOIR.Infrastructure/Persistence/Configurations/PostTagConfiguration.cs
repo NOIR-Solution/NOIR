@@ -23,9 +23,9 @@ public class PostTagConfiguration : IEntityTypeConfiguration<PostTag>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.HasIndex(e => new { e.Slug, e.TenantId })
+        builder.HasIndex(e => new { e.TenantId, e.Slug })
             .IsUnique()
-            .HasDatabaseName("IX_PostTags_Slug_TenantId");
+            .HasDatabaseName("IX_PostTags_TenantId_Slug");
 
         // Description
         builder.Property(e => e.Description)
@@ -67,10 +67,10 @@ public class PostTagAssignmentConfiguration : IEntityTypeConfiguration<PostTagAs
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id).ValueGeneratedOnAdd();
 
-        // Unique constraint (one tag per post)
-        builder.HasIndex(e => new { e.PostId, e.TagId })
+        // Unique constraint: one tag per post per tenant (CLAUDE.md Rule 18)
+        builder.HasIndex(e => new { e.TenantId, e.PostId, e.TagId })
             .IsUnique()
-            .HasDatabaseName("IX_PostTagAssignments_PostId_TagId");
+            .HasDatabaseName("IX_PostTagAssignments_TenantId_Post_Tag");
 
         // Post relationship
         builder.HasOne(e => e.Post)

@@ -88,24 +88,29 @@ public class ProductAttributeConfiguration : IEntityTypeConfiguration<ProductAtt
             .HasForeignKey(v => v.AttributeId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Indexes for filtering
-        builder.HasIndex(e => new { e.TenantId, e.IsActive })
-            .HasDatabaseName("IX_ProductAttributes_TenantId_IsActive");
-
-        builder.HasIndex(e => new { e.TenantId, e.IsFilterable })
-            .HasDatabaseName("IX_ProductAttributes_TenantId_IsFilterable");
-
-        builder.HasIndex(e => new { e.TenantId, e.IsVariantAttribute })
-            .HasDatabaseName("IX_ProductAttributes_TenantId_IsVariantAttribute");
-
+        // Indexes for filtering (TenantId as leading column for Finbuckle)
         builder.HasIndex(e => new { e.TenantId, e.Type })
             .HasDatabaseName("IX_ProductAttributes_TenantId_Type");
 
         builder.HasIndex(e => new { e.TenantId, e.SortOrder, e.Name })
             .HasDatabaseName("IX_ProductAttributes_TenantId_SortOrder_Name");
 
-        builder.HasIndex(e => new { e.TenantId, e.IsGlobal })
-            .HasDatabaseName("IX_ProductAttributes_TenantId_IsGlobal");
+        // Filtered indexes for sparse boolean columns (TenantId leading)
+        builder.HasIndex(e => new { e.TenantId, e.SortOrder })
+            .HasFilter("[IsActive] = 1")
+            .HasDatabaseName("IX_ProductAttributes_TenantId_Active");
+
+        builder.HasIndex(e => new { e.TenantId, e.SortOrder })
+            .HasFilter("[IsFilterable] = 1 AND [IsActive] = 1")
+            .HasDatabaseName("IX_ProductAttributes_TenantId_Filterable");
+
+        builder.HasIndex(e => new { e.TenantId, e.SortOrder })
+            .HasFilter("[IsVariantAttribute] = 1 AND [IsActive] = 1")
+            .HasDatabaseName("IX_ProductAttributes_TenantId_Variant");
+
+        builder.HasIndex(e => new { e.TenantId, e.SortOrder })
+            .HasFilter("[IsGlobal] = 1 AND [IsActive] = 1")
+            .HasDatabaseName("IX_ProductAttributes_TenantId_Global");
 
         // Tenant
         builder.Property(e => e.TenantId)

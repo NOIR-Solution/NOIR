@@ -4,14 +4,22 @@ namespace NOIR.Application.Features.Users.Commands.UpdateUser;
 /// Command for admin to update any user.
 /// </summary>
 public sealed record UpdateUserCommand(
-    string UserId,
+    string TargetUserId,
     string? DisplayName,
     string? FirstName,
     string? LastName,
-    bool? LockoutEnabled) : IAuditableCommand<UserProfileDto>
+    bool? LockoutEnabled,
+    string? UserEmail = null) : IAuditableCommand<UserProfileDto>
 {
+    /// <summary>
+    /// The ID of the admin user performing the update (actor).
+    /// Set by endpoint from ICurrentUser.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Update;
-    public object? GetTargetId() => UserId;
-    public string? GetTargetDisplayName() => DisplayName ?? $"{FirstName} {LastName}".Trim();
+    public object? GetTargetId() => TargetUserId;
+    public string? GetTargetDisplayName() => UserEmail ?? DisplayName ?? $"{FirstName} {LastName}".Trim();
     public string? GetActionDescription() => $"Updated user '{GetTargetDisplayName()}'";
 }

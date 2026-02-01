@@ -23,7 +23,7 @@ public class DeleteUserCommandHandler
     public async Task<Result<bool>> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
     {
         // Verify user exists
-        var user = await _userIdentityService.FindByIdAsync(command.UserId, cancellationToken);
+        var user = await _userIdentityService.FindByIdAsync(command.TargetUserId, cancellationToken);
         if (user is null)
         {
             return Result.Failure<bool>(
@@ -38,7 +38,7 @@ public class DeleteUserCommandHandler
         }
 
         // Prevent self-deletion
-        if (_currentUser.UserId == command.UserId)
+        if (_currentUser.UserId == command.TargetUserId)
         {
             return Result.Failure<bool>(
                 Error.Validation("userId", _localization["users.cannotDeleteSelf"], ErrorCodes.Business.CannotDelete));
@@ -46,7 +46,7 @@ public class DeleteUserCommandHandler
 
         // Soft delete user
         var deletedBy = _currentUser.UserId ?? "system";
-        var result = await _userIdentityService.SoftDeleteUserAsync(command.UserId, deletedBy, cancellationToken);
+        var result = await _userIdentityService.SoftDeleteUserAsync(command.TargetUserId, deletedBy, cancellationToken);
 
         if (!result.Succeeded)
         {

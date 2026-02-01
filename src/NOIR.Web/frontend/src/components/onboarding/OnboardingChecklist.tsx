@@ -135,6 +135,7 @@ export function OnboardingChecklist({
               size="icon"
               className="h-7 w-7 text-muted-foreground hover:text-foreground"
               onClick={onDismiss}
+              aria-label="Dismiss onboarding checklist"
             >
               <X className="h-4 w-4" />
             </Button>

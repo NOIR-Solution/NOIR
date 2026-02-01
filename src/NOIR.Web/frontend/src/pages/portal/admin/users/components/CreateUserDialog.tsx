@@ -22,40 +22,41 @@ import { RolePermissionInfo } from './RolePermissionInfo'
 import { ApiError } from '@/services/apiClient'
 
 /**
- * Validation schema for CreateUserCommand
+ * Creates validation schema for CreateUserCommand
  * Matches backend FluentValidation rules
+ * Uses i18n for localized error messages
  */
-const createUserSchema = z.object({
+const createUserSchemaFactory = (t: (key: string, options?: Record<string, unknown>) => string) => z.object({
   email: z
     .string()
-    .min(1, { message: 'Email is required' })
-    .max(256, { message: 'Maximum 256 characters allowed' })
-    .email({ message: 'Please enter a valid email address' }),
+    .min(1, { message: t('validation.emailRequired') })
+    .max(256, { message: t('validation.maxLength', { count: 256 }) })
+    .email({ message: t('validation.pleaseEnterValidEmail') }),
   password: z
     .string()
-    .min(1, { message: 'Password is required' })
-    .min(6, { message: 'Password must be at least 6 characters' })
-    .max(100, { message: 'Password cannot exceed 100 characters' }),
+    .min(1, { message: t('validation.passwordRequired') })
+    .min(6, { message: t('validation.passwordMinLength', { count: 6 }) })
+    .max(100, { message: t('validation.passwordMaxLength', { count: 100 }) }),
   confirmPassword: z
     .string()
-    .min(1, { message: 'Please confirm your password' }),
+    .min(1, { message: t('validation.passwordConfirm') }),
   firstName: z
     .string()
-    .max(50, { message: 'Maximum 50 characters allowed' })
+    .max(50, { message: t('validation.maxLength', { count: 50 }) })
     .optional()
     .or(z.literal('')),
   lastName: z
     .string()
-    .max(50, { message: 'Maximum 50 characters allowed' })
+    .max(50, { message: t('validation.maxLength', { count: 50 }) })
     .optional()
     .or(z.literal('')),
   displayName: z
     .string()
-    .max(100, { message: 'Maximum 100 characters allowed' })
+    .max(100, { message: t('validation.maxLength', { count: 100 }) })
     .optional()
     .or(z.literal('')),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
+  message: t('validation.passwordMismatch'),
   path: ['confirmPassword'],
 })
 
@@ -119,30 +120,30 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
     }
   }, [open])
 
-  // Field-specific validation schemas
+  // Field-specific validation schemas with i18n messages
   const fieldSchemas = {
     email: z
       .string()
-      .min(1, { message: 'Email is required' })
-      .max(256, { message: 'Maximum 256 characters allowed' })
-      .email({ message: 'Please enter a valid email address' }),
+      .min(1, { message: t('validation.emailRequired') })
+      .max(256, { message: t('validation.maxLength', { count: 256 }) })
+      .email({ message: t('validation.pleaseEnterValidEmail') }),
     password: z
       .string()
-      .min(1, { message: 'Password is required' })
-      .min(6, { message: 'Password must be at least 6 characters' })
-      .max(100, { message: 'Password cannot exceed 100 characters' }),
+      .min(1, { message: t('validation.passwordRequired') })
+      .min(6, { message: t('validation.passwordMinLength', { count: 6 }) })
+      .max(100, { message: t('validation.passwordMaxLength', { count: 100 }) }),
     confirmPassword: z
       .string()
-      .min(1, { message: 'Please confirm your password' }),
+      .min(1, { message: t('validation.passwordConfirm') }),
     firstName: z
       .string()
-      .max(50, { message: 'Maximum 50 characters allowed' }),
+      .max(50, { message: t('validation.maxLength', { count: 50 }) }),
     lastName: z
       .string()
-      .max(50, { message: 'Maximum 50 characters allowed' }),
+      .max(50, { message: t('validation.maxLength', { count: 50 }) }),
     displayName: z
       .string()
-      .max(100, { message: 'Maximum 100 characters allowed' }),
+      .max(100, { message: t('validation.maxLength', { count: 100 }) }),
   }
 
   // Validate a single field
@@ -154,7 +155,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
         return result.error.issues[0].message
       }
       if (value && value !== password) {
-        return 'Passwords do not match'
+        return t('validation.passwordMismatch')
       }
       return undefined
     }
@@ -162,7 +163,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
     // For password changes, also re-validate confirmPassword if it was touched
     if (field === 'password' && touched.confirmPassword && confirmPassword) {
       if (value !== confirmPassword) {
-        setErrors((prev) => ({ ...prev, confirmPassword: 'Passwords do not match' }))
+        setErrors((prev) => ({ ...prev, confirmPassword: t('validation.passwordMismatch') }))
       } else {
         setErrors((prev) => ({ ...prev, confirmPassword: undefined }))
       }
@@ -200,7 +201,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
 
     // Validate all fields
     const data = { email, password, confirmPassword, firstName, lastName, displayName }
-    const result = createUserSchema.safeParse(data)
+    const result = createUserSchemaFactory(t).safeParse(data)
 
     if (!result.success) {
       // Show all errors

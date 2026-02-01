@@ -19,7 +19,7 @@ public class TokenService : ITokenService, IScopedService
         _tenantStore = tenantStore;
     }
 
-    public string GenerateAccessToken(string userId, string email, string? tenantId = null)
+    public async Task<string> GenerateAccessTokenAsync(string userId, string email, string? tenantId = null, CancellationToken cancellationToken = default)
     {
         // Minimal JWT: only userId, email, tenantId
         // Roles and permissions are queried from database on each request
@@ -35,7 +35,7 @@ public class TokenService : ITokenService, IScopedService
         // We must resolve the tenant to get its Identifier field
         if (!string.IsNullOrEmpty(tenantId))
         {
-            var tenant = _tenantStore.GetAsync(tenantId).GetAwaiter().GetResult();
+            var tenant = await _tenantStore.GetAsync(tenantId);
             if (tenant is not null)
             {
                 // Use Identifier (e.g., "default") not Id (GUID) for Finbuckle lookup
@@ -68,9 +68,9 @@ public class TokenService : ITokenService, IScopedService
     /// Generates both access and refresh tokens as a pair.
     /// Use this to avoid duplicating token generation logic in handlers.
     /// </summary>
-    public TokenPair GenerateTokenPair(string userId, string email, string? tenantId = null)
+    public async Task<TokenPair> GenerateTokenPairAsync(string userId, string email, string? tenantId = null, CancellationToken cancellationToken = default)
     {
-        var accessToken = GenerateAccessToken(userId, email, tenantId);
+        var accessToken = await GenerateAccessTokenAsync(userId, email, tenantId, cancellationToken);
         var refreshToken = GenerateRefreshToken();
         var expiresAt = _dateTime.UtcNow.AddMinutes(_jwtSettings.CurrentValue.ExpirationInMinutes);
 

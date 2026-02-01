@@ -16,7 +16,7 @@ public sealed record ConfigureGatewayCommand(
     public string? UserId { get; init; }
 
     public AuditOperationType OperationType => AuditOperationType.Create;
-    public object? GetTargetId() => UserId;
+    public object? GetTargetId() => Provider;
     public string? GetTargetDisplayName() => DisplayName;
     public string? GetActionDescription() => $"Configured payment gateway '{DisplayName}' ({Provider})";
 }

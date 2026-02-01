@@ -150,11 +150,10 @@ public class DeletePostCommandHandlerTests
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<PostByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(post);
 
-        // Return tags in order they're requested
+        // Batch fetch all tags in single query (fixes N+1)
         _tagRepositoryMock
-            .SetupSequence(x => x.FirstOrDefaultAsync(It.IsAny<TagByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(tag1)
-            .ReturnsAsync(tag2);
+            .Setup(x => x.ListAsync(It.IsAny<ISpecification<PostTag>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<PostTag> { tag1, tag2 });
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -190,8 +189,9 @@ public class DeletePostCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
+        // No tags to query since post has no tag assignments
         _tagRepositoryMock.Verify(
-            x => x.FirstOrDefaultAsync(It.IsAny<TagByIdForUpdateSpec>(), It.IsAny<CancellationToken>()),
+            x => x.ListAsync(It.IsAny<ISpecification<PostTag>>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -212,10 +212,10 @@ public class DeletePostCommandHandlerTests
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<PostByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(post);
 
-        // Tag not found (already deleted)
+        // Tag not found (already deleted) - batch query returns empty list
         _tagRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(It.IsAny<TagByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((PostTag?)null);
+            .Setup(x => x.ListAsync(It.IsAny<ISpecification<PostTag>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<PostTag>());
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -350,10 +350,10 @@ public class DeletePostCommandHandlerTests
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<PostByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(post);
 
-        var tagIndex = 0;
+        // Batch fetch all tags in single query (fixes N+1)
         _tagRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(It.IsAny<TagByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() => tagIndex < tags.Count ? tags[tagIndex++] : null);
+            .Setup(x => x.ListAsync(It.IsAny<ISpecification<PostTag>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tags);
 
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))

@@ -112,7 +112,7 @@ public class RefreshToken : TenantAggregateRoot<Guid>
         ArgumentException.ThrowIfNullOrWhiteSpace(token);
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-        return new RefreshToken
+        var refreshToken = new RefreshToken
         {
             Id = Guid.NewGuid(),
             Token = token,
@@ -125,6 +125,13 @@ public class RefreshToken : TenantAggregateRoot<Guid>
             TokenFamily = tokenFamily ?? Guid.NewGuid(),
             TenantId = tenantId
         };
+
+        refreshToken.AddDomainEvent(new Events.Auth.RefreshTokenCreatedEvent(
+            refreshToken.Id,
+            userId,
+            deviceName ?? userAgent));
+
+        return refreshToken;
     }
 
     /// <summary>
@@ -136,5 +143,7 @@ public class RefreshToken : TenantAggregateRoot<Guid>
         RevokedByIp = ipAddress;
         ReasonRevoked = reason;
         ReplacedByToken = replacedByToken;
+
+        AddDomainEvent(new Events.Auth.RefreshTokenRevokedEvent(Id, UserId, reason));
     }
 }

@@ -12,6 +12,9 @@ public sealed record CreateUserCommand(
     IReadOnlyList<string>? RoleNames,
     bool SendWelcomeEmail = true) : IAuditableCommand
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Create;
     public object? GetTargetId() => Email; // Use email as target before ID is created
     public string? GetTargetDisplayName() => DisplayName ?? Email;

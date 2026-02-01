@@ -76,7 +76,7 @@ public class LegalPage : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
         string? canonicalUrl = null,
         bool allowIndexing = true)
     {
-        return new LegalPage
+        var page = new LegalPage
         {
             Id = Guid.NewGuid(),
             TenantId = null, // Platform default
@@ -91,6 +91,13 @@ public class LegalPage : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
             Version = 1,
             LastModified = DateTimeOffset.UtcNow
         };
+
+        page.AddDomainEvent(new Events.Platform.LegalPageCreatedEvent(
+            page.Id,
+            slug,
+            null));
+
+        return page;
     }
 
     /// <summary>
@@ -109,7 +116,7 @@ public class LegalPage : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantId, nameof(tenantId));
 
-        return new LegalPage
+        var page = new LegalPage
         {
             Id = Guid.NewGuid(),
             TenantId = tenantId,
@@ -124,6 +131,13 @@ public class LegalPage : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
             Version = 1,
             LastModified = DateTimeOffset.UtcNow
         };
+
+        page.AddDomainEvent(new Events.Platform.LegalPageCreatedEvent(
+            page.Id,
+            slug,
+            tenantId));
+
+        return page;
     }
 
     /// <summary>
@@ -145,6 +159,8 @@ public class LegalPage : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
         AllowIndexing = allowIndexing;
         Version++;
         LastModified = DateTimeOffset.UtcNow;
+
+        AddDomainEvent(new Events.Platform.LegalPageUpdatedEvent(Id, Slug, Version));
     }
 
     /// <summary>
@@ -152,7 +168,11 @@ public class LegalPage : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
     /// </summary>
     public void Activate()
     {
-        IsActive = true;
+        if (!IsActive)
+        {
+            IsActive = true;
+            AddDomainEvent(new Events.Platform.LegalPageActivatedEvent(Id, Slug));
+        }
     }
 
     /// <summary>
@@ -160,7 +180,11 @@ public class LegalPage : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
     /// </summary>
     public void Deactivate()
     {
-        IsActive = false;
+        if (IsActive)
+        {
+            IsActive = false;
+            AddDomainEvent(new Events.Platform.LegalPageDeactivatedEvent(Id, Slug));
+        }
     }
 
     /// <summary>

@@ -47,30 +47,32 @@ const ATTRIBUTE_TYPES: AttributeType[] = [
   'File',
 ]
 
-const attributeSchema = z.object({
-  code: z.string().min(1, 'Code is required').max(50, 'Code must be 50 characters or less')
-    .regex(/^[a-z0-9_]+$/, 'Code must only contain lowercase letters, numbers, and underscores'),
-  name: z.string().min(1, 'Name is required').max(100, 'Name must be 100 characters or less'),
-  type: z.string().min(1, 'Type is required'),
-  isFilterable: z.boolean(),
-  isSearchable: z.boolean(),
-  isRequired: z.boolean(),
-  isVariantAttribute: z.boolean(),
-  showInProductCard: z.boolean(),
-  showInSpecifications: z.boolean(),
-  isActive: z.boolean(),
-  sortOrder: z.number().int().min(0).default(0),
-  unit: z.string().max(20).optional().nullable(),
-  validationRegex: z.string().max(500).optional().nullable(),
-  minValue: z.number().optional().nullable(),
-  maxValue: z.number().optional().nullable(),
-  maxLength: z.number().int().min(1).optional().nullable(),
-  defaultValue: z.string().max(500).optional().nullable(),
-  placeholder: z.string().max(200).optional().nullable(),
-  helpText: z.string().max(500).optional().nullable(),
-})
+const createAttributeSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    code: z.string().min(1, t('validation.required')).max(50, t('validation.maxLength', { count: 50 }))
+      .regex(/^[a-z0-9_]+$/, t('validation.identifierFormat')),
+    name: z.string().min(1, t('validation.required')).max(100, t('validation.maxLength', { count: 100 })),
+    type: z.string().min(1, t('validation.required')),
+    isFilterable: z.boolean(),
+    isSearchable: z.boolean(),
+    isRequired: z.boolean(),
+    isVariantAttribute: z.boolean(),
+    showInProductCard: z.boolean(),
+    showInSpecifications: z.boolean(),
+    isGlobal: z.boolean(),
+    isActive: z.boolean(),
+    sortOrder: z.number().int().min(0).default(0),
+    unit: z.string().max(20, t('validation.maxLength', { count: 20 })).optional().nullable(),
+    validationRegex: z.string().max(500, t('validation.maxLength', { count: 500 })).optional().nullable(),
+    minValue: z.number().optional().nullable(),
+    maxValue: z.number().optional().nullable(),
+    maxLength: z.number().int().min(1).optional().nullable(),
+    defaultValue: z.string().max(500, t('validation.maxLength', { count: 500 })).optional().nullable(),
+    placeholder: z.string().max(200, t('validation.maxLength', { count: 200 })).optional().nullable(),
+    helpText: z.string().max(500, t('validation.maxLength', { count: 500 })).optional().nullable(),
+  })
 
-type AttributeFormData = z.infer<typeof attributeSchema>
+type AttributeFormData = z.infer<ReturnType<typeof createAttributeSchema>>
 
 interface ProductAttributeDialogProps {
   open: boolean
@@ -91,7 +93,7 @@ export function ProductAttributeDialog({
   const updateAttributeHook = useUpdateProductAttribute()
 
   const form = useForm<AttributeFormData>({
-    resolver: zodResolver(attributeSchema),
+    resolver: zodResolver(createAttributeSchema(t)),
     mode: 'onBlur',
     defaultValues: {
       code: '',
@@ -103,6 +105,7 @@ export function ProductAttributeDialog({
       isVariantAttribute: false,
       showInProductCard: false,
       showInSpecifications: true,
+      isGlobal: false,
       isActive: true,
       sortOrder: 0,
       unit: '',
@@ -117,6 +120,9 @@ export function ProductAttributeDialog({
   })
 
   // Reset form when dialog opens/closes or attribute changes
+  // Note: ProductAttributeListItem only has basic fields (code, name, type, isFilterable,
+  // isVariantAttribute, isGlobal, isActive, valueCount). Other fields use defaults when editing.
+  // For a full edit experience, consider fetching the complete ProductAttribute.
   useEffect(() => {
     if (open) {
       if (attribute) {
@@ -124,15 +130,16 @@ export function ProductAttributeDialog({
           code: attribute.code,
           name: attribute.name,
           type: attribute.type,
-          isFilterable: attribute.isFilterable,
-          isSearchable: attribute.isSearchable,
-          isRequired: attribute.isRequired,
-          isVariantAttribute: attribute.isVariantAttribute,
-          showInProductCard: attribute.showInProductCard,
-          showInSpecifications: attribute.showInSpecifications,
-          isActive: attribute.isActive,
-          sortOrder: attribute.sortOrder,
-          // These fields are not available in list item, set to defaults
+          isFilterable: attribute.isFilterable ?? false,
+          isVariantAttribute: attribute.isVariantAttribute ?? false,
+          isGlobal: attribute.isGlobal ?? false,
+          isActive: attribute.isActive ?? true,
+          // Fields not in ProductAttributeListItem - use defaults
+          isSearchable: false,
+          isRequired: false,
+          showInProductCard: false,
+          showInSpecifications: true,
+          sortOrder: 0,
           unit: '',
           validationRegex: '',
           minValue: null,
@@ -153,6 +160,7 @@ export function ProductAttributeDialog({
           isVariantAttribute: false,
           showInProductCard: false,
           showInSpecifications: true,
+          isGlobal: false,
           isActive: true,
           sortOrder: 0,
           unit: '',
@@ -508,6 +516,28 @@ export function ProductAttributeDialog({
                           <FormLabel>{t('productAttributes.showInSpecs', 'Show in Specs')}</FormLabel>
                           <FormDescription className="text-xs">
                             {t('productAttributes.showInSpecsDescription', 'Display in specifications')}
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="cursor-pointer"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="isGlobal"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>{t('productAttributes.global', 'Global')}</FormLabel>
+                          <FormDescription className="text-xs">
+                            {t('productAttributes.globalDescription', 'Available for all categories')}
                           </FormDescription>
                         </div>
                         <FormControl>

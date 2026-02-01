@@ -80,6 +80,7 @@ export function WelcomeModal() {
             size="icon"
             className="absolute top-3 right-3 h-8 w-8 text-muted-foreground hover:text-foreground"
             onClick={handleSkip}
+            aria-label="Close welcome dialog"
           >
             <X className="h-4 w-4" />
           </Button>

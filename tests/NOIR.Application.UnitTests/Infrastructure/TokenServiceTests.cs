@@ -38,10 +38,10 @@ public class TokenServiceTests
     #region GenerateAccessToken Tests
 
     [Fact]
-    public void GenerateAccessToken_ShouldReturnValidJwt()
+    public async Task GenerateAccessToken_ShouldReturnValidJwt()
     {
         // Act
-        var token = _sut.GenerateAccessToken("user123", "test@example.com");
+        var token = await _sut.GenerateAccessTokenAsync("user123", "test@example.com");
 
         // Assert
         token.Should().NotBeNullOrEmpty();
@@ -49,10 +49,10 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void GenerateAccessToken_WithTenantId_ShouldIncludeTenantClaim()
+    public async Task GenerateAccessToken_WithTenantId_ShouldIncludeTenantClaim()
     {
         // Act
-        var token = _sut.GenerateAccessToken("user123", "test@example.com", "tenant-1");
+        var token = await _sut.GenerateAccessTokenAsync("user123", "test@example.com", "tenant-1");
 
         // Assert
         token.Should().NotBeNullOrEmpty();
@@ -64,10 +64,10 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void GenerateAccessToken_ShouldIncludeUserIdClaim()
+    public async Task GenerateAccessToken_ShouldIncludeUserIdClaim()
     {
         // Act
-        var token = _sut.GenerateAccessToken("user123", "test@example.com");
+        var token = await _sut.GenerateAccessTokenAsync("user123", "test@example.com");
 
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
@@ -77,10 +77,10 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void GenerateAccessToken_ShouldIncludeEmailClaim()
+    public async Task GenerateAccessToken_ShouldIncludeEmailClaim()
     {
         // Act
-        var token = _sut.GenerateAccessToken("user123", "test@example.com");
+        var token = await _sut.GenerateAccessTokenAsync("user123", "test@example.com");
 
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
@@ -90,14 +90,14 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void GenerateAccessToken_ShouldSetCorrectExpiration()
+    public async Task GenerateAccessToken_ShouldSetCorrectExpiration()
     {
         // Arrange
         var now = new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.Zero);
         _dateTimeMock.Setup(x => x.UtcNow).Returns(now);
 
         // Act
-        var token = _sut.GenerateAccessToken("user123", "test@example.com");
+        var token = await _sut.GenerateAccessTokenAsync("user123", "test@example.com");
 
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
@@ -108,10 +108,10 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void GenerateAccessToken_ShouldSetCorrectIssuerAndAudience()
+    public async Task GenerateAccessToken_ShouldSetCorrectIssuerAndAudience()
     {
         // Act
-        var token = _sut.GenerateAccessToken("user123", "test@example.com");
+        var token = await _sut.GenerateAccessTokenAsync("user123", "test@example.com");
 
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
@@ -171,10 +171,10 @@ public class TokenServiceTests
     #region GenerateTokenPair Tests
 
     [Fact]
-    public void GenerateTokenPair_ShouldReturnBothTokens()
+    public async Task GenerateTokenPair_ShouldReturnBothTokens()
     {
         // Act
-        var pair = _sut.GenerateTokenPair("user123", "test@example.com");
+        var pair = await _sut.GenerateTokenPairAsync("user123", "test@example.com");
 
         // Assert
         pair.AccessToken.Should().NotBeNullOrEmpty();
@@ -182,14 +182,14 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void GenerateTokenPair_ShouldSetCorrectExpiration()
+    public async Task GenerateTokenPair_ShouldSetCorrectExpiration()
     {
         // Arrange
         var now = new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.Zero);
         _dateTimeMock.Setup(x => x.UtcNow).Returns(now);
 
         // Act
-        var pair = _sut.GenerateTokenPair("user123", "test@example.com");
+        var pair = await _sut.GenerateTokenPairAsync("user123", "test@example.com");
 
         // Assert
         pair.ExpiresAt.Should().BeCloseTo(
@@ -198,10 +198,10 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void GenerateTokenPair_WithTenantId_ShouldIncludeTenantInAccessToken()
+    public async Task GenerateTokenPair_WithTenantId_ShouldIncludeTenantInAccessToken()
     {
         // Act
-        var pair = _sut.GenerateTokenPair("user123", "test@example.com", "tenant-1");
+        var pair = await _sut.GenerateTokenPairAsync("user123", "test@example.com", "tenant-1");
 
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
@@ -302,10 +302,10 @@ public class TokenServiceTests
     #region GetPrincipalFromExpiredToken Tests
 
     [Fact]
-    public void GetPrincipalFromExpiredToken_WithValidToken_ShouldReturnPrincipal()
+    public async Task GetPrincipalFromExpiredToken_WithValidToken_ShouldReturnPrincipal()
     {
         // Arrange
-        var token = _sut.GenerateAccessToken("user123", "test@example.com");
+        var token = await _sut.GenerateAccessTokenAsync("user123", "test@example.com");
 
         // Act
         var principal = _sut.GetPrincipalFromExpiredToken(token);

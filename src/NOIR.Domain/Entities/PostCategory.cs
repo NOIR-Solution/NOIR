@@ -71,6 +71,7 @@ public class PostCategory : TenantAggregateRoot<Guid>
     /// <summary>
     /// Creates a new post category.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when required parameters are invalid.</exception>
     public static PostCategory Create(
         string name,
         string slug,
@@ -78,6 +79,9 @@ public class PostCategory : TenantAggregateRoot<Guid>
         Guid? parentId = null,
         string? tenantId = null)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(slug);
+
         return new PostCategory
         {
             Id = Guid.NewGuid(),

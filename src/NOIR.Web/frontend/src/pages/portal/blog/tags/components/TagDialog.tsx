@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Tag, Pencil } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -28,14 +29,15 @@ import { createTag, updateTag } from '@/services/blog'
 import { ApiError } from '@/services/apiClient'
 import type { PostTagListItem, CreateTagRequest } from '@/types'
 
-const formSchema = z.object({
-  name: z.string().min(2, 'Tag name must be at least 2 characters').max(50, 'Tag name cannot exceed 50 characters'),
-  slug: z.string().min(2, 'Slug must be at least 2 characters').max(50, 'Slug cannot exceed 50 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
-  description: z.string().max(500, 'Description cannot exceed 500 characters').optional(),
-  color: z.string().optional(),
-})
+const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    name: z.string().min(2, t('validation.minLength', { count: 2 })).max(50, t('validation.maxLength', { count: 50 })),
+    slug: z.string().min(2, t('validation.minLength', { count: 2 })).max(50, t('validation.maxLength', { count: 50 })).regex(/^[a-z0-9-]+$/, t('validation.identifierFormat')),
+    description: z.string().max(500, t('validation.maxLength', { count: 500 })).optional(),
+    color: z.string().optional(),
+  })
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<ReturnType<typeof createFormSchema>>
 
 interface TagDialogProps {
   open: boolean
@@ -45,11 +47,12 @@ interface TagDialogProps {
 }
 
 export function TagDialog({ open, onOpenChange, tag, onSuccess }: TagDialogProps) {
+  const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const isEdit = !!tag
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
+    resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
     defaultValues: {
       name: '',

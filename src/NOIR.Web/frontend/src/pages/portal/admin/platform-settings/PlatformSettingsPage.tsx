@@ -60,23 +60,25 @@ import { getEmailTemplates, type EmailTemplateListDto } from '@/services/emailTe
 import { getLegalPages, type LegalPageListDto } from '@/services/legalPages'
 
 // ============================================================================
-// SMTP Form Schema
+// SMTP Form Schema Factories
 // ============================================================================
-const smtpSettingsSchema = z.object({
-  host: z.string().min(1, 'SMTP host is required'),
-  port: z.coerce.number().int().min(1).max(65535),
-  username: z.string().optional().nullable(),
-  password: z.string().optional().nullable(),
-  fromEmail: z.string().email('Invalid email address'),
-  fromName: z.string().min(1, 'From name is required'),
-  useSsl: z.boolean(),
-})
+const createSmtpSettingsSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    host: z.string().min(1, t('validation.required')),
+    port: z.coerce.number().int().min(1).max(65535),
+    username: z.string().optional().nullable(),
+    password: z.string().optional().nullable(),
+    fromEmail: z.string().email(t('validation.invalidEmail')),
+    fromName: z.string().min(1, t('validation.required')),
+    useSsl: z.boolean(),
+  })
 
-type SmtpSettingsFormData = z.infer<typeof smtpSettingsSchema>
+type SmtpSettingsFormData = z.infer<ReturnType<typeof createSmtpSettingsSchema>>
 
-const testEmailSchema = z.object({
-  recipientEmail: z.string().email('Invalid email address'),
-})
+const createTestEmailSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    recipientEmail: z.string().email(t('validation.invalidEmail')),
+  })
 
 type TestEmailFormData = z.infer<typeof testEmailSchema>
 
@@ -146,7 +148,7 @@ function SmtpSettingsTab() {
   const [hasPassword, setHasPassword] = useState(false)
 
   const form = useForm<SmtpSettingsFormData>({
-    resolver: zodResolver(smtpSettingsSchema),
+    resolver: zodResolver(createSmtpSettingsSchema(t)),
     defaultValues: {
       host: '',
       port: 587,
@@ -160,7 +162,7 @@ function SmtpSettingsTab() {
   })
 
   const testForm = useForm<TestEmailFormData>({
-    resolver: zodResolver(testEmailSchema),
+    resolver: zodResolver(createTestEmailSchema(t)),
     mode: 'onBlur',
     defaultValues: {
       recipientEmail: '',

@@ -952,7 +952,7 @@ export function MobileSidebarTrigger({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="lg:hidden h-10 w-10">
+        <Button variant="outline" size="icon" className="lg:hidden h-10 w-10" aria-label={t('nav.openMenu')}>
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>

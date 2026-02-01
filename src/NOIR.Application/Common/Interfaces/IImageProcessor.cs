@@ -78,8 +78,9 @@ public interface IImageProcessor
     /// </summary>
     /// <param name="inputStream">The input stream to validate.</param>
     /// <param name="fileName">The filename to check extension.</param>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>True if valid image format.</returns>
-    Task<bool> IsValidImageAsync(Stream inputStream, string fileName);
+    Task<bool> IsValidImageAsync(Stream inputStream, string fileName, CancellationToken ct = default);
 }
 
 /// <summary>

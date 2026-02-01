@@ -57,6 +57,9 @@ public sealed record ProvisionTenantCommand(
     string? AdminLastName = null
 ) : IAuditableCommand
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Create;
     public object? GetTargetId() => Identifier;
     public string? GetTargetDisplayName() => Name;

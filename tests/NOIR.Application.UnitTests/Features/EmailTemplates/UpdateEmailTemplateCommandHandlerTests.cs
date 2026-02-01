@@ -21,6 +21,7 @@ public class UpdateEmailTemplateCommandHandlerTests
     private readonly Mock<IRepository<EmailTemplate, Guid>> _repositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<ICacheInvalidationService> _cacheInvalidationMock;
     private readonly UpdateEmailTemplateCommandHandler _handler;
 
     public UpdateEmailTemplateCommandHandlerTests()
@@ -29,13 +30,15 @@ public class UpdateEmailTemplateCommandHandlerTests
         _repositoryMock = new Mock<IRepository<EmailTemplate, Guid>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _currentUserMock = new Mock<ICurrentUser>();
+        _cacheInvalidationMock = new Mock<ICacheInvalidationService>();
         _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
 
         _handler = new UpdateEmailTemplateCommandHandler(
             _dbContextMock.Object,
             _repositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _cacheInvalidationMock.Object);
     }
 
     private static EmailTemplate CreateTestEmailTemplate(

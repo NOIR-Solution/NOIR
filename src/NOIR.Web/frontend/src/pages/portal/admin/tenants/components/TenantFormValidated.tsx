@@ -23,65 +23,67 @@ import type { Tenant } from "@/types"
 import { z } from "zod"
 import { UserPlus } from "lucide-react"
 
-// Schema for provisioning a new tenant (create mode)
+// Schema factory for provisioning a new tenant (create mode)
 // Admin user is REQUIRED for all new tenants
-const provisionTenantSchema = z.object({
-  identifier: z
-    .string()
-    .min(1, { message: "This field is required" })
-    .min(2, { message: "Minimum 2 characters required" })
-    .max(64, { message: "Maximum 64 characters allowed" })
-    .regex(/^[a-z0-9-]+$/, { message: "Only lowercase letters, numbers, and hyphens allowed" }),
-  name: z
-    .string()
-    .min(1, { message: "This field is required" })
-    .min(2, { message: "Minimum 2 characters required" })
-    .max(256, { message: "Maximum 256 characters allowed" }),
-  description: z
-    .string()
-    .max(1024, { message: "Maximum 1024 characters allowed" })
-    .optional()
-    .or(z.literal("")),
-  note: z
-    .string()
-    .max(4096, { message: "Maximum 4096 characters allowed" })
-    .optional()
-    .or(z.literal("")),
-  // Admin user fields - always required for provisioning
-  adminEmail: z
-    .string()
-    .min(1, { message: "This field is required" })
-    .email({ message: "Invalid email address" }),
-  adminPassword: z
-    .string()
-    .min(1, { message: "This field is required" })
-    .min(6, { message: "Minimum 6 characters required" }),
-  adminFirstName: z
-    .string()
-    .max(64, { message: "Maximum 64 characters allowed" })
-    .optional()
-    .or(z.literal("")),
-  adminLastName: z
-    .string()
-    .max(64, { message: "Maximum 64 characters allowed" })
-    .optional()
-    .or(z.literal("")),
-})
+const createProvisionTenantSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    identifier: z
+      .string()
+      .min(1, { message: t('validation.required') })
+      .min(2, { message: t('validation.minLength', { count: 2 }) })
+      .max(64, { message: t('validation.maxLength', { count: 64 }) })
+      .regex(/^[a-z0-9-]+$/, { message: t('validation.identifierFormat') }),
+    name: z
+      .string()
+      .min(1, { message: t('validation.required') })
+      .min(2, { message: t('validation.minLength', { count: 2 }) })
+      .max(256, { message: t('validation.maxLength', { count: 256 }) }),
+    description: z
+      .string()
+      .max(1024, { message: t('validation.maxLength', { count: 1024 }) })
+      .optional()
+      .or(z.literal("")),
+    note: z
+      .string()
+      .max(4096, { message: t('validation.maxLength', { count: 4096 }) })
+      .optional()
+      .or(z.literal("")),
+    // Admin user fields - always required for provisioning
+    adminEmail: z
+      .string()
+      .min(1, { message: t('validation.required') })
+      .email({ message: t('validation.invalidEmail') }),
+    adminPassword: z
+      .string()
+      .min(1, { message: t('validation.required') })
+      .min(6, { message: t('validation.minLength', { count: 6 }) }),
+    adminFirstName: z
+      .string()
+      .max(64, { message: t('validation.maxLength', { count: 64 }) })
+      .optional()
+      .or(z.literal("")),
+    adminLastName: z
+      .string()
+      .max(64, { message: t('validation.maxLength', { count: 64 }) })
+      .optional()
+      .or(z.literal("")),
+  })
 
-// Extended schema for update form (includes fields not validated on server)
-const updateTenantFormSchema = updateTenantSchema.extend({
-  description: z
-    .string()
-    .max(1024, { message: "Maximum 1024 characters allowed" })
-    .optional()
-    .or(z.literal("")),
-  note: z
-    .string()
-    .max(4096, { message: "Maximum 4096 characters allowed" })
-    .optional()
-    .or(z.literal("")),
-  isActive: z.boolean().optional(),
-})
+// Extended schema factory for update form (includes fields not validated on server)
+const createUpdateTenantFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  updateTenantSchema.extend({
+    description: z
+      .string()
+      .max(1024, { message: t('validation.maxLength', { count: 1024 }) })
+      .optional()
+      .or(z.literal("")),
+    note: z
+      .string()
+      .max(4096, { message: t('validation.maxLength', { count: 4096 }) })
+      .optional()
+      .or(z.literal("")),
+    isActive: z.boolean().optional(),
+  })
 
 export type ProvisionTenantFormData = z.infer<typeof provisionTenantSchema>
 export type UpdateTenantFormData = z.infer<typeof updateTenantFormSchema>
@@ -100,7 +102,7 @@ export function TenantFormValidated({ tenant, onSubmit, onCancel }: TenantFormVa
   const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<
     ProvisionTenantFormData | UpdateTenantFormData
   >({
-    schema: isEditing ? updateTenantFormSchema : provisionTenantSchema,
+    schema: isEditing ? createUpdateTenantFormSchema(t) : createProvisionTenantSchema(t),
     defaultValues: isEditing
       ? {
           tenantId: tenant.id,

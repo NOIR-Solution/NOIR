@@ -178,8 +178,18 @@ public class PermissionTemplate : PlatformTenantEntity<Guid>
 /// <summary>
 /// Join entity for Permission Template - Permission many-to-many relationship.
 /// </summary>
-public class PermissionTemplateItem : Entity<Guid>
+public class PermissionTemplateItem : Entity<Guid>, IAuditableEntity
 {
+    #region IAuditableEntity Implementation
+
+    public string? CreatedBy { get; protected set; }
+    public string? ModifiedBy { get; protected set; }
+    public bool IsDeleted { get; protected set; }
+    public DateTimeOffset? DeletedAt { get; protected set; }
+    public string? DeletedBy { get; protected set; }
+
+    #endregion
+
     public Guid TemplateId { get; private set; }
     public Guid PermissionId { get; private set; }
 
@@ -190,6 +200,11 @@ public class PermissionTemplateItem : Entity<Guid>
 
     public static PermissionTemplateItem Create(Guid templateId, Guid permissionId)
     {
+        if (templateId == Guid.Empty)
+            throw new ArgumentException("TemplateId cannot be empty.", nameof(templateId));
+        if (permissionId == Guid.Empty)
+            throw new ArgumentException("PermissionId cannot be empty.", nameof(permissionId));
+
         return new PermissionTemplateItem
         {
             Id = Guid.NewGuid(),

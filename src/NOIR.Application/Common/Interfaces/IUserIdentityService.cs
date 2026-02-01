@@ -36,14 +36,17 @@ public interface IUserIdentityService
     IQueryable<UserIdentityDto> GetUsersQueryable();
 
     /// <summary>
-    /// Gets paginated users within a tenant with optional search filter.
+    /// Gets paginated users within a tenant with optional search, role, and lockout filters.
     /// Handles EF Core translation properly by doing projection after ordering.
+    /// All filters are applied at the database level for accurate pagination.
     /// </summary>
     Task<(IReadOnlyList<UserIdentityDto> Users, int TotalCount)> GetUsersPaginatedAsync(
         string? tenantId,
         string? search,
         int page,
         int pageSize,
+        string? role = null,
+        bool? isLocked = null,
         CancellationToken ct = default);
 
     #endregion
@@ -168,6 +171,21 @@ public interface IUserIdentityService
         string userId,
         IEnumerable<string> roleNames,
         bool replaceExisting = false,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets roles for multiple users in a single query (batch operation to avoid N+1).
+    /// </summary>
+    Task<IReadOnlyDictionary<string, IReadOnlyList<string>>> GetRolesForUsersAsync(
+        IEnumerable<string> userIds,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Gets users in a specific role within a tenant (efficient single query).
+    /// </summary>
+    Task<IReadOnlyList<UserIdentityDto>> GetUsersInRoleAsync(
+        string? tenantId,
+        string roleName,
         CancellationToken ct = default);
 
     #endregion

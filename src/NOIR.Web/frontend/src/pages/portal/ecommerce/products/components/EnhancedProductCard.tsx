@@ -51,7 +51,6 @@ export function EnhancedProductCard({
   const StatusIcon = status.icon
 
   const isLowStock = product.totalStock > 0 && product.totalStock < LOW_STOCK_THRESHOLD
-  const hasDiscount = !!product.discountPercentage && product.discountPercentage > 0
 
   return (
     <motion.div
@@ -107,13 +106,6 @@ export function EnhancedProductCard({
             <StatusIcon className="h-3 w-3" />
             {status.label}
           </Badge>
-
-          {/* Discount Badge (if applicable) */}
-          {hasDiscount && product.discountPercentage && (
-            <Badge className="absolute left-3 top-14 bg-green-500 text-white border-0 shadow-lg">
-              -{product.discountPercentage}%
-            </Badge>
-          )}
 
           {/* Low Stock Warning */}
           {isLowStock && (
@@ -248,14 +240,6 @@ export function EnhancedProductCard({
             <span className="text-2xl font-bold text-foreground">
               {formatCurrency(product.basePrice, product.currency)}
             </span>
-            {hasDiscount && product.discountPercentage && (
-              <span className="text-sm text-muted-foreground line-through">
-                {formatCurrency(
-                  product.basePrice / (1 - product.discountPercentage / 100),
-                  product.currency
-                )}
-              </span>
-            )}
           </div>
 
           {/* Attribute Badges */}

@@ -61,6 +61,7 @@ public class Product : TenantAggregateRoot<Guid>
     /// <summary>
     /// Factory method to create a new product.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when required parameters are invalid.</exception>
     public static Product Create(
         string name,
         string slug,
@@ -68,6 +69,12 @@ public class Product : TenantAggregateRoot<Guid>
         string currency = "VND",
         string? tenantId = null)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(slug);
+
+        if (basePrice < 0)
+            throw new ArgumentOutOfRangeException(nameof(basePrice), "Base price cannot be negative.");
+
         var product = new Product(Guid.NewGuid(), tenantId)
         {
             Name = name,

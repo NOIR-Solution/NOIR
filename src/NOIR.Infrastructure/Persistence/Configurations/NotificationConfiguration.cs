@@ -79,9 +79,20 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
         builder.HasIndex(n => new { n.UserId, n.Category })
             .HasDatabaseName("IX_Notifications_UserId_Category");
 
-        // Index for digest job
-        builder.HasIndex(n => new { n.UserId, n.IncludedInDigest, n.CreatedAt })
+        // Filtered index for unread notifications (TenantId leading for Finbuckle)
+        builder.HasIndex(n => new { n.TenantId, n.UserId, n.CreatedAt })
+            .HasFilter("[IsRead] = 0")
+            .HasDatabaseName("IX_Notifications_Unread");
+
+        // Filtered index for pending digest (TenantId leading for Finbuckle)
+        builder.HasIndex(n => new { n.TenantId, n.UserId, n.CreatedAt })
+            .HasFilter("[IncludedInDigest] = 0")
             .HasDatabaseName("IX_Notifications_PendingDigest");
+
+        // Filtered index for unsent email notifications (TenantId leading for Finbuckle)
+        builder.HasIndex(n => new { n.TenantId, n.UserId, n.CreatedAt })
+            .HasFilter("[EmailSent] = 0")
+            .HasDatabaseName("IX_Notifications_UnsentEmail");
 
         // Tenant ID
         builder.Property(n => n.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);

@@ -8,15 +8,18 @@ public class TenantSettingsService : ITenantSettingsService, IScopedService
 {
     private readonly ApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IFusionCache _cache;
     private readonly ILogger<TenantSettingsService> _logger;
 
     public TenantSettingsService(
         ApplicationDbContext context,
         IUnitOfWork unitOfWork,
+        IFusionCache cache,
         ILogger<TenantSettingsService> logger)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _cache = cache;
         _logger = logger;
     }
 
@@ -120,6 +123,9 @@ public class TenantSettingsService : ITenantSettingsService, IScopedService
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        // Invalidate related caches when SMTP settings change
+        await InvalidateSettingsCacheAsync(tenantId, key, cancellationToken);
+
         _logger.LogInformation(
             "Set tenant setting {Key} for tenant {TenantId}",
             key,
@@ -145,6 +151,9 @@ public class TenantSettingsService : ITenantSettingsService, IScopedService
 
         _context.TenantSettings.Remove(existing);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Invalidate related caches when SMTP settings are deleted
+        await InvalidateSettingsCacheAsync(tenantId, key, cancellationToken);
 
         _logger.LogInformation(
             "Deleted tenant setting {Key} for tenant {TenantId}",
@@ -176,5 +185,22 @@ public class TenantSettingsService : ITenantSettingsService, IScopedService
         return await SpecificationEvaluator
             .GetQuery(_context.TenantSettings, spec)
             .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Invalidates related caches when settings change.
+    /// This ensures EmailService picks up SMTP changes immediately.
+    /// </summary>
+    private async Task InvalidateSettingsCacheAsync(string? tenantId, string key, CancellationToken cancellationToken)
+    {
+        var tenantKey = tenantId ?? "platform";
+
+        // Invalidate SMTP settings cache when any smtp: key changes
+        if (key.StartsWith("smtp:", StringComparison.OrdinalIgnoreCase))
+        {
+            var smtpCacheKey = CacheKeys.SmtpSettings(tenantId);
+            await _cache.RemoveAsync(smtpCacheKey, token: cancellationToken);
+            _logger.LogDebug("Invalidated SMTP settings cache for tenant {TenantId}", tenantKey);
+        }
     }
 }

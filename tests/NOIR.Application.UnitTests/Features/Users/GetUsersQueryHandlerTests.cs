@@ -67,6 +67,25 @@ public class GetUsersQueryHandlerTests
         return users;
     }
 
+    /// <summary>
+    /// Helper to setup batch roles mock (used after N+1 fix)
+    /// </summary>
+    private void SetupBatchRolesMock(Dictionary<string, IReadOnlyList<string>> userRoles)
+    {
+        IReadOnlyDictionary<string, IReadOnlyList<string>> result = userRoles;
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesForUsersAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(result);
+    }
+
+    private void SetupBatchRolesMockEmpty()
+    {
+        IReadOnlyDictionary<string, IReadOnlyList<string>> result = new Dictionary<string, IReadOnlyList<string>>();
+        _userIdentityServiceMock
+            .Setup(x => x.GetRolesForUsersAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(result);
+    }
+
     #endregion
 
     #region Success Scenarios
@@ -76,25 +95,19 @@ public class GetUsersQueryHandlerTests
     {
         // Arrange
         var users = CreateTestUsers(5);
-        var userRoles = new Dictionary<string, List<string>>
+
+        _userIdentityServiceMock
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((users, users.Count));
+
+        SetupBatchRolesMock(new Dictionary<string, IReadOnlyList<string>>
         {
             { "user-1", new List<string> { "Admin" } },
             { "user-2", new List<string> { "User" } },
             { "user-3", new List<string> { "Admin", "User" } },
             { "user-4", new List<string>() },
             { "user-5", new List<string> { "Manager" } }
-        };
-
-        _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((users, users.Count));
-
-        foreach (var user in users)
-        {
-            _userIdentityServiceMock
-                .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(userRoles[user.Id]);
-        }
+        });
 
         var query = new GetUsersQuery();
 
@@ -119,12 +132,13 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, searchTerm, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, searchTerm, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-1", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string> { "User" });
+        SetupBatchRolesMock(new Dictionary<string, IReadOnlyList<string>>
+        {
+            { "user-1", new List<string> { "User" } }
+        });
 
         var query = new GetUsersQuery(Search: searchTerm);
 
@@ -135,31 +149,29 @@ public class GetUsersQueryHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Items.Should().HaveCount(1);
         _userIdentityServiceMock.Verify(
-            x => x.GetUsersPaginatedAsync(TestTenantId, searchTerm, 1, 20, It.IsAny<CancellationToken>()),
+            x => x.GetUsersPaginatedAsync(TestTenantId, searchTerm, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WithRoleFilter_ShouldFilterByRole()
+    public async Task Handle_WithRoleFilter_ShouldPassRoleFilterToService()
     {
-        // Arrange
-        var users = CreateTestUsers(3);
+        // Arrange - Service returns pre-filtered users (filtering happens at service level)
+        var adminUsers = new List<UserIdentityDto>
+        {
+            CreateTestUserDto("user-1", "admin1@example.com"),
+            CreateTestUserDto("user-3", "admin2@example.com")
+        };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((users, users.Count));
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, "Admin", It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((adminUsers, adminUsers.Count));
 
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-1", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string> { "Admin" });
-
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-2", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string> { "User" });
-
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-3", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string> { "Admin", "User" });
+        SetupBatchRolesMock(new Dictionary<string, IReadOnlyList<string>>
+        {
+            { "user-1", new List<string> { "Admin" } },
+            { "user-3", new List<string> { "Admin", "User" } }
+        });
 
         var query = new GetUsersQuery(Role: "Admin");
 
@@ -168,32 +180,29 @@ public class GetUsersQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        // Only users with Admin role should be included
         result.Value.Items.Should().HaveCount(2);
         result.Value.Items.All(u => u.Roles.Contains("Admin")).Should().BeTrue();
+
+        // Verify role filter was passed to service
+        _userIdentityServiceMock.Verify(
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, "Admin", It.IsAny<bool?>(), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WithIsLockedFilter_ShouldFilterByLockStatus()
+    public async Task Handle_WithIsLockedFilter_ShouldPassIsLockedFilterToService()
     {
-        // Arrange
-        var users = new List<UserIdentityDto>
+        // Arrange - Service returns pre-filtered locked users (filtering at service level)
+        var lockedUsers = new List<UserIdentityDto>
         {
-            CreateTestUserDto("user-1", "active@example.com", isActive: true),
-            CreateTestUserDto("user-2", "locked@example.com", isActive: false),
-            CreateTestUserDto("user-3", "another-active@example.com", isActive: true)
+            CreateTestUserDto("user-2", "locked@example.com", isActive: false)
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((users, users.Count));
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), true, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((lockedUsers, lockedUsers.Count));
 
-        foreach (var user in users)
-        {
-            _userIdentityServiceMock
-                .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<string>());
-        }
+        SetupBatchRolesMockEmpty();
 
         var query = new GetUsersQuery(IsLocked: true);
 
@@ -202,32 +211,30 @@ public class GetUsersQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        // Only locked users (IsActive = false means IsLocked = true)
         result.Value.Items.Should().HaveCount(1);
         result.Value.Items.Should().OnlyContain(u => u.IsLocked);
+
+        // Verify isLocked filter was passed to service
+        _userIdentityServiceMock.Verify(
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), true, It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WithIsLockedFalseFilter_ShouldReturnActiveUsers()
+    public async Task Handle_WithIsLockedFalseFilter_ShouldPassIsLockedFalseToService()
     {
-        // Arrange
-        var users = new List<UserIdentityDto>
+        // Arrange - Service returns pre-filtered active users (filtering at service level)
+        var activeUsers = new List<UserIdentityDto>
         {
             CreateTestUserDto("user-1", "active@example.com", isActive: true),
-            CreateTestUserDto("user-2", "locked@example.com", isActive: false),
             CreateTestUserDto("user-3", "another-active@example.com", isActive: true)
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((users, users.Count));
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), false, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((activeUsers, activeUsers.Count));
 
-        foreach (var user in users)
-        {
-            _userIdentityServiceMock
-                .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<string>());
-        }
+        SetupBatchRolesMockEmpty();
 
         var query = new GetUsersQuery(IsLocked: false);
 
@@ -236,9 +243,13 @@ public class GetUsersQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        // Only active users (IsLocked = false)
         result.Value.Items.Should().HaveCount(2);
         result.Value.Items.Should().OnlyContain(u => !u.IsLocked);
+
+        // Verify isLocked=false filter was passed to service
+        _userIdentityServiceMock.Verify(
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), false, It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     #endregion
@@ -253,15 +264,10 @@ public class GetUsersQueryHandlerTests
         var users = CreateTestUsers(10);
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, pageSize, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, pageSize, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 25)); // Total count is 25
 
-        foreach (var user in users)
-        {
-            _userIdentityServiceMock
-                .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<string>());
-        }
+        SetupBatchRolesMockEmpty();
 
         var query = new GetUsersQuery(PageSize: pageSize);
 
@@ -284,15 +290,10 @@ public class GetUsersQueryHandlerTests
         var users = CreateTestUsers(5);
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, page, pageSize, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, page, pageSize, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 15)); // Total count is 15
 
-        foreach (var user in users)
-        {
-            _userIdentityServiceMock
-                .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<string>());
-        }
+        SetupBatchRolesMockEmpty();
 
         var query = new GetUsersQuery(Page: page, PageSize: pageSize);
 
@@ -303,7 +304,7 @@ public class GetUsersQueryHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.PageNumber.Should().Be(2);
         _userIdentityServiceMock.Verify(
-            x => x.GetUsersPaginatedAsync(TestTenantId, null, page, pageSize, It.IsAny<CancellationToken>()),
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, page, pageSize, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -312,7 +313,7 @@ public class GetUsersQueryHandlerTests
     {
         // Arrange
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, It.IsAny<string?>(), 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, It.IsAny<string?>(), 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((new List<UserIdentityDto>(), 0));
 
         var query = new GetUsersQuery(Search: "nonexistent");
@@ -332,33 +333,22 @@ public class GetUsersQueryHandlerTests
     #region Combined Filters Scenarios
 
     [Fact]
-    public async Task Handle_WithRoleAndIsLockedFilter_ShouldApplyBothFilters()
+    public async Task Handle_WithRoleAndIsLockedFilter_ShouldPassBothFiltersToService()
     {
-        // Arrange
-        var users = new List<UserIdentityDto>
+        // Arrange - Service returns pre-filtered user matching both criteria (filtering at service level)
+        var filteredUser = new List<UserIdentityDto>
         {
-            CreateTestUserDto("user-1", "admin-active@example.com", isActive: true),
-            CreateTestUserDto("user-2", "admin-locked@example.com", isActive: false),
-            CreateTestUserDto("user-3", "user-active@example.com", isActive: true),
-            CreateTestUserDto("user-4", "user-locked@example.com", isActive: false)
+            CreateTestUserDto("user-2", "admin-locked@example.com", isActive: false)
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((users, users.Count));
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, "Admin", true, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((filteredUser, filteredUser.Count));
 
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-1", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string> { "Admin" });
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-2", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string> { "Admin" });
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-3", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string> { "User" });
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-4", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string> { "User" });
+        SetupBatchRolesMock(new Dictionary<string, IReadOnlyList<string>>
+        {
+            { "user-2", new List<string> { "Admin" } }
+        });
 
         // Filter: Admin role AND locked
         var query = new GetUsersQuery(Role: "Admin", IsLocked: true);
@@ -368,9 +358,13 @@ public class GetUsersQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        // Only user-2 matches both criteria (Admin AND locked)
         result.Value.Items.Should().HaveCount(1);
         result.Value.Items[0].Id.Should().Be("user-2");
+
+        // Verify both filters were passed to service
+        _userIdentityServiceMock.Verify(
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, "Admin", true, It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -383,12 +377,13 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 1));
 
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-1", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string> { "Admin" }); // Capitalized
+        SetupBatchRolesMock(new Dictionary<string, IReadOnlyList<string>>
+        {
+            { "user-1", new List<string> { "Admin" } } // Capitalized
+        });
 
         // Query with lowercase role
         var query = new GetUsersQuery(Role: "admin");
@@ -416,15 +411,10 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
-        foreach (var user in users)
-        {
-            _userIdentityServiceMock
-                .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<string>());
-        }
+        SetupBatchRolesMockEmpty();
 
         var query = new GetUsersQuery();
 
@@ -448,15 +438,10 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
-        foreach (var user in users)
-        {
-            _userIdentityServiceMock
-                .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<string>());
-        }
+        SetupBatchRolesMockEmpty();
 
         var query = new GetUsersQuery();
 
@@ -480,15 +465,10 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, users.Count));
 
-        foreach (var user in users)
-        {
-            _userIdentityServiceMock
-                .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<string>());
-        }
+        SetupBatchRolesMockEmpty();
 
         var query = new GetUsersQuery();
 
@@ -516,12 +496,10 @@ public class GetUsersQueryHandlerTests
         };
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 1));
 
-        _userIdentityServiceMock
-            .Setup(x => x.GetRolesAsync("user-1", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<string>());
+        SetupBatchRolesMockEmpty();
 
         var query = new GetUsersQuery();
         var cts = new CancellationTokenSource();
@@ -532,10 +510,10 @@ public class GetUsersQueryHandlerTests
 
         // Assert
         _userIdentityServiceMock.Verify(
-            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, token),
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), token),
             Times.Once);
         _userIdentityServiceMock.Verify(
-            x => x.GetRolesAsync("user-1", token),
+            x => x.GetRolesForUsersAsync(It.IsAny<IEnumerable<string>>(), token),
             Times.Once);
     }
 
@@ -544,7 +522,7 @@ public class GetUsersQueryHandlerTests
     {
         // Arrange
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((new List<UserIdentityDto>(), 0));
 
         var query = new GetUsersQuery(); // Using all defaults
@@ -554,38 +532,44 @@ public class GetUsersQueryHandlerTests
 
         // Assert
         _userIdentityServiceMock.Verify(
-            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()),
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
     [Fact]
-    public async Task Handle_FilteringReducesItemsButTotalCountFromService_ShouldReflectOriginalCount()
+    public async Task Handle_WithFilterAndPagination_ShouldReturnCorrectTotalCountFromService()
     {
-        // Arrange
-        var users = CreateTestUsers(10);
+        // Arrange - Service handles filtering and returns accurate total count
+        var filteredUsers = CreateTestUsers(5); // 5 users on current page matching filter
 
         _userIdentityServiceMock
-            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((users, 50)); // Service returns total of 50, but only 10 on this page
+            .Setup(x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, "Admin", It.IsAny<bool?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((filteredUsers, 12)); // 12 total admins across all pages
 
-        foreach (var user in users)
+        SetupBatchRolesMock(new Dictionary<string, IReadOnlyList<string>>
         {
-            _userIdentityServiceMock
-                .Setup(x => x.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<string>()); // No roles - will be filtered out by role filter
-        }
+            { "user-1", new List<string> { "Admin" } },
+            { "user-2", new List<string> { "Admin" } },
+            { "user-3", new List<string> { "Admin" } },
+            { "user-4", new List<string> { "Admin" } },
+            { "user-5", new List<string> { "Admin" } }
+        });
 
-        var query = new GetUsersQuery(Role: "Admin"); // Filter by Admin role
+        var query = new GetUsersQuery(Role: "Admin");
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        // Items filtered down (no one has Admin role)
-        result.Value.Items.Should().BeEmpty();
-        // But TotalCount reflects the original service count (this is a known behavior)
-        result.Value.TotalCount.Should().Be(50);
+        result.Value.Items.Should().HaveCount(5);
+        // TotalCount reflects the filtered count from service (not post-filter)
+        result.Value.TotalCount.Should().Be(12);
+
+        // Verify the role filter was passed to service
+        _userIdentityServiceMock.Verify(
+            x => x.GetUsersPaginatedAsync(TestTenantId, null, 1, 20, "Admin", It.IsAny<bool?>(), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     #endregion

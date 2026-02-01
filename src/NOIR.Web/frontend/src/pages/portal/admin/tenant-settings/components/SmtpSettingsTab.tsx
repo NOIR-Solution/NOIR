@@ -44,23 +44,25 @@ import {
 } from '@/services/tenantSettings'
 
 // ============================================================================
-// Form Schemas
+// Form Schema Factories
 // ============================================================================
-const tenantSmtpSettingsSchema = z.object({
-  host: z.string().min(1, 'SMTP host is required'),
-  port: z.coerce.number().int().min(1).max(65535),
-  username: z.string().optional().nullable(),
-  password: z.string().optional().nullable(),
-  fromEmail: z.string().email('Invalid email address'),
-  fromName: z.string().min(1, 'From name is required'),
-  useSsl: z.boolean(),
-})
+const createTenantSmtpSettingsSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    host: z.string().min(1, t('validation.required')),
+    port: z.coerce.number().int().min(1).max(65535),
+    username: z.string().optional().nullable(),
+    password: z.string().optional().nullable(),
+    fromEmail: z.string().email(t('validation.invalidEmail')),
+    fromName: z.string().min(1, t('validation.required')),
+    useSsl: z.boolean(),
+  })
 
-type TenantSmtpFormData = z.infer<typeof tenantSmtpSettingsSchema>
+type TenantSmtpFormData = z.infer<ReturnType<typeof createTenantSmtpSettingsSchema>>
 
-const testEmailSchema = z.object({
-  recipientEmail: z.string().email('Invalid email address'),
-})
+const createTestEmailSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    recipientEmail: z.string().email(t('validation.invalidEmail')),
+  })
 
 type TestEmailFormData = z.infer<typeof testEmailSchema>
 
@@ -81,7 +83,7 @@ export function SmtpSettingsTab({ canEdit }: SmtpSettingsTabProps) {
   const [reverting, setReverting] = useState(false)
 
   const form = useForm<TenantSmtpFormData>({
-    resolver: zodResolver(tenantSmtpSettingsSchema),
+    resolver: zodResolver(createTenantSmtpSettingsSchema(t)),
     defaultValues: {
       host: '',
       port: 587,
@@ -95,7 +97,7 @@ export function SmtpSettingsTab({ canEdit }: SmtpSettingsTabProps) {
   })
 
   const testForm = useForm<TestEmailFormData>({
-    resolver: zodResolver(testEmailSchema),
+    resolver: zodResolver(createTestEmailSchema(t)),
     mode: 'onBlur',
     defaultValues: {
       recipientEmail: '',

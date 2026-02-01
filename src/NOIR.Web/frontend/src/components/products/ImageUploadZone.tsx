@@ -173,6 +173,7 @@ export function ImageUploadZone({
                     size="icon"
                     className="h-8 w-8 cursor-pointer"
                     onClick={() => removeUpload(upload.file)}
+                    aria-label={t('buttons.removeUpload')}
                   >
                     <X className="h-4 w-4" />
                   </Button>

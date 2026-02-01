@@ -18,10 +18,10 @@ public class EmailTemplateConfiguration : IEntityTypeConfiguration<EmailTemplate
             .HasMaxLength(100)
             .IsRequired();
 
-        // Unique constraint on Name + TenantId (one template per tenant)
-        builder.HasIndex(e => new { e.Name, e.TenantId })
+        // Unique constraint on TenantId + Name (one template per tenant, TenantId first for Finbuckle filtering)
+        builder.HasIndex(e => new { e.TenantId, e.Name })
             .IsUnique()
-            .HasDatabaseName("IX_EmailTemplates_Name_TenantId");
+            .HasDatabaseName("IX_EmailTemplates_TenantId_Name");
 
         // Subject
         builder.Property(e => e.Subject)

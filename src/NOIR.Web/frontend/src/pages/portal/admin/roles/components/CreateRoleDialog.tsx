@@ -39,13 +39,14 @@ import { ApiError } from '@/services/apiClient'
 import type { RoleListItem } from '@/types'
 import { useEffect } from 'react'
 
-const formSchema = z.object({
-  name: z.string().min(2, 'Role name must be at least 2 characters').max(50, 'Role name cannot exceed 50 characters'),
-  description: z.string().max(500, 'Description cannot exceed 500 characters').optional(),
-  parentRoleId: z.string().optional(),
-  color: z.string().optional(),
-  iconName: z.string().optional(),
-})
+const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    name: z.string().min(2, t('validation.minLength', { count: 2 })).max(50, t('validation.maxLength', { count: 50 })),
+    description: z.string().max(500, t('validation.maxLength', { count: 500 })).optional(),
+    parentRoleId: z.string().optional(),
+    color: z.string().optional(),
+    iconName: z.string().optional(),
+  })
 
 type FormValues = z.infer<typeof formSchema>
 
@@ -60,7 +61,7 @@ export function CreateRoleDialog({ onSuccess }: CreateRoleDialogProps) {
   const [existingRoles, setExistingRoles] = useState<RoleListItem[]>([])
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(createFormSchema(t)),
     mode: 'onBlur',
     defaultValues: {
       name: '',

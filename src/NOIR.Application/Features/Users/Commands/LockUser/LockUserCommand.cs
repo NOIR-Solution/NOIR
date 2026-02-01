@@ -4,10 +4,13 @@ namespace NOIR.Application.Features.Users.Commands.LockUser;
 /// Command to lock or unlock a user account.
 /// When locked, the user cannot sign in.
 /// </summary>
-public sealed record LockUserCommand(string UserId, bool Lock, string? UserEmail = null) : IAuditableCommand
+public sealed record LockUserCommand(string TargetUserId, bool Lock, string? UserEmail = null) : IAuditableCommand
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Update;
-    public object? GetTargetId() => UserId;
+    public object? GetTargetId() => TargetUserId;
     public string? GetTargetDisplayName() => UserEmail;
     public string? GetActionDescription() => Lock
         ? (UserEmail != null ? $"Locked user '{UserEmail}'" : "Locked user")

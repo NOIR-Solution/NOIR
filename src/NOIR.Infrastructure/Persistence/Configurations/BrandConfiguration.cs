@@ -60,12 +60,15 @@ public class BrandConfiguration : IEntityTypeConfiguration<Brand>
         builder.Property(e => e.ProductCount)
             .HasDefaultValue(0);
 
-        // Indexes for filtering
-        builder.HasIndex(e => new { e.TenantId, e.IsActive })
-            .HasDatabaseName("IX_Brands_TenantId_IsActive");
+        // Filtered index for active brands (sparse false values - inactive rare)
+        builder.HasIndex(e => new { e.TenantId, e.SortOrder })
+            .HasFilter("[IsActive] = 1")
+            .HasDatabaseName("IX_Brands_TenantId_Active");
 
-        builder.HasIndex(e => new { e.TenantId, e.IsFeatured })
-            .HasDatabaseName("IX_Brands_TenantId_IsFeatured");
+        // Filtered index for featured brands (sparse true values - few featured)
+        builder.HasIndex(e => new { e.TenantId, e.SortOrder })
+            .HasFilter("[IsFeatured] = 1")
+            .HasDatabaseName("IX_Brands_TenantId_Featured");
 
         builder.HasIndex(e => new { e.TenantId, e.SortOrder, e.Name })
             .HasDatabaseName("IX_Brands_TenantId_SortOrder_Name");

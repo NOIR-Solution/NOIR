@@ -13,6 +13,9 @@ public sealed record CreateRoleCommand(
     string? Color = null,
     IReadOnlyList<string>? Permissions = null) : IAuditableCommand
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Create;
     public object? GetTargetId() => Name;
     public string? GetTargetDisplayName() => Name;

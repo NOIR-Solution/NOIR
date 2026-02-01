@@ -13,6 +13,7 @@ public class EmailServiceTests
     private readonly Mock<IOptionsMonitor<EmailSettings>> _emailSettingsMock;
     private readonly Mock<ITenantSettingsService> _tenantSettingsMock;
     private readonly Mock<IMultiTenantContextAccessor<Tenant>> _tenantContextAccessorMock;
+    private readonly IFusionCache _cache;
     private readonly Mock<ILogger<EmailService>> _loggerMock;
 
     public EmailServiceTests()
@@ -26,6 +27,8 @@ public class EmailServiceTests
         _tenantSettingsMock.Setup(x => x.GetSettingsAsync(It.IsAny<string?>(), "smtp:", It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<string, string>().AsReadOnly());
         _tenantContextAccessorMock = new Mock<IMultiTenantContextAccessor<Tenant>>();
+        // Use real FusionCache for tests - lightweight in-memory cache with no external dependencies
+        _cache = new FusionCache(new FusionCacheOptions { DefaultEntryOptions = new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(1) } });
         _loggerMock = new Mock<ILogger<EmailService>>();
     }
 
@@ -47,6 +50,7 @@ public class EmailServiceTests
             _emailSettingsMock.Object,
             _tenantSettingsMock.Object,
             _tenantContextAccessorMock.Object,
+            _cache,
             _loggerMock.Object);
     }
 

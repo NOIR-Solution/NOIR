@@ -108,7 +108,7 @@ public class CreatePaymentCommandHandler
         if (gatewayProvider == null)
         {
             return Result.Failure<PaymentTransactionDto>(
-                Error.Failure($"Payment provider '{command.Provider}' is not configured.", ErrorCodes.Payment.ProviderNotConfigured));
+                Error.Failure(ErrorCodes.Payment.ProviderNotConfigured, $"Payment provider '{command.Provider}' is not configured."));
         }
 
         var initiationRequest = new PaymentInitiationRequest(
@@ -149,7 +149,7 @@ public class CreatePaymentCommandHandler
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return Result.Failure<PaymentTransactionDto>(
-                    Error.Failure(initiationResult.ErrorMessage ?? "Payment initiation failed", ErrorCodes.Payment.InitiationFailed));
+                    Error.Failure(ErrorCodes.Payment.InitiationFailed, initiationResult.ErrorMessage ?? "Payment initiation failed"));
             }
 
             await _operationLogger.CompleteSuccessAsync(operationLogId, initiationResult, cancellationToken: cancellationToken);

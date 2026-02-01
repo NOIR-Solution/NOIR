@@ -11,17 +11,20 @@ public class RevertToPlatformDefaultCommandHandler
     private readonly IRepository<EmailTemplate, Guid> _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly ICacheInvalidationService _cacheInvalidation;
 
     public RevertToPlatformDefaultCommandHandler(
         IApplicationDbContext dbContext,
         IRepository<EmailTemplate, Guid> repository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        ICacheInvalidationService cacheInvalidation)
     {
         _dbContext = dbContext;
         _repository = repository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _cacheInvalidation = cacheInvalidation;
     }
 
     public async Task<Result<EmailTemplateDto>> Handle(
@@ -77,6 +80,10 @@ public class RevertToPlatformDefaultCommandHandler
         _dbContext.Attach(tenantTemplate);
         _repository.Remove(tenantTemplate);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Invalidate tenant cache to force fallback to platform template
+        await _cacheInvalidation.InvalidateEmailTemplateCacheAsync(
+            tenantTemplate.Name, currentTenantId, cancellationToken);
 
         // Return the platform template as the result (now visible to tenant)
         var dto = new EmailTemplateDto(

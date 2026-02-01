@@ -32,7 +32,7 @@ public class DeleteUserCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.UserId)
+        result.ShouldHaveValidationErrorFor(x => x.TargetUserId)
             .WithErrorMessage("User ID is required");
     }
 
@@ -46,7 +46,7 @@ public class DeleteUserCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.UserId);
+        result.ShouldHaveValidationErrorFor(x => x.TargetUserId);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class DeleteUserCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(x => x.UserId);
+        result.ShouldNotHaveValidationErrorFor(x => x.TargetUserId);
     }
 
     #endregion

@@ -14,7 +14,7 @@ public sealed record UpdateBrandingSettingsCommand(
     [System.Text.Json.Serialization.JsonIgnore]
     public string? UserId { get; init; }
 
-    public object? GetTargetId() => UserId;
+    public object? GetTargetId() => "BrandingSettings";
     public AuditOperationType OperationType => AuditOperationType.Update;
     public string? GetTargetDisplayName() => "Branding Settings";
     public string? GetActionDescription() => "Updated branding settings";

@@ -34,10 +34,10 @@ public class ProductOptionValueConfiguration : IEntityTypeConfiguration<ProductO
             .HasForeignKey(e => e.OptionId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Unique constraint: same value cannot exist twice for same option
-        builder.HasIndex(e => new { e.OptionId, e.Value })
+        // Unique constraint: same value cannot exist twice for same option per tenant (CLAUDE.md Rule 18)
+        builder.HasIndex(e => new { e.TenantId, e.OptionId, e.Value })
             .IsUnique()
-            .HasDatabaseName("IX_ProductOptionValues_Option_Value");
+            .HasDatabaseName("IX_ProductOptionValues_TenantId_Option_Value");
 
         // Option lookup index
         builder.HasIndex(e => new { e.OptionId, e.SortOrder })

@@ -8,6 +8,7 @@ public sealed class CategoryAttributeByIdSpec : Specification<CategoryAttribute>
     public CategoryAttributeByIdSpec(Guid id)
     {
         Query.Where(ca => ca.Id == id)
+             .AsSplitQuery() // Prevent Cartesian explosion with multiple collections
              .Include(ca => ca.Category)
              .Include(ca => ca.Attribute)
              .TagWith("GetCategoryAttributeById");
@@ -35,6 +36,7 @@ public sealed class CategoryAttributesByCategoryIdSpec : Specification<CategoryA
     public CategoryAttributesByCategoryIdSpec(Guid categoryId)
     {
         Query.Where(ca => ca.CategoryId == categoryId)
+             .AsSplitQuery() // Prevent Cartesian explosion with nested collections
              .Include(ca => ca.Attribute)
              .Include("Attribute.Values")  // String-based include for nested navigation
              .OrderBy(ca => ca.SortOrder)

@@ -71,7 +71,7 @@ public class UserValidatorsTests
         }
 
         [Fact]
-        public void Validate_EmptyUserId_ShouldFail()
+        public void Validate_EmptyTargetUserId_ShouldFail()
         {
             // Arrange
             var command = new UpdateUserCommand("", null, null, null, null);
@@ -80,7 +80,7 @@ public class UserValidatorsTests
             var result = _validator.TestValidate(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(x => x.UserId)
+            result.ShouldHaveValidationErrorFor(x => x.TargetUserId)
                 .WithErrorMessage("User ID is required");
         }
 
@@ -180,7 +180,7 @@ public class UserValidatorsTests
             var result = _validator.TestValidate(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(x => x.UserId)
+            result.ShouldHaveValidationErrorFor(x => x.TargetUserId)
                 .WithErrorMessage("User ID is required");
         }
 
@@ -194,7 +194,7 @@ public class UserValidatorsTests
             var result = _validator.TestValidate(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(x => x.UserId);
+            result.ShouldHaveValidationErrorFor(x => x.TargetUserId);
         }
     }
 
@@ -247,7 +247,7 @@ public class UserValidatorsTests
             var result = _validator.TestValidate(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(x => x.UserId)
+            result.ShouldHaveValidationErrorFor(x => x.TargetUserId)
                 .WithErrorMessage("User ID is required");
         }
 

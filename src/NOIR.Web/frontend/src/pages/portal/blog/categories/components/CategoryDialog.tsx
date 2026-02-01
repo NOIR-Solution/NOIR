@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FolderTree, Pencil } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -34,18 +35,19 @@ import { createCategory, updateCategory, getCategories } from '@/services/blog'
 import { ApiError } from '@/services/apiClient'
 import type { PostCategoryListItem, CreateCategoryRequest } from '@/types'
 
-const formSchema = z.object({
-  name: z.string().min(2, 'Category name must be at least 2 characters').max(100, 'Category name cannot exceed 100 characters'),
-  slug: z.string().min(2, 'Slug must be at least 2 characters').max(100, 'Slug cannot exceed 100 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
-  description: z.string().max(500, 'Description cannot exceed 500 characters').optional(),
-  sortOrder: z.preprocess(
-    (val) => (val === '' || val === undefined || val === null ? 0 : Number(val)),
-    z.number().int().min(0, 'Sort order must be a positive number')
-  ),
-  parentId: z.string().optional(),
-})
+const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    name: z.string().min(2, t('validation.minLength', { count: 2 })).max(100, t('validation.maxLength', { count: 100 })),
+    slug: z.string().min(2, t('validation.minLength', { count: 2 })).max(100, t('validation.maxLength', { count: 100 })).regex(/^[a-z0-9-]+$/, t('validation.identifierFormat')),
+    description: z.string().max(500, t('validation.maxLength', { count: 500 })).optional(),
+    sortOrder: z.preprocess(
+      (val) => (val === '' || val === undefined || val === null ? 0 : Number(val)),
+      z.number().int().min(0, t('validation.minValue', { value: 0 }))
+    ),
+    parentId: z.string().optional(),
+  })
 
-type FormValues = z.output<typeof formSchema>
+type FormValues = z.output<ReturnType<typeof createFormSchema>>
 
 interface CategoryDialogProps {
   open: boolean
@@ -55,12 +57,13 @@ interface CategoryDialogProps {
 }
 
 export function CategoryDialog({ open, onOpenChange, category, onSuccess }: CategoryDialogProps) {
+  const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const [existingCategories, setExistingCategories] = useState<PostCategoryListItem[]>([])
   const isEdit = !!category
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
+    resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
     defaultValues: {
       name: '',

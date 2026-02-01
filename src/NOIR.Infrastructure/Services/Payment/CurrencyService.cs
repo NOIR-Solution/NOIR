@@ -6,7 +6,7 @@ namespace NOIR.Infrastructure.Services.Payment;
 /// Currency conversion service with caching support.
 /// Uses external API for exchange rates with FusionCache for performance.
 /// </summary>
-public class CurrencyService : ICurrencyService
+public class CurrencyService : ICurrencyService, IScopedService
 {
     private readonly HttpClient _httpClient;
     private readonly IFusionCache _cache;

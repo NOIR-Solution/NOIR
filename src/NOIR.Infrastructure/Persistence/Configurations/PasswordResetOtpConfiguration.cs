@@ -50,8 +50,12 @@ public class PasswordResetOtpConfiguration : IEntityTypeConfiguration<PasswordRe
         builder.Property(e => e.ResetToken).HasMaxLength(128);
         builder.HasIndex(e => e.ResetToken);
 
-        // Composite index for active OTPs per email (for bypass prevention)
-        builder.HasIndex(e => new { e.Email, e.IsUsed, e.IsDeleted });
+        // Filtered index for active OTPs per email (TenantId leading for Finbuckle)
+        // Note: SessionToken is globally unique per CLAUDE.md Rule 18, but
+        // performance indexes benefit from TenantId as leading column
+        builder.HasIndex(e => new { e.TenantId, e.Email, e.ExpiresAt })
+            .HasFilter("[IsUsed] = 0 AND [IsDeleted] = 0")
+            .HasDatabaseName("IX_PasswordResetOtps_Active");
 
         // Composite index for session token lookup with usage status
         builder.HasIndex(e => new { e.SessionToken, e.IsUsed });

@@ -12,7 +12,12 @@ public class EmailService : IEmailService, IScopedService
     private readonly IOptionsMonitor<EmailSettings> _emailSettings;
     private readonly ITenantSettingsService _settingsService;
     private readonly IMultiTenantContextAccessor<Tenant> _tenantContextAccessor;
+    private readonly IFusionCache _cache;
     private readonly ILogger<EmailService> _logger;
+
+    // Cache durations
+    private static readonly TimeSpan TemplateCacheDuration = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan SmtpSettingsCacheDuration = TimeSpan.FromMinutes(5);
 
     public EmailService(
         IFluentEmail fluentEmail,
@@ -20,6 +25,7 @@ public class EmailService : IEmailService, IScopedService
         IOptionsMonitor<EmailSettings> emailSettings,
         ITenantSettingsService settingsService,
         IMultiTenantContextAccessor<Tenant> tenantContextAccessor,
+        IFusionCache cache,
         ILogger<EmailService> logger)
     {
         _fluentEmail = fluentEmail;
@@ -27,6 +33,7 @@ public class EmailService : IEmailService, IScopedService
         _emailSettings = emailSettings;
         _settingsService = settingsService;
         _tenantContextAccessor = tenantContextAccessor;
+        _cache = cache;
         _logger = logger;
     }
 
@@ -216,12 +223,30 @@ public class EmailService : IEmailService, IScopedService
     /// <summary>
     /// Gets SMTP settings with fallback chain: Tenant → Platform.
     /// Returns null if no SMTP settings configured at any level.
+    /// Uses FusionCache for performance optimization.
     /// </summary>
     private async Task<(string Host, int Port, string? Username, string? Password, bool UseSsl, string FromEmail, string FromName, string Source)?> GetSmtpSettingsWithFallbackAsync(
         CancellationToken cancellationToken)
     {
         var currentTenantId = _tenantContextAccessor.MultiTenantContext?.TenantInfo?.Id;
+        var cacheKey = CacheKeys.SmtpSettings(currentTenantId);
 
+        var cached = await _cache.GetOrSetAsync(
+            cacheKey,
+            async token => await FetchSmtpSettingsFromDatabaseAsync(currentTenantId, token),
+            options => options
+                .SetDuration(SmtpSettingsCacheDuration)
+                .SetFailSafe(true, TimeSpan.FromHours(1)),
+            cancellationToken);
+
+        return cached?.ToTuple();
+    }
+
+    /// <summary>
+    /// Fetches SMTP settings from database with tenant fallback logic.
+    /// </summary>
+    private async Task<SmtpSettingsCache?> FetchSmtpSettingsFromDatabaseAsync(string? currentTenantId, CancellationToken cancellationToken)
+    {
         // Step 1: Check for tenant-specific SMTP settings
         if (currentTenantId != null)
         {
@@ -236,7 +261,7 @@ public class EmailService : IEmailService, IScopedService
                 if (!string.IsNullOrWhiteSpace(tenantHost))
                 {
                     _logger.LogDebug("Using tenant-specific SMTP settings for tenant {TenantId}", currentTenantId);
-                    return ParseSmtpSettings(tenantSettings, "Tenant");
+                    return SmtpSettingsCache.FromTuple(ParseSmtpSettings(tenantSettings, "Tenant"));
                 }
             }
         }
@@ -253,7 +278,7 @@ public class EmailService : IEmailService, IScopedService
             if (!string.IsNullOrWhiteSpace(platformHost))
             {
                 _logger.LogDebug("Using platform-level SMTP settings (no tenant override)");
-                return ParseSmtpSettings(platformSettings, "Platform");
+                return SmtpSettingsCache.FromTuple(ParseSmtpSettings(platformSettings, "Platform"));
             }
         }
 
@@ -283,11 +308,27 @@ public class EmailService : IEmailService, IScopedService
     /// 1. First tries to find tenant-specific template (TenantId = current tenant)
     /// 2. Falls back to platform-level template (TenantId = null)
     /// This allows tenants to override platform defaults while sharing common templates.
+    /// Uses FusionCache for performance optimization.
     /// </summary>
     private async Task<EmailTemplate?> GetTemplateWithFallbackAsync(string templateName, CancellationToken cancellationToken)
     {
         var currentTenantId = _tenantContextAccessor.MultiTenantContext?.TenantInfo?.Id;
+        var cacheKey = CacheKeys.EmailTemplate(templateName, currentTenantId);
 
+        return await _cache.GetOrSetAsync(
+            cacheKey,
+            async token => await FetchTemplateFromDatabaseAsync(templateName, currentTenantId, token),
+            options => options
+                .SetDuration(TemplateCacheDuration)
+                .SetFailSafe(true, TimeSpan.FromHours(1)),
+            cancellationToken);
+    }
+
+    /// <summary>
+    /// Fetches email template from database with tenant fallback logic.
+    /// </summary>
+    private async Task<EmailTemplate?> FetchTemplateFromDatabaseAsync(string templateName, string? currentTenantId, CancellationToken cancellationToken)
+    {
         // Query all templates with this name using specification (ignores tenant and soft delete filters)
         var spec = new EmailTemplateByNameWithFallbackSpec(templateName);
         var templates = await _emailTemplateRepository.ListAsync(spec, cancellationToken);
@@ -335,4 +376,25 @@ public class EmailService : IEmailService, IScopedService
 
         return result;
     }
+}
+
+/// <summary>
+/// Cache-friendly wrapper for SMTP settings.
+/// FusionCache requires a reference type for nullable caching scenarios.
+/// </summary>
+internal sealed record SmtpSettingsCache(
+    string Host,
+    int Port,
+    string? Username,
+    string? Password,
+    bool UseSsl,
+    string FromEmail,
+    string FromName,
+    string Source)
+{
+    public (string Host, int Port, string? Username, string? Password, bool UseSsl, string FromEmail, string FromName, string Source) ToTuple()
+        => (Host, Port, Username, Password, UseSsl, FromEmail, FromName, Source);
+
+    public static SmtpSettingsCache FromTuple((string Host, int Port, string? Username, string? Password, bool UseSsl, string FromEmail, string FromName, string Source) tuple)
+        => new(tuple.Host, tuple.Port, tuple.Username, tuple.Password, tuple.UseSsl, tuple.FromEmail, tuple.FromName, tuple.Source);
 }

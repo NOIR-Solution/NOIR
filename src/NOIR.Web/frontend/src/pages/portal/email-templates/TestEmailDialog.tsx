@@ -21,10 +21,11 @@ import { sendTestEmailSchema } from '@/validation/schemas.generated'
 import { createValidationTranslator } from '@/lib/validation-i18n'
 import { z } from 'zod'
 
-// Extended schema to include dynamic sample data fields
-const testEmailFormSchema = sendTestEmailSchema.omit({ templateId: true, sampleData: true }).extend({
-  recipientEmail: z.string().min(1, { message: 'This field is required' }).email({ message: 'Invalid email address' }),
-})
+// Extended schema factory to include dynamic sample data fields
+const createTestEmailFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  sendTestEmailSchema.omit({ templateId: true, sampleData: true }).extend({
+    recipientEmail: z.string().min(1, { message: t('validation.required') }).email({ message: t('validation.invalidEmail') }),
+  })
 
 type TestEmailFormData = z.infer<typeof testEmailFormSchema>
 
@@ -55,7 +56,7 @@ export function TestEmailDialog({
 
   // Use validated form with Zod schema
   const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<TestEmailFormData>({
-    schema: testEmailFormSchema,
+    schema: createTestEmailFormSchema(t),
     defaultValues: {
       recipientEmail: '',
     },

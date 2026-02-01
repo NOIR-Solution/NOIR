@@ -277,3 +277,16 @@ public sealed class ProductAttributesByCodesSpec : Specification<ProductAttribut
         Query.TagWith("GetProductAttributesByCodes");
     }
 }
+
+/// <summary>
+/// Specification to find a product attribute value by ID.
+/// </summary>
+public sealed class ProductAttributeValueByIdSpec : Specification<ProductAttributeValue>
+{
+    public ProductAttributeValueByIdSpec(Guid id)
+    {
+        Query.Where(v => v.Id == id)
+             .Include(v => v.Attribute)
+             .TagWith("GetProductAttributeValueById");
+    }
+}

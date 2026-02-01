@@ -17,9 +17,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.HasIndex(e => new { e.OrderNumber, e.TenantId })
+        // TenantId leading for Finbuckle multi-tenant filtering
+        builder.HasIndex(e => new { e.TenantId, e.OrderNumber })
             .IsUnique()
-            .HasDatabaseName("IX_Orders_OrderNumber_TenantId");
+            .HasDatabaseName("IX_Orders_TenantId_OrderNumber");
 
         // Customer
         builder.Property(e => e.CustomerId);

@@ -92,7 +92,7 @@ export function ConfigureGatewayDialog({
   // Build dynamic schema based on provider fields - memoized to prevent rebuilds
   const formSchema = useMemo(() => {
     const schemaFields: Record<string, z.ZodTypeAny> = {
-      displayName: z.string().min(1, 'Display name is required').max(100),
+      displayName: z.string().min(1, t('validation.required')).max(100, t('validation.maxLength', { count: 100 })),
       environment: z.enum(['Sandbox', 'Production']),
     }
 
@@ -101,20 +101,20 @@ export function ConfigureGatewayDialog({
       let fieldSchema: z.ZodTypeAny = z.string()
 
       if (field.type === 'url') {
-        fieldSchema = z.string().url('Must be a valid URL').or(z.literal(''))
+        fieldSchema = z.string().url(t('validation.invalidFormat')).or(z.literal(''))
       } else if (field.type === 'number') {
-        fieldSchema = z.string().regex(/^\d*$/, 'Must be a number').or(z.literal(''))
+        fieldSchema = z.string().regex(/^\d*$/, t('validation.invalidFormat')).or(z.literal(''))
       } else if (field.type === 'select' && field.options && field.options.length > 0) {
         // Validate select fields - only allow values from options list
         const allowedValues = field.options.map(opt => opt.value) as [string, ...string[]]
         fieldSchema = z.enum(allowedValues, {
-          errorMap: () => ({ message: `Please select a valid ${field.label.toLowerCase()}` })
+          errorMap: () => ({ message: t('validation.required') })
         }).or(z.literal('')) // Allow empty string for optional fields
       }
 
       if (field.required && !isEditing) {
         fieldSchema = fieldSchema.refine((val: unknown) => typeof val === 'string' && val.length > 0, {
-          message: `${field.label} is required`,
+          message: t('validation.fieldRequired', { field: field.label }),
         })
       } else {
         fieldSchema = fieldSchema.optional()
@@ -124,7 +124,7 @@ export function ConfigureGatewayDialog({
     })
 
     return z.object(schemaFields)
-  }, [schema.fields, isEditing])
+  }, [schema.fields, isEditing, t])
 
   // Build default values
   const buildDefaultValues = (): FieldValues => {

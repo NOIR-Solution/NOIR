@@ -9,21 +9,23 @@ namespace NOIR.Application.UnitTests.Infrastructure;
 public class DomainEventInterceptorTests
 {
     private readonly Mock<IMessageBus> _messageBusMock;
+    private readonly Mock<ILogger<DomainEventInterceptor>> _loggerMock;
     private readonly DomainEventInterceptor _sut;
 
     public DomainEventInterceptorTests()
     {
         _messageBusMock = new Mock<IMessageBus>();
-        _sut = new DomainEventInterceptor(_messageBusMock.Object);
+        _loggerMock = new Mock<ILogger<DomainEventInterceptor>>();
+        _sut = new DomainEventInterceptor(_messageBusMock.Object, _loggerMock.Object);
     }
 
     #region Constructor Tests
 
     [Fact]
-    public void Constructor_ShouldAcceptMessageBus()
+    public void Constructor_ShouldAcceptMessageBusAndLogger()
     {
         // Act
-        var interceptor = new DomainEventInterceptor(_messageBusMock.Object);
+        var interceptor = new DomainEventInterceptor(_messageBusMock.Object, _loggerMock.Object);
 
         // Assert
         interceptor.Should().NotBeNull();
@@ -33,7 +35,7 @@ public class DomainEventInterceptorTests
     public void Constructor_WithNullMessageBus_ShouldNotThrow()
     {
         // Act - Constructor accepts null but will fail when used
-        var act = () => new DomainEventInterceptor(null!);
+        var act = () => new DomainEventInterceptor(null!, _loggerMock.Object);
 
         // Assert
         act.Should().NotThrow();

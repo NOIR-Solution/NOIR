@@ -70,7 +70,7 @@ public class EmailTemplate : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
         string? description = null,
         string? availableVariables = null)
     {
-        return new EmailTemplate
+        var template = new EmailTemplate
         {
             Id = Guid.NewGuid(),
             TenantId = null, // Platform default
@@ -83,6 +83,13 @@ public class EmailTemplate : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
             Description = description,
             AvailableVariables = availableVariables
         };
+
+        template.AddDomainEvent(new Events.Platform.EmailTemplateCreatedEvent(
+            template.Id,
+            name,
+            null));
+
+        return template;
     }
 
     /// <summary>
@@ -100,7 +107,7 @@ public class EmailTemplate : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantId, nameof(tenantId));
 
-        return new EmailTemplate
+        var template = new EmailTemplate
         {
             Id = Guid.NewGuid(),
             TenantId = tenantId,
@@ -113,6 +120,13 @@ public class EmailTemplate : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
             Description = description,
             AvailableVariables = availableVariables
         };
+
+        template.AddDomainEvent(new Events.Platform.EmailTemplateCreatedEvent(
+            template.Id,
+            name,
+            tenantId));
+
+        return template;
     }
 
     /// <summary>
@@ -150,6 +164,8 @@ public class EmailTemplate : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
         Description = description;
         AvailableVariables = availableVariables;
         Version++;
+
+        AddDomainEvent(new Events.Platform.EmailTemplateUpdatedEvent(Id, Name, Version));
     }
 
     /// <summary>
@@ -157,7 +173,11 @@ public class EmailTemplate : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
     /// </summary>
     public void Activate()
     {
-        IsActive = true;
+        if (!IsActive)
+        {
+            IsActive = true;
+            AddDomainEvent(new Events.Platform.EmailTemplateActivatedEvent(Id, Name));
+        }
     }
 
     /// <summary>
@@ -165,7 +185,11 @@ public class EmailTemplate : PlatformTenantAggregateRoot<Guid>, ISeedableEntity
     /// </summary>
     public void Deactivate()
     {
-        IsActive = false;
+        if (IsActive)
+        {
+            IsActive = false;
+            AddDomainEvent(new Events.Platform.EmailTemplateDeactivatedEvent(Id, Name));
+        }
     }
 
     /// <summary>

@@ -9,8 +9,11 @@ public sealed record UpdateEmailTemplateCommand(
     string HtmlBody,
     string? PlainTextBody,
     string? Description,
-    string? TemplateName = null) : IAuditableCommand
+    string? TemplateName = null) : IAuditableCommand<EmailTemplateDto>
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? UserId { get; init; }
+
     public AuditOperationType OperationType => AuditOperationType.Update;
     public object? GetTargetId() => Id;
     public string? GetTargetDisplayName() => TemplateName ?? Subject;

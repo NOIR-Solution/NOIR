@@ -12,7 +12,7 @@ public sealed record UpdateContactSettingsCommand(
     [System.Text.Json.Serialization.JsonIgnore]
     public string? UserId { get; init; }
 
-    public object? GetTargetId() => UserId;
+    public object? GetTargetId() => "ContactSettings";
     public AuditOperationType OperationType => AuditOperationType.Update;
     public string? GetTargetDisplayName() => "Contact Settings";
     public string? GetActionDescription() => "Updated contact settings";
