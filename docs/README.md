@@ -2,6 +2,8 @@
 
 > **Start Here:** [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)
 
+**Last Updated:** 2026-02-01
+
 ## Core Documentation
 
 | Document | Description |
@@ -18,17 +20,70 @@
 
 ```
 docs/
-├── backend/           # .NET backend
-│   ├── patterns/      # Code patterns (9 files)
-│   ├── architecture/  # Architecture guides
-│   └── research/      # Technical research (6 files)
-├── frontend/          # React frontend (9 files)
-│   └── designs/       # UI designs
-├── decisions/         # ADRs (3 files)
-├── designs/           # Feature designs
-├── plans/             # Roadmaps (2 files)
-└── research/          # General research (2 files)
+├── Core (7 files)
+│   ├── README.md                    # This file
+│   ├── DOCUMENTATION_INDEX.md       # Master index
+│   ├── KNOWLEDGE_BASE.md            # Codebase reference
+│   ├── PROJECT_INDEX.md             # Project navigation
+│   ├── FEATURE_CATALOG.md           # Feature catalog
+│   ├── TECH_STACK.md                # Technology reference
+│   ├── API_INDEX.md                 # API documentation
+│   └── ARCHITECTURE.md              # Architecture overview
+│
+├── backend/                          # .NET backend (17 files)
+│   ├── README.md                    # Backend overview
+│   ├── patterns/ (9 files)          # Implementation patterns
+│   │   ├── repository-specification.md
+│   │   ├── di-auto-registration.md
+│   │   ├── entity-configuration.md
+│   │   ├── hierarchical-audit-logging.md
+│   │   ├── before-state-resolver.md
+│   │   ├── bulk-operations.md
+│   │   ├── json-enum-serialization.md
+│   │   ├── jwt-refresh-token.md
+│   │   └── technical-checklist.md
+│   ├── architecture/ (1 file)
+│   │   └── tenant-id-interceptor.md
+│   └── research/ (7 files)          # Research documents
+│       ├── cache-busting-best-practices.md
+│       ├── ecommerce-ux-patterns-2026.md
+│       ├── hierarchical-audit-logging-comparison-2025.md
+│       ├── role-permission-system-research.md   # Consolidated RBAC/ReBAC
+│       ├── seo-meta-and-hint-text-best-practices.md
+│       ├── validation-unification-plan.md
+│       └── vietnam-shipping-integration-2026.md
+│
+├── frontend/ (10 files)              # React frontend
+│   ├── README.md
+│   ├── architecture.md
+│   ├── api-types.md
+│   ├── localization-guide.md
+│   ├── COLOR_SCHEMA_GUIDE.md
+│   ├── ui-ux-enhancements.md
+│   ├── ecommerce-ui.md
+│   ├── vibe-kanban-integration.md
+│   └── designs/ (1 file)
+│       └── notification-dropdown-ui-design.md
+│
+├── decisions/ (4 files)              # Architecture Decision Records
+│   ├── README.md
+│   ├── 001-tech-stack.md
+│   ├── 002-frontend-ui-stack.md
+│   └── 003-vertical-slice-cqrs.md
+│
+├── designs/ (1 file)                 # Feature designs
+│   └── payment-gateway-admin-ui.md
+│
+├── plans/ (2 files)                  # Roadmaps
+│   ├── feature-roadmap-basic.md     # Phases 1-4 (Complete)
+│   └── feature-roadmap-ecommerce.md # E-commerce (In Progress)
+│
+└── research/ (2 files)               # General research
+    ├── admin-portal-features-2026.md
+    └── essential-erp-cms-features-2026.md
 ```
+
+**Total: 44 documentation files**
 
 ## Quick Links
 
@@ -38,6 +93,8 @@ docs/
 - [DI Auto-Registration](backend/patterns/di-auto-registration.md)
 - [Audit Logging](backend/patterns/hierarchical-audit-logging.md)
 - [Multi-Tenancy](backend/architecture/tenant-id-interceptor.md)
+- [JWT Refresh Token](backend/patterns/jwt-refresh-token.md)
+- [Bulk Operations](backend/patterns/bulk-operations.md)
 
 ### Frontend
 
@@ -45,8 +102,26 @@ docs/
 - [API Types](frontend/api-types.md)
 - [Localization](frontend/localization-guide.md)
 - [UI/UX Enhancements](frontend/ui-ux-enhancements.md)
+- [E-commerce UI](frontend/ecommerce-ui.md)
+- [Color Schema](frontend/COLOR_SCHEMA_GUIDE.md)
+
+### Research
+
+- [Role Permission System](backend/research/role-permission-system-research.md) (Consolidated)
+- [Vietnam Shipping Integration](backend/research/vietnam-shipping-integration-2026.md)
+- [E-commerce UX Patterns](backend/research/ecommerce-ux-patterns-2026.md)
+
+### Architecture Decisions
+
+- [ADR 001: Tech Stack](decisions/001-tech-stack.md)
+- [ADR 002: Frontend UI Stack](decisions/002-frontend-ui-stack.md)
+- [ADR 003: Vertical Slice CQRS](decisions/003-vertical-slice-cqrs.md)
 
 ## AI Instructions
 
-- [CLAUDE.md](../CLAUDE.md) - Claude Code
-- [AGENTS.md](../AGENTS.md) - Universal AI
+- [CLAUDE.md](../CLAUDE.md) - Claude Code specific instructions
+- [AGENTS.md](../AGENTS.md) - Universal AI agent guidelines
+
+---
+
+**For detailed navigation, see [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)**

@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-01-29
+**Last Updated:** 2026-02-01
 
 ---
 
@@ -61,9 +61,10 @@
 | [cache-busting-best-practices.md](backend/research/cache-busting-best-practices.md) | Cache invalidation |
 | [ecommerce-ux-patterns-2026.md](backend/research/ecommerce-ux-patterns-2026.md) | E-commerce UX |
 | [hierarchical-audit-logging-comparison-2025.md](backend/research/hierarchical-audit-logging-comparison-2025.md) | Audit design |
-| [role-permission-best-practices-2025.md](backend/research/role-permission-best-practices-2025.md) | RBAC patterns |
+| [role-permission-system-research.md](backend/research/role-permission-system-research.md) | RBAC/ReBAC patterns (Consolidated) |
 | [seo-meta-and-hint-text-best-practices.md](backend/research/seo-meta-and-hint-text-best-practices.md) | SEO best practices |
 | [validation-unification-plan.md](backend/research/validation-unification-plan.md) | Validation strategy |
+| [vietnam-shipping-integration-2026.md](backend/research/vietnam-shipping-integration-2026.md) | Vietnam shipping providers |
 
 ---
 
@@ -141,13 +142,16 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 42 |
+| **Total Docs** | 44 |
 | **Backend Patterns** | 9 |
-| **Backend Research** | 6 |
+| **Backend Architecture** | 1 |
+| **Backend Research** | 7 |
 | **Frontend Guides** | 9 |
 | **ADRs** | 3 |
 | **Plans** | 2 |
+| **Research (General)** | 2 |
+| **Designs** | 1 |
 
 ---
 
-**Version:** 2.0
+**Version:** 2.2

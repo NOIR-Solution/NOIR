@@ -506,7 +506,7 @@ NOIR.Web/
 
 **Tests:** `tests/NOIR.Domain.UnitTests/Common/PermissionsTests.cs`
 
-**Docs:** [Role Permission Best Practices](backend/research/role-permission-best-practices-2025.md)
+**Docs:** [Role Permission System](backend/research/role-permission-system-research.md)
 
 ---
 
@@ -931,7 +931,7 @@ public void Domain_Should_Not_HaveDependencyOn_Application()
 
 | Document | Topic |
 |----------|-------|
-| [Role Permission Best Practices](backend/research/role-permission-best-practices-2025.md) | Role/permission patterns |
+| [Role Permission System](backend/research/role-permission-system-research.md) | Role/permission patterns |
 | [Hierarchical Audit Comparison](backend/research/hierarchical-audit-logging-comparison-2025.md) | Audit system design |
 | [Validation Unification Plan](backend/research/validation-unification-plan.md) | Unified validation strategy |
 
@@ -981,7 +981,7 @@ npm run generate:api
 | **Specifications** | `Specifications/` | [Repository Pattern](backend/patterns/repository-specification.md) |
 | **Multi-Tenancy** | `TenantIdSetterInterceptor.cs` | [Tenant Isolation](backend/architecture/tenant-id-interceptor.md) |
 | **Audit Logging** | `EntityAuditLogInterceptor.cs` | [Audit Pattern](backend/patterns/hierarchical-audit-logging.md) |
-| **Permissions** | `Domain/Common/Permissions.cs` | [Role Permission](backend/research/role-permission-best-practices-2025.md) |
+| **Permissions** | `Domain/Common/Permissions.cs` | [Role Permission](backend/research/role-permission-system-research.md) |
 | **Validation** | `*Validator.cs` | [Validation Guide](backend/patterns/validation.md) |
 | **Email Templates** | `EmailTemplate` entity | Knowledge Base |
 | **SignalR Hubs** | `NotificationHub`, `DeveloperLogHub` | Knowledge Base |
