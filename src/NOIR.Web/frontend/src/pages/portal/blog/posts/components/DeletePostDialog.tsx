@@ -99,7 +99,7 @@ export function DeletePostDialog({ post, open, onOpenChange, onConfirm }: Delete
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={loading}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+            className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
           >
             {loading ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>

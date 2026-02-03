@@ -8,18 +8,18 @@ public class InitiateCheckoutCommandHandler
     private readonly IRepository<Domain.Entities.Cart.Cart, Guid> _cartRepository;
     private readonly IRepository<CheckoutSession, Guid> _checkoutRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ITenantInfo _tenantInfo;
+    private readonly ICurrentUser _currentUser;
 
     public InitiateCheckoutCommandHandler(
         IRepository<Domain.Entities.Cart.Cart, Guid> cartRepository,
         IRepository<CheckoutSession, Guid> checkoutRepository,
         IUnitOfWork unitOfWork,
-        ITenantInfo tenantInfo)
+        ICurrentUser currentUser)
     {
         _cartRepository = cartRepository;
         _checkoutRepository = checkoutRepository;
         _unitOfWork = unitOfWork;
-        _tenantInfo = tenantInfo;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<CheckoutSessionDto>> Handle(
@@ -71,7 +71,7 @@ public class InitiateCheckoutCommandHandler
             subTotal: cart.Subtotal,
             currency: cart.Currency,
             userId: command.UserId,
-            tenantId: _tenantInfo.Id);
+            tenantId: _currentUser.TenantId);
 
         // Set customer info if provided
         if (!string.IsNullOrEmpty(command.CustomerName) || !string.IsNullOrEmpty(command.CustomerPhone))

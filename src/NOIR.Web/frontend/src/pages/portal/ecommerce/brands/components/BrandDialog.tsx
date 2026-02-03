@@ -263,43 +263,49 @@ export function BrandDialog({ open, onOpenChange, brand, onSuccess }: BrandDialo
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="sortOrder"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('labels.sortOrder', 'Sort Order')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        min={0}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="sortOrder"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('labels.sortOrder', 'Sort Order')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      min={0}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t('brands.sortOrderDescription', 'Lower numbers appear first')}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 h-[58px]">
-                    <FormLabel className="cursor-pointer">{t('labels.active', 'Active')}</FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="cursor-pointer"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="isActive"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>{t('labels.active', 'Active')}</FormLabel>
+                    <FormDescription className="text-xs">
+                      {t('brands.activeDescription', 'Show this brand on the storefront')}
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="cursor-pointer"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
             <DialogFooter>
               <Button

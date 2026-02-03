@@ -317,7 +317,7 @@ export default function ProductAttributesPage() {
             <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90 border-destructive/30"
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {t('labels.delete', 'Delete')}
             </AlertDialogAction>

@@ -23,11 +23,13 @@ public sealed class ConfigureGatewayCommandValidator : AbstractValidator<Configu
 
         RuleFor(x => x.Credentials)
             .NotNull().WithMessage("Credentials are required.")
-            .Must(c => c.Count > 0).WithMessage("At least one credential is required.");
+            .Must(c => c is not null && c.Count > 0).WithMessage("At least one credential is required.")
+            .When(x => x.Credentials is not null);
 
         RuleFor(x => x.SupportedMethods)
             .NotNull().WithMessage("Supported methods are required.")
-            .Must(m => m.Count > 0).WithMessage("At least one supported payment method is required.");
+            .Must(m => m is not null && m.Count > 0).WithMessage("At least one supported payment method is required.")
+            .When(x => x.SupportedMethods is not null);
 
         RuleFor(x => x.SortOrder)
             .GreaterThanOrEqualTo(0).WithMessage("Sort order must be non-negative.");

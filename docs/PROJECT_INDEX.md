@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-02-03
 
 ---
 
@@ -30,7 +30,7 @@
 - **API Endpoints:** 200+ REST endpoints (29 endpoint groups)
 - **Domain Entities:** 47 entities, 22 enums, 8 domain event files
 - **Application Layer:** 126 Commands, 74 Queries, 39 Common Interfaces
-- **Source Files:** 1,143 C# files, 456 test files, 301 frontend TypeScript files
+- **Source Files:** 1,255 C# files, 456 test files, 305 frontend TypeScript files
 - **Database Indexes:** 233+ indexes (including 14 new filtered indexes for sparse data)
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
 
@@ -1039,14 +1039,27 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-02-01
-**Version:** 2.8
+**Last Updated:** 2026-02-03
+**Version:** 2.9
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 2.9 (2026-02-03) - Repository Index Update
+
+- **Statistics Update**
+  - Updated source file counts: 1,255 C# files, 456 test files, 305 TypeScript files
+  - 43 documentation files in `docs/` folder
+  - 4 test projects: Domain.UnitTests, Application.UnitTests, IntegrationTests, ArchitectureTests
+- **UI/UX Improvements** (from recent sessions)
+  - Fixed Active toggle alignment in BrandDialog (full-width row pattern)
+  - Fixed delete button colors across 14 dialogs (softer destructive pattern)
+  - Enhanced attribute input components for all 13 attribute types
+  - Added localization keys for brands, product attributes
+- **Inline Variant Editing** - Product variants now editable inline with auto-save
 
 ### Version 2.8 (2026-02-01) - Database Index Optimization
 

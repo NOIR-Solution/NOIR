@@ -69,8 +69,18 @@ public class ExceptionHandlingMiddleware
                 HandleUnknownException(exception)
         };
 
-        // Log based on severity
+        // Log based on severity - do this FIRST before any response writing attempts
         LogException(exception, statusCode, errorCode, context.TraceIdentifier);
+
+        // Check if response has already started - can't modify headers or write body
+        if (context.Response.HasStarted)
+        {
+            _logger.LogWarning(
+                "Response has already started, cannot write error response for [{ErrorCode}] CorrelationId={CorrelationId}",
+                errorCode,
+                context.TraceIdentifier);
+            return;
+        }
 
         // Add standard error tracking extensions
         problemDetails.Extensions["errorCode"] = errorCode;
@@ -84,17 +94,31 @@ public class ExceptionHandlingMiddleware
             problemDetails.Extensions["stackTrace"] = exception.StackTrace;
         }
 
-        context.Response.ContentType = "application/problem+json";
-        context.Response.StatusCode = statusCode;
-
-        var options = new JsonSerializerOptions
+        try
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = statusCode;
 
-        // Use runtime type to ensure derived properties (like Errors in ValidationProblemDetails) are serialized
-        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, problemDetails.GetType(), options));
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+
+            // Use runtime type to ensure derived properties (like Errors in ValidationProblemDetails) are serialized
+            await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, problemDetails.GetType(), options));
+        }
+        catch (Exception writeException)
+        {
+            // Log the write failure but don't throw - the original exception is already logged
+            _logger.LogError(
+                writeException,
+                "Failed to write error response for [{ErrorCode}] CorrelationId={CorrelationId}. Original exception: {OriginalExceptionType}: {OriginalMessage}",
+                errorCode,
+                context.TraceIdentifier,
+                exception.GetType().Name,
+                exception.Message);
+        }
     }
 
     private void LogException(Exception exception, int statusCode, string errorCode, string correlationId)

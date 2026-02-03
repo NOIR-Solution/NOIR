@@ -230,7 +230,7 @@ export default function TenantDetailPage() {
             <AlertDialogAction
               onClick={handleDelete}
               disabled={saving}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
             >
               {saving ? t('labels.loading') : t('buttons.delete')}
             </AlertDialogAction>

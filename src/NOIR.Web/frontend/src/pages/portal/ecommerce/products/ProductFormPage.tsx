@@ -99,6 +99,7 @@ import { ImageUploadZone } from '@/components/products/ImageUploadZone'
 import { SortableImageGallery } from '@/components/products/SortableImageGallery'
 import { ProductAttributesSection } from '@/components/products/ProductAttributesSection'
 import { ProductAttributesSectionCreate } from '@/components/products/ProductAttributesSectionCreate'
+import { EditableVariantsTable } from '@/components/products/EditableVariantsTable'
 import { ProductActivityLog } from './components/ProductActivityLog'
 import { useBulkUpdateProductAttributes } from '@/hooks/useProductAttributes'
 import { useStockHistory } from '@/hooks/useStockHistory'
@@ -1189,78 +1190,21 @@ export default function ProductFormPage() {
 
                 {/* Display variants - local in create mode, from API in edit mode */}
                 {isEditing ? (
-                  // Edit mode: show variants from API
-                  variants.length === 0 && !newVariant ? (
-                    <p className="text-center text-muted-foreground py-8">
-                      No variants yet. Add variants for different sizes, colors, etc.
-                    </p>
-                  ) : (
-                    <div className="space-y-2">
-                      {variants.map((variant) => (
-                        editingVariantId === variant.id ? (
-                          <EditVariantForm
-                            key={variant.id}
-                            variant={variant}
-                            onSave={(data) => handleUpdateVariant(variant.id, data)}
-                            onCancel={() => setEditingVariantId(null)}
-                          />
-                        ) : (
-                          <div
-                            key={variant.id}
-                            className="flex items-center gap-4 p-4 border rounded-xl bg-background hover:bg-muted/50 hover:shadow-sm transition-all duration-200 group"
-                          >
-                            <div className="flex-1">
-                              <div className="font-medium">{variant.name}</div>
-                              <div className="text-sm text-muted-foreground">
-                                {variant.sku && `SKU: ${variant.sku} • `}
-                                Stock: {variant.stockQuantity}
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-medium">
-                                {formatCurrency(variant.price)}
-                              </div>
-                              {variant.onSale && variant.compareAtPrice && (
-                                <div className="text-sm text-muted-foreground line-through">
-                                  {formatCurrency(variant.compareAtPrice)}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              {variant.lowStock && (
-                                <Badge variant="destructive" className="text-xs">Low Stock</Badge>
-                              )}
-                              {!variant.inStock && (
-                                <Badge variant="secondary" className="text-xs">Out of Stock</Badge>
-                              )}
-                            </div>
-                            {!isViewMode && (
-                              <div className="flex items-center gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="cursor-pointer"
-                                  onClick={() => setEditingVariantId(variant.id)}
-                                  aria-label={`Edit variant ${variant.name}`}
-                                >
-                                  <Pencil className="h-4 w-4 text-muted-foreground" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="cursor-pointer"
-                                  onClick={() => setVariantToDelete(variant)}
-                                  aria-label={`Delete variant ${variant.name}`}
-                                >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        )
-                      ))}
-                    </div>
-                  )
+                  // Edit mode: show editable variants table
+                  <EditableVariantsTable
+                    productId={id!}
+                    variants={variants}
+                    isReadOnly={isViewMode}
+                    onDelete={setVariantToDelete}
+                    onSaveSuccess={async (updatedVariant) => {
+                      // Update local variants state for immediate UI feedback
+                      setVariants((prev) =>
+                        prev.map((v) => (v.id === updatedVariant.id ? updatedVariant : v))
+                      )
+                      // Refresh product data to ensure full sync (computed fields like lowStock, inStock)
+                      await refreshProduct()
+                    }}
+                  />
                 ) : (
                   // Create mode: show local variants
                   localVariants.length === 0 && !newVariant ? (
@@ -1692,7 +1636,7 @@ export default function ProductFormPage() {
             <AlertDialogAction
               onClick={handleConfirmDeleteVariant}
               disabled={isDeletingVariant}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
             >
               {isDeletingVariant && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isDeletingVariant ? 'Deleting...' : 'Delete'}
@@ -1722,7 +1666,7 @@ export default function ProductFormPage() {
             <AlertDialogAction
               onClick={handleConfirmDeleteImage}
               disabled={isDeletingImage}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
             >
               {isDeletingImage && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isDeletingImage ? 'Deleting...' : 'Delete'}
@@ -1749,7 +1693,7 @@ export default function ProductFormPage() {
             <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDeleteLocalVariant}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
             >
               Remove
             </AlertDialogAction>
@@ -1775,7 +1719,7 @@ export default function ProductFormPage() {
             <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDeleteTempImage}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
+              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
             >
               Remove
             </AlertDialogAction>

@@ -17,7 +17,7 @@ public class CompleteCheckoutCommandHandlerTests
     private readonly Mock<IRepository<Domain.Entities.Cart.Cart, Guid>> _cartRepositoryMock;
     private readonly Mock<IRepository<Order, Guid>> _orderRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-    private readonly Mock<ITenantInfo> _tenantInfoMock;
+    private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly CompleteCheckoutCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -29,16 +29,16 @@ public class CompleteCheckoutCommandHandlerTests
         _cartRepositoryMock = new Mock<IRepository<Domain.Entities.Cart.Cart, Guid>>();
         _orderRepositoryMock = new Mock<IRepository<Order, Guid>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _tenantInfoMock = new Mock<ITenantInfo>();
+        _currentUserMock = new Mock<ICurrentUser>();
 
-        _tenantInfoMock.Setup(x => x.Id).Returns(TestTenantId);
+        _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
 
         _handler = new CompleteCheckoutCommandHandler(
             _checkoutRepositoryMock.Object,
             _cartRepositoryMock.Object,
             _orderRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _tenantInfoMock.Object);
+            _currentUserMock.Object);
     }
 
     private static CheckoutSession CreateTestSession(

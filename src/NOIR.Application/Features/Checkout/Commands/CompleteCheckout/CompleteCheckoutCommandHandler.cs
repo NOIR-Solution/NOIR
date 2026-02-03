@@ -10,20 +10,20 @@ public class CompleteCheckoutCommandHandler
     private readonly IRepository<Domain.Entities.Cart.Cart, Guid> _cartRepository;
     private readonly IRepository<Domain.Entities.Order.Order, Guid> _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ITenantInfo _tenantInfo;
+    private readonly ICurrentUser _currentUser;
 
     public CompleteCheckoutCommandHandler(
         IRepository<CheckoutSession, Guid> checkoutRepository,
         IRepository<Domain.Entities.Cart.Cart, Guid> cartRepository,
         IRepository<Domain.Entities.Order.Order, Guid> orderRepository,
         IUnitOfWork unitOfWork,
-        ITenantInfo tenantInfo)
+        ICurrentUser currentUser)
     {
         _checkoutRepository = checkoutRepository;
         _cartRepository = cartRepository;
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
-        _tenantInfo = tenantInfo;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<CheckoutSessionDto>> Handle(
@@ -92,7 +92,7 @@ public class CompleteCheckoutCommandHandler
             }
 
             // Generate order number using sequence
-            var orderNumber = await GenerateOrderNumberAsync(_tenantInfo.Id, cancellationToken);
+            var orderNumber = await GenerateOrderNumberAsync(_currentUser.TenantId, cancellationToken);
 
             // Create order
             var order = Domain.Entities.Order.Order.Create(
@@ -101,7 +101,7 @@ public class CompleteCheckoutCommandHandler
                 subTotal: session.SubTotal,
                 grandTotal: session.GrandTotal,
                 currency: session.Currency,
-                tenantId: _tenantInfo.Id);
+                tenantId: _currentUser.TenantId);
 
             // Set customer info
             if (!string.IsNullOrEmpty(session.UserId) && Guid.TryParse(session.UserId, out var customerId))
