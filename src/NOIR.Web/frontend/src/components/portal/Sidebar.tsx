@@ -472,6 +472,7 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
   const bellButton = (
     <Button
       variant="ghost"
+      data-active={isActive}
       className={cn(
         'w-full justify-start relative overflow-hidden transition-all duration-200',
         isExpanded ? 'px-3' : 'px-0 justify-center',
@@ -698,6 +699,7 @@ function SidebarContent({
       <Button
         variant="ghost"
         asChild
+        data-active={active}
         className={cn(
           'w-full justify-start relative overflow-hidden transition-all duration-200',
           isExpanded ? 'px-3' : 'px-0 justify-center',
@@ -929,6 +931,7 @@ export function MobileSidebarTrigger({
         key={item.path}
         variant="ghost"
         asChild
+        data-active={active}
         className={cn(
           'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
           active && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',

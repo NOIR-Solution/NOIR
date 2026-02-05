@@ -34,7 +34,10 @@ export function PasswordStrengthIndicator({
           <span className="text-muted-foreground">
             {t('forgotPassword.reset.passwordStrength')}
           </span>
-          <span className={cn('font-medium', getStrengthTextColor(strength.level))}>
+          <span
+            className={cn('font-medium', getStrengthTextColor(strength.level))}
+            data-testid="password-strength-level"
+          >
             {t(`forgotPassword.reset.strength.${strength.level}`)}
           </span>
         </div>
