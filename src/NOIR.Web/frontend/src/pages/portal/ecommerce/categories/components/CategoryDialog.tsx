@@ -34,6 +34,7 @@ import {
   createProductCategory,
   updateProductCategory,
 } from '@/services/products'
+import { useProductCategories } from '@/hooks/useProducts'
 import type { ProductCategoryListItem } from '@/types/product'
 import { toast } from 'sonner'
 import { ApiError } from '@/services/apiClient'
@@ -58,7 +59,7 @@ interface CategoryDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   category: ProductCategoryListItem | null
-  categories: ProductCategoryListItem[]
+  categories?: ProductCategoryListItem[]  // Optional - will use hook if not provided
   onSuccess: () => void
 }
 
@@ -66,12 +67,29 @@ export function CategoryDialog({
   open,
   onOpenChange,
   category,
-  categories,
+  categories: categoriesProp,
   onSuccess,
 }: CategoryDialogProps) {
   const { t } = useTranslation('common')
   const isEditing = !!category
   const [isSaving, setIsSaving] = useState(false)
+
+  // Fetch fresh categories when dialog opens - this fixes CAT-013 where newly created
+  // categories weren't appearing in parent dropdown after page reload
+  const { data: categoriesFromHook, loading: categoriesLoading, refresh: refreshCategories } = useProductCategories()
+
+  // Use hook data (always fresh) as primary source once loaded
+  // Fallback to prop only when hook hasn't loaded yet
+  const categories = categoriesFromHook.length > 0
+    ? categoriesFromHook
+    : categoriesProp ?? []
+
+  // Refresh categories when dialog opens to ensure fresh data
+  useEffect(() => {
+    if (open) {
+      refreshCategories()
+    }
+  }, [open, refreshCategories])
 
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(createCategorySchema(t)),
@@ -90,16 +108,16 @@ export function CategoryDialog({
 
   useEffect(() => {
     if (category) {
-      // TODO: ProductCategoryListItem doesn't include metaTitle, metaDescription, imageUrl
-      // To preserve these on edit, extend the type and backend DTO to include these fields
-      // For now, these will reset to empty when editing
+      // KNOWN LIMITATION: metaTitle, metaDescription, imageUrl are not included in
+      // ProductCategoryListItem DTO. These fields will be empty when editing existing
+      // categories - they are only set during category creation.
       form.reset({
         name: category.name,
         slug: category.slug,
         description: category.description || '',
-        metaTitle: (category as unknown as Record<string, string>).metaTitle || '',
-        metaDescription: (category as unknown as Record<string, string>).metaDescription || '',
-        imageUrl: (category as unknown as Record<string, string>).imageUrl || '',
+        metaTitle: '',
+        metaDescription: '',
+        imageUrl: '',
         sortOrder: category.sortOrder,
         parentId: category.parentId || null,
       })
@@ -225,10 +243,11 @@ export function CategoryDialog({
                   <Select
                     onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
                     value={field.value || 'none'}
+                    disabled={categoriesLoading}
                   >
                     <FormControl>
                       <SelectTrigger className="cursor-pointer">
-                        <SelectValue placeholder={t('categories.selectParent', 'Select parent category')} />
+                        <SelectValue placeholder={categoriesLoading ? t('labels.loading', 'Loading...') : t('categories.selectParent', 'Select parent category')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
