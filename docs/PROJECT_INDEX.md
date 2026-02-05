@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-03
+**Last Updated:** 2026-02-05
 
 ---
 
@@ -26,11 +26,12 @@
 
 - **Lines of Code:** ~200,000
 - **Test Coverage:** 5,188+ tests across Unit, Integration, and Architecture layers
-- **Feature Modules:** 25 domain-driven modules (E-commerce, CMS, Auth, Multi-tenant, Payments)
-- **API Endpoints:** 200+ REST endpoints (29 endpoint groups)
-- **Domain Entities:** 47 entities, 22 enums, 8 domain event files
-- **Application Layer:** 126 Commands, 74 Queries, 39 Common Interfaces
-- **Source Files:** 1,255 C# files, 456 test files, 305 frontend TypeScript files
+- **Feature Modules:** 26 domain-driven modules (E-commerce, CMS, Auth, Multi-tenant, Payments, Shipping)
+- **API Endpoints:** 200+ REST endpoints (27+ endpoint groups)
+- **Domain Entities:** 45+ entities, 22+ enums, 8 domain event files
+- **Application Layer:** 126 Commands, 74 Queries, 39+ Common Interfaces
+- **Source Files:** ~1,998 files (*.cs, *.tsx, *.ts combined)
+- **Frontend:** 60+ UI components, 28+ custom hooks, 23+ API services
 - **Database Indexes:** 233+ indexes (including 14 new filtered indexes for sparse data)
 - **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
 
@@ -1039,14 +1040,32 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-02-03
-**Version:** 2.9
+**Last Updated:** 2026-02-05
+**Version:** 3.0
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 3.0 (2026-02-05) - Complete Repository Index Refresh
+
+- **Statistics Refresh**
+  - Updated file count: ~1,998 source files (*.cs, *.tsx, *.ts)
+  - 26 feature modules (added Shipping integration)
+  - 60+ UI components in shadcn/ui + custom
+  - 28+ custom React hooks
+  - 23+ API service modules
+- **E2E Testing Improvements**
+  - Fixed CAT-013 (subcategory creation) - added CAT-014 for partial coverage
+  - Added `expectPageLoaded()` pattern across all smoke tests
+  - Fixed navigation and product smoke test stability
+  - CategoryDialog now fetches fresh categories via `useProductCategories` hook
+- **Code Quality**
+  - Updated CategoryDialog to use hook-based category fetching
+  - Fixed parent dropdown showing newly created categories
+  - Improved test documentation with known limitations
 
 ### Version 2.9 (2026-02-03) - Repository Index Update
 
