@@ -62,26 +62,18 @@ export class UsersPage extends BasePage {
   }
 
   /**
-   * Verify page loaded - check for page header or page content
+   * Verify page loaded using sequential wait pattern
+   * Waits for header first (proves render), then create button (proves data loaded)
    */
   async expectPageLoaded(): Promise<void> {
-    // Wait for the Users page content
-    const pageContent = this.page.locator(
-      'h1:has-text("Users"), ' +
-      'button:has-text("Create User"), ' +
-      ':text("All Users"), ' +
-      'table'
-    );
-    await expect(pageContent.first()).toBeVisible({ timeout: 15000 });
+    await this.expectStandardPageLoaded(this.pageHeader, this.createButton);
   }
 
   /**
    * Open create user dialog
    */
   async openCreateDialog(): Promise<void> {
-    await expect(this.createButton.first()).toBeVisible({ timeout: 10000 });
-    await this.createButton.first().click();
-    await expect(this.dialog).toBeVisible();
+    await this.openDialogViaButton(this.createButton, this.dialog);
   }
 
   /**

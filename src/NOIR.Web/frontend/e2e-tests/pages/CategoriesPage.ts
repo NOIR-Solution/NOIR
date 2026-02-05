@@ -59,31 +59,18 @@ export class CategoriesPage extends BasePage {
   }
 
   /**
-   * Verify page loaded - check for page header or category content
+   * Verify page loaded using sequential wait pattern
+   * Waits for header first (proves render), then create button (proves data loaded)
    */
   async expectPageLoaded(): Promise<void> {
-    // Wait for page to load - look for either:
-    // 1. The page title "Product Categories" or "Categories"
-    // 2. The "New Category" button (if user has permission)
-    // 3. The "All Categories" section header
-    const pageContent = this.page.locator(
-      'h1:has-text("Categories"), ' +
-      'h1:has-text("Product Categories"), ' +
-      'button:has-text("New Category"), ' +
-      ':text("All Categories")'
-    );
-    await expect(pageContent.first()).toBeVisible({ timeout: 15000 });
+    await this.expectStandardPageLoaded(this.pageHeader, this.createButton);
   }
 
   /**
    * Open create category dialog
    */
   async openCreateDialog(): Promise<void> {
-    // Wait for button to be visible and enabled before clicking
-    await expect(this.createButton).toBeVisible({ timeout: 15000 });
-    await expect(this.createButton).toBeEnabled({ timeout: 5000 });
-    await this.createButton.click();
-    await expect(this.dialog).toBeVisible();
+    await this.openDialogViaButton(this.createButton, this.dialog);
   }
 
   /**

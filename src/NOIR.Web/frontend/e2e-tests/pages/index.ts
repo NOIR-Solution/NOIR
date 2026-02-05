@@ -4,7 +4,7 @@
  * Export all page objects for easy importing in tests
  */
 
-export { BasePage } from './BasePage';
+export { BasePage, Timeouts } from './BasePage';
 export { LoginPage } from './LoginPage';
 export { DashboardPage } from './DashboardPage';
 export { ProductsPage } from './ProductsPage';
@@ -14,3 +14,4 @@ export { AttributesPage } from './AttributesPage';
 export { BrandsPage } from './BrandsPage';
 export { UsersPage } from './UsersPage';
 export { RolesPage } from './RolesPage';
+export { TenantSettingsPage } from './TenantSettingsPage';

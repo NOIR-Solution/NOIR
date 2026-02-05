@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage, DashboardPage } from '../pages';
+import { LoginPage, DashboardPage, Timeouts } from '../pages';
 
 /**
  * Authentication Tests
@@ -28,6 +28,9 @@ test.describe('Authentication @auth', () => {
       await loginPage.navigate();
       await loginPage.loginAsTenantAdmin();
 
+      // Auth flow requires longer timeout: form submit → backend auth → token → redirect → page load
+      // Firefox can be slower on auth redirects (see MEMORY.md)
+      await page.waitForURL(/\/(portal|dashboard)/, { timeout: Timeouts.PAGE_LOAD });
       await expect(page).toHaveURL(/\/portal/);
     });
 
@@ -36,6 +39,9 @@ test.describe('Authentication @auth', () => {
       await loginPage.navigate();
       await loginPage.loginAsPlatformAdmin();
 
+      // Auth flow requires longer timeout: form submit → backend auth → token → redirect → page load
+      // Firefox can be slower on auth redirects (see MEMORY.md)
+      await page.waitForURL(/\/(portal|dashboard)/, { timeout: Timeouts.PAGE_LOAD });
       await expect(page).toHaveURL(/\/portal/);
     });
 

@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-05
+**Last Updated:** 2026-02-05 | **Index Version:** 3.1
 
 ---
 
@@ -24,16 +24,26 @@
 
 ### Key Statistics
 
-- **Lines of Code:** ~200,000
-- **Test Coverage:** 5,188+ tests across Unit, Integration, and Architecture layers
-- **Feature Modules:** 26 domain-driven modules (E-commerce, CMS, Auth, Multi-tenant, Payments, Shipping)
-- **API Endpoints:** 200+ REST endpoints (27+ endpoint groups)
-- **Domain Entities:** 45+ entities, 22+ enums, 8 domain event files
-- **Application Layer:** 126 Commands, 74 Queries, 39+ Common Interfaces
-- **Source Files:** ~1,998 files (*.cs, *.tsx, *.ts combined)
-- **Frontend:** 60+ UI components, 28+ custom hooks, 23+ API services
-- **Database Indexes:** 233+ indexes (including 14 new filtered indexes for sparse data)
-- **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR
+| Metric | Count | Notes |
+|--------|-------|-------|
+| **Backend Source Files** | 1,180 | C# files in `src/` |
+| **Frontend Source Files** | 305 | TypeScript/TSX in `frontend/src/` |
+| **Test Files** | 456 | C# test files in `tests/` |
+| **Total Source Files** | ~1,941 | Combined codebase |
+| **Feature Modules** | 26 | Domain-driven vertical slices |
+| **API Endpoint Groups** | 29 | Minimal API endpoint files |
+| **Domain Entities** | 50+ | Core business entities |
+| **UI Components** | 56 | shadcn/ui + custom components |
+| **Custom Hooks** | 28 | React hooks in `hooks/` |
+| **API Services** | 23 | Frontend API clients |
+| **Frontend Pages** | 88 | React page components |
+| **E2E Test Specs** | 13 | Playwright test files |
+| **E2E Page Objects** | 12 | POM pattern files |
+| **Documentation Files** | 48 | Markdown docs in `docs/` |
+| **Test Coverage** | 5,188+ | Unit + Integration + Architecture |
+| **Database Indexes** | 233+ | Including 14 filtered indexes |
+
+**Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR, Playwright
 
 ### Directory Structure
 
@@ -254,7 +264,14 @@ Features/{Feature}/
 | **Products** | CreateProduct, UpdateProduct, ArchiveProduct, PublishProduct, AddProductVariant, UpdateProductVariant, DeleteProductVariant, AddProductImage, UpdateProductImage, DeleteProductImage, SetPrimaryProductImage, CreateProductCategory, UpdateProductCategory, DeleteProductCategory | GetProducts, GetProductById, GetProductCategories, GetProductCategoryById | ⭐ Product catalog with variants & images |
 | **Cart** | AddToCart, UpdateCartItem, RemoveCartItem, ClearCart, MergeCart | GetCart, GetCartSummary | ⭐ Shopping cart with guest support |
 | **Checkout** | InitiateCheckout, SetCheckoutAddress, SelectShipping, SelectPayment, CompleteCheckout | GetCheckoutSession | ⭐ **NEW:** Hybrid accordion checkout flow |
-| **Orders** | CreateOrder, ConfirmOrder, ShipOrder, CancelOrder | GetOrders, GetOrderById | ⭐ **NEW:** Order lifecycle management |
+| **Orders** | CreateOrder, ConfirmOrder, ShipOrder, CancelOrder | GetOrders, GetOrderById | Order lifecycle management |
+| **Brands** | CreateBrand, UpdateBrand, DeleteBrand | GetBrands, GetBrandById | Product brand management |
+| **ProductAttributes** | CreateAttribute, UpdateAttribute, DeleteAttribute | GetAttributes, GetAttributeById, GetCategoryAttributes | Dynamic product attributes (13 types) |
+| **Inventory** | AdjustStock, TransferStock | GetStockHistory, GetLowStockProducts | Stock and inventory management |
+| **ProductFilter** | - | FilterProducts, GetCategoryFilters | Faceted product filtering |
+| **ProductFilterIndex** | RebuildIndex, SyncIndex | - | Denormalized filter index |
+| **FilterAnalytics** | CreateFilterEvent | GetPopularFilters, GetFilterUsage | Filter usage analytics |
+| **Shipping** | CreateShippingOrder, UpdateTracking | GetShippingProviders, GetShippingRates | Shipping provider integration |
 
 #### Navigation
 
@@ -1041,13 +1058,26 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 ---
 
 **Last Updated:** 2026-02-05
-**Version:** 3.0
+**Version:** 3.1
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 3.1 (2026-02-05) - Automated Index Refresh
+
+- **Statistics Table Update** - Converted to tabular format for clarity
+  - Backend source files: 1,180 C# files
+  - Frontend source files: 305 TypeScript/TSX files
+  - Test files: 456 C# test files
+  - Total source: ~1,941 files
+- **Feature Modules** - Added 8 missing modules to summary table:
+  - Brands, ProductAttributes, Inventory, ProductFilter
+  - ProductFilterIndex, FilterAnalytics, Shipping
+- **E2E Testing** - 13 test specs, 12 page objects documented
+- **Documentation** - 48 markdown files in docs/
 
 ### Version 3.0 (2026-02-05) - Complete Repository Index Refresh
 

@@ -2,25 +2,35 @@
   "project": {
     "name": "NOIR",
     "type": "Enterprise .NET 10 + React 19 SaaS Foundation",
-    "architecture": ["Clean Architecture", "CQRS", "DDD", "Multi-Tenant"],
-    "generated": "2026-01-26",
-    "version": "2.2"
+    "architecture": ["Clean Architecture", "CQRS", "DDD", "Multi-Tenant", "Vertical Slice"],
+    "generated": "2026-02-05",
+    "version": "3.1"
   },
   "metrics": {
-    "backend_files": 650,
-    "frontend_files": 180,
-    "test_files": 330,
-    "total_tests": 5571,
+    "backend_files": 1180,
+    "frontend_files": 305,
+    "test_files": 456,
+    "total_source_files": 1941,
+    "total_tests": 5188,
     "test_status": "passing",
-    "documentation_files": 46,
-    "ai_memories": 13
+    "documentation_files": 48,
+    "ui_components": 56,
+    "custom_hooks": 28,
+    "api_services": 23,
+    "frontend_pages": 88,
+    "e2e_test_specs": 13,
+    "e2e_page_objects": 12,
+    "feature_modules": 26,
+    "endpoint_groups": 29,
+    "domain_entities": 50,
+    "database_indexes": 233
   },
   "tests": {
-    "domain": 841,
-    "application": 4100,
+    "domain": 842,
+    "application": 4321,
     "architecture": 25,
     "integration": 605,
-    "total": 5571,
+    "total": 5188,
     "pass_rate": "100%"
   },
   "entry_points": {
@@ -32,8 +42,8 @@
   "urls": {
     "frontend": "http://localhost:3000",
     "backend": "http://localhost:4000",
-    "api_docs": "http://localhost:3000/api/docs",
-    "hangfire": "http://localhost:3000/hangfire"
+    "api_docs": "http://localhost:4000/api/docs",
+    "hangfire": "http://localhost:4000/hangfire"
   },
   "admin_credentials": {
     "platform_admin": {
@@ -56,19 +66,26 @@
     "email_templates": ["Update", "SendTest", "Preview", "MultiTenant COW"],
     "legal_pages": ["Update", "Preview", "RevertToDefault", "MultiTenant COW", "SEO"],
     "tenants": ["CRUD", "Provisioning", "Settings", "Archive", "Restore"],
-    "tenant_settings": ["Branding", "Contact", "SMTP", "Regional", "EmailTemplates", "LegalPages"],
+    "tenant_settings": ["Branding", "Contact", "SMTP", "Regional", "EmailTemplates", "LegalPages", "PaymentGateways"],
     "notifications": ["MarkAsRead", "Delete", "Preferences", "List", "UnreadCount", "SignalR Push"],
     "blog": ["Posts CRUD", "Publish/Unpublish", "Categories", "Tags", "SEO"],
     "media": ["Upload", "Delete", "List", "ImageProcessing"],
     "developer_logs": ["StreamLogs", "ErrorClusters", "Stats", "History"],
     "products": ["CRUD", "Variants", "Pricing", "Inventory", "Categories", "Images", "Publish/Archive", "Search"],
-    "cart": ["AddToCart", "UpdateQuantity", "RemoveItem", "ClearCart", "GetCart", "GetSummary", "MergeCart", "GuestSupport"]
+    "cart": ["AddToCart", "UpdateQuantity", "RemoveItem", "ClearCart", "GetCart", "GetSummary", "MergeCart", "GuestSupport"],
+    "checkout": ["InitiateCheckout", "SetAddress", "SelectShipping", "SelectPayment", "CompleteCheckout"],
+    "orders": ["CRUD", "Confirm", "Ship", "Cancel", "Deliver", "Complete"],
+    "payments": ["CreatePayment", "ConfigureGateway", "ProcessWebhook", "RequestRefund", "ApproveRefund", "CODCollection"],
+    "brands": ["CRUD", "Logo", "Banner", "SEO"],
+    "product_attributes": ["CRUD", "13 AttributeTypes", "CategoryAttributes", "FilterIndex"],
+    "inventory": ["AdjustStock", "TransferStock", "StockHistory", "LowStockAlerts"],
+    "shipping": ["Providers", "Rates", "Tracking", "WebhookLogs"]
   },
   "tech_stack": {
     "backend": {
       "runtime": ".NET 10 LTS",
       "database": "SQL Server + EF Core 10",
-      "mediator": "Wolverine 5.9+",
+      "mediator": "Wolverine 5.11+",
       "validation": "FluentValidation 11.x",
       "mapping": "Mapperly 4.3+",
       "multi_tenancy": "Finbuckle.MultiTenant 10.0+",
@@ -89,7 +106,8 @@
       "data_fetching": "TanStack Query 5.x",
       "validation": "Zod 3.x",
       "forms": "React Hook Form 7.x",
-      "i18n": "i18next"
+      "i18n": "i18next",
+      "e2e_testing": "Playwright"
     }
   },
   "layers": {
@@ -101,13 +119,22 @@
         "EmailTemplate", "LegalPage", "MediaFile", "Post", "PostCategory", "PostTag",
         "EntityAuditLog", "HandlerAuditLog", "HttpRequestAuditLog", "ResourceShare",
         "PasswordResetOtp", "EmailChangeOtp",
-        "Product", "ProductVariant", "ProductImage", "ProductCategory",
-        "Cart", "CartItem"
+        "Product", "ProductVariant", "ProductImage", "ProductCategory", "ProductOption", "ProductOptionValue",
+        "Brand", "ProductAttribute", "ProductAttributeValue", "CategoryAttribute", "ProductAttributeAssignment",
+        "ProductFilterIndex", "FilterAnalyticsEvent", "InventoryMovement",
+        "Cart", "CartItem", "CheckoutSession", "Order", "OrderItem",
+        "PaymentGateway", "PaymentTransaction", "PaymentWebhookLog", "PaymentOperationLog", "PaymentInstallment", "Refund",
+        "ShippingProvider", "ShippingOrder", "ShippingTrackingEvent", "ShippingWebhookLog"
       ],
       "common_types": ["Result", "Error", "ErrorCodes", "Permissions", "Roles"],
-      "base_classes": ["Entity", "AggregateRoot", "TenantAggregateRoot", "PlatformTenantAggregateRoot"],
-      "interfaces": ["IRepository", "IUnitOfWork", "ITenantEntity", "IAuditableEntity", "ISeedableEntity"],
-      "enums": ["AuditOperationType", "NotificationType", "NotificationCategory", "PostStatus", "EmailFrequency", "ProductStatus", "CartStatus"]
+      "base_classes": ["Entity", "AggregateRoot", "TenantAggregateRoot", "PlatformTenantAggregateRoot", "TenantEntity", "PlatformTenantEntity"],
+      "interfaces": ["IRepository", "IUnitOfWork", "ITenantEntity", "IAuditableEntity", "ISeedableEntity", "ISoftDeletable"],
+      "enums": [
+        "AuditOperationType", "NotificationType", "NotificationCategory", "PostStatus", "EmailFrequency",
+        "ProductStatus", "CartStatus", "CheckoutSessionStatus", "OrderStatus", "ReservationStatus",
+        "PaymentStatus", "PaymentMethod", "RefundStatus", "RefundReason", "GatewayEnvironment", "GatewayHealthStatus",
+        "WebhookProcessingStatus", "PaymentOperationType", "InventoryMovementType", "AttributeType"
+      ]
     },
     "application": {
       "path": "src/NOIR.Application/",
@@ -115,15 +142,16 @@
         "Auth", "Users", "Roles", "Permissions", "Tenants", "TenantSettings",
         "Audit", "Notifications", "EmailTemplates", "LegalPages", "Media",
         "Blog", "DeveloperLogs", "PlatformSettings", "Payments",
-        "Products", "Cart"
+        "Products", "Cart", "Checkout", "Orders", "Brands", "ProductAttributes",
+        "Inventory", "ProductFilter", "ProductFilterIndex", "FilterAnalytics", "Shipping"
       ],
-      "specifications": ["RefreshTokens", "Notifications", "PasswordResetOtps", "EmailChangeOtps", "TenantSettings", "Roles", "Permissions", "Products", "Cart"],
+      "specifications": ["RefreshTokens", "Notifications", "PasswordResetOtps", "EmailChangeOtps", "TenantSettings", "Roles", "Permissions", "Products", "Cart", "MediaFiles", "ResourceShares"],
       "behaviors": ["Logging", "Performance", "Validation", "Audit"],
-      "interfaces": ["ICurrentUser", "IUserIdentityService", "IEmailService", "ITokenService"]
+      "interfaces": ["ICurrentUser", "IUserIdentityService", "IEmailService", "ITokenService", "IPaymentService", "IPaymentGatewayFactory", "ICredentialEncryptionService"]
     },
     "infrastructure": {
       "path": "src/NOIR.Infrastructure/",
-      "modules": ["Persistence", "Identity", "Services", "Email", "Audit", "Caching", "Hubs", "Media", "Storage", "Localization", "Logging", "BackgroundJobs", "Validation"],
+      "modules": ["Persistence", "Identity", "Services", "Email", "Audit", "Caching", "Hubs", "Media", "Storage", "Localization", "Logging", "BackgroundJobs", "Validation", "Payment"],
       "contexts": ["ApplicationDbContext", "TenantStoreDbContext"],
       "interceptors": ["AuditableEntityInterceptor", "EntityAuditLogInterceptor", "TenantIdSetterInterceptor", "DomainEventInterceptor"],
       "hubs": ["NotificationHub", "DeveloperLogHub", "PaymentHub"]
@@ -136,7 +164,9 @@
         "EmailTemplateEndpoints", "LegalPageEndpoints", "PublicLegalPageEndpoints",
         "MediaEndpoints", "FileEndpoints", "BlogEndpoints", "FeedEndpoints",
         "DeveloperLogEndpoints", "PlatformSettingsEndpoints", "PaymentEndpoints",
-        "ProductEndpoints", "ProductCategoryEndpoints", "CartEndpoints"
+        "ProductEndpoints", "ProductCategoryEndpoints", "CartEndpoints", "CheckoutEndpoints",
+        "OrderEndpoints", "BrandEndpoints", "ProductAttributeEndpoints", "ProductFilterEndpoints",
+        "FilterAnalyticsEndpoints", "ShippingEndpoints", "ShippingProviderEndpoints"
       ],
       "middleware": ["ExceptionHandling", "CurrentUserLoader", "HttpRequestAudit", "TenantResolution"],
       "filters": ["ValidateAntiforgeryTokenAttribute"]
@@ -146,13 +176,30 @@
       "pages": {
         "public": ["Landing", "Login", "ForgotPassword", "VerifyOtp", "ResetPassword", "PrivacyPage", "TermsPage"],
         "portal": ["Dashboard", "Settings", "Notifications", "NotificationPreferences"],
-        "admin": ["Users", "Roles", "Tenants", "TenantDetail", "TenantSettings", "ActivityTimeline", "DeveloperLogs", "PlatformSettings"],
-        "content": ["EmailTemplates", "LegalPages", "BlogPosts", "BlogCategories", "BlogTags"]
+        "admin": ["Users", "Roles", "Tenants", "TenantDetail", "TenantSettings", "ActivityTimeline", "DeveloperLogs", "PlatformSettings", "PaymentGateways"],
+        "content": ["EmailTemplates", "LegalPages", "BlogPosts", "BlogCategories", "BlogTags"],
+        "ecommerce": ["Products", "ProductDetail", "Categories", "Brands", "Attributes", "Inventory"]
       },
-      "components": ["ui", "auth", "portal", "settings", "notifications", "seo", "forgot-password"],
+      "components": ["ui", "auth", "portal", "settings", "notifications", "seo", "forgot-password", "products", "storefront", "onboarding", "network", "command-palette", "layout"],
       "contexts": ["AuthContext", "ThemeContext", "NotificationContext", "BrandingContext", "RegionalSettingsContext"],
-      "hooks": ["useLogin", "useSignalR", "usePermissions", "useRoles", "useUsers", "useTenants", "useBlog", "useLogStream", "usePageContext", "useImageUpload", "useValidatedForm"],
-      "services": ["apiClient", "auth", "users", "roles", "tenants", "tenantSettings", "audit", "notifications", "emailTemplates", "legalPages", "media", "blog", "developerLogs", "platformSettings", "forgotPassword", "profile", "settings", "pageContext"]
+      "hooks": [
+        "useLogin", "useSignalR", "usePermissions", "useRoles", "useUsers", "useTenants", "useBlog",
+        "useLogStream", "usePageContext", "useImageUpload", "useValidatedForm", "usePaymentGateways",
+        "useProducts", "useBrands", "useProductAttributes", "useStockHistory", "useOnboarding",
+        "useNetworkStatus", "useAutoSave", "useUnsavedChanges", "useSoftDelete", "useKeyboardShortcuts",
+        "useBreadcrumbs", "useSmartDefaults", "useMediaQuery", "useOptimisticMutation"
+      ],
+      "services": [
+        "apiClient", "auth", "users", "roles", "tenants", "tenantSettings", "audit", "notifications",
+        "emailTemplates", "legalPages", "media", "blog", "developerLogs", "platformSettings",
+        "forgotPassword", "profile", "settings", "pageContext", "paymentGateways", "products",
+        "productAttributes", "brands"
+      ]
+    },
+    "e2e_tests": {
+      "path": "src/NOIR.Web/frontend/e2e-tests/",
+      "specs": ["auth", "categories", "products", "brands", "attributes", "roles", "users", "tenant-settings", "navigation", "smoke"],
+      "pages": ["BasePage", "LoginPage", "CategoriesPage", "ProductsPage", "BrandsPage", "AttributesPage", "RolesPage", "UsersPage", "TenantSettingsPage"]
     }
   },
   "documentation": {
@@ -168,12 +215,15 @@
       "json-enum-serialization", "jwt-refresh-token", "technical-checklist"
     ],
     "backend_research": [
-      "role-permission-best-practices-2025", "hierarchical-audit-logging-comparison-2025",
+      "role-permission-system-research", "hierarchical-audit-logging-comparison-2025",
       "validation-unification-plan", "cache-busting-best-practices", "seo-meta-and-hint-text-best-practices",
-      "ecommerce-ux-patterns-2026"
+      "ecommerce-ux-patterns-2026", "vietnam-shipping-integration-2026"
     ],
     "frontend_guides": [
-      "architecture", "theme", "api-types", "localization-guide", "COLOR_SCHEMA_GUIDE", "vibe-kanban-integration"
+      "architecture", "api-types", "localization-guide", "COLOR_SCHEMA_GUIDE", "vibe-kanban-integration", "ecommerce-ui", "ui-ux-enhancements"
+    ],
+    "testing_guides": [
+      "E2E-TESTING-GUIDE", "PRODUCT_E2E_TESTS", "TEST_CASES", "TEST_PLAN"
     ],
     "architecture_decisions": ["001-tech-stack", "002-frontend-ui-stack", "003-vertical-slice-cqrs"]
   },
@@ -189,7 +239,9 @@
     "frontend_install": "cd src/NOIR.Web/frontend && npm install",
     "frontend_dev": "cd src/NOIR.Web/frontend && npm run dev",
     "frontend_build": "cd src/NOIR.Web/frontend && npm run build",
-    "frontend_generate_api": "cd src/NOIR.Web/frontend && npm run generate:api"
+    "frontend_generate_api": "cd src/NOIR.Web/frontend && npm run generate:api",
+    "e2e_test": "cd src/NOIR.Web/frontend && npx playwright test",
+    "e2e_test_ui": "cd src/NOIR.Web/frontend && npx playwright test --ui"
   },
   "critical_rules": [
     "Use Specifications for all database queries - never raw DbSet",

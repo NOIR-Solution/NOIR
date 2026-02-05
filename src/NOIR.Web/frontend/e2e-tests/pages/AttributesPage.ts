@@ -1,5 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { BasePage, Timeouts } from './BasePage';
 
 /**
  * AttributesPage - Page Object for Product Attribute Management
@@ -72,20 +72,18 @@ export class AttributesPage extends BasePage {
   }
 
   /**
-   * Verify page loaded - check for page header or create button
+   * Verify page loaded using sequential wait pattern
+   * Waits for header first (proves render), then create button (proves data loaded)
    */
   async expectPageLoaded(): Promise<void> {
-    // Wait for either the page header or create button to be visible
-    const pageContent = this.page.locator('h1:has-text("Attributes"), button:has-text("New Attribute")');
-    await expect(pageContent.first()).toBeVisible({ timeout: 15000 });
+    await this.expectStandardPageLoaded(this.pageHeader, this.createButton);
   }
 
   /**
    * Open create attribute dialog
    */
   async openCreateDialog(): Promise<void> {
-    await this.createButton.click();
-    await expect(this.dialog).toBeVisible();
+    await this.openDialogViaButton(this.createButton, this.dialog);
   }
 
   /**
@@ -95,6 +93,51 @@ export class AttributesPage extends BasePage {
     await this.typeSelect.click();
     const option = this.page.locator(`[role="option"]:has-text("${type}")`);
     await option.click();
+  }
+
+  /**
+   * Create a generic attribute with just name and type
+   */
+  async createAttribute(data: {
+    name: string;
+    type: string;
+    code?: string;
+  }): Promise<void> {
+    await this.openCreateDialog();
+
+    await this.nameInput.fill(data.name);
+
+    // Code field may be auto-generated, fill if provided
+    if (data.code && await this.codeInput.isVisible()) {
+      await this.codeInput.fill(data.code);
+    }
+
+    // Select type using Cmdk command palette (uses BasePage helper)
+    await this.selectFromCmdk(this.typeSelect, data.type);
+
+    await this.saveButton.click();
+
+    // Wait for either dialog to close or error toast
+    await Promise.race([
+      this.dialog.waitFor({ state: 'hidden', timeout: 15000 }),
+      this.page.locator('[data-sonner-toast][data-type="error"]').waitFor({ state: 'visible', timeout: 15000 }),
+    ]);
+
+    // Check if creation succeeded
+    const dialogHidden = await this.dialog.isHidden();
+    if (dialogHidden) {
+      // Wait for list to refresh
+      await this.waitForPageLoad();
+    }
+  }
+
+  /**
+   * Search attributes
+   */
+  async search(query: string): Promise<void> {
+    await this.searchInput.fill(query);
+    await this.page.keyboard.press('Enter');
+    await this.waitForPageLoad();
   }
 
   /**
@@ -298,11 +341,10 @@ export class AttributesPage extends BasePage {
   }
 
   /**
-   * Verify attribute exists
+   * Verify attribute exists (searches if not immediately visible)
    */
   async expectAttributeExists(name: string): Promise<void> {
-    const attribute = this.page.locator(`text="${name}"`).first();
-    await expect(attribute).toBeVisible({ timeout: 10000 });
+    await this.expectItemExists(name, () => this.search(name));
   }
 
   /**

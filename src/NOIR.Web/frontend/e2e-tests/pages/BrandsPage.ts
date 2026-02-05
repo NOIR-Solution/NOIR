@@ -56,20 +56,18 @@ export class BrandsPage extends BasePage {
   }
 
   /**
-   * Verify page loaded - check for page header or create button
+   * Verify page loaded using sequential wait pattern
+   * Waits for header first (proves render), then create button (proves data loaded)
    */
   async expectPageLoaded(): Promise<void> {
-    // Wait for either the page header or create button to be visible
-    const pageContent = this.page.locator('h1:has-text("Brands"), button:has-text("New Brand")');
-    await expect(pageContent.first()).toBeVisible({ timeout: 15000 });
+    await this.expectStandardPageLoaded(this.pageHeader, this.createButton);
   }
 
   /**
    * Open create dialog
    */
   async openCreateDialog(): Promise<void> {
-    await this.createButton.click();
-    await expect(this.dialog).toBeVisible();
+    await this.openDialogViaButton(this.createButton, this.dialog);
   }
 
   /**
@@ -176,10 +174,9 @@ export class BrandsPage extends BasePage {
   }
 
   /**
-   * Verify brand exists
+   * Verify brand exists (searches if not immediately visible)
    */
   async expectBrandExists(name: string): Promise<void> {
-    const brand = this.page.locator(`text="${name}"`).first();
-    await expect(brand).toBeVisible({ timeout: 10000 });
+    await this.expectItemExists(name, () => this.search(name));
   }
 }

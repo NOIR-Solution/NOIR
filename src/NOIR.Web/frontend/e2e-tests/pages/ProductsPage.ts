@@ -56,16 +56,11 @@ export class ProductsPage extends BasePage {
   }
 
   /**
-   * Verify products page loaded - check for page header or page content
+   * Verify page loaded using sequential wait pattern
+   * Waits for header first (proves render), then create button (proves data loaded)
    */
   async expectPageLoaded(): Promise<void> {
-    // Wait for page content - look for Products header or All Products section
-    const pageContent = this.page.locator(
-      'h1:has-text("Products"), ' +
-      ':text("All Products"), ' +
-      'a[href="/portal/ecommerce/products/new"]'
-    );
-    await expect(pageContent.first()).toBeVisible({ timeout: 15000 });
+    await this.expectStandardPageLoaded(this.pageHeader, this.createButton);
   }
 
   /**

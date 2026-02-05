@@ -49,20 +49,22 @@ export class RolesPage extends BasePage {
   }
 
   /**
-   * Verify page loaded - check for page header or create button
+   * Verify page loaded - wait for create button specifically
+   * This ensures data loading is complete, not just header render
+   */
+  /**
+   * Verify page loaded using sequential wait pattern
+   * Waits for header first (proves render), then create button (proves data loaded)
    */
   async expectPageLoaded(): Promise<void> {
-    // Wait for either the page header or create button to be visible
-    const pageContent = this.page.locator('h1:has-text("Roles"), button:has-text("Create Role")');
-    await expect(pageContent.first()).toBeVisible({ timeout: 15000 });
+    await this.expectStandardPageLoaded(this.pageHeader, this.createButton);
   }
 
   /**
    * Open create role dialog
    */
   async openCreateDialog(): Promise<void> {
-    await this.createButton.click();
-    await expect(this.dialog).toBeVisible();
+    await this.openDialogViaButton(this.createButton, this.dialog);
   }
 
   /**
