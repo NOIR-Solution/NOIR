@@ -73,9 +73,10 @@ export class PlatformSettingsPage extends BasePage {
     this.loadingSpinner = page.locator('[role="progressbar"], .animate-spin');
 
     // SMTP Settings Card
+    // Badge uses data-slot="badge" in shadcn/ui
     this.smtpCard = page.locator('[data-testid="smtp-card"], .card:has-text("SMTP")').first();
-    this.smtpConfiguredBadge = page.locator('.badge:has-text("Configured")');
-    this.smtpDefaultBadge = page.locator('.badge:has-text("Using defaults")');
+    this.smtpConfiguredBadge = page.locator('[data-slot="badge"]:has-text("Configured"), span:has-text("Configured"):has(svg)');
+    this.smtpDefaultBadge = page.locator('[data-slot="badge"]:has-text("Using defaults"), span:has-text("Using defaults"):has(svg)');
     this.smtpNotConfiguredAlert = page.locator('[role="alert"]:has-text("Using Default Configuration")');
 
     // SMTP Settings Form Fields
@@ -95,14 +96,14 @@ export class PlatformSettingsPage extends BasePage {
     this.testSendButton = page.locator('[role="dialog"] button:has-text("Send Test")');
     this.testCancelButton = page.locator('[role="dialog"] button:has-text("Cancel")');
 
-    // Email Templates Tab
+    // Email Templates Tab - shadcn Badge uses data-slot="badge"
     this.emailTemplatesCard = page.locator('[data-testid="email-templates-card"], .card:has-text("Email Templates")').first();
-    this.emailTemplateCards = page.locator('.card:has-text("Platform"):has(.badge)');
+    this.emailTemplateCards = page.locator('.card:has-text("Platform"):has([data-slot="badge"])');
     this.noEmailTemplatesMessage = page.locator('text="No platform email templates found."');
 
-    // Legal Pages Tab
+    // Legal Pages Tab - shadcn Badge uses data-slot="badge"
     this.legalPagesCard = page.locator('[data-testid="legal-pages-card"], .card:has-text("Legal Pages")').first();
-    this.legalPageCards = page.locator('.card:has-text("Platform Default"):has(.badge)');
+    this.legalPageCards = page.locator('.card:has-text("Platform Default"):has([data-slot="badge"])');
     this.noLegalPagesMessage = page.locator('text="No platform legal pages found."');
   }
 
@@ -295,7 +296,8 @@ export class PlatformSettingsPage extends BasePage {
     }
 
     // Count cards with "Platform" badge in email templates section
-    const cards = this.page.locator('.card:has(.badge:has-text("Platform"))');
+    // shadcn Badge uses data-slot="badge"
+    const cards = this.page.locator('.card:has([data-slot="badge"]:has-text("Platform"))');
     return await cards.count();
   }
 
@@ -307,7 +309,8 @@ export class PlatformSettingsPage extends BasePage {
     const templateCard = this.page.locator(`.card:has-text("${templateName}")`).first();
     await expect(templateCard).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
 
-    const editButton = templateCard.locator('button').filter({ has: this.page.locator('svg.lucide-pencil, .lucide-pencil') });
+    // Use aria-label or title with fallback to position-based selector
+    const editButton = templateCard.locator('button[aria-label*="Edit"], button[title*="Edit"], button:first-of-type').first();
     await editButton.click();
   }
 
@@ -324,7 +327,8 @@ export class PlatformSettingsPage extends BasePage {
     }
 
     // Count cards with "Platform Default" badge in legal pages section
-    const cards = this.page.locator('.card:has(.badge:has-text("Platform Default"))');
+    // shadcn Badge uses data-slot="badge"
+    const cards = this.page.locator('.card:has([data-slot="badge"]:has-text("Platform Default"))');
     return await cards.count();
   }
 
@@ -336,7 +340,8 @@ export class PlatformSettingsPage extends BasePage {
     const legalPageCard = this.page.locator(`.card:has-text("${pageTitle}")`).first();
     await expect(legalPageCard).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
 
-    const editButton = legalPageCard.locator('button').filter({ has: this.page.locator('svg.lucide-pencil, .lucide-pencil') }).first();
+    // Use aria-label or title with fallback to position-based selector
+    const editButton = legalPageCard.locator('button[aria-label*="Edit"], button[title*="Edit"], button:nth-of-type(1)').first();
     await editButton.click();
   }
 
@@ -348,7 +353,8 @@ export class PlatformSettingsPage extends BasePage {
     const legalPageCard = this.page.locator(`.card:has-text("${pageTitle}")`).first();
     await expect(legalPageCard).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
 
-    const viewButton = legalPageCard.locator('button').filter({ has: this.page.locator('svg.lucide-eye, .lucide-eye') }).first();
+    // Use aria-label or title with fallback to position-based selector (view is typically 2nd button)
+    const viewButton = legalPageCard.locator('button[aria-label*="View"], button[title*="View"], button:nth-of-type(2)').first();
 
     // Wait for new page popup
     const [newPage] = await Promise.all([
@@ -394,12 +400,12 @@ export class PlatformSettingsPage extends BasePage {
     const name = await templateCard.locator('h4').textContent() ?? '';
     const description = await templateCard.locator('p.text-muted-foreground').first().textContent() ?? '';
 
-    // Get language badge
-    const languageBadge = templateCard.locator('.badge:has-text("en"), .badge:has-text("vi")').first();
+    // Get language badge - shadcn Badge uses data-slot="badge"
+    const languageBadge = templateCard.locator('[data-slot="badge"]:has-text("en"), [data-slot="badge"]:has-text("vi")').first();
     const language = await languageBadge.textContent() ?? '';
 
-    // Check if active
-    const activeBadge = templateCard.locator('.badge:has-text("Active")');
+    // Check if active - shadcn Badge uses data-slot="badge"
+    const activeBadge = templateCard.locator('[data-slot="badge"]:has-text("Active")');
     const isActive = await activeBadge.isVisible().catch(() => false);
 
     return {

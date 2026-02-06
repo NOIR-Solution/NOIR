@@ -54,8 +54,9 @@ export class PostEditorPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    // Header elements
-    this.backButton = page.locator('button:has(svg.lucide-arrow-left)').first();
+    // Header elements - back button is an icon-only button with ArrowLeft icon
+    // Selector priority: aria-label (best) → SVG class (fallback) → position-based (last resort)
+    this.backButton = page.locator('button[aria-label*="Back"], button[aria-label*="back"], button:has(svg[class*="lucide-arrow-left"]), header button[variant="ghost"]:first-child, .flex.items-center.gap-3 > button:first-child').first();
     this.pageTitle = page.locator('h1:has-text("New Post"), h1:has-text("Edit Post")');
     this.saveButton = page.locator('button:has-text("Save")');
     this.statusBadge = page.locator('[class*="badge"]');
@@ -81,7 +82,7 @@ export class PostEditorPage extends BasePage {
     // Featured image
     this.imageUploadArea = page.locator('text="Click to upload featured image"').first();
     this.imagePreview = page.locator('img[alt*="preview"], img[alt*="Featured"]');
-    this.removeImageButton = page.locator('button[class*="destructive"]:has(svg.lucide-x)');
+    this.removeImageButton = page.locator('button[aria-label*="Remove"], button[title*="Remove"], button[class*="destructive"]').first();
     this.replaceImageButton = page.locator('button:has-text("Replace Image")');
     this.imageAltInput = page.locator('input[placeholder*="Describe the image"]');
 

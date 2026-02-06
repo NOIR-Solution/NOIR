@@ -218,6 +218,19 @@ export class BasePage {
   }
 
   /**
+   * Click element with scroll handling for elements inside scroll containers (e.g., tall dialogs)
+   * Uses JavaScript scrollIntoView which works within nested scroll contexts
+   * @param locator - The element to click
+   */
+  async clickWithScroll(locator: Locator): Promise<void> {
+    await locator.evaluate((el) => {
+      el.scrollIntoView({ behavior: 'instant', block: 'center' });
+    });
+    await this.page.waitForTimeout(Timeouts.STABILITY_WAIT);
+    await locator.click();
+  }
+
+  /**
    * Verify an item exists, searching if not immediately visible
    * Handles pagination by searching for the item
    * @param name - Text to find on the page

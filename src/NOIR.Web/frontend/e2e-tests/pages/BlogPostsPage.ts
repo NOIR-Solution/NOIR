@@ -33,7 +33,9 @@ export class BlogPostsPage extends BasePage {
     this.createButton = page.locator('a:has-text("New Post"), button:has-text("New Post")');
     this.searchInput = page.locator('input[placeholder*="Search posts"]').first();
     this.searchButton = page.locator('button[type="submit"]:has-text("Search")');
-    this.statusFilter = page.locator('button[role="combobox"]:has-text("All Status"), button[role="combobox"]:has-text("Status")');
+    // Status filter Select - positioned after search form, before category filter
+    // Uses w-32 class to identify it (category filter uses w-40)
+    this.statusFilter = page.locator('button[role="combobox"].w-32, button[role="combobox"]:has-text("All Status"), button[role="combobox"]:has-text("Status")').first();
     this.categoryFilter = page.locator('button[role="combobox"]:has-text("All Categories"), button[role="combobox"]:has-text("Category")');
     this.postsTable = page.locator('table');
     this.pageHeader = page.locator('h1:has-text("Blog Posts")');

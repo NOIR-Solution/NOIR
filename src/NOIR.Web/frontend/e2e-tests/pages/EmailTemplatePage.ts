@@ -80,10 +80,10 @@ export class EmailTemplatePage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    // Page Header
+    // Page Header - shadcn Badge uses data-slot="badge"
     this.pageHeader = page.locator('h1.text-2xl');
     this.backButton = page.locator('button:has([class*="lucide-arrow-left"])').first();
-    this.templateNameBadge = page.locator('h1 .badge, h1 ~ .badge').first();
+    this.templateNameBadge = page.locator('h1 [data-slot="badge"], h1 ~ [data-slot="badge"]').first();
 
     // Action Buttons
     this.previewButton = page.locator('button:has-text("Preview")');
@@ -110,7 +110,8 @@ export class EmailTemplatePage extends BasePage {
     this.templateInfoCard = page.locator('div:has(> div:has-text("Template Info"))').first();
     this.templateVersionDisplay = page.locator('text=Version').locator('..').locator('span.font-medium').last();
     this.templateStatusSwitch = page.locator('#template-active');
-    this.templateSourceBadge = page.locator('text=Source').locator('..').locator('.badge').last();
+    // shadcn Badge uses data-slot="badge"
+    this.templateSourceBadge = page.locator('text=Source').locator('..').locator('[data-slot="badge"]').last();
 
     // Sidebar - Variables
     this.variablesCard = page.locator('div:has(> div:has-text("Variables"))').first();

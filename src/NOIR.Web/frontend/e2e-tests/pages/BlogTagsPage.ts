@@ -34,8 +34,8 @@ export class BlogTagsPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    // The create button has "New Tag" text with Plus icon
-    this.createButton = page.locator('button:has-text("New Tag")');
+    // The create button has "New Tag" text with Plus icon - use first() to avoid empty state button
+    this.createButton = page.locator('button:has-text("New Tag")').first();
     this.searchInput = page.locator('input[placeholder*="Search tags"]').first();
     this.searchButton = page.locator('button[type="submit"]:has-text("Search")');
     this.tagsTable = page.locator('table');
@@ -364,9 +364,9 @@ export class BlogTagsPage extends BasePage {
   /**
    * Open delete confirmation via row actions and verify dialog content
    */
-  async openDeleteConfirmation(name: string): Promise<Locator> {
+  async openDeleteConfirmationForTag(name: string): Promise<Locator> {
     const row = this.getTagRow(name);
-    return await this.openDeleteConfirmation(row);
+    return await super.openDeleteConfirmation(row);
   }
 
   /**

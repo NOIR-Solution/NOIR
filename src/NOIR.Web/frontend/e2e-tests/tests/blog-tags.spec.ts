@@ -212,8 +212,8 @@ test.describe('Blog Tags Management @blog @tags', () => {
 
       await tagsPage.openCreateDialog();
 
-      // Check for create dialog title
-      const createTitle = tagsPage.dialog.locator('text=/Create.*Tag|New.*Tag/i');
+      // Check for create dialog title - target heading specifically to avoid matching description
+      const createTitle = tagsPage.dialog.locator('h2:has-text("Create"), h2:has-text("New Tag")');
       await expect(createTitle).toBeVisible({ timeout: 5000 });
 
       // Close dialog
@@ -241,9 +241,9 @@ test.describe('Blog Tags Management @blog @tags', () => {
       const editItem = dropdownMenu.locator('[role="menuitem"]:has-text("Edit")');
       await editItem.click();
 
-      // Check for edit dialog title
+      // Check for edit dialog title - target heading specifically to avoid matching description
       await expect(tagsPage.dialog).toBeVisible({ timeout: 5000 });
-      const editTitle = tagsPage.dialog.locator('text=/Edit.*Tag|Update.*Tag/i');
+      const editTitle = tagsPage.dialog.locator('h2:has-text("Edit Tag")');
       await expect(editTitle).toBeVisible({ timeout: 5000 });
 
       // Close dialog

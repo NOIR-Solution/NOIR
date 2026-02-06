@@ -201,7 +201,8 @@ export class BlogCategoriesPage extends BasePage {
    */
   private async clickEditButton(categoryName: string): Promise<void> {
     const row = this.page.locator(`tr:has-text("${categoryName}")`).first();
-    const actionsButton = row.locator('button:has(svg.lucide-more-horizontal)');
+    // Use aria-label that contains "Actions for" (set in BlogCategoriesPage.tsx line 229)
+    const actionsButton = row.locator('button[aria-label*="Actions for"], td:last-child button').first();
     await actionsButton.click();
 
     const dropdownMenu = this.page.locator('[role="menu"]');
@@ -218,7 +219,8 @@ export class BlogCategoriesPage extends BasePage {
    */
   async deleteCategory(name: string): Promise<void> {
     const row = this.page.locator(`tr:has-text("${name}")`).first();
-    const actionsButton = row.locator('button:has(svg.lucide-more-horizontal)');
+    // Use aria-label that contains "Actions for" (set in BlogCategoriesPage.tsx line 229)
+    const actionsButton = row.locator('button[aria-label*="Actions for"], td:last-child button').first();
     await actionsButton.click();
 
     const dropdownMenu = this.page.locator('[role="menu"]');
@@ -238,7 +240,8 @@ export class BlogCategoriesPage extends BasePage {
    */
   async cancelDelete(name: string): Promise<void> {
     const row = this.page.locator(`tr:has-text("${name}")`).first();
-    const actionsButton = row.locator('button:has(svg.lucide-more-horizontal)');
+    // Use aria-label that contains "Actions for" (set in BlogCategoriesPage.tsx line 229)
+    const actionsButton = row.locator('button[aria-label*="Actions for"], td:last-child button').first();
     await actionsButton.click();
 
     const dropdownMenu = this.page.locator('[role="menu"]');
@@ -340,8 +343,8 @@ export class BlogCategoriesPage extends BasePage {
   /**
    * Close the dialog without saving
    */
-  async closeDialog(): Promise<void> {
-    await this.closeDialog(this.dialog, this.cancelButton);
+  async closeDialogWithoutSaving(): Promise<void> {
+    await super.closeDialog(this.dialog, this.cancelButton);
   }
 
   /**
@@ -383,7 +386,8 @@ export class BlogCategoriesPage extends BasePage {
    */
   async editCategoryFromTree(name: string): Promise<void> {
     const categoryNode = this.page.locator(`text="${name}"`).first();
-    const editButton = categoryNode.locator('..').locator('button:has(svg.lucide-pencil)');
+    // Use aria-label with fallback to icon selector
+    const editButton = categoryNode.locator('..').locator('button[aria-label*="Edit"], button[title*="Edit"], button:nth-of-type(1)').first();
     await editButton.click();
     await expect(this.dialog).toBeVisible({ timeout: Timeouts.DIALOG_OPEN });
   }
@@ -393,7 +397,8 @@ export class BlogCategoriesPage extends BasePage {
    */
   async deleteCategoryFromTree(name: string): Promise<void> {
     const categoryNode = this.page.locator(`text="${name}"`).first();
-    const deleteButton = categoryNode.locator('..').locator('button:has(svg.lucide-trash-2)');
+    // Use aria-label with fallback to button position
+    const deleteButton = categoryNode.locator('..').locator('button[aria-label*="Delete"], button[title*="Delete"], button:nth-of-type(2)').first();
     await deleteButton.click();
     await expect(this.deleteDialog).toBeVisible({ timeout: Timeouts.DIALOG_OPEN });
     await this.deleteConfirmButton.click();

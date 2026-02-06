@@ -58,8 +58,8 @@ export class TenantsPage extends BasePage {
     this.searchButton = page.locator('button:has-text("Search")').first();
     this.tenantTable = page.locator('table');
 
-    // Create Dialog (Credenza component)
-    this.createDialog = page.locator('[data-state="open"][role="dialog"]').first();
+    // Create Dialog (Credenza component) - use same selector as editDialog
+    this.createDialog = page.locator('[role="dialog"]');
     // Edit Dialog (standard Dialog component)
     this.editDialog = page.locator('[role="dialog"]');
 
@@ -336,6 +336,22 @@ export class TenantsPage extends BasePage {
     await this.page.keyboard.press('Escape');
     // Wait for any dialog to close
     await this.page.waitForTimeout(Timeouts.STABILITY_WAIT);
+  }
+
+  /**
+   * Click save button in dialog with scroll handling for tall dialogs
+   * Uses BasePage.clickWithScroll utility
+   */
+  async clickSaveButton(): Promise<void> {
+    await this.clickWithScroll(this.saveButton);
+  }
+
+  /**
+   * Click cancel button in dialog with scroll handling for tall dialogs
+   * Uses BasePage.clickWithScroll utility
+   */
+  async clickCancelButton(): Promise<void> {
+    await this.clickWithScroll(this.cancelButton);
   }
 
   /**

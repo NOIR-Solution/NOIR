@@ -68,8 +68,9 @@ export class LegalPagePage extends BasePage {
     this.pageHeader = page.locator('h1.text-2xl');
     this.backButton = page.locator('button:has([class*="lucide-arrow-left"])').first();
     this.slugDisplay = page.locator('span.text-sm.text-muted-foreground');
-    this.platformDefaultBadge = page.locator('.badge:has-text("Platform Default")');
-    this.customizedBadge = page.locator('.badge:has-text("Customized")');
+    // shadcn Badge uses data-slot="badge"
+    this.platformDefaultBadge = page.locator('[data-slot="badge"]:has-text("Platform Default")');
+    this.customizedBadge = page.locator('[data-slot="badge"]:has-text("Customized")');
 
     // Action Buttons
     this.revertToDefaultButton = page.locator('button:has-text("Revert to Default")');
