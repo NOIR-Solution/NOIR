@@ -469,6 +469,12 @@ app.MapCheckoutEndpoints();
 app.MapShippingProviderEndpoints();
 app.MapShippingEndpoints();
 
+// Dev-only endpoints for E2E testing (not available in production)
+if (app.Environment.IsDevelopment())
+{
+    app.MapDevEndpoints();
+}
+
 // Map SignalR Hubs
 app.MapHub<NOIR.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");
 app.MapHub<NOIR.Infrastructure.Hubs.LogStreamHub>("/hubs/logstream");

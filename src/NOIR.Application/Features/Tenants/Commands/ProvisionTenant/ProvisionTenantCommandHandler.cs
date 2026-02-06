@@ -54,15 +54,37 @@ public class ProvisionTenantCommandHandler
         }
 
         // Step 3: Create the tenant
-        var tenant = Tenant.Create(
-            command.Identifier,
-            command.Name,
-            command.Domain,
-            command.Description,
-            command.Note,
-            isActive: true);
+        Tenant tenant;
+        try
+        {
+            tenant = Tenant.Create(
+                command.Identifier,
+                command.Name,
+                command.Domain,
+                command.Description,
+                command.Note,
+                isActive: true);
+        }
+        catch (ArgumentException ex)
+        {
+            return Result.Failure<ProvisionTenantResult>(
+                Error.Validation("tenant", ex.Message, ErrorCodes.Validation.InvalidInput));
+        }
 
-        var tenantCreated = await _tenantStore.AddAsync(tenant);
+        bool tenantCreated;
+        try
+        {
+            tenantCreated = await _tenantStore.AddAsync(tenant);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to persist tenant {Identifier} to store", command.Identifier);
+            return Result.Failure<ProvisionTenantResult>(
+                Error.Internal(
+                    _localization["auth.tenants.createFailed"],
+                    ErrorCodes.System.InternalError));
+        }
+
         if (!tenantCreated)
         {
             return Result.Failure<ProvisionTenantResult>(
@@ -81,7 +103,21 @@ public class ProvisionTenantCommandHandler
 
         if (command.CreateAdminUser && !string.IsNullOrWhiteSpace(command.AdminEmail))
         {
-            var userCreationResult = await CreateAdminUserAsync(tenant, command, cancellationToken);
+            Result<(string UserId, string Email)> userCreationResult;
+            try
+            {
+                userCreationResult = await CreateAdminUserAsync(tenant, command, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unhandled exception creating admin user for tenant {Identifier}", command.Identifier);
+                await RollbackTenantAsync(tenant);
+                return Result.Failure<ProvisionTenantResult>(
+                    Error.Internal(
+                        _localization["auth.users.createFailed"],
+                        ErrorCodes.Auth.UserCreationFailed));
+            }
+
             if (userCreationResult.IsFailure)
             {
                 // Rollback: Delete the tenant we just created

@@ -66,14 +66,7 @@ test.describe('Category Management @categories', () => {
       await expect(error.first()).toBeVisible({ timeout: 5000 });
     });
 
-    // Known issue: Subcategory creation appears to succeed (dialog closes with success toast)
-    // but child category is not actually saved. Requires API-level debugging.
-    // The frontend correctly:
-    // - Fetches fresh categories when dialog opens (via useProductCategories hook)
-    // - Shows parent in dropdown after parent is created
-    // - Allows selection of parent category
-    // But the API call doesn't persist the child category.
-    test.skip('CAT-013: Create subcategory with parent', async ({ page }) => {
+    test('CAT-013: Create subcategory with parent', async ({ page }) => {
       const categoriesPage = new CategoriesPage(page);
       await categoriesPage.navigate();
       await categoriesPage.expectPageLoaded();
@@ -88,8 +81,18 @@ test.describe('Category Management @categories', () => {
         parentCategory: parentName,
       });
 
-      // Search for the child
-      await categoriesPage.search(childName);
+      // Reload page to ensure fresh data from server
+      await page.reload();
+      await categoriesPage.expectPageLoaded();
+
+      // Expand all tree nodes to reveal subcategories
+      const expandAllButton = page.getByRole('button', { name: 'Expand All' });
+      if (await expandAllButton.isVisible()) {
+        await expandAllButton.click();
+        await page.waitForTimeout(1000);
+      }
+
+      // Child should be visible in the expanded tree
       await categoriesPage.expectCategoryExists(childName);
     });
 

@@ -37,3 +37,6 @@ export { BlogTagsPage } from './BlogTagsPage';
 export { LandingPage } from './LandingPage';
 export { TermsPage } from './TermsPage';
 export { PrivacyPage } from './PrivacyPage';
+
+// Shared components
+export { CommandPalettePage } from './CommandPalettePage';

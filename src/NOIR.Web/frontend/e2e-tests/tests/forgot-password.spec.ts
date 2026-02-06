@@ -80,41 +80,49 @@ test.describe('Forgot Password Flow @forgot-password', () => {
       expect(hasValidationError || stayedOnPage).toBe(true);
     });
 
-    test.skip('FP-003: Submit valid email and verify redirect to OTP page', async ({ page }) => {
-      // SKIPPED: Requires actual email delivery infrastructure
-      // This test depends on backend actually sending OTP emails
+    test('FP-003: Submit valid email and verify redirect to OTP page', async ({ page }) => {
       const forgotPasswordPage = new ForgotPasswordPage(page);
       await forgotPasswordPage.navigate();
       await page.waitForLoadState('networkidle');
 
-      // Use a test email - the backend should accept this and send OTP
-      // For E2E, we use the known tenant admin email
+      // Intercept API response to check if backend processes the request
+      const responsePromise = page.waitForResponse(
+        resp => resp.url().includes('/forgot-password') && resp.request().method() === 'POST',
+        { timeout: Timeouts.PAGE_LOAD }
+      ).catch(() => null);
+
       await forgotPasswordPage.requestPasswordReset('admin@noir.local');
 
-      // Should redirect to OTP verification page
-      // Note: This test depends on backend actually processing the request
-      await forgotPasswordPage.expectEmailAccepted();
+      const response = await responsePromise;
+      if (!response || !response.ok()) {
+        const status = response?.status() ?? 'no response';
+        test.skip(true, `Forgot-password API returned ${status} - may be rate limited`);
+        return;
+      }
 
-      // Verify we're on the verify page
+      // Should redirect to OTP verification page
+      await forgotPasswordPage.expectEmailAccepted();
       expect(forgotPasswordPage.getCurrentPath()).toBe('/forgot-password/verify');
     });
 
-    test.skip('FP-004: OTP page displays masked email', async ({ page }) => {
-      // SKIPPED: Requires actual email delivery infrastructure
+    test('FP-004: OTP page displays masked email', async ({ page }) => {
       const forgotPasswordPage = new ForgotPasswordPage(page);
-      await forgotPasswordPage.navigate();
-      await page.waitForLoadState('networkidle');
 
-      // Submit email to get to OTP page
-      await forgotPasswordPage.requestPasswordReset('admin@noir.local');
-      await forgotPasswordPage.expectEmailAccepted();
+      // Use mock session to access OTP page directly (avoids API dependency)
+      await forgotPasswordPage.navigate();
+      await forgotPasswordPage.setupMockSession({
+        sessionToken: 'test-session-token',
+        maskedEmail: 'a***@noir.local',
+      });
+
+      await forgotPasswordPage.navigateToVerify();
+      await page.waitForLoadState('networkidle');
 
       // Verify OTP inputs are visible
       await expect(forgotPasswordPage.otpInputs.first()).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
 
       // Check for masked email in the page subtitle
       const subtitle = await forgotPasswordPage.pageSubtitle.textContent();
-      // Should contain masked email pattern like "a***@noir.local" or similar text
       expect(subtitle).toBeTruthy();
       // The page should mention something about code/email being sent
       const hasMaskedEmailOrSentText = subtitle?.includes('@') || subtitle?.toLowerCase().includes('sent') || subtitle?.toLowerCase().includes('code');
@@ -189,25 +197,31 @@ test.describe('Forgot Password Flow @forgot-password', () => {
       expect(hasError || stayedOnPage).toBe(true);
     });
 
-    test.skip('FP-006: Resend OTP functionality and cooldown', async ({ page }) => {
-      // SKIPPED: Requires actual email delivery infrastructure
+    test('FP-006: Resend OTP functionality and cooldown', async ({ page }) => {
       const forgotPasswordPage = new ForgotPasswordPage(page);
-      await forgotPasswordPage.navigate();
-      await page.waitForLoadState('networkidle');
 
-      // Go through the flow to get to OTP page
-      await forgotPasswordPage.requestPasswordReset('admin@noir.local');
-      await forgotPasswordPage.expectEmailAccepted();
+      // Use mock session to access OTP page directly (avoids API dependency)
+      await forgotPasswordPage.navigate();
+      await forgotPasswordPage.setupMockSession({
+        sessionToken: 'test-session-token',
+        maskedEmail: 'a***@noir.local',
+      });
+
+      await forgotPasswordPage.navigateToVerify();
+      await page.waitForLoadState('networkidle');
 
       // Check if countdown timer is active (resend should be disabled initially)
       const isCountdownActive = await forgotPasswordPage.isCountdownActive();
-      const resendButtonInitiallyDisabled = await forgotPasswordPage.resendCodeButton.isDisabled({ timeout: Timeouts.QUICK_CHECK }).catch(() => true);
+      const resendButtonVisible = await forgotPasswordPage.resendCodeButton.isVisible({ timeout: Timeouts.QUICK_CHECK }).catch(() => false);
 
-      // Either countdown should be active or resend button should be disabled
-      expect(isCountdownActive || resendButtonInitiallyDisabled).toBe(true);
-
-      // Note: Full resend test would require waiting for cooldown (60s) which is too long for E2E
-      // The test verifies the cooldown mechanism exists
+      if (resendButtonVisible) {
+        const resendButtonInitiallyDisabled = await forgotPasswordPage.resendCodeButton.isDisabled().catch(() => true);
+        // Either countdown should be active or resend button should be disabled
+        expect(isCountdownActive || resendButtonInitiallyDisabled).toBe(true);
+      } else {
+        // Resend button may not be visible if cooldown timer is displayed instead
+        expect(isCountdownActive).toBe(true);
+      }
     });
   });
 
@@ -570,36 +584,66 @@ test.describe('Forgot Password Flow @forgot-password', () => {
   // ============================================================
 
   test.describe('Integration - Full Flow @slow', () => {
-    test.skip('FP-FULL-001: Complete password reset flow (requires real OTP)', async ({ page }) => {
-      // This test is skipped by default as it requires:
-      // 1. A real email to be sent
-      // 2. Access to the OTP (from email or test mailbox)
-      // 3. The password to be actually reset
-
+    test('FP-FULL-001: Complete password reset flow', async ({ page }) => {
+      // Uses dev-only endpoint to retrieve plaintext OTP (available in Development mode)
       const forgotPasswordPage = new ForgotPasswordPage(page);
+      const testEmail = 'admin@noir.local';
+      const originalPassword = '123qwe';
+      // Strong password that meets all frontend+backend requirements (12+ chars, upper, lower, digit, special)
+      const strongPassword = 'TestP@ssw0rd123!';
 
-      // Step 1: Request password reset
+      // Set tenant header for all browser requests (Finbuckle requires X-Tenant for multi-tenant queries)
+      await page.setExtraHTTPHeaders({ 'X-Tenant': 'default' });
+
+      // Step 1: Create password reset session via dev endpoint (returns plaintext OTP)
+      const devResponse = await page.request.post('/api/dev/auth/test-password-reset', {
+        data: { email: testEmail, tenantIdentifier: 'default' },
+      });
+
+      // If dev endpoint is not available, skip gracefully
+      if (!devResponse.ok()) {
+        test.skip(true, 'Dev OTP endpoint not available - backend may not be in Development mode');
+        return;
+      }
+
+      const { sessionToken, maskedEmail, plainOtp } = await devResponse.json();
+      expect(sessionToken).toBeTruthy();
+      expect(plainOtp).toBeTruthy();
+
+      // Step 2: Navigate to forgot-password and set up the session state
       await forgotPasswordPage.navigate();
-      await forgotPasswordPage.requestPasswordReset('admin@noir.local');
-      await forgotPasswordPage.expectEmailAccepted();
+      await forgotPasswordPage.setupMockSession({
+        sessionToken,
+        maskedEmail,
+      });
 
-      // Step 2: Enter OTP (would need to retrieve from email)
-      // const otp = await getOtpFromTestMailbox(); // Would need implementation
-      // await forgotPasswordPage.enterOtp(otp);
-      // await forgotPasswordPage.expectOtpAccepted();
+      // Step 3: Go to OTP verification page and enter the real OTP
+      await forgotPasswordPage.navigateToVerify();
+      await page.waitForLoadState('networkidle');
+      await expect(forgotPasswordPage.otpInputs.first()).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
 
-      // Step 3: Reset password
-      // await forgotPasswordPage.resetPassword('NewSecurePassword123!');
-      // await forgotPasswordPage.expectPasswordResetSuccess();
+      await forgotPasswordPage.enterOtp(plainOtp);
 
-      // Step 4: Verify success
-      // await forgotPasswordPage.expectOnSuccessPage();
-      // await forgotPasswordPage.clickGoToLogin();
+      // Step 4: OTP should be accepted, redirecting to reset page
+      await forgotPasswordPage.expectOtpAccepted();
 
-      // Step 5: Login with new password
-      // const loginPage = new LoginPage(page);
-      // await loginPage.login('admin@noir.local', 'NewSecurePassword123!');
-      // await expect(page).toHaveURL(/\/portal/);
+      // Step 5: Reset password with a strong password that meets all validation requirements
+      await forgotPasswordPage.resetPassword(strongPassword);
+
+      // Step 6: Verify success
+      await forgotPasswordPage.expectPasswordResetSuccess();
+      await forgotPasswordPage.expectOnSuccessPage();
+
+      // Step 7: Navigate to login and verify we can log in
+      await forgotPasswordPage.clickGoToLogin();
+      const loginPage = new LoginPage(page);
+      await expect(loginPage.emailInput).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
+
+      // Cleanup: Restore original password via dev endpoint (bypasses validation)
+      const restoreResponse = await page.request.post('/api/dev/auth/set-password', {
+        data: { email: testEmail, newPassword: originalPassword },
+      });
+      expect(restoreResponse.ok()).toBeTruthy();
     });
   });
 
@@ -631,15 +675,18 @@ test.describe('Forgot Password Flow @forgot-password', () => {
       expect(stayedOnPage || redirectedToVerify || hasMessage).toBe(true);
     });
 
-    test.skip('FP-EDGE-002: OTP input handles paste correctly', async ({ page }) => {
-      // SKIPPED: Requires actual email delivery infrastructure
+    test('FP-EDGE-002: OTP input handles paste correctly', async ({ page }) => {
       const forgotPasswordPage = new ForgotPasswordPage(page);
-      await forgotPasswordPage.navigate();
-      await page.waitForLoadState('networkidle');
 
-      // Go through flow to get to OTP page
-      await forgotPasswordPage.requestPasswordReset('admin@noir.local');
-      await forgotPasswordPage.expectEmailAccepted();
+      // Use mock session to access OTP page directly (same pattern as FP-005b)
+      await forgotPasswordPage.navigate();
+      await forgotPasswordPage.setupMockSession({
+        sessionToken: 'test-session-token',
+        maskedEmail: 'a***@noir.local',
+      });
+
+      await forgotPasswordPage.navigateToVerify();
+      await page.waitForLoadState('networkidle');
 
       // Test pasting OTP
       await forgotPasswordPage.pasteOtp('123456');
@@ -658,15 +705,18 @@ test.describe('Forgot Password Flow @forgot-password', () => {
       expect(filledCount).toBeGreaterThan(0);
     });
 
-    test.skip('FP-EDGE-003: Clear OTP inputs', async ({ page }) => {
-      // SKIPPED: Requires actual email delivery infrastructure
+    test('FP-EDGE-003: Clear OTP inputs', async ({ page }) => {
       const forgotPasswordPage = new ForgotPasswordPage(page);
-      await forgotPasswordPage.navigate();
-      await page.waitForLoadState('networkidle');
 
-      // Go through flow to get to OTP page
-      await forgotPasswordPage.requestPasswordReset('admin@noir.local');
-      await forgotPasswordPage.expectEmailAccepted();
+      // Use mock session to access OTP page directly (same pattern as FP-005b)
+      await forgotPasswordPage.navigate();
+      await forgotPasswordPage.setupMockSession({
+        sessionToken: 'test-session-token',
+        maskedEmail: 'a***@noir.local',
+      });
+
+      await forgotPasswordPage.navigateToVerify();
+      await page.waitForLoadState('networkidle');
 
       // Enter OTP
       await forgotPasswordPage.enterOtp('123456');

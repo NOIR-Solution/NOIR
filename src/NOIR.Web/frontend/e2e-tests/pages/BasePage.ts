@@ -15,6 +15,7 @@ export const Timeouts = {
   API_RESPONSE: 15000,
   STABILITY_WAIT: 200,
   SEARCH_WAIT: 500,
+  REDIRECT: 1000,
 } as const;
 
 /**
@@ -43,6 +44,21 @@ export class BasePage {
     this.toast = page.locator('[data-sonner-toast], [role="alert"], .toast');
     // Radix AlertDialog uses role="dialog", not "alertdialog" - include both for compatibility
     this.confirmDialog = page.locator('[role="alertdialog"], [role="dialog"]:has-text("Delete"), [data-testid="confirm-dialog"]');
+  }
+
+  /**
+   * Open the user profile dropdown menu at the bottom of the sidebar.
+   * Used for accessing theme, language, and settings options.
+   */
+  async openUserProfileMenu(): Promise<void> {
+    const userProfileTrigger = this.page.locator(
+      'button:has(svg.lucide-chevrons-up-down), button:has(svg.lucide-chevron-up)'
+    );
+    const fallbackTrigger = this.page.locator('button:has-text("admin@noir.local")');
+    const trigger = userProfileTrigger.or(fallbackTrigger);
+    await expect(trigger.first()).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
+    await trigger.first().click();
+    await this.page.waitForTimeout(Timeouts.STABILITY_WAIT);
   }
 
   /**

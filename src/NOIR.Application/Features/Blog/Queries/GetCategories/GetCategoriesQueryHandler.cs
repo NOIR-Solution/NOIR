@@ -35,6 +35,12 @@ public class GetCategoriesQueryHandler
         // Build a lookup for parent names
         var categoryDict = categories.ToDictionary(c => c.Id, c => c.Name);
 
+        // Build parent → child count lookup (O(n) instead of O(n²))
+        var childCountLookup = categories
+            .Where(c => c.ParentId.HasValue)
+            .GroupBy(c => c.ParentId!.Value)
+            .ToDictionary(g => g.Key, g => g.Count());
+
         var result = categories.Select(c => new PostCategoryListDto(
             c.Id,
             c.Name,
@@ -46,7 +52,7 @@ public class GetCategoriesQueryHandler
             c.ParentId.HasValue && categoryDict.TryGetValue(c.ParentId.Value, out var parentName)
                 ? parentName
                 : c.Parent?.Name,
-            c.Children?.Count ?? 0
+            childCountLookup.TryGetValue(c.Id, out var childCount) ? childCount : 0
         )).ToList();
 
         return Result.Success(result);

@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-06 | **Index Version:** 3.2
+**Last Updated:** 2026-02-06 | **Index Version:** 3.3
 
 ---
 
@@ -20,32 +20,32 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 5,188+ tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 6,751+ backend tests.
 
 ### Key Statistics
 
 | Metric | Count | Notes |
 |--------|-------|-------|
-| **Backend Source Files** | 1,123 | C# files in `src/` (excl. generated) |
+| **Backend Source Files** | 1,229 | C# files in `src/` (excl. generated) |
 | **Frontend Source Files** | 305 | TypeScript/TSX in `frontend/src/` |
 | **Test Files** | 438 | C# test files in `tests/` |
-| **Total Source Files** | ~1,866 | Combined backend + frontend + tests |
-| **Feature Modules** | 26 | Domain-driven vertical slices |
+| **Total Source Files** | ~1,972 | Combined backend + frontend + tests |
+| **Feature Modules** | 27 | Domain-driven vertical slices |
 | **API Endpoint Groups** | 29 | Minimal API endpoint files |
 | **Domain Entities** | 50 | Core business entities |
-| **Repositories** | 28 | Infrastructure repositories |
-| **UI Components** | 56 | shadcn/ui + custom components |
+| **Repositories** | 29 | Infrastructure repositories (28 concrete + 1 base) |
+| **UI Components** | 103 | shadcn/ui + custom components |
 | **Custom Hooks** | 28 | React hooks in `hooks/` |
 | **API Services** | 23 | Frontend API clients |
 | **Frontend Pages** | 88 | React page components |
-| **E2E Test Specs** | 29 | Playwright test files (24 + 5 smoke) |
-| **E2E Page Objects** | 30 | Page Object Model files |
+| **E2E Test Specs** | 32 | Playwright test files (27 + 5 smoke) |
+| **E2E Page Objects** | 31 | Page Object Model files |
 | **Documentation Files** | 48 | Markdown docs in `docs/` |
 | **Test Coverage** | 6,751+ | Unit + Integration + Architecture |
-| **E2E Test Cases** | 406+ | Playwright E2E tests (Chromium + Firefox) |
+| **E2E Test Cases** | 490+ | Playwright E2E tests (Chromium + Firefox) |
 | **Database Indexes** | 233+ | Including 14 filtered indexes |
 
-**Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR, Playwright
+**Technologies:** .NET 10, React 19.2, SQL Server, EF Core 10, Wolverine, SignalR, Playwright, Vite 7.3, TypeScript 5.9, Tailwind 4.1, Zod 4.3
 
 ### Directory Structure
 
@@ -57,7 +57,7 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 6,751+ tests across 4 projects
+├── tests/                        # ✅ 6,751+ backend tests across 4 projects
 │   ├── NOIR.Domain.UnitTests/    # Domain logic tests
 │   ├── NOIR.Application.UnitTests/ # Handler/service/validator tests
 │   ├── NOIR.IntegrationTests/    # API integration tests (requires DB)
@@ -852,7 +852,7 @@ tests/
 
 **Configuration:** `playwright.config.ts` - Chromium + Firefox, 1 worker, retries on failure
 
-**Test Suites (29 spec files):**
+**Test Suites (32 spec files):**
 
 | Spec File | Area | Tests |
 |-----------|------|-------|
@@ -864,9 +864,11 @@ tests/
 | `blog-tags.spec.ts` | Blog Tags | CRUD |
 | `brands.spec.ts` | Product Brands | CRUD |
 | `categories.spec.ts` | Product Categories | CRUD, hierarchy |
+| `command-palette.spec.ts` | Command Palette | Open/close, search, navigation, quick actions, keyboard nav |
 | `dashboard.spec.ts` | Dashboard | Widget rendering |
 | `developer-logs.spec.ts` | Developer Logs | Live logs, history, stats |
 | `email-templates.spec.ts` | Email Templates | Edit, preview, variables |
+| `error-pages.spec.ts` | Error Pages | Unknown routes, auth protection |
 | `forgot-password.spec.ts` | Password Reset | OTP flow |
 | `legal-pages.spec.ts` | Legal Pages | Edit, revert, preview |
 | `notifications.spec.ts` | Notifications | List, filter, preferences |
@@ -878,15 +880,16 @@ tests/
 | `roles.spec.ts` | Role Management | CRUD, permissions |
 | `tenants.spec.ts` | Tenant Management | CRUD |
 | `tenant-settings.spec.ts` | Tenant Settings | Tabs, SMTP, branding |
+| `theme-language.spec.ts` | Theme & Language | Theme toggle, language switching, persistence |
 | `users.spec.ts` | User Management | CRUD, role assign |
 | `user-settings.spec.ts` | User Profile | Edit profile |
 | `smoke/*.smoke.spec.ts` | Smoke Tests | 5 quick validation suites |
 
-**Page Objects (30 files):**
+**Page Objects (31 files):**
 
 | Page Object | Route |
 |-------------|-------|
-| `BasePage.ts` | Base class with shared utilities |
+| `BasePage.ts` | Base class with shared utilities, `openUserProfileMenu()` |
 | `ActivityTimelinePage.ts` | `/portal/admin/activity-timeline` |
 | `AttributesPage.ts` | `/portal/ecommerce/attributes` |
 | `BlogCategoriesPage.ts` | `/portal/blog/categories` |
@@ -894,6 +897,7 @@ tests/
 | `BlogTagsPage.ts` | `/portal/blog/tags` |
 | `BrandsPage.ts` | `/portal/ecommerce/brands` |
 | `CategoriesPage.ts` | `/portal/ecommerce/categories` |
+| `CommandPalettePage.ts` | Command palette (Ctrl+K) - search, navigation, quick actions |
 | `DashboardPage.ts` | `/portal/dashboard` |
 | `DeveloperLogsPage.ts` | `/portal/admin/developer-logs` |
 | `EmailTemplatePage.ts` | `/portal/email-templates/:id` |
@@ -1154,13 +1158,32 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 ---
 
 **Last Updated:** 2026-02-06
-**Version:** 3.2
+**Version:** 3.3
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 3.3 (2026-02-06) - E2E Expansion & Statistics Refresh
+
+- **New E2E Test Specs** - Added 3 new spec files (32 total, was 29):
+  - `command-palette.spec.ts` - 27 tests: open/close, search, navigation, quick actions, keyboard nav
+  - `theme-language.spec.ts` - 9 tests: theme toggle, language switching, persistence
+  - `error-pages.spec.ts` - 5 tests: unknown routes, auth protection
+- **New Page Object** - `CommandPalettePage.ts` for cmdk-based command palette (31 total)
+- **E2E Test Cases** - 490+ (was 406+), 470 passed, 11 flaky (pass on retry), 9 skipped, 0 hard failures
+- **Backend Source Files** - Recounted to 1,229 C# files (was 1,123)
+- **UI Components** - Recounted to 103 (was 56, includes all shadcn/ui + custom)
+- **Repositories** - 29 (was 28, includes base repository)
+- **Feature Modules** - 27 (was 26)
+- **Code Quality Improvements**:
+  - Extracted `openUserProfileMenu()` to BasePage.ts for reuse across specs
+  - Added `Timeouts.REDIRECT` constant, replaced hardcoded values
+  - Centralized `ROUTE_PATTERNS.BLOG_POSTS` and `BLOG_POSTS_NEW` in routes.ts
+  - Added `afterEach` cleanup hooks in theme-language.spec.ts
+- **Technology Versions** - React 19.2.3, Vite 7.3.0, TypeScript 5.9.3, Tailwind 4.1.18, Zod 4.3.5
 
 ### Version 3.2 (2026-02-06) - Comprehensive E2E & Statistics Refresh
 
@@ -1174,13 +1197,13 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
   - Brands, Product Attributes, Product Filters, Filter Analytics, Shipping/Shipping Providers
 - **Statistics Accuracy** - Recounted all source files from filesystem:
   - Domain: 114, Application: 737, Infrastructure: 232, Web: 40
-  - Backend total: 1,123 C# files (excluding generated Wolverine handlers)
-  - Repositories: 28 concrete implementations
+  - Backend total: 1,229 C# files (excluding generated Wolverine handlers)
+  - Repositories: 29 (28 concrete + 1 base)
 - **E2E Stability Fixes** (from QA regression session 4):
   - Fixed `:has-text()` substring matching bug in filter tabs
   - Fixed TinyMCE editor initialization timing in email template tests
   - Fixed `[data-slot="card"]` selectors for shadcn/ui Card component
-  - All 406 E2E tests passing (0 failures, 5 flaky on retry, 9 skipped)
+  - All E2E tests passing (0 hard failures, flaky tests pass on retry, 9 skipped)
 
 ### Version 3.1 (2026-02-05) - Automated Index Refresh
 

@@ -74,4 +74,6 @@ export const ROUTE_PATTERNS = {
   ROLES_LIST: /\/portal\/admin\/roles/,
   TENANTS_LIST: /\/portal\/admin\/tenants/,
   TENANT_SETTINGS: /\/portal\/admin\/tenant-settings/,
+  BLOG_POSTS: /\/portal\/blog\/posts/,
+  BLOG_POSTS_NEW: /\/portal\/blog\/posts\/new/,
 } as const;

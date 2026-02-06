@@ -17,6 +17,7 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.OutputCaching;
 global using Microsoft.AspNetCore.RateLimiting;
 global using Microsoft.AspNetCore.ResponseCompression;
+global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 // Microsoft - Extensions

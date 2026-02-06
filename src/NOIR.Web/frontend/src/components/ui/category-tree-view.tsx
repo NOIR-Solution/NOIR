@@ -272,7 +272,11 @@ export function CategoryTreeView<T extends TreeCategory>({
   }
 
   const expandAll = () => {
-    const allIds = new Set(categories.filter(c => c.childCount > 0).map(c => c.id))
+    // Use tree map (built from parentId) to find categories with children,
+    // not childCount which may be stale or 0 when backend doesn't load Children nav
+    const allIds = new Set(
+      categories.filter(c => (tree.get(c.id) || []).length > 0).map(c => c.id)
+    )
     setExpandedIds(allIds)
   }
 
