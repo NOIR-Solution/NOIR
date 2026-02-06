@@ -36,7 +36,7 @@ export class TermsPage extends BasePage {
     this.backButton = page.locator('nav button:has-text("Back"), nav a:has-text("Back")').first();
 
     // Content
-    this.pageTitle = page.locator('main h1');
+    this.pageTitle = page.locator('main > h1').first();
     this.lastUpdatedText = page.locator('main p:has-text("Last updated")');
     this.contentArea = page.locator('main .prose, main div[class*="prose"]');
 

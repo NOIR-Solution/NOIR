@@ -94,7 +94,7 @@ export class ActivityTimelinePage extends BasePage {
    * Navigate to activity timeline page
    */
   async navigate(): Promise<void> {
-    await this.goto('/portal/admin/activity-timeline');
+    await this.goto('/portal/activity-timeline');
     await this.page.waitForLoadState('domcontentloaded');
   }
 
@@ -102,7 +102,7 @@ export class ActivityTimelinePage extends BasePage {
    * Navigate with user filter (from Users page "View user activity" link)
    */
   async navigateWithUserFilter(userId: string, userEmail?: string): Promise<void> {
-    let url = `/portal/admin/activity-timeline?userId=${userId}`;
+    let url = `/portal/activity-timeline?userId=${userId}`;
     if (userEmail) {
       url += `&userEmail=${encodeURIComponent(userEmail)}`;
     }

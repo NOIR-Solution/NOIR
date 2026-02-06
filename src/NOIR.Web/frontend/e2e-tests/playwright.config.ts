@@ -99,12 +99,20 @@ export default defineConfig({
       },
     },
 
+    // Firefox auth re-setup - refresh tokens before Firefox tests
+    // (tokens from initial auth-setup may expire during long Chromium run)
+    {
+      name: 'firefox-auth-setup',
+      testMatch: /auth\.setup\.ts/,
+      dependencies: ['chromium'],
+    },
+
     // Firefox tests - cross-browser validation
     {
       name: 'firefox',
       testMatch: /.*\.spec\.ts/,
       testIgnore: /.*smoke.*\.spec\.ts/,
-      dependencies: ['auth-setup'],
+      dependencies: ['firefox-auth-setup'],
       use: {
         ...devices['Desktop Firefox'],
         storageState: TENANT_ADMIN_STATE,
@@ -123,10 +131,11 @@ export default defineConfig({
     },
 
     // Platform admin tests - uses platform admin auth
+    // Depends on firefox-auth-setup which refreshes both tenant + platform tokens
     {
       name: 'platform-admin',
       testMatch: /.*platform.*\.spec\.ts/,
-      dependencies: ['auth-setup'],
+      dependencies: ['firefox-auth-setup'],
       use: {
         ...devices['Desktop Chrome'],
         storageState: PLATFORM_ADMIN_STATE,

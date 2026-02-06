@@ -239,6 +239,93 @@ test.describe('Tenant Settings @tenant-settings', () => {
     });
   });
 
+  test.describe('Payment Gateways Tab @P1', () => {
+    test('SETTINGS-070: Payment Gateways tab is accessible', async ({ page }) => {
+      const settingsPage = new TenantSettingsPage(page);
+      await settingsPage.navigate();
+      await settingsPage.expectPageLoaded();
+
+      if (await settingsPage.paymentGatewaysTab.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+        await settingsPage.selectTab('payment');
+        await settingsPage.expectTabActive('Payment');
+      }
+    });
+
+    test('SETTINGS-071: Payment Gateways tab has content', async ({ page }) => {
+      const settingsPage = new TenantSettingsPage(page);
+      await settingsPage.navigate();
+      await settingsPage.expectPageLoaded();
+
+      if (await settingsPage.paymentGatewaysTab.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+        await settingsPage.selectTab('payment');
+
+        // Verify active tab panel has content
+        const tabPanel = page.locator('[role="tabpanel"][data-state="active"]');
+        await expect(tabPanel).toBeVisible({ timeout: 10000 });
+      }
+    });
+  });
+
+  test.describe('Email Templates Tab @P1', () => {
+    test('SETTINGS-080: Email Templates tab is accessible', async ({ page }) => {
+      const settingsPage = new TenantSettingsPage(page);
+      await settingsPage.navigate();
+      await settingsPage.expectPageLoaded();
+
+      if (await settingsPage.emailTemplatesTab.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+        await settingsPage.selectTab('email-templates');
+
+        // Tab content should load
+        const tabPanel = page.locator('[role="tabpanel"][data-state="active"]');
+        await expect(tabPanel).toBeVisible({ timeout: 10000 });
+      }
+    });
+
+    test('SETTINGS-081: Email Templates tab shows template list', async ({ page }) => {
+      const settingsPage = new TenantSettingsPage(page);
+      await settingsPage.navigate();
+      await settingsPage.expectPageLoaded();
+
+      if (await settingsPage.emailTemplatesTab.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+        await settingsPage.selectTab('email-templates');
+
+        // Verify active tab panel has content
+        const tabPanel = page.locator('[role="tabpanel"][data-state="active"]');
+        await expect(tabPanel).toBeVisible({ timeout: 10000 });
+      }
+    });
+  });
+
+  test.describe('Legal Pages Tab @P1', () => {
+    test('SETTINGS-090: Legal Pages tab is accessible', async ({ page }) => {
+      const settingsPage = new TenantSettingsPage(page);
+      await settingsPage.navigate();
+      await settingsPage.expectPageLoaded();
+
+      if (await settingsPage.legalPagesTab.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+        await settingsPage.selectTab('legal');
+
+        // Tab content should load
+        const tabPanel = page.locator('[role="tabpanel"][data-state="active"]');
+        await expect(tabPanel).toBeVisible({ timeout: 10000 });
+      }
+    });
+
+    test('SETTINGS-091: Legal Pages tab shows legal page list', async ({ page }) => {
+      const settingsPage = new TenantSettingsPage(page);
+      await settingsPage.navigate();
+      await settingsPage.expectPageLoaded();
+
+      if (await settingsPage.legalPagesTab.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+        await settingsPage.selectTab('legal');
+
+        // Verify active tab panel has content
+        const tabPanel = page.locator('[role="tabpanel"][data-state="active"]');
+        await expect(tabPanel).toBeVisible({ timeout: 10000 });
+      }
+    });
+  });
+
   test.describe('Save Functionality @P1', () => {
     test('SETTINGS-060: Save button exists in form', async ({ page }) => {
       const settingsPage = new TenantSettingsPage(page);
@@ -251,6 +338,38 @@ test.describe('Tenant Settings @tenant-settings', () => {
       if (await saveButton.first().isVisible({ timeout: 5000 }).catch(() => false)) {
         // Just verify the button exists and is visible - it may be disabled by design
         await expect(saveButton.first()).toBeVisible();
+      }
+    });
+  });
+
+  test.describe('All Tabs Navigation @P1', () => {
+    test('SETTINGS-100: Can navigate through all 7 tabs', async ({ page }) => {
+      const settingsPage = new TenantSettingsPage(page);
+      await settingsPage.navigate();
+      await settingsPage.expectPageLoaded();
+
+      const tabNames: Array<'regional' | 'branding' | 'contact' | 'smtp' | 'payment' | 'legal' | 'email-templates'> = [
+        'regional', 'branding', 'contact', 'smtp', 'payment', 'legal', 'email-templates'
+      ];
+
+      for (const tabName of tabNames) {
+        const tabLocator = {
+          'regional': settingsPage.regionalTab,
+          'branding': settingsPage.brandingTab,
+          'contact': settingsPage.contactTab,
+          'smtp': settingsPage.smtpTab,
+          'payment': settingsPage.paymentGatewaysTab,
+          'legal': settingsPage.legalPagesTab,
+          'email-templates': settingsPage.emailTemplatesTab,
+        }[tabName];
+
+        if (await tabLocator.first().isVisible({ timeout: 3000 }).catch(() => false)) {
+          await settingsPage.selectTab(tabName);
+
+          // Verify tab panel is active
+          const tabPanel = page.locator('[role="tabpanel"][data-state="active"]');
+          await expect(tabPanel).toBeVisible({ timeout: 5000 });
+        }
       }
     });
   });

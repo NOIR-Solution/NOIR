@@ -47,10 +47,11 @@ export class NotificationsPage extends BasePage {
     this.liveIndicator = page.locator('span:has-text("Live"), .animate-pulse').first();
 
     // Filter tabs - tabs are inside a muted background container
+    // Use exact regex matching to prevent "read" from matching "unread" (substring)
     this.filterTabs = page.locator('.bg-muted.rounded-lg, [role="tablist"]').first();
-    this.allFilterTab = page.locator('button:has-text("all")').first();
-    this.unreadFilterTab = page.locator('button:has-text("unread")').first();
-    this.readFilterTab = page.locator('button:has-text("read")').first();
+    this.allFilterTab = this.filterTabs.locator('button').filter({ hasText: /^all$/i }).first();
+    this.unreadFilterTab = this.filterTabs.locator('button').filter({ hasText: /^unread$/i }).first();
+    this.readFilterTab = this.filterTabs.locator('button').filter({ hasText: /^read$/i }).first();
 
     // Actions
     this.refreshButton = page.locator('button:has-text("Refresh")');
@@ -106,11 +107,14 @@ export class NotificationsPage extends BasePage {
    * Get current active filter
    */
   async getActiveFilter(): Promise<string> {
-    // Active filter has 'bg-background shadow-sm' classes
-    for (const filter of ['all', 'unread', 'read']) {
-      const tab = this.page.locator(`button:has-text("${filter}")`).first();
+    // Active filter has 'bg-background shadow-sm' classes (both conditions must be true)
+    // Scope to filterTabs container and use exact text match to avoid 'read' matching 'unread'
+    for (const filter of ['read', 'unread', 'all']) {
+      const tab = this.filterTabs.locator('button').filter({ hasText: new RegExp(`^${filter}$`, 'i') }).first();
+      const isVisible = await tab.isVisible().catch(() => false);
+      if (!isVisible) continue;
       const classes = await tab.getAttribute('class') || '';
-      if (classes.includes('bg-background') || classes.includes('shadow')) {
+      if (classes.includes('bg-background') && classes.includes('shadow')) {
         return filter;
       }
     }

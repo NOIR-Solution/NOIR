@@ -127,7 +127,7 @@ export class EmailTemplatePage extends BasePage {
     this.previewSubject = this.previewDialog.locator('p.text-sm.font-medium');
     this.previewIframe = this.previewDialog.locator('iframe[title="Email Preview"]');
     this.previewPlainText = this.previewDialog.locator('pre');
-    this.previewCloseButton = this.previewDialog.locator('button:has-text("Close")');
+    this.previewCloseButton = this.previewDialog.locator('button:has-text("Close")').last();
     this.previewLoading = this.previewDialog.locator('[class*="animate-spin"]');
 
     // Test Email Dialog
@@ -163,6 +163,13 @@ export class EmailTemplatePage extends BasePage {
     await expect(this.pageHeader).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
     // Wait for the TinyMCE editor to initialize (proves form loaded)
     await expect(this.tinymceEditor).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
+    // Wait for TinyMCE iframe with contenteditable body (proves editor rendered)
+    await expect(this.tinymceIframe).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
+    const frame = this.tinymceIframe.contentFrame();
+    await expect(frame.locator('body[contenteditable="true"]')).toBeVisible({ timeout: Timeouts.ELEMENT_VISIBLE });
+    // The component sets editorInitializedRef after a 100ms setTimeout in onInit.
+    // Change detection is gated on this ref, so we need a stability wait.
+    await this.page.waitForTimeout(Timeouts.STABILITY_WAIT);
   }
 
   /**

@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
+import * as nodePath from 'path';
 
 /**
  * Standardized timeout values for consistent test behavior
@@ -45,11 +46,50 @@ export class BasePage {
   }
 
   /**
-   * Navigate to a path relative to base URL
+   * Navigate to a path relative to base URL.
+   * Includes auth recovery: if the page redirects to login (expired token),
+   * re-authenticates and retries navigation.
    */
   async goto(path: string): Promise<void> {
     await this.page.goto(path);
     await this.waitForPageLoad();
+
+    // Auth recovery: detect if redirected to login due to expired tokens
+    // Skip if we're intentionally navigating to login-related pages
+    const isLoginPath = path.includes('/login') || path.includes('/forgot-password');
+    if (!isLoginPath && await this.isOnLoginPage()) {
+      await this.reAuthenticate();
+      await this.page.goto(path);
+      await this.waitForPageLoad();
+    }
+  }
+
+  /**
+   * Check if the current page is the login page (auth expired)
+   */
+  private async isOnLoginPage(): Promise<boolean> {
+    return await this.page.locator('h1:has-text("NOIR Authentication")').isVisible();
+  }
+
+  /**
+   * Re-authenticate when auth state expires during long test runs.
+   * Updates the storage state file so subsequent tests get fresh tokens.
+   */
+  private async reAuthenticate(): Promise<void> {
+    if (!this.page.url().includes('/login')) {
+      await this.page.goto('/login');
+      await this.page.waitForLoadState('networkidle');
+    }
+
+    await this.page.locator('#email').fill('admin@noir.local');
+    await this.page.locator('#password').fill('123qwe');
+    await this.page.locator('button[type="submit"]').click();
+    await this.page.waitForURL(/\/(portal|dashboard)/, { timeout: 30000 });
+    await this.page.waitForLoadState('networkidle');
+
+    // Save updated auth state for subsequent tests
+    const authStatePath = nodePath.join(__dirname, '..', '.auth', 'tenant-admin.json');
+    await this.page.context().storageState({ path: authStatePath });
   }
 
   /**

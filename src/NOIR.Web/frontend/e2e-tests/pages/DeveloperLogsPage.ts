@@ -94,7 +94,7 @@ export class DeveloperLogsPage extends BasePage {
     // Log table
     this.logTable = page.locator('[class*="LogTable"], table, [data-testid="log-table"]');
     this.logEntries = page.locator('tr[class*="log-entry"], [data-testid="log-entry"], [class*="LogEntryRow"]');
-    this.emptyState = page.locator('text="No log entries", text="Waiting for incoming logs"');
+    this.emptyState = page.locator('text="No log entries"').or(page.locator('text="Waiting for incoming logs"'));
 
     // Detail dialog
     this.detailDialog = page.locator('[role="dialog"]');
@@ -125,7 +125,7 @@ export class DeveloperLogsPage extends BasePage {
    * Navigate to developer logs page
    */
   async navigate(): Promise<void> {
-    await this.goto('/portal/admin/developer-logs');
+    await this.goto('/portal/developer-logs');
     await this.page.waitForLoadState('domcontentloaded');
   }
 

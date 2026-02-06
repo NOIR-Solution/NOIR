@@ -32,8 +32,8 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Arrange
         var adminClient = await GetAdminClientAsync();
 
-        // Act
-        var response = await adminClient.GetAsync("/api/payments/gateways");
+        // Act - Gateway management routes are under /api/payment-gateways
+        var response = await adminClient.GetAsync("/api/payment-gateways");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -43,7 +43,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     public async Task GetPaymentGateways_Unauthenticated_ShouldReturnUnauthorized()
     {
         // Act
-        var response = await _client.GetAsync("/api/payments/gateways");
+        var response = await _client.GetAsync("/api/payment-gateways");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -60,8 +60,8 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var adminClient = await GetAdminClientAsync();
         var invalidId = Guid.NewGuid();
 
-        // Act
-        var response = await adminClient.GetAsync($"/api/payments/gateways/{invalidId}");
+        // Act - Gateway by ID is under /api/payment-gateways/{id}
+        var response = await adminClient.GetAsync($"/api/payment-gateways/{invalidId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -77,8 +77,8 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Arrange
         var adminClient = await GetAdminClientAsync();
 
-        // Act
-        var response = await adminClient.GetAsync("/api/payments/transactions");
+        // Act - Transaction list is at /api/payments (root of payments group)
+        var response = await adminClient.GetAsync("/api/payments");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -90,8 +90,8 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Arrange
         var adminClient = await GetAdminClientAsync();
 
-        // Act
-        var response = await adminClient.GetAsync("/api/payments/transactions?pageNumber=1&pageSize=5");
+        // Act - Transaction list uses 'page' and 'pageSize' query params
+        var response = await adminClient.GetAsync("/api/payments?page=1&pageSize=5");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -108,8 +108,8 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var adminClient = await GetAdminClientAsync();
         var invalidId = Guid.NewGuid();
 
-        // Act
-        var response = await adminClient.GetAsync($"/api/payments/transactions/{invalidId}");
+        // Act - Transaction by ID is at /api/payments/{id}
+        var response = await adminClient.GetAsync($"/api/payments/{invalidId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -135,8 +135,8 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             IsActive = true
         };
 
-        // Act
-        var response = await adminClient.PostAsJsonAsync("/api/payments/gateways", command);
+        // Act - Configure gateway is at /api/payment-gateways
+        var response = await adminClient.PostAsJsonAsync("/api/payment-gateways", command);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -158,8 +158,8 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             IsActive = true
         };
 
-        // Act
-        var response = await adminClient.PutAsJsonAsync($"/api/payments/gateways/{invalidId}", command);
+        // Act - Update gateway is at /api/payment-gateways/{id}
+        var response = await adminClient.PutAsJsonAsync($"/api/payment-gateways/{invalidId}", command);
 
         // Assert
         response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
@@ -176,8 +176,8 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var adminClient = await GetAdminClientAsync();
         var invalidId = Guid.NewGuid();
 
-        // Act
-        var response = await adminClient.PostAsJsonAsync($"/api/payments/gateways/{invalidId}/test", new { });
+        // Act - Test connection is at /api/payment-gateways/{id}/test
+        var response = await adminClient.PostAsJsonAsync($"/api/payment-gateways/{invalidId}/test", new { });
 
         // Assert
         response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
@@ -194,8 +194,8 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var adminClient = await GetAdminClientAsync();
         var invalidId = Guid.NewGuid();
 
-        // Act
-        var response = await adminClient.PostAsJsonAsync($"/api/payments/transactions/{invalidId}/cancel", new { });
+        // Act - Cancel payment is at /api/payments/{id}/cancel
+        var response = await adminClient.PostAsJsonAsync($"/api/payments/{invalidId}/cancel", new { });
 
         // Assert
         response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
@@ -210,15 +210,17 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     {
         // Arrange
         var adminClient = await GetAdminClientAsync();
-        var invalidId = Guid.NewGuid();
+        var invalidTransactionId = Guid.NewGuid();
         var command = new
         {
+            PaymentTransactionId = invalidTransactionId,
             Amount = 10.00m,
-            Reason = "Customer request"
+            Reason = "CustomerRequest",
+            Notes = "Test refund"
         };
 
-        // Act
-        var response = await adminClient.PostAsJsonAsync($"/api/payments/transactions/{invalidId}/refund", command);
+        // Act - Refund requests are at /api/refunds (POST with PaymentTransactionId in body)
+        var response = await adminClient.PostAsJsonAsync("/api/refunds", command);
 
         // Assert
         response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);

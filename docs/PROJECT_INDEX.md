@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-05 | **Index Version:** 3.1
+**Last Updated:** 2026-02-06 | **Index Version:** 3.2
 
 ---
 
@@ -26,21 +26,23 @@
 
 | Metric | Count | Notes |
 |--------|-------|-------|
-| **Backend Source Files** | 1,180 | C# files in `src/` |
+| **Backend Source Files** | 1,123 | C# files in `src/` (excl. generated) |
 | **Frontend Source Files** | 305 | TypeScript/TSX in `frontend/src/` |
-| **Test Files** | 456 | C# test files in `tests/` |
-| **Total Source Files** | ~1,941 | Combined codebase |
+| **Test Files** | 438 | C# test files in `tests/` |
+| **Total Source Files** | ~1,866 | Combined backend + frontend + tests |
 | **Feature Modules** | 26 | Domain-driven vertical slices |
 | **API Endpoint Groups** | 29 | Minimal API endpoint files |
-| **Domain Entities** | 50+ | Core business entities |
+| **Domain Entities** | 50 | Core business entities |
+| **Repositories** | 28 | Infrastructure repositories |
 | **UI Components** | 56 | shadcn/ui + custom components |
 | **Custom Hooks** | 28 | React hooks in `hooks/` |
 | **API Services** | 23 | Frontend API clients |
 | **Frontend Pages** | 88 | React page components |
-| **E2E Test Specs** | 13 | Playwright test files |
-| **E2E Page Objects** | 12 | POM pattern files |
+| **E2E Test Specs** | 29 | Playwright test files (24 + 5 smoke) |
+| **E2E Page Objects** | 30 | Page Object Model files |
 | **Documentation Files** | 48 | Markdown docs in `docs/` |
-| **Test Coverage** | 5,188+ | Unit + Integration + Architecture |
+| **Test Coverage** | 6,751+ | Unit + Integration + Architecture |
+| **E2E Test Cases** | 406+ | Playwright E2E tests (Chromium + Firefox) |
 | **Database Indexes** | 233+ | Including 14 filtered indexes |
 
 **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR, Playwright
@@ -55,12 +57,12 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 5,188+ tests across 4 projects
-│   ├── NOIR.Domain.UnitTests/    # 842 domain logic tests
-│   ├── NOIR.Application.UnitTests/ # 4,321 handler/service tests
-│   ├── NOIR.IntegrationTests/    # ~605 API integration tests (requires DB)
-│   └── NOIR.ArchitectureTests/   # 25 architectural rule tests
-├── docs/                         # 📚 46 documentation files
+├── tests/                        # ✅ 6,751+ tests across 4 projects
+│   ├── NOIR.Domain.UnitTests/    # Domain logic tests
+│   ├── NOIR.Application.UnitTests/ # Handler/service/validator tests
+│   ├── NOIR.IntegrationTests/    # API integration tests (requires DB)
+│   └── NOIR.ArchitectureTests/   # Architectural rule tests
+├── docs/                         # 📚 48 documentation files
 └── .github/                      # ⚙️  CI/CD workflows
 
 ```
@@ -102,47 +104,52 @@ NOIR.Domain/
 │   │   ├── PaymentWebhookLog.cs         # Webhook audit trail
 │   │   ├── PaymentOperationLog.cs       # Gateway API call audit trail
 │   │   └── Refund.cs                    # Refund tracking with approval workflow
-│   ├── Product/                         # ⭐ NEW: Product domain (Phase 8)
+│   ├── Product/                         # Product domain
 │   │   ├── Product.cs                   # Product aggregate root with variants
 │   │   ├── ProductVariant.cs            # SKU, price, inventory
 │   │   ├── ProductImage.cs              # Product images
 │   │   └── ProductCategory.cs           # Hierarchical categories
-│   ├── Cart/                            # ⭐ NEW: Shopping Cart domain (Phase 8)
+│   ├── Cart/                            # Shopping Cart domain
 │   │   ├── Cart.cs                      # Cart aggregate root (user/guest)
 │   │   └── CartItem.cs                  # Cart line items
-│   ├── Checkout/                        # ⭐ NEW: Checkout domain (Phase 8 Sprint 2)
+│   ├── Checkout/                        # Checkout domain
 │   │   └── CheckoutSession.cs           # Checkout session aggregate (address, shipping, payment)
-│   └── Order/                           # ⭐ NEW: Order domain (Phase 8 Sprint 2)
-│       ├── Order.cs                     # Order aggregate root with lifecycle
-│       └── OrderItem.cs                 # Order line items (product snapshot)
+│   ├── Order/                           # Order domain (Phase 8 Sprint 2)
+│   │   ├── Order.cs                     # Order aggregate root with lifecycle
+│   │   └── OrderItem.cs                 # Order line items (product snapshot)
+│   └── Shipping/                        # Shipping domain
+│       ├── ShippingProvider.cs           # Shipping provider configuration
+│       ├── ShippingOrder.cs             # Shipping order tracking
+│       ├── ShippingTrackingEvent.cs     # Tracking events
+│       └── ShippingWebhookLog.cs        # Webhook audit trail
 ├── Enums/                               # Domain enumerations
 │   ├── AuditOperationType.cs            # CRUD operations
 │   ├── NotificationType.cs              # Notification types
 │   ├── PostStatus.cs                    # Draft, Published, Archived
-│   ├── PaymentStatus.cs                 # ⭐ NEW: Payment lifecycle states
-│   ├── PaymentMethod.cs                 # ⭐ NEW: Card, eWallet, COD, etc.
-│   ├── RefundStatus.cs                  # ⭐ NEW: Refund workflow states
-│   ├── RefundReason.cs                  # ⭐ NEW: Refund reasons
-│   ├── GatewayEnvironment.cs            # ⭐ NEW: Sandbox/Production
-│   ├── GatewayHealthStatus.cs           # ⭐ NEW: Gateway operational status
-│   ├── WebhookProcessingStatus.cs       # ⭐ NEW: Webhook processing states
+│   ├── PaymentStatus.cs                 # Payment lifecycle states
+│   ├── PaymentMethod.cs                 # Card, eWallet, COD, etc.
+│   ├── RefundStatus.cs                  # Refund workflow states
+│   ├── RefundReason.cs                  # Refund reasons
+│   ├── GatewayEnvironment.cs            # Sandbox/Production
+│   ├── GatewayHealthStatus.cs           # Gateway operational status
+│   ├── WebhookProcessingStatus.cs       # Webhook processing states
 │   ├── PaymentOperationType.cs          # Operation types for logging
-│   ├── ProductStatus.cs                 # ⭐ NEW: Draft, Active, Archived
-│   ├── CartStatus.cs                    # ⭐ NEW: Active, Merged, Abandoned, Converted
-│   ├── OrderStatus.cs                   # ⭐ NEW: Pending, Confirmed, Processing, Shipped, Delivered, etc.
-│   ├── CheckoutSessionStatus.cs         # ⭐ NEW: Active, Completed, Expired, Abandoned
-│   ├── ReservationStatus.cs             # ⭐ NEW: Pending, Reserved, Released, Expired
-│   └── InventoryMovementType.cs         # ⭐ NEW: StockIn, StockOut, Adjustment, Return, etc.
+│   ├── ProductStatus.cs                 # Draft, Active, Archived
+│   ├── CartStatus.cs                    # Active, Merged, Abandoned, Converted
+│   ├── OrderStatus.cs                   # Pending, Confirmed, Processing, Shipped, Delivered, etc.
+│   ├── CheckoutSessionStatus.cs         # Active, Completed, Expired, Abandoned
+│   ├── ReservationStatus.cs             # Pending, Reserved, Released, Expired
+│   └── InventoryMovementType.cs         # StockIn, StockOut, Adjustment, Return, etc.
 ├── Events/                              # Domain events
 │   ├── Payment/                         # Payment domain events
 │   │   └── PaymentEvents.cs             # Created, Succeeded, Failed, Refunded
-│   ├── Product/                         # ⭐ NEW: Product domain events
+│   ├── Product/                         # Product domain events
 │   │   └── ProductEvents.cs             # Created, Published, Archived
-│   ├── Cart/                            # ⭐ NEW: Cart domain events
+│   ├── Cart/                            # Cart domain events
 │   │   └── CartEvents.cs                # ItemAdded, ItemUpdated, ItemRemoved, Cleared
-│   ├── Checkout/                        # ⭐ NEW: Checkout domain events
+│   ├── Checkout/                        # Checkout domain events
 │   │   └── CheckoutEvents.cs            # Started, AddressSet, ShippingSelected, PaymentSelected, Completed
-│   └── Order/                           # ⭐ NEW: Order domain events
+│   └── Order/                           # Order domain events
 │       └── OrderEvents.cs               # Created, Confirmed, Shipped, Delivered, Cancelled
 ├── Interfaces/
 │   ├── IRepository.cs                   # Generic repository
@@ -168,7 +175,7 @@ NOIR.Domain/
 
 - [Domain Layer Documentation](../src/NOIR.Domain/README.md)
 - [Entity Configuration Guide](backend/patterns/entity-configuration.md)
-- [Soft Delete Pattern](backend/patterns/soft-delete.md)
+- [Entity Configuration Guide](backend/patterns/entity-configuration.md) (includes soft delete)
 
 ---
 
@@ -206,7 +213,7 @@ NOIR.Application/
 │   ├── Roles/                           # Role management
 │   ├── Permissions/                     # Permission management
 │   ├── Tenants/                         # Tenant administration
-│   ├── Payments/                        # ⭐ NEW: Payment processing
+│   ├── Payments/                        # Payment processing
 │   ├── Audit/                           # Audit log queries
 │   ├── Notifications/                   # User notifications
 │   ├── EmailTemplates/                  # Email template CRUD
@@ -251,7 +258,7 @@ Features/{Feature}/
 | **Roles** | CreateRole, UpdateRole, DeleteRole | GetRoles, GetRoleById | Role management |
 | **Permissions** | AssignToRole, RemoveFromRole | GetRolePermissions, GetUserPermissions | Permission assignment |
 | **Tenants** | CreateTenant, UpdateTenant, DeleteTenant, RestoreTenant | GetTenants, GetTenantById, GetTenantSettings, GetArchivedTenants | Multi-tenant administration |
-| **Payments** | CreatePayment, CancelPayment, ConfigureGateway, UpdateGateway, ProcessWebhook, RequestRefund, ApproveRefund, RejectRefund, ConfirmCodCollection | GetPaymentTransactions, GetPaymentTransaction, GetOrderPayments, GetPaymentGateways, GetPaymentGateway, GetActiveGateways, GetRefunds, GetPendingCodPayments, GetWebhookLogs | ⭐ **NEW:** Payment gateway integration, transactions, refunds |
+| **Payments** | CreatePayment, CancelPayment, ConfigureGateway, UpdateGateway, ProcessWebhook, RequestRefund, ApproveRefund, RejectRefund, ConfirmCodCollection | GetPaymentTransactions, GetPaymentTransaction, GetOrderPayments, GetPaymentGateways, GetPaymentGateway, GetActiveGateways, GetRefunds, GetPendingCodPayments, GetWebhookLogs | Payment gateway integration, transactions, refunds |
 | **Audit** | BulkExport | GetAuditLogs, GetEntityHistory | Audit log queries and export |
 | **Notifications** | MarkAsRead, MarkAllAsRead, DeleteNotification | GetNotifications, GetUnreadCount | User notifications |
 | **EmailTemplates** | UpdateEmailTemplate | GetEmailTemplates, GetEmailTemplateById | Template customization |
@@ -261,9 +268,9 @@ Features/{Feature}/
 | **DeveloperLogs** | - | StreamLogs | Real-time Serilog streaming |
 | **TenantSettings** | UpdateBranding, UpdateContact, UpdateSmtp, UpdateRegional | GetTenantSettings, GetBranding | Tenant configuration |
 | **PlatformSettings** | UpdatePlatformSettings | GetPlatformSettings | Platform-level config |
-| **Products** | CreateProduct, UpdateProduct, ArchiveProduct, PublishProduct, AddProductVariant, UpdateProductVariant, DeleteProductVariant, AddProductImage, UpdateProductImage, DeleteProductImage, SetPrimaryProductImage, CreateProductCategory, UpdateProductCategory, DeleteProductCategory | GetProducts, GetProductById, GetProductCategories, GetProductCategoryById | ⭐ Product catalog with variants & images |
-| **Cart** | AddToCart, UpdateCartItem, RemoveCartItem, ClearCart, MergeCart | GetCart, GetCartSummary | ⭐ Shopping cart with guest support |
-| **Checkout** | InitiateCheckout, SetCheckoutAddress, SelectShipping, SelectPayment, CompleteCheckout | GetCheckoutSession | ⭐ **NEW:** Hybrid accordion checkout flow |
+| **Products** | CreateProduct, UpdateProduct, ArchiveProduct, PublishProduct, AddProductVariant, UpdateProductVariant, DeleteProductVariant, AddProductImage, UpdateProductImage, DeleteProductImage, SetPrimaryProductImage, CreateProductCategory, UpdateProductCategory, DeleteProductCategory | GetProducts, GetProductById, GetProductCategories, GetProductCategoryById | Product catalog with variants & images |
+| **Cart** | AddToCart, UpdateCartItem, RemoveCartItem, ClearCart, MergeCart | GetCart, GetCartSummary | Shopping cart with guest support |
+| **Checkout** | InitiateCheckout, SetCheckoutAddress, SelectShipping, SelectPayment, CompleteCheckout | GetCheckoutSession | Hybrid accordion checkout flow |
 | **Orders** | CreateOrder, ConfirmOrder, ShipOrder, CancelOrder | GetOrders, GetOrderById | Order lifecycle management |
 | **Brands** | CreateBrand, UpdateBrand, DeleteBrand | GetBrands, GetBrandById | Product brand management |
 | **ProductAttributes** | CreateAttribute, UpdateAttribute, DeleteAttribute | GetAttributes, GetAttributeById, GetCategoryAttributes | Dynamic product attributes (13 types) |
@@ -276,8 +283,8 @@ Features/{Feature}/
 #### Navigation
 
 - [Application Layer Documentation](../src/NOIR.Application/README.md)
-- [CQRS Pattern](backend/patterns/cqrs-vertical-slice.md)
-- [Validation Guide](backend/patterns/validation.md)
+- [Vertical Slice CQRS](decisions/003-vertical-slice-cqrs.md)
+- [Validation (FluentValidation)](backend/research/validation-unification-plan.md)
 - [Audit Logging](backend/patterns/hierarchical-audit-logging.md)
 
 ---
@@ -304,9 +311,9 @@ NOIR.Infrastructure/
 ├── Hubs/
 │   ├── NotificationHub.cs               # SignalR notifications
 │   ├── DeveloperLogHub.cs               # SignalR log streaming
-│   ├── PaymentHub.cs                    # ⭐ NEW: Real-time payment updates
-│   ├── IPaymentClient.cs                # ⭐ NEW: Payment hub client interface
-│   └── PaymentHubContext.cs             # ⭐ NEW: Payment hub abstraction (IPaymentHubContext)
+│   ├── PaymentHub.cs                    # Real-time payment updates
+│   ├── IPaymentClient.cs                # Payment hub client interface
+│   └── PaymentHubContext.cs             # Payment hub abstraction (IPaymentHubContext)
 ├── Identity/
 │   ├── UserIdentityService.cs           # UserManager wrapper
 │   └── Authorization/
@@ -383,7 +390,7 @@ NOIR.Web/
 │   ├── RoleEndpoints.cs                 # /api/roles/*
 │   ├── PermissionEndpoints.cs           # /api/permissions/*
 │   ├── TenantEndpoints.cs               # /api/tenants/*
-│   ├── PaymentEndpoints.cs              # ⭐ NEW: /api/payments/*
+│   ├── PaymentEndpoints.cs              # /api/payments/*
 │   ├── AuditEndpoints.cs                # /api/audit/*
 │   ├── NotificationEndpoints.cs         # /api/notifications/*
 │   ├── EmailTemplateEndpoints.cs        # /api/email-templates/*
@@ -406,27 +413,27 @@ NOIR.Web/
     ├── src/
     │   ├── components/                  # Reusable components
     │   │   └── ui/                      # shadcn/ui components
-    │   │       ├── combobox.tsx         # ⭐ Searchable dropdown with scroll, bank selection
+    │   │       ├── combobox.tsx         # Searchable dropdown with scroll, bank selection
     │   │       └── ...                  # Button, Dialog, Input, etc.
     │   ├── contexts/                    # React contexts (Auth, Theme, Notification, Branding, Regional)
     │   ├── hooks/                       # Custom React hooks
-    │   │   ├── usePaymentGateways.ts    # ⭐ Payment gateway API hooks (TanStack Query)
+    │   │   ├── usePaymentGateways.ts    # Payment gateway API hooks (TanStack Query)
     │   │   └── ...                      # useLogin, useUsers, useRoles, etc.
     │   ├── layouts/                     # Layout components
     │   ├── pages/                       # Route pages
     │   │   └── portal/admin/
     │   │       ├── tenant-settings/     # Tabbed tenant settings
     │   │       │   └── components/
-    │   │       │       └── PaymentGatewaysTab.tsx  # ⭐ Gateway configuration UI
-    │   │       └── payment-gateways/    # ⭐ Payment gateway management
+    │   │       │       └── PaymentGatewaysTab.tsx  # Gateway configuration UI
+    │   │       └── payment-gateways/    # Payment gateway management
     │   │           └── components/
     │   │               ├── GatewayCard.tsx           # Gateway provider cards
     │   │               └── ConfigureGatewayDialog.tsx # Credential configuration
     │   ├── services/                    # API services
-    │   │   ├── paymentGateways.ts       # ⭐ Payment gateway API client
+    │   │   ├── paymentGateways.ts       # Payment gateway API client
     │   │   └── ...                      # auth, users, roles, etc.
     │   ├── types/                       # TypeScript types
-    │   │   ├── payment.ts               # ⭐ Payment gateway types
+    │   │   ├── payment.ts               # Payment gateway types
     │   │   └── ...                      # user, role, tenant types
     │   └── lib/                         # Utilities
     └── public/                          # Static assets
@@ -441,7 +448,7 @@ NOIR.Web/
 | **Roles** | `/api/roles` | CRUD, permissions |
 | **Permissions** | `/api/permissions` | assign, remove, list |
 | **Tenants** | `/api/tenants` | CRUD, archive, restore |
-| **Payments** | `/api/payments` | ⭐ **NEW:** transactions, gateways, refunds, webhooks, COD |
+| **Payments** | `/api/payments` | transactions, gateways, refunds, webhooks, COD |
 | **Audit** | `/api/audit` | logs, entity-history, export |
 | **Notifications** | `/api/notifications` | list, mark-read, delete |
 | **Email Templates** | `/api/email-templates` | CRUD, preview |
@@ -453,11 +460,17 @@ NOIR.Web/
 | **Developer Logs** | `/api/developer-logs` | Serilog streaming, error clusters |
 | **Tenant Settings** | `/api/tenant-settings` | Branding, SMTP, regional, contact |
 | **Platform Settings** | `/api/platform-settings` | Platform-level configuration |
-| **Products** | `/api/products` | ⭐ CRUD, variants, images, publish, archive |
-| **Product Categories** | `/api/product-categories` | ⭐ CRUD, hierarchical |
-| **Cart** | `/api/cart` | ⭐ add, update, remove, clear, get, merge |
-| **Checkout** | `/api/checkout` | ⭐ **NEW:** initiate, address, shipping, payment, complete |
-| **Orders** | `/api/orders` | ⭐ **NEW:** create, confirm, ship, cancel, list, details |
+| **Products** | `/api/products` | CRUD, variants, images, publish, archive |
+| **Product Categories** | `/api/product-categories` | CRUD, hierarchical |
+| **Brands** | `/api/brands` | CRUD, logo/banner |
+| **Product Attributes** | `/api/product-attributes` | CRUD, 13 attribute types |
+| **Product Filters** | `/api/product-filters` | Faceted filtering |
+| **Filter Analytics** | `/api/filter-analytics` | Filter usage tracking |
+| **Cart** | `/api/cart` | add, update, remove, clear, get, merge |
+| **Checkout** | `/api/checkout` | initiate, address, shipping, payment, complete |
+| **Orders** | `/api/orders` | create, confirm, ship, cancel, list, details |
+| **Shipping** | `/api/shipping` | providers, rates, tracking |
+| **Shipping Providers** | `/api/shipping-providers` | provider management |
 | **Hangfire** | `/hangfire` | Dashboard (requires `system:hangfire` permission) |
 
 #### Navigation
@@ -556,7 +569,7 @@ NOIR.Web/
 - **Refunds** - Request, approve/reject workflow with audit trail
 - **Webhooks** - Process payment provider callbacks with signature verification
 - **COD Support** - Cash-on-Delivery collection confirmation
-- **Operation Logging** - ⭐ NEW: Database audit trail for all gateway API calls
+- **Operation Logging** - Database audit trail for all gateway API calls
 
 **Key Files:**
 - `Commands/CreatePayment/CreatePaymentCommand.cs` - Initiate payment (implements IAuditableCommand)
@@ -564,13 +577,13 @@ NOIR.Web/
 - `Commands/ProcessWebhook/ProcessWebhookCommand.cs` - Webhook handling
 - `Commands/RequestRefund/RequestRefundCommand.cs` - Refund workflow
 - `Queries/GetPaymentTransactions/GetPaymentTransactionsQuery.cs` - Transaction list
-- `Queries/GetOperationLogs/GetOperationLogsQuery.cs` - ⭐ NEW: Query gateway API call logs
+- `Queries/GetOperationLogs/GetOperationLogsQuery.cs` - Query gateway API call logs
 
 **Domain Entities:**
 - `PaymentGateway` - Gateway configuration (Provider, EncryptedCredentials, WebhookSecret)
 - `PaymentTransaction` - Transaction lifecycle (Amount, Status, PaymentMethod)
 - `PaymentWebhookLog` - Webhook audit (EventType, ProcessingStatus)
-- `PaymentOperationLog` - ⭐ NEW: Gateway API call audit (Request/Response, Duration, Errors)
+- `PaymentOperationLog` - Gateway API call audit (Request/Response, Duration, Errors)
 - `Refund` - Refund tracking (Amount, Status, Reason, ApprovedBy)
 
 **Enums:**
@@ -579,17 +592,17 @@ NOIR.Web/
 - `RefundStatus` - Pending, Approved, Processing, Completed, Rejected, Failed
 - `GatewayEnvironment` - Sandbox, Production
 - `GatewayHealthStatus` - Unknown, Healthy, Degraded, Unhealthy
-- `PaymentOperationType` - ⭐ NEW: InitiatePayment, ValidateWebhook, InitiateRefund, TestConnection, etc.
+- `PaymentOperationType` - InitiatePayment, ValidateWebhook, InitiateRefund, TestConnection, etc.
 
 **Services:**
 - `IPaymentService` - Payment orchestration abstraction
 - `IPaymentGatewayFactory` - Gateway provider instantiation
 - `IPaymentGatewayProvider` - Gateway-specific implementation interface
 - `ICredentialEncryptionService` - Credential encryption/decryption
-- `IPaymentOperationLogger` - ⭐ NEW: Database logging for gateway API operations
+- `IPaymentOperationLogger` - Database logging for gateway API operations
 
 **Endpoints:**
-- `GET /api/payment-webhooks/operations` - ⭐ NEW: Query operation logs with filtering
+- `GET /api/payment-webhooks/operations` - Query operation logs with filtering
 
 **Tests:** `tests/NOIR.Application.UnitTests/Features/Payments/`, `tests/NOIR.IntegrationTests/Features/Payments/`
 
@@ -775,7 +788,7 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 
 **Pipeline:** `ValidationBehavior<TRequest, TResponse>` in Wolverine pipeline.
 
-**Docs:** [Validation Guide](backend/patterns/validation.md)
+**Docs:** [Validation (FluentValidation)](backend/research/validation-unification-plan.md)
 
 ---
 
@@ -816,7 +829,7 @@ public static partial class UserMapper
 | `TenantResolutionMiddleware` | Extract tenant from header/JWT | 2 |
 | `CurrentUserLoaderMiddleware` | Load user claims into `ICurrentUser` | 3 |
 
-**Docs:** [Middleware Guide](backend/patterns/middleware.md)
+**Docs:** See `src/NOIR.Web/Program.cs` for middleware registration order
 
 ---
 
@@ -826,12 +839,95 @@ public static partial class UserMapper
 
 ```
 tests/
-├── NOIR.Domain.UnitTests/           # Domain logic tests (842 tests)
-├── NOIR.Application.UnitTests/      # Handler, service, validator tests (4,125 tests)
-├── NOIR.IntegrationTests/           # API integration tests (605 tests)
-├── NOIR.ArchitectureTests/          # Architecture rule validation (25 tests)
+├── NOIR.Domain.UnitTests/           # Domain logic tests
+├── NOIR.Application.UnitTests/      # Handler, service, validator tests
+├── NOIR.IntegrationTests/           # API integration tests
+├── NOIR.ArchitectureTests/          # Architecture rule validation
 └── coverage.runsettings             # Test coverage configuration
 ```
+
+### E2E Tests (Playwright)
+
+**Location:** `src/NOIR.Web/frontend/e2e-tests/`
+
+**Configuration:** `playwright.config.ts` - Chromium + Firefox, 1 worker, retries on failure
+
+**Test Suites (29 spec files):**
+
+| Spec File | Area | Tests |
+|-----------|------|-------|
+| `activity-timeline.spec.ts` | Activity Timeline | Search, filter, details dialog |
+| `attributes.spec.ts` | Product Attributes | CRUD, type system |
+| `auth.spec.ts` | Authentication | Login, logout |
+| `blog-categories.spec.ts` | Blog Categories | CRUD |
+| `blog-posts.spec.ts` | Blog Posts | List, create, edit |
+| `blog-tags.spec.ts` | Blog Tags | CRUD |
+| `brands.spec.ts` | Product Brands | CRUD |
+| `categories.spec.ts` | Product Categories | CRUD, hierarchy |
+| `dashboard.spec.ts` | Dashboard | Widget rendering |
+| `developer-logs.spec.ts` | Developer Logs | Live logs, history, stats |
+| `email-templates.spec.ts` | Email Templates | Edit, preview, variables |
+| `forgot-password.spec.ts` | Password Reset | OTP flow |
+| `legal-pages.spec.ts` | Legal Pages | Edit, revert, preview |
+| `notifications.spec.ts` | Notifications | List, filter, preferences |
+| `platform-settings.spec.ts` | Platform Settings | Configuration |
+| `post-editor.spec.ts` | Post Editor | TinyMCE editing |
+| `product-form.spec.ts` | Product Form | Create/edit products |
+| `products.spec.ts` | Products List | Grid, search, actions |
+| `public-pages.spec.ts` | Public Pages | Landing, terms, privacy |
+| `roles.spec.ts` | Role Management | CRUD, permissions |
+| `tenants.spec.ts` | Tenant Management | CRUD |
+| `tenant-settings.spec.ts` | Tenant Settings | Tabs, SMTP, branding |
+| `users.spec.ts` | User Management | CRUD, role assign |
+| `user-settings.spec.ts` | User Profile | Edit profile |
+| `smoke/*.smoke.spec.ts` | Smoke Tests | 5 quick validation suites |
+
+**Page Objects (30 files):**
+
+| Page Object | Route |
+|-------------|-------|
+| `BasePage.ts` | Base class with shared utilities |
+| `ActivityTimelinePage.ts` | `/portal/admin/activity-timeline` |
+| `AttributesPage.ts` | `/portal/ecommerce/attributes` |
+| `BlogCategoriesPage.ts` | `/portal/blog/categories` |
+| `BlogPostsPage.ts` | `/portal/blog/posts` |
+| `BlogTagsPage.ts` | `/portal/blog/tags` |
+| `BrandsPage.ts` | `/portal/ecommerce/brands` |
+| `CategoriesPage.ts` | `/portal/ecommerce/categories` |
+| `DashboardPage.ts` | `/portal/dashboard` |
+| `DeveloperLogsPage.ts` | `/portal/admin/developer-logs` |
+| `EmailTemplatePage.ts` | `/portal/email-templates/:id` |
+| `ForgotPasswordPage.ts` | `/forgot-password` |
+| `LandingPage.ts` | `/` |
+| `LegalPagePage.ts` | `/portal/legal-pages/:slug` |
+| `LoginPage.ts` | `/login` |
+| `NotificationsPage.ts` | `/portal/notifications` |
+| `NotificationPreferencesPage.ts` | `/portal/settings/notifications` |
+| `PlatformSettingsPage.ts` | `/portal/admin/platform-settings` |
+| `PostEditorPage.ts` | `/portal/blog/posts/:id/edit` |
+| `PrivacyPage.ts` | `/privacy` |
+| `ProductFormPage.ts` | `/portal/ecommerce/products/new` |
+| `ProductsPage.ts` | `/portal/ecommerce/products` |
+| `RolesPage.ts` | `/portal/admin/roles` |
+| `TenantDetailPage.ts` | `/portal/admin/tenants/:id` |
+| `TenantSettingsPage.ts` | `/portal/admin/tenant-settings` |
+| `TenantsPage.ts` | `/portal/admin/tenants` |
+| `TermsPage.ts` | `/terms` |
+| `UserSettingsPage.ts` | `/portal/settings` |
+| `UsersPage.ts` | `/portal/admin/users` |
+
+**Running E2E Tests:**
+
+```bash
+cd src/NOIR.Web/frontend
+npx playwright test                    # All tests
+npx playwright test --headed           # With browser visible
+npx playwright test --ui               # Interactive UI mode
+npx playwright test categories.spec.ts # Single spec
+npx playwright test --grep @smoke      # Smoke tests only
+```
+
+**Docs:** [E2E Testing Guide](testing/E2E-TESTING-GUIDE.md)
 
 ### Integration Tests
 
@@ -925,7 +1021,7 @@ public void Domain_Should_Not_HaveDependencyOn_Application()
 | [JSON Enum Serialization](backend/patterns/json-enum-serialization.md) | String-based enum serialization |
 | [JWT Refresh Token](backend/patterns/jwt-refresh-token.md) | Token rotation and security |
 | [Tenant Isolation](backend/architecture/tenant-id-interceptor.md) | Multi-tenancy implementation |
-| [Payment Gateway Pattern](backend/patterns/payment-gateway-abstraction.md) | ⭐ **NEW:** Payment provider abstraction |
+| [Payment Gateway Pattern](backend/patterns/payment-gateway-abstraction.md) | Payment provider abstraction |
 
 ### Frontend
 
@@ -1000,10 +1096,10 @@ npm run generate:api
 | **Multi-Tenancy** | `TenantIdSetterInterceptor.cs` | [Tenant Isolation](backend/architecture/tenant-id-interceptor.md) |
 | **Audit Logging** | `EntityAuditLogInterceptor.cs` | [Audit Pattern](backend/patterns/hierarchical-audit-logging.md) |
 | **Permissions** | `Domain/Common/Permissions.cs` | [Role Permission](backend/research/role-permission-system-research.md) |
-| **Validation** | `*Validator.cs` | [Validation Guide](backend/patterns/validation.md) |
+| **Validation** | `*Validator.cs` | [Validation Plan](backend/research/validation-unification-plan.md) |
 | **Email Templates** | `EmailTemplate` entity | Knowledge Base |
 | **SignalR Hubs** | `NotificationHub`, `DeveloperLogHub` | Knowledge Base |
-| **Payment Processing** | `Features/Payments/`, `Services/Payment/` | ⭐ NEW: [Payment Gateway](backend/patterns/payment-gateway-abstraction.md) |
+| **Payment Processing** | `Features/Payments/`, `Services/Payment/` | [Payment Gateway](backend/patterns/payment-gateway-abstraction.md) |
 
 ---
 
@@ -1057,14 +1153,34 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-02-05
-**Version:** 3.1
+**Last Updated:** 2026-02-06
+**Version:** 3.2
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 3.2 (2026-02-06) - Comprehensive E2E & Statistics Refresh
+
+- **Test Coverage Update** - Backend: 6,751+ tests, E2E: 406+ test cases
+- **E2E Testing Section** - Complete documentation of Playwright test infrastructure:
+  - 29 spec files (24 regular + 5 smoke)
+  - 30 page objects with Page Object Model pattern
+  - Chromium + Firefox cross-browser testing
+  - Full spec-to-route mapping table
+- **API Endpoints** - Added 5 missing endpoint groups:
+  - Brands, Product Attributes, Product Filters, Filter Analytics, Shipping/Shipping Providers
+- **Statistics Accuracy** - Recounted all source files from filesystem:
+  - Domain: 114, Application: 737, Infrastructure: 232, Web: 40
+  - Backend total: 1,123 C# files (excluding generated Wolverine handlers)
+  - Repositories: 28 concrete implementations
+- **E2E Stability Fixes** (from QA regression session 4):
+  - Fixed `:has-text()` substring matching bug in filter tabs
+  - Fixed TinyMCE editor initialization timing in email template tests
+  - Fixed `[data-slot="card"]` selectors for shadcn/ui Card component
+  - All 406 E2E tests passing (0 failures, 5 flaky on retry, 9 skipped)
 
 ### Version 3.1 (2026-02-05) - Automated Index Refresh
 

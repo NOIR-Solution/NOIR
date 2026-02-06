@@ -49,13 +49,13 @@ export class NotificationPreferencesPage extends BasePage {
     this.backButton = page.locator('a[href="/portal/notifications"], button:has-text("Back")').first();
     this.saveButton = page.locator('button:has-text("Save Changes"), button:has-text("Save")').first();
 
-    // Category cards - identified by their title
-    this.categoryCards = page.locator('.shadow-sm.hover\\:shadow-lg, [data-testid="category-card"]');
-    this.systemCard = page.locator('div.rounded-lg').filter({ hasText: 'System' }).first();
-    this.userActionCard = page.locator('div.rounded-lg').filter({ hasText: 'User Actions' }).first();
-    this.workflowCard = page.locator('div.rounded-lg').filter({ hasText: 'Workflow' }).first();
-    this.securityCard = page.locator('div.rounded-lg').filter({ hasText: 'Security' }).first();
-    this.integrationCard = page.locator('div.rounded-lg').filter({ hasText: 'Integration' }).first();
+    // Category cards - identified by data-slot="card" attribute (from shadcn/ui Card component)
+    this.categoryCards = page.locator('[data-slot="card"]');
+    this.systemCard = page.locator('[data-slot="card"]').filter({ hasText: 'System' }).first();
+    this.userActionCard = page.locator('[data-slot="card"]').filter({ hasText: 'User Actions' }).first();
+    this.workflowCard = page.locator('[data-slot="card"]').filter({ hasText: 'Workflow' }).first();
+    this.securityCard = page.locator('[data-slot="card"]').filter({ hasText: 'Security' }).first();
+    this.integrationCard = page.locator('[data-slot="card"]').filter({ hasText: 'Integration' }).first();
 
     // Info text
     this.infoText = page.locator('p.text-sm.text-muted-foreground').filter({ hasText: 'Security notifications' });
@@ -156,6 +156,8 @@ export class NotificationPreferencesPage extends BasePage {
    */
   async isInAppEnabled(category: NotificationCategory): Promise<boolean> {
     const toggle = this.getInAppToggle(category);
+    const isVisible = await toggle.isVisible().catch(() => false);
+    if (!isVisible) return false;
     return await toggle.getAttribute('aria-checked') === 'true';
   }
 
@@ -172,6 +174,9 @@ export class NotificationPreferencesPage extends BasePage {
    */
   async getEmailFrequency(category: NotificationCategory): Promise<EmailFrequency> {
     const card = this.getCategoryCard(category);
+    const isCardVisible = await card.isVisible().catch(() => false);
+    if (!isCardVisible) return 'none';
+
     const frequencyMap: Record<string, EmailFrequency> = {
       'Never': 'none',
       'Immediate': 'immediate',
@@ -181,6 +186,8 @@ export class NotificationPreferencesPage extends BasePage {
 
     for (const [label, freq] of Object.entries(frequencyMap)) {
       const button = card.locator(`button:has-text("${label}")`);
+      const isButtonVisible = await button.isVisible().catch(() => false);
+      if (!isButtonVisible) continue;
       const classes = await button.getAttribute('class') || '';
       // Active button has primary background
       if (classes.includes('bg-primary')) {

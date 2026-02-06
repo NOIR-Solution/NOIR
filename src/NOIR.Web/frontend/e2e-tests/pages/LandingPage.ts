@@ -49,9 +49,9 @@ export class LandingPage extends BasePage {
 
     // Trust indicators
     this.trustIndicators = page.locator('p:has-text("Trusted by")').first();
-    this.enterpriseSecurityCard = page.locator('div:has-text("Enterprise Security"):has-text("Bank-level")');
-    this.realTimeSyncCard = page.locator('div:has-text("Real-time Sync"):has-text("99.9%")');
-    this.multiTenantCard = page.locator('div:has-text("Multi-tenant"):has-text("Scalable")');
+    this.enterpriseSecurityCard = page.getByText('Enterprise Security').first();
+    this.realTimeSyncCard = page.getByText('Real-time Sync').first();
+    this.multiTenantCard = page.getByText('Multi-tenant').first();
 
     // Footer
     this.footer = page.locator('footer');

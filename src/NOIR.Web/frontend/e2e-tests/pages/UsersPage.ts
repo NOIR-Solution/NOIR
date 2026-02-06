@@ -63,10 +63,14 @@ export class UsersPage extends BasePage {
 
   /**
    * Verify page loaded using sequential wait pattern
-   * Waits for header first (proves render), then create button (proves data loaded)
+   * Waits for header first (proves render), then table or create button (proves data loaded)
+   * Note: Create button is permission-gated and may not be visible for all users
    */
   async expectPageLoaded(): Promise<void> {
-    await this.expectStandardPageLoaded(this.pageHeader, this.createButton);
+    await expect(this.pageHeader.first()).toBeVisible({ timeout: 15000 });
+    // Wait for either create button or user table to appear (proves page is interactive)
+    const actionLocator = this.page.locator('button:has-text("Create User"), button:has-text("New User"), button:has-text("Add User"), table').first();
+    await expect(actionLocator).toBeVisible({ timeout: 15000 });
   }
 
   /**

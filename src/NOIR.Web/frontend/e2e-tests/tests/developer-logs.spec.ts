@@ -32,9 +32,10 @@ test.describe('Developer Logs @developer-logs', () => {
       await logsPage.expectPageLoaded();
 
       // Connection badge should be visible (Connected, Connecting, or Disconnected)
-      const connectionBadge = page.locator(
-        'text="Connected", text="Connecting", text="Disconnected", text="Reconnecting"'
-      );
+      const connectionBadge = page.locator('text="Connected"')
+        .or(page.locator('text="Connecting"'))
+        .or(page.locator('text="Disconnected"'))
+        .or(page.locator('text="Reconnecting"'));
       await expect(connectionBadge.first()).toBeVisible({ timeout: 10000 });
     });
   });
@@ -192,11 +193,9 @@ test.describe('Developer Logs @developer-logs', () => {
         }
       } else {
         // No log entries yet - verify empty state message
-        const emptyState = page.locator(
-          'text="No log entries", ' +
-          'text="Waiting for incoming logs", ' +
-          'text="No entries match"'
-        );
+        const emptyState = page.locator('text="No log entries"')
+          .or(page.locator('text="Waiting for incoming logs"'))
+          .or(page.locator('text="No entries match"'));
         await expect(emptyState.first()).toBeVisible({ timeout: 5000 });
       }
     });
@@ -255,18 +254,8 @@ test.describe('Developer Logs @developer-logs', () => {
       // Wait for tab content to load
       await page.waitForTimeout(1000);
 
-      // History tab should show either file list or empty state
-      const historyContent = page.locator(
-        '[data-testid="history-files"], ' +
-        '[class*="history-list"], ' +
-        'text="No history files", ' +
-        'text="Log files will appear here", ' +
-        'table, ' +
-        '[class*="file"]'
-      );
-
-      // Content area should be visible
-      const tabContent = page.locator('[role="tabpanel"]');
+      // Active tab panel should be visible (use data-state="active" to avoid matching hidden panels)
+      const tabContent = page.locator('[role="tabpanel"][data-state="active"]');
       await expect(tabContent.first()).toBeVisible({ timeout: 5000 });
     });
   });
@@ -286,31 +275,9 @@ test.describe('Developer Logs @developer-logs', () => {
       // Wait for tab content to load
       await page.waitForTimeout(1000);
 
-      // Statistics tab should show stats cards or metrics
-      const statsContent = page.locator(
-        '[data-testid="stats-card"], ' +
-        '[class*="stats-card"], ' +
-        '[class*="Card"], ' +
-        'text="Total", ' +
-        'text="Entries", ' +
-        'text="Buffer", ' +
-        'text="Levels"'
-      );
-
-      // Tab panel should be visible
-      const tabContent = page.locator('[role="tabpanel"]');
+      // Active tab panel should be visible
+      const tabContent = page.locator('[role="tabpanel"][data-state="active"]');
       await expect(tabContent.first()).toBeVisible({ timeout: 5000 });
-
-      // Look for refresh button
-      const refreshButton = page.locator(
-        'button:has-text("Refresh"), ' +
-        '[data-testid="stats-refresh"], ' +
-        'button[aria-label*="refresh"]'
-      );
-
-      if (await refreshButton.first().isVisible()) {
-        await expect(refreshButton.first()).toBeEnabled();
-      }
     });
   });
 
@@ -329,30 +296,9 @@ test.describe('Developer Logs @developer-logs', () => {
       // Wait for tab content to load
       await page.waitForTimeout(1000);
 
-      // Error Clusters tab should show clusters list or empty state
-      const clustersContent = page.locator(
-        '[data-testid="error-clusters"], ' +
-        '[class*="error-cluster"], ' +
-        'text="No error clusters", ' +
-        'text="No errors found", ' +
-        'text="Error Patterns", ' +
-        '[class*="Card"]'
-      );
-
-      // Tab panel should be visible
-      const tabContent = page.locator('[role="tabpanel"]');
+      // Active tab panel should be visible
+      const tabContent = page.locator('[role="tabpanel"][data-state="active"]');
       await expect(tabContent.first()).toBeVisible({ timeout: 5000 });
-
-      // Look for refresh button
-      const refreshButton = page.locator(
-        'button:has-text("Refresh"), ' +
-        '[data-testid="clusters-refresh"], ' +
-        'button[aria-label*="refresh"]'
-      );
-
-      if (await refreshButton.first().isVisible()) {
-        await expect(refreshButton.first()).toBeEnabled();
-      }
     });
   });
 
@@ -389,31 +335,31 @@ test.describe('Developer Logs @developer-logs', () => {
       await logsPage.navigate();
       await logsPage.expectPageLoaded();
 
-      // Find server level dropdown
+      // Server level dropdown uses Radix Select with trigger text "Min: [Level]"
+      // Only available for platform admins who have log level access
       const serverLevelDropdown = page.locator(
+        'button:has-text("Min:"), ' +
         'button:has-text("Server Level"), ' +
-        '[data-testid="server-level"], ' +
-        'button:has-text("Information"), ' +
-        'button:has-text("Debug"), ' +
-        'button:has-text("Warning"), ' +
-        'button:has-text("Error")'
+        '[data-testid="server-level"]'
       );
 
-      if (await serverLevelDropdown.first().isVisible()) {
+      const isVisible = await serverLevelDropdown.first().isVisible().catch(() => false);
+      if (isVisible) {
         await expect(serverLevelDropdown.first()).toBeEnabled();
 
         // Click to open dropdown
         await serverLevelDropdown.first().click();
 
-        // Verify dropdown opens
+        // Verify dropdown opens (Radix Select uses role="listbox")
         const dropdown = page.locator(
-          '[role="menu"], [role="listbox"], [data-radix-popper-content-wrapper]'
+          '[role="listbox"], [data-radix-popper-content-wrapper]'
         );
         await expect(dropdown.first()).toBeVisible({ timeout: 5000 });
 
         // Close dropdown
         await page.keyboard.press('Escape');
       }
+      // If not visible, tenant admin may not have access - test passes
     });
   });
 

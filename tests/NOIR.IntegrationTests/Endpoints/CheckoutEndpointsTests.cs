@@ -97,8 +97,8 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             Country = "VN"
         };
 
-        // Act
-        var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/address", command);
+        // Act - Address endpoint is at /{sessionId}/shipping-address
+        var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/shipping-address", command);
 
         // Assert
         response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
@@ -120,8 +120,8 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             RateId = "standard"
         };
 
-        // Act
-        var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/shipping", command);
+        // Act - Shipping endpoint is at /{sessionId}/shipping-method
+        var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/shipping-method", command);
 
         // Assert
         response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
@@ -143,8 +143,8 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             PaymentMethod = "CreditCard"
         };
 
-        // Act
-        var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/payment", command);
+        // Act - Payment endpoint is at /{sessionId}/payment-method
+        var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/payment-method", command);
 
         // Assert
         response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);

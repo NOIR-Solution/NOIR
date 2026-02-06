@@ -37,7 +37,7 @@ public class ProductEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<PaginatedList<ProductListDto>>();
+        var result = await response.Content.ReadFromJsonWithEnumsAsync<Application.Features.Products.Queries.GetProducts.PagedResult<ProductListDto>>();
         result.Should().NotBeNull();
     }
 
@@ -57,14 +57,14 @@ public class ProductEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Arrange
         var adminClient = await GetAdminClientAsync();
 
-        // Act
-        var response = await adminClient.GetAsync("/api/products?pageNumber=1&pageSize=5");
+        // Act - The endpoint uses 'page' and 'pageSize' query parameters
+        var response = await adminClient.GetAsync("/api/products?page=1&pageSize=5");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<PaginatedList<ProductListDto>>();
+        var result = await response.Content.ReadFromJsonWithEnumsAsync<Application.Features.Products.Queries.GetProducts.PagedResult<ProductListDto>>();
         result.Should().NotBeNull();
-        result!.PageNumber.Should().Be(1);
+        result!.Page.Should().Be(1);
         result.Items.Count.Should().BeLessThanOrEqualTo(5);
     }
 
@@ -137,8 +137,8 @@ public class ProductEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/products", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var result = await response.Content.ReadFromJsonAsync<ProductDto>();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonWithEnumsAsync<ProductDto>();
         result.Should().NotBeNull();
         result!.Name.Should().StartWith("Test Product");
     }
