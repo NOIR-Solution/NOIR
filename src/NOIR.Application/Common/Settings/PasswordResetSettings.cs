@@ -34,8 +34,9 @@ public class PasswordResetSettings
     /// <summary>
     /// Maximum OTP requests per email per hour (default: 3).
     /// Used for rate limiting to prevent abuse.
+    /// Set to 0 to disable rate limiting (useful for development/testing).
     /// </summary>
-    [Range(1, 20, ErrorMessage = "MaxRequestsPerEmailPerHour must be between 1 and 20")]
+    [Range(0, 10000, ErrorMessage = "MaxRequestsPerEmailPerHour must be between 0 and 10000")]
     public int MaxRequestsPerEmailPerHour { get; set; } = 3;
 
     /// <summary>

@@ -24,6 +24,17 @@ import i18n from '@/i18n'
 const API_BASE = '/api'
 
 /**
+ * Get the current tenant identifier for multi-tenant API calls.
+ * Used by apiClientPublic for unauthenticated requests (login, forgot-password).
+ * Authenticated requests use the tenant_id JWT claim instead.
+ *
+ * For production multi-tenancy, derive from hostname/subdomain.
+ */
+function getTenantIdentifier(): string {
+  return 'default'
+}
+
+/**
  * Custom API Error class for consistent error handling
  * Automatically logs error details to console for customer support
  */
@@ -254,6 +265,7 @@ export async function apiClientPublic<T>(
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     'Accept-Language': i18n.language,
+    'X-Tenant': getTenantIdentifier(),
     ...options.headers,
   }
 

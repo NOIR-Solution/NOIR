@@ -557,6 +557,23 @@ public class PasswordResetServiceTests
         result.Should().BeTrue();
     }
 
+    [Fact]
+    public async Task IsRateLimitedAsync_WhenDisabled_ShouldReturnFalseWithoutQueryingDatabase()
+    {
+        // Arrange - set to 0 to disable rate limiting
+        _settings.MaxRequestsPerEmailPerHour = 0;
+
+        // Act
+        var result = await _sut.IsRateLimitedAsync("test@example.com");
+
+        // Assert
+        result.Should().BeFalse();
+        _otpRepositoryMock.Verify(
+            x => x.CountAsync(It.IsAny<ISpecification<PasswordResetOtp>>(), It.IsAny<CancellationToken>()),
+            Times.Never,
+            "Should not query database when rate limiting is disabled");
+    }
+
     #endregion
 
     #region Helper Methods

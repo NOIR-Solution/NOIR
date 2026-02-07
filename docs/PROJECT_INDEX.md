@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-06 | **Index Version:** 3.3
+**Last Updated:** 2026-02-07 | **Index Version:** 3.4
 
 ---
 
@@ -26,26 +26,33 @@
 
 | Metric | Count | Notes |
 |--------|-------|-------|
-| **Backend Source Files** | 1,229 | C# files in `src/` (excl. generated) |
+| **Backend Source Files** | 1,248 | C# files in `src/` (excl. generated) |
 | **Frontend Source Files** | 305 | TypeScript/TSX in `frontend/src/` |
-| **Test Files** | 438 | C# test files in `tests/` |
-| **Total Source Files** | ~1,972 | Combined backend + frontend + tests |
-| **Feature Modules** | 27 | Domain-driven vertical slices |
-| **API Endpoint Groups** | 29 | Minimal API endpoint files |
-| **Domain Entities** | 50 | Core business entities |
+| **Test Files** | 446 | C# test files in `tests/` |
+| **Total Source Files** | ~1,999 | Combined backend + frontend + tests |
+| **Feature Modules** | 26 | Domain-driven vertical slices |
+| **API Endpoint Groups** | 30 | Minimal API endpoint files |
+| **Domain Entities** | 50+ | Core business entities |
+| **Aggregate Roots** | 26 | DDD aggregate roots |
+| **CQRS Commands** | 131 | Write operations |
+| **CQRS Queries** | 105 | Read operations |
 | **Repositories** | 29 | Infrastructure repositories (28 concrete + 1 base) |
-| **UI Components** | 103 | shadcn/ui + custom components |
+| **EF Core Configurations** | 49 | Entity type configurations |
+| **UI Components** | 103 | shadcn/ui + custom components (57 in ui/) |
 | **Custom Hooks** | 28 | React hooks in `hooks/` |
 | **API Services** | 23 | Frontend API clients |
 | **Frontend Pages** | 88 | React page components |
 | **E2E Test Specs** | 32 | Playwright test files (27 + 5 smoke) |
 | **E2E Page Objects** | 31 | Page Object Model files |
 | **Documentation Files** | 48 | Markdown docs in `docs/` |
-| **Test Coverage** | 6,751+ | Unit + Integration + Architecture |
-| **E2E Test Cases** | 490+ | Playwright E2E tests (Chromium + Firefox) |
+| **Backend Tests** | 6,751+ | Unit (842 + 5,230) + Integration (654) + Architecture (25) |
+| **E2E Test Cases** | 490+ | Playwright (Chromium + Firefox), 459 passing |
 | **Database Indexes** | 233+ | Including 14 filtered indexes |
+| **Enums** | 24 | Domain enumerations |
+| **Service Interfaces** | 43 | Application-layer abstractions |
+| **NuGet Packages** | 40+ | Direct package references |
 
-**Technologies:** .NET 10, React 19.2, SQL Server, EF Core 10, Wolverine, SignalR, Playwright, Vite 7.3, TypeScript 5.9, Tailwind 4.1, Zod 4.3
+**Technologies:** .NET 10, React 19.2, SQL Server, EF Core 10, Wolverine 5.11, SignalR, Playwright, Vite 7.3, TypeScript 5.9, Tailwind 4.1, Zod 4.3
 
 ### Directory Structure
 
@@ -57,7 +64,7 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 6,751+ backend tests across 4 projects
+├── tests/                        # ✅ 6,751+ backend tests across 4 test projects
 │   ├── NOIR.Domain.UnitTests/    # Domain logic tests
 │   ├── NOIR.Application.UnitTests/ # Handler/service/validator tests
 │   ├── NOIR.IntegrationTests/    # API integration tests (requires DB)
@@ -1157,14 +1164,31 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-02-06
-**Version:** 3.3
+**Last Updated:** 2026-02-07
+**Version:** 3.4
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 3.4 (2026-02-07) - Comprehensive Recount & QA Regression Fixes
+
+- **Statistics Recount** - Full codebase re-analysis with parallel agents:
+  - Backend source files: 1,248 (was 1,229)
+  - Test files: 446 (was 438)
+  - Total source: ~1,999 (was ~1,972)
+  - Feature modules: 26 (corrected from 27)
+  - API endpoint groups: 30 (was 29)
+  - 131 CQRS commands, 105 queries cataloged
+  - 26 aggregate roots, 49 EF Core configurations, 24 enums
+  - 43 service interfaces, 40+ NuGet packages
+- **Bug Fix: Forgot-Password 500 Error** - Root cause: unauthenticated requests to public endpoints (forgot-password, login) lacked `X-Tenant` header, causing Finbuckle tenant resolution to fail with 500. Fix: Added `X-Tenant: getTenantIdentifier()` header to `apiClientPublic` in `apiClient.ts`
+- **Rate Limiting Configurable** - `PasswordResetSettings.MaxRequestsPerEmailPerHour` now supports `0` = disabled. Added `appsettings.Development.json` (gitignored) with rate limiting disabled for dev/testing
+- **E2E Results** - Chromium: 459 passed, 0 skipped, 0 failed (FP-003 now passes)
+- **New Unit Test** - `IsRateLimitedAsync_WhenDisabled_ShouldReturnFalseWithoutQueryingDatabase`
+- **Backend Test Breakdown** - 842 domain + 5,230 application + 25 architecture + 654 integration = 6,751 total
 
 ### Version 3.3 (2026-02-06) - E2E Expansion & Statistics Refresh
 

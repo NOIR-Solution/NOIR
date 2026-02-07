@@ -293,6 +293,10 @@ public class PasswordResetService : IPasswordResetService, IScopedService
         string email,
         CancellationToken cancellationToken = default)
     {
+        // 0 = rate limiting disabled (useful for development/testing)
+        if (_settings.CurrentValue.MaxRequestsPerEmailPerHour <= 0)
+            return false;
+
         var normalizedEmail = email.ToLowerInvariant().Trim();
         var spec = new RecentPasswordResetOtpsByEmailSpec(normalizedEmail, 1);
         var recentCount = await _otpRepository.CountAsync(spec, cancellationToken);
