@@ -271,6 +271,7 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 *.lnk
+nul
 
 # macOS
 .DS_Store

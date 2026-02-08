@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-02-05
+**Last Updated:** 2026-02-08
 
 ---
 
@@ -101,51 +101,22 @@
 |----------|---------|
 | [TEST_PLAN.md](testing/TEST_PLAN.md) | Comprehensive test strategy, scope, and roadmap |
 | [E2E-TESTING-GUIDE.md](testing/E2E-TESTING-GUIDE.md) | Playwright setup, configuration, and implementation guide |
-| [TEST_CASES.md](testing/TEST_CASES.md) | Quick reference test cases by module (156 tests) |
-| [PRODUCT_E2E_TESTS.md](testing/PRODUCT_E2E_TESTS.md) | **Comprehensive Product E2E Suite (247 tests)** - Categories, Attributes, Brands, Products, Variants, Images, Options, Bulk Ops, Import/Export |
+| [TEST_CASES.md](testing/TEST_CASES.md) | Test case reference by module |
 
-### Test Coverage Summary
+### Test Coverage Summary (2026-02-08)
 
-#### Quick Reference Tests (156)
+| Category | Spec Files | Description |
+|----------|-----------|-------------|
+| Authentication | 2 | Login, forgot password |
+| E-commerce | 8 | Products, categories, brands, attributes, product forms |
+| Admin | 5 | Users, roles, tenants, platform/tenant settings |
+| Content | 5 | Blog posts, categories, tags, post editor, legal pages |
+| System | 7 | Notifications, command palette, developer logs, email templates, error pages, public pages, theme/language |
+| Smoke | 5 | Quick validation of critical flows |
+| Other | 2 | Dashboard, user settings, activity timeline |
+| **Total** | **32** | **~490 unique test scenarios across Chromium + Firefox** |
 
-| Module | Test Cases | Priority Distribution |
-|--------|------------|----------------------|
-| Authentication | 20 | P0: 6, P1: 10, P2: 4 |
-| Products (Quick) | 36 | P0: 6, P1: 20, P2: 10 |
-| Users | 14 | P0: 4, P1: 8, P2: 2 |
-| Roles | 8 | P0: 3, P1: 4, P2: 1 |
-| Tenants | 8 | P0: 3, P1: 4, P2: 1 |
-| E-commerce (Cart/Checkout/Orders) | 30 | P0: 13, P1: 13, P2: 4 |
-| Blog | 15 | P0: 2, P1: 10, P2: 3 |
-| Settings | 10 | P0: 1, P1: 7, P2: 2 |
-| Smoke Suite | 10 | P0: 10 |
-| Activity | 5 | P0: 0, P1: 5, P2: 0 |
-| **Quick Total** | **156** | **P0: 48, P1: 81, P2: 27** |
-
-#### Comprehensive Product E2E Suite (247)
-
-| Module | Test Cases | Priority Distribution |
-|--------|------------|----------------------|
-| Categories | 30 | P0: 5, P1: 18, P2: 7 |
-| Attributes | 45 | P0: 6, P1: 32, P2: 7 |
-| Brands | 12 | P0: 2, P1: 8, P2: 2 |
-| Product CRUD | 48 | P0: 12, P1: 30, P2: 6 |
-| Variants | 28 | P0: 5, P1: 18, P2: 5 |
-| Images | 22 | P0: 4, P1: 14, P2: 4 |
-| Options | 14 | P0: 2, P1: 10, P2: 2 |
-| Filters & Search | 20 | P0: 4, P1: 14, P2: 2 |
-| Bulk Operations | 16 | P0: 4, P1: 10, P2: 2 |
-| Import/Export | 18 | P0: 3, P1: 13, P2: 2 |
-| Integration | 14 | P0: 5, P1: 9, P2: 0 |
-| **Product Total** | **247** | **P0: 52, P1: 158, P2: 35** |
-
-#### Grand Total: **403 Test Cases**
-
-| Suite | P0 | P1 | P2 | Total |
-|-------|----|----|-----|-------|
-| Quick Reference | 48 | 81 | 27 | 156 |
-| Product E2E | 52 | 158 | 35 | 247 |
-| **Grand Total** | **100** | **239** | **62** | **403** |
+**Infrastructure:** 31 Page Object Model files, auth setup with storage states
 
 ---
 
@@ -200,18 +171,19 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 48 |
+| **Total Docs** | 47 |
 | **Backend Patterns** | 9 |
 | **Backend Architecture** | 1 |
 | **Backend Research** | 7 |
 | **Frontend Guides** | 9 |
-| **Testing Docs** | 4 |
+| **Testing Docs** | 3 |
 | **ADRs** | 3 |
 | **Plans** | 2 |
 | **Research (General)** | 2 |
 | **Designs** | 1 |
-| **E2E Test Cases** | 403 |
+| **E2E Test Scenarios** | ~490 |
+| **Backend Tests** | 6,750+ |
 
 ---
 
-**Version:** 2.4
+**Version:** 2.5 (Updated 2026-02-08)

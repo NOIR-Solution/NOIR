@@ -1,8 +1,8 @@
 # Frontend UI Stack Decision
 
 **Date:** 2026-01-03
-**Status:** Decided
-**Decision:** React + 21st.dev + Tailwind CSS
+**Status:** Decided (Updated 2026-02-08)
+**Decision:** React + shadcn/ui + Tailwind CSS
 
 ---
 
@@ -10,36 +10,39 @@
 
 NOIR needs a modern frontend for:
 1. Admin login page (cookie auth for Hangfire dashboard)
-2. Future React SPA frontend
+2. Full React SPA frontend
 3. AI-assisted development workflow
 
 ## Decision
 
 | Technology | Purpose |
 |------------|---------|
-| **React** | UI framework |
-| **21st.dev** | Component marketplace |
-| **Tailwind CSS** | Utility-first CSS |
+| **React 19** | UI framework |
+| **shadcn/ui** | Component library (Radix UI + Tailwind) |
+| **Tailwind CSS 4** | Utility-first CSS |
 
-## Why 21st.dev?
+> **Note:** Initial decision was 21st.dev, but shadcn/ui was adopted for its maturity, copy-paste ownership model, and better Radix UI integration.
+
+## Why shadcn/ui?
 
 ### Key Features
-- **730+ components** - Production-ready, community-contributed
-- **MCP Integration** - Magic MCP for AI-assisted development
-- **AI-first workflow** - `/ui` command in Cursor/Claude/Windsurf
-- **Copy-paste model** - You own the code, no lock-in
+- **Built on Radix UI** - Accessible, unstyled primitive components
+- **Copy-paste model** - You own the code, no lock-in, no version conflicts
+- **TypeScript-first** - Full type safety for all components
+- **Tailwind CSS styling** - Fully customizable with utility classes
+- **Active community** - 60k+ GitHub stars, widely adopted
 
-### Statistics
-- GitHub Stars: 5,000+
-- Components: 730+
-- MCP Support: Yes (Magic MCP)
-- License: MIT
+### Current Implementation
+- 56 UI components in `src/components/ui/`
+- 103 total components (including custom)
+- 28 custom React hooks
+- OKLCH color system (see `docs/frontend/COLOR_SCHEMA_GUIDE.md`)
 
-## MCP Configuration
+## MCP Integration
 
-### 21st.dev Magic MCP
+### 21st.dev Magic MCP (Optional - Component Inspiration)
 
-Add to `.cursor/mcp.json` or Claude Code config:
+The 21st.dev Magic MCP can still be used for component inspiration and generation:
 
 ```json
 {
@@ -52,33 +55,9 @@ Add to `.cursor/mcp.json` or Claude Code config:
 }
 ```
 
-### Usage
-```
-/ui create a modern login form with email and password
-/ui create an admin dashboard sidebar
-/ui create a data table with pagination
-```
-
-## Implementation Plan
-
-### Phase 1: Admin Login
-```
-/admin/login → Cookie authentication → /hangfire dashboard
-```
-
-### Phase 2: React SPA
-```bash
-# Initialize React app
-npx create-next-app@latest client --typescript --tailwind
-cd client
-
-# Install 21st.dev Magic MCP
-npx @21st-dev/cli@latest install cursor --api-key <key>
-```
-
 ## References
 
-- [21st.dev](https://21st.dev) - Component marketplace
-- [21st.dev GitHub](https://github.com/serafimcloud/21st)
-- [21st.dev Magic MCP](https://github.com/21st-dev/magic-mcp)
-- [Tailwind CSS](https://tailwindcss.com)
+- [shadcn/ui](https://ui.shadcn.com) - Component library
+- [Radix UI](https://www.radix-ui.com) - Accessible primitives
+- [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS
+- [21st.dev](https://21st.dev) - Component marketplace (inspiration)

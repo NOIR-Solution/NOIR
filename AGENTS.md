@@ -23,12 +23,14 @@ dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 dotnet watch --project src/NOIR.Web
 
-# Tests (5,370+)
+# Tests (6,750+)
 dotnet test src/NOIR.sln
 
-# Database Migrations
-dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web
-dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web
+# Database Migrations (CRITICAL: always specify --context)
+dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/App
+dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context TenantStoreDbContext --output-dir Migrations/Tenant
+dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext
+dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context TenantStoreDbContext
 
 # Frontend
 cd src/NOIR.Web/frontend
@@ -128,5 +130,7 @@ public class CustomerService : ICustomerService, IScopedService { }
 
 ## Admin Credentials
 
-- **Email:** `admin@noir.local`
-- **Password:** `123qwe`
+| Account | Email | Password |
+|---------|-------|----------|
+| **Platform Admin** | `platform@noir.local` | `123qwe` |
+| **Tenant Admin** | `admin@noir.local` | `123qwe` |

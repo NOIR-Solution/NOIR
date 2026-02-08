@@ -83,7 +83,7 @@ docs/
     └── essential-erp-cms-features-2026.md
 ```
 
-**Total: 44 documentation files**
+**Total: 47 documentation files**
 
 ## Quick Links
 

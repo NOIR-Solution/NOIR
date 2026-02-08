@@ -1,7 +1,7 @@
 # NOIR API Documentation
 
-**Last Updated:** 2026-01-20
-**Version:** 1.0
+**Last Updated:** 2026-02-08
+**Version:** 2.0
 **Base URL (Dev):** `http://localhost:4000/api`
 
 A comprehensive guide to all REST API endpoints in the NOIR platform.
@@ -17,14 +17,31 @@ A comprehensive guide to all REST API endpoints in the NOIR platform.
 | [Roles](#roles-api) | 8 | ✅ | `roles:*` |
 | [Permissions](#permissions-api) | 2 | ✅ | `permissions:read` |
 | [Tenants](#tenants-api) | 5 | ✅ | `tenants:*` |
+| [Products](#products-api) | 14+ | ✅ | `products:*` |
+| [Product Categories](#product-categories-api) | 10 | ✅ | `products:*` |
+| [Product Attributes](#product-attributes-api) | 8 | ✅ | `products:*` |
+| [Product Filters](#product-filters-api) | 2 | Mixed | Public filtering |
+| [Brands](#brands-api) | 5 | ✅ | `brands:*` |
+| [Cart](#cart-api) | 7 | Mixed | User-scoped / SessionId |
+| [Checkout](#checkout-api) | 7 | ✅ | User-scoped |
+| [Orders](#orders-api) | 6 | ✅ | `orders:*` |
+| [Payments](#payments-api) | 9+ | ✅ | `payments:*` |
+| [Payment Gateways](#payment-gateways-api) | 7 | ✅ | Admin |
+| [Shipping](#shipping-api) | 5 | ✅ | `shipping:*` |
+| [Shipping Providers](#shipping-providers-api) | 5 | ✅ | Admin |
 | [Notifications](#notifications-api) | 5 | ✅ | User-scoped |
 | [Email Templates](#email-templates-api) | 4 | ✅ | `email-templates:*` |
 | [Audit](#audit-api) | 3 | ✅ | `audit:view` |
 | [Blog](#blog-api) | 12 | Mixed | `blog:write` (admin) |
+| [Feeds](#feeds-api) | 3 | ❌ | Public |
 | [Media](#media-api) | 2 | ✅ | `media:*` |
+| [Legal Pages](#legal-pages-api) | 4 | Mixed | Admin + Public |
+| [Platform Settings](#platform-settings-api) | 3 | ✅ | Platform Admin |
+| [Tenant Settings](#tenant-settings-api) | 8 | ✅ | Tenant Admin |
+| [Filter Analytics](#filter-analytics-api) | 2 | Mixed | Admin (read) / Public (write) |
 | [Developer Logs](#developer-logs-api) | 1 | ✅ | Dev only |
 
-**API Documentation UI:** `http://localhost:3000/api/docs` (Scalar)
+**API Documentation UI:** `http://localhost:4000/api/docs` (Scalar)
 
 ---
 
@@ -1345,6 +1362,322 @@ All list endpoints support pagination:
 
 ---
 
+## Products API
+
+**Base Path:** `/api/products`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/products` | List products (paged, filterable) | ✅ |
+| GET | `/products/{id}` | Get product by ID | ✅ |
+| POST | `/products` | Create product | ✅ |
+| PUT | `/products/{id}` | Update product | ✅ |
+| DELETE | `/products/{id}` | Delete product (soft) | ✅ |
+| POST | `/products/{id}/publish` | Publish product (Draft → Active) | ✅ |
+| POST | `/products/{id}/archive` | Archive product | ✅ |
+| POST | `/products/{id}/duplicate` | Duplicate product | ✅ |
+| POST | `/products/bulk/publish` | Bulk publish products | ✅ |
+| POST | `/products/bulk/archive` | Bulk archive products | ✅ |
+| POST | `/products/bulk/delete` | Bulk delete products | ✅ |
+| POST | `/products/bulk/import` | Bulk import products | ✅ |
+| GET | `/products/export` | Export products to CSV | ✅ |
+| GET | `/products/stats` | Get product statistics | ✅ |
+
+### Product Images (`/api/products/{productId}/images`)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/images` | Add product image |
+| POST | `/images/upload` | Upload product image file |
+| PUT | `/images/{id}` | Update product image |
+| DELETE | `/images/{id}` | Delete product image |
+| POST | `/images/reorder` | Reorder product images |
+| POST | `/images/{id}/set-primary` | Set primary image |
+
+### Product Variants (`/api/products/{productId}/variants`)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/variants` | Add product variant |
+| PUT | `/variants/{id}` | Update product variant |
+| DELETE | `/variants/{id}` | Delete product variant |
+
+### Product Options (`/api/products/{productId}/options`)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/options` | Add product option |
+| PUT | `/options/{id}` | Update product option |
+| DELETE | `/options/{id}` | Delete product option |
+| POST | `/options/{optionId}/values` | Add option value |
+| PUT | `/options/{optionId}/values/{id}` | Update option value |
+| DELETE | `/options/{optionId}/values/{id}` | Delete option value |
+
+### Product Attribute Assignments (`/api/products/{productId}/attributes`)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/attributes` | Get product attribute assignments |
+| GET | `/attributes/form-schema` | Get attribute form schema |
+| POST | `/attributes` | Set product attribute value |
+| POST | `/attributes/bulk` | Bulk update attributes |
+
+---
+
+## Product Categories API
+
+**Base Path:** `/api/products/categories`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/categories` | List categories (hierarchical) | ✅ |
+| GET | `/categories/{id}` | Get category by ID | ✅ |
+| POST | `/categories` | Create category | ✅ |
+| PUT | `/categories/{id}` | Update category | ✅ |
+| DELETE | `/categories/{id}` | Delete category (soft) | ✅ |
+
+### Category Attributes (`/api/products/categories/{categoryId}/attributes`)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/attributes` | Get category attributes |
+| GET | `/attributes/form-schema` | Get attribute form schema |
+| POST | `/attributes` | Assign attribute to category |
+| PUT | `/attributes/{id}` | Update category attribute |
+| DELETE | `/attributes/{id}` | Remove attribute from category |
+
+---
+
+## Product Attributes API
+
+**Base Path:** `/api/product-attributes`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/product-attributes` | List attributes (paged) | ✅ |
+| GET | `/product-attributes/{id}` | Get attribute by ID | ✅ |
+| POST | `/product-attributes` | Create attribute | ✅ |
+| PUT | `/product-attributes/{id}` | Update attribute | ✅ |
+| DELETE | `/product-attributes/{id}` | Delete attribute | ✅ |
+
+### Attribute Values (`/api/product-attributes/{attributeId}/values`)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/values` | Add predefined value |
+| PUT | `/values/{id}` | Update value |
+| DELETE | `/values/{id}` | Remove value |
+
+**Attribute Types:** Select, MultiSelect, Text, TextArea, Number, Decimal, Boolean, Date, DateTime, Color, Range, Url, File
+
+---
+
+## Product Filters API
+
+**Base Path:** `/api/products/filter`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/filter` | Filter products with facets (public) | ❌ |
+| GET | `/filter/category/{slug}` | Get category-specific filters | ❌ |
+
+Supports: category slug, brand filter, price range, attribute filters, search query, sorting.
+
+---
+
+## Brands API
+
+**Base Path:** `/api/brands`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/brands` | List brands (paged) | ✅ |
+| GET | `/brands/{id}` | Get brand by ID | ✅ |
+| POST | `/brands` | Create brand | ✅ |
+| PUT | `/brands/{id}` | Update brand | ✅ |
+| DELETE | `/brands/{id}` | Delete brand (soft) | ✅ |
+
+---
+
+## Cart API
+
+**Base Path:** `/api/cart`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/cart` | Get current cart | Mixed (User/SessionId) |
+| GET | `/cart/summary` | Get cart summary (mini-cart) | Mixed |
+| POST | `/cart/items` | Add item to cart | Mixed |
+| PUT | `/cart/items/{id}` | Update cart item quantity | Mixed |
+| DELETE | `/cart/items/{id}` | Remove item from cart | Mixed |
+| DELETE | `/cart` | Clear entire cart | Mixed |
+| POST | `/cart/merge` | Merge guest cart on login | ✅ |
+
+Guest carts use `SessionId` (cookie/header). On login, call merge to combine.
+
+---
+
+## Checkout API
+
+**Base Path:** `/api/checkout`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/checkout/{sessionId}` | Get checkout session | ✅ |
+| POST | `/checkout/initiate` | Initiate checkout from cart | ✅ |
+| POST | `/checkout/{sessionId}/shipping-address` | Set shipping address | ✅ |
+| POST | `/checkout/{sessionId}/billing-address` | Set billing address | ✅ |
+| POST | `/checkout/{sessionId}/shipping-method` | Select shipping method | ✅ |
+| POST | `/checkout/{sessionId}/payment-method` | Select payment method | ✅ |
+| POST | `/checkout/{sessionId}/complete` | Complete checkout → create order | ✅ |
+
+Session expires after 30 minutes (configurable).
+
+---
+
+## Orders API
+
+**Base Path:** `/api/orders`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/orders` | List orders (paged, filterable) | ✅ |
+| GET | `/orders/{id}` | Get order by ID | ✅ |
+| POST | `/orders` | Create order | ✅ |
+| POST | `/orders/{id}/confirm` | Confirm order | ✅ |
+| POST | `/orders/{id}/ship` | Ship order | ✅ |
+| POST | `/orders/{id}/cancel` | Cancel order (releases inventory) | ✅ |
+
+**Order Status Flow:** Pending → Confirmed → Processing → Shipped → Delivered → Completed (or → Cancelled)
+
+---
+
+## Payments API
+
+**Base Path:** `/api/payments`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/payments` | List payment transactions | ✅ |
+| GET | `/payments/{id}` | Get payment transaction | ✅ |
+| POST | `/payments` | Create payment | ✅ |
+| POST | `/payments/{id}/cancel` | Cancel payment | ✅ |
+| POST | `/payments/refunds/request` | Request refund | ✅ |
+| POST | `/payments/refunds/{id}/approve` | Approve refund | ✅ |
+| POST | `/payments/refunds/{id}/reject` | Reject refund | ✅ |
+| GET | `/payments/cod/pending` | Get pending COD payments | ✅ |
+| POST | `/payments/cod/{id}/confirm` | Confirm COD collection | ✅ |
+
+## Payment Gateways API
+
+**Base Path:** `/api/payment-gateways`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/payment-gateways` | List payment gateways | ✅ Admin |
+| GET | `/payment-gateways/{id}` | Get gateway details | ✅ Admin |
+| POST | `/payment-gateways` | Configure new gateway | ✅ Admin |
+| PUT | `/payment-gateways/{id}` | Update gateway config | ✅ Admin |
+| GET | `/payment-gateways/active` | Get active gateways (checkout) | ✅ |
+| POST | `/payment-gateways/test` | Test gateway connection | ✅ Admin |
+| GET | `/payment-gateways/schemas` | Get gateway config schemas | ✅ Admin |
+
+---
+
+## Shipping API
+
+**Base Path:** `/api/shipping`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| POST | `/shipping/rates/calculate` | Calculate shipping rates | ✅ |
+| POST | `/shipping/orders` | Create shipping order | ✅ |
+| GET | `/shipping/orders/{trackingNumber}` | Get shipping order | ✅ |
+| POST | `/shipping/orders/{trackingNumber}/cancel` | Cancel shipping order | ✅ |
+| GET | `/shipping/tracking/{trackingNumber}` | Get tracking events | ✅ |
+
+## Shipping Providers API
+
+**Base Path:** `/api/shipping-providers`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/shipping-providers` | List all providers (admin) | ✅ Admin |
+| GET | `/shipping-providers/active` | Get active providers | ✅ |
+| GET | `/shipping-providers/{id}` | Get provider details | ✅ Admin |
+| POST | `/shipping-providers` | Configure new provider | ✅ Admin |
+| PUT | `/shipping-providers/{id}` | Update provider config | ✅ Admin |
+
+---
+
+## Legal Pages API
+
+**Base Path:** `/api/legal-pages` (Admin) | `/api/public/legal` (Public)
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/legal-pages` | List legal pages | ✅ Admin |
+| GET | `/legal-pages/{id}` | Get legal page by ID | ✅ Admin |
+| PUT | `/legal-pages/{id}` | Update legal page content | ✅ Admin |
+| POST | `/legal-pages/{id}/revert` | Revert to platform default | ✅ Admin |
+| GET | `/public/legal/{slug}` | Get public legal page | ❌ Public |
+
+---
+
+## Platform Settings API
+
+**Base Path:** `/api/platform-settings`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/platform-settings/smtp` | Get SMTP settings | ✅ Platform Admin |
+| PUT | `/platform-settings/smtp` | Update SMTP settings | ✅ Platform Admin |
+| POST | `/platform-settings/smtp/test` | Test SMTP connection | ✅ Platform Admin |
+
+---
+
+## Tenant Settings API
+
+**Base Path:** `/api/tenant-settings`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/tenant-settings/branding` | Get branding settings | ✅ Tenant Admin |
+| PUT | `/tenant-settings/branding` | Update branding | ✅ Tenant Admin |
+| GET | `/tenant-settings/contact` | Get contact settings | ✅ Tenant Admin |
+| PUT | `/tenant-settings/contact` | Update contact settings | ✅ Tenant Admin |
+| GET | `/tenant-settings/regional` | Get regional settings | ✅ Tenant Admin |
+| PUT | `/tenant-settings/regional` | Update regional settings | ✅ Tenant Admin |
+| GET | `/tenant-settings/smtp` | Get tenant SMTP settings | ✅ Tenant Admin |
+| PUT | `/tenant-settings/smtp` | Update tenant SMTP | ✅ Tenant Admin |
+| POST | `/tenant-settings/smtp/test` | Test tenant SMTP | ✅ Tenant Admin |
+| POST | `/tenant-settings/smtp/revert` | Revert to platform SMTP | ✅ Tenant Admin |
+
+---
+
+## Feeds API
+
+**Public RSS and Sitemap endpoints (no authentication required)**
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/blog/feed.xml` | RSS 2.0 feed of published posts | ❌ |
+| GET | `/rss.xml` | RSS feed (alternative path) | ❌ |
+| GET | `/sitemap.xml` | XML sitemap for SEO | ❌ |
+
+---
+
+## Filter Analytics API
+
+**Base Path:** `/api/analytics/filter-events`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| POST | `/analytics/filter-events` | Track filter usage event | ❌ Public |
+| GET | `/analytics/filter-events/popular` | Get popular filters | ✅ Admin |
+
+---
+
 ## Versioning
 
 NOIR uses URL path versioning:
@@ -1364,4 +1697,4 @@ NOIR uses URL path versioning:
 
 ---
 
-*Last Updated: 2026-01-20 | Total Endpoints: 60+ | Supports: OpenAPI 3.0*
+*Last Updated: 2026-02-08 | Total Endpoints: 160+ across 30 groups | Supports: OpenAPI 3.0*

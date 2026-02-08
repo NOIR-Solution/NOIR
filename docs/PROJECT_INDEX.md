@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-07 | **Index Version:** 3.4
+**Last Updated:** 2026-02-08 | **Index Version:** 3.5
 
 ---
 
@@ -20,36 +20,36 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 6,751+ backend tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 6,752+ backend tests.
 
 ### Key Statistics
 
 | Metric | Count | Notes |
 |--------|-------|-------|
-| **Backend Source Files** | 1,248 | C# files in `src/` (excl. generated) |
+| **Backend Source Files** | 1,230 | C# files in `src/` (excl. generated) |
 | **Frontend Source Files** | 305 | TypeScript/TSX in `frontend/src/` |
-| **Test Files** | 446 | C# test files in `tests/` |
-| **Total Source Files** | ~1,999 | Combined backend + frontend + tests |
+| **Test Files** | 438 | C# test files in `tests/` |
+| **Total Source Files** | ~1,973 | Combined backend + frontend + tests |
 | **Feature Modules** | 26 | Domain-driven vertical slices |
 | **API Endpoint Groups** | 30 | Minimal API endpoint files |
 | **Domain Entities** | 50+ | Core business entities |
 | **Aggregate Roots** | 26 | DDD aggregate roots |
-| **CQRS Commands** | 131 | Write operations |
-| **CQRS Queries** | 105 | Read operations |
-| **Repositories** | 29 | Infrastructure repositories (28 concrete + 1 base) |
+| **CQRS Commands** | 130 | Write operations |
+| **CQRS Queries** | 86 | Read operations |
+| **Repositories** | 28 | Infrastructure repositories |
 | **EF Core Configurations** | 49 | Entity type configurations |
-| **UI Components** | 103 | shadcn/ui + custom components (57 in ui/) |
+| **UI Components** | 103 | shadcn/ui + custom components (56 in ui/) |
 | **Custom Hooks** | 28 | React hooks in `hooks/` |
 | **API Services** | 23 | Frontend API clients |
 | **Frontend Pages** | 88 | React page components |
 | **E2E Test Specs** | 32 | Playwright test files (27 + 5 smoke) |
 | **E2E Page Objects** | 31 | Page Object Model files |
-| **Documentation Files** | 48 | Markdown docs in `docs/` |
-| **Backend Tests** | 6,751+ | Unit (842 + 5,230) + Integration (654) + Architecture (25) |
-| **E2E Test Cases** | 490+ | Playwright (Chromium + Firefox), 459 passing |
+| **Documentation Files** | 47 | Markdown docs in `docs/` |
+| **Backend Tests** | 6,752+ | Unit (842 + 5,231) + Integration (654) + Architecture (25) |
+| **E2E Test Cases** | 490+ | Playwright (Chromium + Firefox) |
 | **Database Indexes** | 233+ | Including 14 filtered indexes |
 | **Enums** | 24 | Domain enumerations |
-| **Service Interfaces** | 43 | Application-layer abstractions |
+| **Service Interfaces** | 44 | Application-layer abstractions |
 | **NuGet Packages** | 40+ | Direct package references |
 
 **Technologies:** .NET 10, React 19.2, SQL Server, EF Core 10, Wolverine 5.11, SignalR, Playwright, Vite 7.3, TypeScript 5.9, Tailwind 4.1, Zod 4.3
@@ -64,12 +64,12 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 6,751+ backend tests across 4 test projects
+├── tests/                        # ✅ 6,752+ backend tests across 4 test projects
 │   ├── NOIR.Domain.UnitTests/    # Domain logic tests
 │   ├── NOIR.Application.UnitTests/ # Handler/service/validator tests
 │   ├── NOIR.IntegrationTests/    # API integration tests (requires DB)
 │   └── NOIR.ArchitectureTests/   # Architectural rule tests
-├── docs/                         # 📚 48 documentation files
+├── docs/                         # 📚 47 documentation files
 └── .github/                      # ⚙️  CI/CD workflows
 
 ```
@@ -181,7 +181,6 @@ NOIR.Domain/
 #### Navigation
 
 - [Domain Layer Documentation](../src/NOIR.Domain/README.md)
-- [Entity Configuration Guide](backend/patterns/entity-configuration.md)
 - [Entity Configuration Guide](backend/patterns/entity-configuration.md) (includes soft delete)
 
 ---
@@ -229,7 +228,18 @@ NOIR.Application/
 │   ├── Blog/                            # Blog CMS (Posts, Categories, Tags)
 │   ├── DeveloperLogs/                   # Serilog streaming
 │   ├── TenantSettings/                  # Tenant configuration (Branding, SMTP, etc.)
-│   └── PlatformSettings/                # Platform-level settings
+│   ├── PlatformSettings/                # Platform-level settings
+│   ├── Products/                        # Product catalog (CRUD, variants, images)
+│   ├── Brands/                          # Product brand management
+│   ├── ProductAttributes/               # Dynamic product attributes (13 types)
+│   ├── ProductFilter/                   # Faceted product filtering
+│   ├── ProductFilterIndex/              # Denormalized filter index
+│   ├── FilterAnalytics/                 # Filter usage analytics
+│   ├── Cart/                            # Shopping cart (user + guest)
+│   ├── Checkout/                        # Checkout flow (address, shipping, payment)
+│   ├── Orders/                          # Order lifecycle management
+│   ├── Inventory/                       # Stock management
+│   └── Shipping/                        # Shipping provider integration
 └── Specifications/                      # EF Core query specs
     ├── RefreshTokens/
     ├── Notifications/
@@ -397,17 +407,29 @@ NOIR.Web/
 │   ├── RoleEndpoints.cs                 # /api/roles/*
 │   ├── PermissionEndpoints.cs           # /api/permissions/*
 │   ├── TenantEndpoints.cs               # /api/tenants/*
-│   ├── PaymentEndpoints.cs              # /api/payments/*
+│   ├── ProductEndpoints.cs              # /api/products/* (CRUD, variants, images, options, attributes)
+│   ├── ProductCategoryEndpoints.cs      # /api/products/categories/*
+│   ├── ProductAttributeEndpoints.cs     # /api/product-attributes/*
+│   ├── ProductFilterEndpoints.cs        # /api/products/filter/*
+│   ├── BrandEndpoints.cs                # /api/brands/*
+│   ├── CartEndpoints.cs                 # /api/cart/*
+│   ├── CheckoutEndpoints.cs             # /api/checkout/*
+│   ├── OrderEndpoints.cs                # /api/orders/*
+│   ├── PaymentEndpoints.cs              # /api/payments/* + /api/payment-gateways/*
+│   ├── ShippingEndpoints.cs             # /api/shipping/*
+│   ├── ShippingProviderEndpoints.cs     # /api/shipping-providers/*
+│   ├── FilterAnalyticsEndpoints.cs      # /api/analytics/filter-events/*
 │   ├── AuditEndpoints.cs                # /api/audit/*
 │   ├── NotificationEndpoints.cs         # /api/notifications/*
 │   ├── EmailTemplateEndpoints.cs        # /api/email-templates/*
 │   ├── LegalPageEndpoints.cs            # /api/legal-pages/*
 │   ├── PublicLegalPageEndpoints.cs      # /api/public/legal/*
 │   ├── MediaEndpoints.cs                # /api/media/*
-│   ├── FileEndpoints.cs                 # /api/files/*
+│   ├── FileEndpoints.cs                 # /media/{path} (file serving)
 │   ├── BlogEndpoints.cs                 # /api/blog/*
-│   ├── FeedEndpoints.cs                 # /api/feeds/* (RSS/Atom)
-│   ├── DeveloperLogEndpoints.cs         # /api/developer-logs/*
+│   ├── FeedEndpoints.cs                 # /blog/feed.xml, /rss.xml, /sitemap.xml
+│   ├── DeveloperLogEndpoints.cs         # /api/admin/developer-logs/*
+│   ├── DevEndpoints.cs                  # /api/dev/* (development only)
 │   ├── TenantSettingsEndpoints.cs       # /api/tenant-settings/*
 │   └── PlatformSettingsEndpoints.cs     # /api/platform-settings/*
 ├── Middleware/
@@ -971,7 +993,7 @@ public class CreateUserTests : IntegrationTestBase
 - Seeded with test users and roles
 - Support for multi-tenancy testing
 
-**Docs:** [Testing Guide](backend/testing/integration-tests.md)
+**Docs:** [E2E Testing Guide](testing/E2E-TESTING-GUIDE.md)
 
 ---
 
@@ -1003,7 +1025,7 @@ public void Domain_Should_Not_HaveDependencyOn_Application()
 }
 ```
 
-**Docs:** [Architecture Testing](backend/testing/architecture-tests.md)
+**Docs:** See `tests/NOIR.ArchitectureTests/` for implementation
 
 ---
 
@@ -1032,7 +1054,7 @@ public void Domain_Should_Not_HaveDependencyOn_Application()
 | [JSON Enum Serialization](backend/patterns/json-enum-serialization.md) | String-based enum serialization |
 | [JWT Refresh Token](backend/patterns/jwt-refresh-token.md) | Token rotation and security |
 | [Tenant Isolation](backend/architecture/tenant-id-interceptor.md) | Multi-tenancy implementation |
-| [Payment Gateway Pattern](backend/patterns/payment-gateway-abstraction.md) | Payment provider abstraction |
+| [Payment Gateway Design](../docs/designs/payment-gateway-admin-ui.md) | Payment gateway admin UI |
 
 ### Frontend
 
@@ -1110,7 +1132,7 @@ npm run generate:api
 | **Validation** | `*Validator.cs` | [Validation Plan](backend/research/validation-unification-plan.md) |
 | **Email Templates** | `EmailTemplate` entity | Knowledge Base |
 | **SignalR Hubs** | `NotificationHub`, `DeveloperLogHub` | Knowledge Base |
-| **Payment Processing** | `Features/Payments/`, `Services/Payment/` | [Payment Gateway](backend/patterns/payment-gateway-abstraction.md) |
+| **Payment Processing** | `Features/Payments/`, `Services/Payment/` | [Payment Gateway Design](../docs/designs/payment-gateway-admin-ui.md) |
 
 ---
 
@@ -1164,14 +1186,32 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-02-07
-**Version:** 3.4
+**Last Updated:** 2026-02-08
+**Version:** 3.5
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 3.5 (2026-02-08) - Documentation Audit & Synchronization
+
+- **Documentation Audit** - Full audit of 47 docs against actual codebase:
+  - Removed `PRODUCT_E2E_TESTS.md` (misleading test counts)
+  - Removed empty `docs/fixes/` directory
+  - Updated ADR-002 from "21st.dev" to "shadcn/ui" (actual implementation)
+  - Updated payment-gateway design doc status to "Implemented"
+  - Updated feature-roadmap-basic.md to "All Phases Complete"
+- **Statistics Correction** - Verified via filesystem:
+  - Backend tests: 6,752+ (842 domain + 5,231 application + 654 integration + 25 architecture)
+  - CQRS: 130 commands, 86 queries (corrected from 131/105)
+  - Repositories: 28 (corrected from 29)
+  - Documentation files: 47 (was 48, removed 1)
+- **API_INDEX.md Overhaul** - Added 20 missing endpoint groups (was 10/30 documented, now 30/30)
+- **Application Layer** - Added 13 missing e-commerce feature modules to structure tree
+- **Web Layer** - Updated endpoint list to show all 30 endpoint files
+- **AGENTS.md Fixes** - Corrected migration commands (added `--context`), added platform admin credentials
 
 ### Version 3.4 (2026-02-07) - Comprehensive Recount & QA Regression Fixes
 

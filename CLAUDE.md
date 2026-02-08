@@ -126,7 +126,7 @@ dotnet watch --project src/NOIR.Web
 ### Testing
 
 ```bash
-# All tests (5,188+ tests)
+# All tests (6,750+ tests)
 dotnet test src/NOIR.sln
 
 # Specific project
@@ -805,11 +805,14 @@ For detailed documentation, see the `docs/` folder:
 
 ## 📝 Changelog
 
+### Version 2.2 (2026-02-08)
+- **Updated:** Test count to 6,750+ (verified 2026-02-08: 842 domain + 5,231 application + 654 integration + 25 architecture)
+- **Updated:** Documentation audit - removed outdated PRODUCT_E2E_TESTS.md, updated ADR-002 to reflect shadcn/ui
+
 ### Version 2.1 (2026-01-29)
 - **Added:** Product Attribute System patterns (13 attribute types)
 - **Added:** ProductFilterIndex for faceted filtering
 - **Added:** FilterAnalyticsEvent for usage tracking
-- **Updated:** Test count to 5,188+ (accurate after Weight removal)
 - **Cleaned:** Documentation structure (42 files, removed obsolete plans)
 
 ### Version 2.0 (2026-01-26)

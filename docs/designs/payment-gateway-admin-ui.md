@@ -1,6 +1,6 @@
 # Payment Gateway Admin UI - Design Document
 
-> **Status:** Design Complete - Ready for Implementation
+> **Status:** Implemented (January 2026)
 > **Author:** Claude AI Assistant
 > **Date:** January 2026
 > **Related Roadmap:** Phase 6 - Vietnam Domestic Gateways

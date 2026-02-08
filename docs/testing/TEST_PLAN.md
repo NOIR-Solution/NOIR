@@ -38,9 +38,10 @@ This document defines the comprehensive end-to-end (E2E) testing strategy for th
 
 | Test Type | Count | Coverage |
 |-----------|-------|----------|
-| Unit Tests | 5,188+ | Domain, Application, Infrastructure |
-| Integration Tests | 22 files | API endpoints |
-| **E2E Tests** | **0** | **Gap - To Be Implemented** |
+| Unit Tests | 6,073+ | Domain (842) + Application (5,231) |
+| Integration Tests | 654 | API endpoints |
+| Architecture Tests | 25 | Architectural rules |
+| **E2E Tests** | **490+** | **32 spec files, 31 page objects (Chromium + Firefox)** |
 
 ### 1.3 Target Coverage
 
@@ -52,15 +53,17 @@ This document defines the comprehensive end-to-end (E2E) testing strategy for th
 | Flaky Test Rate | < 5% |
 | Total Execution Time | < 60 minutes (full suite) |
 
-### 1.4 Test Suite Summary
+### 1.4 Test Suite Summary (Actual - 2026-02-08)
 
-| Suite | Tests | P0 | P1 | P2 | Est. Time |
-|-------|-------|----|----|-----|-----------|
-| Quick Reference | 156 | 48 | 81 | 27 | 30 min |
-| **Product E2E (Comprehensive)** | **247** | **52** | **158** | **35** | **4.5 hours** |
-| **Grand Total** | **403** | **100** | **239** | **62** | **5 hours** |
+| Suite | Spec Files | Test Scenarios | Browsers |
+|-------|-----------|----------------|----------|
+| Main Tests | 27 | ~460 | Chromium, Firefox |
+| Smoke Tests | 5 | ~30 | Chromium |
+| **Total** | **32** | **~490** | **Chromium + Firefox** |
 
-> **Note:** The Product E2E suite provides comprehensive browser testing for the complete product ecosystem including Categories, Attributes, Brands, Products, Variants, Images, Options, Bulk Operations, and Import/Export. See [PRODUCT_E2E_TESTS.md](./PRODUCT_E2E_TESTS.md) for details.
+**Page Objects:** 31 dedicated POM files in `e2e-tests/pages/`
+
+> **Note:** Tests cover authentication, e-commerce (products, categories, brands, attributes), admin features (users, roles, tenants, settings), content management (blog, legal pages), and system features (notifications, command palette, developer logs).
 
 ---
 
