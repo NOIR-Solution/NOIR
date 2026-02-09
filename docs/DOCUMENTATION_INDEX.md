@@ -17,6 +17,8 @@
 | **See API endpoints** | [API_INDEX.md](API_INDEX.md) |
 | **Understand architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | **Run E2E tests** | [testing/E2E-TESTING-GUIDE.md](testing/E2E-TESTING-GUIDE.md) |
+| **Test visual changes** | [testing/VISUAL-REGRESSION-TESTING.md](testing/VISUAL-REGRESSION-TESTING.md) |
+| **Test accessibility** | [testing/ACCESSIBILITY-TESTING.md](testing/ACCESSIBILITY-TESTING.md) |
 | **View test cases** | [testing/TEST_CASES.md](testing/TEST_CASES.md) |
 
 ---
@@ -99,11 +101,16 @@
 
 | Document | Purpose |
 |----------|---------|
+| [TESTING-INFRASTRUCTURE-SUMMARY.md](testing/TESTING-INFRASTRUCTURE-SUMMARY.md) | 📊 **Overview of entire testing infrastructure** |
 | [TEST_PLAN.md](testing/TEST_PLAN.md) | Comprehensive test strategy, scope, and roadmap |
 | [E2E-TESTING-GUIDE.md](testing/E2E-TESTING-GUIDE.md) | Playwright setup, configuration, and implementation guide |
 | [TEST_CASES.md](testing/TEST_CASES.md) | Test case reference by module |
+| [VISUAL-REGRESSION-TESTING.md](testing/VISUAL-REGRESSION-TESTING.md) | Visual comparison testing with screenshot baselines |
+| [ACCESSIBILITY-TESTING.md](testing/ACCESSIBILITY-TESTING.md) | WCAG 2.1 Level AA compliance testing with axe-core |
 
-### Test Coverage Summary (2026-02-08)
+### Test Coverage Summary (2026-02-09)
+
+#### Functional Tests (E2E)
 
 | Category | Spec Files | Description |
 |----------|-----------|-------------|
@@ -114,9 +121,17 @@
 | System | 7 | Notifications, command palette, developer logs, email templates, error pages, public pages, theme/language |
 | Smoke | 5 | Quick validation of critical flows |
 | Other | 2 | Dashboard, user settings, activity timeline |
-| **Total** | **32** | **~490 unique test scenarios across Chromium + Firefox** |
+| **Total** | **34** | **~490 unique test scenarios across Chromium + Firefox** |
 
-**Infrastructure:** 31 Page Object Model files, auth setup with storage states
+#### Specialized Tests
+
+| Test Type | Spec Files | Test Cases | Description |
+|-----------|-----------|-----------|-------------|
+| **Visual Regression** | 1 | 15 tests | Screenshot comparison (505KB baselines, 3 viewports) |
+| **Accessibility** | 3 | 9 tests | WCAG 2.1 AA compliance (axe-core, 90+ checks) |
+| **Mobile** | 3 | ~30 tests | iOS/Android viewport testing |
+
+**Infrastructure:** 31 Page Object Model files, auth setup with storage states, visual baselines, accessibility audit rules
 
 ---
 
@@ -171,19 +186,22 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 47 |
+| **Total Docs** | 50 |
 | **Backend Patterns** | 9 |
 | **Backend Architecture** | 1 |
 | **Backend Research** | 7 |
 | **Frontend Guides** | 9 |
-| **Testing Docs** | 3 |
+| **Testing Docs** | 6 |
 | **ADRs** | 3 |
 | **Plans** | 2 |
 | **Research (General)** | 2 |
 | **Designs** | 1 |
 | **E2E Test Scenarios** | ~490 |
+| **Visual Regression Tests** | 15 (16 baselines, 505KB) |
+| **Accessibility Tests** | 9 (90+ WCAG checks) |
 | **Backend Tests** | 6,750+ |
+| **Total Frontend Tests** | ~514 (E2E + Visual + A11y) |
 
 ---
 
-**Version:** 2.5 (Updated 2026-02-08)
+**Version:** 2.7 (Updated 2026-02-09)

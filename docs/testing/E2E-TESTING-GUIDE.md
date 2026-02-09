@@ -17,6 +17,7 @@
 9. [Debugging](#debugging)
 10. [CI/CD Integration](#cicd-integration)
 11. [Best Practices](#best-practices)
+12. [Specialized Testing](#specialized-testing)
 
 ---
 
@@ -1519,4 +1520,79 @@ test.describe('Product CRUD', () => {
 
 ---
 
-**Last Updated:** 2026-02-05
+## Specialized Testing
+
+The NOIR project includes specialized E2E testing capabilities beyond standard functional tests:
+
+### Visual Regression Testing
+
+Automated visual comparison to detect UI changes using Playwright's screenshot comparison.
+
+**Coverage:**
+- 15 visual tests across 3 viewports (Desktop, Tablet, Mobile)
+- 16 baseline snapshots (505KB)
+- Light/Dark theme variants
+- Component isolation testing
+
+**Documentation:** [VISUAL-REGRESSION-TESTING.md](./VISUAL-REGRESSION-TESTING.md)
+
+**Quick Start:**
+```bash
+# Run visual tests
+npx playwright test tests/visual
+
+# Update baselines after UI changes
+npx playwright test tests/visual --update-snapshots
+```
+
+### Accessibility Testing
+
+WCAG 2.1 Level AA compliance testing using axe-core.
+
+**Coverage:**
+- 9 accessibility tests across 5+ pages
+- 90+ automated WCAG checks
+- Keyboard navigation validation
+- ARIA compliance verification
+
+**Documentation:** [ACCESSIBILITY-TESTING.md](./ACCESSIBILITY-TESTING.md)
+
+**Quick Start:**
+```bash
+# Run accessibility tests
+npx playwright test tests/accessibility
+
+# View detailed report
+npx playwright show-report
+```
+
+### Mobile Testing
+
+Responsive design validation on mobile viewports.
+
+**Coverage:**
+- 3 mobile-specific test suites
+- iOS (iPhone SE) and Android (Pixel 5) viewports
+- Touch interaction testing
+- Mobile navigation patterns
+
+**Tests:**
+```
+tests/mobile/
+├── dashboard-mobile.spec.ts
+├── login-mobile.spec.ts
+└── products-mobile.spec.ts
+```
+
+**Quick Start:**
+```bash
+# Run mobile tests
+npx playwright test tests/mobile
+
+# Run on mobile Chrome project
+npx playwright test --project=mobile-chrome
+```
+
+---
+
+**Last Updated:** 2026-02-09
