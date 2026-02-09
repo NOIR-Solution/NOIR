@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +34,7 @@ const Pagination: React.FC<PaginationProps> = ({
   showPageSizeSelector = true,
   className,
 }) => {
+  const { t } = useTranslation('common');
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
     const maxVisiblePages = 7;
@@ -119,7 +121,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(1)}
           disabled={currentPage === 1}
-          aria-label="Go to first page"
+          aria-label={t('labels.goToFirstPage', 'Go to first page')}
         >
           <ChevronsLeft className="h-4 w-4" />
         </Button>
@@ -129,7 +131,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          aria-label="Go to previous page"
+          aria-label={t('labels.goToPreviousPage', 'Go to previous page')}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -169,7 +171,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          aria-label="Go to next page"
+          aria-label={t('labels.goToNextPage', 'Go to next page')}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -179,7 +181,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages}
-          aria-label="Go to last page"
+          aria-label={t('labels.goToLastPage', 'Go to last page')}
         >
           <ChevronsRight className="h-4 w-4" />
         </Button>

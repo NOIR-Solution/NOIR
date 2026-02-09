@@ -1,5 +1,6 @@
 import { Moon, Sun } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/contexts/ThemeContext'
 
@@ -12,6 +13,7 @@ interface ThemeToggleProps {
  * Design from 21st.dev
  */
 export function ThemeToggle({ className }: ThemeToggleProps) {
+  const { t } = useTranslation('common')
   const { resolvedTheme, setTheme } = useTheme()
 
   return (
@@ -30,7 +32,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
             ? 'text-foreground'
             : 'text-muted-foreground hover:text-foreground'
         )}
-        aria-label="Light mode"
+        aria-label={t('labels.lightMode', 'Light mode')}
       >
         {resolvedTheme === 'light' && (
           <motion.div
@@ -56,7 +58,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
             ? 'text-foreground'
             : 'text-muted-foreground hover:text-foreground'
         )}
-        aria-label="Dark mode"
+        aria-label={t('labels.darkMode', 'Dark mode')}
       >
         {resolvedTheme === 'dark' && (
           <motion.div
