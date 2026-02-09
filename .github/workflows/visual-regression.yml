@@ -24,7 +24,21 @@ on:
 jobs:
   visual-regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
+
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: YourStrong!Passw0rd
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P 'YourStrong!Passw0rd' -Q 'SELECT 1'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -69,6 +83,8 @@ jobs:
         env:
           ASPNETCORE_ENVIRONMENT: Development
           ASPNETCORE_URLS: http://localhost:4000
+          ConnectionStrings__DefaultConnection: Server=localhost,1433;Database=NOIR_Test;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+          ConnectionStrings__TenantStoreConnection: Server=localhost,1433;Database=NOIR_TenantStore_Test;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
 
       - name: Run visual regression tests
         working-directory: src/NOIR.Web/frontend/e2e-tests
