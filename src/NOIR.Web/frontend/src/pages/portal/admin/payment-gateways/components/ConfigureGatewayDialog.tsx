@@ -320,7 +320,7 @@ export function ConfigureGatewayDialog({
                       value={field.value as string}
                     >
                       <FormControl>
-                        <SelectTrigger className="cursor-pointer">
+                        <SelectTrigger className="cursor-pointer" aria-label={t('paymentGateways.fields.environment', 'Environment')}>
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>

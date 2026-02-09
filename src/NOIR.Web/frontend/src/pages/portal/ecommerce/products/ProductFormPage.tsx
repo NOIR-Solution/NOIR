@@ -1038,7 +1038,7 @@ export default function ProductFormPage() {
                           disabled={isViewMode}
                         >
                           <FormControl>
-                            <SelectTrigger className="cursor-pointer">
+                            <SelectTrigger className="cursor-pointer" aria-label={t('labels.brand', 'Brand')}>
                               <SelectValue placeholder={t('products.selectBrand', 'Select brand')} />
                             </SelectTrigger>
                           </FormControl>
@@ -1319,7 +1319,7 @@ export default function ProductFormPage() {
                         disabled={isViewMode}
                       >
                         <FormControl>
-                          <SelectTrigger className="cursor-pointer">
+                          <SelectTrigger className="cursor-pointer" aria-label="Select product category">
                             <SelectValue placeholder={t('categories.selectParent')} />
                           </SelectTrigger>
                         </FormControl>
@@ -1578,7 +1578,7 @@ export default function ProductFormPage() {
                     value={selectedVariantForHistory ?? variants[0]?.id}
                     onValueChange={setSelectedVariantForHistory}
                   >
-                    <SelectTrigger className="mb-4 cursor-pointer">
+                    <SelectTrigger className="mb-4 cursor-pointer" aria-label={t('products.selectVariant', 'Select variant')}>
                       <SelectValue placeholder={t('products.selectVariant', 'Select variant')} />
                     </SelectTrigger>
                     <SelectContent>

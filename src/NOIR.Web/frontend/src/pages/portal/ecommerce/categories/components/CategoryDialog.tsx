@@ -246,7 +246,7 @@ export function CategoryDialog({
                     disabled={categoriesLoading}
                   >
                     <FormControl>
-                      <SelectTrigger className="cursor-pointer">
+                      <SelectTrigger className="cursor-pointer" aria-label={t('categories.parentCategory', 'Parent Category')}>
                         <SelectValue placeholder={categoriesLoading ? t('labels.loading', 'Loading...') : t('categories.selectParent', 'Select parent category')} />
                       </SelectTrigger>
                     </FormControl>

@@ -204,7 +204,7 @@ export function PermissionsDialog({ role, open, onOpenChange, onSuccess }: Permi
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" disabled={templatesLoading}>
+              <Button variant="outline" className="cursor-pointer" disabled={templatesLoading}>
                 <Sparkles className="mr-2 h-4 w-4" />
                 {t('roles.applyTemplate', 'Apply Template')}
               </Button>

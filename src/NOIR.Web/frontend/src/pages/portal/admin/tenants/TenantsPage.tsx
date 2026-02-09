@@ -68,6 +68,7 @@ export default function TenantsPage() {
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="pl-10 w-full sm:w-64"
+                  aria-label={t('tenants.searchTenants', 'Search tenants')}
                 />
               </div>
               <Button type="submit" variant="secondary">

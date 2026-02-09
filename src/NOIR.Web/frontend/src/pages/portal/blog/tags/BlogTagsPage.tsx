@@ -86,6 +86,7 @@ export default function BlogTagsPage() {
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="pl-10 w-full sm:w-64"
+                  aria-label="Search tags"
                 />
               </div>
               <Button type="submit" variant="secondary">
@@ -164,7 +165,7 @@ export default function BlogTagsPage() {
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="cursor-pointer">
+                            <Button variant="ghost" size="sm" className="cursor-pointer" aria-label={`Actions for ${tag.name}`}>
                               •••
                             </Button>
                           </DropdownMenuTrigger>

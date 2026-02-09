@@ -157,7 +157,7 @@ export function CategoryAttributesDialog({
                     onValueChange={setSelectedAttributeId}
                     disabled={loadingAttributes}
                   >
-                    <SelectTrigger className="cursor-pointer">
+                    <SelectTrigger className="cursor-pointer" aria-label={t('categoryAttributes.selectAttribute', 'Select Attribute')}>
                       <SelectValue placeholder={t('categoryAttributes.selectPlaceholder', 'Choose an attribute...')} />
                     </SelectTrigger>
                     <SelectContent>

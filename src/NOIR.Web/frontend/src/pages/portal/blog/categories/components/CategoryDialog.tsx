@@ -251,7 +251,7 @@ export function CategoryDialog({ open, onOpenChange, category, onSuccess }: Cate
                       value={field.value || '__none__'}
                     >
                       <FormControl>
-                        <SelectTrigger className="cursor-pointer">
+                        <SelectTrigger className="cursor-pointer" aria-label="Select parent category">
                           <SelectValue placeholder="Select parent (optional)" />
                         </SelectTrigger>
                       </FormControl>

@@ -239,7 +239,7 @@ function HistoryFileViewer({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-2" disabled={errorsOnly}>
+            <Button variant="outline" size="sm" className="h-8 gap-2 cursor-pointer" disabled={errorsOnly} aria-label="Filter by log level">
               <span className="text-muted-foreground">Levels:</span>
               {selectedLevels.size === 0 ? (
                 <span>All</span>

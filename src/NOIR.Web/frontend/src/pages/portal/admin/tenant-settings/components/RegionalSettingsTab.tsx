@@ -141,7 +141,7 @@ export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
             {t('tenantSettings.regional.timezoneDescription')}
           </p>
           <Select value={timezone} onValueChange={setTimezone} disabled={!canEdit}>
-            <SelectTrigger className="cursor-pointer">
+            <SelectTrigger className="cursor-pointer" aria-label={t('tenantSettings.regional.timezone', 'Timezone')}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -159,7 +159,7 @@ export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
             {t('tenantSettings.regional.languageDescription')}
           </p>
           <Select value={language} onValueChange={setLanguage} disabled={!canEdit}>
-            <SelectTrigger className="cursor-pointer">
+            <SelectTrigger className="cursor-pointer" aria-label={t('tenantSettings.regional.language', 'Language')}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -177,7 +177,7 @@ export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
             {t('tenantSettings.regional.dateFormatDescription')}
           </p>
           <Select value={dateFormat} onValueChange={setDateFormat} disabled={!canEdit}>
-            <SelectTrigger className="cursor-pointer">
+            <SelectTrigger className="cursor-pointer" aria-label={t('tenantSettings.regional.dateFormat', 'Date format')}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

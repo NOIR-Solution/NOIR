@@ -141,7 +141,7 @@ export function LiveLogsToolbar({
             onValueChange={onLevelChange}
             disabled={isChangingLevel}
           >
-            <SelectTrigger className="w-[160px] h-8" title="Server minimum log level - also filters display">
+            <SelectTrigger className="w-[160px] h-8" title="Server minimum log level - also filters display" aria-label="Server minimum log level">
               <span className="text-muted-foreground mr-1">Min:</span>
               <SelectValue />
             </SelectTrigger>
@@ -163,7 +163,7 @@ export function LiveLogsToolbar({
           {/* Display Level Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-2">
+              <Button variant="outline" size="sm" className="h-8 gap-2 cursor-pointer" aria-label="Filter displayed log levels">
                 <span className="text-muted-foreground">Filter:</span>
                 {selectedLevels.size === 0 ? (
                   <span>All</span>
