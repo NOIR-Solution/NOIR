@@ -13,7 +13,6 @@ import {
 import {
   useVariantAutoSave,
   type AutoSaveStatus,
-  type VariantRowData,
 } from '@/hooks/useVariantAutoSave'
 import type { ProductVariant } from '@/types/product'
 
@@ -32,22 +31,6 @@ interface EditableVariantRowProps {
 
 function StatusIndicator({ status, error }: { status: AutoSaveStatus; error: string | null }) {
   const { t } = useTranslation('common')
-
-  // Get the status message for screen readers
-  const getStatusMessage = () => {
-    switch (status) {
-      case 'dirty':
-        return t('products.variants.statusDirty')
-      case 'saving':
-        return t('products.variants.statusSaving')
-      case 'saved':
-        return t('products.variants.statusSaved')
-      case 'error':
-        return error || t('products.variants.statusError')
-      default:
-        return ''
-    }
-  }
 
   switch (status) {
     case 'dirty':

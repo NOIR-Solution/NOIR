@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { FilterOption } from '@/types/filter'

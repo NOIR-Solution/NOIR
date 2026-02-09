@@ -34,7 +34,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { useBrands, useDeleteBrand } from '@/hooks/useBrands'
+import { useBrands } from '@/hooks/useBrands'
 import { BrandDialog } from './components/BrandDialog'
 import type { BrandListItem } from '@/types/brand'
 import { PageHeader } from '@/components/ui/page-header'
@@ -56,7 +56,6 @@ export default function BrandsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false)
 
   const { data: brandsResponse, loading, error, refresh, setSearch, handleDelete: handleDeleteBrand } = useBrands()
-  const { deleteBrand: deleteBrandApi, isPending: isDeleting } = useDeleteBrand()
 
   const brands = brandsResponse?.items ?? []
 
@@ -133,7 +132,7 @@ export default function BrandsPage() {
         <CardContent>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
-              {error instanceof Error ? error.message : t('errors.generic', 'An error occurred')}
+              {(error as any) instanceof Error ? (error as unknown as Error).message : t('errors.generic', 'An error occurred')}
             </div>
           )}
 

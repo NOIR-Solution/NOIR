@@ -27,7 +27,6 @@ interface ChecklistItemProps {
 }
 
 function ChecklistItem({
-  id,
   label,
   description,
   href,

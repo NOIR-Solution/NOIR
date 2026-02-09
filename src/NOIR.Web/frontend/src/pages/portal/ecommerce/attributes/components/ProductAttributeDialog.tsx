@@ -93,7 +93,7 @@ export function ProductAttributeDialog({
   const updateAttributeHook = useUpdateProductAttribute()
 
   const form = useForm<AttributeFormData>({
-    resolver: zodResolver(createAttributeSchema(t)),
+    resolver: zodResolver(createAttributeSchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {
       code: '',

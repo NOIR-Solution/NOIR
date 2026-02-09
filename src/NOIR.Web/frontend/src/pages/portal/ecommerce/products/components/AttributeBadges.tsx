@@ -87,8 +87,8 @@ export function AttributeBadges({
           className="text-xs px-2 py-0.5"
         >
           {attr.displayValue}
-          {attr.unit && (
-            <span className="text-muted-foreground ml-0.5">{attr.unit}</span>
+          {(attr as any).unit && (
+            <span className="text-muted-foreground ml-0.5">{(attr as any).unit}</span>
           )}
         </Badge>
       ))}

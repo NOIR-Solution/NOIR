@@ -107,9 +107,7 @@ export function ConfigureGatewayDialog({
       } else if (field.type === 'select' && field.options && field.options.length > 0) {
         // Validate select fields - only allow values from options list
         const allowedValues = field.options.map(opt => opt.value) as [string, ...string[]]
-        fieldSchema = z.enum(allowedValues, {
-          errorMap: () => ({ message: t('validation.required') })
-        }).or(z.literal('')) // Allow empty string for optional fields
+        fieldSchema = z.enum(allowedValues).or(z.literal('')) // Allow empty string for optional fields
       }
 
       if (field.required && !isEditing) {

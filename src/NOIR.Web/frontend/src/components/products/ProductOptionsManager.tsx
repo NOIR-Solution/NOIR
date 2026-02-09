@@ -17,7 +17,6 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Collapsible,
   CollapsibleContent,
@@ -33,7 +32,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { cn } from '@/lib/utils'
 import { sanitizeColorCode } from '@/lib/color-utils'
 import type {
   ProductOption,
@@ -68,10 +66,8 @@ interface ProductOptionsManagerProps {
 }
 
 export function ProductOptionsManager({
-  productId,
   options,
   onAddOption,
-  onUpdateOption,
   onDeleteOption,
   onAddValue,
   onUpdateValue,

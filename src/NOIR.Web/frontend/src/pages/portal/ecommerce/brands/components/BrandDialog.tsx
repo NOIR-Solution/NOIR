@@ -60,7 +60,7 @@ export function BrandDialog({ open, onOpenChange, brand, onSuccess }: BrandDialo
   const updateBrandHook = useUpdateBrand()
 
   const form = useForm<BrandFormData>({
-    resolver: zodResolver(createBrandSchema(t)),
+    resolver: zodResolver(createBrandSchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {
       name: '',
@@ -235,7 +235,7 @@ export function BrandDialog({ open, onOpenChange, brand, onSuccess }: BrandDialo
                       onChange={field.onChange}
                       onUpload={async (file) => {
                         const result = await uploadMedia(file, 'branding')
-                        return result.url
+                        return result.defaultUrl || ''
                       }}
                       placeholder={t('brands.uploadLogo', 'Upload brand logo')}
                     />

@@ -32,7 +32,7 @@ const createChangePasswordFormSchema = (t: (key: string, options?: Record<string
     path: ["newPassword"],
   })
 
-type ChangePasswordFormData = z.infer<typeof changePasswordFormSchema>
+type ChangePasswordFormData = z.infer<ReturnType<typeof createChangePasswordFormSchema>>
 
 export function ChangePasswordForm() {
   const { t } = useTranslation('auth')

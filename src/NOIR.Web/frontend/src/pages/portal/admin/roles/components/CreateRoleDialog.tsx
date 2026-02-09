@@ -48,7 +48,7 @@ const createFormSchema = (t: (key: string, options?: Record<string, unknown>) =>
     iconName: z.string().optional(),
   })
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<ReturnType<typeof createFormSchema>>
 
 interface CreateRoleDialogProps {
   onSuccess: () => void

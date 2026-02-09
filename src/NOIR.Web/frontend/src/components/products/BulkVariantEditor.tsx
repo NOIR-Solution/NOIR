@@ -6,7 +6,7 @@
  */
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Save, X, Edit2, Percent, Package } from 'lucide-react'
+import { Save, Edit2, Percent } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -173,7 +173,7 @@ export function BulkVariantEditor({
           update.stockQuantity = edits.stockQuantity
         }
         if (edits.sku !== undefined && edits.sku !== original.sku) {
-          update.sku = edits.sku
+          update.sku = edits.sku || undefined
         }
 
         if (update.price !== undefined || update.stockQuantity !== undefined || update.sku !== undefined) {

@@ -85,8 +85,8 @@ const createUpdateTenantFormSchema = (t: (key: string, options?: Record<string, 
     isActive: z.boolean().optional(),
   })
 
-export type ProvisionTenantFormData = z.infer<typeof provisionTenantSchema>
-export type UpdateTenantFormData = z.infer<typeof updateTenantFormSchema>
+export type ProvisionTenantFormData = z.infer<ReturnType<typeof createProvisionTenantSchema>>
+export type UpdateTenantFormData = z.infer<ReturnType<typeof createUpdateTenantFormSchema>>
 
 interface TenantFormValidatedProps {
   tenant?: Tenant | null

@@ -92,7 +92,7 @@ export function CategoryDialog({
   }, [open, refreshCategories])
 
   const form = useForm<CategoryFormData>({
-    resolver: zodResolver(createCategorySchema(t)),
+    resolver: zodResolver(createCategorySchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {
       name: '',

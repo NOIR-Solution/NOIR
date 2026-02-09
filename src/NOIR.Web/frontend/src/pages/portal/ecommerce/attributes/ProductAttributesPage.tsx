@@ -152,7 +152,7 @@ export default function ProductAttributesPage() {
         <CardContent>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
-              {error instanceof Error ? error.message : t('errors.generic', 'An error occurred')}
+              {(error as any) instanceof Error ? (error as unknown as Error).message : t('errors.generic', 'An error occurred')}
             </div>
           )}
 

@@ -15,7 +15,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef, ty
 import { useAuthContext } from './AuthContext'
 import { getRegionalSettings, type RegionalSettingsDto } from '@/services/tenantSettings'
 import { useLanguage } from '@/i18n/useLanguage'
-import { LANGUAGE_STORAGE_KEY, type SupportedLanguage, supportedLanguages } from '@/i18n'
+import { type SupportedLanguage, supportedLanguages } from '@/i18n'
 
 /**
  * LocalStorage key for tracking the last tenant language applied.

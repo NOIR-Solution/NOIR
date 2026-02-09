@@ -64,7 +64,7 @@ const createTestEmailSchema = (t: (key: string, options?: Record<string, unknown
     recipientEmail: z.string().email(t('validation.invalidEmail')),
   })
 
-type TestEmailFormData = z.infer<typeof testEmailSchema>
+type TestEmailFormData = z.infer<ReturnType<typeof createTestEmailSchema>>
 
 export interface SmtpSettingsTabProps {
   canEdit: boolean
@@ -83,7 +83,7 @@ export function SmtpSettingsTab({ canEdit }: SmtpSettingsTabProps) {
   const [reverting, setReverting] = useState(false)
 
   const form = useForm<TenantSmtpFormData>({
-    resolver: zodResolver(createTenantSmtpSettingsSchema(t)),
+    resolver: zodResolver(createTenantSmtpSettingsSchema(t)) as any,
     defaultValues: {
       host: '',
       port: 587,
@@ -97,7 +97,7 @@ export function SmtpSettingsTab({ canEdit }: SmtpSettingsTabProps) {
   })
 
   const testForm = useForm<TestEmailFormData>({
-    resolver: zodResolver(createTestEmailSchema(t)),
+    resolver: zodResolver(createTestEmailSchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {
       recipientEmail: '',

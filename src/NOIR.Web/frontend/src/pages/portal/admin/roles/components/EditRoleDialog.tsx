@@ -47,7 +47,7 @@ const createFormSchema = (t: (key: string, options?: Record<string, unknown>) =>
     sortOrder: z.number().optional(),
   })
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<ReturnType<typeof createFormSchema>>
 
 interface EditRoleDialogProps {
   role: RoleListItem | null

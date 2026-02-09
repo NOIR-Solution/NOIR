@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type {
   Product,
-  ProductListItem,
   ProductPagedResult,
   ProductCategoryListItem,
   ProductStatus,

@@ -80,7 +80,7 @@ const createTestEmailSchema = (t: (key: string, options?: Record<string, unknown
     recipientEmail: z.string().email(t('validation.invalidEmail')),
   })
 
-type TestEmailFormData = z.infer<typeof testEmailSchema>
+type TestEmailFormData = z.infer<ReturnType<typeof createTestEmailSchema>>
 
 // ============================================================================
 // Main Component
@@ -148,7 +148,7 @@ function SmtpSettingsTab() {
   const [hasPassword, setHasPassword] = useState(false)
 
   const form = useForm<SmtpSettingsFormData>({
-    resolver: zodResolver(createSmtpSettingsSchema(t)),
+    resolver: zodResolver(createSmtpSettingsSchema(t)) as any,
     defaultValues: {
       host: '',
       port: 587,
@@ -162,7 +162,7 @@ function SmtpSettingsTab() {
   })
 
   const testForm = useForm<TestEmailFormData>({
-    resolver: zodResolver(createTestEmailSchema(t)),
+    resolver: zodResolver(createTestEmailSchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {
       recipientEmail: '',
@@ -543,9 +543,6 @@ function EmailTemplatesTab({ onEdit }: { onEdit: (id: string) => void }) {
                       {template.description}
                     </p>
                     <div className="flex items-center gap-2 pt-2">
-                      <Badge variant="outline" className="text-xs">
-                        {template.language}
-                      </Badge>
                       <Badge variant={template.isActive ? 'default' : 'secondary'} className="text-xs">
                         {template.isActive ? 'Active' : 'Inactive'}
                       </Badge>

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { SlidersHorizontal, X } from 'lucide-react'
+import { SlidersHorizontal } from 'lucide-react'
 import {
   Sheet,
   SheetContent,

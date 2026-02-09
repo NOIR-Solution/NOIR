@@ -101,7 +101,6 @@ const PLACEHOLDER_FILTERS: AvailableFilters = {
  * Contains collapsible sections for different filter types
  */
 export function FilterSidebar({
-  categorySlug,
   onFilterChange,
   appliedFilters,
   availableFilters,

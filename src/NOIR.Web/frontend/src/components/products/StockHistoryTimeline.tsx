@@ -10,7 +10,6 @@ import { formatDistanceToNow } from 'date-fns'
 import {
   Package,
   TrendingUp,
-  TrendingDown,
   ShoppingCart,
   RotateCcw,
   History,
@@ -148,10 +147,9 @@ export function StockHistoryTimeline({
           <div className="absolute left-[11px] top-0 bottom-0 w-0.5 bg-border" />
 
           <div className="space-y-4">
-            {sortedMovements.map((movement, index) => {
+            {sortedMovements.map((movement) => {
               const config = movementConfig[movement.type]
               const Icon = config.icon
-              const isPositive = movement.quantity > 0
               const delta = movement.newStock - movement.previousStock
 
               return (

@@ -6,7 +6,7 @@
 
 *Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).*
 
-**Last Updated:** 2026-01-29 | **Version:** 2.1
+**Last Updated:** 2026-02-09 | **Version:** 2.2
 
 </div>
 
@@ -15,7 +15,7 @@
 ## Table of Contents
 
 - [SuperClaude Framework](#superclaude-framework)
-- [Critical Rules](#-critical-rules) (22 rules organized by category)
+- [Critical Rules](#-critical-rules) (23 rules organized by category)
 - [Quick Reference](#-quick-reference) (Build, Test, Database, Credentials)
 - [Running the Website](#-running-the-website-important)
 - [Project Structure](#-project-structure)
@@ -105,6 +105,10 @@ Quick reference: `/sc:help` | `/sc:recommend "your task"`
 ### Database Migrations
 
 22. ✅ **EF Core migrations MUST specify --context** - ALWAYS use `--context ApplicationDbContext` or `--context TenantStoreDbContext` when running `dotnet ef migrations` commands. This project has multiple DbContexts and omitting `--context` will cause errors. Specify `--output-dir Migrations/App` for ApplicationDbContext or `--output-dir Migrations/Tenant` for TenantStoreDbContext. See Quick Reference for examples.
+
+### Pre-Push Validation
+
+23. ✅ **ALWAYS run frontend build before pushing** - Run `cd src/NOIR.Web/frontend && npm run build` before `git push`. The local dev server (`npm run dev`) allows TypeScript warnings, but CI runs strict mode and will fail. A pre-push hook is installed at `.git/hooks/pre-push` to automatically validate builds. If you bypass the hook with `--no-verify`, you MUST manually verify the build passes.
 
 ---
 

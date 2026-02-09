@@ -13,11 +13,9 @@ import {
   Plus,
   Pencil,
   Trash2,
-  CheckCircle2,
   XCircle,
   RefreshCw,
   ExternalLink,
-  Loader2,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -115,7 +113,7 @@ function CompactTimelineEntry({
 
 export function ProductActivityLog({
   productId,
-  productName,
+  productName: _productName,
   className,
   maxEntries = 10,
 }: ProductActivityLogProps) {

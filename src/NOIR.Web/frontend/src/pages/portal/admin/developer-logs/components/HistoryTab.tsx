@@ -100,6 +100,7 @@ function HistoryFileViewer({
   date: string
   onBack: () => void
 }) {
+  const { t } = useTranslation('common')
   const [entries, setEntries] = useState<LogEntryDto[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -349,7 +350,6 @@ function HistoryFileViewer({
 
 // Main History Tab Content Component
 export function HistoryTab() {
-  const { t } = useTranslation('common')
   const [availableDates, setAvailableDates] = useState<string[]>([])
   const [isLoadingDates, setIsLoadingDates] = useState(true)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)

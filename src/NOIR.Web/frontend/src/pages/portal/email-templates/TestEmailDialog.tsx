@@ -27,7 +27,7 @@ const createTestEmailFormSchema = (t: (key: string, options?: Record<string, unk
     recipientEmail: z.string().min(1, { message: t('validation.required') }).email({ message: t('validation.invalidEmail') }),
   })
 
-type TestEmailFormData = z.infer<typeof testEmailFormSchema>
+type TestEmailFormData = z.infer<ReturnType<typeof createTestEmailFormSchema>>
 
 interface TestEmailDialogProps {
   open: boolean

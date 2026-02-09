@@ -159,7 +159,7 @@ export default function PostEditorPage() {
           } else if (data.status === 'Scheduled' && data.scheduledPublishAt) {
             setPublishOption('schedule')
             const scheduleDate = new Date(data.scheduledPublishAt)
-            setScheduledDate(scheduleDate.toISOString().split('T')[0])
+            setScheduledDate(scheduleDate)
             setScheduledTime(scheduleDate.toTimeString().slice(0, 5))
           } else {
             setPublishOption('draft')

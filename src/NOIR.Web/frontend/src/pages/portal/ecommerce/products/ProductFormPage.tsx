@@ -52,7 +52,6 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
-import { Separator } from '@/components/ui/separator'
 import {
   Form,
   FormControl,
@@ -86,7 +85,6 @@ import {
   updateProduct,
   publishProduct,
   addProductVariant,
-  updateProductVariant,
   deleteProductVariant,
   addProductImage,
   updateProductImage,
@@ -166,7 +164,7 @@ const createVariantSchema = (t: (key: string, options?: Record<string, unknown>)
     sortOrder: z.coerce.number().default(0),
   })
 
-type VariantFormData = z.infer<typeof variantSchema>
+type VariantFormData = z.infer<ReturnType<typeof createVariantSchema>>
 
 // Inline edit form for variants
 function EditVariantForm({
@@ -249,7 +247,6 @@ export default function ProductFormPage() {
   const isViewMode = isEditing && !location.pathname.endsWith('/edit')
 
   // Permission checks
-  const canUpdateProducts = hasPermission(Permissions.ProductsUpdate)
   const canPublishProducts = hasPermission(Permissions.ProductsPublish)
 
   usePageContext(isViewMode ? 'View Product' : isEditing ? 'Edit Product' : 'New Product')
@@ -271,8 +268,6 @@ export default function ProductFormPage() {
   const [isDeletingImage, setIsDeletingImage] = useState(false)
   const [descriptionHtml, setDescriptionHtml] = useState('')
   const editorRef = useRef<TinyMCEEditor | null>(null)
-  const [editingImageId, setEditingImageId] = useState<string | null>(null)
-  const [editingAltText, setEditingAltText] = useState('')
   const [pendingAttributeValues, setPendingAttributeValues] = useState<Record<string, unknown>>({})
 
   // Local state for create mode (before product exists)
@@ -324,7 +319,7 @@ export default function ProductFormPage() {
   }
 
   const form = useForm<ProductFormData>({
-    resolver: zodResolver(createProductSchema(t)),
+    resolver: zodResolver(createProductSchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {
       name: '',
@@ -497,27 +492,6 @@ export default function ProductFormPage() {
     }
   }
 
-  const handleUpdateVariant = async (variantId: string, data: VariantFormData) => {
-    if (!id) return
-
-    try {
-      await updateProductVariant(id, variantId, {
-        name: data.name,
-        price: data.price,
-        sku: data.sku || null,
-        compareAtPrice: data.compareAtPrice || null,
-        stockQuantity: data.stockQuantity,
-        options: null,
-        sortOrder: data.sortOrder,
-      })
-      toast.success('Variant updated successfully')
-      setEditingVariantId(null)
-      await refreshProduct()
-    } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to update variant'
-      toast.error(message)
-    }
-  }
 
   const handleConfirmDeleteVariant = async () => {
     if (!id || !variantToDelete) return
@@ -589,7 +563,7 @@ export default function ProductFormPage() {
       const result = await uploadMedia(file, 'products')
       const tempImage: TempImage = {
         tempId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        url: result.url,
+        url: result.defaultUrl || '',
         altText: null,
         sortOrder: tempImages.length,
         isPrimary: tempImages.length === 0,
@@ -643,15 +617,6 @@ export default function ProductFormPage() {
     setTempImageToDelete(null)
   }
 
-  const handleReorderTempImages = (reorderedImages: TempImage[]) => {
-    setTempImages(
-      reorderedImages.map((img, index) => ({
-        ...img,
-        sortOrder: index,
-      }))
-    )
-  }
-
   // Image management
   const handleAddImage = async () => {
     if (!newImageUrl || !id) return
@@ -700,38 +665,6 @@ export default function ProductFormPage() {
       const message = err instanceof ApiError ? err.message : 'Failed to set primary image'
       toast.error(message)
     }
-  }
-
-  const handleStartEditAltText = (image: ProductImage) => {
-    setEditingImageId(image.id)
-    setEditingAltText(image.altText || '')
-  }
-
-  const handleSaveAltText = async () => {
-    if (!id || !editingImageId) return
-
-    const image = images.find(img => img.id === editingImageId)
-    if (!image) return
-
-    try {
-      await updateProductImage(id, editingImageId, {
-        url: image.url,
-        altText: editingAltText || null,
-        sortOrder: image.sortOrder,
-      })
-      toast.success('Alt text updated successfully')
-      setEditingImageId(null)
-      setEditingAltText('')
-      await refreshProduct()
-    } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to update alt text'
-      toast.error(message)
-    }
-  }
-
-  const handleCancelEditAltText = () => {
-    setEditingImageId(null)
-    setEditingAltText('')
   }
 
   // New image upload handler
