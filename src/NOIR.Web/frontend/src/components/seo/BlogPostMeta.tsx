@@ -113,7 +113,8 @@ export function BlogPostMeta({
 
   useHead({
     title: fullTitle,
-    meta
+    meta,
+    link: [{ rel: 'canonical', href: articleUrl }]
   })
 
   return null
