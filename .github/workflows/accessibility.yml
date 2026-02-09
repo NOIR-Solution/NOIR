@@ -44,7 +44,7 @@ jobs:
 
       - name: Run accessibility tests
         working-directory: src/NOIR.Web/frontend
-        run: npx playwright test e2e-tests/tests/accessibility --reporter=html
+        run: npx playwright test e2e-tests/tests/accessibility --config=e2e-tests/playwright.config.ts --reporter=html
 
       - name: Upload test results
         if: always()
