@@ -5,6 +5,7 @@
  * log level selector, display level filter, search, errors-only toggle,
  * and clear buffer button.
  */
+import { useTranslation } from 'react-i18next'
 import {
   Play,
   Pause,
@@ -85,6 +86,7 @@ export function LiveLogsToolbar({
   onExceptionsOnlyChange,
   onClearBuffer,
 }: LiveLogsToolbarProps) {
+  const { t } = useTranslation('common')
   const hasActiveFilters = searchTerm || exceptionsOnly || selectedLevels.size > 0
 
   return (
@@ -141,7 +143,7 @@ export function LiveLogsToolbar({
             onValueChange={onLevelChange}
             disabled={isChangingLevel}
           >
-            <SelectTrigger className="w-[160px] h-8" title="Server minimum log level - also filters display" aria-label="Server minimum log level">
+            <SelectTrigger className="w-[160px] h-8" title="Server minimum log level - also filters display" aria-label={t('developerLogs.serverMinLevel', 'Server minimum log level')}>
               <span className="text-muted-foreground mr-1">Min:</span>
               <SelectValue />
             </SelectTrigger>
@@ -163,7 +165,7 @@ export function LiveLogsToolbar({
           {/* Display Level Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-2 cursor-pointer" aria-label="Filter displayed log levels">
+              <Button variant="outline" size="sm" className="h-8 gap-2 cursor-pointer" aria-label={t('developerLogs.filterDisplayedLevels', 'Filter displayed log levels')}>
                 <span className="text-muted-foreground">Filter:</span>
                 {selectedLevels.size === 0 ? (
                   <span>All</span>

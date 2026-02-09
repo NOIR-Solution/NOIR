@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Search, FileText, Plus, Eye, Pencil, Trash2, Send } from 'lucide-react'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PageHeader } from '@/components/ui/page-header'
@@ -44,6 +45,7 @@ const statusColors: Record<PostStatus, string> = {
 }
 
 export default function BlogPostsPage() {
+  const { t } = useTranslation('common')
   usePageContext('Blog Posts')
   const navigate = useNavigate()
 
@@ -100,7 +102,7 @@ export default function BlogPostsPage() {
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     className="pl-10 w-full sm:w-48"
-                    aria-label="Search posts"
+                    aria-label={t('labels.searchPosts', 'Search posts')}
                   />
                 </div>
                 <Button type="submit" variant="secondary" size="sm">
@@ -108,7 +110,7 @@ export default function BlogPostsPage() {
                 </Button>
               </form>
               <Select onValueChange={handleStatusChange} defaultValue="all">
-                <SelectTrigger className="w-32 cursor-pointer" aria-label="Filter by status">
+                <SelectTrigger className="w-32 cursor-pointer" aria-label={t('labels.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -120,7 +122,7 @@ export default function BlogPostsPage() {
                 </SelectContent>
               </Select>
               <Select onValueChange={handleCategoryChange} defaultValue="all">
-                <SelectTrigger className="w-36 cursor-pointer" aria-label="Filter by category">
+                <SelectTrigger className="w-36 cursor-pointer" aria-label={t('labels.filterByCategory', 'Filter by category')}>
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>

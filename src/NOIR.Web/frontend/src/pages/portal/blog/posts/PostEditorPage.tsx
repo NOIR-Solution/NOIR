@@ -655,7 +655,7 @@ export default function PostEditorPage() {
                           value={field.value || '__none__'}
                         >
                           <FormControl>
-                            <SelectTrigger className="cursor-pointer" aria-label="Select blog post category">
+                            <SelectTrigger className="cursor-pointer" aria-label={t('blog.selectPostCategory', 'Select blog post category')}>
                               <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                           </FormControl>

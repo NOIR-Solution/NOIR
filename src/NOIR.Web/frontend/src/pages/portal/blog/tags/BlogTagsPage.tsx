@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Search, Tag, Plus, Pencil, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { PageHeader } from '@/components/ui/page-header'
@@ -27,6 +28,7 @@ import { DeleteTagDialog } from './components/DeleteTagDialog'
 import type { PostTagListItem } from '@/types'
 
 export default function BlogTagsPage() {
+  const { t } = useTranslation('common')
   usePageContext('Blog Tags')
 
   const { data, loading, error, refresh, setSearch, handleDelete } = useTags()
@@ -86,7 +88,7 @@ export default function BlogTagsPage() {
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="pl-10 w-full sm:w-64"
-                  aria-label="Search tags"
+                  aria-label={t('labels.searchTags', 'Search tags')}
                 />
               </div>
               <Button type="submit" variant="secondary">

@@ -6,6 +6,7 @@
  * pagination, and fullscreen support.
  */
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { DateRange } from 'react-day-picker'
 import {
   Search,
@@ -239,7 +240,7 @@ function HistoryFileViewer({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-2 cursor-pointer" disabled={errorsOnly} aria-label="Filter by log level">
+            <Button variant="outline" size="sm" className="h-8 gap-2 cursor-pointer" disabled={errorsOnly} aria-label={t('developerLogs.filterByLevel', 'Filter by log level')}>
               <span className="text-muted-foreground">Levels:</span>
               {selectedLevels.size === 0 ? (
                 <span>All</span>
@@ -348,6 +349,7 @@ function HistoryFileViewer({
 
 // Main History Tab Content Component
 export function HistoryTab() {
+  const { t } = useTranslation('common')
   const [availableDates, setAvailableDates] = useState<string[]>([])
   const [isLoadingDates, setIsLoadingDates] = useState(true)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
