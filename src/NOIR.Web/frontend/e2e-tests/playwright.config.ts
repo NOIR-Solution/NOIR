@@ -3,7 +3,7 @@ import * as path from 'path';
 
 /**
  * NOIR E2E Test Configuration
- * Updated: 2026-02-09 - Fixed CI: Complete E2E setup
+ * Updated: 2026-02-09 - Fixed CI: Increased workflow timeouts
  *
  * IMPORTANT: Run from one of these directories:
  *   1. e2e-tests/ (recommended): Config auto-discovered
