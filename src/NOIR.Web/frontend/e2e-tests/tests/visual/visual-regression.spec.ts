@@ -26,7 +26,7 @@ test.describe('Visual Regression Tests @visual', () => {
   test('VIS-001: Dashboard page renders correctly', async ({ page }) => {
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
-    await dashboardPage.expectPageLoaded();
+    await dashboardPage.expectDashboardLoaded();
 
     // Wait for any loading states to complete
     await page.waitForLoadState('networkidle');
@@ -51,7 +51,7 @@ test.describe('Visual Regression Tests @visual', () => {
   test('VIS-003: Dashboard card components', async ({ page }) => {
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
-    await dashboardPage.expectPageLoaded();
+    await dashboardPage.expectDashboardLoaded();
 
     await page.waitForLoadState('networkidle');
 
@@ -72,7 +72,11 @@ test.describe('Visual Regression Tests @visual', () => {
 
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
-    await dashboardPage.expectPageLoaded();
+
+    // On mobile, sidebar is hidden by design (hidden lg:flex)
+    // Just wait for main content to load
+    const content = page.locator('main, [data-testid="dashboard-content"], .dashboard');
+    await expect(content.first()).toBeVisible({ timeout: 10000 });
 
     await page.waitForLoadState('networkidle');
 
@@ -89,7 +93,11 @@ test.describe('Visual Regression Tests @visual', () => {
 
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
-    await dashboardPage.expectPageLoaded();
+
+    // On tablet, sidebar is hidden by design (hidden lg:flex)
+    // Just wait for main content to load
+    const content = page.locator('main, [data-testid="dashboard-content"], .dashboard');
+    await expect(content.first()).toBeVisible({ timeout: 10000 });
 
     await page.waitForLoadState('networkidle');
 
@@ -103,7 +111,7 @@ test.describe('Visual Regression Tests @visual', () => {
   test('VIS-006: Dark mode vs Light mode', async ({ page }) => {
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
-    await dashboardPage.expectPageLoaded();
+    await dashboardPage.expectDashboardLoaded();
 
     await page.waitForLoadState('networkidle');
 
@@ -130,7 +138,7 @@ test.describe('Visual Regression Tests @visual', () => {
   test('VIS-007: Navigation sidebar', async ({ page }) => {
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
-    await dashboardPage.expectPageLoaded();
+    await dashboardPage.expectDashboardLoaded();
 
     await page.waitForLoadState('networkidle');
 
@@ -165,7 +173,7 @@ test.describe('Visual Regression Tests @visual', () => {
   test('VIS-009: Button components', async ({ page }) => {
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
-    await dashboardPage.expectPageLoaded();
+    await dashboardPage.expectDashboardLoaded();
 
     await page.waitForLoadState('networkidle');
 
@@ -185,7 +193,7 @@ test.describe('Visual Regression Tests @visual', () => {
   test('VIS-010: Modal dialogs', async ({ page }) => {
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
-    await dashboardPage.expectPageLoaded();
+    await dashboardPage.expectDashboardLoaded();
 
     await page.waitForLoadState('networkidle');
 
