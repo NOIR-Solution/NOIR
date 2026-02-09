@@ -57,12 +57,12 @@ jobs:
         run: npm run build
 
       - name: Run visual regression tests
-        working-directory: src/NOIR.Web/frontend
+        working-directory: src/NOIR.Web/frontend/e2e-tests
         run: |
           if [ "${{ github.event.inputs.update_baselines }}" == "true" ]; then
-            npx playwright test e2e-tests/tests/visual --config=e2e-tests/playwright.config.ts --update-snapshots
+            npx playwright test tests/visual --update-snapshots
           else
-            npx playwright test e2e-tests/tests/visual --config=e2e-tests/playwright.config.ts
+            npx playwright test tests/visual
           fi
 
       - name: Upload visual diff results
