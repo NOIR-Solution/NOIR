@@ -94,6 +94,8 @@ jobs:
           else
             npx playwright test tests/visual
           fi
+        env:
+          BASE_URL: http://localhost:4000
 
       - name: Upload visual diff results
         if: failure()
