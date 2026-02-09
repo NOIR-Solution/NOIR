@@ -1,0 +1,65 @@
+name: Accessibility Tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/NOIR.Web/frontend/src/**'
+      - 'src/NOIR.Web/frontend/e2e-tests/**'
+      - 'src/NOIR.Web/frontend/package*.json'
+  push:
+    branches: [main]
+    paths:
+      - 'src/NOIR.Web/frontend/src/**'
+      - 'src/NOIR.Web/frontend/e2e-tests/**'
+      - 'src/NOIR.Web/frontend/package*.json'
+
+jobs:
+  accessibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: src/NOIR.Web/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: src/NOIR.Web/frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: src/NOIR.Web/frontend/e2e-tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Build frontend
+        working-directory: src/NOIR.Web/frontend
+        run: npm run build
+
+      - name: Run accessibility tests
+        working-directory: src/NOIR.Web/frontend/e2e-tests
+        run: npx playwright test tests/accessibility --reporter=html
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-report
+          path: src/NOIR.Web/frontend/e2e-tests/playwright-report/
+          retention-days: 30
+
+      - name: Upload test results (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-test-failures
+          path: |
+            src/NOIR.Web/frontend/e2e-tests/test-results/
+            src/NOIR.Web/frontend/e2e-tests/playwright-report/
+          retention-days: 7
