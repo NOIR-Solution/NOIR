@@ -35,7 +35,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
-        working-directory: src/NOIR.Web/frontend/e2e-tests
+        working-directory: src/NOIR.Web/frontend
         run: npx playwright install --with-deps chromium
 
       - name: Build frontend
@@ -43,8 +43,8 @@ jobs:
         run: npm run build
 
       - name: Run accessibility tests
-        working-directory: src/NOIR.Web/frontend/e2e-tests
-        run: npx playwright test tests/accessibility --reporter=html
+        working-directory: src/NOIR.Web/frontend
+        run: npx playwright test e2e-tests/tests/accessibility --reporter=html
 
       - name: Upload test results
         if: always()

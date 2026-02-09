@@ -45,7 +45,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
-        working-directory: src/NOIR.Web/frontend/e2e-tests
+        working-directory: src/NOIR.Web/frontend
         run: npx playwright install --with-deps chromium
 
       - name: Build frontend
@@ -53,12 +53,12 @@ jobs:
         run: npm run build
 
       - name: Run visual regression tests
-        working-directory: src/NOIR.Web/frontend/e2e-tests
+        working-directory: src/NOIR.Web/frontend
         run: |
           if [ "${{ github.event.inputs.update_baselines }}" == "true" ]; then
-            npx playwright test tests/visual --update-snapshots
+            npx playwright test e2e-tests/tests/visual --update-snapshots
           else
-            npx playwright test tests/visual
+            npx playwright test e2e-tests/tests/visual
           fi
 
       - name: Upload visual diff results
