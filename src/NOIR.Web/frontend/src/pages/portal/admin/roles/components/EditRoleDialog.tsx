@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Shield } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
@@ -62,7 +62,9 @@ export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRole
   const [existingRoles, setExistingRoles] = useState<RoleListItem[]>([])
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(createFormSchema(t)),
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
     defaultValues: {
       name: '',
