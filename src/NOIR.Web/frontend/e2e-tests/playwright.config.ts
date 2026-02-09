@@ -5,7 +5,14 @@ import * as path from 'path';
  * NOIR E2E Test Configuration
  * Updated: 2026-02-09 - Fixed workflow module resolution
  *
- * Run with:
+ * IMPORTANT: Run from one of these directories:
+ *   1. e2e-tests/ (recommended): Config auto-discovered
+ *      cd src/NOIR.Web/frontend/e2e-tests && npx playwright test
+ *
+ *   2. frontend/: Requires --config flag
+ *      cd src/NOIR.Web/frontend && npx playwright test --config=e2e-tests/playwright.config.ts
+ *
+ * Commands:
  *   npx playwright test              # Run all tests
  *   npx playwright test --headed     # Run with browser visible
  *   npx playwright test --ui         # Open interactive UI mode

@@ -952,7 +952,8 @@ tests/
 **Running E2E Tests:**
 
 ```bash
-cd src/NOIR.Web/frontend
+# Run from e2e-tests directory (config auto-discovered)
+cd src/NOIR.Web/frontend/e2e-tests
 npx playwright test                    # All tests
 npx playwright test --headed           # With browser visible
 npx playwright test --ui               # Interactive UI mode

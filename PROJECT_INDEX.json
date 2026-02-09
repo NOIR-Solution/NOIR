@@ -248,8 +248,8 @@
     "frontend_dev": "cd src/NOIR.Web/frontend && npm run dev",
     "frontend_build": "cd src/NOIR.Web/frontend && npm run build",
     "frontend_generate_api": "cd src/NOIR.Web/frontend && npm run generate:api",
-    "e2e_test": "cd src/NOIR.Web/frontend && npx playwright test",
-    "e2e_test_ui": "cd src/NOIR.Web/frontend && npx playwright test --ui"
+    "e2e_test": "cd src/NOIR.Web/frontend/e2e-tests && npx playwright test",
+    "e2e_test_ui": "cd src/NOIR.Web/frontend/e2e-tests && npx playwright test --ui"
   },
   "critical_rules": [
     "Use Specifications for all database queries - never raw DbSet",
