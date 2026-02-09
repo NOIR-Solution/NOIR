@@ -92,6 +92,8 @@ export function CategoryDialog({
   }, [open, refreshCategories])
 
   const form = useForm<CategoryFormData>({
+    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
+    // Using 'as any' is a pragmatic workaround for this limitation
     resolver: zodResolver(createCategorySchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {

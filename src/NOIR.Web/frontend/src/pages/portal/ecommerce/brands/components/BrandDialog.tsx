@@ -60,6 +60,8 @@ export function BrandDialog({ open, onOpenChange, brand, onSuccess }: BrandDialo
   const updateBrandHook = useUpdateBrand()
 
   const form = useForm<BrandFormData>({
+    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
+    // Using 'as any' is a pragmatic workaround for this limitation
     resolver: zodResolver(createBrandSchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {

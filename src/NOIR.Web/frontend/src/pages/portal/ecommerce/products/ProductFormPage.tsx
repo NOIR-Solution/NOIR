@@ -319,6 +319,8 @@ export default function ProductFormPage() {
   }
 
   const form = useForm<ProductFormData>({
+    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
+    // Using 'as any' is a pragmatic workaround for this limitation
     resolver: zodResolver(createProductSchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {

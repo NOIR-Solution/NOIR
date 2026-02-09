@@ -93,6 +93,8 @@ export function ProductAttributeDialog({
   const updateAttributeHook = useUpdateProductAttribute()
 
   const form = useForm<AttributeFormData>({
+    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
+    // Using 'as any' is a pragmatic workaround for this limitation
     resolver: zodResolver(createAttributeSchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {

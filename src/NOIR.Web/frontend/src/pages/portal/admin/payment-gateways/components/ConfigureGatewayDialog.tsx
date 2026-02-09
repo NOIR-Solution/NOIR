@@ -140,6 +140,8 @@ export function ConfigureGatewayDialog({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const form = useForm<FieldValues>({
+    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
+    // Using 'as any' is a pragmatic workaround for this limitation
     resolver: zodResolver(formSchema) as any,
     mode: 'onBlur',
     defaultValues: buildDefaultValues(),

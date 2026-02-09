@@ -148,6 +148,8 @@ function SmtpSettingsTab() {
   const [hasPassword, setHasPassword] = useState(false)
 
   const form = useForm<SmtpSettingsFormData>({
+    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
+    // Using 'as any' is a pragmatic workaround for this limitation
     resolver: zodResolver(createSmtpSettingsSchema(t)) as any,
     defaultValues: {
       host: '',
@@ -162,6 +164,8 @@ function SmtpSettingsTab() {
   })
 
   const testForm = useForm<TestEmailFormData>({
+    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
+    // Using 'as any' is a pragmatic workaround for this limitation
     resolver: zodResolver(createTestEmailSchema(t)) as any,
     mode: 'onBlur',
     defaultValues: {
