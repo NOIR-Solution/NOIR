@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Editor } from '@tinymce/tinymce-react'
@@ -319,9 +319,9 @@ export default function ProductFormPage() {
   }
 
   const form = useForm<ProductFormData>({
-    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
-    // Using 'as any' is a pragmatic workaround for this limitation
-    resolver: zodResolver(createProductSchema(t)) as any,
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(createProductSchema(t)) as unknown as Resolver<ProductFormData>,
     mode: 'onBlur',
     defaultValues: {
       name: '',

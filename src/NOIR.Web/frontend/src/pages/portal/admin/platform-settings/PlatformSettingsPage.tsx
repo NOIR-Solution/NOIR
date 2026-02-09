@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -148,9 +148,9 @@ function SmtpSettingsTab() {
   const [hasPassword, setHasPassword] = useState(false)
 
   const form = useForm<SmtpSettingsFormData>({
-    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
-    // Using 'as any' is a pragmatic workaround for this limitation
-    resolver: zodResolver(createSmtpSettingsSchema(t)) as any,
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(createSmtpSettingsSchema(t)) as unknown as Resolver<SmtpSettingsFormData>,
     defaultValues: {
       host: '',
       port: 587,
@@ -164,9 +164,9 @@ function SmtpSettingsTab() {
   })
 
   const testForm = useForm<TestEmailFormData>({
-    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
-    // Using 'as any' is a pragmatic workaround for this limitation
-    resolver: zodResolver(createTestEmailSchema(t)) as any,
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(createTestEmailSchema(t)) as unknown as Resolver<TestEmailFormData>,
     mode: 'onBlur',
     defaultValues: {
       recipientEmail: '',

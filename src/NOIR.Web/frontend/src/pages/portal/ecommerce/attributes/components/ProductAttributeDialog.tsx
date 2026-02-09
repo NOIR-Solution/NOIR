@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
@@ -93,9 +93,9 @@ export function ProductAttributeDialog({
   const updateAttributeHook = useUpdateProductAttribute()
 
   const form = useForm<AttributeFormData>({
-    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
-    // Using 'as any' is a pragmatic workaround for this limitation
-    resolver: zodResolver(createAttributeSchema(t)) as any,
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(createAttributeSchema(t)) as unknown as Resolver<AttributeFormData>,
     mode: 'onBlur',
     defaultValues: {
       code: '',

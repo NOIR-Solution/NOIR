@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -83,9 +83,9 @@ export function SmtpSettingsTab({ canEdit }: SmtpSettingsTabProps) {
   const [reverting, setReverting] = useState(false)
 
   const form = useForm<TenantSmtpFormData>({
-    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
-    // Using 'as any' is a pragmatic workaround for this limitation
-    resolver: zodResolver(createTenantSmtpSettingsSchema(t)) as any,
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(createTenantSmtpSettingsSchema(t)) as unknown as Resolver<TenantSmtpFormData>,
     defaultValues: {
       host: '',
       port: 587,
@@ -99,9 +99,9 @@ export function SmtpSettingsTab({ canEdit }: SmtpSettingsTabProps) {
   })
 
   const testForm = useForm<TestEmailFormData>({
-    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
-    // Using 'as any' is a pragmatic workaround for this limitation
-    resolver: zodResolver(createTestEmailSchema(t)) as any,
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(createTestEmailSchema(t)) as unknown as Resolver<TestEmailFormData>,
     mode: 'onBlur',
     defaultValues: {
       recipientEmail: '',

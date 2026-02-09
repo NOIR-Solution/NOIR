@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useForm, type FieldValues } from 'react-hook-form'
+import { useForm, type FieldValues, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
@@ -138,11 +138,10 @@ export function ConfigureGatewayDialog({
     return defaults
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const form = useForm<FieldValues>({
-    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
-    // Using 'as any' is a pragmatic workaround for this limitation
-    resolver: zodResolver(formSchema) as any,
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(formSchema) as unknown as Resolver<FieldValues>,
     mode: 'onBlur',
     defaultValues: buildDefaultValues(),
   })

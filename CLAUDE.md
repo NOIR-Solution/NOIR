@@ -6,7 +6,7 @@
 
 *Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).*
 
-**Last Updated:** 2026-02-09 | **Version:** 2.2
+**Last Updated:** 2026-02-09 | **Version:** 2.3
 
 </div>
 
@@ -587,6 +587,44 @@ const form = useForm<FormData>({
 
 **See:** [docs/frontend/architecture.md#form-validation-standards](docs/frontend/architecture.md#form-validation-standards) for complete patterns.
 
+### 🔧 Dynamic Schema Factories with i18n (CRITICAL)
+
+When using Zod schema factories that accept translation functions for i18n validation messages, TypeScript cannot infer compatible resolver types. Use the standardized type assertion pattern:
+
+```typescript
+import { useForm, type Resolver } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+// Schema factory with translation function
+const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
+  z.object({
+    name: z.string().min(1, t('validation.required')),
+    sortOrder: z.number().default(0),  // .default() causes type mismatch
+  })
+
+type FormData = z.infer<ReturnType<typeof createFormSchema>>
+
+const form = useForm<FormData>({
+  // TypeScript cannot infer resolver types from dynamic schema factories
+  // Using 'as unknown as Resolver<T>' for type-safe assertion
+  resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormData>,
+  mode: 'onBlur',
+})
+```
+
+**Why this is needed:**
+- `z.default()` makes TypeScript infer fields as optional (`field?: type`)
+- But form types expect them as required (`field: type`)
+- The type assertion bridges this mismatch
+- Runtime validation works correctly; this is only for compile-time type checking
+
+**Pattern:**
+- ✅ **Use:** `as unknown as Resolver<FormDataType>` (type-safe, explicit)
+- ❌ **Avoid:** `as any` (unsafe, loses all type information)
+- ✅ **Always include comment** explaining the TypeScript limitation
+
+**Affected files:** All forms using i18n validation messages (13+ files standardized)
+
 ### 💬 Dialog Form Layout (Focus Ring Clipping)
 
 ```typescript
@@ -808,6 +846,13 @@ For detailed documentation, see the `docs/` folder:
 ---
 
 ## 📝 Changelog
+
+### Version 2.3 (2026-02-09)
+- **Standardized:** Form resolver pattern across 13 files - migrated from `as any` to safer `as unknown as Resolver<T>`
+- **Added:** Documentation for dynamic schema factories with i18n validation messages
+- **Fixed:** Type safety improvements for react-hook-form with Zod schema factories
+- **Investigated:** Root cause of type assertions (`.default()` in Zod makes fields optional in type inference)
+- **Added:** Explanatory comments to all form resolver usages explaining TypeScript limitation
 
 ### Version 2.2 (2026-02-08)
 - **Updated:** Test count to 6,750+ (verified 2026-02-08: 842 domain + 5,231 application + 654 integration + 25 architecture)

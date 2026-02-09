@@ -63,6 +63,8 @@ export function CategoryDialog({ open, onOpenChange, category, onSuccess }: Cate
   const isEdit = !!category
 
   const form = useForm<FormValues>({
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
     resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
     defaultValues: {

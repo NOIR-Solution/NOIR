@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -92,9 +92,9 @@ export function CategoryDialog({
   }, [open, refreshCategories])
 
   const form = useForm<CategoryFormData>({
-    // TypeScript cannot infer that dynamic schema factories produce compatible resolver types
-    // Using 'as any' is a pragmatic workaround for this limitation
-    resolver: zodResolver(createCategorySchema(t)) as any,
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(createCategorySchema(t)) as unknown as Resolver<CategoryFormData>,
     mode: 'onBlur',
     defaultValues: {
       name: '',
