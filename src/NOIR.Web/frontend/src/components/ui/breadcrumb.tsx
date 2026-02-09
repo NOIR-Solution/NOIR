@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronRight, Home } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 export interface BreadcrumbItem {
@@ -19,12 +20,14 @@ interface BreadcrumbProps {
 
 const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
   ({ items, className, showHomeIcon = true }, ref) => {
+    const { t } = useTranslation('common')
+
     if (!items || items.length === 0) return null
 
     return (
       <nav
         ref={ref}
-        aria-label="Breadcrumb"
+        aria-label={t('labels.breadcrumb', 'Breadcrumb')}
         className={cn('flex items-center text-sm', className)}
       >
         <ol className="flex items-center gap-1.5">

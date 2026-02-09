@@ -290,7 +290,10 @@
     "filterByAttribute": "Filter by Attribute",
     "selectAttribute": "Select Attribute",
     "values": "values",
-    "clearAttributeFilter": "Clear Filter"
+    "clearAttributeFilter": "Clear Filter",
+    "selectCategory": "Select product category",
+    "imageUrlAriaLabel": "Image URL",
+    "addImageAriaLabel": "Add image"
   },
   "brands": {
     "title": "Brands",
@@ -488,7 +491,9 @@
       "published": "Published",
       "scheduled": "Scheduled",
       "archived": "Archived"
-    }
+    },
+    "selectPostCategory": "Select blog post category",
+    "selectParentCategoryOptional": "Select parent category (optional)"
   },
   "tenants": {
     "title": "Tenants",
@@ -699,7 +704,11 @@
     "recipientPlaceholder": "Enter email address...",
     "subjectPlaceholder": "Enter email subject...",
     "plainTextPlaceholder": "Enter plain text version of the email...",
-    "descriptionPlaceholder": "Template description..."
+    "descriptionPlaceholder": "Template description...",
+    "emailSubject": "Email subject",
+    "insertVariableIntoSubject": "Insert variable into subject",
+    "plainTextBodyAriaLabel": "Plain text email body",
+    "templateDescription": "Template description"
   },
   "legalPages": {
     "title": "Legal Pages",
@@ -720,7 +729,11 @@
     "customizingPlatformDescription": "This is a default platform page. When you save changes, a customized copy will be created for your tenant. The original platform page will remain unchanged.",
     "pageTitlePlaceholder": "Page title",
     "seoTitlePlaceholder": "Page title for search engines...",
-    "seoDescriptionPlaceholder": "Brief description for search engines..."
+    "seoDescriptionPlaceholder": "Brief description for search engines...",
+    "pageTitle": "Page title",
+    "seoMetaTitle": "SEO meta title",
+    "seoMetaDescription": "SEO meta description",
+    "canonicalUrl": "Canonical URL"
   },
   "profile": {
     "email": "Email",
@@ -849,7 +862,25 @@
     "sortOrder": "Sort Order",
     "websiteUrl": "Website URL",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "breadcrumb": "Breadcrumb",
+    "pickCustomColor": "Pick custom color",
+    "colorPicker": "Color picker",
+    "closeWelcomeDialog": "Close welcome dialog",
+    "dismissOnboarding": "Dismiss onboarding checklist",
+    "goBack": "Go back",
+    "goBackToProducts": "Go back to products list",
+    "productFilters": "Product filters",
+    "openFilters": "Open filters",
+    "appliedFilters": "Applied filters",
+    "filterByContext": "Filter by context",
+    "filterByAction": "Filter by action",
+    "filterByLogLevel": "Filter by log level",
+    "searchPosts": "Search posts",
+    "goToFirstPage": "Go to first page",
+    "goToPreviousPage": "Go to previous page",
+    "goToNextPage": "Go to next page",
+    "goToLastPage": "Go to last page"
   },
   "permissions": {
     "categories": {
@@ -985,7 +1016,10 @@
     "showErrorsOnly": "Show errors only",
     "showDebugLogs": "Show debug logs",
     "resetFilters": "Reset filters",
-    "noErrorPatterns": "No error patterns detected"
+    "noErrorPatterns": "No error patterns detected",
+    "serverMinLevel": "Server minimum log level",
+    "filterDisplayedLevels": "Filter displayed log levels",
+    "filterByLevel": "Filter by log level"
   },
   "platformSettings": {
     "title": "Platform Settings",

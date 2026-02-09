@@ -290,7 +290,10 @@
     "filterByAttribute": "Lọc theo thuộc tính",
     "selectAttribute": "Chọn thuộc tính",
     "values": "giá trị",
-    "clearAttributeFilter": "Xóa bộ lọc"
+    "clearAttributeFilter": "Xóa bộ lọc",
+    "selectCategory": "Chọn danh mục sản phẩm",
+    "imageUrlAriaLabel": "URL hình ảnh",
+    "addImageAriaLabel": "Thêm hình ảnh"
   },
   "brands": {
     "title": "Thương hiệu",
@@ -488,7 +491,9 @@
       "published": "Đã xuất bản",
       "scheduled": "Đã lên lịch",
       "archived": "Đã lưu trữ"
-    }
+    },
+    "selectPostCategory": "Chọn danh mục bài viết",
+    "selectParentCategoryOptional": "Chọn danh mục cha (tùy chọn)"
   },
   "tenants": {
     "title": "Tổ chức",
@@ -699,7 +704,11 @@
     "recipientPlaceholder": "Nhập địa chỉ email...",
     "subjectPlaceholder": "Nhập tiêu đề email...",
     "plainTextPlaceholder": "Nhập nội dung văn bản thuần của email...",
-    "descriptionPlaceholder": "Mô tả mẫu..."
+    "descriptionPlaceholder": "Mô tả mẫu...",
+    "emailSubject": "Tiêu đề email",
+    "insertVariableIntoSubject": "Chèn biến vào tiêu đề",
+    "plainTextBodyAriaLabel": "Nội dung email dạng văn bản",
+    "templateDescription": "Mô tả mẫu"
   },
   "tenantSettings": {
     "title": "Cài đặt Tổ chức",
@@ -834,7 +843,11 @@
     "customizingPlatformDescription": "Đây là trang mặc định của nền tảng. Khi bạn lưu thay đổi, một bản sao tùy chỉnh sẽ được tạo cho tổ chức của bạn. Trang gốc của nền tảng sẽ không bị thay đổi.",
     "pageTitlePlaceholder": "Tiêu đề trang",
     "seoTitlePlaceholder": "Tiêu đề trang cho công cụ tìm kiếm...",
-    "seoDescriptionPlaceholder": "Mô tả ngắn gọn cho công cụ tìm kiếm..."
+    "seoDescriptionPlaceholder": "Mô tả ngắn gọn cho công cụ tìm kiếm...",
+    "pageTitle": "Tiêu đề trang",
+    "seoMetaTitle": "Tiêu đề SEO meta",
+    "seoMetaDescription": "Mô tả SEO meta",
+    "canonicalUrl": "URL chuẩn"
   },
   "platformSettings": {
     "title": "Cài đặt Nền tảng",
@@ -1136,7 +1149,10 @@
     "showErrorsOnly": "Chỉ hiện lỗi",
     "showDebugLogs": "Hiện nhật ký debug",
     "resetFilters": "Đặt lại bộ lọc",
-    "noErrorPatterns": "Không phát hiện mẫu lỗi"
+    "noErrorPatterns": "Không phát hiện mẫu lỗi",
+    "serverMinLevel": "Cấp độ log tối thiểu của server",
+    "filterDisplayedLevels": "Lọc các cấp độ log hiển thị",
+    "filterByLevel": "Lọc theo cấp độ log"
   },
   "audit": {
     "entityHistory": "Lịch sử thực thể",
@@ -1163,5 +1179,25 @@
     "showUnchanged": "Hiện không đổi",
     "hideUnchanged": "Ẩn không đổi",
     "noChanges": "Không có thay đổi giữa các phiên bản này"
+  },
+  "labels": {
+    "breadcrumb": "Đường dẫn",
+    "pickCustomColor": "Chọn màu tùy chỉnh",
+    "colorPicker": "Bộ chọn màu",
+    "closeWelcomeDialog": "Đóng hộp thoại chào mừng",
+    "dismissOnboarding": "Đóng danh sách hướng dẫn",
+    "goBack": "Quay lại",
+    "goBackToProducts": "Quay lại danh sách sản phẩm",
+    "productFilters": "Bộ lọc sản phẩm",
+    "openFilters": "Mở bộ lọc",
+    "appliedFilters": "Bộ lọc đã áp dụng",
+    "filterByContext": "Lọc theo ngữ cảnh",
+    "filterByAction": "Lọc theo hành động",
+    "filterByLogLevel": "Lọc theo cấp độ log",
+    "searchPosts": "Tìm kiếm bài viết",
+    "goToFirstPage": "Đến trang đầu",
+    "goToPreviousPage": "Đến trang trước",
+    "goToNextPage": "Đến trang sau",
+    "goToLastPage": "Đến trang cuối"
   }
 }
