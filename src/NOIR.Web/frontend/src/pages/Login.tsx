@@ -237,12 +237,13 @@ export default function LoginPage() {
                               setEmailError(null)
                             }}
                             className="pl-10 h-12 bg-background border-border focus:border-blue-600 focus:ring-blue-600/20 transition-all"
+                            aria-label={t('login.emailLabel')}
                             aria-invalid={!!emailError}
                             autoFocus
                           />
                         </div>
                         {emailError && (
-                          <p className="text-sm font-medium text-destructive">{emailError}</p>
+                          <p role="alert" aria-live="assertive" className="text-sm font-medium text-destructive">{emailError}</p>
                         )}
                       </div>
 
@@ -263,6 +264,7 @@ export default function LoginPage() {
                               setPasswordError(null)
                             }}
                             className="pl-10 pr-10 h-12 bg-background border-border focus:border-blue-600 focus:ring-blue-600/20 transition-all"
+                            aria-label={t('login.password')}
                             aria-invalid={!!passwordError}
                           />
                           <button
@@ -275,7 +277,7 @@ export default function LoginPage() {
                           </button>
                         </div>
                         {passwordError && (
-                          <p className="text-sm font-medium text-destructive">{passwordError}</p>
+                          <p role="alert" aria-live="assertive" className="text-sm font-medium text-destructive">{passwordError}</p>
                         )}
                         {/* Forgot Password Link */}
                         <div className="flex justify-end mt-1">
@@ -290,7 +292,7 @@ export default function LoginPage() {
 
                       {/* Error Message */}
                       {serverError && (
-                        <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 animate-fade-in">
+                        <div role="alert" aria-live="assertive" className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 animate-fade-in">
                           <p className="text-sm text-destructive font-medium">{serverError}</p>
                         </div>
                       )}

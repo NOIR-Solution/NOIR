@@ -119,6 +119,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(1)}
           disabled={currentPage === 1}
+          aria-label="Go to first page"
         >
           <ChevronsLeft className="h-4 w-4" />
         </Button>
@@ -128,6 +129,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          aria-label="Go to previous page"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -152,6 +154,8 @@ const Pagination: React.FC<PaginationProps> = ({
                 size="icon"
                 className="h-8 w-8 cursor-pointer"
                 onClick={() => handlePageChange(page)}
+                aria-label={currentPage === page ? `Current page, page ${page}` : `Go to page ${page}`}
+                aria-current={currentPage === page ? 'page' : undefined}
               >
                 {page}
               </Button>
@@ -165,6 +169,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
+          aria-label="Go to next page"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -174,6 +179,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="h-8 w-8 cursor-pointer"
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages}
+          aria-label="Go to last page"
         >
           <ChevronsRight className="h-4 w-4" />
         </Button>

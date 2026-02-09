@@ -816,7 +816,7 @@ function SidebarContent({
             {/* Section label (only if defined and expanded) */}
             {section.labelKey && isExpanded && (
               <div className="px-4 mb-2">
-                <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                <p className="text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider">
                   {t(section.labelKey)}
                 </p>
               </div>
@@ -988,7 +988,7 @@ export function MobileSidebarTrigger({
               <div key={section.labelKey || 'primary'} className={cn(index > 0 && 'mt-4')}>
                 {section.labelKey && (
                   <div className="px-4 mb-2">
-                    <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                    <p className="text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider">
                       {t(section.labelKey)}
                     </p>
                   </div>

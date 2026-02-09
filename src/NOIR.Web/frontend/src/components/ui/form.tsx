@@ -157,6 +157,10 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
+      // Accessibility: role="alert" + aria-live="assertive" ensure screen readers
+      // announce validation errors immediately (WCAG 3.3.1, 4.1.3)
+      role="alert"
+      aria-live="assertive"
       className={cn('text-sm font-medium text-destructive', className)}
       {...props}
     >

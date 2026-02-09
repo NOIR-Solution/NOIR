@@ -141,6 +141,28 @@ export default defineConfig({
         storageState: PLATFORM_ADMIN_STATE,
       },
     },
+
+    // Mobile viewport tests - iPhone SE responsive design validation
+    {
+      name: 'mobile-viewport',
+      testMatch: /tests\/mobile\/.*\.spec\.ts/,
+      dependencies: ['auth-setup'],
+      use: {
+        ...devices['iPhone SE'],
+        storageState: TENANT_ADMIN_STATE,
+      },
+    },
+
+    // Accessibility tests - WCAG 2.1 Level AA compliance
+    {
+      name: 'accessibility',
+      testMatch: /tests\/accessibility\/.*\.spec\.ts/,
+      dependencies: ['auth-setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: TENANT_ADMIN_STATE,
+      },
+    },
   ],
 
   // Run your local dev server before starting the tests

@@ -414,6 +414,8 @@ export default function ProductsPage() {
                   size="sm"
                   onClick={() => setViewMode('table')}
                   className="cursor-pointer h-8 px-3"
+                  aria-label={t('products.viewModeTable', 'Table view')}
+                  aria-pressed={viewMode === 'table'}
                 >
                   <List className="h-4 w-4" />
                 </Button>
@@ -422,6 +424,8 @@ export default function ProductsPage() {
                   size="sm"
                   onClick={() => setViewMode('grid')}
                   className="cursor-pointer h-8 px-3"
+                  aria-label={t('products.viewModeGrid', 'Grid view')}
+                  aria-pressed={viewMode === 'grid'}
                 >
                   <LayoutGrid className="h-4 w-4" />
                 </Button>
@@ -454,7 +458,7 @@ export default function ProductsPage() {
             </form>
 
             <Select onValueChange={handleStatusChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50">
+              <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByStatus', 'Filter by status')}>
                 <SelectValue placeholder={t('labels.status', 'Status')} />
               </SelectTrigger>
               <SelectContent>
@@ -467,7 +471,7 @@ export default function ProductsPage() {
             </Select>
 
             <Select onValueChange={handleCategoryChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-40 cursor-pointer transition-all duration-200 hover:border-primary/50">
+              <SelectTrigger className="w-full sm:w-40 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByCategory', 'Filter by category')}>
                 <SelectValue placeholder={t('labels.category', 'Category')} />
               </SelectTrigger>
               <SelectContent>
@@ -481,7 +485,7 @@ export default function ProductsPage() {
             </Select>
 
             <Select onValueChange={handleBrandChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50">
+              <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByBrand', 'Filter by brand')}>
                 <SelectValue placeholder={t('labels.brand', 'Brand')} />
               </SelectTrigger>
               <SelectContent>
@@ -495,7 +499,7 @@ export default function ProductsPage() {
             </Select>
 
             <Select onValueChange={handleStockFilterChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50">
+              <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByStock', 'Filter by stock')}>
                 <SelectValue placeholder={t('labels.stock', 'Stock')} />
               </SelectTrigger>
               <SelectContent>
