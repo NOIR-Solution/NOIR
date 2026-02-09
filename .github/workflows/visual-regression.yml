@@ -52,16 +52,23 @@ jobs:
         working-directory: src/NOIR.Web/frontend/e2e-tests
         run: npx playwright install --with-deps chromium
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
       - name: Build frontend
         working-directory: src/NOIR.Web/frontend
         run: npm run build
 
-      - name: Start preview server
-        working-directory: src/NOIR.Web/frontend
+      - name: Start backend server
+        working-directory: src/NOIR.Web
         run: |
-          npx vite preview --port 3000 --strictPort &
-          sleep 5
-          timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null; do sleep 1; done'
+          dotnet run --no-launch-profile &
+          timeout 120 bash -c 'until curl -s http://localhost:4000/health > /dev/null 2>&1; do sleep 2; done'
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ASPNETCORE_URLS: http://localhost:4000
 
       - name: Run visual regression tests
         working-directory: src/NOIR.Web/frontend/e2e-tests
