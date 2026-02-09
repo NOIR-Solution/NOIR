@@ -34,8 +34,12 @@ jobs:
         working-directory: src/NOIR.Web/frontend
         run: npm ci
 
+      - name: Install E2E test dependencies
+        working-directory: src/NOIR.Web/frontend/e2e-tests
+        run: npm ci
+
       - name: Install Playwright browsers
-        working-directory: src/NOIR.Web/frontend
+        working-directory: src/NOIR.Web/frontend/e2e-tests
         run: npx playwright install --with-deps chromium
 
       - name: Build frontend
