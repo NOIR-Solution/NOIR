@@ -46,6 +46,13 @@ jobs:
         working-directory: src/NOIR.Web/frontend
         run: npm run build
 
+      - name: Start preview server
+        working-directory: src/NOIR.Web/frontend
+        run: |
+          npx vite preview --port 3000 --strictPort &
+          sleep 5
+          timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null; do sleep 1; done'
+
       - name: Run accessibility tests
         working-directory: src/NOIR.Web/frontend/e2e-tests
         run: npx playwright test tests/accessibility --reporter=html
