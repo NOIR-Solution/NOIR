@@ -114,6 +114,7 @@ export function TestEmailDialog({
                 type="email"
                 {...form.register('recipientEmail')}
                 placeholder="Enter email address..."
+                aria-label={t('emailTemplates.recipientEmail', 'Recipient email address')}
                 aria-invalid={!!form.formState.errors.recipientEmail}
               />
               {form.formState.errors.recipientEmail && (
@@ -136,6 +137,7 @@ export function TestEmailDialog({
                         value={sampleData[variable] || ''}
                         onChange={(e) => updateSampleData(variable, e.target.value)}
                         placeholder={`Value for ${variable}...`}
+                        aria-label={`Sample data for ${variable}`}
                         className="h-8 text-sm"
                       />
                     </div>

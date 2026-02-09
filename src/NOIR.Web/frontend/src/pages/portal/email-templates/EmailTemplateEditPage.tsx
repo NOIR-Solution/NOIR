@@ -469,13 +469,14 @@ export default function EmailTemplateEditPage() {
                       if (errors.subject) setErrors((prev) => ({ ...prev, subject: undefined }))
                     }}
                     placeholder="Enter email subject..."
+                    aria-label="Email subject"
                     className={`w-full ${errors.subject ? 'border-destructive' : ''}`}
                     aria-invalid={!!errors.subject}
                   />
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon">
+                    <Button variant="outline" size="icon" aria-label="Insert variable into subject">
                       <Variable className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -668,6 +669,7 @@ export default function EmailTemplateEditPage() {
                   value={plainTextBody}
                   onChange={(e) => setPlainTextBody(e.target.value)}
                   placeholder="Enter plain text version of the email..."
+                  aria-label="Plain text email body"
                   className="w-full h-48 p-3 border rounded-lg resize-none font-mono text-sm bg-background text-foreground"
                 />
               </CardContent>
@@ -781,6 +783,7 @@ export default function EmailTemplateEditPage() {
                   if (errors.description) setErrors((prev) => ({ ...prev, description: undefined }))
                 }}
                 placeholder="Template description..."
+                aria-label="Template description"
                 className={`w-full h-24 p-3 border rounded-lg resize-none text-sm bg-background text-foreground ${errors.description ? 'border-destructive' : ''}`}
               />
               {errors.description && (
