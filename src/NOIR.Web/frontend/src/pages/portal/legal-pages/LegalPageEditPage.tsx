@@ -326,7 +326,7 @@ export default function LegalPageEditPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Page title"
-                  aria-label="Page title"
+                  aria-label={t('legalPages.pageTitle', 'Page title')}
                   disabled={!canEdit}
                 />
               </div>
@@ -463,7 +463,7 @@ export default function LegalPageEditPage() {
                   value={metaTitle}
                   onChange={(e) => setMetaTitle(e.target.value)}
                   placeholder="Page title for search engines..."
-                  aria-label="SEO meta title"
+                  aria-label={t('legalPages.seoMetaTitle', 'SEO meta title')}
                   maxLength={60}
                   disabled={!canEdit}
                 />
@@ -478,7 +478,7 @@ export default function LegalPageEditPage() {
                   value={metaDescription}
                   onChange={(e) => setMetaDescription(e.target.value)}
                   placeholder="Brief description for search engines..."
-                  aria-label="SEO meta description"
+                  aria-label={t('legalPages.seoMetaDescription', 'SEO meta description')}
                   className="min-h-[80px]"
                   maxLength={160}
                   disabled={!canEdit}
@@ -494,7 +494,7 @@ export default function LegalPageEditPage() {
                   value={canonicalUrl}
                   onChange={(e) => setCanonicalUrl(e.target.value)}
                   placeholder="https://example.com/page"
-                  aria-label="Canonical URL"
+                  aria-label={t('legalPages.canonicalUrl', 'Canonical URL')}
                   disabled={!canEdit}
                 />
                 <p className="text-xs text-muted-foreground">

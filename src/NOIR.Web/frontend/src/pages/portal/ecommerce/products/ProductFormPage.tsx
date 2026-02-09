@@ -817,7 +817,7 @@ export default function ProductFormPage() {
               variant="ghost"
               size="icon"
               className="cursor-pointer hover:bg-muted transition-all duration-300 hover:scale-105"
-              aria-label="Go back to products list"
+              aria-label={t('labels.goBackToProducts', 'Go back to products list')}
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -1319,7 +1319,7 @@ export default function ProductFormPage() {
                         disabled={isViewMode}
                       >
                         <FormControl>
-                          <SelectTrigger className="cursor-pointer" aria-label="Select product category">
+                          <SelectTrigger className="cursor-pointer" aria-label={t('products.selectCategory', 'Select product category')}>
                             <SelectValue placeholder={t('categories.selectParent')} />
                           </SelectTrigger>
                         </FormControl>
@@ -1453,7 +1453,7 @@ export default function ProductFormPage() {
                           placeholder="Image URL"
                           value={newImageUrl}
                           onChange={(e) => setNewImageUrl(e.target.value)}
-                          aria-label="Image URL"
+                          aria-label={t('products.imageUrlAriaLabel', 'Image URL')}
                         />
                         <Button
                           variant="outline"
@@ -1461,7 +1461,7 @@ export default function ProductFormPage() {
                           className="cursor-pointer"
                           onClick={handleAddImage}
                           disabled={!newImageUrl}
-                          aria-label="Add image"
+                          aria-label={t('products.addImageAriaLabel', 'Add image')}
                         >
                           <ImagePlus className="h-4 w-4" />
                         </Button>
