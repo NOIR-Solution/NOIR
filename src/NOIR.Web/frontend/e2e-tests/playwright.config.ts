@@ -3,6 +3,7 @@ import * as path from 'path';
 
 /**
  * NOIR E2E Test Configuration
+ * Updated: 2026-02-09 - Fixed workflow module resolution
  *
  * Run with:
  *   npx playwright test              # Run all tests
