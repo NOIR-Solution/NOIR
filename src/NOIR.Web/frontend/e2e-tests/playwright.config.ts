@@ -3,7 +3,7 @@ import * as path from 'path';
 
 /**
  * NOIR E2E Test Configuration
- * Updated: 2026-02-09 - Fixed workflow module resolution
+ * Updated: 2026-02-09 - Fixed workflow module resolution & documentation
  *
  * IMPORTANT: Run from one of these directories:
  *   1. e2e-tests/ (recommended): Config auto-discovered
