@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage, DashboardPage } from '../../pages';
 import { VisualDiffThresholds, Viewports, ScreenshotOptions } from './config';
+import { expectDashboardLoadedOnMobile } from '../../utils/mobile';
 
 /**
  * Visual Regression Tests
@@ -73,12 +74,8 @@ test.describe('Visual Regression Tests @visual', () => {
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
 
-    // On mobile, sidebar is hidden by design (hidden lg:flex)
-    // Just wait for main content to load
-    const content = page.locator('main, [data-testid="dashboard-content"], .dashboard');
-    await expect(content.first()).toBeVisible({ timeout: 10000 });
-
-    await page.waitForLoadState('networkidle');
+    // On mobile, sidebar is hidden by design - use mobile utility
+    await expectDashboardLoadedOnMobile(page);
 
     await expect(page).toHaveScreenshot('dashboard-mobile.png', {
       fullPage: true,
@@ -94,12 +91,8 @@ test.describe('Visual Regression Tests @visual', () => {
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.navigate();
 
-    // On tablet, sidebar is hidden by design (hidden lg:flex)
-    // Just wait for main content to load
-    const content = page.locator('main, [data-testid="dashboard-content"], .dashboard');
-    await expect(content.first()).toBeVisible({ timeout: 10000 });
-
-    await page.waitForLoadState('networkidle');
+    // On tablet, sidebar is hidden by design - use mobile utility
+    await expectDashboardLoadedOnMobile(page);
 
     await expect(page).toHaveScreenshot('dashboard-tablet.png', {
       fullPage: true,
