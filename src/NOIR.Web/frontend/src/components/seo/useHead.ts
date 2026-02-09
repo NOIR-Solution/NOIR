@@ -6,7 +6,7 @@ import { useEffect } from 'react'
  */
 export function useHead(config: HeadConfig) {
   useEffect(() => {
-    const { title, meta, jsonLd } = config
+    const { title, meta, link, jsonLd } = config
 
     // Update title
     if (title) {
@@ -37,6 +37,28 @@ export function useHead(config: HeadConfig) {
       })
     }
 
+    // Update/add link tags
+    if (link) {
+      link.forEach(({ rel, href, type }) => {
+        const selector = `link[rel="${rel}"]`
+        let element = document.querySelector(selector) as HTMLLinkElement | null
+
+        if (!element) {
+          element = document.createElement('link')
+          element.setAttribute('rel', rel)
+          document.head.appendChild(element)
+          addedElements.push(element)
+        }
+
+        element.setAttribute('href', href)
+        if (type) {
+          element.setAttribute('type', type)
+        } else {
+          element.removeAttribute('type')
+        }
+      })
+    }
+
     // Add JSON-LD structured data
     if (jsonLd) {
       const script = document.createElement('script')
@@ -50,7 +72,7 @@ export function useHead(config: HeadConfig) {
     return () => {
       addedElements.forEach(el => el.remove())
     }
-  }, [config.title, JSON.stringify(config.meta), JSON.stringify(config.jsonLd)])
+  }, [config.title, JSON.stringify(config.meta), JSON.stringify(config.link), JSON.stringify(config.jsonLd)])
 }
 
 export interface MetaTag {
@@ -59,9 +81,16 @@ export interface MetaTag {
   content: string
 }
 
+export interface LinkTag {
+  rel: string
+  href: string
+  type?: string
+}
+
 export interface HeadConfig {
   title?: string
   meta?: MetaTag[]
+  link?: LinkTag[]
   jsonLd?: Record<string, unknown>
 }
 

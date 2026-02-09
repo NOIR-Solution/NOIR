@@ -1,4 +1,5 @@
-export { useHead, type HeadConfig, type MetaTag } from './useHead'
+export { useHead, type HeadConfig, type MetaTag, type LinkTag } from './useHead'
 export { BlogPostSchema, type BlogPostSchemaProps } from './BlogPostSchema'
 export { BlogPostMeta, type BlogPostMetaProps } from './BlogPostMeta'
 export { BreadcrumbSchema, type BreadcrumbItem, type BreadcrumbSchemaProps } from './BreadcrumbSchema'
+export { PageMeta, type PageMetaProps } from './PageMeta'

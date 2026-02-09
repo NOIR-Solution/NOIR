@@ -163,6 +163,17 @@ export default defineConfig({
         storageState: TENANT_ADMIN_STATE,
       },
     },
+
+    // Visual regression tests - Screenshot comparison
+    {
+      name: 'visual',
+      testMatch: /tests\/visual\/.*\.spec\.ts/,
+      dependencies: ['auth-setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: TENANT_ADMIN_STATE,
+      },
+    },
   ],
 
   // Run your local dev server before starting the tests
