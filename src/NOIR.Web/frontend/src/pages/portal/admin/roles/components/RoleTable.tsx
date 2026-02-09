@@ -112,9 +112,13 @@ export function RoleTable({ roles, onEdit, onDelete, onPermissions, loading }: R
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="cursor-pointer"
+                      aria-label={t('labels.actionsFor', { name: role.name, defaultValue: `Actions for ${role.name}` })}
+                    >
                       <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">{t('labels.openMenu', 'Open menu')}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">

@@ -416,7 +416,7 @@ export default function ActivityTimelinePage() {
                     setCurrentPage(1)
                   }}
                 >
-                  <SelectTrigger className="w-[130px] h-9">
+                  <SelectTrigger className="w-[130px] h-9" aria-label="Filter by context">
                     <SelectValue placeholder="All Contexts" />
                   </SelectTrigger>
                   <SelectContent>
@@ -437,7 +437,7 @@ export default function ActivityTimelinePage() {
                     setCurrentPage(1)
                   }}
                 >
-                  <SelectTrigger className="w-[130px] h-9">
+                  <SelectTrigger className="w-[130px] h-9" aria-label="Filter by action">
                     <SelectValue placeholder="All Actions" />
                   </SelectTrigger>
                   <SelectContent>

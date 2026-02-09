@@ -68,6 +68,7 @@ export default function RolesPage() {
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="pl-10 w-full sm:w-64"
+                  aria-label={t('roles.searchRoles', 'Search roles')}
                 />
               </div>
               <Button type="submit" variant="secondary">

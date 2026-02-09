@@ -100,6 +100,7 @@ export default function BlogPostsPage() {
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     className="pl-10 w-full sm:w-48"
+                    aria-label="Search posts"
                   />
                 </div>
                 <Button type="submit" variant="secondary" size="sm">
@@ -107,7 +108,7 @@ export default function BlogPostsPage() {
                 </Button>
               </form>
               <Select onValueChange={handleStatusChange} defaultValue="all">
-                <SelectTrigger className="w-32 cursor-pointer">
+                <SelectTrigger className="w-32 cursor-pointer" aria-label="Filter by status">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -119,7 +120,7 @@ export default function BlogPostsPage() {
                 </SelectContent>
               </Select>
               <Select onValueChange={handleCategoryChange} defaultValue="all">
-                <SelectTrigger className="w-36 cursor-pointer">
+                <SelectTrigger className="w-36 cursor-pointer" aria-label="Filter by category">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>

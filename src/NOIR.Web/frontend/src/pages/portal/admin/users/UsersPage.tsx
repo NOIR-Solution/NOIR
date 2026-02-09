@@ -102,7 +102,7 @@ export default function UsersPage() {
                 value={params.role || 'all'}
                 onValueChange={(value) => setRoleFilter(value === 'all' ? '' : value)}
               >
-                <SelectTrigger className="w-[140px] cursor-pointer">
+                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('users.filterByRole', 'Filter by role')}>
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder={t('users.filterByRole', 'Filter by role')} />
                 </SelectTrigger>
@@ -125,7 +125,7 @@ export default function UsersPage() {
                   else setLockedFilter(false)
                 }}
               >
-                <SelectTrigger className="w-[120px] cursor-pointer">
+                <SelectTrigger className="w-[120px] cursor-pointer" aria-label={t('users.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder={t('users.filterByStatus', 'Status')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -144,6 +144,7 @@ export default function UsersPage() {
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     className="pl-10 w-full sm:w-64"
+                    aria-label={t('users.searchUsers', 'Search users')}
                   />
                 </div>
                 <Button type="submit" variant="secondary">
