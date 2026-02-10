@@ -16,9 +16,6 @@
 | **Learn technologies** | [TECH_STACK.md](TECH_STACK.md) |
 | **See API endpoints** | [API_INDEX.md](API_INDEX.md) |
 | **Understand architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| **Run E2E tests** | [testing/E2E-TESTING-GUIDE.md](testing/E2E-TESTING-GUIDE.md) |
-| **Test visual changes** | [testing/VISUAL-REGRESSION-TESTING.md](testing/VISUAL-REGRESSION-TESTING.md) |
-| **Test accessibility** | [testing/ACCESSIBILITY-TESTING.md](testing/ACCESSIBILITY-TESTING.md) |
 | **View test cases** | [testing/TEST_CASES.md](testing/TEST_CASES.md) |
 
 ---
@@ -97,41 +94,21 @@
 
 ## Testing Documentation
 
-### E2E Testing (`testing/`)
+### Backend Testing (`testing/`)
 
 | Document | Purpose |
 |----------|---------|
-| [TESTING-INFRASTRUCTURE-SUMMARY.md](testing/TESTING-INFRASTRUCTURE-SUMMARY.md) | 📊 **Overview of entire testing infrastructure** |
-| [TEST_PLAN.md](testing/TEST_PLAN.md) | Comprehensive test strategy, scope, and roadmap |
-| [E2E-TESTING-GUIDE.md](testing/E2E-TESTING-GUIDE.md) | Playwright setup, configuration, and implementation guide |
+| [TESTING-INFRASTRUCTURE-SUMMARY.md](testing/TESTING-INFRASTRUCTURE-SUMMARY.md) | 📊 **Overview of backend testing infrastructure** |
+| [TEST_PLAN.md](testing/TEST_PLAN.md) | Backend test strategy and scope |
 | [TEST_CASES.md](testing/TEST_CASES.md) | Test case reference by module |
-| [VISUAL-REGRESSION-TESTING.md](testing/VISUAL-REGRESSION-TESTING.md) | Visual comparison testing with screenshot baselines |
-| [ACCESSIBILITY-TESTING.md](testing/ACCESSIBILITY-TESTING.md) | WCAG 2.1 Level AA compliance testing with axe-core |
 
-### Test Coverage Summary (2026-02-09)
+### Test Coverage Summary (2026-02-10)
 
-#### Functional Tests (E2E)
-
-| Category | Spec Files | Description |
-|----------|-----------|-------------|
-| Authentication | 2 | Login, forgot password |
-| E-commerce | 8 | Products, categories, brands, attributes, product forms |
-| Admin | 5 | Users, roles, tenants, platform/tenant settings |
-| Content | 5 | Blog posts, categories, tags, post editor, legal pages |
-| System | 7 | Notifications, command palette, developer logs, email templates, error pages, public pages, theme/language |
-| Smoke | 5 | Quick validation of critical flows |
-| Other | 2 | Dashboard, user settings, activity timeline |
-| **Total** | **34** | **~490 unique test scenarios across Chromium + Firefox** |
-
-#### Specialized Tests
-
-| Test Type | Spec Files | Test Cases | Description |
-|-----------|-----------|-----------|-------------|
-| **Visual Regression** | 1 | 15 tests | Screenshot comparison (505KB baselines, 3 viewports) |
-| **Accessibility** | 3 | 9 tests | WCAG 2.1 AA compliance (axe-core, 90+ checks) |
-| **Mobile** | 3 | ~30 tests | iOS/Android viewport testing |
-
-**Infrastructure:** 31 Page Object Model files, auth setup with storage states, visual baselines, accessibility audit rules
+**Backend Tests:** 6,750+ tests across 4 test projects
+- 842 Domain unit tests
+- 5,231 Application unit tests
+- 654 Integration tests
+- 25 Architecture tests
 
 ---
 
@@ -191,17 +168,13 @@
 | **Backend Architecture** | 1 |
 | **Backend Research** | 7 |
 | **Frontend Guides** | 9 |
-| **Testing Docs** | 6 |
+| **Testing Docs** | 3 |
 | **ADRs** | 3 |
 | **Plans** | 2 |
 | **Research (General)** | 2 |
 | **Designs** | 1 |
-| **E2E Test Scenarios** | ~490 |
-| **Visual Regression Tests** | 15 (16 baselines, 505KB) |
-| **Accessibility Tests** | 9 (90+ WCAG checks) |
 | **Backend Tests** | 6,750+ |
-| **Total Frontend Tests** | ~514 (E2E + Visual + A11y) |
 
 ---
 
-**Version:** 2.7 (Updated 2026-02-09)
+**Version:** 2.8 (Updated 2026-02-10 - E2E testing removed)

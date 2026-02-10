@@ -42,17 +42,14 @@
 | **Custom Hooks** | 28 | React hooks in `hooks/` |
 | **API Services** | 23 | Frontend API clients |
 | **Frontend Pages** | 88 | React page components |
-| **E2E Test Specs** | 32 | Playwright test files (27 + 5 smoke) |
-| **E2E Page Objects** | 31 | Page Object Model files |
 | **Documentation Files** | 47 | Markdown docs in `docs/` |
-| **Backend Tests** | 6,752+ | Unit (842 + 5,231) + Integration (654) + Architecture (25) |
-| **E2E Test Cases** | 490+ | Playwright (Chromium + Firefox) |
+| **Backend Tests** | 6,750+ | Unit (842 + 5,231) + Integration (654) + Architecture (25) |
 | **Database Indexes** | 233+ | Including 14 filtered indexes |
 | **Enums** | 24 | Domain enumerations |
 | **Service Interfaces** | 44 | Application-layer abstractions |
 | **NuGet Packages** | 40+ | Direct package references |
 
-**Technologies:** .NET 10, React 19.2, SQL Server, EF Core 10, Wolverine 5.11, SignalR, Playwright, Vite 7.3, TypeScript 5.9, Tailwind 4.1, Zod 4.3
+**Technologies:** .NET 10, React 19.2, SQL Server, EF Core 10, Wolverine 5.11, SignalR, Vite 7.3, TypeScript 5.9, Tailwind 4.1, Zod 4.3
 
 ### Directory Structure
 
@@ -875,94 +872,6 @@ tests/
 └── coverage.runsettings             # Test coverage configuration
 ```
 
-### E2E Tests (Playwright)
-
-**Location:** `src/NOIR.Web/frontend/e2e-tests/`
-
-**Configuration:** `playwright.config.ts` - Chromium + Firefox, 1 worker, retries on failure
-
-**Test Suites (32 spec files):**
-
-| Spec File | Area | Tests |
-|-----------|------|-------|
-| `activity-timeline.spec.ts` | Activity Timeline | Search, filter, details dialog |
-| `attributes.spec.ts` | Product Attributes | CRUD, type system |
-| `auth.spec.ts` | Authentication | Login, logout |
-| `blog-categories.spec.ts` | Blog Categories | CRUD |
-| `blog-posts.spec.ts` | Blog Posts | List, create, edit |
-| `blog-tags.spec.ts` | Blog Tags | CRUD |
-| `brands.spec.ts` | Product Brands | CRUD |
-| `categories.spec.ts` | Product Categories | CRUD, hierarchy |
-| `command-palette.spec.ts` | Command Palette | Open/close, search, navigation, quick actions, keyboard nav |
-| `dashboard.spec.ts` | Dashboard | Widget rendering |
-| `developer-logs.spec.ts` | Developer Logs | Live logs, history, stats |
-| `email-templates.spec.ts` | Email Templates | Edit, preview, variables |
-| `error-pages.spec.ts` | Error Pages | Unknown routes, auth protection |
-| `forgot-password.spec.ts` | Password Reset | OTP flow |
-| `legal-pages.spec.ts` | Legal Pages | Edit, revert, preview |
-| `notifications.spec.ts` | Notifications | List, filter, preferences |
-| `platform-settings.spec.ts` | Platform Settings | Configuration |
-| `post-editor.spec.ts` | Post Editor | TinyMCE editing |
-| `product-form.spec.ts` | Product Form | Create/edit products |
-| `products.spec.ts` | Products List | Grid, search, actions |
-| `public-pages.spec.ts` | Public Pages | Landing, terms, privacy |
-| `roles.spec.ts` | Role Management | CRUD, permissions |
-| `tenants.spec.ts` | Tenant Management | CRUD |
-| `tenant-settings.spec.ts` | Tenant Settings | Tabs, SMTP, branding |
-| `theme-language.spec.ts` | Theme & Language | Theme toggle, language switching, persistence |
-| `users.spec.ts` | User Management | CRUD, role assign |
-| `user-settings.spec.ts` | User Profile | Edit profile |
-| `smoke/*.smoke.spec.ts` | Smoke Tests | 5 quick validation suites |
-
-**Page Objects (31 files):**
-
-| Page Object | Route |
-|-------------|-------|
-| `BasePage.ts` | Base class with shared utilities, `openUserProfileMenu()` |
-| `ActivityTimelinePage.ts` | `/portal/admin/activity-timeline` |
-| `AttributesPage.ts` | `/portal/ecommerce/attributes` |
-| `BlogCategoriesPage.ts` | `/portal/blog/categories` |
-| `BlogPostsPage.ts` | `/portal/blog/posts` |
-| `BlogTagsPage.ts` | `/portal/blog/tags` |
-| `BrandsPage.ts` | `/portal/ecommerce/brands` |
-| `CategoriesPage.ts` | `/portal/ecommerce/categories` |
-| `CommandPalettePage.ts` | Command palette (Ctrl+K) - search, navigation, quick actions |
-| `DashboardPage.ts` | `/portal/dashboard` |
-| `DeveloperLogsPage.ts` | `/portal/admin/developer-logs` |
-| `EmailTemplatePage.ts` | `/portal/email-templates/:id` |
-| `ForgotPasswordPage.ts` | `/forgot-password` |
-| `LandingPage.ts` | `/` |
-| `LegalPagePage.ts` | `/portal/legal-pages/:slug` |
-| `LoginPage.ts` | `/login` |
-| `NotificationsPage.ts` | `/portal/notifications` |
-| `NotificationPreferencesPage.ts` | `/portal/settings/notifications` |
-| `PlatformSettingsPage.ts` | `/portal/admin/platform-settings` |
-| `PostEditorPage.ts` | `/portal/blog/posts/:id/edit` |
-| `PrivacyPage.ts` | `/privacy` |
-| `ProductFormPage.ts` | `/portal/ecommerce/products/new` |
-| `ProductsPage.ts` | `/portal/ecommerce/products` |
-| `RolesPage.ts` | `/portal/admin/roles` |
-| `TenantDetailPage.ts` | `/portal/admin/tenants/:id` |
-| `TenantSettingsPage.ts` | `/portal/admin/tenant-settings` |
-| `TenantsPage.ts` | `/portal/admin/tenants` |
-| `TermsPage.ts` | `/terms` |
-| `UserSettingsPage.ts` | `/portal/settings` |
-| `UsersPage.ts` | `/portal/admin/users` |
-
-**Running E2E Tests:**
-
-```bash
-# Run from e2e-tests directory (config auto-discovered)
-cd src/NOIR.Web/frontend/e2e-tests
-npx playwright test                    # All tests
-npx playwright test --headed           # With browser visible
-npx playwright test --ui               # Interactive UI mode
-npx playwright test categories.spec.ts # Single spec
-npx playwright test --grep @smoke      # Smoke tests only
-```
-
-**Docs:** [E2E Testing Guide](testing/E2E-TESTING-GUIDE.md)
-
 ### Integration Tests
 
 **Base Class:** `IntegrationTestBase` - Provides `WebApplicationFactory`, test database, and cleanup.
@@ -1227,18 +1136,11 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
   - 43 service interfaces, 40+ NuGet packages
 - **Bug Fix: Forgot-Password 500 Error** - Root cause: unauthenticated requests to public endpoints (forgot-password, login) lacked `X-Tenant` header, causing Finbuckle tenant resolution to fail with 500. Fix: Added `X-Tenant: getTenantIdentifier()` header to `apiClientPublic` in `apiClient.ts`
 - **Rate Limiting Configurable** - `PasswordResetSettings.MaxRequestsPerEmailPerHour` now supports `0` = disabled. Added `appsettings.Development.json` (gitignored) with rate limiting disabled for dev/testing
-- **E2E Results** - Chromium: 459 passed, 0 skipped, 0 failed (FP-003 now passes)
 - **New Unit Test** - `IsRateLimitedAsync_WhenDisabled_ShouldReturnFalseWithoutQueryingDatabase`
 - **Backend Test Breakdown** - 842 domain + 5,230 application + 25 architecture + 654 integration = 6,751 total
 
-### Version 3.3 (2026-02-06) - E2E Expansion & Statistics Refresh
+### Version 3.3 (2026-02-06) - Statistics Refresh
 
-- **New E2E Test Specs** - Added 3 new spec files (32 total, was 29):
-  - `command-palette.spec.ts` - 27 tests: open/close, search, navigation, quick actions, keyboard nav
-  - `theme-language.spec.ts` - 9 tests: theme toggle, language switching, persistence
-  - `error-pages.spec.ts` - 5 tests: unknown routes, auth protection
-- **New Page Object** - `CommandPalettePage.ts` for cmdk-based command palette (31 total)
-- **E2E Test Cases** - 490+ (was 406+), 470 passed, 11 flaky (pass on retry), 9 skipped, 0 hard failures
 - **Backend Source Files** - Recounted to 1,229 C# files (was 1,123)
 - **UI Components** - Recounted to 103 (was 56, includes all shadcn/ui + custom)
 - **Repositories** - 29 (was 28, includes base repository)
@@ -1250,25 +1152,15 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
   - Added `afterEach` cleanup hooks in theme-language.spec.ts
 - **Technology Versions** - React 19.2.3, Vite 7.3.0, TypeScript 5.9.3, Tailwind 4.1.18, Zod 4.3.5
 
-### Version 3.2 (2026-02-06) - Comprehensive E2E & Statistics Refresh
+### Version 3.2 (2026-02-06) - Statistics Refresh
 
-- **Test Coverage Update** - Backend: 6,751+ tests, E2E: 406+ test cases
-- **E2E Testing Section** - Complete documentation of Playwright test infrastructure:
-  - 29 spec files (24 regular + 5 smoke)
-  - 30 page objects with Page Object Model pattern
-  - Chromium + Firefox cross-browser testing
-  - Full spec-to-route mapping table
+- **Test Coverage Update** - Backend: 6,750+ tests
 - **API Endpoints** - Added 5 missing endpoint groups:
   - Brands, Product Attributes, Product Filters, Filter Analytics, Shipping/Shipping Providers
 - **Statistics Accuracy** - Recounted all source files from filesystem:
   - Domain: 114, Application: 737, Infrastructure: 232, Web: 40
   - Backend total: 1,229 C# files (excluding generated Wolverine handlers)
   - Repositories: 29 (28 concrete + 1 base)
-- **E2E Stability Fixes** (from QA regression session 4):
-  - Fixed `:has-text()` substring matching bug in filter tabs
-  - Fixed TinyMCE editor initialization timing in email template tests
-  - Fixed `[data-slot="card"]` selectors for shadcn/ui Card component
-  - All E2E tests passing (0 hard failures, flaky tests pass on retry, 9 skipped)
 
 ### Version 3.1 (2026-02-05) - Automated Index Refresh
 
@@ -1280,7 +1172,6 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 - **Feature Modules** - Added 8 missing modules to summary table:
   - Brands, ProductAttributes, Inventory, ProductFilter
   - ProductFilterIndex, FilterAnalytics, Shipping
-- **E2E Testing** - 13 test specs, 12 page objects documented
 - **Documentation** - 48 markdown files in docs/
 
 ### Version 3.0 (2026-02-05) - Complete Repository Index Refresh
@@ -1291,11 +1182,6 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
   - 60+ UI components in shadcn/ui + custom
   - 28+ custom React hooks
   - 23+ API service modules
-- **E2E Testing Improvements**
-  - Fixed CAT-013 (subcategory creation) - added CAT-014 for partial coverage
-  - Added `expectPageLoaded()` pattern across all smoke tests
-  - Fixed navigation and product smoke test stability
-  - CategoryDialog now fetches fresh categories via `useProductCategories` hook
 - **Code Quality**
   - Updated CategoryDialog to use hook-based category fetching
   - Fixed parent dropdown showing newly created categories
