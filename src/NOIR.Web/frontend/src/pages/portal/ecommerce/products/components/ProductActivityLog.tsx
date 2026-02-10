@@ -6,7 +6,7 @@
  */
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import {
   Activity,
   Clock,
@@ -219,13 +219,13 @@ export function ProductActivityLog({
           {/* View All Link */}
           {entries.length > 0 && (
             <div className="pt-3 border-t mt-3">
-              <Link
+              <ViewTransitionLink
                 to={`/portal/admin/activity-timeline?targetId=${productId}`}
                 className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 {t('products.viewAllActivity', 'View all activity')}
                 <ExternalLink className="h-3 w-3" />
-              </Link>
+              </ViewTransitionLink>
             </div>
           )}
         </CardContent>

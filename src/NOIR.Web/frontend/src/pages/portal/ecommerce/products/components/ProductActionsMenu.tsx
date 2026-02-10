@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { Eye, Pencil, Trash2, Send, Archive, Copy } from 'lucide-react'
 import {
@@ -48,17 +48,17 @@ export function ProductActionsMenu({
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent align={align} className="w-48">
         <DropdownMenuItem className="cursor-pointer" asChild>
-          <Link to={`/portal/ecommerce/products/${product.id}`}>
+          <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
             <Eye className="h-4 w-4 mr-2" />
             {t('labels.viewDetails', 'View Details')}
-          </Link>
+          </ViewTransitionLink>
         </DropdownMenuItem>
         {canEdit && (
           <DropdownMenuItem className="cursor-pointer" asChild>
-            <Link to={`/portal/ecommerce/products/${product.id}/edit`}>
+            <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}/edit`}>
               <Pencil className="h-4 w-4 mr-2" />
               {t('products.editProduct', 'Edit Product')}
-            </Link>
+            </ViewTransitionLink>
           </DropdownMenuItem>
         )}
         {canCreate && onDuplicate && (

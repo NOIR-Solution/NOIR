@@ -3,6 +3,7 @@
  *
  * Animated empty state for notification list with engaging illustration
  */
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { BellOff, Mail, MessageSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -12,6 +13,8 @@ interface NotificationEmptyProps {
 }
 
 export function NotificationEmpty({ className }: NotificationEmptyProps) {
+  const { t } = useTranslation('common')
+
   return (
     <div className={cn('flex flex-col items-center justify-center py-12 px-6', className)}>
       {/* Animated illustration with 3 icons */}
@@ -48,7 +51,7 @@ export function NotificationEmpty({ className }: NotificationEmptyProps) {
         transition={{ delay: 0.4 }}
         className="text-base font-semibold text-foreground mb-1.5"
       >
-        All caught up!
+        {t('notifications.emptyCaughtUp')}
       </motion.h3>
       <motion.p
         initial={{ opacity: 0 }}
@@ -56,7 +59,7 @@ export function NotificationEmpty({ className }: NotificationEmptyProps) {
         transition={{ delay: 0.5 }}
         className="text-sm text-muted-foreground text-center max-w-[240px]"
       >
-        You don't have any notifications right now. We'll let you know when something arrives.
+        {t('notifications.emptyMessage')}
       </motion.p>
     </div>
   )

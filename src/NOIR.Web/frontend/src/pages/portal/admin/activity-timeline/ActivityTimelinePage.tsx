@@ -417,13 +417,13 @@ export default function ActivityTimelinePage() {
                   }}
                 >
                   <SelectTrigger className="w-[130px] h-9" aria-label={t('labels.filterByContext', 'Filter by context')}>
-                    <SelectValue placeholder="All Contexts" />
+                    <SelectValue placeholder={t('activityTimeline.allContexts')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Contexts</SelectItem>
+                    <SelectItem value="all">{t('activityTimeline.allContexts')}</SelectItem>
                     {pageContexts.map((ctx) => (
                       <SelectItem key={ctx} value={ctx}>
-                        {ctx}
+                        {t(`pageContexts.${ctx}`, ctx)}
                       </SelectItem>
                     ))}
                   </SelectContent>

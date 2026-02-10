@@ -93,7 +93,7 @@ export default function UsersPage() {
             <div className="space-y-1">
               <CardTitle>{t('users.listTitle', 'All Users')}</CardTitle>
               <CardDescription>
-                {data ? `${t('labels.showing', 'Showing')} ${data.items.length} ${t('labels.of', 'of')} ${data.totalCount} ${t('labels.items', 'items')}` : ''}
+                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">

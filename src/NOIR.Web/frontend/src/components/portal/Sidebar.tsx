@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -169,7 +170,7 @@ interface UserData {
  */
 interface UserProfileDropdownProps {
   isExpanded: boolean
-  t: (key: string) => string
+  t: (key: string, options?: Record<string, unknown>) => string
   user?: UserData | null
 }
 
@@ -258,10 +259,10 @@ function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) 
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to="/portal/settings">
+          <ViewTransitionLink to="/portal/settings">
             <Settings className="mr-2 h-4 w-4" />
             <span>{t('settings.title')}</span>
-          </Link>
+          </ViewTransitionLink>
         </DropdownMenuItem>
         {/* Language Switcher Sub-menu */}
         <DropdownMenuSub>
@@ -359,7 +360,7 @@ interface SidebarContentProps {
   isExpanded: boolean
   onToggle?: () => void
   onItemClick?: (path: string) => void
-  t: (key: string) => string
+  t: (key: string, options?: Record<string, unknown>) => string
   pathname: string
   user?: UserData | null
   logoUrl?: string | null
@@ -369,24 +370,27 @@ interface SidebarContentProps {
 
 
 /**
- * Get time label for grouping notifications
+ * Get time group key for grouping notifications.
+ * Returns a stable key used for grouping; translate with t(`time.${key}`) for display.
  */
-function getNotificationTimeLabel(dateString: string): string {
+function getNotificationTimeGroup(dateString: string): string {
   const date = new Date(dateString)
   const now = new Date()
   const diffTime = Math.abs(now.getTime() - date.getTime())
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays <= 7) return 'Earlier this week'
-  return 'Older'
+  if (diffDays === 0) return 'today'
+  if (diffDays === 1) return 'yesterday'
+  if (diffDays <= 7) return 'earlierThisWeek'
+  return 'older'
 }
 
 /**
  * Animated Empty State for Notifications
  */
 function NotificationEmptyState() {
+  const { t } = useTranslation('common')
+
   return (
     <div className="flex flex-col items-center justify-center py-10 px-4">
       {/* Animated illustration with 3 icons */}
@@ -423,7 +427,7 @@ function NotificationEmptyState() {
         transition={{ delay: 0.4 }}
         className="text-sm font-semibold text-foreground mb-1"
       >
-        All caught up!
+        {t('notifications.emptyCaughtUp')}
       </motion.h4>
       <motion.p
         initial={{ opacity: 0 }}
@@ -431,7 +435,7 @@ function NotificationEmptyState() {
         transition={{ delay: 0.5 }}
         className="text-xs text-muted-foreground text-center max-w-[200px]"
       >
-        No new notifications. We'll let you know when something arrives.
+        {t('notifications.emptyMessage')}
       </motion.p>
     </div>
   )
@@ -440,7 +444,7 @@ function NotificationEmptyState() {
 /**
  * Notification Sidebar Item with Dropdown
  */
-function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: boolean; t: (key: string) => string; onItemClick?: (path: string) => void }) {
+function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: boolean; t: (key: string, options?: Record<string, unknown>) => string; onItemClick?: (path: string) => void }) {
   const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead, connectionState } = useNotificationContext()
   const { formatRelativeTime } = useRegionalSettings()
   const location = useLocation()
@@ -452,13 +456,13 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
 
   // Group notifications by time
   const groupedNotifications = recentNotifications.reduce((groups, notification) => {
-    const label = getNotificationTimeLabel(notification.createdAt)
+    const label = getNotificationTimeGroup(notification.createdAt)
     if (!groups[label]) groups[label] = []
     groups[label].push(notification)
     return groups
   }, {} as Record<string, typeof notifications>)
 
-  const groupOrder = ['Today', 'Yesterday', 'Earlier this week', 'Older']
+  const groupOrder = ['today', 'yesterday', 'earlierThisWeek', 'older']
   const sortedGroups = groupOrder.filter(label => groupedNotifications[label]?.length > 0)
 
   const handleMarkAllAsRead = async () => {
@@ -540,7 +544,7 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
             <h3 className="text-sm font-semibold">{t('notifications.title')}</h3>
             {unreadCount > 0 && (
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                {unreadCount} unread
+                {t('notifications.unreadCount', { count: unreadCount })}
               </p>
             )}
           </div>
@@ -552,7 +556,7 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
               onClick={handleMarkAllAsRead}
             >
               <Check className="size-3 mr-1" />
-              Mark all read
+              {t('notifications.markAllRead')}
             </Button>
           )}
         </div>
@@ -581,7 +585,7 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
                   <div key={groupLabel} className="mb-1 last:mb-0">
                     <div className="px-3 py-1.5">
                       <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                        {groupLabel}
+                        {t(`time.${groupLabel}`)}
                       </span>
                     </div>
                     {groupedNotifications[groupLabel].map((notification) => (
@@ -641,12 +645,12 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
             asChild
             onClick={() => setOpen(false)}
           >
-            <Link
+            <ViewTransitionLink
               to="/portal/notifications"
               onClick={() => onItemClick?.('/portal/notifications')}
             >
               {t('notifications.viewAll')}
-            </Link>
+            </ViewTransitionLink>
           </Button>
         </div>
       </DropdownMenuContent>
@@ -707,7 +711,7 @@ function SidebarContent({
           !active && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
         )}
       >
-        <Link to={item.path} onClick={() => onItemClick?.(item.path)}>
+        <ViewTransitionLink to={item.path} onClick={() => onItemClick?.(item.path)}>
           {active && (
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
           )}
@@ -718,7 +722,7 @@ function SidebarContent({
           {isExpanded && (
             <span className="flex-1 text-left">{t(item.titleKey)}</span>
           )}
-        </Link>
+        </ViewTransitionLink>
       </Button>
     )
 
@@ -743,7 +747,7 @@ function SidebarContent({
       {/* Header with Logo and Toggle */}
       <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
         {isExpanded && (
-          <Link to="/portal" className="flex items-center gap-3 group" onClick={() => onItemClick?.('/portal')}>
+          <ViewTransitionLink to="/portal" className="flex items-center gap-3 group" onClick={() => onItemClick?.('/portal')}>
             {logoUrl ? (
               <img
                 src={logoUrl}
@@ -758,7 +762,7 @@ function SidebarContent({
                 <h2 className="text-lg font-semibold text-sidebar-foreground">NOIR</h2>
               </>
             )}
-          </Link>
+          </ViewTransitionLink>
         )}
         <Button
           variant="ghost"
@@ -879,7 +883,7 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'hidden lg:flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out',
+        'vt-sidebar hidden lg:flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out',
         collapsed ? 'w-20' : 'w-64'
       )}
     >
@@ -938,13 +942,13 @@ export function MobileSidebarTrigger({
           !active && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
         )}
       >
-        <Link to={item.path} onClick={() => onOpenChange(false)}>
+        <ViewTransitionLink to={item.path} onClick={() => onOpenChange(false)}>
           {active && (
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
           )}
           <Icon className="h-5 w-5 flex-shrink-0 mr-3" />
           <span className="flex-1 text-left">{t(item.titleKey)}</span>
-        </Link>
+        </ViewTransitionLink>
       </Button>
     )
   }
@@ -964,7 +968,7 @@ export function MobileSidebarTrigger({
         <div className="flex flex-col h-full bg-sidebar">
           {/* Mobile Header */}
           <div className="flex items-center p-4 border-b border-sidebar-border">
-            <Link to="/portal" className="flex items-center gap-3" onClick={() => onOpenChange(false)}>
+            <ViewTransitionLink to="/portal" className="flex items-center gap-3" onClick={() => onOpenChange(false)}>
               {branding?.logoUrl ? (
                 <img
                   src={branding.logoUrl}
@@ -979,7 +983,7 @@ export function MobileSidebarTrigger({
                   <h2 className="text-lg font-semibold text-sidebar-foreground">NOIR</h2>
                 </>
               )}
-            </Link>
+            </ViewTransitionLink>
           </div>
 
           {/* Mobile Navigation - Task-based sections */}
@@ -1017,7 +1021,7 @@ export function MobileSidebarTrigger({
                     !notificationActive && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                   )}
                 >
-                  <Link to="/portal/notifications" onClick={() => onOpenChange(false)}>
+                  <ViewTransitionLink to="/portal/notifications" onClick={() => onOpenChange(false)}>
                     {notificationActive && (
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
                     )}
@@ -1028,7 +1032,7 @@ export function MobileSidebarTrigger({
                         {displayCount}
                       </Badge>
                     )}
-                  </Link>
+                  </ViewTransitionLink>
                 </Button>
               </div>
             )}

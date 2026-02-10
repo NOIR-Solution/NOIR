@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { ShieldCheck, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getPublicLegalPage, type PublicLegalPageDto } from '@/services/legalPages'
@@ -48,10 +48,10 @@ export default function TermsPage() {
         <div className="text-center">
           <p className="text-muted-foreground mb-4">{error || 'Page not found'}</p>
           <Button variant="outline" asChild>
-            <Link to="/">
+            <ViewTransitionLink to="/">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
-            </Link>
+            </ViewTransitionLink>
           </Button>
         </div>
       </div>
@@ -64,17 +64,17 @@ export default function TermsPage() {
       <nav className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-2 group">
+            <ViewTransitionLink to="/" className="flex items-center gap-2 group">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-700 to-cyan-700 flex items-center justify-center">
                 <ShieldCheck className="w-4 h-4 text-white" />
               </div>
               <span className="text-lg font-semibold text-foreground">NOIR</span>
-            </Link>
+            </ViewTransitionLink>
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/">
+              <ViewTransitionLink to="/">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
-              </Link>
+              </ViewTransitionLink>
             </Button>
           </div>
         </div>
@@ -103,9 +103,9 @@ export default function TermsPage() {
               <span className="text-sm font-medium text-foreground">NOIR</span>
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <Link to="/privacy" className="hover:text-foreground transition-colors">
+              <ViewTransitionLink to="/privacy" className="hover:text-foreground transition-colors">
                 Privacy Policy
-              </Link>
+              </ViewTransitionLink>
             </div>
           </div>
         </div>

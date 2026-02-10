@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -64,8 +64,11 @@ export function EnhancedProductCard({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Image Container */}
-        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted to-muted/50">
+        {/* Image Container — view-transition-name enables shared element morphing to detail page */}
+        <div
+          className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted to-muted/50"
+          style={{ viewTransitionName: `product-image-${product.id}` } as React.CSSProperties}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={product.id}
@@ -165,7 +168,7 @@ export function EnhancedProductCard({
               </motion.div>
             )}
             {/* Navigation Actions */}
-            <Link to={`/portal/ecommerce/products/${product.id}`}>
+            <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   size="icon"
@@ -176,9 +179,9 @@ export function EnhancedProductCard({
                   <Eye className="h-4 w-4" />
                 </Button>
               </motion.div>
-            </Link>
+            </ViewTransitionLink>
             {canEdit && (
-              <Link to={`/portal/ecommerce/products/${product.id}/edit`}>
+              <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}/edit`}>
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                   <Button
                     size="icon"
@@ -189,7 +192,7 @@ export function EnhancedProductCard({
                     <Pencil className="h-4 w-4" />
                   </Button>
                 </motion.div>
-              </Link>
+              </ViewTransitionLink>
             )}
           </motion.div>
 

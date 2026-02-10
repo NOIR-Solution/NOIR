@@ -8,6 +8,7 @@
  * - Action buttons
  * - Read/unread state
  */
+import { useTranslation } from 'react-i18next'
 import { Info, CheckCircle, AlertTriangle, XCircle, Trash2, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
@@ -54,6 +55,7 @@ export function NotificationItem({
   compact = false,
   className,
 }: NotificationItemProps) {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { formatRelativeTime } = useRegionalSettings()
   const config = typeConfig[notification.type] || typeConfig.info
@@ -162,7 +164,7 @@ export function NotificationItem({
           onClick={handleDelete}
         >
           <Trash2 className="size-4" />
-          <span className="sr-only">Delete notification</span>
+          <span className="sr-only">{t('notifications.deleteNotification')}</span>
         </Button>
       )}
     </div>

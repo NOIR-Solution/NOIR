@@ -189,6 +189,10 @@
     "duplicate": "Duplicate",
     "duplicateSuccess": "Product duplicated successfully",
     "duplicateFailed": "Failed to duplicate product",
+    "publishSuccess": "Product \"{{name}}\" published successfully",
+    "publishFailed": "Failed to publish product",
+    "archiveSuccess": "Product \"{{name}}\" archived successfully",
+    "archiveFailed": "Failed to archive product",
     "clickToFilter": "Click a card to filter by status. Click again to clear.",
     "statsNote": "Note: Status counts reflect the current page only. Total is accurate.",
     "lowStockAlert": {
@@ -683,7 +687,14 @@
     "title": "Notifications",
     "markAllRead": "Mark all read",
     "viewAll": "View all notifications",
-    "noNotifications": "No notifications"
+    "noNotifications": "No notifications",
+    "unreadCount": "{{count}} unread",
+    "emptyCaughtUp": "All caught up!",
+    "emptyMessage": "No new notifications. We'll let you know when something arrives.",
+    "description": "Manage your notifications and stay up to date.",
+    "live": "Live",
+    "preferences": "Preferences",
+    "deleteNotification": "Delete notification"
   },
   "emailTemplates": {
     "title": "Email Templates",
@@ -849,6 +860,8 @@
     "viewDetails": "View Details",
     "created": "Created",
     "showingOfItems": "Showing {{from}}-{{to}} of {{total}} items",
+    "showingCountOfTotal": "Showing {{count}} of {{total}} items",
+    "rowsPerPage": "Rows per page:",
     "logo": "Logo",
     "logoUploaded": "Logo uploaded",
     "removeLogo": "Remove logo",
@@ -947,7 +960,9 @@
     "daysAgo": "{{count}} days ago",
     "today": "Today",
     "yesterday": "Yesterday",
-    "tomorrow": "Tomorrow"
+    "tomorrow": "Tomorrow",
+    "earlierThisWeek": "Earlier this week",
+    "older": "Older"
   },
   "validation": {
     "required": "This field is required",
@@ -986,6 +1001,25 @@
     "dateRange": "Date range",
     "allContexts": "All Contexts",
     "allActions": "All Actions"
+  },
+  "pageContexts": {
+    "Products": "Products",
+    "Product Categories": "Product Categories",
+    "ProductAttributes": "Product Attributes",
+    "Brands": "Brands",
+    "Users": "Users",
+    "Roles": "Roles",
+    "Tenants": "Tenants",
+    "Tenant Settings": "Tenant Settings",
+    "PlatformSettings": "Platform Settings",
+    "Blog Posts": "Blog Posts",
+    "Blog Categories": "Blog Categories",
+    "Blog Tags": "Blog Tags",
+    "Legal Pages": "Legal Pages",
+    "Profile": "Profile",
+    "Developer Logs": "Developer Logs",
+    "Activity Timeline": "Activity Timeline",
+    "Email Templates": "Email Templates"
   },
   "developerLogs": {
     "title": "Developer Logs",

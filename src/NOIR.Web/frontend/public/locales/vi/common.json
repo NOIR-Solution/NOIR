@@ -189,6 +189,10 @@
     "duplicate": "Nhân bản",
     "duplicateSuccess": "Nhân bản sản phẩm thành công",
     "duplicateFailed": "Không thể nhân bản sản phẩm",
+    "publishSuccess": "Sản phẩm \"{{name}}\" đã xuất bản thành công",
+    "publishFailed": "Không thể xuất bản sản phẩm",
+    "archiveSuccess": "Sản phẩm \"{{name}}\" đã lưu trữ thành công",
+    "archiveFailed": "Không thể lưu trữ sản phẩm",
     "clickToFilter": "Nhấp vào thẻ để lọc theo trạng thái. Nhấp lại để xóa bộ lọc.",
     "statsNote": "Lưu ý: Số lượng theo trạng thái chỉ phản ánh trang hiện tại. Tổng số là chính xác.",
     "lowStockAlert": {
@@ -683,7 +687,14 @@
     "title": "Thông báo",
     "markAllRead": "Đánh dấu đã đọc",
     "viewAll": "Xem tất cả thông báo",
-    "noNotifications": "Không có thông báo"
+    "noNotifications": "Không có thông báo",
+    "unreadCount": "{{count}} chưa đọc",
+    "emptyCaughtUp": "Đã xem hết!",
+    "emptyMessage": "Không có thông báo mới. Chúng tôi sẽ thông báo khi có tin mới.",
+    "description": "Quản lý thông báo và cập nhật tin mới.",
+    "live": "Trực tiếp",
+    "preferences": "Tùy chọn",
+    "deleteNotification": "Xóa thông báo"
   },
   "emailTemplates": {
     "title": "Mẫu Email",
@@ -1000,6 +1011,8 @@
     "viewDetails": "Xem chi tiết",
     "created": "Đã tạo",
     "showingOfItems": "Hiển thị {{from}}-{{to}} trong số {{total}} mục",
+    "showingCountOfTotal": "Hiển thị {{count}} trong số {{total}} mục",
+    "rowsPerPage": "Số hàng mỗi trang:",
     "logo": "Logo",
     "logoUploaded": "Đã tải lên logo",
     "removeLogo": "Xóa logo",
@@ -1080,7 +1093,9 @@
     "daysAgo": "{{count}} ngày trước",
     "today": "Hôm nay",
     "yesterday": "Hôm qua",
-    "tomorrow": "Ngày mai"
+    "tomorrow": "Ngày mai",
+    "earlierThisWeek": "Đầu tuần này",
+    "older": "Cũ hơn"
   },
   "validation": {
     "required": "Trường này là bắt buộc",
@@ -1119,6 +1134,25 @@
     "dateRange": "Khoảng thời gian",
     "allContexts": "Tất cả ngữ cảnh",
     "allActions": "Tất cả thao tác"
+  },
+  "pageContexts": {
+    "Products": "Sản phẩm",
+    "Product Categories": "Danh mục sản phẩm",
+    "ProductAttributes": "Thuộc tính sản phẩm",
+    "Brands": "Thương hiệu",
+    "Users": "Người dùng",
+    "Roles": "Vai trò",
+    "Tenants": "Tenant",
+    "Tenant Settings": "Cài đặt Tenant",
+    "PlatformSettings": "Cài đặt nền tảng",
+    "Blog Posts": "Bài viết",
+    "Blog Categories": "Danh mục blog",
+    "Blog Tags": "Thẻ blog",
+    "Legal Pages": "Trang pháp lý",
+    "Profile": "Hồ sơ",
+    "Developer Logs": "Nhật ký phát triển",
+    "Activity Timeline": "Dòng thời gian hoạt động",
+    "Email Templates": "Mẫu email"
   },
   "developerLogs": {
     "title": "Nhật ký phát triển",

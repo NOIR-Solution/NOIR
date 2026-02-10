@@ -35,7 +35,8 @@ import { usePosts, useCategories } from '@/hooks/useBlog'
 import { DeletePostDialog } from './components/DeletePostDialog'
 import type { PostListItem, PostStatus } from '@/types'
 import { formatDistanceToNow } from 'date-fns'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 
 const statusColors: Record<PostStatus, string> = {
   Draft: 'bg-gray-100 text-gray-800',
@@ -75,12 +76,12 @@ export default function BlogPostsPage() {
         title="Blog Posts"
         description="Manage your blog content"
         action={
-          <Link to="/portal/blog/posts/new">
+          <ViewTransitionLink to="/portal/blog/posts/new">
             <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               New Post
             </Button>
-          </Link>
+          </ViewTransitionLink>
         }
       />
 
@@ -88,9 +89,9 @@ export default function BlogPostsPage() {
         <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
-              <CardTitle>All Posts</CardTitle>
+              <CardTitle>{t('blog.allPosts', 'All Posts')}</CardTitle>
               <CardDescription>
-                {data ? `Showing ${data.items.length} of ${data.totalCount} posts` : ''}
+                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -184,13 +185,15 @@ export default function BlogPostsPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {/* Featured Image Thumbnail - Click to view full image */}
-                          <ImageLightbox
-                            src={post.featuredImageUrl ?? ''}
-                            thumbnailSrc={post.featuredImageThumbnailUrl}
-                            alt={post.title}
-                            thumbnailWidth={48}
-                            thumbnailHeight={48}
-                          />
+                          <div style={{ viewTransitionName: `blog-featured-${post.id}` }}>
+                            <ImageLightbox
+                              src={post.featuredImageUrl ?? ''}
+                              thumbnailSrc={post.featuredImageThumbnailUrl}
+                              alt={post.title}
+                              thumbnailWidth={48}
+                              thumbnailHeight={48}
+                            />
+                          </div>
                           <div className="flex flex-col min-w-0">
                             <span className="font-medium truncate">{post.title}</span>
                             {post.excerpt && (
@@ -220,16 +223,16 @@ export default function BlogPostsPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem className="cursor-pointer" asChild>
-                              <Link to={`/portal/blog/posts/${post.id}`}>
+                              <ViewTransitionLink to={`/portal/blog/posts/${post.id}`}>
                                 <Eye className="h-4 w-4 mr-2" />
                                 View
-                              </Link>
+                              </ViewTransitionLink>
                             </DropdownMenuItem>
                             <DropdownMenuItem className="cursor-pointer" asChild>
-                              <Link to={`/portal/blog/posts/${post.id}/edit`}>
+                              <ViewTransitionLink to={`/portal/blog/posts/${post.id}/edit`}>
                                 <Pencil className="h-4 w-4 mr-2" />
                                 Edit
-                              </Link>
+                              </ViewTransitionLink>
                             </DropdownMenuItem>
                             {post.status === 'Draft' && (
                               <DropdownMenuItem className="cursor-pointer">

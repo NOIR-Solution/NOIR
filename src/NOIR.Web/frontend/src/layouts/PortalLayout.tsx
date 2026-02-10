@@ -36,7 +36,7 @@ export function PortalLayout() {
       {/* Main Content Area - Full height, no header */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile header - only visible on mobile */}
-        <div className="flex items-center h-14 px-4 border-b border-border bg-background lg:hidden">
+        <div className="vt-mobile-header flex items-center h-14 px-4 border-b border-border bg-background lg:hidden">
           <MobileSidebarTrigger
             open={mobileMenuOpen}
             onOpenChange={setMobileMenuOpen}

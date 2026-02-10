@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { getPaginationRange } from '@/lib/utils/pagination';
 
 interface PaginationProps {
   currentPage: number;
@@ -70,8 +71,7 @@ const Pagination: React.FC<PaginationProps> = ({
     return pages;
   };
 
-  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-  const endItem = Math.min(currentPage * pageSize, totalItems);
+  const { from: startItem, to: endItem } = getPaginationRange(currentPage, pageSize, totalItems);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
@@ -93,11 +93,11 @@ const Pagination: React.FC<PaginationProps> = ({
     <div className={cn("flex flex-col sm:flex-row items-center justify-between gap-4 w-full", className)}>
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span>
-          Showing {startItem}-{endItem} of {totalItems} items
+          {t('labels.showingOfItems', { from: startItem, to: endItem, total: totalItems })}
         </span>
         {showPageSizeSelector && onPageSizeChange && (
           <div className="flex items-center gap-2 ml-4">
-            <span className="text-sm text-muted-foreground">Rows per page:</span>
+            <span className="text-sm text-muted-foreground">{t('labels.rowsPerPage', 'Rows per page:')}</span>
             <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
               <SelectTrigger className="h-8 w-[70px] cursor-pointer">
                 <SelectValue />

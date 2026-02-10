@@ -10,7 +10,7 @@
  * in all scenarios.
  */
 
-import { Link } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { Package, Eye, Pencil, Trash2, Send, Archive } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -81,7 +81,7 @@ export function ProductGridView({ products, onDelete, onPublish, onArchive }: Pr
 
               {/* Action Buttons */}
               <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
-                <Link to={`/portal/ecommerce/products/${product.id}`}>
+                <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
                   <Button
                     size="icon"
                     variant="secondary"
@@ -89,8 +89,8 @@ export function ProductGridView({ products, onDelete, onPublish, onArchive }: Pr
                   >
                     <Eye className="w-4 h-4" />
                   </Button>
-                </Link>
-                <Link to={`/portal/ecommerce/products/${product.id}/edit`}>
+                </ViewTransitionLink>
+                <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}/edit`}>
                   <Button
                     size="icon"
                     variant="secondary"
@@ -98,7 +98,7 @@ export function ProductGridView({ products, onDelete, onPublish, onArchive }: Pr
                   >
                     <Pencil className="w-4 h-4" />
                   </Button>
-                </Link>
+                </ViewTransitionLink>
               </div>
             </div>
 
@@ -140,16 +140,16 @@ export function ProductGridView({ products, onDelete, onPublish, onArchive }: Pr
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="w-48">
                   <DropdownMenuItem className="cursor-pointer" asChild>
-                    <Link to={`/portal/ecommerce/products/${product.id}`}>
+                    <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
                       <Eye className="h-4 w-4 mr-2" />
                       View Details
-                    </Link>
+                    </ViewTransitionLink>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" asChild>
-                    <Link to={`/portal/ecommerce/products/${product.id}/edit`}>
+                    <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}/edit`}>
                       <Pencil className="h-4 w-4 mr-2" />
                       Edit Product
-                    </Link>
+                    </ViewTransitionLink>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {product.status === 'Draft' && (

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { ViewTransitionLink } from "@/components/navigation/ViewTransitionLink";
 import type { LucideIcon } from "lucide-react";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -74,7 +74,7 @@ function ActionButton({ action, variant = "outline" }: { action: EmptyStateActio
         asChild
         className="shadow-sm hover:shadow-md transition-all duration-200"
       >
-        <Link to={action.href}>{action.label}</Link>
+        <ViewTransitionLink to={action.href}>{action.label}</ViewTransitionLink>
       </Button>
     );
   }
@@ -157,12 +157,12 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
                 <ExternalLink className="h-3 w-3" />
               </a>
             ) : (
-              <Link
+              <ViewTransitionLink
                 to={helpLink.href}
                 className="text-sm text-primary hover:underline"
               >
                 {helpLink.label}
-              </Link>
+              </ViewTransitionLink>
             )}
           </div>
         )}

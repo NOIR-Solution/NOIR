@@ -730,7 +730,10 @@ export default function PostEditorPage() {
                         <p className="text-xs text-muted-foreground mt-1">Please wait while we process your image</p>
                       </div>
                     ) : form.watch('featuredImageUrl') ? (
-                      <div className="relative rounded-md overflow-hidden border">
+                      <div
+                        className="relative rounded-md overflow-hidden border"
+                        style={id ? { viewTransitionName: `blog-featured-${id}` } : undefined}
+                      >
                         <img
                           src={form.watch('featuredImageUrl')}
                           alt={form.watch('featuredImageAlt') || 'Featured image preview'}

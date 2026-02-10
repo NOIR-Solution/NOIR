@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -747,7 +748,7 @@ export default function ProductFormPage() {
       {/* Page Header with Glassmorphism */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
-          <Link to="/portal/ecommerce/products">
+          <ViewTransitionLink to="/portal/ecommerce/products">
             <Button
               variant="ghost"
               size="icon"
@@ -756,7 +757,7 @@ export default function ProductFormPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-          </Link>
+          </ViewTransitionLink>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 backdrop-blur-sm border border-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-105">
             <Package className="h-6 w-6 text-primary" />
           </div>
@@ -771,12 +772,12 @@ export default function ProductFormPage() {
         </div>
         <div className="flex items-center gap-2">
           {isViewMode ? (
-            <Link to={`/portal/ecommerce/products/${id}/edit`}>
+            <ViewTransitionLink to={`/portal/ecommerce/products/${id}/edit`}>
               <Button>
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-            </Link>
+            </ViewTransitionLink>
           ) : (
             <>
               {isEditing && product?.status === 'Draft' && canPublishProducts && (

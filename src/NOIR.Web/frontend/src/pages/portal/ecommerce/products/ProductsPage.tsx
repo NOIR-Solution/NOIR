@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { useDebouncedCallback } from 'use-debounce'
+import { getPaginationRange } from '@/lib/utils/pagination'
 import {
   Search,
   Package,
@@ -322,18 +324,18 @@ export default function ProductsPage() {
   const onPublish = async (product: ProductListItem) => {
     const result = await handlePublish(product.id)
     if (result.success) {
-      toast.success(`Product "${product.name}" published successfully`)
+      toast.success(t('products.publishSuccess', { name: product.name, defaultValue: `Product "${product.name}" published successfully` }))
     } else {
-      toast.error(result.error || 'Failed to publish product')
+      toast.error(result.error || t('products.publishFailed', 'Failed to publish product'))
     }
   }
 
   const onArchive = async (product: ProductListItem) => {
     const result = await handleArchive(product.id)
     if (result.success) {
-      toast.success(`Product "${product.name}" archived successfully`)
+      toast.success(t('products.archiveSuccess', { name: product.name, defaultValue: `Product "${product.name}" archived successfully` }))
     } else {
-      toast.error(result.error || 'Failed to archive product')
+      toast.error(result.error || t('products.archiveFailed', 'Failed to archive product'))
     }
   }
 
@@ -347,6 +349,10 @@ export default function ProductsPage() {
       toast.error(result.error || t('products.duplicateFailed', 'Failed to duplicate product'))
     }
   }
+
+  const paginationRange = data
+    ? getPaginationRange(data.page, params.pageSize || DEFAULT_PRODUCT_PAGE_SIZE, data.totalCount)
+    : { from: 0, to: 0 }
 
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
@@ -365,12 +371,12 @@ export default function ProductsPage() {
               }}
             />
             {canCreateProducts && (
-              <Link to="/portal/ecommerce/products/new">
+              <ViewTransitionLink to="/portal/ecommerce/products/new">
                 <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
                   <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
                   {t('products.newProduct', 'New Product')}
                 </Button>
-              </Link>
+              </ViewTransitionLink>
             )}
           </div>
         }
@@ -400,7 +406,7 @@ export default function ProductsPage() {
             <div className="space-y-1">
               <CardTitle className="text-xl">{t('products.allProducts', 'All Products')}</CardTitle>
               <CardDescription className="text-sm">
-                {data ? t('labels.showingOfItems', { showing: data.items.length, total: data.totalCount, defaultValue: `Showing ${data.items.length} of ${data.totalCount} products` }) : t('labels.loading', 'Loading...')}
+                {data ? t('labels.showingOfItems', { from: paginationRange.from, to: paginationRange.to, total: data.totalCount }) : t('labels.loading', 'Loading...')}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -876,17 +882,17 @@ export default function ProductsPage() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
                               <DropdownMenuItem className="cursor-pointer" asChild>
-                                <Link to={`/portal/ecommerce/products/${product.id}`}>
+                                <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
                                   <Eye className="h-4 w-4 mr-2" />
                                   {t('labels.viewDetails', 'View Details')}
-                                </Link>
+                                </ViewTransitionLink>
                               </DropdownMenuItem>
                               {canUpdateProducts && (
                                 <DropdownMenuItem className="cursor-pointer" asChild>
-                                  <Link to={`/portal/ecommerce/products/${product.id}/edit`}>
+                                  <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}/edit`}>
                                     <Pencil className="h-4 w-4 mr-2" />
                                     {t('products.editProduct', 'Edit Product')}
-                                  </Link>
+                                  </ViewTransitionLink>
                                 </DropdownMenuItem>
                               )}
                               {canCreateProducts && (

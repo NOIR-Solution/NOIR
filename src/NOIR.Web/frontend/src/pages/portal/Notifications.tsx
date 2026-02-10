@@ -3,13 +3,15 @@
  *
  * Full notification history page with filtering and pagination.
  */
-import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { NotificationList } from '@/components/notifications'
 import { useNotificationContext } from '@/contexts/NotificationContext'
 
 export default function Notifications() {
+  const { t } = useTranslation('common')
   const { connectionState } = useNotificationContext()
 
   return (
@@ -17,22 +19,22 @@ export default function Notifications() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('notifications.title')}</h1>
           <p className="text-muted-foreground">
-            Manage your notifications and stay up to date.
+            {t('notifications.description')}
             {connectionState === 'connected' && (
               <span className="ml-2 inline-flex items-center text-green-600">
                 <span className="size-2 rounded-full bg-green-600 mr-1.5 animate-pulse" />
-                Live
+                {t('notifications.live')}
               </span>
             )}
           </p>
         </div>
         <Button variant="outline" asChild>
-          <Link to="/portal/settings/notifications">
+          <ViewTransitionLink to="/portal/settings/notifications">
             <Settings className="size-4 mr-2" />
-            Preferences
-          </Link>
+            {t('notifications.preferences')}
+          </ViewTransitionLink>
         </Button>
       </div>
 

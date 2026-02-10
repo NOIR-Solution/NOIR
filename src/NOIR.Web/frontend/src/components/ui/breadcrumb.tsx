@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Link } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { ChevronRight, Home } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -43,8 +43,9 @@ const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
                 )}
 
                 {item.href && !isLast ? (
-                  <Link
+                  <ViewTransitionLink
                     to={item.href}
+                    vtDirection="back"
                     className={cn(
                       'flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer',
                       'hover:underline underline-offset-4'
@@ -55,7 +56,7 @@ const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
                     )}
                     {Icon && <Icon className="h-3.5 w-3.5" />}
                     <span>{item.label}</span>
-                  </Link>
+                  </ViewTransitionLink>
                 ) : (
                   <span
                     className={cn(

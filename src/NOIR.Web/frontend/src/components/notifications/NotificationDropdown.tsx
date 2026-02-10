@@ -7,7 +7,8 @@
  * - Spacious layout with smooth interactions
  */
 import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Bell } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -29,16 +30,16 @@ interface NotificationGroup {
 /**
  * Get time label for grouping notifications
  */
-function getTimeLabel(dateString: string): string {
+function getTimeLabelKey(dateString: string): string {
   const date = new Date(dateString)
   const now = new Date()
   const diffTime = Math.abs(now.getTime() - date.getTime())
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays <= 7) return 'Earlier this week'
-  return 'Older'
+  if (diffDays === 0) return 'today'
+  if (diffDays === 1) return 'yesterday'
+  if (diffDays <= 7) return 'earlierThisWeek'
+  return 'older'
 }
 
 /**
@@ -46,14 +47,14 @@ function getTimeLabel(dateString: string): string {
  */
 function groupNotificationsByTime(notifications: Notification[]): NotificationGroup[] {
   const groups: { [key: string]: Notification[] } = {
-    Today: [],
-    Yesterday: [],
-    'Earlier this week': [],
-    Older: [],
+    today: [],
+    yesterday: [],
+    earlierThisWeek: [],
+    older: [],
   }
 
   notifications.forEach((notification) => {
-    const label = getTimeLabel(notification.createdAt)
+    const label = getTimeLabelKey(notification.createdAt)
     groups[label].push(notification)
   })
 
@@ -63,6 +64,7 @@ function groupNotificationsByTime(notifications: Notification[]): NotificationGr
 }
 
 export function NotificationDropdown({ className }: NotificationDropdownProps) {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const {
@@ -115,7 +117,7 @@ export function NotificationDropdown({ className }: NotificationDropdownProps) {
           'hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
           open && 'bg-muted'
         )}
-        aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+        aria-label={`${t('notifications.title')}${unreadCount > 0 ? ` (${t('notifications.unreadCount', { count: unreadCount })})` : ''}`}
       >
         <Bell className="size-5 text-foreground" />
 
@@ -155,10 +157,10 @@ export function NotificationDropdown({ className }: NotificationDropdownProps) {
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
               <div>
-                <h3 className="text-base font-semibold text-foreground">Notifications</h3>
+                <h3 className="text-base font-semibold text-foreground">{t('notifications.title')}</h3>
                 {unreadCount > 0 && (
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {unreadCount} unread
+                    {t('notifications.unreadCount', { count: unreadCount })}
                   </p>
                 )}
               </div>
@@ -170,7 +172,7 @@ export function NotificationDropdown({ className }: NotificationDropdownProps) {
                   onClick={handleMarkAllAsRead}
                 >
                   <Check className="size-3.5 mr-1" />
-                  Mark all read
+                  {t('notifications.markAllRead')}
                 </Button>
               )}
             </div>
@@ -188,7 +190,7 @@ export function NotificationDropdown({ className }: NotificationDropdownProps) {
                   {groupedNotifications.map((group) => (
                     <div key={group.label} className="mb-3 last:mb-0">
                       <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 py-2">
-                        {group.label}
+                        {t(`time.${group.label}`)}
                       </h4>
                       <div className="space-y-0.5">
                         <AnimatePresence>
@@ -224,7 +226,7 @@ export function NotificationDropdown({ className }: NotificationDropdownProps) {
                 asChild
                 onClick={() => setOpen(false)}
               >
-                <Link to="/portal/notifications">View all notifications</Link>
+                <ViewTransitionLink to="/portal/notifications">{t('notifications.viewAll')}</ViewTransitionLink>
               </Button>
             </div>
           </motion.div>

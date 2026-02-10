@@ -3,10 +3,12 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { PageLoader } from '@/components/ui/page-loader'
+import { supportsViewTransitions } from '@/hooks/useViewTransition'
+import { cn } from '@/lib/utils'
 
 /**
- * Page transition variants
- * Subtle fade + slide for smooth navigation feel
+ * Page transition variants (framer-motion fallback)
+ * Used only when the browser doesn't support the View Transitions API.
  */
 const pageVariants = {
   initial: {
@@ -18,7 +20,7 @@ const pageVariants = {
     y: 0,
     transition: {
       duration: 0.2,
-      ease: [0.25, 0.1, 0.25, 1], // ease-out-cubic
+      ease: [0.25, 0.1, 0.25, 1],
     },
   },
   exit: {
@@ -32,8 +34,7 @@ const pageVariants = {
 }
 
 /**
- * Reduced motion variants (for users who prefer reduced motion)
- * Uses opacity only, no movement
+ * Reduced motion variants (framer-motion fallback)
  */
 const reducedMotionVariants = {
   initial: {
@@ -61,19 +62,14 @@ interface AnimatedOutletProps {
 }
 
 /**
- * AnimatedOutlet - Wrapper for react-router Outlet with page transitions
+ * AnimatedOutlet - Page transitions using the View Transitions API
  *
- * Features:
- * - Smooth fade + slide transitions between pages
- * - Respects prefers-reduced-motion
- * - Suspense boundary for lazy-loaded pages
- * - AnimatePresence for exit animations
+ * When the browser supports the View Transitions API (Chrome 111+, Edge 111+,
+ * Firefox 144+, Safari 18+), the outlet uses native compositor-thread animations
+ * via CSS view-transition-name. The actual transition is triggered by
+ * ViewTransitionLink / useViewTransitionNavigate at navigation time.
  *
- * @example
- * // In layout:
- * <main>
- *   <AnimatedOutlet />
- * </main>
+ * Falls back to framer-motion AnimatePresence for unsupported browsers.
  */
 export function AnimatedOutlet({
   className,
@@ -82,7 +78,20 @@ export function AnimatedOutlet({
   const location = useLocation()
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 
-  // Skip animation entirely if user prefers reduced motion
+  // Native View Transitions: browser handles animation via CSS pseudo-elements.
+  // The transition is started by ViewTransitionLink/useViewTransitionNavigate,
+  // which wraps navigation in document.startViewTransition().
+  if (supportsViewTransitions) {
+    return (
+      <div className={cn('vt-main-content', className)}>
+        <Suspense fallback={fallback || <PageLoader text="Loading..." />}>
+          <Outlet />
+        </Suspense>
+      </div>
+    )
+  }
+
+  // Fallback: framer-motion transitions for unsupported browsers
   const variants = prefersReducedMotion ? reducedMotionVariants : pageVariants
 
   return (

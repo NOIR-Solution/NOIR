@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
-import { useNavigate, useSearchParams, Link } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from "react-i18next"
 import { Mail, Lock, Eye, EyeOff, ShieldCheck, Sparkles, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -281,12 +282,12 @@ export default function LoginPage() {
                         )}
                         {/* Forgot Password Link */}
                         <div className="flex justify-end mt-1">
-                          <Link
+                          <ViewTransitionLink
                             to="/forgot-password"
                             className="text-sm text-blue-600 hover:text-blue-700 hover:underline transition-colors"
                           >
                             {t('login.forgotPassword')}
-                          </Link>
+                          </ViewTransitionLink>
                         </div>
                       </div>
 

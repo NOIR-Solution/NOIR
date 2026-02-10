@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { ShieldCheck, ArrowRight, Sparkles, Zap, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -28,23 +28,23 @@ export default function LandingPage() {
         <div className="container mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group">
+            <ViewTransitionLink to="/" className="flex items-center gap-3 group">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-700 to-cyan-700 flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
                 <ShieldCheck className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-semibold text-foreground">NOIR</span>
-            </Link>
+            </ViewTransitionLink>
 
             {/* Right Section */}
             <div className="flex items-center gap-3">
               <LanguageSwitcher variant="dropdown" />
               <ThemeToggleCompact />
-              <Link to="/portal">
+              <ViewTransitionLink to="/portal">
                 <Button className="px-6 h-10 text-[15px] font-medium rounded-full bg-foreground text-background hover:bg-foreground/90 shadow-lg hover:shadow-xl transition-all duration-200">
                   {t('nav.portal')}
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
-              </Link>
+              </ViewTransitionLink>
             </div>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function LandingPage() {
 
           {/* CTA Button */}
           <div className="flex items-center justify-center mb-16 animate-fade-in-up animation-delay-400">
-            <Link to="/portal">
+            <ViewTransitionLink to="/portal">
               <Button
                 size="lg"
                 className="px-8 py-6 text-lg font-semibold rounded-full bg-foreground text-background hover:bg-foreground/90 shadow-2xl hover:shadow-3xl transition-all duration-200 hover:scale-[1.02]"
@@ -89,7 +89,7 @@ export default function LandingPage() {
                 {t('landing.accessPortal')}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-            </Link>
+            </ViewTransitionLink>
           </div>
 
           {/* Trust Indicators - Blue-teal gradients */}
@@ -141,12 +141,12 @@ export default function LandingPage() {
               <span className="text-sm font-medium text-foreground">NOIR</span>
             </div>
             <div className="flex items-center gap-6">
-              <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ViewTransitionLink to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Terms
-              </Link>
-              <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              </ViewTransitionLink>
+              <ViewTransitionLink to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Privacy
-              </Link>
+              </ViewTransitionLink>
               <p className="text-sm text-muted-foreground">
                 © {new Date().getFullYear()} NOIR. {t('landing.allRightsReserved')}
               </p>

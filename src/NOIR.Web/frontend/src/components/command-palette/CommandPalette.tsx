@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Command } from 'cmdk'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+import { useViewTransitionNavigate } from '@/hooks/useViewTransition'
 import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard,
@@ -75,7 +76,7 @@ interface QuickAction {
  */
 export function CommandPalette() {
   const { t } = useTranslation('common')
-  const navigate = useNavigate()
+  const navigate = useViewTransitionNavigate()
   const location = useLocation()
   const { isOpen, close, toggle } = useCommand()
   const { setTheme, resolvedTheme } = useTheme()

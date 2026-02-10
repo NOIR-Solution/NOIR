@@ -57,7 +57,7 @@ export default function RolesPage() {
             <div className="space-y-1">
               <CardTitle>{t('roles.listTitle', 'All Roles')}</CardTitle>
               <CardDescription>
-                {data ? `${t('labels.showing', 'Showing')} ${data.items.length} ${t('labels.of', 'of')} ${data.totalCount} ${t('labels.items', 'items')}` : ''}
+                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
             <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">

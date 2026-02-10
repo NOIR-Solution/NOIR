@@ -4,7 +4,7 @@
  * Manage notification preferences per category.
  */
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { ArrowLeft, Save, Bell, Mail, Shield, Workflow, Users, Settings2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -169,9 +169,9 @@ export default function NotificationPreferences() {
         <div className="space-y-1">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
-              <Link to="/portal/notifications">
+              <ViewTransitionLink to="/portal/notifications">
                 <ArrowLeft className="size-4" />
-              </Link>
+              </ViewTransitionLink>
             </Button>
             <h1 className="text-2xl font-bold text-foreground">Notification Preferences</h1>
           </div>

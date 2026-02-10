@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { useState, useEffect, useMemo } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowLeft, Lock, Eye, EyeOff, ShieldCheck, KeyRound, Loader2 } from 'lucide-react'
@@ -129,13 +130,13 @@ export default function ResetPasswordPage() {
 
         <div className="w-full max-w-md space-y-8 animate-fade-in">
           {/* Back Link */}
-          <Link
+          <ViewTransitionLink
             to="/forgot-password/verify"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('forgotPassword.reset.back')}
-          </Link>
+          </ViewTransitionLink>
 
           {/* Logo & Title */}
           <div className="text-center space-y-2">

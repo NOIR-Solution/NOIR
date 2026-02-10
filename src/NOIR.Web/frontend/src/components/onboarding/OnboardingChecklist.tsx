@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, Circle, Sparkles, ChevronRight, X } from 'lucide-react'
 import {
@@ -62,7 +62,7 @@ function ChecklistItem({
       </button>
 
       <div className="flex-1 min-w-0">
-        <Link
+        <ViewTransitionLink
           to={href}
           className={cn(
             'text-sm font-medium transition-colors',
@@ -72,17 +72,17 @@ function ChecklistItem({
           )}
         >
           {label}
-        </Link>
+        </ViewTransitionLink>
         <p className="text-xs text-muted-foreground truncate">{description}</p>
       </div>
 
       {!completed && (
-        <Link
+        <ViewTransitionLink
           to={href}
           className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
         >
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </Link>
+        </ViewTransitionLink>
       )}
     </motion.div>
   )

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
@@ -115,10 +116,10 @@ export default function TenantDetailPage() {
     return (
       <div className="space-y-4">
         <Button variant="ghost" asChild>
-          <Link to="/portal/admin/tenants">
+          <ViewTransitionLink to="/portal/admin/tenants">
             <ArrowLeft className="mr-2 h-4 w-4" />
             {t('buttons.back')}
-          </Link>
+          </ViewTransitionLink>
         </Button>
         <div className="p-4 bg-destructive/10 text-destructive rounded-md">
           {error}
@@ -136,10 +137,10 @@ export default function TenantDetailPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" asChild>
-            <Link to="/portal/admin/tenants">
+            <ViewTransitionLink to="/portal/admin/tenants">
               <ArrowLeft className="mr-2 h-4 w-4" />
               {t('buttons.back')}
-            </Link>
+            </ViewTransitionLink>
           </Button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{tenant.name || tenant.identifier}</h1>
