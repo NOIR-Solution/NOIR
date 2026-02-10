@@ -61,19 +61,19 @@ export default defineConfig({
     // Record video on first retry
     video: 'on-first-retry',
 
-    // Timeout for actions like click, fill, etc.
-    actionTimeout: 10000,
+    // Timeout for actions like click, fill, etc. (2x in CI for slower environment)
+    actionTimeout: process.env.CI ? 20000 : 10000,
 
-    // Navigation timeout
-    navigationTimeout: 30000,
+    // Navigation timeout (2x in CI)
+    navigationTimeout: process.env.CI ? 60000 : 30000,
   },
 
-  // Global timeout for each test
-  timeout: 60000,
+  // Global timeout for each test (2x in CI for slower SQL Server + backend startup)
+  timeout: process.env.CI ? 120000 : 60000,
 
-  // Expect timeout
+  // Expect timeout (2x in CI)
   expect: {
-    timeout: 10000,
+    timeout: process.env.CI ? 20000 : 10000,
   },
 
   // Configure projects for different browsers and roles

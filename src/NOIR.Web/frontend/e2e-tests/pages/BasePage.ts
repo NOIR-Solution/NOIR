@@ -3,19 +3,22 @@ import * as nodePath from 'path';
 
 /**
  * Standardized timeout values for consistent test behavior
+ * CI environment gets 2x timeouts due to slower Docker containers, SQL Server, and backend compilation
  */
+const CI_MULTIPLIER = process.env.CI ? 2 : 1;
+
 export const Timeouts = {
-  PAGE_LOAD: 30000,
-  ELEMENT_VISIBLE: 15000,
-  ELEMENT_ENABLED: 5000,
-  DIALOG_OPEN: 10000,
-  DIALOG_CLOSE: 10000,
-  QUICK_CHECK: 3000,
-  TOAST: 10000,
-  API_RESPONSE: 15000,
-  STABILITY_WAIT: 200,
-  SEARCH_WAIT: 500,
-  REDIRECT: 1000,
+  PAGE_LOAD: 30000 * CI_MULTIPLIER,
+  ELEMENT_VISIBLE: 15000 * CI_MULTIPLIER,
+  ELEMENT_ENABLED: 5000 * CI_MULTIPLIER,
+  DIALOG_OPEN: 10000 * CI_MULTIPLIER,
+  DIALOG_CLOSE: 10000 * CI_MULTIPLIER,
+  QUICK_CHECK: 3000 * CI_MULTIPLIER,
+  TOAST: 10000 * CI_MULTIPLIER,
+  API_RESPONSE: 15000 * CI_MULTIPLIER,
+  STABILITY_WAIT: 200, // Don't scale stability waits
+  SEARCH_WAIT: 500, // Don't scale search waits
+  REDIRECT: 1000, // Don't scale redirects
 } as const;
 
 /**
