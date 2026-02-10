@@ -410,11 +410,8 @@ The `/ui-ux-pro-max` skill provides comprehensive UI/UX capabilities:
 
 **Installation:**
 ```bash
-# Install via SuperClaude skill marketplace
-superclaude skill install ui-ux-pro-max
-
-# Or clone the skill repository
-git clone https://github.com/YourOrg/ui-ux-pro-max.git ~/.claude/skills/ui-ux-pro-max
+# Install the ui-ux-pro-max skill
+npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max
 ```
 
 **Example prompts:**
