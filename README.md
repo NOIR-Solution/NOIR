@@ -393,8 +393,25 @@ Once installed, just speak naturally in Claude Code within this project:
 - "add a new feature" → auto-routes to `/sc:brainstorm`
 - "write tests for this" → auto-routes to `/sc:test`
 - "explain this code" → auto-routes to `/sc:explain`
+- "build a modal component" → auto-routes to `/ui-ux-pro-max`
+- "design a dashboard page" → auto-routes to `/ui-ux-pro-max`
 
 Run `/sc:help` to see all available commands, or `/sc:recommend "your task"` for suggestions.
+
+### UI/UX Design Intelligence
+
+The `/ui-ux-pro-max` skill provides comprehensive UI/UX capabilities:
+
+- **Design Research**: Color palettes, typography, UX patterns, style guidelines
+- **Component Generation**: Production-ready React components with shadcn/ui
+- **Accessibility**: ARIA labels, keyboard navigation, screen reader support
+- **Responsive Design**: Mobile-first patterns and breakpoint optimization
+- **50+ Styles**: Glassmorphism, neumorphism, brutalism, minimalism, and more
+
+**Example prompts:**
+- "What color palette for e-commerce?" → Design research with color schemes
+- "Build a product card component" → React/TypeScript implementation
+- "Review my navbar for accessibility" → Comprehensive UX audit
 
 > Auto-routing rules are defined in `.claude/rules/superclaude-routing.md`
 
