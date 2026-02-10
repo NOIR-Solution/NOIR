@@ -491,7 +491,6 @@ Use `react-hook-form` with `zod` validation:
 ### Testing
 - [ ] Unit tests for credential validation
 - [ ] Integration tests for API endpoints
-- [ ] E2E test for configuration flow
 
 ---
 

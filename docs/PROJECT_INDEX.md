@@ -903,8 +903,6 @@ public class CreateUserTests : IntegrationTestBase
 - Seeded with test users and roles
 - Support for multi-tenancy testing
 
-**Docs:** [E2E Testing Guide](testing/E2E-TESTING-GUIDE.md)
-
 ---
 
 ### Architecture Tests
