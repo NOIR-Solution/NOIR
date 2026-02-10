@@ -39,7 +39,8 @@ export class AttributesPage extends BasePage {
     super(page);
 
     // The create button has "New Attribute" text with Plus icon
-    this.createButton = page.locator('button:has-text("New Attribute"), button:has-text("Create Attribute"), button:has-text("Add Attribute")');
+    // Use getByRole with exact name to avoid matching "Add Attribute" in EmptyState
+    this.createButton = page.getByRole('button', { name: 'New Attribute' });
     // Use specific placeholder - use first() to avoid strict mode
     this.searchInput = page.locator('input[placeholder*="Search attributes"]').first();
     this.attributeTable = page.locator('table');
