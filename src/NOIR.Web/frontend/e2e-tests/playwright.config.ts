@@ -95,11 +95,11 @@ export default defineConfig({
       },
     },
 
-    // Chrome tests - primary browser
+    // Chrome tests - primary browser (excludes visual/mobile tests which have dedicated projects)
     {
       name: 'chromium',
       testMatch: /.*\.spec\.ts/,
-      testIgnore: /.*smoke.*\.spec\.ts/,
+      testIgnore: [/.*smoke.*\.spec\.ts/, /tests\/visual\/.*/, /tests\/mobile\/.*/],
       dependencies: ['auth-setup'],
       use: {
         ...devices['Desktop Chrome'],
@@ -115,11 +115,11 @@ export default defineConfig({
       dependencies: ['chromium'],
     },
 
-    // Firefox tests - cross-browser validation
+    // Firefox tests - cross-browser validation (excludes visual/mobile tests which have dedicated projects)
     {
       name: 'firefox',
       testMatch: /.*\.spec\.ts/,
-      testIgnore: /.*smoke.*\.spec\.ts/,
+      testIgnore: [/.*smoke.*\.spec\.ts/, /tests\/visual\/.*/, /tests\/mobile\/.*/],
       dependencies: ['firefox-auth-setup'],
       use: {
         ...devices['Desktop Firefox'],

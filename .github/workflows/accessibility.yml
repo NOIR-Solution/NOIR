@@ -89,9 +89,9 @@ jobs:
           ConnectionStrings__DefaultConnection: Server=localhost,1433;Database=NOIR_Test;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
           ConnectionStrings__TenantStoreConnection: Server=localhost,1433;Database=NOIR_TenantStore_Test;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
 
-      - name: Run accessibility tests
+      - name: Run accessibility tests (visual/mobile excluded via config)
         working-directory: src/NOIR.Web/frontend/e2e-tests
-        run: npx playwright test --grep-invert "@visual" --reporter=html
+        run: npx playwright test --reporter=html
         env:
           BASE_URL: http://localhost:4000
 
