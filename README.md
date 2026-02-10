@@ -408,6 +408,15 @@ The `/ui-ux-pro-max` skill provides comprehensive UI/UX capabilities:
 - **Responsive Design**: Mobile-first patterns and breakpoint optimization
 - **50+ Styles**: Glassmorphism, neumorphism, brutalism, minimalism, and more
 
+**Installation:**
+```bash
+# Install via SuperClaude skill marketplace
+superclaude skill install ui-ux-pro-max
+
+# Or clone the skill repository
+git clone https://github.com/YourOrg/ui-ux-pro-max.git ~/.claude/skills/ui-ux-pro-max
+```
+
 **Example prompts:**
 - "What color palette for e-commerce?" → Design research with color schemes
 - "Build a product card component" → React/TypeScript implementation
