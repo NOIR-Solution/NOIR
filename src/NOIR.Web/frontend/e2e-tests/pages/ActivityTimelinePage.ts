@@ -71,7 +71,7 @@ export class ActivityTimelinePage extends BasePage {
     // Timeline content
     this.timelineContainer = page.locator('[class*="pl-2"]').first();
     this.timelineEntries = page.locator('button[type="button"][class*="rounded-lg border"]');
-    this.emptyState = page.locator('text="No activity found"');
+    this.emptyState = page.locator('div.border-dashed.border-2.rounded-xl');
     this.loadingSkeletons = page.locator('.animate-pulse, [class*="Skeleton"]');
 
     // Pagination
