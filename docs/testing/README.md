@@ -1,6 +1,6 @@
 # Testing Documentation
 
-**Comprehensive Testing Infrastructure for NOIR Project**
+**Backend Testing Infrastructure for NOIR Project**
 
 ---
 
@@ -10,21 +10,8 @@
 
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
-| **[TESTING-INFRASTRUCTURE-SUMMARY.md](./TESTING-INFRASTRUCTURE-SUMMARY.md)** | **Complete testing overview** | Understanding the entire testing strategy |
+| **[TESTING-INFRASTRUCTURE-SUMMARY.md](./TESTING-INFRASTRUCTURE-SUMMARY.md)** | **Complete testing overview** | Understanding the testing strategy |
 | [TEST_PLAN.md](./TEST_PLAN.md) | Test strategy and roadmap | Planning new tests or understanding scope |
-
-### 📚 Implementation Guides
-
-| Document | Purpose | When to Use |
-|----------|---------|-------------|
-| [E2E-TESTING-GUIDE.md](./E2E-TESTING-GUIDE.md) | Playwright E2E testing | Writing functional tests, setting up Page Objects |
-| [VISUAL-REGRESSION-TESTING.md](./VISUAL-REGRESSION-TESTING.md) | Screenshot comparison tests | Detecting UI changes, validating responsive design |
-| [ACCESSIBILITY-TESTING.md](./ACCESSIBILITY-TESTING.md) | WCAG compliance testing | Ensuring a11y compliance, fixing violations |
-
-### 📋 Reference
-
-| Document | Purpose | When to Use |
-|----------|---------|-------------|
 | [TEST_CASES.md](./TEST_CASES.md) | Test case catalog | Finding existing tests, planning coverage |
 
 ---
@@ -37,301 +24,238 @@
 # Run all backend tests
 cd /d/GIT/TOP/NOIR
 dotnet test src/NOIR.sln
+
+# Run specific test project
+dotnet test tests/NOIR.Application.UnitTests
+dotnet test tests/NOIR.Domain.UnitTests
+dotnet test tests/NOIR.IntegrationTests
+dotnet test tests/NOIR.ArchitectureTests
 ```
 
 **Coverage:**
-- 842 domain tests
-- 5,231 application tests
-- 654 integration tests
-- 25 architecture tests
+- 842 domain unit tests
+- 5,231 application unit tests (handlers, validators, services)
+- 654 integration tests (API endpoints with database)
+- 25 architecture tests (dependency rules, naming conventions)
 
-**Execution Time:** ~2 minutes
+**Execution Time:** ~2 minutes for full suite
 
-### Frontend E2E Testing (~490 tests)
-
-```bash
-# Run all E2E tests
-cd src/NOIR.Web/frontend/e2e-tests
-npm test
-```
-
-**Coverage:**
-- Authentication flows
-- E-commerce features (products, categories, cart, checkout)
-- Admin functionality (users, roles, tenants)
-- Content management (blog posts, legal pages)
-- System features (notifications, command palette)
-
-**Execution Time:** ~12 minutes
-
-### Visual Regression Testing (15 tests)
-
-```bash
-# Run visual tests
-cd src/NOIR.Web/frontend/e2e-tests
-npx playwright test tests/visual
-```
-
-**Coverage:**
-- Full page layouts
-- Component isolation
-- Responsive design (Mobile, Tablet, Desktop)
-- Theme variants (Light, Dark)
-
-**Baseline Size:** 505KB (16 snapshots)
-
-**Execution Time:** ~60 seconds
-
-### Accessibility Testing (9 tests)
-
-```bash
-# Run accessibility tests
-cd src/NOIR.Web/frontend/e2e-tests
-npx playwright test tests/accessibility
-```
-
-**Coverage:**
-- WCAG 2.1 Level AA compliance
-- Keyboard navigation
-- ARIA labels and roles
-- Color contrast
-- Form accessibility
-
-**Execution Time:** ~30 seconds
+**Test Projects:**
+- **NOIR.Domain.UnitTests** - Domain entity validation, business rules
+- **NOIR.Application.UnitTests** - CQRS handlers, validators, specifications
+- **NOIR.IntegrationTests** - End-to-end API testing with real database
+- **NOIR.ArchitectureTests** - Architecture compliance (NetArchTest)
 
 ---
 
-## Test Categories
+## Test Organization
 
-### P0 - Critical (Smoke Tests)
+### Domain Tests (`tests/NOIR.Domain.UnitTests/`)
 
-**Purpose:** Validate core functionality before deployment
+Pure domain logic testing with no external dependencies:
+- Entity validation
+- Value object behavior
+- Business rule enforcement
+- Domain event handling
 
-**Coverage:**
-- User authentication
-- Product creation
-- Order placement
-- Payment processing
-- User management
+**Example:**
+```csharp
+public class ProductTests
+{
+    [Fact]
+    public void Create_ValidData_ReturnsProduct()
+    {
+        // Arrange & Act
+        var product = Product.Create("Test Product", "SKU001");
 
-**Run Frequency:** Every commit
+        // Assert
+        product.Should().NotBeNull();
+        product.Name.Should().Be("Test Product");
+    }
+}
+```
 
+### Application Tests (`tests/NOIR.Application.UnitTests/`)
+
+CQRS command/query handler testing with mocked dependencies:
+- Command handlers
+- Query handlers
+- FluentValidation validators
+- Specifications
+- Service implementations
+
+**Example:**
+```csharp
+public class CreateProductCommandHandlerTests
+{
+    [Fact]
+    public async Task Handle_ValidCommand_ReturnsSuccess()
+    {
+        // Arrange
+        var repository = Substitute.For<IRepository<Product, Guid>>();
+        var handler = new CreateProductCommandHandler(repository);
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+    }
+}
+```
+
+### Integration Tests (`tests/NOIR.IntegrationTests/`)
+
+Full API endpoint testing with real database:
+- HTTP request/response validation
+- Database state verification
+- Authentication/authorization
+- Multi-tenancy isolation
+
+**Example:**
+```csharp
+public class ProductsEndpointsTests : IntegrationTestBase
+{
+    [Fact]
+    public async Task CreateProduct_ValidData_ReturnsCreated()
+    {
+        // Act
+        var response = await Client.PostAsJsonAsync("/api/products", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+}
+```
+
+### Architecture Tests (`tests/NOIR.ArchitectureTests/`)
+
+Automated architecture rule enforcement:
+- Layer dependency rules (Clean Architecture)
+- Naming convention compliance
+- Handler registration validation
+- Repository pattern enforcement
+
+**Example:**
+```csharp
+[Fact]
+public void Domain_ShouldNotDependOn_Application()
+{
+    Types().That().ResideInNamespace("NOIR.Domain")
+        .ShouldNot().HaveDependencyOn("NOIR.Application")
+        .Check(Architecture);
+}
+```
+
+---
+
+## Running Tests
+
+### All Tests
 ```bash
-npm run test:smoke
+dotnet test src/NOIR.sln
 ```
 
-### P1 - High Priority
-
-**Purpose:** Essential features that must work
-
-**Coverage:**
-- Advanced product features
-- Admin operations
-- Content management
-- Notification system
-
-**Run Frequency:** Every PR
-
-### P2 - Medium Priority
-
-**Purpose:** Important but not blocking
-
-**Coverage:**
-- Edge cases
-- Less common workflows
-- Analytics
-- Reporting
-
-**Run Frequency:** Daily/Weekly
-
----
-
-## Common Tasks
-
-### Writing a New E2E Test
-
-1. **Create test file**
-   ```bash
-   touch tests/my-feature.spec.ts
-   ```
-
-2. **Follow structure**
-   ```typescript
-   import { test, expect } from '@playwright/test';
-   import { MyFeaturePage } from '../pages/my-feature.page';
-
-   test.describe('My Feature', () => {
-     test('@p1 should do something', async ({ page }) => {
-       const myPage = new MyFeaturePage(page);
-       await myPage.navigate();
-       // Test logic
-     });
-   });
-   ```
-
-3. **Run test**
-   ```bash
-   npx playwright test tests/my-feature.spec.ts
-   ```
-
-4. **See guide:** [E2E-TESTING-GUIDE.md](./E2E-TESTING-GUIDE.md)
-
-### Updating Visual Baselines
-
+### With Coverage
 ```bash
-# After intentional UI changes
-cd src/NOIR.Web/frontend/e2e-tests
-npx playwright test tests/visual --update-snapshots
+dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
 ```
 
-**See guide:** [VISUAL-REGRESSION-TESTING.md](./VISUAL-REGRESSION-TESTING.md)
-
-### Fixing Accessibility Violations
-
-1. **Run test to identify violations**
-   ```bash
-   npx playwright test tests/accessibility
-   ```
-
-2. **View report**
-   ```bash
-   npx playwright show-report
-   ```
-
-3. **Fix violation** (example)
-   ```html
-   <!-- Before: Missing alt text -->
-   <img src="logo.png" />
-
-   <!-- After: Add alt text -->
-   <img src="logo.png" alt="NOIR Logo" />
-   ```
-
-4. **Re-run test**
-   ```bash
-   npx playwright test tests/accessibility
-   ```
-
-**See guide:** [ACCESSIBILITY-TESTING.md](./ACCESSIBILITY-TESTING.md)
-
----
-
-## CI/CD Integration
-
-### GitHub Actions Workflows
-
-| Workflow | Trigger | Duration |
-|----------|---------|----------|
-| Backend Tests | Every push, PR | ~3 min |
-| E2E Tests | Frontend changes | ~15 min |
-| Visual Regression | Frontend changes | ~5 min |
-| Accessibility | Frontend changes | ~3 min |
-
-### Required Checks
-
-Before merging PRs:
-- ✅ All backend tests pass
-- ✅ All E2E tests pass
-- ✅ No visual regressions (or approved)
-- ✅ No accessibility violations
-
----
-
-## Troubleshooting
-
-### Flaky Tests
-
-**Problem:** Tests pass/fail randomly
-
-**Solution:**
-```typescript
-// Use explicit waits
-await page.waitForLoadState('networkidle');
-
-// Increase timeout
-await expect(element).toBeVisible({ timeout: 10000 });
-```
-
-### Visual Test Failures
-
-**Problem:** Visual tests fail after minor changes
-
-**Solution:**
+### Specific Category
 ```bash
-# Review diffs
-npx playwright show-report
+# Domain tests only
+dotnet test tests/NOIR.Domain.UnitTests
 
-# Update if intentional
-npx playwright test tests/visual --update-snapshots
+# Integration tests only (requires database)
+dotnet test tests/NOIR.IntegrationTests
 ```
 
-### Accessibility Violations
-
-**Problem:** WCAG violations detected
-
-**Solution:**
-1. Check violation details in HTML report
-2. Read helpUrl for remediation guidance
-3. Fix the issue (add alt text, improve contrast, etc.)
-4. Re-run tests
+### By Test Name
+```bash
+dotnet test --filter "FullyQualifiedName~CreateProduct"
+```
 
 ---
 
-## Best Practices
+## Test Conventions
 
-### Backend Testing
-- ✅ Test happy path + edge cases + error conditions
-- ✅ Mock external dependencies
-- ✅ Clean up test data after each test
-- ✅ Use FluentAssertions for readable assertions
+### Naming
+- Test class: `{ClassUnderTest}Tests`
+- Test method: `{Method}_{Scenario}_{ExpectedBehavior}`
+- Example: `CreateProduct_ValidData_ReturnsSuccess`
 
-### Frontend E2E Testing
-- ✅ Use Page Object Model
-- ✅ Create test data via API (faster)
-- ✅ Use data-testid for stable selectors
-- ✅ Wait for network idle before assertions
+### Structure (AAA Pattern)
+```csharp
+[Fact]
+public async Task Method_Scenario_ExpectedBehavior()
+{
+    // Arrange - Set up test data and dependencies
 
-### Visual Testing
-- ✅ Disable animations for consistency
-- ✅ Use appropriate diff thresholds
-- ✅ Review diffs before updating baselines
-- ✅ Update baselines only for intentional changes
+    // Act - Execute the method under test
 
-### Accessibility Testing
-- ✅ Run axe-core on every page
-- ✅ Test keyboard navigation manually
-- ✅ Use semantic HTML
-- ✅ Ensure 4.5:1 color contrast
-- ✅ Provide text alternatives (alt, aria-label)
+    // Assert - Verify the expected outcome
+}
+```
+
+### Assertions
+- Use FluentAssertions for readable assertions
+- Example: `result.IsSuccess.Should().BeTrue()`
+
+---
+
+## Continuous Integration
+
+Tests run automatically on every push to `main` branch via GitHub Actions.
+
+**Backend Tests Workflow:**
+- Builds solution
+- Runs all 6,750+ tests
+- Fails build if any test fails
+- Execution time: ~3 minutes
+
+---
+
+## Writing New Tests
+
+### For New Features
+1. **Domain Tests** - Test entity creation and business rules
+2. **Application Tests** - Test command/query handlers
+3. **Integration Tests** - Test API endpoints end-to-end
+4. **Architecture Tests** - Add rules if introducing new patterns
+
+### Best Practices
+- ✅ Write tests for all new code
+- ✅ Test both success and failure paths
+- ✅ Use meaningful test names
+- ✅ Keep tests fast and isolated
+- ✅ Mock external dependencies in unit tests
+- ✅ Use real database in integration tests
+- ✅ Follow AAA pattern (Arrange, Act, Assert)
+- ❌ Don't test framework code (EF Core, FluentValidation)
+- ❌ Don't share state between tests
+
+---
+
+## Test Coverage Goals
+
+| Layer | Current Coverage | Goal |
+|-------|-----------------|------|
+| Domain | ~95% | 95%+ |
+| Application | ~90% | 90%+ |
+| Integration | ~70% | 75%+ |
+| Overall | ~85% | 85%+ |
 
 ---
 
 ## Resources
 
-### Internal
-- [../DOCUMENTATION_INDEX.md](../DOCUMENTATION_INDEX.md) - Main documentation hub
-- [../KNOWLEDGE_BASE.md](../KNOWLEDGE_BASE.md) - Codebase reference
-- [../frontend/architecture.md](../frontend/architecture.md) - Frontend patterns
-
-### External
-- [Playwright Documentation](https://playwright.dev/docs/intro)
 - [xUnit Documentation](https://xunit.net/)
-- [axe-core Rules](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
-- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [FluentAssertions Documentation](https://fluentassertions.com/)
+- [NSubstitute Documentation](https://nsubstitute.github.io/)
+- [NetArchTest Documentation](https://github.com/BenMorris/NetArchTest)
 
 ---
 
-## Support
-
-For testing questions:
-
-1. Check this documentation
-2. Review test examples in the codebase
-3. Consult team in project chat
-4. Update documentation with new patterns
-
----
-
-**Last Updated:** 2026-02-09
-**Documents:** 6 files, 4,800+ lines
-**Test Coverage:** 6,750+ backend tests, ~514 frontend tests
+**Last Updated:** 2026-02-10
+**Test Count:** 6,750+ tests
+**Focus:** Backend unit, integration, and architecture testing

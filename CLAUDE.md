@@ -847,6 +847,14 @@ For detailed documentation, see the `docs/` folder:
 
 ## 📝 Changelog
 
+### Version 2.4 (2026-02-10)
+- **BREAKING:** Removed entire E2E testing infrastructure (Playwright, 490+ tests, 100 files)
+- **Removed:** GitHub Actions workflows (accessibility.yml, visual-regression.yml)
+- **Removed:** E2E testing documentation (4 guides, 3 test docs)
+- **Updated:** All documentation to reflect backend-only testing focus
+- **Focus:** Backend testing only (6,750+ xUnit tests: domain, application, integration, architecture)
+- **Reason:** Simplified project maintenance, focus on core backend functionality
+
 ### Version 2.3 (2026-02-09)
 - **Standardized:** Form resolver pattern across 13 files - migrated from `as any` to safer `as unknown as Resolver<T>`
 - **Added:** Documentation for dynamic schema factories with i18n validation messages
