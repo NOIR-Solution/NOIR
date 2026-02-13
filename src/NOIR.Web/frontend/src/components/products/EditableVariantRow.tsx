@@ -1,15 +1,16 @@
 import { useTranslation } from 'react-i18next'
 import { Trash2, Loader2, Check, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { InlineEditInput } from '@/components/ui/inline-edit-input'
-import { Badge } from '@/components/ui/badge'
 import {
+  Badge,
+  Button,
+  InlineEditInput,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@uikit'
+
 import {
   useVariantAutoSave,
   type AutoSaveStatus,

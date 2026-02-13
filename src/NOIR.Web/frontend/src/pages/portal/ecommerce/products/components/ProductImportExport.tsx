@@ -14,25 +14,24 @@ import {
   AlertTriangle,
   Loader2,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
+  Badge,
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Progress } from '@/components/ui/progress'
-import { ScrollArea } from '@/components/ui/scroll-area'
+  Progress,
+  ScrollArea,
+} from '@uikit'
+
 import type { ProductListItem } from '@/types/product'
 import { bulkImportProducts, exportProducts, type ImportProductDto } from '@/services/products'
 import { toast } from 'sonner'

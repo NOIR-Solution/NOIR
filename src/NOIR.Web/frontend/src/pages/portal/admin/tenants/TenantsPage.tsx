@@ -2,11 +2,18 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Building } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { PageHeader } from '@/components/ui/page-header'
-import { Pagination } from '@/components/ui/pagination'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  PageHeader,
+  Pagination,
+} from '@uikit'
+
 import { TenantTable } from './components/TenantTable'
 import { CreateTenantDialog } from './components/CreateTenantDialog'
 import { EditTenantDialog } from './components/EditTenantDialog'

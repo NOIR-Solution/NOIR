@@ -1630,8 +1630,8 @@ dotnet test src/NOIR.sln
 
 # Frontend
 cd src/NOIR.Web/frontend
-npm install && npm run dev
-npm run generate:api  # Sync types from backend
+pnpm install && pnpm run dev
+pnpm run generate:api  # Sync types from backend
 
 # Database
 dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web

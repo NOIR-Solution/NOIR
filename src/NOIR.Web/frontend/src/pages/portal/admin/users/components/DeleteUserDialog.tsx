@@ -8,8 +8,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+  Button,
+} from '@uikit'
+
 import { toast } from 'sonner'
 import type { UserListItem } from '@/types'
 

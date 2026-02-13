@@ -9,7 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '@uikit'
 import { toast } from 'sonner'
 import type { PostTagListItem } from '@/types'
 

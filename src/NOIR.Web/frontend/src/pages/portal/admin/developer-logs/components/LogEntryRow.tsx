@@ -13,13 +13,8 @@ import {
   Check,
   Maximize2,
 } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { LogMessageFormatter } from '@/components/ui/log-message-formatter'
+import { Badge, LogMessageFormatter, Tooltip, TooltipContent, TooltipTrigger } from '@uikit'
+
 import { cn } from '@/lib/utils'
 import type { LogEntryDto } from '@/services/developerLogs'
 import {

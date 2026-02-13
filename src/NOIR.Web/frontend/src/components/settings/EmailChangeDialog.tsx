@@ -12,17 +12,18 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Mail, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+  Input,
+  Label,
+} from '@uikit'
+
 import { OtpInput } from '@/components/forgot-password/OtpInput'
 import { CountdownTimer } from '@/components/forgot-password/CountdownTimer'
 import {

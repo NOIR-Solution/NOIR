@@ -3,9 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
 import { Loader2, Pencil, Eye, GitFork } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@uikit'
+
 import { ApiError } from '@/services/apiClient'
 import { getLegalPages, type LegalPageListDto } from '@/services/legalPages'
 

@@ -7,15 +7,16 @@
 import { useState } from 'react'
 import { Copy, Check } from 'lucide-react'
 import {
+  Badge,
+  Button,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { JsonViewer } from '@/components/ui/json-viewer'
-import { LogMessageFormatter } from '@/components/ui/log-message-formatter'
+  JsonViewer,
+  LogMessageFormatter,
+} from '@uikit'
+
 import { cn } from '@/lib/utils'
 import type { LogEntryDto } from '@/services/developerLogs'
 import { getLevelConfig, formatFullTimestamp, getDisplayMessage } from './log-utils'

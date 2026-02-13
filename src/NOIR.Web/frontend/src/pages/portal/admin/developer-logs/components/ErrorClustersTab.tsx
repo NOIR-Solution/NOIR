@@ -6,14 +6,18 @@
  */
 import { RefreshCw, ChevronRight, AlertCircle } from 'lucide-react'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible'
+} from '@uikit'
+
 import type { ErrorClusterDto } from '@/services/developerLogs'
 
 export interface ErrorClustersTabProps {

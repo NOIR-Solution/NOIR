@@ -35,7 +35,7 @@ npx playwright test tests/accessibility
 
 #### NPM Script:
 ```bash
-npm run i18n:scan
+pnpm run i18n:scan
 ```
 
 #### Findings:
@@ -101,8 +101,8 @@ import { PageMeta } from '@/components/seo';
 
 #### NPM Scripts:
 ```bash
-npm run visual:test     # Run visual tests
-npm run visual:update   # Update screenshot baselines
+pnpm run visual:test     # Run visual tests
+pnpm run visual:update   # Update screenshot baselines
 ```
 
 #### Test Coverage:
@@ -122,7 +122,7 @@ npm run visual:update   # Update screenshot baselines
 4. CI workflow auto-comments on PRs with diff links
 
 #### Remaining Work:
-- Generate initial baselines: `npm run visual:update`
+- Generate initial baselines: `pnpm run visual:update`
 - Expand coverage to product pages, blog pages, admin pages
 
 ---
@@ -165,14 +165,14 @@ npx playwright test tests/accessibility
 
 # Scan hardcoded strings
 cd src/NOIR.Web/frontend
-npm run i18n:scan
+ppnpm run i18n:scan
 
 # Visual regression tests
-npm run visual:test              # Run tests
-npm run visual:update            # Update baselines
+ppnpm run visual:test              # Run tests
+ppnpm run visual:update            # Update baselines
 
 # Build frontend
-npm run build
+ppnpm run build
 ```
 
 ---
@@ -182,8 +182,8 @@ npm run build
 ### Immediate (This Week)
 
 1. ✅ **Verify accessibility tests pass**
-2. ✅ **Generate visual baselines**: `npm run visual:update`
-3. ⚠️ **Review i18n scan results**: `npm run i18n:scan`
+2. ✅ **Generate visual baselines**: `pnpm run visual:update`
+3. ⚠️ **Review i18n scan results**: `pnpm run i18n:scan`
 
 ### Short Term (Next Sprint)
 

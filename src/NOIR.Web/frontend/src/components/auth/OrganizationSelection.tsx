@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Building2, ArrowLeft, Check, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@uikit'
+
 import { cn } from '@/lib/utils'
 import type { TenantOption } from '@/types'
 

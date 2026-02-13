@@ -2,31 +2,37 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDebouncedCallback } from 'use-debounce'
 import { Search, FolderTree, Plus, Pencil, Trash2, List, GitBranch, MoreHorizontal } from 'lucide-react'
-import { EmptyState } from '@/components/ui/empty-state'
-import { PageHeader } from '@/components/ui/page-header'
-import { usePageContext } from '@/hooks/usePageContext'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CategoryTreeView,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  EmptyState,
+  Input,
+  PageHeader,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+  type TreeCategory,
+} from '@uikit'
+
+import { usePageContext } from '@/hooks/usePageContext'
+
 import { useCategories } from '@/hooks/useBlog'
 import { CategoryDialog } from './components/CategoryDialog'
 import { DeleteCategoryDialog } from './components/DeleteCategoryDialog'
-import { CategoryTreeView, type TreeCategory } from '@/components/ui/category-tree-view'
+
 import type { PostCategoryListItem } from '@/types'
 
 // Adapter to map PostCategoryListItem to TreeCategory

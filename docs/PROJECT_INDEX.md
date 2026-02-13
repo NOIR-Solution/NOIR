@@ -1009,10 +1009,10 @@ dotnet ef database update --project src/NOIR.Infrastructure --startup-project sr
 
 # Frontend
 cd src/NOIR.Web/frontend
-npm install
-npm run dev
-npm run build
-npm run generate:api
+pnpm install
+pnpm run dev
+pnpm run build
+pnpm run generate:api
 ```
 
 ### Key Directories

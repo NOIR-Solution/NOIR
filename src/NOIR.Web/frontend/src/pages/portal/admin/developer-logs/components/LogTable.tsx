@@ -14,15 +14,8 @@ import {
   ArrowDownToLine,
   Loader2,
 } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Badge, Button, Dialog, DialogContent, DialogHeader, DialogTitle, ScrollArea } from '@uikit'
+
 import type { LogEntryDto } from '@/services/developerLogs'
 import { LogEntryRow } from './LogEntryRow'
 

@@ -33,11 +33,11 @@ Before using this skill, ensure Playwright is available:
 
 ```bash
 # Check if Playwright is installed
-npm list playwright 2>/dev/null || echo "Playwright not installed"
+pnpm list playwright 2>/dev/null || echo "Playwright not installed"
 
 # Install (if needed)
 cd ~/.claude/skills/playwright-skill
-npm run setup
+pnpm run setup
 ```
 
 ### Basic Configuration
@@ -67,7 +67,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run start',
+    command: 'pnpm run start',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },
@@ -565,7 +565,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run tests

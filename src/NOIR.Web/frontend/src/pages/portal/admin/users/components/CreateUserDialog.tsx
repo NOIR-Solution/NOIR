@@ -3,18 +3,19 @@ import { useTranslation } from 'react-i18next'
 import * as z from 'zod'
 import { Loader2, Eye, EyeOff, UserPlus, Check } from 'lucide-react'
 import {
+  Badge,
+  Button,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
+  Input,
+  Label,
+} from '@uikit'
+
 import { toast } from 'sonner'
 import { createUser } from '@/services/users'
 import { useAvailableRoles } from '@/hooks/useUsers'

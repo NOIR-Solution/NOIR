@@ -3,16 +3,17 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { KeyRound, Eye, EyeOff } from 'lucide-react'
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+  Input,
+  Label,
+} from '@uikit'
+
 import { resetTenantAdminPassword } from '@/services/tenants'
 import type { TenantListItem } from '@/types'
 

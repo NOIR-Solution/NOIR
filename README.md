@@ -58,7 +58,7 @@ dotnet watch --project src/NOIR.Web
 
 # Terminal 2 - Frontend with Vite HMR (port 3000)
 cd src/NOIR.Web/frontend
-npm install && npm run dev
+pnpm install && pnpm run dev
 ```
 
 **Production Mode:**
@@ -330,14 +330,14 @@ dotnet watch --project src/NOIR.Web
 
 # Frontend dev server
 cd src/NOIR.Web/frontend
-npm run dev
+pnpm run dev
 
 # Run tests
 dotnet test src/NOIR.sln
 
 # Generate API types
 cd src/NOIR.Web/frontend
-npm run generate:api
+pnpm run generate:api
 ```
 
 </td>

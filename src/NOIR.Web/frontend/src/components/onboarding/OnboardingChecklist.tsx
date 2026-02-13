@@ -1,15 +1,8 @@
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, Circle, Sparkles, ChevronRight, X } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Progress } from '@uikit'
+
 import { cn } from '@/lib/utils'
 import {
   useOnboarding,

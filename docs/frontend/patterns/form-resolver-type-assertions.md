@@ -56,7 +56,7 @@ Solution: Investigate WHY CreateRoleDialog/EditRoleDialog work without assertion
 
 Recommended Steps:
 1. Test removing "as any" from ONE file (e.g., BrandDialog.tsx)
-2. Run "npm run type-check" to see exact error
+2. Run "pnpm run type-check" to see exact error
 3. If it works, progressively remove type assertions
 4. If it fails, document the exact TypeScript error
 5. Choose ONE pattern and apply consistently

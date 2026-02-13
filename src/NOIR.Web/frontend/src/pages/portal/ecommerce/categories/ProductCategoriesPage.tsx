@@ -4,33 +4,38 @@ import { useDebouncedCallback } from 'use-debounce'
 import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, MoreHorizontal, List, GitBranch, Tags } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import { EmptyState } from '@/components/ui/empty-state'
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CategoryTreeView,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  EmptyState,
+  Input,
+  PageHeader,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+  type TreeCategory,
+} from '@uikit'
+
 import { useProductCategories } from '@/hooks/useProducts'
 import { CategoryDialog } from './components/CategoryDialog'
 import { DeleteCategoryDialog } from './components/DeleteCategoryDialog'
 import { CategoryAttributesDialog } from './components/CategoryAttributesDialog'
-import { CategoryTreeView, type TreeCategory } from '@/components/ui/category-tree-view'
+
 import type { ProductCategoryListItem } from '@/types/product'
-import { PageHeader } from '@/components/ui/page-header'
 
 // Adapter to map ProductCategoryListItem to TreeCategory
 function toTreeCategory(category: ProductCategoryListItem): TreeCategory & ProductCategoryListItem {

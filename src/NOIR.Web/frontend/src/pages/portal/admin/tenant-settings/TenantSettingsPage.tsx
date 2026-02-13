@@ -13,8 +13,8 @@ import {
 } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PageHeader } from '@/components/ui/page-header'
+import { PageHeader, Tabs, TabsContent, TabsList, TabsTrigger } from '@uikit'
+
 import {
   BrandingSettingsTab,
   ContactSettingsTab,

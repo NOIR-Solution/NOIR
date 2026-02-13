@@ -12,16 +12,17 @@
 
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { Package, Eye, Pencil, Trash2, Send, Archive } from 'lucide-react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
+  Badge,
+  Button,
+  Card,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@uikit'
+
 import type { ProductListItem } from '@/types/product'
 import { formatCurrency } from '@/lib/utils/currency'
 import { PRODUCT_STATUS_CONFIG } from '@/lib/constants/product'

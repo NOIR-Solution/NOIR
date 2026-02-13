@@ -11,16 +11,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { User, Mail, Phone, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '@uikit'
+
 import { ProfileAvatar } from './ProfileAvatar'
 import { EmailChangeDialog } from './EmailChangeDialog'
 import { useAuthContext } from '@/contexts/AuthContext'

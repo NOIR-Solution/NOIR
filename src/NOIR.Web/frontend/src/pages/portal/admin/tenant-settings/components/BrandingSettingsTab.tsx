@@ -2,12 +2,19 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Save, RotateCcw } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { ColorPicker } from '@/components/ui/color-picker'
-import { ImageUploadField } from '@/components/ui/image-upload-field'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  ColorPicker,
+  ImageUploadField,
+  Label,
+  Switch,
+} from '@uikit'
+
 import { ApiError } from '@/services/apiClient'
 import { useBranding } from '@/contexts/BrandingContext'
 import {

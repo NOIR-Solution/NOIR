@@ -13,8 +13,10 @@
     "generate:api:file": "node scripts/generate-api-types.mjs --from-file",
     "generate:validation": "node scripts/generate-validation-schemas.mjs",
     "i18n:scan": "node scripts/scan-ui-strings.mjs",
-    "visual:test": "cd e2e-tests && npx playwright test tests/visual",
-    "visual:update": "cd e2e-tests && npx playwright test tests/visual --update-snapshots"
+    "visual:test": "cd e2e-tests && pnpm exec playwright test tests/visual",
+    "visual:update": "cd e2e-tests && pnpm exec playwright test tests/visual --update-snapshots",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -70,6 +72,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@eslint/js": "^9.39.2",
+    "@storybook/react-vite": "^10.2.8",
     "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
@@ -80,6 +83,7 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "openapi-typescript": "^7.10.1",
+    "storybook": "^10.2.8",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",

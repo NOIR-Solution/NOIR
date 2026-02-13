@@ -653,7 +653,7 @@ const form = useForm<FormData>({
 | Tool | Purpose |
 |------|---------|
 | **NuGet** | .NET packages |
-| **npm** | JavaScript packages |
+| **pnpm** | JavaScript packages |
 
 ---
 

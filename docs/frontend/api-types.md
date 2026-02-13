@@ -15,15 +15,15 @@ dotnet run
 
 # 2. Generate types from running backend
 cd frontend
-npm run generate:api
+pnpm run generate:api
 ```
 
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `npm run generate:api` | Generate types from running backend at http://localhost:4000 |
-| `npm run generate:api:file` | Generate types from exported openapi.json file |
+| `pnpm run generate:api` | Generate types from running backend at http://localhost:4000 |
+| `pnpm run generate:api:file` | Generate types from exported openapi.json file |
 | `node scripts/generate-api-types.mjs --help` | Show available options |
 
 ## Generated Output
@@ -78,7 +78,7 @@ dotnet run --project src/NOIR.Web &
 # Wait for startup, then generate
 sleep 5
 cd src/NOIR.Web/frontend
-npm run generate:api
+pnpm run generate:api
 
 # Stop backend if running in background
 kill %1
@@ -94,7 +94,7 @@ dotnet run --project src/NOIR.Web &
 sleep 10
 curl http://localhost:4000/api/openapi/v1.json > frontend/openapi.json
 kill %1
-npm run generate:api:file --prefix frontend
+pnpm run generate:api:file --prefix frontend
 
 # Option 2: Use Microsoft.Extensions.ApiDescription.Server (future)
 # This generates spec at build time without running the app
@@ -155,7 +155,7 @@ dotnet run --project src/NOIR.Web
 ### Generated file is empty or malformed
 
 1. Check the OpenAPI spec is valid: `curl http://localhost:4000/api/openapi/v1.json | jq .`
-2. Ensure openapi-typescript is installed: `npm install`
+2. Ensure openapi-typescript is installed: `pnpm install`
 
 ## Comparison with NSwag
 
@@ -164,7 +164,7 @@ dotnet run --project src/NOIR.Web
 | Output | Types only | Types + HTTP client |
 | Bundle size | Zero (types stripped) | Includes runtime code |
 | Flexibility | Use any HTTP library | Uses generated client |
-| Setup | Simple npm script | More configuration |
+| Setup | Simple pnpm script | More configuration |
 
 We chose openapi-typescript because:
 - **Zero runtime overhead** - types are erased at build

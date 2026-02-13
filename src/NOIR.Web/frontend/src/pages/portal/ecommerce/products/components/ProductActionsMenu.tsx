@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@uikit'
 import type { ProductListItem } from '@/types/product'
 
 interface ProductActionsMenuProps {

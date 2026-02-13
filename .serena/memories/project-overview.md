@@ -57,7 +57,7 @@ dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 
 # Run frontend with hot reload (terminal 2)
-cd src/NOIR.Web/frontend && npm install && npm run dev
+cd src/NOIR.Web/frontend && pnpm install && pnpm run dev
 
 # Tests
 dotnet test src/NOIR.sln

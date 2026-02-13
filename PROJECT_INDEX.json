@@ -244,12 +244,12 @@
     "start_dev": "./start-dev.sh",
     "migrations_add": "dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/App",
     "migrations_update": "dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext",
-    "frontend_install": "cd src/NOIR.Web/frontend && npm install",
-    "frontend_dev": "cd src/NOIR.Web/frontend && npm run dev",
-    "frontend_build": "cd src/NOIR.Web/frontend && npm run build",
-    "frontend_generate_api": "cd src/NOIR.Web/frontend && npm run generate:api",
-    "e2e_test": "cd src/NOIR.Web/frontend/e2e-tests && npx playwright test",
-    "e2e_test_ui": "cd src/NOIR.Web/frontend/e2e-tests && npx playwright test --ui"
+    "frontend_install": "cd src/NOIR.Web/frontend && pnpm install",
+    "frontend_dev": "cd src/NOIR.Web/frontend && pnpm run dev",
+    "frontend_build": "cd src/NOIR.Web/frontend && pnpm run build",
+    "frontend_generate_api": "cd src/NOIR.Web/frontend && pnpm run generate:api",
+    "e2e_test": "cd src/NOIR.Web/frontend/e2e-tests && pnpm exec playwright test",
+    "e2e_test_ui": "cd src/NOIR.Web/frontend/e2e-tests && pnpm exec playwright test --ui"
   },
   "critical_rules": [
     "Use Specifications for all database queries - never raw DbSet",

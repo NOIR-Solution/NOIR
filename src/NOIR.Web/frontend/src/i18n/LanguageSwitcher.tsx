@@ -3,13 +3,8 @@ import { Check } from 'lucide-react'
 import { useLanguage } from './useLanguage'
 import { languageFlags } from './languageFlags'
 import type { SupportedLanguage } from './index'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@uikit'
+
 import { cn } from '@/lib/utils'
 
 interface LanguageSwitcherProps {

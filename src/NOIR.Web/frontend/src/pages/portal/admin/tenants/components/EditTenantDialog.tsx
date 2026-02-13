@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
   Credenza,
+  CredenzaBody,
   CredenzaContent,
   CredenzaDescription,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaBody,
-} from '@/components/ui/credenza'
+} from '@uikit'
 import { TenantFormValidated, type UpdateTenantFormData } from './TenantFormValidated'
 import type { ProvisionTenantRequest } from '@/types'
 import { getTenant, updateTenant } from '@/services/tenants'

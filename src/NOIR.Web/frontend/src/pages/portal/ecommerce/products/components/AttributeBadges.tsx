@@ -1,10 +1,5 @@
-import { Badge } from '@/components/ui/badge'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@uikit'
+
 import type { ProductAttributeDisplay } from '@/types/product'
 
 interface AttributeBadgesProps {

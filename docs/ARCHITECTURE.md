@@ -923,7 +923,7 @@ Types are auto-generated from backend DTOs:
 
 ```bash
 # In frontend directory
-npm run generate:api
+pnpm run generate:api
 ```
 
 Generates `src/types/generated.ts` with all API types.
@@ -985,7 +985,7 @@ Generates `src/types/generated.ts` with all API types.
 
 **Build Process:**
 1. `dotnet build -c Release` → Builds .NET projects
-2. `npm run build` (in frontend/) → Vite builds to `wwwroot/`
+2. `pnpm run build` (in frontend/) → Vite builds to `wwwroot/`
 3. .NET serves React SPA + API from single host
 
 ---

@@ -8,8 +8,8 @@
  */
 import { useState } from 'react'
 import { Check, RefreshCw, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Button, Skeleton } from '@uikit'
+
 import { NotificationItem } from './NotificationItem'
 import { NotificationEmpty } from './NotificationEmpty'
 import { useNotificationContext } from '@/contexts/NotificationContext'

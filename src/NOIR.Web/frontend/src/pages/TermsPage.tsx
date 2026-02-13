@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { ShieldCheck, ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@uikit'
 import { getPublicLegalPage, type PublicLegalPageDto } from '@/services/legalPages'
 
 /**

@@ -61,22 +61,22 @@ dotnet ef migrations remove \
 
 ### Install Dependencies
 ```bash
-cd src/NOIR.Web/frontend && npm install
+cd src/NOIR.Web/frontend && pnpm install
 ```
 
 ### Dev Server
 ```bash
-cd src/NOIR.Web/frontend && npm run dev
+cd src/NOIR.Web/frontend && pnpm run dev
 ```
 
 ### Build
 ```bash
-cd src/NOIR.Web/frontend && npm run build
+cd src/NOIR.Web/frontend && pnpm run build
 ```
 
 ### Generate API Types
 ```bash
-cd src/NOIR.Web/frontend && npm run generate:api
+cd src/NOIR.Web/frontend && pnpm run generate:api
 ```
 
 ## Code Quality
@@ -88,7 +88,7 @@ dotnet format src/NOIR.sln
 
 ### Lint Frontend
 ```bash
-cd src/NOIR.Web/frontend && npm run lint
+cd src/NOIR.Web/frontend && pnpm run lint
 ```
 
 ## Package Management

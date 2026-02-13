@@ -20,19 +20,23 @@ import {
   Check,
 } from 'lucide-react'
 import {
+  Badge,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
-import { HttpMethodBadge } from '@/components/ui/http-method-badge'
-import { DiffViewer } from '@/components/ui/diff-viewer'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Skeleton } from '@/components/ui/skeleton'
-import { JsonViewer } from '@/components/ui/json-viewer'
+  DiffViewer,
+  HttpMethodBadge,
+  JsonViewer,
+  ScrollArea,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@uikit'
+
 import { cn } from '@/lib/utils'
 import {
   getActivityDetails,

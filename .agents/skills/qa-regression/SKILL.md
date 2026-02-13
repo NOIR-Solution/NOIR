@@ -11,9 +11,9 @@ Build and run automated regression tests using Playwright. Each test is a reusab
 ## Setup
 
 ```bash
-npm init -y
-npm install playwright @playwright/test
-npx playwright install
+pnpm init
+pnpm install playwright @playwright/test
+pnpm exec playwright install
 ```
 
 ## Test Structure
@@ -259,19 +259,19 @@ export default defineConfig({
 
 ```bash
 # Run all tests
-npx playwright test
+pnpm exec playwright test
 
 # Run specific test file
-npx playwright test tests/auth/login.spec.ts
+pnpm exec playwright test tests/auth/login.spec.ts
 
 # Run tests with UI
-npx playwright test --ui
+pnpm exec playwright test --ui
 
 # Run in headed mode (see browser)
-npx playwright test --headed
+pnpm exec playwright test --headed
 
 # Generate report
-npx playwright show-report
+pnpm exec playwright show-report
 ```
 
 ## CI Integration
@@ -298,13 +298,13 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Run tests
-        run: npx playwright test
+        run: pnpm exec playwright test
         env:
           BASE_URL: ${{ secrets.STAGING_URL }}
           TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
@@ -330,8 +330,8 @@ jobs:
 
 | Task | Command |
 |------|---------|
-| Run all | `npx playwright test` |
-| Run one file | `npx playwright test login.spec.ts` |
-| Debug mode | `npx playwright test --debug` |
-| UI mode | `npx playwright test --ui` |
-| Update snapshots | `npx playwright test --update-snapshots` |
+| Run all | `pnpm exec playwright test` |
+| Run one file | `pnpm exec playwright test login.spec.ts` |
+| Debug mode | `pnpm exec playwright test --debug` |
+| UI mode | `pnpm exec playwright test --ui` |
+| Update snapshots | `pnpm exec playwright test --update-snapshots` |

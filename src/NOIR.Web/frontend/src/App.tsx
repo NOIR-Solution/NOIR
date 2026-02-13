@@ -9,7 +9,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import { AccessibilityProvider } from '@/contexts/AccessibilityContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { PortalLayout } from '@/layouts/PortalLayout'
-import { PageSkeleton } from '@/components/ui/page-loader'
+import { PageSkeleton } from '@uikit'
 import { CommandProvider, CommandPalette } from '@/components/command-palette'
 
 import LoginPage from '@/pages/Login'

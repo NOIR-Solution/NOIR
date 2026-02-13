@@ -2,13 +2,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Sparkles, ArrowRight, X, Rocket, Shield, Users } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '@uikit'
+
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuthContext } from '@/contexts/AuthContext'
 

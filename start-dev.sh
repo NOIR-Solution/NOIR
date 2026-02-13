@@ -227,7 +227,7 @@ main() {
     cd "$FRONTEND_DIR"
     if [[ ! -d "node_modules" ]]; then
         print_info "Installing dependencies..."
-        npm install --silent >/dev/null 2>&1
+        pnpm install --silent >/dev/null 2>&1
         print_ok "Dependencies installed"
     else
         print_ok "Dependencies ready"
@@ -272,7 +272,7 @@ main() {
     # Start frontend
     print_step "Starting frontend"
     cd "$FRONTEND_DIR"
-    npm run dev >"${SCRIPT_DIR}/.frontend.log" 2>&1 &
+    pnpm run dev >"${SCRIPT_DIR}/.frontend.log" 2>&1 &
     FRONTEND_PID=$!
     sleep 2
     print_ok "Frontend started"

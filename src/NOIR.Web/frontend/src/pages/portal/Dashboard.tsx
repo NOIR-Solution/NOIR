@@ -1,8 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '@/contexts/AuthContext'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, PageHeader } from '@uikit'
 import { ExternalLink, BookOpen, Cpu, User, LayoutDashboard } from 'lucide-react'
-import { PageHeader } from '@/components/ui/page-header'
 
 export default function Dashboard() {
   const { t } = useTranslation('common')

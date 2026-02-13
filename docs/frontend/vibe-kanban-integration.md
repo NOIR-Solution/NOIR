@@ -56,7 +56,7 @@ D:\TOP\GIT\NOIR\src\NOIR.Web\frontend\start-dev.bat
 Use the direct command:
 
 ```bash
-cd src/NOIR.Web/frontend && npm run dev:full
+cd src/NOIR.Web/frontend && pnpm run dev:full
 ```
 
 #### VSCode Task (Alternative)
@@ -70,7 +70,7 @@ This uses the configuration in `.vscode/tasks.json`.
 
 ## Dev Server Startup Process
 
-When you start the dev server (via `start-dev.bat` or `npm run dev:full`), it:
+When you start the dev server (via `start-dev.bat` or `pnpm run dev:full`), it:
 
 1. **Checks dependencies** - Installs `node_modules` if missing
 2. **Detects running backend** - Reuses existing backend if available
@@ -116,7 +116,7 @@ Then restart the dev server.
 
 ### PowerShell Execution Policy Error
 
-**Problem:** PowerShell blocks npm from running scripts.
+**Problem:** PowerShell blocks pnpm from running scripts.
 
 **Solution 1 (Easiest):** Use Command Prompt instead of PowerShell
 

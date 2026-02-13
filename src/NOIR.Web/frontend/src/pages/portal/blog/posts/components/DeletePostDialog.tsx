@@ -9,8 +9,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Badge } from '@/components/ui/badge'
+  Badge,
+} from '@uikit'
+
 import { toast } from 'sonner'
 import type { PostListItem, PostStatus } from '@/types'
 

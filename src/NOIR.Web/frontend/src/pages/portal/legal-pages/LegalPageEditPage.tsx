@@ -32,21 +32,6 @@ import 'tinymce/plugins/wordcount'
 /* eslint-enable import/no-unresolved */
 
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { usePageContext } from '@/hooks/usePageContext'
-import {
-  getLegalPageById,
-  updateLegalPage,
-  revertLegalPageToDefault,
-  type LegalPageDto,
-} from '@/services/legalPages'
-import { ApiError } from '@/services/apiClient'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,7 +42,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Switch,
+  Textarea,
+} from '@uikit'
+
+import { usePageContext } from '@/hooks/usePageContext'
+import {
+  getLegalPageById,
+  updateLegalPage,
+  revertLegalPageToDefault,
+  type LegalPageDto,
+} from '@/services/legalPages'
+import { ApiError } from '@/services/apiClient'
 
 /**
  * Legal Page Edit Page

@@ -5,7 +5,7 @@
  *
  * Usage:
  *   node scripts/generate-api-types.mjs [--from-url | --from-file]
- *   npm run generate:api
+ *   ppnpm run generate:api
  */
 
 import { spawn } from "node:child_process"
@@ -50,7 +50,7 @@ async function generateFromUrl() {
   console.log(`Generating types from running backend at ${BACKEND_URL}...`)
   console.log("Make sure the backend is running: dotnet run --project src/NOIR.Web\n")
 
-  await runCommand("npx", ["openapi-typescript", BACKEND_URL, "-o", outputFile])
+  await runCommand("pnpm", ["exec", "openapi-typescript", BACKEND_URL, "-o", outputFile])
 }
 
 async function generateFromFile() {
@@ -61,7 +61,7 @@ async function generateFromFile() {
   }
 
   console.log(`Generating types from file: ${OPENAPI_FILE}\n`)
-  await runCommand("npx", ["openapi-typescript", OPENAPI_FILE, "-o", outputFile])
+  await runCommand("pnpm", ["exec", "openapi-typescript", OPENAPI_FILE, "-o", outputFile])
 }
 
 function printUsage() {
@@ -74,8 +74,8 @@ Options:
   --help       Show this help message
 
 Examples:
-  npm run generate:api           # From running backend
-  npm run generate:api:file      # From file
+  pnpm run generate:api           # From running backend
+  pnpm run generate:api:file      # From file
 `)
 }
 
@@ -115,7 +115,7 @@ async function main() {
       console.error("  3. Check if the port is correct (default: 5000)")
     } else if (msg.includes("enoent") || msg.includes("not found")) {
       console.error("\nTroubleshooting:")
-      console.error("  1. Run: npm install")
+      console.error("  1. Run: pnpm install")
       console.error("  2. Ensure openapi-typescript is in devDependencies")
     }
 

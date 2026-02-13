@@ -5,25 +5,24 @@ import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
+  Button,
+  ColorPicker,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { ColorPicker } from '@/components/ui/color-picker'
+  Input,
+  Textarea,
+} from '@uikit'
+
 import { toast } from 'sonner'
 import { createTag, updateTag } from '@/services/blog'
 import { ApiError } from '@/services/apiClient'

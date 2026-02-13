@@ -61,8 +61,8 @@ dotnet run --project src/NOIR.Web --environment Development
 
 # Terminal 2: Start frontend (REQUIRED for development)
 cd src/NOIR.Web/frontend
-npm install
-npm run dev
+pnpm install
+ppnpm run dev
 
 # Access application at: http://localhost:3000
 # Admin credentials: admin@noir.local / 123qwe
@@ -77,8 +77,8 @@ npm run dev
 > **Alternative - Single command (recommended):**
 > ```bash
 > cd src/NOIR.Web/frontend
-> npm install
-> npm run dev:full
+> pnpm install
+> ppnpm run dev:full
 > ```
 > This starts both backend and frontend with a single command, auto-generates API types, and handles graceful shutdown.
 
@@ -111,20 +111,20 @@ src\NOIR.Web\frontend\start-dev.bat
 
 The `start-dev.bat` file is a convenience wrapper that:
 - Automatically changes to the correct directory (`%~dp0` = script's directory)
-- Runs `npm run dev:full` in the frontend folder
+- Runs `ppnpm run dev:full` in the frontend folder
 - Works reliably with Vibe Kanban's dev server launcher
 
 ### Option 2: Direct Command
 
 **Command:**
 ```bash
-cd NOIR/src/NOIR.Web/frontend && npm run dev:full
+cd NOIR/src/NOIR.Web/frontend && pnpm run dev:full
 ```
 
 **Note:** This may not work properly in Vibe Kanban's dev script UI on Windows due to command parsing issues. Use the batch file instead.
 
 **What it does:**
-1. Installs frontend dependencies (`npm install`) if `node_modules` is missing
+1. Installs frontend dependencies (`pnpm install`) if `node_modules` is missing
 2. Checks if backend is already running (reuses existing instance)
 3. Builds backend (`dotnet build`) if backend not running
 4. Starts .NET backend (`dotnet run`)
@@ -148,7 +148,7 @@ Before running the dev script, ensure:
 2. Node.js installed (LTS version)
 3. .NET SDK 10.0+ installed
 
-> **Note:** The script auto-installs npm packages if `node_modules` is missing, and auto-builds the backend before starting. No manual `npm install` or `dotnet build` needed!
+> **Note:** The script auto-installs pnpm packages if `node_modules` is missing, and auto-builds the backend before starting. No manual `pnpm install` or `dotnet build` needed!
 
 ---
 
@@ -320,8 +320,8 @@ dotnet run --project src/NOIR.Web --environment Development
 
 # Terminal 2: Start frontend (REQUIRED - open a new terminal)
 cd src/NOIR.Web/frontend
-npm install
-npm run dev
+pnpm install
+ppnpm run dev
 ```
 
 ### Step 5: Access the Application
@@ -344,7 +344,7 @@ docker start noir-sqlserver noir-mailhog
 dotnet watch --project src/NOIR.Web
 
 # Terminal 2: Run frontend with hot reload
-cd src/NOIR.Web/frontend && npm run dev
+cd src/NOIR.Web/frontend && pnpm run dev
 ```
 
 ### Optional: Azure Data Studio
@@ -469,8 +469,8 @@ dotnet run --project src/NOIR.Web --environment Development
 
 # Terminal 2: Start frontend (REQUIRED - open a new terminal)
 cd src/NOIR.Web/frontend
-npm install
-npm run dev
+pnpm install
+ppnpm run dev
 ```
 
 ### Step 5: Access the Application
@@ -493,7 +493,7 @@ docker start noir-sqlserver noir-mailhog
 dotnet watch --project src/NOIR.Web
 
 # Terminal 2: Run frontend with hot reload
-cd src/NOIR.Web/frontend && npm run dev
+cd src/NOIR.Web/frontend && pnpm run dev
 ```
 
 ---

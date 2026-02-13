@@ -1,12 +1,7 @@
 import * as React from 'react'
 import { ChevronDown } from 'lucide-react'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger, Separator, Skeleton } from '@uikit'
+
 import { cn } from '@/lib/utils'
 import { FacetCheckbox, FacetColorSwatch, FacetPriceRange } from './facets'
 import type {
