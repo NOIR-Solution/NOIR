@@ -67,7 +67,7 @@ app.UseStaticFiles(new StaticFileOptions
 ## Development-Time Cache Prevention
 
 ### Issue
-During development with `npm run dev` (Vite dev server), browsers can still cache assets, causing stale content issues.
+During development with `pnpm run dev` (Vite dev server), browsers can still cache assets, causing stale content issues.
 
 ### Solution 1: Vite Dev Server (Already Working)
 Vite's dev server automatically handles HMR (Hot Module Replacement) and doesn't produce hashed files during development. It uses WebSocket connections to push updates instantly.
@@ -182,7 +182,7 @@ app.MapStaticAssets();
 ```bash
 # Build the frontend
 cd src/NOIR.Web/frontend
-npm run build
+pnpm run build
 
 # Check output files have hashes
 ls ../wwwroot/assets/

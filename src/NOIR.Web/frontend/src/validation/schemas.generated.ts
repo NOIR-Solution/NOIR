@@ -2,7 +2,7 @@
  * Zod Validation Schemas
  * 
  * Auto-generated from FluentValidation rules.
- * DO NOT EDIT - run 'npm run generate:validation' to regenerate.
+ * DO NOT EDIT - run 'pnpm run generate:validation' to regenerate.
  * 
  * @generated 2026-01-14T05:57:39.508Z
  */

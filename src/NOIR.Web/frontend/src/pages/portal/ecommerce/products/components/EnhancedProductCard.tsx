@@ -10,9 +10,8 @@ import {
   Send,
   Archive,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
+import { Badge, Button, Card } from '@uikit'
+
 import type { ProductListItem, ProductAttributeDisplay } from '@/types/product'
 import { formatCurrency } from '@/lib/utils/currency'
 import { PRODUCT_STATUS_CONFIG, LOW_STOCK_THRESHOLD } from '@/lib/constants/product'

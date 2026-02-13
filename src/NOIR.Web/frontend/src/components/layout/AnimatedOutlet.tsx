@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { PageLoader } from '@/components/ui/page-loader'
+import { PageLoader } from '@uikit'
 import { supportsViewTransitions } from '@/hooks/useViewTransition'
 import { cn } from '@/lib/utils'
 

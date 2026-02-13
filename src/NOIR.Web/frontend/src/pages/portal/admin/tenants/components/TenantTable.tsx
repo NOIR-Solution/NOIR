@@ -2,16 +2,17 @@ import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { Edit, Trash2, Building, KeyRound } from 'lucide-react'
 import {
+  Button,
+  EmptyState,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { EmptyState } from '@/components/ui/empty-state'
+} from '@uikit'
+
 import { TenantStatusBadge } from './TenantStatusBadge'
 import type { TenantListItem } from '@/types'
 

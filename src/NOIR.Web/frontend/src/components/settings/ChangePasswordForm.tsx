@@ -3,16 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Lock, Eye, EyeOff, Shield } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '@uikit'
+
 import { changePassword, ApiError } from '@/services/settings'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useValidatedForm } from '@/hooks/useValidatedForm'

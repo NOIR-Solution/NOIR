@@ -1,7 +1,7 @@
 import { useState, Suspense } from 'react'
 import { Sidebar, MobileSidebarTrigger } from '@/components/portal/Sidebar'
-import { PageLoader } from '@/components/ui/page-loader'
-import { Breadcrumb } from '@/components/ui/breadcrumb'
+import { Breadcrumb, PageLoader } from '@uikit'
+
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs'
 import { SkipLink } from '@/components/accessibility/SkipLink'
 import { OfflineIndicator } from '@/components/network/OfflineIndicator'

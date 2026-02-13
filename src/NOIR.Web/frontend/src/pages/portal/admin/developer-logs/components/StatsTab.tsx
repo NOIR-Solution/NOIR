@@ -5,10 +5,8 @@
  * memory usage, and time range of logged entries.
  */
 import { RefreshCw, Database, Clock } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from '@uikit'
+
 import { cn } from '@/lib/utils'
 import type { LogBufferStatsDto } from '@/services/developerLogs'
 import { LOG_LEVELS, formatBytes, formatFullTimestamp } from './log-utils'

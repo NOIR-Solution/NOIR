@@ -15,13 +15,6 @@ import {
   GripVertical,
   X,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,7 +24,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  Button,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  Input,
+} from '@uikit'
+
 import { sanitizeColorCode } from '@/lib/color-utils'
 import type {
   ProductOption,

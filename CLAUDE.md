@@ -108,7 +108,7 @@ Quick reference: `/sc:help` | `/sc:recommend "your task"`
 
 ### Pre-Push Validation
 
-23. ✅ **ALWAYS run frontend build before pushing** - Run `cd src/NOIR.Web/frontend && npm run build` before `git push`. The local dev server (`npm run dev`) allows TypeScript warnings, but CI runs strict mode and will fail. A pre-push hook is installed at `.git/hooks/pre-push` to automatically validate builds. If you bypass the hook with `--no-verify`, you MUST manually verify the build passes.
+23. ✅ **ALWAYS run frontend build before pushing** - Run `cd src/NOIR.Web/frontend && pnpm run build` before `git push`. The local dev server (`pnpm run dev`) allows TypeScript warnings, but CI runs strict mode and will fail. A pre-push hook is installed at `.git/hooks/pre-push` to automatically validate builds. If you bypass the hook with `--no-verify`, you MUST manually verify the build passes.
 
 ---
 
@@ -236,8 +236,8 @@ View logs with: `tail -f .backend.log` or `tail -f .frontend.log`
 # Terminal 1 - Backend
 cd src/NOIR.Web && dotnet run
 
-# Terminal 2 - Frontend (MUST run npm install first!)
-cd src/NOIR.Web/frontend && npm install && npm run dev
+# Terminal 2 - Frontend (MUST run pnpm install first!)
+cd src/NOIR.Web/frontend && pnpm install && pnpm run dev
 ```
 
 ### Claude Code on Windows (CRITICAL)
@@ -249,7 +249,7 @@ When running commands directly in Claude Code on Windows (not via start-dev.sh):
 dotnet run --project src/NOIR.Web
 
 # Frontend - MUST use PowerShell Start-Process to spawn detached process
-powershell -Command "Start-Process cmd -ArgumentList '/c cd /d D:\GIT\TOP\NOIR\src\NOIR.Web\frontend && npm run dev'"
+powershell -Command "Start-Process cmd -ArgumentList '/c cd /d D:\GIT\TOP\NOIR\src\NOIR.Web\frontend && pnpm run dev'"
 ```
 
 ### Access Points

@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
-import type { BreadcrumbItem } from '@/components/ui/breadcrumb'
-
+import type { BreadcrumbItem } from '@uikit'
 /**
  * Hook to generate breadcrumb items based on current route
  */

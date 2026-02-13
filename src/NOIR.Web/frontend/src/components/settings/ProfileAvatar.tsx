@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Camera, Trash2, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@uikit'
 import { useImageUpload } from '@/hooks/useImageUpload'
 import { getGravatarUrl, getInitials, getAvatarColor } from '@/lib/gravatar'
 

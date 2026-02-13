@@ -3,16 +3,17 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Send, Mail, Loader2 } from 'lucide-react'
 import {
+  Button,
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Label,
+} from '@uikit'
+
 import { useAuthContext } from '@/contexts/AuthContext'
 import { sendTestEmail, getDefaultSampleData } from '@/services/emailTemplates'
 import { ApiError } from '@/services/apiClient'

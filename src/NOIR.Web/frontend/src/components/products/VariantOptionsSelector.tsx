@@ -6,14 +6,8 @@
  */
 import { useTranslation } from 'react-i18next'
 import { Check } from 'lucide-react'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@uikit'
+
 import { cn } from '@/lib/utils'
 import { sanitizeColorCode, getContrastMode } from '@/lib/color-utils'
 import type { ProductOption } from '@/types/product'

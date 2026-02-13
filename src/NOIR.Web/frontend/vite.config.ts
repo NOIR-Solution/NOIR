@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
+      '@uikit': path.resolve(__dirname, './src/uikit'),
       '@': path.resolve(__dirname, './src'),
     },
   },
@@ -34,6 +35,9 @@ export default defineConfig({
         target: 'http://localhost:4000',
         changeOrigin: true,
         secure: false,
+        // Follow redirects server-side so browser never sees cross-origin redirects
+        // (prevents CORS preflight failures from HTTPS redirection)
+        followRedirects: true,
         // Enable WebSocket proxy for any real-time features
         ws: true,
         // Configure proxy to handle Scalar API docs and security headers

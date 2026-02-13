@@ -2,17 +2,18 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loader2 } from 'lucide-react'
 import {
+  Button,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
+  Input,
+  Label,
+} from '@uikit'
+
 import { toast } from 'sonner'
 import { getUserById, updateUser } from '@/services/users'
 import type { UserListItem, UserProfile } from '@/types'

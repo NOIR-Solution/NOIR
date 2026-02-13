@@ -14,9 +14,7 @@
  */
 
 import { useTranslation } from "react-i18next"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { FormField, FormTextarea, FormError } from "@/components/ui/form-field"
+import { Button, Label, SimpleFormField as FormField, FormTextarea, FormError } from '@uikit'
 import { useValidatedForm } from "@/hooks/useValidatedForm"
 import { updateTenantSchema } from "@/validation/schemas.generated"
 import type { Tenant } from "@/types"

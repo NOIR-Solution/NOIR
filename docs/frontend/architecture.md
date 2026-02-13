@@ -251,7 +251,7 @@ NOIR/
 1. **API Base:** All API calls use `/api` prefix (proxied in dev, same-origin in prod)
 2. **Authentication:** Uses HTTP-only cookies for security
 3. **Build Output:** Vite builds to `../wwwroot/` which .NET serves as static files
-4. **Type Sync:** Use `npm run generate:api` to sync types from backend (see [api-types.md](api-types.md))
+4. **Type Sync:** Use `pnpm run generate:api` to sync types from backend (see [api-types.md](api-types.md))
 
 ## Adding New Features
 
@@ -548,6 +548,6 @@ If you encounter a form using manual error state, migrate it to the standard pat
 
 ## Code Quality
 
-- Run `npm run lint` before committing
+- Run `pnpm run lint` before committing
 - TypeScript strict mode is enabled
 - Follow existing patterns in the codebase

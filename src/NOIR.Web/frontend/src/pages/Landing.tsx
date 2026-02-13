@@ -1,10 +1,9 @@
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { ShieldCheck, ArrowRight, Sparkles, Zap, Users } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Badge, Button, ThemeToggleCompact } from '@uikit'
+
 import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
-import { ThemeToggleCompact } from '@/components/ui/theme-toggle'
 
 /**
  * Landing Page - Professional hero section with blue-teal color scheme

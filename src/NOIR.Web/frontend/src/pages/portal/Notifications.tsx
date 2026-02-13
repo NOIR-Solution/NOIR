@@ -6,7 +6,7 @@
 import { useTranslation } from 'react-i18next'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { Settings } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@uikit'
 import { NotificationList } from '@/components/notifications'
 import { useNotificationContext } from '@/contexts/NotificationContext'
 

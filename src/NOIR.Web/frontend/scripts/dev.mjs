@@ -6,7 +6,7 @@
  *
  * Usage:
  *   node scripts/dev.mjs
- *   npm run dev:full
+ *   pnpm run dev:full
  */
 
 import { spawn } from "node:child_process"
@@ -128,8 +128,8 @@ async function installFrontendDependencies() {
     return true
   }
 
-  logSystem("Installing frontend dependencies (npm install)...")
-  const cmd = isWindows ? "npm.cmd" : "npm"
+  logSystem("Installing frontend dependencies (pnpm install)...")
+  const cmd = isWindows ? "pnpm.cmd" : "pnpm"
   return runCommand(
     cmd,
     ["install"],
@@ -190,10 +190,10 @@ async function generateApiTypes() {
   logSystem("Generating API types from backend...")
 
   return new Promise((resolve, reject) => {
-    const cmd = isWindows ? "npx.cmd" : "npx"
+    const cmd = isWindows ? "pnpm.cmd" : "pnpm"
     const outputFile = "src/types/api.generated.ts"
 
-    const child = spawn(cmd, ["openapi-typescript", OPENAPI_URL, "-o", outputFile], {
+    const child = spawn(cmd, ["exec", "openapi-typescript", OPENAPI_URL, "-o", outputFile], {
       cwd: frontendDir,
       stdio: ["inherit", "pipe", "pipe"],
       shell: isWindows,
@@ -268,7 +268,7 @@ function startBackend() {
 function startFrontend() {
   logFrontend("Starting Vite dev server...")
 
-  const cmd = isWindows ? "npm.cmd" : "npm"
+  const cmd = isWindows ? "pnpm.cmd" : "pnpm"
 
   const child = spawn(cmd, ["run", "dev"], {
     cwd: frontendDir,

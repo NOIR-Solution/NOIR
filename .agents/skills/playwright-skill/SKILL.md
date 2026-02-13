@@ -47,7 +47,7 @@ General-purpose browser automation skill. I'll write custom Playwright code for 
 
 ```bash
 cd $SKILL_DIR
-npm run setup
+pnpm run setup
 ```
 
 This installs Playwright and Chromium browser. Only needed once.
@@ -399,7 +399,7 @@ For comprehensive Playwright API documentation, see [API_REFERENCE.md](API_REFER
 **Playwright not installed:**
 
 ```bash
-cd $SKILL_DIR && npm run setup
+cd $SKILL_DIR && pnpm run setup
 ```
 
 **Module not found:**

@@ -20,9 +20,8 @@ import {
   BarChart3,
   AlertCircle,
 } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { PageHeader } from '@/components/ui/page-header'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge, PageHeader, Tabs, TabsContent, TabsList, TabsTrigger } from '@uikit'
+
 import { isPlatformAdmin } from '@/lib/roles'
 import { useAuthContext } from '@/contexts/AuthContext'
 import {

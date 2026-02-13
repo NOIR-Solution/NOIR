@@ -5,7 +5,7 @@
  *
  * Usage:
  *   node scripts/generate-validation-schemas.mjs
- *   npm run generate:validation
+ *   pnpm run generate:validation
  */
 
 import { writeFileSync } from "node:fs"
@@ -232,7 +232,7 @@ function generateFile(validators) {
  * Zod Validation Schemas
  * 
  * Auto-generated from FluentValidation rules.
- * DO NOT EDIT - run 'npm run generate:validation' to regenerate.
+ * DO NOT EDIT - run 'pnpm run generate:validation' to regenerate.
  * 
  * @generated ${new Date().toISOString()}
  */

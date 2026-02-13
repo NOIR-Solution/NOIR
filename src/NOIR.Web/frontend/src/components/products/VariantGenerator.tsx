@@ -7,23 +7,22 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Wand2, AlertTriangle, Check } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
+  Alert,
+  AlertDescription,
+  Button,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import {
-  Alert,
-  AlertDescription,
-} from '@/components/ui/alert'
-import { ScrollArea } from '@/components/ui/scroll-area'
+  Input,
+  Label,
+  ScrollArea,
+} from '@uikit'
+
 import type { ProductOption, ProductVariant } from '@/types/product'
 
 interface VariantGeneratorProps {

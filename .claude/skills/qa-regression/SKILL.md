@@ -11,9 +11,9 @@ Build and run automated regression tests using Playwright. Each test is a reusab
 ## Setup
 
 ```bash
-npm init -y
-npm install playwright @playwright/test
-npx playwright install
+pnpm init
+pnpm install playwright @playwright/test
+pnpm exec playwright install
 ```
 
 ## Test Structure
@@ -298,7 +298,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright
         run: npx playwright install --with-deps

@@ -33,13 +33,15 @@ import 'tinymce/plugins/wordcount'
 /* eslint-enable import/no-unresolved */
 
 import { usePageContext } from '@/hooks/usePageContext'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  DatePicker,
   Form,
   FormControl,
   FormDescription,
@@ -47,21 +49,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import {
+  Input,
+  Label,
+  RadioGroup,
+  RadioGroupItem,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+  Switch,
+  Textarea,
+  TimePicker,
+} from '@uikit'
+
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { getPostById, createPost, updatePost, publishPost, unpublishPost } from '@/services/blog'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
-import { DatePicker } from '@/components/ui/date-picker'
-import { TimePicker } from '@/components/ui/time-picker'
+
 import { uploadMedia } from '@/services/media'
 import { useCategories, useTags } from '@/hooks/useBlog'
 import { ApiError } from '@/services/apiClient'

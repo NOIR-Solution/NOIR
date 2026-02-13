@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, type WheelEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Info, Loader2 } from 'lucide-react'
-import { TippyTooltip } from '@/components/ui/tippy-tooltip'
+import { TippyTooltip } from '@uikit'
 import { getEffectivePermissions, getAllPermissions } from '@/services/roles'
 import type { Permission, RoleListItem } from '@/types'
 

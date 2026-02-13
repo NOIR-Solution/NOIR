@@ -3,18 +3,23 @@ import { useTranslation } from 'react-i18next'
 import { Search, Users, Filter, Plus } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { PageHeader } from '@/components/ui/page-header'
 import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  PageHeader,
+  Pagination,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Pagination } from '@/components/ui/pagination'
+} from '@uikit'
+
 import { UserTable } from './components/UserTable'
 import { CreateUserDialog } from './components/CreateUserDialog'
 import { EditUserDialog } from './components/EditUserDialog'

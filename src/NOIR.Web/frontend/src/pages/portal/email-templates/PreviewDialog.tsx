@@ -1,14 +1,15 @@
 import { useTranslation } from 'react-i18next'
 import { Mail, FileText, Loader2 } from 'lucide-react'
 import {
+  Badge,
+  Button,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+} from '@uikit'
+
 import type { EmailPreviewResponse } from '@/services/emailTemplates'
 
 interface PreviewDialogProps {

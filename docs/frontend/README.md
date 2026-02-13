@@ -38,16 +38,16 @@ src/NOIR.Web/frontend/
 cd src/NOIR.Web/frontend
 
 # Install dependencies
-npm install
+pnpm install
 
 # Development (with .NET backend)
-npm run dev
+pnpm run dev
 
 # Build for production
-npm run build
+pnpm run build
 
 # Lint
-npm run lint
+pnpm run lint
 ```
 
 ## Documentation
@@ -65,7 +65,7 @@ npm run lint
 - **API Base:** All API calls use `/api` prefix
 - **Authentication:** HTTP-only cookies for security
 - **Build Output:** Vite builds to `../wwwroot/` (served by .NET)
-- **Type Sync:** Use `npm run generate:api` to sync types from backend
+- **Type Sync:** Use `pnpm run generate:api` to sync types from backend
 
 ## Conventions
 

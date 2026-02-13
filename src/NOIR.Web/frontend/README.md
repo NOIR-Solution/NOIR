@@ -5,8 +5,8 @@ React SPA for the NOIR application.
 ## Quick Start
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 ## Documentation
@@ -32,10 +32,10 @@ All frontend documentation is in `docs/frontend/`:
 ## Commands
 
 ```bash
-npm run dev          # Start dev server
-npm run build        # Production build
-npm run lint         # Run linter
-npm run generate:api # Sync types from backend
+pnpm run dev          # Start dev server
+pnpm run build        # Production build
+pnpm run lint         # Run linter
+pnpm run generate:api # Sync types from backend
 ```
 
 ## Integration

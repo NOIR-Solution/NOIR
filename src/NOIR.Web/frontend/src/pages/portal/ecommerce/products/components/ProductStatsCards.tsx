@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card } from '@/components/ui/card'
+import { Card } from '@uikit'
 import { TrendingUp, TrendingDown, Info, Check } from 'lucide-react'
 import { PRODUCT_STAT_CARDS_CONFIG, ANIMATION_DURATIONS } from '@/lib/constants/product'
 import type { ProductStatus } from '@/types/product'

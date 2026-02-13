@@ -21,32 +21,36 @@ import {
   User,
   HelpCircle,
 } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Avatar } from '@/components/ui/avatar'
 import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  DateRangePicker,
+  EmptyState,
+  Input,
+  Label,
+  PageHeader,
+  Pagination,
+  RichTooltip,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Pagination } from '@/components/ui/pagination'
-import { DateRangePicker } from '@/components/ui/date-range-picker'
-import { RichTooltip } from '@/components/ui/tippy-tooltip'
-import {
+  Skeleton,
+  Switch,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@uikit'
+
 import { cn } from '@/lib/utils'
-import { PageHeader } from '@/components/ui/page-header'
-import { EmptyState } from '@/components/ui/empty-state'
+
 import {
   searchActivityTimeline,
   getPageContexts,

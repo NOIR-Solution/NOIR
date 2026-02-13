@@ -1,15 +1,16 @@
 import * as React from 'react'
 import { SlidersHorizontal } from 'lucide-react'
 import {
+  Button,
+  ScrollArea,
   Sheet,
+  SheetClose,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
-  SheetClose,
-} from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
+} from '@uikit'
+
 import { cn } from '@/lib/utils'
 
 export interface FilterMobileDrawerProps {

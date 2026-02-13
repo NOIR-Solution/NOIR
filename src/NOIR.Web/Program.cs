@@ -350,18 +350,18 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Security Headers
 app.UseSecurityHeaders();
 
-app.UseHttpsRedirection();
+// CORS must be before HTTPS redirection so preflight (OPTIONS) responses
+// get proper CORS headers before any redirect can intercept them
+app.UseCors();
 
-// HSTS - HTTP Strict Transport Security (production only)
-// Forces browsers to always use HTTPS for this domain
-// Not used in development to allow HTTP debugging
+// HTTPS redirection and HSTS only in production
+// In development, the Vite proxy handles HTTP→backend communication
+// and HTTPS redirect causes cross-origin redirect failures on preflight requests
 if (!app.Environment.IsDevelopment())
 {
+    app.UseHttpsRedirection();
     app.UseHsts();
 }
-
-// CORS (must be before auth and routing)
-app.UseCors();
 
 // Serve static files from wwwroot (React SPA build output)
 app.UseDefaultFiles();

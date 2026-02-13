@@ -4,14 +4,13 @@ import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import {
   Form,
   FormControl,
   FormDescription,
@@ -19,12 +18,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
-import { LogoUploadField } from '@/components/ui/logo-upload-field'
+  Input,
+  LogoUploadField,
+  Switch,
+  Textarea,
+} from '@uikit'
+
 import { useCreateBrand, useUpdateBrand } from '@/hooks/useBrands'
 import { uploadMedia } from '@/services/media'
 import type { BrandListItem } from '@/types/brand'

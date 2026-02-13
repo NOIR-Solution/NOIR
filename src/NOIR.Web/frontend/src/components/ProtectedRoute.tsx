@@ -2,8 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { usePermissions, type PermissionKey } from '@/hooks/usePermissions'
 import type { ReactNode } from 'react'
-import { PageSpinner } from '@/components/ui/loading'
-
+import { PageSpinner } from '@uikit'
 interface ProtectedRouteProps {
   children: ReactNode
   /** Optional permission(s) required to access this route */

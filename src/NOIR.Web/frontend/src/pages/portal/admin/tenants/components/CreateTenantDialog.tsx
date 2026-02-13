@@ -2,15 +2,16 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
+  Button,
   Credenza,
+  CredenzaBody,
   CredenzaContent,
   CredenzaDescription,
   CredenzaHeader,
   CredenzaTitle,
   CredenzaTrigger,
-  CredenzaBody,
-} from '@/components/ui/credenza'
-import { Button } from '@/components/ui/button'
+} from '@uikit'
+
 import { TenantFormValidated, type ProvisionTenantFormData, type UpdateTenantFormData } from './TenantFormValidated'
 import { provisionTenant } from '@/services/tenants'
 import type { ProvisionTenantRequest } from '@/types'

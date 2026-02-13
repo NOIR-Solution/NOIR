@@ -2,26 +2,29 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Tag, Plus, Pencil, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
-import { PageHeader } from '@/components/ui/page-header'
-import { EmptyState } from '@/components/ui/empty-state'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  EmptyState,
+  Input,
+  PageHeader,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@uikit'
+
 import { useTags } from '@/hooks/useBlog'
 import { TagDialog } from './components/TagDialog'
 import { DeleteTagDialog } from './components/DeleteTagDialog'

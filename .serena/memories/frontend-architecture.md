@@ -35,17 +35,17 @@ frontend/
 ## Commands
 ```bash
 cd src/NOIR.Web/frontend
-npm install
-npm run dev          # Start dev server
-npm run build        # Production build
-npm run lint         # Run linter
-npm run generate:api # Sync types from backend
+pnpm install
+pnpm run dev          # Start dev server
+pnpm run build        # Production build
+pnpm run lint         # Run linter
+pnpm run generate:api # Sync types from backend
 ```
 
 ## API Type Generation
 Backend OpenAPI spec generates TypeScript types:
 ```bash
-npm run generate:api
+pnpm run generate:api
 ```
 
 This creates types matching backend DTOs for type-safe API calls.

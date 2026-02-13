@@ -38,28 +38,28 @@ import {
   Award,
   Tags,
 } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { TippyTooltip } from '@/components/ui/tippy-tooltip'
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetTitle,
-} from '@/components/ui/sheet'
-import {
+  Badge,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
   DropdownMenuPortal,
-} from '@/components/ui/dropdown-menu'
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+  Input,
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+  TippyTooltip,
+} from '@uikit'
+import { cn } from '@/lib/utils'
+
 import { useAuthContext } from '@/contexts/AuthContext'
 import { getAvatarColor, getInitials } from '@/lib/gravatar'
 import { usePermissions, Permissions, type PermissionKey } from '@/hooks/usePermissions'
@@ -70,7 +70,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { useNotificationContext } from '@/contexts/NotificationContext'
 import { useBranding } from '@/contexts/BrandingContext'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
-import { Badge } from '@/components/ui/badge'
+
 import { isPlatformAdmin } from '@/lib/roles'
 
 interface NavItem {
@@ -367,7 +367,6 @@ interface SidebarContentProps {
   searchQuery?: string
   onSearchChange?: (query: string) => void
 }
-
 
 /**
  * Get time group key for grouping notifications.

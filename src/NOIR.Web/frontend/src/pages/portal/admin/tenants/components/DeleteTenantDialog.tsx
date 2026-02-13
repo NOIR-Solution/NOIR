@@ -11,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '@uikit'
 import type { TenantListItem } from '@/types'
 
 interface DeleteTenantDialogProps {

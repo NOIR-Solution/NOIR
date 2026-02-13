@@ -10,7 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '@uikit'
 import type { ProductListItem } from '@/types/product'
 import { toast } from 'sonner'
 

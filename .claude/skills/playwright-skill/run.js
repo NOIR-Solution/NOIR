@@ -35,13 +35,13 @@ function checkPlaywrightInstalled() {
 function installPlaywright() {
   console.log('📦 Playwright not found. Installing...');
   try {
-    execSync('npm install', { stdio: 'inherit', cwd: __dirname });
-    execSync('npx playwright install chromium', { stdio: 'inherit', cwd: __dirname });
+    execSync('pnpm install', { stdio: 'inherit', cwd: __dirname });
+    execSync('pnpm exec playwright install chromium', { stdio: 'inherit', cwd: __dirname });
     console.log('✅ Playwright installed successfully');
     return true;
   } catch (e) {
     console.error('❌ Failed to install Playwright:', e.message);
-    console.error('Please run manually: cd', __dirname, '&& npm run setup');
+    console.error('Please run manually: cd', __dirname, '&& pnpm run setup');
     return false;
   }
 }

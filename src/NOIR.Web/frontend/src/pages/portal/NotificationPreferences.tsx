@@ -6,10 +6,17 @@
 import { useState, useEffect } from 'react'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { ArrowLeft, Save, Bell, Mail, Shield, Workflow, Users, Settings2, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Label,
+  Skeleton,
+} from '@uikit'
+
 import { toast } from 'sonner'
 import { getPreferences, updatePreferences } from '@/services/notifications'
 import type { NotificationPreference, NotificationCategory, EmailFrequency } from '@/types'

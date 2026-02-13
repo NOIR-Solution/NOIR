@@ -3,8 +3,7 @@ import { useDropzone } from 'react-dropzone'
 import { useTranslation } from 'react-i18next'
 import { Upload, X, Loader2, ImagePlus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
+import { Button, Progress } from '@uikit'
 
 interface ImageUploadZoneProps {
   onUpload: (file: File) => Promise<void>

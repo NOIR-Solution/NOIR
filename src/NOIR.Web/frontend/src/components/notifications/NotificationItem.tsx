@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { Info, CheckCircle, AlertTriangle, XCircle, Trash2, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
-import { Button } from '@/components/ui/button'
+import { Button } from '@uikit'
 import type { Notification, NotificationType } from '@/types'
 import { useNavigate } from 'react-router-dom'
 

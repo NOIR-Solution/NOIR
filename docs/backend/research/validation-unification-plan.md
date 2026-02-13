@@ -377,8 +377,8 @@ public class ValidationEndpoints : IEndpoints
 
 ```bash
 # In frontend directory
-npm install zod @hookform/resolvers react-hook-form
-npm install -D tsx
+pnpm install zod @hookform/resolvers react-hook-form
+pnpm install -D tsx
 ```
 
 #### 2.2 Code Generation Script
@@ -492,7 +492,7 @@ async function main() {
   const header = `/**
  * AUTO-GENERATED FILE - DO NOT EDIT
  * Generated from FluentValidation metadata
- * Run 'npm run generate:validation' to regenerate
+ * Run 'pnpm run generate:validation' to regenerate
  */
 
 import { z } from 'zod';
@@ -520,8 +520,8 @@ main().catch(console.error);
 {
   "scripts": {
     "generate:validation": "tsx scripts/generate-validation.ts",
-    "prebuild": "npm run generate:validation",
-    "predev": "npm run generate:validation"
+    "prebuild": "pnpm run generate:validation",
+    "predev": "pnpm run generate:validation"
   }
 }
 ```
@@ -936,7 +936,7 @@ export const DateRangeSchema = z.object({
 ```
 
 ### 3. Build-Time vs Runtime Generation
-- **Build-time** (recommended): Generate during `npm run build`, commit `schemas.generated.ts`
+- **Build-time** (recommended): Generate during `pnpm run build`, commit `schemas.generated.ts`
 - **Runtime**: Fetch metadata on app load (adds latency, but always fresh)
 
 Recommendation: Build-time with CI validation that schemas match current API.

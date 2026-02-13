@@ -1,36 +1,38 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, FileText, Plus, Eye, Pencil, Trash2, Send } from 'lucide-react'
-import { EmptyState } from '@/components/ui/empty-state'
-import { PageHeader } from '@/components/ui/page-header'
-import { ImageLightbox } from '@/components/ui/image-lightbox'
-import { usePageContext } from '@/hooks/usePageContext'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Pagination } from '@/components/ui/pagination'
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  EmptyState,
+  ImageLightbox,
+  Input,
+  PageHeader,
+  Pagination,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@uikit'
+
+import { usePageContext } from '@/hooks/usePageContext'
+
 import { usePosts, useCategories } from '@/hooks/useBlog'
 import { DeletePostDialog } from './components/DeletePostDialog'
 import type { PostListItem, PostStatus } from '@/types'

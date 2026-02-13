@@ -19,22 +19,24 @@ import {
   History,
   FileText,
 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
-import { DateRangePicker } from '@/components/ui/date-range-picker'
-import { Pagination } from '@/components/ui/pagination'
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  DateRangePicker,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+  Input,
+  Label,
+  Pagination,
+  Skeleton,
+  Switch,
+} from '@uikit'
+
 import { cn } from '@/lib/utils'
 import { parseISO } from 'date-fns'
 import {
