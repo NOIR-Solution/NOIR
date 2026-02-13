@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-08 | **Index Version:** 3.5
+**Last Updated:** 2026-02-13 | **Index Version:** 3.6
 
 ---
 
@@ -28,8 +28,8 @@
 |--------|-------|-------|
 | **Backend Source Files** | 1,230 | C# files in `src/` (excl. generated) |
 | **Frontend Source Files** | 305 | TypeScript/TSX in `frontend/src/` |
-| **Test Files** | 438 | C# test files in `tests/` |
-| **Total Source Files** | ~1,973 | Combined backend + frontend + tests |
+| **Test Files** | 453 | C# test files in `tests/` |
+| **Total Source Files** | ~1,988 | Combined backend + frontend + tests |
 | **Feature Modules** | 26 | Domain-driven vertical slices |
 | **API Endpoint Groups** | 30 | Minimal API endpoint files |
 | **Domain Entities** | 50+ | Core business entities |
@@ -38,10 +38,11 @@
 | **CQRS Queries** | 86 | Read operations |
 | **Repositories** | 28 | Infrastructure repositories |
 | **EF Core Configurations** | 49 | Entity type configurations |
-| **UI Components** | 103 | shadcn/ui + custom components (56 in ui/) |
-| **Custom Hooks** | 28 | React hooks in `hooks/` |
+| **UI Components** | 103 | shadcn/ui + custom components (57 in ui/) |
+| **Storybook Stories** | 57 | Interactive component catalog in `uikit/` |
+| **Custom Hooks** | 27 | React hooks in `hooks/` |
 | **API Services** | 23 | Frontend API clients |
-| **Frontend Pages** | 88 | React page components |
+| **Frontend Pages** | 95+ | React page components |
 | **Documentation Files** | 47 | Markdown docs in `docs/` |
 | **Backend Tests** | 6,750+ | Unit (842 + 5,231) + Integration (654) + Architecture (25) |
 | **Database Indexes** | 233+ | Including 14 filtered indexes |
@@ -49,7 +50,7 @@
 | **Service Interfaces** | 44 | Application-layer abstractions |
 | **NuGet Packages** | 40+ | Direct package references |
 
-**Technologies:** .NET 10, React 19.2, SQL Server, EF Core 10, Wolverine 5.11, SignalR, Vite 7.3, TypeScript 5.9, Tailwind 4.1, Zod 4.3
+**Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR, Vite, TypeScript 5, Tailwind CSS 4, Zod, Storybook 10.2, pnpm
 
 ### Directory Structure
 
@@ -61,13 +62,12 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 6,752+ backend tests across 4 test projects
+├── tests/                        # ✅ 6,750+ backend tests across 4 test projects
 │   ├── NOIR.Domain.UnitTests/    # Domain logic tests
 │   ├── NOIR.Application.UnitTests/ # Handler/service/validator tests
 │   ├── NOIR.IntegrationTests/    # API integration tests (requires DB)
 │   └── NOIR.ArchitectureTests/   # Architectural rule tests
-├── docs/                         # 📚 47 documentation files
-└── .github/                      # ⚙️  CI/CD workflows
+└── docs/                         # 📚 47 documentation files
 
 ```
 
@@ -435,34 +435,27 @@ NOIR.Web/
 │   └── TenantResolutionMiddleware.cs    # Resolves tenant from header/JWT
 ├── Program.cs                           # Application entry point
 ├── appsettings.json                     # Configuration
-└── frontend/                            # React SPA (Vite)
+└── frontend/                            # React SPA (Vite + pnpm)
+    ├── .storybook/                      # Storybook 10.2 configuration
+    │   ├── main.ts                      # React + Vite + Tailwind CSS 4
+    │   └── preview.ts                   # Global styles
     ├── src/
     │   ├── components/                  # Reusable components
-    │   │   └── ui/                      # shadcn/ui components
-    │   │       ├── combobox.tsx         # Searchable dropdown with scroll, bank selection
-    │   │       └── ...                  # Button, Dialog, Input, etc.
+    │   │   └── ui/                      # shadcn/ui primitives (57 components)
+    │   ├── uikit/                       # Storybook stories (57 components)
+    │   │   ├── button/Button.stories.tsx
+    │   │   ├── card/Card.stories.tsx
+    │   │   └── ...
     │   ├── contexts/                    # React contexts (Auth, Theme, Notification, Branding, Regional)
-    │   ├── hooks/                       # Custom React hooks
-    │   │   ├── usePaymentGateways.ts    # Payment gateway API hooks (TanStack Query)
-    │   │   └── ...                      # useLogin, useUsers, useRoles, etc.
+    │   ├── hooks/                       # Custom React hooks (27)
     │   ├── layouts/                     # Layout components
-    │   ├── pages/                       # Route pages
-    │   │   └── portal/admin/
-    │   │       ├── tenant-settings/     # Tabbed tenant settings
-    │   │       │   └── components/
-    │   │       │       └── PaymentGatewaysTab.tsx  # Gateway configuration UI
-    │   │       └── payment-gateways/    # Payment gateway management
-    │   │           └── components/
-    │   │               ├── GatewayCard.tsx           # Gateway provider cards
-    │   │               └── ConfigureGatewayDialog.tsx # Credential configuration
-    │   ├── services/                    # API services
-    │   │   ├── paymentGateways.ts       # Payment gateway API client
-    │   │   └── ...                      # auth, users, roles, etc.
+    │   ├── pages/                       # Route pages (95+ components)
+    │   ├── services/                    # API services (23)
     │   ├── types/                       # TypeScript types
-    │   │   ├── payment.ts               # Payment gateway types
-    │   │   └── ...                      # user, role, tenant types
     │   └── lib/                         # Utilities
-    └── public/                          # Static assets
+    ├── public/                          # Static assets + locales
+    ├── package.json
+    └── pnpm-lock.yaml                   # pnpm (disk-optimized)
 ```
 
 #### API Endpoints Summary
@@ -1013,6 +1006,11 @@ pnpm install
 pnpm run dev
 pnpm run build
 pnpm run generate:api
+
+# Storybook (component catalog)
+cd src/NOIR.Web/frontend
+pnpm storybook            # http://localhost:6006
+pnpm build-storybook      # Static build
 ```
 
 ### Key Directories
@@ -1094,14 +1092,24 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-02-08
-**Version:** 3.5
+**Last Updated:** 2026-02-13
+**Version:** 3.6
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
 ---
 
 ## Changelog
+
+### Version 3.6 (2026-02-13) - Storybook, UIKit & pnpm Migration
+
+- **Storybook 10.2** - Added interactive component catalog with 57 stories in `src/uikit/`
+- **UIKit** - Component stories organized by `{component}/{Component}.stories.tsx` pattern
+- **pnpm** - Migrated from npm for disk-optimized dependency management
+- **Statistics Refresh** - Test files: 453 (was 438), Pages: 95+ (was 88), Hooks: 27 (was 28)
+- **Frontend Structure** - Added `.storybook/`, `uikit/`, `pnpm-lock.yaml` to directory trees
+- **Removed** - `.github/` CI/CD reference (workflows removed in v2.4)
+- **Removed** - All 21st.dev references (replaced with shadcn/ui + Storybook)
 
 ### Version 3.5 (2026-02-08) - Documentation Audit & Synchronization
 

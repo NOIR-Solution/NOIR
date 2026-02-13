@@ -3,34 +3,32 @@
     "name": "NOIR",
     "type": "Enterprise .NET 10 + React 19 SaaS Foundation",
     "architecture": ["Clean Architecture", "CQRS", "DDD", "Multi-Tenant", "Vertical Slice"],
-    "generated": "2026-02-07",
-    "version": "3.4"
+    "generated": "2026-02-13",
+    "version": "3.6"
   },
   "metrics": {
-    "backend_files": 1248,
+    "backend_files": 1230,
     "frontend_files": 305,
-    "test_files": 446,
-    "total_source_files": 1999,
-    "total_tests": 6751,
+    "test_files": 453,
+    "total_source_files": 1988,
+    "total_tests": 6750,
     "test_status": "passing",
-    "documentation_files": 48,
+    "documentation_files": 47,
     "ui_components": 103,
-    "custom_hooks": 28,
+    "storybook_stories": 57,
+    "custom_hooks": 27,
     "api_services": 23,
-    "frontend_pages": 88,
-    "e2e_test_specs": 32,
-    "e2e_page_objects": 31,
-    "e2e_test_cases": 490,
+    "frontend_pages": 95,
     "feature_modules": 26,
     "endpoint_groups": 30,
     "domain_entities": 50,
     "aggregate_roots": 26,
-    "cqrs_commands": 131,
-    "cqrs_queries": 105,
-    "repositories": 29,
+    "cqrs_commands": 130,
+    "cqrs_queries": 86,
+    "repositories": 28,
     "ef_core_configurations": 49,
     "enums": 24,
-    "service_interfaces": 43,
+    "service_interfaces": 44,
     "database_indexes": 233
   },
   "tests": {
@@ -51,7 +49,8 @@
     "frontend": "http://localhost:3000",
     "backend": "http://localhost:4000",
     "api_docs": "http://localhost:4000/api/docs",
-    "hangfire": "http://localhost:4000/hangfire"
+    "hangfire": "http://localhost:4000/hangfire",
+    "storybook": "http://localhost:6006"
   },
   "admin_credentials": {
     "platform_admin": {
@@ -110,12 +109,13 @@
       "build_tool": "Vite 6.x",
       "routing": "React Router 7.x",
       "styling": "Tailwind CSS 4.x",
-      "ui_components": "shadcn/ui + 21st.dev",
+      "ui_components": "shadcn/ui (57 components)",
+      "component_catalog": "Storybook 10.2 (57 stories)",
+      "package_manager": "pnpm",
       "data_fetching": "TanStack Query 5.x",
-      "validation": "Zod 3.x",
+      "validation": "Zod",
       "forms": "React Hook Form 7.x",
-      "i18n": "i18next",
-      "e2e_testing": "Playwright"
+      "i18n": "i18next"
     }
   },
   "layers": {
@@ -204,10 +204,12 @@
         "productAttributes", "brands"
       ]
     },
-    "e2e_tests": {
-      "path": "src/NOIR.Web/frontend/e2e-tests/",
-      "specs": ["auth", "categories", "products", "brands", "attributes", "roles", "users", "tenant-settings", "navigation", "smoke"],
-      "pages": ["BasePage", "LoginPage", "CategoriesPage", "ProductsPage", "BrandsPage", "AttributesPage", "RolesPage", "UsersPage", "TenantSettingsPage"]
+    "storybook": {
+      "path": "src/NOIR.Web/frontend/.storybook/",
+      "stories_path": "src/NOIR.Web/frontend/src/uikit/",
+      "stories_count": 57,
+      "config": ".storybook/main.ts",
+      "url": "http://localhost:6006"
     }
   },
   "documentation": {
@@ -231,7 +233,7 @@
       "architecture", "api-types", "localization-guide", "COLOR_SCHEMA_GUIDE", "vibe-kanban-integration", "ecommerce-ui", "ui-ux-enhancements"
     ],
     "testing_guides": [
-      "E2E-TESTING-GUIDE", "PRODUCT_E2E_TESTS", "TEST_CASES", "TEST_PLAN"
+      "testing/README"
     ],
     "architecture_decisions": ["001-tech-stack", "002-frontend-ui-stack", "003-vertical-slice-cqrs"]
   },
@@ -248,8 +250,8 @@
     "frontend_dev": "cd src/NOIR.Web/frontend && pnpm run dev",
     "frontend_build": "cd src/NOIR.Web/frontend && pnpm run build",
     "frontend_generate_api": "cd src/NOIR.Web/frontend && pnpm run generate:api",
-    "e2e_test": "cd src/NOIR.Web/frontend/e2e-tests && pnpm exec playwright test",
-    "e2e_test_ui": "cd src/NOIR.Web/frontend/e2e-tests && pnpm exec playwright test --ui"
+    "storybook": "cd src/NOIR.Web/frontend && pnpm storybook",
+    "storybook_build": "cd src/NOIR.Web/frontend && pnpm build-storybook"
   },
   "critical_rules": [
     "Use Specifications for all database queries - never raw DbSet",
