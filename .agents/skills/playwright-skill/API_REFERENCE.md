@@ -472,13 +472,13 @@ const context = await browser.newContext({
 
 ```bash
 # Run with inspector
-pnpm exec playwright test --debug
+npx playwright test --debug
 
 # Headed mode
-pnpm exec playwright test --headed
+npx playwright test --headed
 
 # Slow motion
-pnpm exec playwright test --headed --slowmo=1000
+npx playwright test --headed --slowmo=1000
 ```
 
 ### In-Code Debugging
@@ -567,9 +567,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
+        run: npx playwright install --with-deps
       - name: Run tests
-        run: pnpm exec playwright test
+        run: npx playwright test
 ```
 
 ## Best Practices
@@ -631,19 +631,19 @@ async function scrollToBottom(page) {
 
 ```bash
 # Run tests
-pnpm exec playwright test
+npx playwright test
 
 # Run in headed mode
-pnpm exec playwright test --headed
+npx playwright test --headed
 
 # Debug tests
-pnpm exec playwright test --debug
+npx playwright test --debug
 
 # Generate code
-pnpm exec playwright codegen https://example.com
+npx playwright codegen https://example.com
 
 # Show report
-pnpm exec playwright show-report
+npx playwright show-report
 ```
 
 ## Additional Resources

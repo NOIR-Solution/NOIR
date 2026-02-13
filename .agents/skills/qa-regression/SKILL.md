@@ -259,19 +259,19 @@ export default defineConfig({
 
 ```bash
 # Run all tests
-pnpm exec playwright test
+npx playwright test
 
 # Run specific test file
-pnpm exec playwright test tests/auth/login.spec.ts
+npx playwright test tests/auth/login.spec.ts
 
 # Run tests with UI
-pnpm exec playwright test --ui
+npx playwright test --ui
 
 # Run in headed mode (see browser)
-pnpm exec playwright test --headed
+npx playwright test --headed
 
 # Generate report
-pnpm exec playwright show-report
+npx playwright show-report
 ```
 
 ## CI Integration
@@ -301,10 +301,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright
-        run: pnpm exec playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: Run tests
-        run: pnpm exec playwright test
+        run: npx playwright test
         env:
           BASE_URL: ${{ secrets.STAGING_URL }}
           TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
@@ -330,8 +330,8 @@ jobs:
 
 | Task | Command |
 |------|---------|
-| Run all | `pnpm exec playwright test` |
-| Run one file | `pnpm exec playwright test login.spec.ts` |
-| Debug mode | `pnpm exec playwright test --debug` |
-| UI mode | `pnpm exec playwright test --ui` |
-| Update snapshots | `pnpm exec playwright test --update-snapshots` |
+| Run all | `npx playwright test` |
+| Run one file | `npx playwright test login.spec.ts` |
+| Debug mode | `npx playwright test --debug` |
+| UI mode | `npx playwright test --ui` |
+| Update snapshots | `npx playwright test --update-snapshots` |
