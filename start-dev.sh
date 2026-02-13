@@ -227,14 +227,16 @@ main() {
     fi
     printf "\n"
 
-    # Frontend dependencies (skip if node_modules exists)
+    # Frontend dependencies (pnpm install is fast when up-to-date)
     print_step "Frontend"
     cd "$FRONTEND_DIR"
-    if [[ ! -d "node_modules" ]]; then
-        print_info "Installing dependencies..."
-        pnpm install --silent >/dev/null 2>&1
+    if [[ ! -d "node_modules/.pnpm" ]]; then
+        print_info "Installing dependencies (first run)..."
+        pnpm install >/dev/null 2>&1
         print_ok "Dependencies installed"
     else
+        print_info "Verifying dependencies..."
+        pnpm install --frozen-lockfile >/dev/null 2>&1 || pnpm install >/dev/null 2>&1
         print_ok "Dependencies ready"
     fi
     printf "\n"
