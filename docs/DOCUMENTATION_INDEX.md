@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-02-08
+**Last Updated:** 2026-02-13
 
 ---
 
@@ -16,7 +16,7 @@
 | **Learn technologies** | [TECH_STACK.md](TECH_STACK.md) |
 | **See API endpoints** | [API_INDEX.md](API_INDEX.md) |
 | **Understand architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| **View test cases** | [testing/TEST_CASES.md](testing/TEST_CASES.md) |
+| **View testing guide** | [testing/README.md](testing/README.md) |
 
 ---
 
@@ -98,11 +98,9 @@
 
 | Document | Purpose |
 |----------|---------|
-| [TESTING-INFRASTRUCTURE-SUMMARY.md](testing/TESTING-INFRASTRUCTURE-SUMMARY.md) | 📊 **Overview of backend testing infrastructure** |
-| [TEST_PLAN.md](testing/TEST_PLAN.md) | Backend test strategy and scope |
-| [TEST_CASES.md](testing/TEST_CASES.md) | Test case reference by module |
+| [README.md](testing/README.md) | Testing overview, conventions, and running tests |
 
-### Test Coverage Summary (2026-02-10)
+### Test Coverage Summary (2026-02-13)
 
 **Backend Tests:** 6,750+ tests across 4 test projects
 - 842 Domain unit tests
@@ -177,4 +175,4 @@
 
 ---
 
-**Version:** 2.8 (Updated 2026-02-10 - E2E testing removed)
+**Version:** 2.9 (Updated 2026-02-13 - Storybook/UIKit/pnpm docs, fixed broken test doc links)

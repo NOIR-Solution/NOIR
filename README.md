@@ -78,6 +78,7 @@ dotnet run --project src/NOIR.Web -c Release
 | **Frontend** | http://localhost:3000 | `admin@noir.local` / `123qwe` |
 | **API** | http://localhost:4000 | - |
 | **API Docs** | http://localhost:4000/api/docs | - |
+| **Storybook** | http://localhost:6006 | - |
 | **Hangfire** | http://localhost:4000/hangfire | Requires `system:hangfire` permission |
 
 ---
@@ -167,6 +168,7 @@ dotnet run --project src/NOIR.Web -c Release
 
 - **Hot Reload** - Backend and frontend live reloading
 - **Type Generation** - Swagger → TypeScript types
+- **Storybook** - 56 interactive component stories with UIKit catalog
 - **6,750+ Tests** - Unit, Integration, Architecture
 - **Architecture Tests** - Enforce layer boundaries
 - **Comprehensive Docs** - 15,000+ lines of documentation
@@ -253,10 +255,12 @@ dotnet run --project src/NOIR.Web -c Release
 | **Vite 6** | Build tool |
 | **Tailwind CSS 4** | Utility-first CSS |
 | **shadcn/ui** | Component library |
+| **Storybook 10** | Component catalog |
 | **React Router 7** | Client routing |
 | **React Hook Form** | Form management |
 | **Zod** | Schema validation |
 | **i18next** | Internationalization |
+| **pnpm** | Package manager |
 
 </td>
 </tr>
@@ -275,7 +279,9 @@ NOIR/
 │   ├── NOIR.Application/      # 📋 Commands, queries, DTOs, handlers
 │   ├── NOIR.Infrastructure/   # 🔧 EF Core, services, persistence
 │   └── NOIR.Web/              # 🌐 API endpoints, middleware, SPA host
-│       └── frontend/          # ⚛️  React application
+│       └── frontend/          # ⚛️  React application (pnpm)
+│           ├── .storybook/    # 📖 Storybook configuration
+│           └── src/uikit/     # 📚 56 component stories
 ├── ✅ tests/                  # 6,750+ tests (Unit, Integration, Architecture)
 ├── 📚 docs/                   # 15,000+ lines of documentation
 └── ⚙️  .github/               # CI/CD workflows and templates
@@ -331,6 +337,10 @@ dotnet watch --project src/NOIR.Web
 # Frontend dev server
 cd src/NOIR.Web/frontend
 pnpm run dev
+
+# Storybook (component catalog)
+cd src/NOIR.Web/frontend
+pnpm storybook
 
 # Run tests
 dotnet test src/NOIR.sln

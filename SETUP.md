@@ -62,7 +62,7 @@ dotnet run --project src/NOIR.Web --environment Development
 # Terminal 2: Start frontend (REQUIRED for development)
 cd src/NOIR.Web/frontend
 pnpm install
-ppnpm run dev
+pnpm run dev
 
 # Access application at: http://localhost:3000
 # Admin credentials: admin@noir.local / 123qwe
@@ -78,7 +78,7 @@ ppnpm run dev
 > ```bash
 > cd src/NOIR.Web/frontend
 > pnpm install
-> ppnpm run dev:full
+> pnpm run dev:full
 > ```
 > This starts both backend and frontend with a single command, auto-generates API types, and handles graceful shutdown.
 
@@ -111,7 +111,7 @@ src\NOIR.Web\frontend\start-dev.bat
 
 The `start-dev.bat` file is a convenience wrapper that:
 - Automatically changes to the correct directory (`%~dp0` = script's directory)
-- Runs `ppnpm run dev:full` in the frontend folder
+- Runs `pnpm run dev:full` in the frontend folder
 - Works reliably with Vibe Kanban's dev server launcher
 
 ### Option 2: Direct Command
@@ -321,7 +321,7 @@ dotnet run --project src/NOIR.Web --environment Development
 # Terminal 2: Start frontend (REQUIRED - open a new terminal)
 cd src/NOIR.Web/frontend
 pnpm install
-ppnpm run dev
+pnpm run dev
 ```
 
 ### Step 5: Access the Application
@@ -470,7 +470,7 @@ dotnet run --project src/NOIR.Web --environment Development
 # Terminal 2: Start frontend (REQUIRED - open a new terminal)
 cd src/NOIR.Web/frontend
 pnpm install
-ppnpm run dev
+pnpm run dev
 ```
 
 ### Step 5: Access the Application
@@ -538,7 +538,7 @@ dotnet run --project src/NOIR.Web --environment Development
 ### All Tests
 
 ```bash
-# Run all 1,808+ tests
+# Run all 6,750+ tests
 dotnet test src/NOIR.sln
 ```
 

@@ -12,21 +12,27 @@ NOIR frontend is a React SPA embedded within the .NET NOIR.Web project.
 | Tailwind CSS | 4 | Styling |
 | React Router | 7 | Client-side routing |
 | shadcn/ui | Latest | UI component primitives |
-| 21st.dev | Latest | AI-assisted component generation |
+| Storybook | 10.2 | Component catalog & UIKit |
+| pnpm | Latest | Package manager |
 
 ## Project Location
 
 ```
 src/NOIR.Web/frontend/
+├── .storybook/         # Storybook configuration
 ├── src/
 │   ├── components/     # Reusable UI components
+│   │   └── ui/         # shadcn/ui primitives (56)
+│   ├── uikit/          # Storybook stories (56 components)
 │   ├── pages/          # Route page components
 │   ├── services/       # API communication
 │   ├── contexts/       # React Context providers
+│   ├── hooks/          # Custom React hooks (28)
 │   ├── types/          # TypeScript definitions
 │   ├── config/         # App configuration
 │   └── lib/            # Utilities
 ├── package.json
+├── pnpm-lock.yaml
 ├── vite.config.ts
 └── tsconfig.json
 ```
@@ -77,107 +83,53 @@ pnpm run lint
 | Types | PascalCase | `CurrentUser` |
 | Import Alias | `@/` for src/ | `@/components/ui/button` |
 
-## AI-Assisted Development
+## Storybook & UIKit
 
-Use 21st.dev Magic MCP for component generation:
+The project includes a **Storybook** setup for interactive component documentation with 56 component stories.
 
 ```bash
-# Example commands in Claude Code / Cursor
-/ui create a modern login form
-/ui create an admin dashboard sidebar
-/ui create a data table with pagination
+# Run Storybook (component catalog)
+cd src/NOIR.Web/frontend
+pnpm storybook          # http://localhost:6006
+
+# Build static Storybook
+pnpm build-storybook
 ```
 
-## Custom 21st.dev Components
+### UIKit Structure
 
-The following components were created using 21st.dev for consistent, high-quality UI:
+Each component has its own story file in `src/uikit/`:
+
+```
+src/uikit/
+├── button/Button.stories.tsx
+├── card/Card.stories.tsx
+├── dialog/Dialog.stories.tsx
+├── table/Table.stories.tsx
+├── ... (56 total)
+```
+
+**Path alias:** `@uikit` maps to `src/uikit/` (`tsconfig.app.json`)
+
+### Key Custom Components
 
 | Component | Path | Description |
 |-----------|------|-------------|
-| `EmptyState` | `components/ui/empty-state.tsx` | Empty state display with icon, title, description, and optional action button |
-| `Pagination` | `components/ui/pagination.tsx` | Full-featured pagination with first/prev/next/last navigation and page numbers |
-| `ColorPicker` | `components/ui/color-picker.tsx` | Color selector with preset swatches and custom color picker |
+| `EmptyState` | `components/ui/empty-state.tsx` | Empty state with icon, title, description, action |
+| `Pagination` | `components/ui/pagination.tsx` | Pagination with page numbers and size selector |
+| `ColorPicker` | `components/ui/color-picker.tsx` | Color selector with swatches and custom picker |
+| `TippyTooltip` | `components/ui/tippy-tooltip.tsx` | Rich tooltips with headers and animations |
+| `VirtualList` | `components/ui/virtual-list.tsx` | Virtualized list for large datasets |
+| `DiffViewer` | `components/ui/diff-viewer.tsx` | Side-by-side diff viewer |
+| `JsonViewer` | `components/ui/json-viewer.tsx` | Syntax-highlighted JSON display |
 
-### EmptyState
+## AI-Assisted Development
 
-Used in tables when no data is available.
+Use `/ui-ux-pro-max` skill for all UI/UX work (research, implementation, refinement, review):
 
-```tsx
-import { EmptyState } from '@/components/ui/empty-state'
-import { Users } from 'lucide-react'
-
-<EmptyState
-  icon={Users}
-  title="No users found"
-  description="Create a new user to get started."
-  action={{ label: "Create User", onClick: () => {} }}
-/>
+```bash
+# Example prompts in Claude Code
+"Build a product card component"
+"What color palette for e-commerce?"
+"Review my navbar for accessibility"
 ```
-
-### Pagination
-
-Used for paginated data tables.
-
-```tsx
-import { Pagination } from '@/components/ui/pagination'
-
-<Pagination
-  currentPage={1}
-  totalPages={10}
-  totalItems={100}
-  pageSize={10}
-  onPageChange={(page) => setPage(page)}
-  showPageSizeSelector={true}
-/>
-```
-
-### ColorPicker
-
-Used for selecting colors (e.g., role colors).
-
-```tsx
-import { ColorPicker } from '@/components/ui/color-picker'
-
-<ColorPicker
-  value="#3B82F6"
-  onChange={(color) => setColor(color)}
-  showCustomInput={true}  // Shows hex input and native picker
-/>
-```
-
-### TippyTooltip
-
-Modern tooltip component powered by Tippy.js with smooth animations and custom styling.
-
-```tsx
-import { TippyTooltip, RichTooltip } from '@/components/ui/tippy-tooltip'
-
-// Simple tooltip
-<TippyTooltip content="This is a tooltip">
-  <button>Hover me</button>
-</TippyTooltip>
-
-// Rich tooltip with header and list
-<RichTooltip
-  title="Search across:"
-  items={[
-    'Entity ID, Correlation ID',
-    'User email',
-    'Handler name, HTTP path',
-  ]}
->
-  <HelpCircle className="h-4 w-4" />
-</RichTooltip>
-```
-
-**Features:**
-- Smooth `shift-away-subtle` animation
-- Blue gradient header matching theme primary color
-- Arrow pointing to trigger element
-- Dark mode support
-- Interactive tooltips for clickable content
-
-**Custom Theme:** Styles defined in `src/styles/tippy-custom.css` with:
-- Layered shadows (Vercel-style)
-- Rounded corners with proper overflow handling
-- Blue arrow matching header color

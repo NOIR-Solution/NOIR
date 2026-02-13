@@ -393,8 +393,9 @@ public class CustomerService : ICustomerService, IScopedService { }
 - Custom: `PageSkeleton`, `TippyTooltip`
 
 **Configuration:**
-- `src/NOIR.Web/frontend/components/ui/`
-- `tailwind.config.ts`
+- `src/NOIR.Web/frontend/src/components/ui/` - Component source
+- `src/NOIR.Web/frontend/src/uikit/` - Storybook stories (56 components)
+- `.storybook/main.ts` - Storybook config (Vite + Tailwind CSS 4)
 
 ---
 
@@ -591,8 +592,8 @@ const form = useForm<FormData>({
 | **NSubstitute** | 5.0 | Mocking | [NSubstitute](https://nsubstitute.github.io/) |
 
 **Test Projects:**
-- `NOIR.Domain.UnitTests` - 500+ tests
-- `NOIR.Application.UnitTests` - 600+ tests
+- `NOIR.Domain.UnitTests` - 842 tests
+- `NOIR.Application.UnitTests` - 5,231 tests
 
 ---
 
@@ -609,7 +610,7 @@ const form = useForm<FormData>({
 - **Cleanup** - Automatic after each test
 
 **Test Project:**
-- `NOIR.IntegrationTests` - 900+ tests
+- `NOIR.IntegrationTests` - 654 tests
 
 ---
 
@@ -625,7 +626,7 @@ const form = useForm<FormData>({
 - Circular references
 
 **Test Project:**
-- `NOIR.ArchitectureTests` - 100+ tests
+- `NOIR.ArchitectureTests` - 25 tests
 
 ---
 

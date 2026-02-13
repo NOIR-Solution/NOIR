@@ -1,8 +1,8 @@
 # Frontend UI Stack Decision
 
 **Date:** 2026-01-03
-**Status:** Decided (Updated 2026-02-08)
-**Decision:** React + shadcn/ui + Tailwind CSS
+**Status:** Decided (Updated 2026-02-13)
+**Decision:** React + shadcn/ui + Tailwind CSS + Storybook
 
 ---
 
@@ -35,29 +35,27 @@ NOIR needs a modern frontend for:
 ### Current Implementation
 - 56 UI components in `src/components/ui/`
 - 103 total components (including custom)
+- 56 Storybook stories in `src/uikit/` (interactive component catalog)
 - 28 custom React hooks
 - OKLCH color system (see `docs/frontend/COLOR_SCHEMA_GUIDE.md`)
+- pnpm for disk-optimized dependency management
 
-## MCP Integration
+## Storybook (Added 2026-02-13)
 
-### 21st.dev Magic MCP (Optional - Component Inspiration)
+Storybook v10.2.8 provides an interactive component catalog:
 
-The 21st.dev Magic MCP can still be used for component inspiration and generation:
-
-```json
-{
-  "mcpServers": {
-    "@21st-dev/magic": {
-      "command": "npx",
-      "args": ["-y", "@21st-dev/magic@latest", "API_KEY=\"your-api-key\""]
-    }
-  }
-}
+```bash
+cd src/NOIR.Web/frontend
+pnpm storybook          # http://localhost:6006
 ```
+
+- **Config:** `.storybook/main.ts` (React + Vite + Tailwind CSS 4)
+- **Stories:** 56 component stories in `src/uikit/{component}/`
+- **Path alias:** `@uikit` → `src/uikit/`
 
 ## References
 
 - [shadcn/ui](https://ui.shadcn.com) - Component library
 - [Radix UI](https://www.radix-ui.com) - Accessible primitives
 - [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS
-- [21st.dev](https://21st.dev) - Component marketplace (inspiration)
+- [Storybook](https://storybook.js.org) - Component catalog

@@ -17,21 +17,29 @@ This document describes the architecture and conventions for the NOIR frontend a
 
 ```
 frontend/
+├── .storybook/              # Storybook configuration
+│   ├── main.ts              # Vite + Tailwind CSS 4 setup
+│   └── preview.ts           # Global styles
 ├── src/
 │   ├── App.tsx              # App shell with routing
 │   ├── main.tsx             # React root entry point
 │   ├── index.css            # Global styles + Tailwind
 │   │
 │   ├── components/          # Reusable UI components
-│   │   ├── ui/              # shadcn/ui primitives (button, input, etc.)
+│   │   ├── ui/              # shadcn/ui primitives (56 components)
 │   │   ├── PermissionGate.tsx  # Permission-based rendering
 │   │   ├── ProtectedRoute.tsx  # Route-level protection
 │   │   └── *.tsx            # App-level shared components
 │   │
+│   ├── uikit/               # Storybook stories (56 components)
+│   │   ├── button/Button.stories.tsx
+│   │   ├── card/Card.stories.tsx
+│   │   └── ...
+│   │
 │   ├── contexts/            # React Context providers
 │   │   └── AuthContext.tsx  # Authentication state
 │   │
-│   ├── hooks/               # Custom React hooks
+│   ├── hooks/               # Custom React hooks (28)
 │   │   └── usePermissions.ts  # Permission checking utilities
 │   │
 │   ├── lib/                 # Utility libraries
@@ -51,6 +59,7 @@ frontend/
 │       └── index.ts         # Barrel export
 │
 ├── package.json
+├── pnpm-lock.yaml           # pnpm (disk-optimized)
 ├── tsconfig.json
 ├── vite.config.ts
 └── eslint.config.js

@@ -6,7 +6,7 @@
 
 *Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).*
 
-**Last Updated:** 2026-02-09 | **Version:** 2.3
+**Last Updated:** 2026-02-13 | **Version:** 2.5
 
 </div>
 
@@ -23,6 +23,7 @@
 - [Naming Conventions](#-naming-conventions)
 - [Performance Rules](#-performance-rules)
 - [Frontend Rules](#-frontend-rules-reacttypescript) (UI, Validation, Forms)
+- [Storybook & UIKit](#-storybook--uikit)
 - [E-commerce Patterns](#-e-commerce-patterns) (Products, Cart, Checkout, Orders)
 - [Task Management](#-task-management)
 - [Documentation](#-documentation)
@@ -259,6 +260,7 @@ powershell -Command "Start-Process cmd -ArgumentList '/c cd /d D:\GIT\TOP\NOIR\s
 | **Frontend** | http://localhost:3000 |
 | **Backend API** | http://localhost:4000 |
 | **API Docs** | http://localhost:4000/api/docs |
+| **Storybook** | http://localhost:6006 |
 
 ---
 
@@ -279,7 +281,12 @@ src/NOIR.Application/     # 📋 Features (Command + Handler + Validator co-loca
     └── Common/Interfaces/  # Service abstractions (IUserIdentityService, etc.)
 src/NOIR.Infrastructure/  # 🔧 EF Core, Repositories, Service implementations
 src/NOIR.Web/             # 🌐 Endpoints, Middleware, Program.cs
-    └── frontend/         # ⚛️ React SPA
+    └── frontend/         # ⚛️ React SPA (pnpm)
+        ├── .storybook/   # 📖 Storybook config
+        ├── src/
+        │   ├── components/ui/  # shadcn/ui primitives
+        │   └── uikit/         # 📚 Component stories (Storybook)
+        └── pnpm-lock.yaml
 ```
 
 ---
@@ -703,6 +710,52 @@ await createProduct.mutateAsync(productData)
 
 ---
 
+## 📖 Storybook & UIKit
+
+### Package Manager: pnpm
+
+The frontend uses **pnpm** (not npm) for disk-optimized dependency management.
+
+```bash
+# Install dependencies
+cd src/NOIR.Web/frontend && pnpm install
+
+# Run Storybook
+pnpm storybook          # http://localhost:6006
+
+# Build Storybook
+pnpm build-storybook
+```
+
+### Storybook Setup
+
+- **Config:** `.storybook/main.ts` (React + Vite + Tailwind CSS 4)
+- **Preview:** `.storybook/preview.ts` (global styles, centered layout)
+- **Framework:** `@storybook/react-vite` v10.2.8
+- **Stories location:** `src/uikit/{component-name}/{Component}.stories.tsx`
+
+### UIKit Structure
+
+All 56 UI components have Storybook stories in `src/uikit/`:
+
+```
+src/NOIR.Web/frontend/src/uikit/
+├── button/Button.stories.tsx
+├── card/Card.stories.tsx
+├── dialog/Dialog.stories.tsx
+├── table/Table.stories.tsx
+├── ... (56 component stories total)
+```
+
+**Path alias:** `@uikit` maps to `src/uikit/` (configured in `tsconfig.app.json`)
+
+**Key points:**
+- Stories are **excluded from production build** (`tsconfig.app.json` excludes `*.stories.*`)
+- Storybook reads from `src/uikit/`, components live in `src/components/ui/`
+- Stories import components via `@/components/ui/{component}`
+
+---
+
 ## 🛒 E-commerce Patterns
 
 > **Phase 8 Complete:** Product Catalog, Shopping Cart, Checkout, Orders, Product Attributes.
@@ -846,6 +899,13 @@ For detailed documentation, see the `docs/` folder:
 ---
 
 ## 📝 Changelog
+
+### Version 2.5 (2026-02-13)
+- **Added:** Storybook v10.2.8 with 56 component stories in `src/uikit/`
+- **Added:** UIKit structure documentation and `@uikit` path alias
+- **Migrated:** npm → pnpm for disk-optimized dependency management
+- **Added:** Storybook access point (http://localhost:6006) to Quick Reference
+- **Updated:** Project structure to reflect `.storybook/`, `uikit/`, `pnpm-lock.yaml`
 
 ### Version 2.4 (2026-02-10)
 - **BREAKING:** Removed entire E2E testing infrastructure (Playwright, 490+ tests, 100 files)
