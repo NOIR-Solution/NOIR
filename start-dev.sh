@@ -14,6 +14,7 @@ FRONTEND_DIR="$SCRIPT_DIR/src/NOIR.Web/frontend"
 BACKEND_DIR="$SCRIPT_DIR/src/NOIR.Web"
 BACKEND_PORT=4000
 FRONTEND_PORT=3000
+STORYBOOK_PORT=6006
 HEALTH_TIMEOUT=60
 
 #-------------------------------------------------------------------------------
@@ -150,10 +151,12 @@ wait_for_backend() {
 #-------------------------------------------------------------------------------
 BACKEND_PID=""
 FRONTEND_PID=""
+STORYBOOK_PID=""
 
 cleanup() {
     printf "\n%sShutting down...%s\n" "$YELLOW" "$NC"
 
+    [[ -n "$STORYBOOK_PID" ]] && kill "$STORYBOOK_PID" 2>/dev/null || true
     [[ -n "$FRONTEND_PID" ]] && kill "$FRONTEND_PID" 2>/dev/null || true
     [[ -n "$BACKEND_PID" ]] && kill "$BACKEND_PID" 2>/dev/null || true
 
@@ -161,6 +164,7 @@ cleanup() {
     if [[ "$OS_TYPE" == "windows" ]]; then
         kill_port $BACKEND_PORT
         kill_port $FRONTEND_PORT
+        kill_port $STORYBOOK_PORT
     fi
 
     printf "%sGoodbye!%s\n" "$GREEN" "$NC"
@@ -193,7 +197,8 @@ main() {
     print_step "Ports"
     kill_port $BACKEND_PORT
     kill_port $FRONTEND_PORT
-    print_ok "Ports $BACKEND_PORT/$FRONTEND_PORT ready"
+    kill_port $STORYBOOK_PORT
+    print_ok "Ports $BACKEND_PORT/$FRONTEND_PORT/$STORYBOOK_PORT ready"
     printf "\n"
 
     # Start MailHog (Docker)
@@ -278,6 +283,15 @@ main() {
     print_ok "Frontend started"
     printf "\n"
 
+    # Start Storybook (component catalog)
+    print_step "Starting Storybook"
+    cd "$FRONTEND_DIR"
+    pnpm storybook --no-open >"${SCRIPT_DIR}/.storybook.log" 2>&1 &
+    STORYBOOK_PID=$!
+    sleep 2
+    print_ok "Storybook started"
+    printf "\n"
+
     # Success
     printf "%s=========================================%s\n" "$GREEN" "$NC"
     printf "%s  NOIR is running!%s\n" "$WHITE$BOLD" "$NC"
@@ -286,6 +300,7 @@ main() {
     printf "   Frontend:  %shttp://localhost:%s%s\n" "$CYAN" "$FRONTEND_PORT" "$NC"
     printf "   Backend:   %shttp://localhost:%s%s\n" "$CYAN" "$BACKEND_PORT" "$NC"
     printf "   API Docs:  %shttp://localhost:%s/api/docs%s\n" "$CYAN" "$BACKEND_PORT" "$NC"
+    printf "   Storybook: %shttp://localhost:%s%s\n" "$CYAN" "$STORYBOOK_PORT" "$NC"
     printf "   MailHog:   %shttp://localhost:8025%s\n" "$CYAN" "$NC"
     printf "\n"
     printf "   Platform Admin: %splatform@noir.local%s / %s123qwe%s\n" "$WHITE" "$NC" "$WHITE" "$NC"
@@ -302,7 +317,7 @@ main() {
     esac
 
     # Wait
-    wait $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
+    wait $BACKEND_PID $FRONTEND_PID $STORYBOOK_PID 2>/dev/null || true
 }
 
 main "$@"

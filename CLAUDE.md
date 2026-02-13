@@ -228,6 +228,7 @@ dotnet ef migrations add InitialCreate \
 The script creates log files in the project root:
 - `.backend.log` - Backend output
 - `.frontend.log` - Frontend output
+- `.storybook.log` - Storybook output
 
 View logs with: `tail -f .backend.log` or `tail -f .frontend.log`
 
