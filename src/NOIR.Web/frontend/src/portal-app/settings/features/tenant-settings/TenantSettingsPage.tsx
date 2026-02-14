@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
@@ -38,10 +38,13 @@ export const TenantSettingsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'branding')
+  const [isTabPending, startTabTransition] = useTransition()
 
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab)
     setSearchParams({ tab }, { replace: true })
+    startTabTransition(() => {
+      setActiveTab(tab)
+    })
   }
 
   return (
@@ -53,7 +56,7 @@ export const TenantSettingsPage = () => {
       />
 
       {/* Tabbed Content */}
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className={isTabPending ? 'space-y-4 opacity-70 transition-opacity duration-200' : 'space-y-4 transition-opacity duration-200'}>
         <TabsList className="flex-wrap h-auto">
           {/* Core Identity & Business Info */}
           <TabsTrigger value="branding" className="cursor-pointer">

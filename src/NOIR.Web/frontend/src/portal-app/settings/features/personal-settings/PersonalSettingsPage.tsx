@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Shield, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -23,6 +23,7 @@ const navItems: NavItem[] = [
 export const PersonalSettingsPage = () => {
   const { t } = useTranslation('auth')
   const [activeSection, setActiveSection] = useState<SettingsSection>('profile')
+  const [isSectionPending, startSectionTransition] = useTransition()
 
   // Set page context for audit logging (Activity Timeline)
   usePageContext('Profile')
@@ -44,7 +45,7 @@ export const PersonalSettingsPage = () => {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveSection(item.id)}
+                  onClick={() => startSectionTransition(() => setActiveSection(item.id))}
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all cursor-pointer',
                     isActive
@@ -61,7 +62,7 @@ export const PersonalSettingsPage = () => {
         </aside>
 
         {/* Content Area */}
-        <main className="flex-1 min-w-0">
+        <main className={isSectionPending ? 'flex-1 min-w-0 opacity-70 transition-opacity duration-200' : 'flex-1 min-w-0 transition-opacity duration-200'}>
           {activeSection === 'profile' && <ProfileForm />}
           {activeSection === 'security' && (
             <div className="space-y-6">

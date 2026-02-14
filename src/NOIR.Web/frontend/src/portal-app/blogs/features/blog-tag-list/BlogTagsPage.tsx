@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Tag, Plus, Pencil, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
@@ -25,7 +25,7 @@ import {
   TableRow,
 } from '@uikit'
 
-import { useTags } from '@/portal-app/blogs/states/useBlogTags'
+import { useBlogTagsQuery, useDeleteBlogTagMutation } from '@/portal-app/blogs/queries'
 import { BlogTagDialog } from '../../components/blog-tags/BlogTagDialog'
 import { DeleteBlogTagDialog } from '../../components/blog-tags/DeleteBlogTagDialog'
 import type { PostTagListItem } from '@/types'
@@ -34,16 +34,26 @@ export const BlogTagsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Tags')
 
-  const { data, loading, error, refresh, setSearch, handleDelete } = useTags()
-
   const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
   const [tagDialogOpen, setTagDialogOpen] = useState(false)
   const [tagToEdit, setTagToEdit] = useState<PostTagListItem | null>(null)
   const [tagToDelete, setTagToDelete] = useState<PostTagListItem | null>(null)
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSearch(searchInput)
+  const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
+  const { data = [], isLoading: loading, error: queryError, refetch: refresh } = useBlogTagsQuery(queryParams)
+  const deleteMutation = useDeleteBlogTagMutation()
+  const error = queryError?.message ?? null
+
+  const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await deleteMutation.mutateAsync(id)
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete tag'
+      return { success: false, error: message }
+    }
   }
 
   const handleCreateClick = () => {
@@ -83,24 +93,19 @@ export const BlogTagsPage = () => {
                 {data ? `${data.length} tags` : ''}
               </CardDescription>
             </div>
-            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search tags..."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="pl-10 w-full sm:w-64"
-                  aria-label={t('labels.searchTags', 'Search tags')}
-                />
-              </div>
-              <Button type="submit" variant="secondary">
-                Search
-              </Button>
-            </form>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search tags..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-10 w-full sm:w-64"
+                aria-label={t('labels.searchTags', 'Search tags')}
+              />
+            </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
               {error}

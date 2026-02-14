@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
-import { useDebouncedCallback } from 'use-debounce'
 import { getPaginationRange } from '@/lib/utils/pagination'
 import {
   Search,
@@ -57,10 +56,21 @@ import {
   TableRow,
 } from '@uikit'
 
-import { useProducts } from '@/portal-app/products/states/useProducts'
-import { useProductCategories } from '@/portal-app/products/states/useProductCategories'
-import { useActiveBrands } from '@/portal-app/brands/states/useBrands'
-import { useFilterableProductAttributes } from '@/portal-app/products/states/useProductAttributes'
+import {
+  useProductsQuery,
+  useProductStatsQuery,
+  useProductCategoriesQuery,
+  useFilterableProductAttributesQuery,
+  useDeleteProduct,
+  usePublishProduct,
+  useArchiveProduct,
+  useDuplicateProduct,
+  useBulkPublishProducts,
+  useBulkArchiveProducts,
+  useBulkDeleteProducts,
+} from '@/portal-app/products/queries'
+import type { GetProductsParams } from '@/services/products'
+import { useActiveBrandsQuery } from '@/portal-app/brands/queries'
 import { DeleteProductDialog } from '../../components/products/DeleteProductDialog'
 import { ProductStatsCards } from '../../components/products/ProductStatsCards'
 import { EnhancedProductGridView } from '../../components/products/EnhancedProductGridView'
@@ -84,57 +94,84 @@ export const ProductsPage = () => {
   const canDeleteProducts = hasPermission(Permissions.ProductsDelete)
   const canPublishProducts = hasPermission(Permissions.ProductsPublish)
 
-  const {
-    data,
-    stats,
-    loading,
-    error,
-    setPage,
-    setSearch,
-    setStatus,
-    setCategoryId,
-    setBrand,
-    setInStockOnly,
-    setLowStockOnly,
-    setAttributeFilters,
-    handleDelete,
-    handlePublish,
-    handleArchive,
-    handleDuplicate,
-    handleBulkPublish,
-    handleBulkArchive,
-    handleBulkDelete,
-    params,
-  } = useProducts()
-  const { data: categories } = useProductCategories()
-  const { data: brands = [] } = useActiveBrands()
-  const { data: filterableAttributes = [] } = useFilterableProductAttributes()
+  // Filter params managed as component state
+  const [params, setParams] = useState<GetProductsParams>({
+    page: 1,
+    pageSize: DEFAULT_PRODUCT_PAGE_SIZE,
+  })
+  const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
+  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
+
+  const { data, isLoading: loading, error: queryError } = useProductsQuery(queryParams)
+  const { data: stats = { total: 0, active: 0, draft: 0, archived: 0, outOfStock: 0, lowStock: 0 } } = useProductStatsQuery()
+  const { data: categories = [] } = useProductCategoriesQuery()
+  const { data: brands = [] } = useActiveBrandsQuery()
+  const { data: filterableAttributes = [] } = useFilterableProductAttributesQuery()
+  const error = queryError?.message ?? null
+
+  // Mutation hooks
+  const deleteProductMutation = useDeleteProduct()
+  const publishProductMutation = usePublishProduct()
+  const archiveProductMutation = useArchiveProduct()
+  const duplicateProductMutation = useDuplicateProduct()
+  const bulkPublishMutation = useBulkPublishProducts()
+  const bulkArchiveMutation = useBulkArchiveProducts()
+  const bulkDeleteMutation = useBulkDeleteProducts()
+
+  // Delete handler for DeleteProductDialog (expects { success, error } return)
+  const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await deleteProductMutation.mutateAsync(id)
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete product'
+      return { success: false, error: message }
+    }
+  }
+
+  // Transition for filter/pagination updates
+  const [isFilterPending, startFilterTransition] = useTransition()
+
+  // Param setters — wrapped in startFilterTransition for smooth UI
+  const setPage = (page: number) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, page }))
+  )
+  const setStatus = (status: ProductStatus | undefined) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, status, page: 1 }))
+  )
+  const setCategoryId = (categoryId: string | undefined) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, categoryId, page: 1 }))
+  )
+  const setBrand = (brand: string | undefined) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, brand, page: 1 }))
+  )
+  const setInStockOnly = (inStockOnly: boolean | undefined) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, inStockOnly, page: 1 }))
+  )
+  const setLowStockOnly = (lowStockOnly: boolean | undefined) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, lowStockOnly, page: 1 }))
+  )
+  const setAttributeFilters = (attributeFilters: Record<string, string[]> | undefined) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, attributeFilters, page: 1 }))
+  )
 
   // Track selected attribute and values for the attribute filter
   const [selectedAttributeCode, setSelectedAttributeCode] = useState<string | null>(null)
   const [selectedAttributeValues, setSelectedAttributeValues] = useState<Set<string>>(new Set())
 
-  const [searchInput, setSearchInput] = useState('')
   const [productToDelete, setProductToDelete] = useState<ProductListItem | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [bulkOperating, setBulkOperating] = useState(false)
 
-  // Debounced search
-  const debouncedSearch = useDebouncedCallback((value: string) => {
-    setSearch(value)
-  }, 300)
+  // Transition for bulk operations
+  const [isBulkPending, startBulkTransition] = useTransition()
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchInput(value)
-    debouncedSearch(value)
-  }
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSearch(searchInput)
+    setSearchInput(e.target.value)
+    setParams((prev) => ({ ...prev, page: 1 }))
   }
 
   // Bulk selection handlers
@@ -164,9 +201,8 @@ export const ProductsPage = () => {
     data.items.every(p => selectedIds.has(p.id))
 
   // Bulk action handlers - use bulk API endpoints for better performance
-  const onBulkPublish = async () => {
+  const onBulkPublish = () => {
     if (selectedIds.size === 0) return
-    setBulkOperating(true)
 
     // Get IDs of draft products only (bulk publish only works on drafts)
     const draftProductIds = data?.items
@@ -175,29 +211,28 @@ export const ProductsPage = () => {
 
     if (draftProductIds.length === 0) {
       toast.warning(t('products.noDraftProductsSelected', 'No draft products selected'))
-      setBulkOperating(false)
       return
     }
 
-    const result = await handleBulkPublish(draftProductIds)
-    if (result.success && result.result) {
-      const { success, failed } = result.result
-      if (failed > 0) {
-        toast.warning(t('products.bulkPublishPartial', { success, failed, defaultValue: `${success} products published, ${failed} failed` }))
-      } else {
-        toast.success(t('products.bulkPublishSuccess', { count: success, defaultValue: `${success} products published` }))
+    startBulkTransition(async () => {
+      try {
+        const result = await bulkPublishMutation.mutateAsync(draftProductIds)
+        const { success, failed } = result
+        if (failed > 0) {
+          toast.warning(t('products.bulkPublishPartial', { success, failed, defaultValue: `${success} products published, ${failed} failed` }))
+        } else {
+          toast.success(t('products.bulkPublishSuccess', { count: success, defaultValue: `${success} products published` }))
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : t('products.bulkPublishFailed', 'Failed to publish products')
+        toast.error(message)
       }
-    } else {
-      toast.error(result.error || t('products.bulkPublishFailed', 'Failed to publish products'))
-    }
-
-    setSelectedIds(new Set())
-    setBulkOperating(false)
+      setSelectedIds(new Set())
+    })
   }
 
-  const onBulkArchive = async () => {
+  const onBulkArchive = () => {
     if (selectedIds.size === 0) return
-    setBulkOperating(true)
 
     // Get IDs of active products only (bulk archive only works on active)
     const activeProductIds = data?.items
@@ -206,46 +241,46 @@ export const ProductsPage = () => {
 
     if (activeProductIds.length === 0) {
       toast.warning(t('products.noActiveProductsSelected', 'No active products selected'))
-      setBulkOperating(false)
       return
     }
 
-    const result = await handleBulkArchive(activeProductIds)
-    if (result.success && result.result) {
-      const { success, failed } = result.result
-      if (failed > 0) {
-        toast.warning(t('products.bulkArchivePartial', { success, failed, defaultValue: `${success} products archived, ${failed} failed` }))
-      } else {
-        toast.success(t('products.bulkArchiveSuccess', { count: success, defaultValue: `${success} products archived` }))
+    startBulkTransition(async () => {
+      try {
+        const result = await bulkArchiveMutation.mutateAsync(activeProductIds)
+        const { success, failed } = result
+        if (failed > 0) {
+          toast.warning(t('products.bulkArchivePartial', { success, failed, defaultValue: `${success} products archived, ${failed} failed` }))
+        } else {
+          toast.success(t('products.bulkArchiveSuccess', { count: success, defaultValue: `${success} products archived` }))
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : t('products.bulkArchiveFailed', 'Failed to archive products')
+        toast.error(message)
       }
-    } else {
-      toast.error(result.error || t('products.bulkArchiveFailed', 'Failed to archive products'))
-    }
-
-    setSelectedIds(new Set())
-    setBulkOperating(false)
+      setSelectedIds(new Set())
+    })
   }
 
-  const onBulkDelete = async () => {
+  const onBulkDelete = () => {
     if (selectedIds.size === 0) return
-    setBulkOperating(true)
 
     const selectedProductIds = Array.from(selectedIds)
 
-    const result = await handleBulkDelete(selectedProductIds)
-    if (result.success && result.result) {
-      const { success, failed } = result.result
-      if (failed > 0) {
-        toast.warning(t('products.bulkDeletePartial', { success, failed, defaultValue: `${success} products deleted, ${failed} failed` }))
-      } else {
-        toast.success(t('products.bulkDeleteSuccess', { count: success, defaultValue: `${success} products deleted` }))
+    startBulkTransition(async () => {
+      try {
+        const result = await bulkDeleteMutation.mutateAsync(selectedProductIds)
+        const { success, failed } = result
+        if (failed > 0) {
+          toast.warning(t('products.bulkDeletePartial', { success, failed, defaultValue: `${success} products deleted, ${failed} failed` }))
+        } else {
+          toast.success(t('products.bulkDeleteSuccess', { count: success, defaultValue: `${success} products deleted` }))
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : t('products.bulkDeleteFailed', 'Failed to delete products')
+        toast.error(message)
       }
-    } else {
-      toast.error(result.error || t('products.bulkDeleteFailed', 'Failed to delete products'))
-    }
-
-    setSelectedIds(new Set())
-    setBulkOperating(false)
+      setSelectedIds(new Set())
+    })
   }
 
   // Get counts for bulk action buttons
@@ -324,31 +359,33 @@ export const ProductsPage = () => {
   }
 
   const onPublish = async (product: ProductListItem) => {
-    const result = await handlePublish(product.id)
-    if (result.success) {
+    try {
+      await publishProductMutation.mutateAsync(product.id)
       toast.success(t('products.publishSuccess', { name: product.name, defaultValue: `Product "${product.name}" published successfully` }))
-    } else {
-      toast.error(result.error || t('products.publishFailed', 'Failed to publish product'))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('products.publishFailed', 'Failed to publish product')
+      toast.error(message)
     }
   }
 
   const onArchive = async (product: ProductListItem) => {
-    const result = await handleArchive(product.id)
-    if (result.success) {
+    try {
+      await archiveProductMutation.mutateAsync(product.id)
       toast.success(t('products.archiveSuccess', { name: product.name, defaultValue: `Product "${product.name}" archived successfully` }))
-    } else {
-      toast.error(result.error || t('products.archiveFailed', 'Failed to archive product'))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('products.archiveFailed', 'Failed to archive product')
+      toast.error(message)
     }
   }
 
   const onDuplicate = async (product: ProductListItem) => {
-    const result = await handleDuplicate(product.id)
-    if (result.success && result.newId) {
+    try {
+      const newProduct = await duplicateProductMutation.mutateAsync(product.id)
       toast.success(t('products.duplicateSuccess', { name: product.name, defaultValue: `"${product.name}" duplicated as draft` }))
-      // Navigate to edit the new product
-      navigate(`/portal/ecommerce/products/${result.newId}/edit`)
-    } else {
-      toast.error(result.error || t('products.duplicateFailed', 'Failed to duplicate product'))
+      navigate(`/portal/ecommerce/products/${newProduct.id}/edit`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('products.duplicateFailed', 'Failed to duplicate product')
+      toast.error(message)
     }
   }
 
@@ -397,7 +434,7 @@ export const ProductsPage = () => {
       {/* Stats Dashboard */}
       <ProductStatsCards
         stats={stats}
-        hasActiveFilters={!!(params.search || params.categoryId || params.brand || params.inStockOnly || params.lowStockOnly || (params.attributeFilters && Object.keys(params.attributeFilters).length > 0))}
+        hasActiveFilters={!!(deferredSearch || params.categoryId || params.brand || params.inStockOnly || params.lowStockOnly || (params.attributeFilters && Object.keys(params.attributeFilters).length > 0))}
         activeFilter={params.status || null}
         onFilterChange={(status) => setStatus(status || undefined)}
       />
@@ -449,7 +486,7 @@ export const ProductsPage = () => {
 
           {/* Filters - Responsive Design */}
           <div className={`flex flex-col gap-3 ${showFilters ? 'block' : 'hidden sm:flex'} sm:flex-row sm:items-center sm:flex-wrap`}>
-            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 flex-1 min-w-[200px]">
+            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                 <Input
@@ -460,7 +497,7 @@ export const ProductsPage = () => {
                   aria-label={t('products.searchProducts', 'Search products')}
                 />
               </div>
-            </form>
+            </div>
 
             <Select onValueChange={handleStatusChange} defaultValue="all">
               <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByStatus', 'Filter by status')}>
@@ -608,7 +645,7 @@ export const ProductsPage = () => {
           </div>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className={(isFilterPending || isSearchStale) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive animate-in fade-in-0 slide-in-from-top-2 duration-300">
               <p className="text-sm font-medium">{error}</p>
@@ -627,10 +664,10 @@ export const ProductsPage = () => {
                     variant="outline"
                     size="sm"
                     onClick={onBulkPublish}
-                    disabled={bulkOperating}
+                    disabled={isBulkPending}
                     className="cursor-pointer text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950"
                   >
-                    {bulkOperating ? (
+                    {isBulkPending ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     ) : (
                       <Send className="h-4 w-4 mr-2" />
@@ -643,10 +680,10 @@ export const ProductsPage = () => {
                     variant="outline"
                     size="sm"
                     onClick={onBulkArchive}
-                    disabled={bulkOperating}
+                    disabled={isBulkPending}
                     className="cursor-pointer text-amber-600 border-amber-200 hover:bg-amber-50 dark:text-amber-400 dark:border-amber-800 dark:hover:bg-amber-950"
                   >
-                    {bulkOperating ? (
+                    {isBulkPending ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     ) : (
                       <Archive className="h-4 w-4 mr-2" />
@@ -659,10 +696,10 @@ export const ProductsPage = () => {
                     variant="outline"
                     size="sm"
                     onClick={onBulkDelete}
-                    disabled={bulkOperating}
+                    disabled={isBulkPending}
                     className="cursor-pointer text-destructive border-destructive/30 hover:bg-destructive/10"
                   >
-                    {bulkOperating ? (
+                    {isBulkPending ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     ) : (
                       <Trash2 className="h-4 w-4 mr-2" />

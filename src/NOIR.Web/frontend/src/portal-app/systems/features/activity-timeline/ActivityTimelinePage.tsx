@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useDeferredValue } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import type { DateRange } from 'react-day-picker'
@@ -258,8 +258,9 @@ export const ActivityTimelinePage = () => {
   const [currentPage, setCurrentPage] = useState(1)
 
   // Filters
-  const [searchTerm, setSearchTerm] = useState('')
   const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
   const [pageContext, setPageContext] = useState<string>('')
   const [operationType, setOperationType] = useState<string>('')
   const [onlyFailed, setOnlyFailed] = useState(false)
@@ -283,7 +284,7 @@ export const ActivityTimelinePage = () => {
       const result = await searchActivityTimeline({
         pageContext: pageContext || undefined,
         operationType: operationType || undefined,
-        searchTerm: searchTerm || undefined,
+        searchTerm: deferredSearch || undefined,
         onlyFailed: onlyFailed || undefined,
         userId: userIdParam || undefined,
         fromDate: dateRange?.from?.toISOString(),
@@ -299,17 +300,11 @@ export const ActivityTimelinePage = () => {
     } finally {
       setLoading(false)
     }
-  }, [pageContext, operationType, searchTerm, onlyFailed, userIdParam, dateRange, currentPage])
+  }, [pageContext, operationType, deferredSearch, onlyFailed, userIdParam, dateRange, currentPage])
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSearchTerm(searchInput)
-    setCurrentPage(1)
-  }
 
   const handleRefresh = () => {
     fetchData()
@@ -370,7 +365,7 @@ export const ActivityTimelinePage = () => {
             )}
 
             {/* Filter Bar - Clean unified search */}
-            <form onSubmit={handleSearchSubmit}>
+            <div>
               <div className="flex flex-wrap items-center gap-2">
                 {/* Unified search input with info tooltip */}
                 <div className="relative flex-1 min-w-[280px]">
@@ -494,7 +489,6 @@ export const ActivityTimelinePage = () => {
                       className="h-9 gap-1.5"
                       onClick={() => {
                         setSearchInput('')
-                        setSearchTerm('')
                         setPageContext('')
                         setOperationType('')
                         setOnlyFailed(false)
@@ -510,16 +504,12 @@ export const ActivityTimelinePage = () => {
                       Clear
                     </Button>
                   )}
-                  <Button type="submit" size="sm" className="h-9 gap-1.5">
-                    <Search className="h-3.5 w-3.5" />
-                    {t('buttons.search', 'Search')}
-                  </Button>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md flex items-center gap-2">
               <AlertCircle className="h-4 w-4" />

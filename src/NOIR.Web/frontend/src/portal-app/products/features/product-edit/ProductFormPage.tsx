@@ -80,35 +80,35 @@ import {
   Textarea,
 } from '@uikit'
 
-import { useProduct } from '@/portal-app/products/states/useProducts'
-import { useProductCategories } from '@/portal-app/products/states/useProductCategories'
-import { useActiveBrands } from '@/portal-app/brands/states/useBrands'
 import {
-  createProduct,
-  updateProduct,
-  publishProduct,
-  addProductVariant,
-  deleteProductVariant,
-  addProductImage,
-  updateProductImage,
-  deleteProductImage,
-  setPrimaryProductImage,
-  uploadProductImage,
-  reorderProductImages,
-} from '@/services/products'
+  useProductQuery,
+  useProductCategoriesQuery,
+  useCreateProduct,
+  useUpdateProduct,
+  usePublishProductAction,
+  useAddProductVariant,
+  useDeleteProductVariant,
+  useAddProductImage,
+  useUpdateProductImage,
+  useDeleteProductImage,
+  useSetPrimaryProductImage,
+  useUploadProductImage,
+  useReorderProductImages,
+} from '@/portal-app/products/queries'
+import { useActiveBrandsQuery } from '@/portal-app/brands/queries'
 import { ImageUploadZone } from '@/components/products/ImageUploadZone'
 import { SortableImageGallery } from '@/components/products/SortableImageGallery'
 import { ProductAttributesSection } from '@/components/products/ProductAttributesSection'
 import { ProductAttributesSectionCreate } from '@/components/products/ProductAttributesSectionCreate'
 import { EditableVariantsTable } from '@/components/products/EditableVariantsTable'
 import { ProductActivityLog } from '../../components/products/ProductActivityLog'
-import { useBulkUpdateProductAttributes } from '@/portal-app/products/states/useProductAttributes'
-import { useStockHistory } from '@/hooks/useStockHistory'
+import { useBulkUpdateProductAttributesMutation } from '@/portal-app/products/queries'
+import { useStockHistoryQuery } from '@/hooks/useStockHistoryQuery'
 import { StockHistoryTimeline, type StockMovement, type StockMovementType } from '@/components/products/StockHistoryTimeline'
 import type { InventoryMovement, InventoryMovementType } from '@/types/inventory'
 import { uploadMedia } from '@/services/media'
 import { toast } from 'sonner'
-import { ApiError } from '@/services/apiClient'
+
 import type { ProductVariant, ProductImage, CreateProductVariantRequest, CreateProductImageRequest } from '@/types/product'
 
 // Local types for create mode (before product exists)
@@ -254,9 +254,9 @@ export const ProductFormPage = () => {
 
   usePageContext(isViewMode ? 'View Product' : isEditing ? 'Edit Product' : 'New Product')
 
-  const { data: product, loading: productLoading, refresh: refreshProduct } = useProduct(id)
-  const { data: categories } = useProductCategories()
-  const { data: brands = [] } = useActiveBrands()
+  const { data: product, isLoading: productLoading, refetch: refreshProduct } = useProductQuery(id)
+  const { data: categories = [] } = useProductCategoriesQuery()
+  const { data: brands = [] } = useActiveBrandsQuery()
 
   const [isSaving, setIsSaving] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
@@ -279,13 +279,24 @@ export const ProductFormPage = () => {
   const [localVariantToDelete, setLocalVariantToDelete] = useState<LocalVariant | null>(null)
   const [tempImageToDelete, setTempImageToDelete] = useState<TempImage | null>(null)
 
-  // Attribute bulk update hook
-  const { bulkUpdate: bulkUpdateAttributes } = useBulkUpdateProductAttributes()
+  // Mutation hooks
+  const createProductMutation = useCreateProduct()
+  const updateProductMutation = useUpdateProduct()
+  const publishProductMutation = usePublishProductAction()
+  const addVariantMutation = useAddProductVariant()
+  const deleteVariantMutation = useDeleteProductVariant()
+  const addImageMutation = useAddProductImage()
+  const updateImageMutation = useUpdateProductImage()
+  const deleteImageMutation = useDeleteProductImage()
+  const setPrimaryImageMutation = useSetPrimaryProductImage()
+  const uploadImageMutation = useUploadProductImage()
+  const reorderImagesMutation = useReorderProductImages()
+  const bulkUpdateAttributesMutation = useBulkUpdateProductAttributesMutation()
 
   // Stock history state
   const [selectedVariantForHistory, setSelectedVariantForHistory] = useState<string | null>(null)
   const effectiveVariantId = selectedVariantForHistory ?? variants[0]?.id
-  const { data: stockHistory, loading: stockHistoryLoading } = useStockHistory(
+  const { data: stockHistory, isLoading: stockHistoryLoading } = useStockHistoryQuery(
     id,
     effectiveVariantId
   )
@@ -385,11 +396,14 @@ export const ProductFormPage = () => {
       let productId = id
 
       if (isEditing && id) {
-        await updateProduct(id, {
-          ...data,
-          descriptionHtml, // Use TinyMCE editor state
-          currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
-          categoryId: data.categoryId || null,
+        await updateProductMutation.mutateAsync({
+          id,
+          request: {
+            ...data,
+            descriptionHtml, // Use TinyMCE editor state
+            currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
+            categoryId: data.categoryId || null,
+          },
         })
       } else {
         // Convert local variants to CreateProductVariantRequest format
@@ -411,7 +425,7 @@ export const ProductFormPage = () => {
           isPrimary: img.isPrimary,
         }))
 
-        const newProduct = await createProduct({
+        const newProduct = await createProductMutation.mutateAsync({
           ...data,
           descriptionHtml, // Use TinyMCE editor state
           currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
@@ -432,15 +446,13 @@ export const ProductFormPage = () => {
           }))
 
         if (attributeItems.length > 0) {
-          const result = await bulkUpdateAttributes(productId, {
-            variantId: null,
-            values: attributeItems,
+          await bulkUpdateAttributesMutation.mutateAsync({
+            productId,
+            request: {
+              variantId: null,
+              values: attributeItems,
+            },
           })
-
-          if (!result.success) {
-            toast.error(result.error || 'Failed to save attributes')
-            return
-          }
         }
       }
 
@@ -450,7 +462,7 @@ export const ProductFormPage = () => {
         navigate(`/portal/ecommerce/products/${productId}/edit`)
       }
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to save product'
+      const message = err instanceof Error ? err.message : 'Failed to save product'
       toast.error(message)
     } finally {
       setIsSaving(false)
@@ -462,11 +474,11 @@ export const ProductFormPage = () => {
 
     setIsPublishing(true)
     try {
-      await publishProduct(id)
+      await publishProductMutation.mutateAsync(id)
       toast.success('Product published successfully')
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to publish product'
+      const message = err instanceof Error ? err.message : 'Failed to publish product'
       toast.error(message)
     } finally {
       setIsPublishing(false)
@@ -478,21 +490,23 @@ export const ProductFormPage = () => {
     if (!newVariant || !id) return
 
     try {
-      const request: CreateProductVariantRequest = {
-        name: newVariant.name,
-        price: newVariant.price,
-        sku: newVariant.sku || null,
-        compareAtPrice: newVariant.compareAtPrice || null,
-        stockQuantity: newVariant.stockQuantity,
-        options: null,
-        sortOrder: newVariant.sortOrder,
-      }
-      await addProductVariant(id, request)
+      await addVariantMutation.mutateAsync({
+        productId: id,
+        request: {
+          name: newVariant.name,
+          price: newVariant.price,
+          sku: newVariant.sku || null,
+          compareAtPrice: newVariant.compareAtPrice || null,
+          stockQuantity: newVariant.stockQuantity,
+          options: null,
+          sortOrder: newVariant.sortOrder,
+        },
+      })
       toast.success('Variant added successfully')
       setNewVariant(null)
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to add variant'
+      const message = err instanceof Error ? err.message : 'Failed to add variant'
       toast.error(message)
     }
   }
@@ -502,12 +516,12 @@ export const ProductFormPage = () => {
 
     setIsDeletingVariant(true)
     try {
-      await deleteProductVariant(id, variantToDelete.id)
+      await deleteVariantMutation.mutateAsync({ productId: id, variantId: variantToDelete.id })
       toast.success(`Variant "${variantToDelete.name}" deleted successfully`)
       setVariantToDelete(null)
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to delete variant'
+      const message = err instanceof Error ? err.message : 'Failed to delete variant'
       toast.error(message)
     } finally {
       setIsDeletingVariant(false)
@@ -626,17 +640,20 @@ export const ProductFormPage = () => {
     if (!newImageUrl || !id) return
 
     try {
-      await addProductImage(id, {
-        url: newImageUrl,
-        altText: null,
-        sortOrder: images.length,
-        isPrimary: images.length === 0,
+      await addImageMutation.mutateAsync({
+        productId: id,
+        request: {
+          url: newImageUrl,
+          altText: null,
+          sortOrder: images.length,
+          isPrimary: images.length === 0,
+        },
       })
       toast.success('Image added successfully')
       setNewImageUrl('')
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to add image'
+      const message = err instanceof Error ? err.message : 'Failed to add image'
       toast.error(message)
     }
   }
@@ -646,12 +663,12 @@ export const ProductFormPage = () => {
 
     setIsDeletingImage(true)
     try {
-      await deleteProductImage(id, imageToDelete.id)
+      await deleteImageMutation.mutateAsync({ productId: id, imageId: imageToDelete.id })
       toast.success('Image deleted successfully')
       setImageToDelete(null)
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to delete image'
+      const message = err instanceof Error ? err.message : 'Failed to delete image'
       toast.error(message)
     } finally {
       setIsDeletingImage(false)
@@ -662,11 +679,11 @@ export const ProductFormPage = () => {
     if (!id) return
 
     try {
-      await setPrimaryProductImage(id, imageId)
+      await setPrimaryImageMutation.mutateAsync({ productId: id, imageId })
       toast.success('Primary image set successfully')
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to set primary image'
+      const message = err instanceof Error ? err.message : 'Failed to set primary image'
       toast.error(message)
     }
   }
@@ -676,7 +693,7 @@ export const ProductFormPage = () => {
     if (!id) return
 
     try {
-      await uploadProductImage(id, file, undefined, images.length === 0)
+      await uploadImageMutation.mutateAsync({ productId: id, file, altText: undefined, isPrimary: images.length === 0 })
       toast.success(t('messages.uploadSuccess', 'Image uploaded successfully'))
       await refreshProduct()
     } catch (err) {
@@ -694,16 +711,16 @@ export const ProductFormPage = () => {
     setImages(reorderedImages)
 
     try {
-      await reorderProductImages(
-        id,
-        reorderedImages.map((img, index) => ({
+      await reorderImagesMutation.mutateAsync({
+        productId: id,
+        items: reorderedImages.map((img, index) => ({
           imageId: img.id,
           sortOrder: index,
-        }))
-      )
+        })),
+      })
       toast.success(t('products.imagesReordered', 'Images reordered successfully'))
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to reorder images'
+      const message = err instanceof Error ? err.message : 'Failed to reorder images'
       toast.error(message)
       // Revert on error
       await refreshProduct()
@@ -718,15 +735,19 @@ export const ProductFormPage = () => {
     if (!image) return
 
     try {
-      await updateProductImage(id, imageId, {
-        url: image.url,
-        altText: altText || null,
-        sortOrder: image.sortOrder,
+      await updateImageMutation.mutateAsync({
+        productId: id,
+        imageId,
+        request: {
+          url: image.url,
+          altText: altText || null,
+          sortOrder: image.sortOrder,
+        },
       })
       toast.success('Alt text updated successfully')
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to update alt text'
+      const message = err instanceof Error ? err.message : 'Failed to update alt text'
       toast.error(message)
     }
   }

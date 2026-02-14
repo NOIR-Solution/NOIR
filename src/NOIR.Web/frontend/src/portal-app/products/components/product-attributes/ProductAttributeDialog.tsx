@@ -28,7 +28,7 @@ import {
   Textarea,
 } from '@uikit'
 
-import { useCreateProductAttribute, useUpdateProductAttribute } from '@/portal-app/products/states/useProductAttributes'
+import { useCreateProductAttributeMutation, useUpdateProductAttributeMutation } from '@/portal-app/products/queries'
 import type { ProductAttributeListItem, AttributeType } from '@/types/productAttribute'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
@@ -91,8 +91,8 @@ export const ProductAttributeDialog = ({
 }: ProductAttributeDialogProps) => {
   const { t } = useTranslation('common')
   const isEditing = !!attribute
-  const createAttributeHook = useCreateProductAttribute()
-  const updateAttributeHook = useUpdateProductAttribute()
+  const createMutation = useCreateProductAttributeMutation()
+  const updateMutation = useUpdateProductAttributeMutation()
 
   const form = useForm<AttributeFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
@@ -205,28 +205,25 @@ export const ProductAttributeDialog = ({
       helpText: data.helpText || null,
     }
 
-    if (isEditing && attribute) {
-      const result = await updateAttributeHook.updateProductAttribute(attribute.id, cleanedData)
-      if (result.success) {
+    try {
+      if (isEditing && attribute) {
+        await updateMutation.mutateAsync({ id: attribute.id, request: cleanedData })
         toast.success(t('productAttributes.updateSuccess', 'Product attribute updated successfully'))
-        onSuccess?.()
-        onOpenChange(false)
       } else {
-        toast.error(result.error || t('productAttributes.updateError', 'Failed to update product attribute'))
-      }
-    } else {
-      const result = await createAttributeHook.createProductAttribute(cleanedData)
-      if (result.success) {
+        await createMutation.mutateAsync(cleanedData)
         toast.success(t('productAttributes.createSuccess', 'Product attribute created successfully'))
-        onSuccess?.()
-        onOpenChange(false)
-      } else {
-        toast.error(result.error || t('productAttributes.createError', 'Failed to create product attribute'))
       }
+      onSuccess?.()
+      onOpenChange(false)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : isEditing
+        ? t('productAttributes.updateError', 'Failed to update product attribute')
+        : t('productAttributes.createError', 'Failed to create product attribute')
+      toast.error(message)
     }
   }
 
-  const isSubmitting = createAttributeHook.isPending || updateAttributeHook.isPending
+  const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   // Get type label for display
   const getTypeLabel = (type: string) => {

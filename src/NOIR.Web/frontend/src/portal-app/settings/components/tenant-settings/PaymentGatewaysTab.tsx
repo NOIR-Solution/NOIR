@@ -2,7 +2,14 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { usePaymentGateways } from '../../states/usePaymentGateways'
+import {
+  usePaymentGatewaysListQuery,
+  useGatewaySchemasQuery,
+  useConfigureGatewayMutation,
+  useUpdateGatewayMutation,
+  useToggleGatewayActiveMutation,
+  useTestGatewayConnectionMutation,
+} from '@/portal-app/settings/queries'
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@uikit'
 
 import { toast } from 'sonner'
@@ -13,18 +20,47 @@ import type { PaymentGateway } from '@/types'
 export const PaymentGatewaysTab = () => {
   const { t } = useTranslation('common')
 
-  const {
-    schemas,
-    loading,
-    error,
-    refresh,
-    configure,
-    update,
-    toggleActive,
-    testConnection,
-    getGatewayByProvider,
-    availableProviders,
-  } = usePaymentGateways()
+  const { data: gateways = [], isLoading: gatewaysLoading, error: gatewaysError, refetch: refreshGateways } = usePaymentGatewaysListQuery()
+  const { data: schemas, isLoading: schemasLoading, error: schemasError, refetch: refreshSchemas } = useGatewaySchemasQuery()
+  const configureMutation = useConfigureGatewayMutation()
+  const updateMutation = useUpdateGatewayMutation()
+  const toggleActiveMutation = useToggleGatewayActiveMutation()
+  const testConnectionMutation = useTestGatewayConnectionMutation()
+
+  const loading = gatewaysLoading || schemasLoading
+  const error = gatewaysError?.message ?? schemasError?.message ?? null
+
+  const getGatewayByProvider = (provider: string) => gateways.find((g) => g.provider === provider)
+  const availableProviders = schemas ? Object.keys(schemas.schemas) : []
+
+  const refresh = async () => {
+    await Promise.all([refreshGateways(), refreshSchemas()])
+  }
+
+  // Wrapper functions that maintain { success, error } return pattern for ConfigureGatewayDialog
+  const configure = async (request: import('@/types').ConfigureGatewayRequest): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await configureMutation.mutateAsync(request)
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to configure gateway'
+      return { success: false, error: message }
+    }
+  }
+
+  const update = async (id: string, request: import('@/types').UpdateGatewayRequest): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await updateMutation.mutateAsync({ id, request })
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update gateway'
+      return { success: false, error: message }
+    }
+  }
+
+  const testConnection = async (id: string) => {
+    return testConnectionMutation.mutateAsync(id)
+  }
 
   const [configureDialogOpen, setConfigureDialogOpen] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null)
@@ -40,15 +76,15 @@ export const PaymentGatewaysTab = () => {
   }
 
   const handleToggleActive = async (gateway: PaymentGateway, isActive: boolean) => {
-    const result = await toggleActive(gateway.id, isActive)
-    if (result.success) {
+    try {
+      await toggleActiveMutation.mutateAsync({ id: gateway.id, isActive })
       toast.success(
         isActive
           ? t('paymentGateways.enabled', 'Gateway enabled')
           : t('paymentGateways.disabled', 'Gateway disabled')
       )
-    } else {
-      toast.error(result.error ?? 'Failed to toggle gateway')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to toggle gateway')
     }
   }
 

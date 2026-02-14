@@ -1,7 +1,13 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Tags, Plus, Trash2, GripVertical, Check } from 'lucide-react'
-import { useCategoryAttributes, useActiveProductAttributes } from '@/portal-app/products/states/useProductAttributes'
+import {
+  useCategoryAttributesQuery,
+  useActiveProductAttributesQuery,
+  useAssignCategoryAttributeMutation,
+  useUpdateCategoryAttributeMutation,
+  useRemoveCategoryAttributeMutation,
+} from '@/portal-app/products/queries'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,15 +62,11 @@ export const ProductCategoryAttributesDialog = ({
   const [attributeToRemove, setAttributeToRemove] = useState<CategoryAttribute | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const {
-    data: categoryAttributes,
-    loading,
-    handleAssign,
-    handleUpdate,
-    handleRemove,
-  } = useCategoryAttributes(category?.id)
-
-  const { data: allAttributes, loading: loadingAttributes } = useActiveProductAttributes()
+  const { data: categoryAttributes = [], isLoading: loading } = useCategoryAttributesQuery(category?.id)
+  const { data: allAttributes = [], isLoading: loadingAttributes } = useActiveProductAttributesQuery()
+  const assignMutation = useAssignCategoryAttributeMutation()
+  const updateMutation = useUpdateCategoryAttributeMutation()
+  const removeMutation = useRemoveCategoryAttributeMutation()
 
   // Filter out already assigned attributes
   const availableAttributes = allAttributes.filter(
@@ -72,48 +74,60 @@ export const ProductCategoryAttributesDialog = ({
   )
 
   const handleAddAttribute = async () => {
-    if (!selectedAttributeId) return
+    if (!selectedAttributeId || !category) return
 
     setIsSubmitting(true)
-    const result = await handleAssign({
-      attributeId: selectedAttributeId,
-      isRequired: selectedIsRequired,
-      sortOrder: categoryAttributes.length,
-    })
-
-    if (result.success) {
+    try {
+      await assignMutation.mutateAsync({
+        categoryId: category.id,
+        request: {
+          attributeId: selectedAttributeId,
+          isRequired: selectedIsRequired,
+          sortOrder: categoryAttributes.length,
+        },
+      })
       toast.success(t('categoryAttributes.assignSuccess', 'Attribute assigned successfully'))
       setShowAddAttribute(false)
       setSelectedAttributeId('')
       setSelectedIsRequired(false)
-    } else {
-      toast.error(result.error || t('categoryAttributes.assignError', 'Failed to assign attribute'))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('categoryAttributes.assignError', 'Failed to assign attribute')
+      toast.error(message)
     }
     setIsSubmitting(false)
   }
 
   const handleToggleRequired = async (ca: CategoryAttribute) => {
-    const result = await handleUpdate(ca.attributeId, {
-      isRequired: !ca.isRequired,
-      sortOrder: ca.sortOrder,
-    })
-
-    if (result.success) {
+    if (!category) return
+    try {
+      await updateMutation.mutateAsync({
+        categoryId: category.id,
+        attributeId: ca.attributeId,
+        request: {
+          isRequired: !ca.isRequired,
+          sortOrder: ca.sortOrder,
+        },
+      })
       toast.success(t('categoryAttributes.updateSuccess', 'Attribute updated'))
-    } else {
-      toast.error(result.error || t('categoryAttributes.updateError', 'Failed to update attribute'))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('categoryAttributes.updateError', 'Failed to update attribute')
+      toast.error(message)
     }
   }
 
   const confirmRemoveAttribute = async () => {
-    if (!attributeToRemove) return
+    if (!attributeToRemove || !category) return
 
-    const result = await handleRemove(attributeToRemove.attributeId)
-    if (result.success) {
+    try {
+      await removeMutation.mutateAsync({
+        categoryId: category.id,
+        attributeId: attributeToRemove.attributeId,
+      })
       toast.success(t('categoryAttributes.removeSuccess', 'Attribute removed'))
       setAttributeToRemove(null)
-    } else {
-      toast.error(result.error || t('categoryAttributes.removeError', 'Failed to remove attribute'))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('categoryAttributes.removeError', 'Failed to remove attribute')
+      toast.error(message)
     }
   }
 

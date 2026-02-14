@@ -68,8 +68,7 @@ import { useTranslation } from 'react-i18next'
 import { getPostById, createPost, updatePost, publishPost, unpublishPost } from '@/services/blog'
 
 import { uploadMedia } from '@/services/media'
-import { useCategories } from '@/portal-app/blogs/states/useBlogCategories'
-import { useTags } from '@/portal-app/blogs/states/useBlogTags'
+import { useBlogCategoriesQuery, useBlogTagsQuery } from '@/portal-app/blogs/queries'
 import { ApiError } from '@/services/apiClient'
 import type { Post, CreatePostRequest } from '@/types'
 
@@ -113,8 +112,8 @@ export const BlogPostEditPage = () => {
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined)
   const [scheduledTime, setScheduledTime] = useState('09:00')
 
-  const { data: categories } = useCategories()
-  const { data: tags } = useTags()
+  const { data: categories = [] } = useBlogCategoriesQuery({})
+  const { data: tags = [] } = useBlogTagsQuery({})
 
   const form = useForm<FormValues>({
     // TypeScript cannot infer resolver types from dynamic schema factories

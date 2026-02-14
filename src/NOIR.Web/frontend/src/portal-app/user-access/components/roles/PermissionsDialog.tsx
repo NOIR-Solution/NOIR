@@ -22,7 +22,7 @@ import {
 } from '@uikit'
 
 import { toast } from 'sonner'
-import { usePermissions, usePermissionTemplates } from '@/portal-app/user-access/states/useRoles'
+import { usePermissionsQuery, usePermissionTemplatesQuery } from '@/portal-app/user-access/queries'
 import { assignPermissions, getRoleById } from '@/services/roles'
 import { ApiError } from '@/services/apiClient'
 import type { RoleListItem, Permission } from '@/types'
@@ -36,8 +36,19 @@ interface PermissionsDialogProps {
 
 export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: PermissionsDialogProps) => {
   const { t } = useTranslation('common')
-  const { permissions, permissionsByCategory, loading: permissionsLoading } = usePermissions()
-  const { templates, loading: templatesLoading } = usePermissionTemplates()
+  const { data: permissions = [], isLoading: permissionsLoading } = usePermissionsQuery()
+  const { data: templates = [], isLoading: templatesLoading } = usePermissionTemplatesQuery()
+
+  // Group permissions by category
+  const permissionsByCategory = useMemo(() => {
+    const grouped: Record<string, Permission[]> = {}
+    for (const perm of permissions) {
+      const category = perm.category || 'Other'
+      if (!grouped[category]) grouped[category] = []
+      grouped[category].push(perm)
+    }
+    return grouped
+  }, [permissions])
 
   const [selectedPermissions, setSelectedPermissions] = useState<Set<string>>(new Set())
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())

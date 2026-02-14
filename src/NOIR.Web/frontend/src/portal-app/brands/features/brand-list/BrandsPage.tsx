@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDebouncedCallback } from 'use-debounce'
 import { Search, Award, Plus, Pencil, Trash2, MoreHorizontal, Globe, ExternalLink } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -36,7 +35,8 @@ import {
   TableRow,
 } from '@uikit'
 
-import { useBrands } from '@/portal-app/brands/states/useBrands'
+import { useBrandsQuery, useDeleteBrandMutation } from '@/portal-app/brands/queries'
+import type { GetBrandsParams } from '@/services/brands'
 import { BrandDialog } from '../../components/BrandDialog'
 import type { BrandListItem } from '@/types/brand'
 
@@ -53,38 +53,34 @@ export const BrandsPage = () => {
   const canDeleteBrands = hasPermission(Permissions.BrandsDelete)
 
   const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
   const [brandToEdit, setBrandToEdit] = useState<BrandListItem | null>(null)
   const [brandToDelete, setBrandToDelete] = useState<BrandListItem | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [params, setParams] = useState<GetBrandsParams>({ page: 1, pageSize: 20 })
 
-  const { data: brandsResponse, loading, error, refresh, setSearch, handleDelete: handleDeleteBrand } = useBrands()
+  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
+  const { data: brandsResponse, isLoading: loading, error: queryError, refetch: refresh } = useBrandsQuery(queryParams)
+  const deleteMutation = useDeleteBrandMutation()
+  const error = queryError?.message ?? null
 
   const brands = brandsResponse?.items ?? []
 
-  // Debounced search
-  const debouncedSearch = useDebouncedCallback((value: string) => {
-    setSearch(value)
-  }, 300)
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchInput(value)
-    debouncedSearch(value)
-  }
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSearch(searchInput)
+    setSearchInput(e.target.value)
+    setParams((prev) => ({ ...prev, page: 1 }))
   }
 
   const handleDelete = async () => {
     if (!brandToDelete) return
-    const result = await handleDeleteBrand(brandToDelete.id)
-    if (result.success) {
+    try {
+      await deleteMutation.mutateAsync(brandToDelete.id)
       toast.success(t('brands.deleteSuccess', 'Brand deleted successfully'))
       setBrandToDelete(null)
-    } else {
-      toast.error(result.error || t('brands.deleteError', 'Failed to delete brand'))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('brands.deleteError', 'Failed to delete brand')
+      toast.error(message)
     }
   }
 
@@ -116,25 +112,23 @@ export const BrandsPage = () => {
             </div>
             <div className="flex items-center gap-3">
               {/* Search */}
-              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder={t('brands.searchPlaceholder', 'Search brands...')}
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    className="pl-10 w-full sm:w-48"
-                    aria-label={t('brands.searchBrands', 'Search brands')}
-                  />
-                </div>
-              </form>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('brands.searchPlaceholder', 'Search brands...')}
+                  value={searchInput}
+                  onChange={handleSearchChange}
+                  className="pl-10 w-full sm:w-48"
+                  aria-label={t('brands.searchBrands', 'Search brands')}
+                />
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
-              {(error as any) instanceof Error ? (error as unknown as Error).message : t('errors.generic', 'An error occurred')}
+              {error}
             </div>
           )}
 

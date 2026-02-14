@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDebouncedCallback } from 'use-debounce'
 import { Search, FolderTree, Plus, Pencil, Trash2, List, GitBranch, MoreHorizontal } from 'lucide-react'
 import {
   Badge,
@@ -29,7 +28,7 @@ import {
 
 import { usePageContext } from '@/hooks/usePageContext'
 
-import { useCategories } from '@/portal-app/blogs/states/useBlogCategories'
+import { useBlogCategoriesQuery, useDeleteBlogCategoryMutation } from '@/portal-app/blogs/queries'
 import { BlogCategoryDialog } from '../../components/blog-categories/BlogCategoryDialog'
 import { DeleteBlogCategoryDialog } from '../../components/blog-categories/DeleteBlogCategoryDialog'
 
@@ -47,28 +46,31 @@ export const BlogCategoriesPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Categories')
 
-  const { data, loading, error, refresh, setSearch, handleDelete } = useCategories()
-
   const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false)
   const [categoryToEdit, setCategoryToEdit] = useState<PostCategoryListItem | null>(null)
   const [categoryToDelete, setCategoryToDelete] = useState<PostCategoryListItem | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
 
-  // Debounced search
-  const debouncedSearch = useDebouncedCallback((value: string) => {
-    setSearch(value)
-  }, 300)
+  const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
+  const { data = [], isLoading: loading, error: queryError, refetch: refresh } = useBlogCategoriesQuery(queryParams)
+  const deleteMutation = useDeleteBlogCategoryMutation()
+  const error = queryError?.message ?? null
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchInput(value)
-    debouncedSearch(value)
+    setSearchInput(e.target.value)
   }
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSearch(searchInput)
+  const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await deleteMutation.mutateAsync(id)
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete category'
+      return { success: false, error: message }
+    }
   }
 
   const handleCreateClick = () => {
@@ -135,22 +137,20 @@ export const BlogCategoriesPage = () => {
               </div>
 
               {/* Search */}
-              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder={t('blogCategories.searchPlaceholder', 'Search categories...')}
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    className="pl-10 w-full sm:w-64"
-                    aria-label={t('blogCategories.searchCategories', 'Search categories')}
-                  />
-                </div>
-              </form>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('blogCategories.searchPlaceholder', 'Search categories...')}
+                  value={searchInput}
+                  onChange={handleSearchChange}
+                  className="pl-10 w-full sm:w-64"
+                  aria-label={t('blogCategories.searchCategories', 'Search categories')}
+                />
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
               {error}

@@ -24,7 +24,7 @@ import {
   Textarea,
 } from '@uikit'
 
-import { useCreateBrand, useUpdateBrand } from '@/portal-app/brands/states/useBrands'
+import { useCreateBrandMutation, useUpdateBrandMutation } from '@/portal-app/brands/queries'
 import { uploadMedia } from '@/services/media'
 import type { BrandListItem } from '@/types/brand'
 import { toast } from 'sonner'
@@ -55,8 +55,8 @@ interface BrandDialogProps {
 export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialogProps) => {
   const { t } = useTranslation('common')
   const isEditing = !!brand
-  const createBrandHook = useCreateBrand()
-  const updateBrandHook = useUpdateBrand()
+  const createMutation = useCreateBrandMutation()
+  const updateMutation = useUpdateBrandMutation()
 
   const form = useForm<BrandFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
@@ -128,28 +128,25 @@ export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialo
       websiteUrl: data.websiteUrl || null,
     }
 
-    if (isEditing && brand) {
-      const result = await updateBrandHook.updateBrand(brand.id, cleanedData)
-      if (result.success) {
+    try {
+      if (isEditing && brand) {
+        await updateMutation.mutateAsync({ id: brand.id, request: cleanedData })
         toast.success(t('brands.updateSuccess', 'Brand updated successfully'))
-        onSuccess?.()
-        onOpenChange(false)
       } else {
-        toast.error(result.error || t('brands.updateError', 'Failed to update brand'))
-      }
-    } else {
-      const result = await createBrandHook.createBrand(cleanedData)
-      if (result.success) {
+        await createMutation.mutateAsync(cleanedData)
         toast.success(t('brands.createSuccess', 'Brand created successfully'))
-        onSuccess?.()
-        onOpenChange(false)
-      } else {
-        toast.error(result.error || t('brands.createError', 'Failed to create brand'))
       }
+      onSuccess?.()
+      onOpenChange(false)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : isEditing
+        ? t('brands.updateError', 'Failed to update brand')
+        : t('brands.createError', 'Failed to create brand')
+      toast.error(message)
     }
   }
 
-  const isSubmitting = createBrandHook.isPending || updateBrandHook.isPending
+  const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

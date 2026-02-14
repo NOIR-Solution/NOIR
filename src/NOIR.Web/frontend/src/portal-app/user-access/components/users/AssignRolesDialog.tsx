@@ -17,7 +17,7 @@ import {
 
 import { toast } from 'sonner'
 import { getUserRoles, assignRolesToUser } from '@/services/users'
-import { useAvailableRoles } from '@/portal-app/user-access/states/useUsers'
+import { useAvailableRolesQuery } from '@/portal-app/user-access/queries'
 import { RolePermissionInfo } from './RolePermissionInfo'
 import type { UserListItem } from '@/types'
 
@@ -30,7 +30,7 @@ interface AssignRolesDialogProps {
 
 export const AssignRolesDialog = ({ user, open, onOpenChange, onSuccess }: AssignRolesDialogProps) => {
   const { t } = useTranslation('common')
-  const { roles: availableRoles, loading: loadingRoles } = useAvailableRoles()
+  const { data: availableRoles = [], isLoading: loadingRoles } = useAvailableRolesQuery()
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(false)
   const [loadingUserRoles, setLoadingUserRoles] = useState(false)

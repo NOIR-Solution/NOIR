@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDebouncedCallback } from 'use-debounce'
 import { Search, Tags, Plus, Pencil, Trash2, MoreHorizontal, Filter, List } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -36,7 +35,8 @@ import {
   TableRow,
 } from '@uikit'
 
-import { useProductAttributes } from '@/portal-app/products/states/useProductAttributes'
+import { useProductAttributesQuery, useDeleteProductAttributeMutation } from '@/portal-app/products/queries'
+import type { GetProductAttributesParams } from '@/services/productAttributes'
 import { ProductAttributeDialog } from '../../components/product-attributes/ProductAttributeDialog'
 import type { ProductAttributeListItem } from '@/types/productAttribute'
 
@@ -53,38 +53,34 @@ export const ProductAttributesPage = () => {
   const canDeleteAttributes = hasPermission(Permissions.AttributesDelete)
 
   const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
   const [attributeToEdit, setAttributeToEdit] = useState<ProductAttributeListItem | null>(null)
   const [attributeToDelete, setAttributeToDelete] = useState<ProductAttributeListItem | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [params, setParams] = useState<GetProductAttributesParams>({ page: 1, pageSize: 20 })
 
-  const { data: attributesResponse, loading, error, refresh, setSearch, handleDelete: handleDeleteAttribute } = useProductAttributes()
+  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
+  const { data: attributesResponse, isLoading: loading, error: queryError, refetch: refresh } = useProductAttributesQuery(queryParams)
+  const deleteMutation = useDeleteProductAttributeMutation()
+  const error = queryError?.message ?? null
 
   const attributes = attributesResponse?.items ?? []
 
-  // Debounced search
-  const debouncedSearch = useDebouncedCallback((value: string) => {
-    setSearch(value)
-  }, 300)
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchInput(value)
-    debouncedSearch(value)
-  }
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSearch(searchInput)
+    setSearchInput(e.target.value)
+    setParams((prev) => ({ ...prev, page: 1 }))
   }
 
   const handleDelete = async () => {
     if (!attributeToDelete) return
-    const result = await handleDeleteAttribute(attributeToDelete.id)
-    if (result.success) {
+    try {
+      await deleteMutation.mutateAsync(attributeToDelete.id)
       toast.success(t('productAttributes.deleteSuccess', 'Product attribute deleted successfully'))
       setAttributeToDelete(null)
-    } else {
-      toast.error(result.error || t('productAttributes.deleteError', 'Failed to delete product attribute'))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('productAttributes.deleteError', 'Failed to delete product attribute')
+      toast.error(message)
     }
   }
 
@@ -136,25 +132,23 @@ export const ProductAttributesPage = () => {
             </div>
             <div className="flex items-center gap-3">
               {/* Search */}
-              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder={t('productAttributes.searchPlaceholder', 'Search attributes...')}
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    className="pl-10 w-full sm:w-48"
-                    aria-label={t('productAttributes.searchAttributes', 'Search product attributes')}
-                  />
-                </div>
-              </form>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('productAttributes.searchPlaceholder', 'Search attributes...')}
+                  value={searchInput}
+                  onChange={handleSearchChange}
+                  className="pl-10 w-full sm:w-48"
+                  aria-label={t('productAttributes.searchAttributes', 'Search product attributes')}
+                />
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
-              {(error as any) instanceof Error ? (error as unknown as Error).message : t('errors.generic', 'An error occurred')}
+              {error}
             </div>
           )}
 
