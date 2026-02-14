@@ -33,7 +33,7 @@ import { getTenant, updateTenant, deleteTenant } from '@/services/tenants'
 import { ApiError } from '@/services/apiClient'
 import type { Tenant } from '@/types'
 
-const TenantDetailPage = () => {
+export const TenantDetailPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()

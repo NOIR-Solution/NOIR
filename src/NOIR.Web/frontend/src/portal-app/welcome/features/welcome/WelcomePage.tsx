@@ -9,7 +9,7 @@ import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
  * Landing Page - Professional hero section with blue-teal color scheme
  * Uses universally accessible colors (avoids red-green, colorblind-friendly)
  */
-const WelcomePage = () => {
+export const WelcomePage = () => {
   const { t } = useTranslation('common')
 
   return (

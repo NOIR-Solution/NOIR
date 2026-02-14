@@ -10,7 +10,7 @@ import { Button } from '@uikit'
 import { NotificationList } from '../../components/notifications'
 import { useNotificationContext } from '@/contexts/NotificationContext'
 
-const NotificationsPage = () => {
+export const NotificationsPage = () => {
   const { t } = useTranslation('common')
   const { connectionState } = useNotificationContext()
 

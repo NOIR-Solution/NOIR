@@ -178,5 +178,3 @@ export const PageMeta = ({
 
   return null
 }
-
-export default PageMeta

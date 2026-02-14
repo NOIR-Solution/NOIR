@@ -22,7 +22,7 @@ interface SessionData {
  * OTP Verification Page
  * User enters the 6-digit code sent to their email
  */
-const VerifyOtpPage = () => {
+export const VerifyOtpPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
   const [otp, setOtp] = useState('')

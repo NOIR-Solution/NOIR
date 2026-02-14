@@ -248,5 +248,3 @@ export const ProductAttributesSectionCreate = ({
     </Card>
   )
 }
-
-export default ProductAttributesSectionCreate

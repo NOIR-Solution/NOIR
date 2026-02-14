@@ -8,7 +8,7 @@ import { getPublicLegalPage, type PublicLegalPageDto } from '@/services/legalPag
  * Public Terms of Service page.
  * Fetches the legal page content from the API and renders it.
  */
-const TermsPage = () => {
+export const TermsPage = () => {
   const [page, setPage] = useState<PublicLegalPageDto | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

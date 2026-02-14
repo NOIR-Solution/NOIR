@@ -31,7 +31,7 @@ const validateReturnUrl = (url: string): string => {
  * Step 2: If multiple tenants → Show organization selection step
  * Step 3: Complete login and redirect
  */
-const LoginPage = () => {
+export const LoginPage = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const returnUrl = searchParams.get('returnUrl') || '/portal'

@@ -22,7 +22,7 @@ import { ResetAdminPasswordDialog } from '../../components/tenants/ResetAdminPas
 import { useTenants } from '../../states/useTenants'
 import type { TenantListItem } from '@/types'
 
-const TenantsPage = () => {
+export const TenantsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Tenants')
   const { data, loading, error, refresh, setPage, setSearch, handleDelete, params } = useTenants()

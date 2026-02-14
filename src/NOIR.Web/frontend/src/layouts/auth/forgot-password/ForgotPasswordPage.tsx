@@ -16,7 +16,7 @@ import { requestPasswordReset, ApiError } from '@/services/forgotPassword'
  * Forgot Password Page - Email entry step
  * Requests OTP to be sent to user's email
  */
-const ForgotPasswordPage = () => {
+export const ForgotPasswordPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
   const { t: tCommon } = useTranslation('common')

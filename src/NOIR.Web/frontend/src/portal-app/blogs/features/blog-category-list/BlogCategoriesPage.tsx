@@ -43,7 +43,7 @@ const toTreeCategory = (category: PostCategoryListItem): TreeCategory & PostCate
   }
 }
 
-const BlogCategoriesPage = () => {
+export const BlogCategoriesPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Categories')
 

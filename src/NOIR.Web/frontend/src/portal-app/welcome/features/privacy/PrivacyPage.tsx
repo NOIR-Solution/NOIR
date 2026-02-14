@@ -8,7 +8,7 @@ import { getPublicLegalPage, type PublicLegalPageDto } from '@/services/legalPag
  * Public Privacy Policy page.
  * Fetches the legal page content from the API and renders it.
  */
-const PrivacyPage = () => {
+export const PrivacyPage = () => {
   const [page, setPage] = useState<PublicLegalPageDto | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

@@ -239,7 +239,7 @@ const TimelineEntry = ({
   )
 }
 
-const ActivityTimelinePage = () => {
+export const ActivityTimelinePage = () => {
   const { t } = useTranslation('common')
   const [searchParams, setSearchParams] = useSearchParams()
   usePageContext('Activity Timeline')

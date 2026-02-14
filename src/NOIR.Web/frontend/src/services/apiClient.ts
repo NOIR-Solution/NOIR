@@ -19,7 +19,7 @@
 import { getAccessToken, getRefreshToken, storeTokens, clearTokens } from './tokenStorage'
 import { getPageContext } from './pageContext'
 import type { AuthResponse, ApiError as ApiErrorType } from '@/types'
-import i18n from '@/i18n'
+import { i18n } from '@/i18n'
 
 const API_BASE = '/api'
 

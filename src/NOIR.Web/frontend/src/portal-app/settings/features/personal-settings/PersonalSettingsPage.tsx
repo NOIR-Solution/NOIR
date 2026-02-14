@@ -20,7 +20,7 @@ const navItems: NavItem[] = [
   { id: 'security', icon: Shield, labelKey: 'profile.security' },
 ]
 
-const PersonalSettingsPage = () => {
+export const PersonalSettingsPage = () => {
   const { t } = useTranslation('auth')
   const [activeSection, setActiveSection] = useState<SettingsSection>('profile')
 

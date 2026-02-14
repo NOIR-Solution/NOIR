@@ -188,5 +188,3 @@ export const LogoUploadField = ({
     </div>
   )
 }
-
-export default LogoUploadField

@@ -42,5 +42,3 @@ export const BreadcrumbSchema = ({ items }: BreadcrumbSchemaProps) => {
 
   return null
 }
-
-export default BreadcrumbSchema

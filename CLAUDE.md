@@ -485,12 +485,26 @@ function internalFn() { ... }
 
 **Rules:**
 - All functions MUST use arrow function syntax (`const fn = () => {}`)
-- `export default function Name` → `const Name = () => { ... }; export default Name`
-- `export function name` → `export const name = () => { ... }`
-- Standalone `function name` → `const name = () => { ... }`
+- **Prefer named exports over default exports** — use `export const` instead of `export default` so imports enforce the exact type/name and enable better refactoring, tree-shaking, and IDE auto-imports
+- Standalone `function name` → `const name = (`
 - Use `const` over `let`/`var`
 - Use template literals, destructuring, spread/rest, optional chaining
 - ESLint enforces `prefer-arrow-callback` and `prefer-const`
+
+```typescript
+// ✅ CORRECT: Named exports (strict type name on import)
+export const MyComponent = () => { ... }
+export const useMyHook = () => { ... }
+
+// ❌ AVOID: Default exports (importers can rename freely, loses type name enforcement)
+const MyComponent = () => { ... }
+export default MyComponent
+
+// Exception: Page components that use React.lazy() require default exports
+// In those cases, add BOTH named and default export:
+export const ProductsPage = () => { ... }
+export default ProductsPage  // Required for React.lazy(() => import(...))
+```
 
 ### 🎨 UI Component Building (MANDATORY)
 

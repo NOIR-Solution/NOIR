@@ -91,7 +91,7 @@ type EmailTemplateFormErrors = {
  * Email Template Edit Page
  * Full editor with TinyMCE, variable insertion, preview and test email functionality.
  */
-const EmailTemplateEditPage = () => {
+export const EmailTemplateEditPage = () => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()

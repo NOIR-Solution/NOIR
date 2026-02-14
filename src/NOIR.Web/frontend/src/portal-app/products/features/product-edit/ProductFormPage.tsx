@@ -240,7 +240,7 @@ const EditVariantForm = ({
   )
 }
 
-const ProductFormPage = () => {
+export const ProductFormPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   const { id } = useParams<{ id: string }>()

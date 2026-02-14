@@ -41,7 +41,7 @@ import {
   ErrorClustersTab,
 } from '../../components/developer-logs'
 
-const DeveloperLogsPage = () => {
+export const DeveloperLogsPage = () => {
   useTranslation('common')
   usePageContext('Developer Logs')
 

@@ -45,7 +45,7 @@ const toTreeCategory = (category: ProductCategoryListItem): TreeCategory & Produ
   }
 }
 
-const ProductCategoriesPage = () => {
+export const ProductCategoriesPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('Product Categories')

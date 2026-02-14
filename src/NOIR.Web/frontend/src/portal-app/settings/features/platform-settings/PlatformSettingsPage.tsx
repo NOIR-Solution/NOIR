@@ -15,7 +15,7 @@ import {
  * Platform Settings Page
  * Tabbed layout for managing platform-wide SMTP, email templates, and legal pages.
  */
-const PlatformSettingsPage = () => {
+export const PlatformSettingsPage = () => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   usePageContext('PlatformSettings')

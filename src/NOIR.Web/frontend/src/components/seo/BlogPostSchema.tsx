@@ -100,5 +100,3 @@ export const BlogPostSchema = ({
 
   return null
 }
-
-export default BlogPostSchema

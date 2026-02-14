@@ -25,7 +25,7 @@ interface SessionData {
  * Reset Password Page
  * User sets their new password after OTP verification
  */
-const ResetPasswordPage = () => {
+export const ResetPasswordPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
   const { t: tCommon } = useTranslation('common')

@@ -93,5 +93,3 @@ export interface HeadConfig {
   link?: LinkTag[]
   jsonLd?: Record<string, unknown>
 }
-
-export default useHead

@@ -3,7 +3,7 @@ import { useAuthContext } from '@/contexts/AuthContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, PageHeader } from '@uikit'
 import { ExternalLink, BookOpen, Cpu, User, LayoutDashboard } from 'lucide-react'
 
-const DashboardPage = () => {
+export const DashboardPage = () => {
   const { t } = useTranslation('common')
   const { user } = useAuthContext()
 

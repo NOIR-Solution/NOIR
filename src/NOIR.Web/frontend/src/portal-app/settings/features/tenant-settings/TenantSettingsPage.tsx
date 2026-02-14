@@ -29,7 +29,7 @@ import {
  * Tenant Settings Page
  * Tabbed layout for managing branding, contact, regional, SMTP, email templates, and legal pages.
  */
-const TenantSettingsPage = () => {
+export const TenantSettingsPage = () => {
   usePageContext('Tenant Settings')
   const { t } = useTranslation('common')
   const navigate = useNavigate()

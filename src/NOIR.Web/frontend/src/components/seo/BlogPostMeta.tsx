@@ -119,5 +119,3 @@ export const BlogPostMeta = ({
 
   return null
 }
-
-export default BlogPostMeta

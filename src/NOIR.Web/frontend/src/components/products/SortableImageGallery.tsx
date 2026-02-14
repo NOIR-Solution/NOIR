@@ -299,5 +299,3 @@ export const SortableImageGallery = ({
     </DndContext>
   )
 }
-
-export default SortableImageGallery

@@ -42,7 +42,7 @@ import type { BrandListItem } from '@/types/brand'
 
 import { toast } from 'sonner'
 
-const BrandsPage = () => {
+export const BrandsPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('Brands')

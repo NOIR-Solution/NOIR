@@ -137,5 +137,3 @@ export const ImageLightbox = ({
     </>
   )
 }
-
-export default ImageLightbox

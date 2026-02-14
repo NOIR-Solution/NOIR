@@ -119,5 +119,3 @@ export const RichTooltip = ({
     </Tooltip>
   )
 }
-
-export default TippyTooltip

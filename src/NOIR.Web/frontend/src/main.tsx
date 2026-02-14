@@ -5,7 +5,7 @@ import './index.css'
 // Initialize i18n before App component
 import './i18n'
 import { LanguageProvider } from './i18n/LanguageContext'
-import App from './App.tsx'
+import { App } from './App.tsx'
 
 /**
  * AppLoadingSkeleton - Root-level loading skeleton

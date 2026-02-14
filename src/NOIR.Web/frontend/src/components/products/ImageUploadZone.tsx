@@ -185,5 +185,3 @@ export const ImageUploadZone = ({
     </div>
   )
 }
-
-export default ImageUploadZone

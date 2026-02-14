@@ -9,7 +9,7 @@ import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
  * Success Page - Password reset complete
  * Confirmation message with link to login
  */
-const AuthSuccessPage = () => {
+export const AuthSuccessPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
 
