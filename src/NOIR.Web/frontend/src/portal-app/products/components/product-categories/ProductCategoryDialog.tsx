@@ -31,7 +31,7 @@ import {
   createProductCategory,
   updateProductCategory,
 } from '@/services/products'
-import { useProductCategories } from '@/portal-app/products/states/useProductCategories'
+import { useProductCategoriesQuery } from '@/portal-app/products/queries'
 import type { ProductCategoryListItem } from '@/types/product'
 import { toast } from 'sonner'
 import { ApiError } from '@/services/apiClient'
@@ -73,7 +73,7 @@ export const ProductCategoryDialog = ({
 
   // Fetch fresh categories when dialog opens - this fixes CAT-013 where newly created
   // categories weren't appearing in parent dropdown after page reload
-  const { data: categoriesFromHook, loading: categoriesLoading, refresh: refreshCategories } = useProductCategories()
+  const { data: categoriesFromHook = [], isLoading: categoriesLoading, refetch: refreshCategories } = useProductCategoriesQuery({})
 
   // Use hook data (always fresh) as primary source once loaded
   // Fallback to prop only when hook hasn't loaded yet

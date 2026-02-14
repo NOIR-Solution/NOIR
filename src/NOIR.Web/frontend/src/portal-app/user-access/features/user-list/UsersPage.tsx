@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Users, Filter, Plus } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -25,27 +25,60 @@ import { CreateUserDialog } from '../../components/users/CreateUserDialog'
 import { EditUserDialog } from '../../components/users/EditUserDialog'
 import { DeleteUserDialog } from '../../components/users/DeleteUserDialog'
 import { AssignRolesDialog } from '../../components/users/AssignRolesDialog'
-import { useUsers, useAvailableRoles } from '@/portal-app/user-access/states/useUsers'
+import {
+  useUsersQuery,
+  useAvailableRolesQuery,
+  useLockUserMutation,
+  useUnlockUserMutation,
+  type UsersParams,
+} from '@/portal-app/user-access/queries'
 import type { UserListItem } from '@/types'
 
 export const UsersPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('Users')
-  const {
-    data,
-    loading,
-    error,
-    refresh,
-    setPage,
-    setSearch,
-    setRoleFilter,
-    setLockedFilter,
-    handleLock,
-    handleUnlock,
-    params
-  } = useUsers()
-  const { roles: availableRoles } = useAvailableRoles()
+  const [isFilterPending, startFilterTransition] = useTransition()
+  const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
+  const [params, setParams] = useState<UsersParams>({ page: 1, pageSize: 10 })
+  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
+  const { data, isLoading: loading, error: queryError, refetch: refresh } = useUsersQuery(queryParams)
+  const { data: availableRoles = [] } = useAvailableRolesQuery()
+  const lockMutation = useLockUserMutation()
+  const unlockMutation = useUnlockUserMutation()
+  const error = queryError?.message ?? null
+
+  const setPage = (page: number) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, page }))
+  )
+  const setRoleFilter = (role: string) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, role: role || undefined, page: 1 }))
+  )
+  const setLockedFilter = (isLocked: boolean | undefined) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, isLocked, page: 1 }))
+  )
+
+  const handleLock = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await lockMutation.mutateAsync(id)
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to lock user'
+      return { success: false, error: message }
+    }
+  }
+
+  const handleUnlock = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await unlockMutation.mutateAsync(id)
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to unlock user'
+      return { success: false, error: message }
+    }
+  }
 
   // Permission checks
   const canCreateUsers = hasPermission(Permissions.UsersCreate)
@@ -53,16 +86,10 @@ export const UsersPage = () => {
   const canDeleteUsers = hasPermission(Permissions.UsersDelete)
   const canAssignRoles = hasPermission(Permissions.PermissionsAssign)
 
-  const [searchInput, setSearchInput] = useState('')
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [userToEdit, setUserToEdit] = useState<UserListItem | null>(null)
   const [userToDelete, setUserToDelete] = useState<UserListItem | null>(null)
   const [userForRoles, setUserForRoles] = useState<UserListItem | null>(null)
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSearch(searchInput)
-  }
 
   const handleEditClick = (user: UserListItem) => {
     setUserToEdit(user)
@@ -141,25 +168,20 @@ export const UsersPage = () => {
               </Select>
 
               {/* Search */}
-              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder={t('users.searchPlaceholder', 'Search users...')}
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    className="pl-10 w-full sm:w-64"
-                    aria-label={t('users.searchUsers', 'Search users')}
-                  />
-                </div>
-                <Button type="submit" variant="secondary">
-                  {t('buttons.search', 'Search')}
-                </Button>
-              </form>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('users.searchPlaceholder', 'Search users...')}
+                  value={searchInput}
+                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
+                  className="pl-10 w-full sm:w-64"
+                  aria-label={t('users.searchUsers', 'Search users')}
+                />
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
               {error}

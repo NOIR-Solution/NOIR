@@ -31,7 +31,7 @@ import {
   Skeleton,
 } from '@uikit'
 
-import { useProductAttributeForm } from '@/portal-app/products/states/useProductAttributes'
+import { useProductAttributeFormQuery } from '@/portal-app/products/queries'
 import { AttributeInputFactory } from './AttributeInputs'
 import type { AttributeValue } from './AttributeInputs'
 import type { ProductAttributeFormField } from '@/types/productAttribute'
@@ -69,7 +69,8 @@ export const ProductAttributesSection = ({
   const pendingCategoryIdRef = useRef<string | null>(null)
 
   // Fetch form schema with current values
-  const { data: formSchema, loading, error, refresh } = useProductAttributeForm(productId, variantId)
+  const { data: formSchema, isLoading: loading, error: queryError, refetch: refresh } = useProductAttributeFormQuery(productId, variantId)
+  const error = queryError?.message ?? null
 
   // Initialize local values from form schema
   useEffect(() => {

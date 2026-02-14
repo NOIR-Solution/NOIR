@@ -6,7 +6,7 @@
 
 *Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).*
 
-**Last Updated:** 2026-02-13 | **Version:** 2.5
+**Last Updated:** 2026-02-15 | **Version:** 2.6
 
 </div>
 
@@ -736,33 +736,69 @@ roleNames: selectedRoles.size > 0 ? Array.from(selectedRoles) : null
 ### 🔄 TanStack Query Hooks Pattern
 
 ```typescript
-// All API calls use TanStack Query hooks for caching, refetching, and state management
-// Hooks are in: src/NOIR.Web/frontend/src/hooks/
+// All API calls use TanStack Query v5 hooks for caching, refetching, and state management
+// Query hooks: src/portal-app/{domain}/queries/use{Domain}Queries.ts
+// Mutation hooks: src/portal-app/{domain}/queries/use{Domain}Mutations.ts
+// Query keys: src/portal-app/{domain}/queries/queryKeys.ts
 
 // Query hook pattern (GET)
-export function useProducts(params?: ProductsParams) {
-  return useQuery({
-    queryKey: ['products', params],
-    queryFn: () => productsApi.getProducts(params),
+export const useProductsQuery = (params: GetProductsParams) =>
+  useQuery({
+    queryKey: productKeys.list(params),
+    queryFn: () => getProducts(params),
   })
-}
 
-// Mutation hook pattern (POST/PUT/DELETE)
-export function useCreateProduct() {
+// Mutation hook with optimistic update (DELETE/PATCH)
+export const useDeleteProduct = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: productsApi.createProduct,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-    },
+    mutationFn: (id: string) => deleteProduct(id),
+    ...optimisticListDelete(queryClient, productKeys.lists(), productKeys.all),
   })
 }
 
 // Usage in components:
-const { data: products, isLoading } = useProducts({ status: 'Active' })
-const createProduct = useCreateProduct()
-await createProduct.mutateAsync(productData)
+const { data, isLoading } = useProductsQuery(params)
+const deleteMutation = useDeleteProduct()
+await deleteMutation.mutateAsync(productId)
 ```
+
+### ⚡ React 19 + TanStack Query Performance Patterns
+
+React 19 hooks (`useDeferredValue`, `useTransition`) are combined with TanStack Query for smooth, responsive UX across all domain features. See [docs/frontend/architecture.md#react-19--tanstack-query-performance-patterns](docs/frontend/architecture.md#react-19--tanstack-query-performance-patterns) for full documentation.
+
+**Quick Reference:**
+
+```typescript
+// 1. Live search with useDeferredValue (replaces debounce + form submit)
+const [searchInput, setSearchInput] = useState('')
+const deferredSearch = useDeferredValue(searchInput)
+const isSearchStale = searchInput !== deferredSearch
+
+useEffect(() => {
+  setParams(prev => ({ ...prev, search: deferredSearch || undefined, page: 1 }))
+}, [deferredSearch])
+
+// 2. useTransition for filters/pagination/tabs
+const [isFilterPending, startFilterTransition] = useTransition()
+const setPage = (page: number) => startFilterTransition(() =>
+  setParams(prev => ({ ...prev, page }))
+)
+
+// 3. Visual feedback (stale/pending opacity dimming)
+<CardContent className={(isSearchStale || isFilterPending)
+  ? 'opacity-70 transition-opacity duration-200'
+  : 'transition-opacity duration-200'}>
+
+// 4. Optimistic mutations (shared utility)
+import { optimisticListDelete, optimisticListPatch } from '@/hooks/useOptimisticMutation'
+useMutation({
+  mutationFn: (id: string) => deleteProduct(id),
+  ...optimisticListDelete(queryClient, productKeys.lists(), productKeys.all),
+})
+```
+
+**Coverage:** All list pages, settings tabs, developer logs, and activity timeline use these patterns.
 
 ---
 
@@ -955,6 +991,12 @@ For detailed documentation, see the `docs/` folder:
 ---
 
 ## 📝 Changelog
+
+### Version 2.6 (2026-02-15)
+- **Added:** React 19 + TanStack Query performance patterns (useDeferredValue, useTransition, optimistic mutations)
+- **Added:** `useOptimisticMutation` shared utility documentation (optimisticListDelete, optimisticListPatch, optimisticArrayDelete)
+- **Updated:** TanStack Query hooks pattern with domain-scoped query/mutation structure
+- **Coverage:** 15 pages use React 19 hooks, all mutation files use shared optimistic helpers
 
 ### Version 2.5 (2026-02-13)
 - **Added:** Storybook v10.2.8 with 56 component stories in `src/uikit/`

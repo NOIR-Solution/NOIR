@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, FileText, Plus, Eye, Pencil, Trash2, Send } from 'lucide-react'
 import {
@@ -33,8 +33,8 @@ import {
 
 import { usePageContext } from '@/hooks/usePageContext'
 
-import { usePosts } from '@/portal-app/blogs/states/useBlogs'
-import { useCategories } from '@/portal-app/blogs/states/useBlogCategories'
+import { useBlogPostsQuery, useBlogCategoriesQuery, useDeleteBlogPostMutation } from '@/portal-app/blogs/queries'
+import type { GetPostsParams } from '@/services/blog'
 import { DeleteBlogPostDialog } from '../../components/blog-posts/DeleteBlogPostDialog'
 import type { PostListItem, PostStatus } from '@/types'
 import { formatDistanceToNow } from 'date-fns'
@@ -53,23 +53,43 @@ export const BlogPostsPage = () => {
   usePageContext('Blog Posts')
   const navigate = useNavigate()
 
-  const { data, loading, error, setPage, setSearch, setStatus, setCategoryId, handleDelete, params } = usePosts()
-  const { data: categories } = useCategories()
-
   const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
+  const [isFilterPending, startFilterTransition] = useTransition()
   const [postToDelete, setPostToDelete] = useState<PostListItem | null>(null)
+  const [params, setParams] = useState<GetPostsParams>({ page: 1, pageSize: 10 })
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSearch(searchInput)
-  }
+  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
+  const { data, isLoading: loading, error: queryError } = useBlogPostsQuery(queryParams)
+  const { data: categories = [] } = useBlogCategoriesQuery({})
+  const deleteMutation = useDeleteBlogPostMutation()
+  const error = queryError?.message ?? null
+
+  const setPage = (page: number) => startFilterTransition(() =>
+    setParams((prev) => ({ ...prev, page }))
+  )
 
   const handleStatusChange = (value: string) => {
-    setStatus(value === 'all' ? undefined : (value as PostStatus))
+    startFilterTransition(() =>
+      setParams((prev) => ({ ...prev, status: value === 'all' ? undefined : (value as PostStatus), page: 1 }))
+    )
   }
 
   const handleCategoryChange = (value: string) => {
-    setCategoryId(value === 'all' ? undefined : value)
+    startFilterTransition(() =>
+      setParams((prev) => ({ ...prev, categoryId: value === 'all' ? undefined : value, page: 1 }))
+    )
+  }
+
+  const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await deleteMutation.mutateAsync(id)
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete post'
+      return { success: false, error: message }
+    }
   }
 
   return (
@@ -98,21 +118,16 @@ export const BlogPostsPage = () => {
               </CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Search posts..."
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    className="pl-10 w-full sm:w-48"
-                    aria-label={t('labels.searchPosts', 'Search posts')}
-                  />
-                </div>
-                <Button type="submit" variant="secondary" size="sm">
-                  Search
-                </Button>
-              </form>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search posts..."
+                  value={searchInput}
+                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
+                  className="pl-10 w-full sm:w-48"
+                  aria-label={t('labels.searchPosts', 'Search posts')}
+                />
+              </div>
               <Select onValueChange={handleStatusChange} defaultValue="all">
                 <SelectTrigger className="w-32 cursor-pointer" aria-label={t('labels.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder="Status" />
@@ -141,7 +156,7 @@ export const BlogPostsPage = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
               {error}

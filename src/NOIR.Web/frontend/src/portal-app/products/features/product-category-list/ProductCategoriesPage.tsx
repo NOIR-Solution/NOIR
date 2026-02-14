@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDebouncedCallback } from 'use-debounce'
 import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, MoreHorizontal, List, GitBranch, Tags } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -30,7 +29,7 @@ import {
   type TreeCategory,
 } from '@uikit'
 
-import { useProductCategories } from '@/portal-app/products/states/useProductCategories'
+import { useProductCategoriesQuery, useDeleteProductCategory } from '@/portal-app/products/queries'
 import { ProductCategoryDialog } from '../../components/product-categories/ProductCategoryDialog'
 import { DeleteProductCategoryDialog } from '../../components/product-categories/DeleteProductCategoryDialog'
 import { ProductCategoryAttributesDialog } from '../../components/product-categories/ProductCategoryAttributesDialog'
@@ -55,29 +54,32 @@ export const ProductCategoriesPage = () => {
   const canUpdateCategories = hasPermission(Permissions.ProductCategoriesUpdate)
   const canDeleteCategories = hasPermission(Permissions.ProductCategoriesDelete)
 
-  const { data: categories, loading, error, setSearch, handleDelete, refresh } = useProductCategories()
-
   const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
   const [categoryToEdit, setCategoryToEdit] = useState<ProductCategoryListItem | null>(null)
   const [categoryToDelete, setCategoryToDelete] = useState<ProductCategoryListItem | null>(null)
   const [categoryToManageAttributes, setCategoryToManageAttributes] = useState<ProductCategoryListItem | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
 
-  // Debounced search
-  const debouncedSearch = useDebouncedCallback((value: string) => {
-    setSearch(value)
-  }, 300)
+  const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
+  const { data: categories = [], isLoading: loading, error: queryError, refetch: refresh } = useProductCategoriesQuery(queryParams)
+  const deleteMutation = useDeleteProductCategory()
+  const error = queryError?.message ?? null
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchInput(value)
-    debouncedSearch(value)
+  const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await deleteMutation.mutateAsync(id)
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete category'
+      return { success: false, error: message }
+    }
   }
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSearch(searchInput)
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value)
   }
 
   // Map categories to tree format
@@ -133,22 +135,20 @@ export const ProductCategoriesPage = () => {
               </div>
 
               {/* Search */}
-              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder={t('categories.searchPlaceholder', 'Search categories...')}
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    className="pl-10 w-full sm:w-48"
-                    aria-label={t('categories.searchCategories', 'Search categories')}
-                  />
-                </div>
-              </form>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('categories.searchPlaceholder', 'Search categories...')}
+                  value={searchInput}
+                  onChange={handleSearchChange}
+                  className="pl-10 w-full sm:w-48"
+                  aria-label={t('categories.searchCategories', 'Search categories')}
+                />
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
               {error}

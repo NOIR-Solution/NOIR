@@ -22,7 +22,7 @@ import {
   Skeleton,
 } from '@uikit'
 
-import { useCategoryAttributeForm } from '@/portal-app/products/states/useProductAttributes'
+import { useCategoryAttributeFormQuery } from '@/portal-app/products/queries'
 import { AttributeInputFactory } from './AttributeInputs'
 import type { AttributeValue } from './AttributeInputs'
 
@@ -49,7 +49,8 @@ export const ProductAttributesSectionCreate = ({
   const [localValues, setLocalValues] = useState<Record<string, unknown>>({})
 
   // Fetch form schema for the category
-  const { data: formSchema, loading, error, refresh } = useCategoryAttributeForm(categoryId)
+  const { data: formSchema, isLoading: loading, error: queryError, refetch: refresh } = useCategoryAttributeFormQuery(categoryId)
+  const error = queryError?.message ?? null
 
   // Initialize local values from form schema (with default values)
   useEffect(() => {

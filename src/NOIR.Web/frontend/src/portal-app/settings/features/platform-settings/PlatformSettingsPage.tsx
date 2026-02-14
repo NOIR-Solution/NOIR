@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Settings, Mail, FileText, Scale } from 'lucide-react'
@@ -22,6 +22,13 @@ export const PlatformSettingsPage = () => {
 
   // Active tab state
   const [activeTab, setActiveTab] = useState('smtp')
+  const [isTabPending, startTabTransition] = useTransition()
+
+  const handleTabChange = (tab: string) => {
+    startTabTransition(() => {
+      setActiveTab(tab)
+    })
+  }
 
   return (
     <div className="container max-w-4xl py-6 space-y-6">
@@ -32,7 +39,7 @@ export const PlatformSettingsPage = () => {
       />
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className={isTabPending ? 'space-y-4 opacity-70 transition-opacity duration-200' : 'space-y-4 transition-opacity duration-200'}>
         <TabsList>
           <TabsTrigger value="smtp" className="cursor-pointer">
             <Mail className="h-4 w-4 mr-2" />

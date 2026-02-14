@@ -6,8 +6,9 @@ This document describes the architecture and conventions for the NOIR frontend a
 
 | Technology | Purpose |
 |------------|---------|
-| React 19 | UI library |
+| React 19 | UI library (useDeferredValue, useTransition) |
 | TypeScript | Type safety |
+| TanStack Query 5 | Server state, caching, optimistic mutations |
 | Vite | Build tool & dev server |
 | Tailwind CSS 4 | Styling |
 | React Router 7 | Client-side routing |
@@ -119,7 +120,12 @@ portal-app/{domain}/
 │   └── {group-name}/   #   e.g., products/
 │       ├── CreateProductDialog.tsx
 │       └── index.ts    #   Barrel export
-└── states/             # Domain-specific hooks (TanStack Query)
+├── queries/            # TanStack Query hooks (preferred)
+│   ├── queryKeys.ts        # Query key factories
+│   ├── use{Domain}Queries.ts  # Query hooks (GET)
+│   ├── use{Domain}Mutations.ts # Mutation hooks (POST/PUT/DELETE)
+│   └── index.ts            # Barrel export
+└── states/             # Legacy domain-specific hooks
     └── useProducts.ts
 ```
 
@@ -207,6 +213,7 @@ import type { CurrentUser } from '@/types/auth'
 
 **Key Hooks:**
 - `usePermissions` - Permission checking with `hasPermission()`, `hasAllPermissions()`, `hasAnyPermission()`
+- `useOptimisticMutation` - Shared optimistic update helpers for TanStack Query (`optimisticListDelete`, `optimisticListPatch`, `optimisticArrayDelete`)
 
 **Guidelines:**
 - Export typed permission constants from `usePermissions.ts`
@@ -613,6 +620,150 @@ If you encounter a form using manual error state, migrate it to the standard pat
 4. Replace manual error display with `<FormMessage />`
 5. Remove manual `handleBlur` and validation functions
 6. Remove className conditionals for error styling
+
+## React 19 + TanStack Query Performance Patterns
+
+**Last Updated:** 2026-02-15
+
+React 19 hooks (`useDeferredValue`, `useTransition`) are combined with TanStack Query v5 for smooth, lag-free UX. These patterns replace older debounce + form-submit search and manual loading states.
+
+**Key principle:** `useOptimistic` is intentionally avoided due to known conflicts with React Query's `useSyncExternalStore` (TanStack GitHub #9742).
+
+### Live Search with `useDeferredValue`
+
+Replaces `useDebouncedCallback` + form submit. The input stays responsive while the query updates on lower priority:
+
+```typescript
+import { useState, useDeferredValue, useMemo } from 'react'
+
+const [searchInput, setSearchInput] = useState('')
+const deferredSearch = useDeferredValue(searchInput)
+const isSearchStale = searchInput !== deferredSearch
+
+// Derive query params via useMemo (NOT useEffect — React 19 flags useEffect setState as cascading render)
+const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
+const { data } = useProductsQuery(queryParams)
+
+// For paginated pages, reset page in the onChange handler
+<Input
+  value={searchInput}
+  onChange={(e) => { setSearchInput(e.target.value); setParams(prev => ({ ...prev, page: 1 })) }}
+  placeholder="Search..."
+/>
+
+// Visual feedback while search catches up
+<CardContent className={isSearchStale
+  ? 'opacity-70 transition-opacity duration-200'
+  : 'transition-opacity duration-200'}>
+```
+
+### `useTransition` for Filters, Pagination & Tabs
+
+Wraps state updates that trigger re-renders with heavy content. Provides `isPending` for visual feedback:
+
+```typescript
+import { useTransition } from 'react'
+
+// Filters & Pagination
+const [isFilterPending, startFilterTransition] = useTransition()
+
+const setPage = (page: number) => startFilterTransition(() =>
+  setParams(prev => ({ ...prev, page }))
+)
+const setStatus = (status: string) => startFilterTransition(() =>
+  setParams(prev => ({ ...prev, status, page: 1 }))
+)
+
+// Tab switching (settings pages)
+const [isTabPending, startTabTransition] = useTransition()
+const handleTabChange = (tab: string) => {
+  startTabTransition(() => setActiveTab(tab))
+}
+
+// Combined visual feedback
+<CardContent className={(isSearchStale || isFilterPending)
+  ? 'opacity-70 transition-opacity duration-200'
+  : 'transition-opacity duration-200'}>
+```
+
+### Optimistic Mutations with `useOptimisticMutation`
+
+Shared utility at `src/hooks/useOptimisticMutation.ts` provides type-safe optimistic update helpers. Three functions cover all data shapes:
+
+| Helper | Cache Shape | Use Case |
+|--------|------------|----------|
+| `optimisticListDelete` | `{ items[], totalCount }` | Delete from paginated list |
+| `optimisticListPatch` | `{ items[], totalCount }` | Patch fields on paginated list item |
+| `optimisticArrayDelete` | `T[]` | Delete from flat array |
+
+**How it works:** `onMutate` snapshots + cancels queries + updates cache instantly. `onError` rolls back to snapshot. `onSettled` invalidates for server truth.
+
+```typescript
+import { optimisticListDelete, optimisticListPatch } from '@/hooks/useOptimisticMutation'
+
+// Instant delete - row disappears immediately
+export const useDeleteProduct = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => deleteProduct(id),
+    ...optimisticListDelete(queryClient, productKeys.lists(), productKeys.all),
+  })
+}
+
+// Instant status change - badge updates immediately
+export const usePublishProduct = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => publishProduct(id),
+    ...optimisticListPatch(queryClient, productKeys.lists(), productKeys.all, { status: 'Active' }),
+  })
+}
+
+// Flat array delete (e.g., blog categories, tags)
+export const useDeleteBlogTag = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => deleteBlogTag(id),
+    ...optimisticArrayDelete(queryClient, blogKeys.tags(), blogKeys.all),
+  })
+}
+```
+
+**Type safety:** Uses structural `PagedData` interface (`{ items: { id: string }[], totalCount }`) that all paginated response types satisfy via TypeScript structural typing. No `any` types or `eslint-disable` comments.
+
+### Query Key Pattern
+
+Each domain module uses a factory pattern for query keys:
+
+```typescript
+// src/portal-app/products/queries/queryKeys.ts
+export const productKeys = {
+  all: ['products'] as const,
+  lists: () => [...productKeys.all, 'list'] as const,
+  list: (params: GetProductsParams) => [...productKeys.lists(), params] as const,
+  detail: (id: string) => [...productKeys.all, 'detail', id] as const,
+}
+```
+
+### Coverage
+
+| Page | `useDeferredValue` | `useTransition` | Optimistic Mutations |
+|------|-------------------|-----------------|---------------------|
+| **Products** | search | filters, pagination, bulk ops | delete, publish, archive |
+| **Product Categories** | search | — | — |
+| **Product Attributes** | search | — | delete |
+| **Brands** | search | — | delete |
+| **Blog Posts** | search | filters, pagination | delete |
+| **Blog Categories** | search | — | delete (array) |
+| **Blog Tags** | search | — | delete (array) |
+| **Roles** | search | pagination | delete |
+| **Users** | search | filters, pagination | delete, lock, unlock |
+| **Tenants** | search | pagination | delete |
+| **Activity Timeline** | search | — | — |
+| **Developer Logs** | search (local) | tabs | — |
+| **Tenant Settings** | — | tabs | — |
+| **Platform Settings** | — | tabs | — |
+| **Personal Settings** | — | section nav | — |
 
 ## Code Quality
 

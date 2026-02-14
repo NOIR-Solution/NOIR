@@ -7,7 +7,7 @@
  * This is the orchestrator component that manages top-level state and
  * delegates rendering to child components in the `components/` directory.
  */
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef, useDeferredValue, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useLogStream } from '@/hooks/useLogStream'
@@ -82,6 +82,9 @@ export const DeveloperLogsPage = () => {
   const [autoScroll, setAutoScroll] = useState(true)
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const [mainTab, setMainTab] = useState('live')
+  const [isTabPending, startTabTransition] = useTransition()
+  const deferredSearchTerm = useDeferredValue(searchTerm)
+  const isSearchStale = searchTerm !== deferredSearchTerm
   const [detailEntry, setDetailEntry] = useState<import('@/services/developerLogs').LogEntryDto | null>(null)
   const [isLiveFullscreen, setIsLiveFullscreen] = useState(false)
 
@@ -172,8 +175,8 @@ export const DeveloperLogsPage = () => {
       }
 
       // Search filter
-      if (searchTerm) {
-        const searchLower = searchTerm.toLowerCase()
+      if (deferredSearchTerm) {
+        const searchLower = deferredSearchTerm.toLowerCase()
         const matchesMessage = entry.message.toLowerCase().includes(searchLower)
         const matchesSource = entry.sourceContext?.toLowerCase().includes(searchLower)
         const matchesException = entry.exception?.message?.toLowerCase().includes(searchLower)
@@ -196,7 +199,7 @@ export const DeveloperLogsPage = () => {
     }
 
     return result
-  }, [entries, searchTerm, exceptionsOnly, sortOrder, liveSelectedLevels])
+  }, [entries, deferredSearchTerm, exceptionsOnly, sortOrder, liveSelectedLevels])
 
   return (
     <div className="flex flex-col h-[calc(100vh-48px)] overflow-hidden">
@@ -227,7 +230,7 @@ export const DeveloperLogsPage = () => {
       />
 
       {/* Main tabs */}
-      <Tabs value={mainTab} onValueChange={setMainTab} className="flex-1 flex flex-col mt-4 overflow-hidden">
+      <Tabs value={mainTab} onValueChange={(tab) => startTabTransition(() => setMainTab(tab))} className={`flex-1 flex flex-col mt-4 overflow-hidden${isTabPending || isSearchStale ? ' opacity-70 transition-opacity duration-200' : ' transition-opacity duration-200'}`}>
         <TabsList>
           <TabsTrigger value="live" className="gap-2">
             <Terminal className="h-4 w-4" />

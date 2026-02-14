@@ -18,7 +18,7 @@ import {
 
 import { toast } from 'sonner'
 import { createUser } from '@/services/users'
-import { useAvailableRoles } from '@/portal-app/user-access/states/useUsers'
+import { useAvailableRolesQuery } from '@/portal-app/user-access/queries'
 import { RolePermissionInfo } from './RolePermissionInfo'
 import { ApiError } from '@/services/apiClient'
 
@@ -78,7 +78,7 @@ interface FieldErrors {
 
 export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDialogProps) => {
   const { t } = useTranslation('common')
-  const { roles: availableRoles, loading: loadingRoles } = useAvailableRoles()
+  const { data: availableRoles = [], isLoading: loadingRoles } = useAvailableRolesQuery()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set())

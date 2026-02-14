@@ -6,9 +6,10 @@ NOIR frontend is a React SPA embedded within the .NET NOIR.Web project.
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| React | 19 | UI library |
+| React | 19 | UI library (useDeferredValue, useTransition) |
 | TypeScript | 5.x | Type safety |
 | Vite | Latest | Build tool & dev server |
+| TanStack Query | 5 | Server state, caching, optimistic mutations |
 | Tailwind CSS | 4 | Styling |
 | React Router | 7 | Client-side routing |
 | shadcn/ui | Latest | UI component primitives |
@@ -69,6 +70,7 @@ pnpm run lint
 | Document | Description |
 |----------|-------------|
 | [Architecture](architecture.md) | Project structure and patterns |
+| [React 19 + Query Patterns](architecture.md#react-19--tanstack-query-performance-patterns) | useDeferredValue, useTransition, optimistic mutations |
 | [UI/UX Enhancements](ui-ux-enhancements.md) | Accessibility, offline support, command palette, and more |
 | [UI/UX Patterns](architecture.md#uiux-standardization-patterns) | Required UI standardization patterns |
 | [API Types](api-types.md) | Type generation from backend |

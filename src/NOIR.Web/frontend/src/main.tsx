@@ -1,11 +1,24 @@
 import { StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { VibeKanbanWebCompanion } from 'vibe-kanban-web-companion'
 import './index.css'
 // Initialize i18n before App component
 import './i18n'
 import { LanguageProvider } from './i18n/LanguageContext'
 import { App } from './App.tsx'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      gcTime: 5 * 60_000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 /**
  * AppLoadingSkeleton - Root-level loading skeleton
@@ -73,10 +86,13 @@ const AppLoadingSkeleton = () => {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     {import.meta.env.DEV && <VibeKanbanWebCompanion />}
-    <Suspense fallback={<AppLoadingSkeleton />}>
-      <LanguageProvider>
-        <App />
-      </LanguageProvider>
-    </Suspense>
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback={<AppLoadingSkeleton />}>
+        <LanguageProvider>
+          <App />
+        </LanguageProvider>
+      </Suspense>
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+    </QueryClientProvider>
   </StrictMode>,
 )
