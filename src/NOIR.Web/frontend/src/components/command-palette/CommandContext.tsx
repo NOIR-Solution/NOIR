@@ -28,7 +28,7 @@ interface CommandProviderProps {
  *
  * Provides open/close/toggle functions to control the command palette visibility.
  */
-export function CommandProvider({ children }: CommandProviderProps) {
+export const CommandProvider = ({ children }: CommandProviderProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const open = useCallback(() => setIsOpen(true), [])
@@ -45,7 +45,7 @@ export function CommandProvider({ children }: CommandProviderProps) {
 /**
  * Hook to access command palette state and controls
  */
-export function useCommand() {
+export const useCommand = () => {
   const context = useContext(CommandContext)
   if (!context) {
     throw new Error('useCommand must be used within a CommandProvider')

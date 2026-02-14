@@ -22,7 +22,7 @@ import { PermissionsDialog } from '../../components/roles/PermissionsDialog'
 import { useRoles } from '@/portal-app/user-access/states/useRoles'
 import type { RoleListItem } from '@/types'
 
-export default function RolesPage() {
+export const RolesPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Roles')
   const { data, loading, error, refresh, setPage, setSearch, handleDelete, params } = useRoles()
@@ -137,3 +137,5 @@ export default function RolesPage() {
     </div>
   )
 }
+
+export default RolesPage

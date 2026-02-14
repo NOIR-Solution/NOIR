@@ -60,7 +60,7 @@ export interface EmailChangeResendResponse {
 /**
  * Update user profile
  */
-export async function updateProfile(request: UpdateProfileRequest): Promise<UpdateProfileResponse> {
+export const updateProfile = async (request: UpdateProfileRequest): Promise<UpdateProfileResponse> => {
   return apiClient<UpdateProfileResponse>('/auth/me', {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -71,7 +71,7 @@ export async function updateProfile(request: UpdateProfileRequest): Promise<Upda
  * Upload user avatar
  * @param file The image file to upload
  */
-export async function uploadAvatar(file: File): Promise<AvatarUploadResponse> {
+export const uploadAvatar = async (file: File): Promise<AvatarUploadResponse> => {
   const formData = new FormData()
   formData.append('file', file)
 
@@ -97,7 +97,7 @@ export async function uploadAvatar(file: File): Promise<AvatarUploadResponse> {
 /**
  * Delete user avatar
  */
-export async function deleteAvatar(): Promise<AvatarDeleteResponse> {
+export const deleteAvatar = async (): Promise<AvatarDeleteResponse> => {
   return apiClient<AvatarDeleteResponse>('/auth/me/avatar', {
     method: 'DELETE',
   })
@@ -106,7 +106,7 @@ export async function deleteAvatar(): Promise<AvatarDeleteResponse> {
 /**
  * Request email change - sends OTP to new email
  */
-export async function requestEmailChange(newEmail: string): Promise<EmailChangeRequestResponse> {
+export const requestEmailChange = async (newEmail: string): Promise<EmailChangeRequestResponse> => {
   return apiClient<EmailChangeRequestResponse>('/auth/me/email/request', {
     method: 'POST',
     body: JSON.stringify({ newEmail }),
@@ -116,10 +116,10 @@ export async function requestEmailChange(newEmail: string): Promise<EmailChangeR
 /**
  * Verify email change OTP
  */
-export async function verifyEmailChange(
+export const verifyEmailChange = async (
   sessionToken: string,
   otp: string
-): Promise<EmailChangeVerifyResponse> {
+): Promise<EmailChangeVerifyResponse> => {
   return apiClient<EmailChangeVerifyResponse>('/auth/me/email/verify', {
     method: 'POST',
     body: JSON.stringify({ sessionToken, otp }),
@@ -129,9 +129,9 @@ export async function verifyEmailChange(
 /**
  * Resend email change OTP
  */
-export async function resendEmailChangeOtp(
+export const resendEmailChangeOtp = async (
   sessionToken: string
-): Promise<EmailChangeResendResponse> {
+): Promise<EmailChangeResendResponse> => {
   return apiClient<EmailChangeResendResponse>('/auth/me/email/resend', {
     method: 'POST',
     body: JSON.stringify({ sessionToken }),

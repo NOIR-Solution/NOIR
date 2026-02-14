@@ -71,7 +71,7 @@ const createTestEmailSchema = (t: (key: string, options?: Record<string, unknown
 
 type TestEmailFormData = z.infer<ReturnType<typeof createTestEmailSchema>>
 
-export function PlatformSmtpSettingsTab() {
+export const PlatformSmtpSettingsTab = () => {
   const { t } = useTranslation('common')
 
   const [loading, setLoading] = useState(true)

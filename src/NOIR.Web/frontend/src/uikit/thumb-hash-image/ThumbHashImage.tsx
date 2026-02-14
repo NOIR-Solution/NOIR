@@ -38,7 +38,7 @@ interface ThumbHashImageProps {
  * Shows a blurred placeholder while the actual image loads,
  * then fades in the real image for a smooth experience.
  */
-export function ThumbHashImage({
+export const ThumbHashImage = ({
   src,
   thumbHash,
   dominantColor,
@@ -53,7 +53,7 @@ export function ThumbHashImage({
   sizes,
   onLoad,
   onError,
-}: ThumbHashImageProps) {
+}: ThumbHashImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
 
@@ -149,7 +149,7 @@ export function ThumbHashImage({
  * Hook to decode ThumbHash to data URL.
  * Useful when you need the placeholder URL separately.
  */
-export function useThumbHashUrl(thumbHash: string | null | undefined): string | null {
+export const useThumbHashUrl = (thumbHash: string | null | undefined): string | null => {
   return useMemo(() => {
     if (!thumbHash) return null
 
@@ -169,7 +169,7 @@ export function useThumbHashUrl(thumbHash: string | null | undefined): string | 
 /**
  * Hook to get average color from ThumbHash.
  */
-export function useThumbHashColor(thumbHash: string | null | undefined): string | null {
+export const useThumbHashColor = (thumbHash: string | null | undefined): string | null => {
   return useMemo(() => {
     if (!thumbHash) return null
 

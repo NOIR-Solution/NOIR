@@ -24,9 +24,9 @@ interface UseProductCategoriesReturn extends UseProductCategoriesState {
   params: GetProductCategoriesParams
 }
 
-export function useProductCategories(
+export const useProductCategories = (
   initialParams: GetProductCategoriesParams = {}
-): UseProductCategoriesReturn {
+): UseProductCategoriesReturn => {
   const [state, setState] = useState<UseProductCategoriesState>({
     data: [],
     loading: true,

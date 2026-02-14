@@ -36,14 +36,14 @@ import { DeleteBlogCategoryDialog } from '../../components/blog-categories/Delet
 import type { PostCategoryListItem } from '@/types'
 
 // Adapter to map PostCategoryListItem to TreeCategory
-function toTreeCategory(category: PostCategoryListItem): TreeCategory & PostCategoryListItem {
+const toTreeCategory = (category: PostCategoryListItem): TreeCategory & PostCategoryListItem => {
   return {
     ...category,
     itemCount: category.postCount,
   }
 }
 
-export default function BlogCategoriesPage() {
+export const BlogCategoriesPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Categories')
 
@@ -283,3 +283,5 @@ export default function BlogCategoriesPage() {
     </div>
   )
 }
+
+export default BlogCategoriesPage

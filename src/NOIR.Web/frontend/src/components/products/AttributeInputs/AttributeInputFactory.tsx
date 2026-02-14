@@ -37,13 +37,13 @@ import type { AttributeType } from '@/types/productAttribute'
 /**
  * Factory component that renders the appropriate input based on attribute type
  */
-export function AttributeInputFactory({
+export const AttributeInputFactory = ({
   field,
   value,
   onChange,
   disabled = false,
   error,
-}: AttributeInputProps) {
+}: AttributeInputProps) => {
   const { t } = useTranslation('common')
   const type = field.type as AttributeType
 
@@ -260,7 +260,7 @@ interface InputComponentProps {
 }
 
 /** Select dropdown input */
-function SelectInput({ field, value, onChange, disabled }: InputComponentProps) {
+const SelectInput = ({ field, value, onChange, disabled }: InputComponentProps) => {
   const { t } = useTranslation('common')
 
   return (
@@ -293,7 +293,7 @@ function SelectInput({ field, value, onChange, disabled }: InputComponentProps) 
 }
 
 /** Multi-select checkbox group with responsive layout */
-function MultiSelectInput({ field, value, onChange, disabled }: InputComponentProps) {
+const MultiSelectInput = ({ field, value, onChange, disabled }: InputComponentProps) => {
   const { t } = useTranslation('common')
   const selectedValues = Array.isArray(value) ? value : []
   const optionCount = field.options?.length || 0
@@ -415,7 +415,7 @@ function MultiSelectInput({ field, value, onChange, disabled }: InputComponentPr
 }
 
 /** Text input */
-function TextInput({ field, value, onChange, disabled }: InputComponentProps) {
+const TextInput = ({ field, value, onChange, disabled }: InputComponentProps) => {
   return (
     <Input
       id={`attr-${field.attributeId}`}
@@ -431,7 +431,7 @@ function TextInput({ field, value, onChange, disabled }: InputComponentProps) {
 }
 
 /** Textarea input */
-function TextAreaInput({ field, value, onChange, disabled }: InputComponentProps) {
+const TextAreaInput = ({ field, value, onChange, disabled }: InputComponentProps) => {
   return (
     <Textarea
       id={`attr-${field.attributeId}`}
@@ -448,13 +448,13 @@ function TextAreaInput({ field, value, onChange, disabled }: InputComponentProps
 }
 
 /** Number input with increment/decrement buttons */
-function NumberInput({
+const NumberInput = ({
   field,
   value,
   onChange,
   disabled,
   isDecimal,
-}: InputComponentProps & { isDecimal: boolean }) {
+}: InputComponentProps & { isDecimal: boolean }) => {
   const { t } = useTranslation('common')
   const numValue = value !== null && value !== undefined ? Number(value) : null
   const step = isDecimal ? 0.1 : 1
@@ -560,7 +560,7 @@ function NumberInput({
 }
 
 /** Boolean switch toggle */
-function BooleanInput({ field, value, onChange, disabled }: InputComponentProps) {
+const BooleanInput = ({ field, value, onChange, disabled }: InputComponentProps) => {
   const { t } = useTranslation('common')
 
   return (
@@ -582,13 +582,13 @@ function BooleanInput({ field, value, onChange, disabled }: InputComponentProps)
 }
 
 /** Date/DateTime picker with enhanced time selection */
-function DateInput({
+const DateInput = ({
   field,
   value,
   onChange,
   disabled,
   showTime,
-}: InputComponentProps & { showTime: boolean }) {
+}: InputComponentProps & { showTime: boolean }) => {
   const { t } = useTranslation('common')
   const dateValue = value ? parseISO(value as string) : undefined
   const formatStr = showTime ? 'PPP HH:mm' : 'PPP'
@@ -711,7 +711,7 @@ function DateInput({
 }
 
 /** Color picker with swatches + native picker + hex input */
-function ColorInput({ field, value, onChange, disabled }: InputComponentProps) {
+const ColorInput = ({ field, value, onChange, disabled }: InputComponentProps) => {
   const { t } = useTranslation('common')
   const selectedValue = (value as string) || ''
   const hasOptions = field.options && field.options.length > 0
@@ -841,7 +841,7 @@ function ColorInput({ field, value, onChange, disabled }: InputComponentProps) {
 }
 
 /** Range input with visual slider and dual inputs */
-function RangeInput({ field, value, onChange, disabled }: InputComponentProps) {
+const RangeInput = ({ field, value, onChange, disabled }: InputComponentProps) => {
   const { t } = useTranslation('common')
   // Value stored as "min-max" string
   const [minVal, maxVal] = ((value as string) || '').split('-').map(v => v === '' ? NaN : Number(v))
@@ -1012,7 +1012,7 @@ function RangeInput({ field, value, onChange, disabled }: InputComponentProps) {
 }
 
 /** URL input with validation indicator */
-function UrlInput({ field, value, onChange, disabled }: InputComponentProps) {
+const UrlInput = ({ field, value, onChange, disabled }: InputComponentProps) => {
   const urlValue = (value as string) || ''
   const isValidUrl = urlValue === '' || isValidUrlString(urlValue)
 
@@ -1044,7 +1044,7 @@ function UrlInput({ field, value, onChange, disabled }: InputComponentProps) {
 }
 
 /** File input with drag-and-drop support */
-function FileInput({ field, value, onChange, disabled }: InputComponentProps) {
+const FileInput = ({ field, value, onChange, disabled }: InputComponentProps) => {
   const { t } = useTranslation('common')
   const [preview, setPreview] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -1192,7 +1192,7 @@ function FileInput({ field, value, onChange, disabled }: InputComponentProps) {
 // Utility Functions
 // ============================================================================
 
-function isLightColor(color: string): boolean {
+const isLightColor = (color: string): boolean => {
   // Simple heuristic for light colors
   if (!color) return false
   const hex = color.replace('#', '')
@@ -1204,7 +1204,7 @@ function isLightColor(color: string): boolean {
   return luminance > 0.5
 }
 
-function isValidUrlString(url: string): boolean {
+const isValidUrlString = (url: string): boolean => {
   try {
     new URL(url)
     return true
@@ -1213,7 +1213,7 @@ function isValidUrlString(url: string): boolean {
   }
 }
 
-function formatFileSize(bytes: number): string {
+const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes'
   const k = 1024
   const sizes = ['Bytes', 'KB', 'MB', 'GB']

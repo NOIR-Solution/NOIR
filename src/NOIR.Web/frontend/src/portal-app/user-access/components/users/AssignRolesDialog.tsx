@@ -28,7 +28,7 @@ interface AssignRolesDialogProps {
   onSuccess: () => void
 }
 
-export function AssignRolesDialog({ user, open, onOpenChange, onSuccess }: AssignRolesDialogProps) {
+export const AssignRolesDialog = ({ user, open, onOpenChange, onSuccess }: AssignRolesDialogProps) => {
   const { t } = useTranslation('common')
   const { roles: availableRoles, loading: loadingRoles } = useAvailableRoles()
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set())

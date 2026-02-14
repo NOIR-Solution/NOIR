@@ -36,12 +36,12 @@ interface ProtectedRouteProps {
  *   <AdminPage />
  * </ProtectedRoute>
  */
-export function ProtectedRoute({
+export const ProtectedRoute = ({
   children,
   permissions,
   requireAll = false,
   redirectTo = '/portal',
-}: ProtectedRouteProps) {
+}: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading: authLoading } = useAuthContext()
   const {
     hasPermission,

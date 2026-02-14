@@ -40,9 +40,9 @@ export interface GetProductAttributesParams {
 /**
  * Fetch paginated list of product attributes
  */
-export async function getProductAttributes(
+export const getProductAttributes = async (
   params: GetProductAttributesParams = {}
-): Promise<ProductAttributePagedResult> {
+): Promise<ProductAttributePagedResult> => {
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('search', params.search)
   if (params.isActive !== undefined) queryParams.append('isActive', String(params.isActive))
@@ -59,7 +59,7 @@ export async function getProductAttributes(
 /**
  * Fetch all active product attributes (for dropdowns)
  */
-export async function getActiveProductAttributes(): Promise<ProductAttributeListItem[]> {
+export const getActiveProductAttributes = async (): Promise<ProductAttributeListItem[]> => {
   const result = await getProductAttributes({ isActive: true, pageSize: 1000 })
   return result.items
 }
@@ -67,7 +67,7 @@ export async function getActiveProductAttributes(): Promise<ProductAttributeList
 /**
  * Fetch all filterable product attributes with their values (for admin product filters)
  */
-export async function getFilterableAttributesWithValues(): Promise<ProductAttribute[]> {
+export const getFilterableAttributesWithValues = async (): Promise<ProductAttribute[]> => {
   const result = await getProductAttributes({ isActive: true, isFilterable: true, pageSize: 1000 })
   // Fetch full details for each filterable attribute to get values
   const attributesWithValues = await Promise.all(
@@ -82,16 +82,16 @@ export async function getFilterableAttributesWithValues(): Promise<ProductAttrib
 /**
  * Fetch a single product attribute by ID
  */
-export async function getProductAttributeById(id: string): Promise<ProductAttribute> {
+export const getProductAttributeById = async (id: string): Promise<ProductAttribute> => {
   return apiClient<ProductAttribute>(`/product-attributes/${id}`)
 }
 
 /**
  * Create a new product attribute
  */
-export async function createProductAttribute(
+export const createProductAttribute = async (
   request: CreateProductAttributeRequest
-): Promise<ProductAttribute> {
+): Promise<ProductAttribute> => {
   return apiClient<ProductAttribute>('/product-attributes', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -101,10 +101,10 @@ export async function createProductAttribute(
 /**
  * Update an existing product attribute
  */
-export async function updateProductAttribute(
+export const updateProductAttribute = async (
   id: string,
   request: UpdateProductAttributeRequest
-): Promise<ProductAttribute> {
+): Promise<ProductAttribute> => {
   return apiClient<ProductAttribute>(`/product-attributes/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -114,7 +114,7 @@ export async function updateProductAttribute(
 /**
  * Delete a product attribute (soft delete)
  */
-export async function deleteProductAttribute(id: string): Promise<void> {
+export const deleteProductAttribute = async (id: string): Promise<void> => {
   return apiClient<void>(`/product-attributes/${id}`, {
     method: 'DELETE',
   })
@@ -127,10 +127,10 @@ export async function deleteProductAttribute(id: string): Promise<void> {
 /**
  * Add a value to a product attribute
  */
-export async function addProductAttributeValue(
+export const addProductAttributeValue = async (
   attributeId: string,
   request: AddProductAttributeValueRequest
-): Promise<ProductAttributeValue> {
+): Promise<ProductAttributeValue> => {
   return apiClient<ProductAttributeValue>(`/product-attributes/${attributeId}/values`, {
     method: 'POST',
     body: JSON.stringify(request),
@@ -140,11 +140,11 @@ export async function addProductAttributeValue(
 /**
  * Update an attribute value
  */
-export async function updateProductAttributeValue(
+export const updateProductAttributeValue = async (
   attributeId: string,
   valueId: string,
   request: UpdateProductAttributeValueRequest
-): Promise<ProductAttributeValue> {
+): Promise<ProductAttributeValue> => {
   return apiClient<ProductAttributeValue>(`/product-attributes/${attributeId}/values/${valueId}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -154,10 +154,10 @@ export async function updateProductAttributeValue(
 /**
  * Remove an attribute value
  */
-export async function removeProductAttributeValue(
+export const removeProductAttributeValue = async (
   attributeId: string,
   valueId: string
-): Promise<void> {
+): Promise<void> => {
   return apiClient<void>(`/product-attributes/${attributeId}/values/${valueId}`, {
     method: 'DELETE',
   })
@@ -170,7 +170,7 @@ export async function removeProductAttributeValue(
 /**
  * Get all attributes assigned to a category
  */
-export async function getCategoryAttributes(categoryId: string): Promise<CategoryAttribute[]> {
+export const getCategoryAttributes = async (categoryId: string): Promise<CategoryAttribute[]> => {
   return apiClient<CategoryAttribute[]>(`/products/categories/${categoryId}/attributes`)
 }
 
@@ -179,19 +179,19 @@ export async function getCategoryAttributes(categoryId: string): Promise<Categor
  * Unlike getProductAttributeFormSchema, this does NOT require a productId.
  * Returns form fields with default values but no currentValue.
  */
-export async function getCategoryAttributeFormSchema(
+export const getCategoryAttributeFormSchema = async (
   categoryId: string
-): Promise<CategoryAttributeFormSchema> {
+): Promise<CategoryAttributeFormSchema> => {
   return apiClient<CategoryAttributeFormSchema>(`/products/categories/${categoryId}/attribute-form-schema`)
 }
 
 /**
  * Assign an attribute to a category
  */
-export async function assignCategoryAttribute(
+export const assignCategoryAttribute = async (
   categoryId: string,
   request: AssignCategoryAttributeRequest
-): Promise<CategoryAttribute> {
+): Promise<CategoryAttribute> => {
   return apiClient<CategoryAttribute>(`/products/categories/${categoryId}/attributes`, {
     method: 'POST',
     body: JSON.stringify(request),
@@ -201,11 +201,11 @@ export async function assignCategoryAttribute(
 /**
  * Update category attribute settings
  */
-export async function updateCategoryAttribute(
+export const updateCategoryAttribute = async (
   categoryId: string,
   attributeId: string,
   request: UpdateCategoryAttributeRequest
-): Promise<CategoryAttribute> {
+): Promise<CategoryAttribute> => {
   return apiClient<CategoryAttribute>(`/products/categories/${categoryId}/attributes/${attributeId}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -215,10 +215,10 @@ export async function updateCategoryAttribute(
 /**
  * Remove an attribute from a category
  */
-export async function removeCategoryAttribute(
+export const removeCategoryAttribute = async (
   categoryId: string,
   attributeId: string
-): Promise<void> {
+): Promise<void> => {
   return apiClient<void>(`/products/categories/${categoryId}/attributes/${attributeId}`, {
     method: 'DELETE',
   })
@@ -231,10 +231,10 @@ export async function removeCategoryAttribute(
 /**
  * Get attribute form schema for a product (for dynamic form rendering)
  */
-export async function getProductAttributeFormSchema(
+export const getProductAttributeFormSchema = async (
   productId: string,
   variantId?: string
-): Promise<ProductAttributeFormSchema> {
+): Promise<ProductAttributeFormSchema> => {
   const params = variantId ? `?variantId=${variantId}` : ''
   return apiClient<ProductAttributeFormSchema>(`/products/${productId}/attributes/form-schema${params}`)
 }
@@ -242,10 +242,10 @@ export async function getProductAttributeFormSchema(
 /**
  * Get a product's attribute values
  */
-export async function getProductAttributeAssignments(
+export const getProductAttributeAssignments = async (
   productId: string,
   variantId?: string
-): Promise<ProductAttributeAssignment[]> {
+): Promise<ProductAttributeAssignment[]> => {
   const params = variantId ? `?variantId=${variantId}` : ''
   return apiClient<ProductAttributeAssignment[]>(`/products/${productId}/attributes${params}`)
 }
@@ -253,11 +253,11 @@ export async function getProductAttributeAssignments(
 /**
  * Set a single attribute value for a product
  */
-export async function setProductAttributeValue(
+export const setProductAttributeValue = async (
   productId: string,
   attributeId: string,
   request: SetProductAttributeValueRequest
-): Promise<ProductAttributeAssignment> {
+): Promise<ProductAttributeAssignment> => {
   return apiClient<ProductAttributeAssignment>(`/products/${productId}/attributes/${attributeId}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -267,10 +267,10 @@ export async function setProductAttributeValue(
 /**
  * Bulk update multiple attribute values for a product
  */
-export async function bulkUpdateProductAttributes(
+export const bulkUpdateProductAttributes = async (
   productId: string,
   request: BulkUpdateProductAttributesRequest
-): Promise<ProductAttributeAssignment[]> {
+): Promise<ProductAttributeAssignment[]> => {
   return apiClient<ProductAttributeAssignment[]>(`/products/${productId}/attributes`, {
     method: 'PUT',
     body: JSON.stringify(request),

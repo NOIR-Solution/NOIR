@@ -89,7 +89,7 @@ const DEFAULT_FILTER: LogStreamFilter = {
  * })
  * ```
  */
-export function useLogStream(options: UseLogStreamOptions = {}): UseLogStreamReturn {
+export const useLogStream = (options: UseLogStreamOptions = {}): UseLogStreamReturn => {
   const {
     autoConnect = true,
     maxEntries = 1000,

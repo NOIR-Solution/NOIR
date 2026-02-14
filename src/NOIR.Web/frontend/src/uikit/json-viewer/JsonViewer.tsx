@@ -36,7 +36,7 @@ const typeColors = {
   bracket: 'text-gray-600 dark:text-gray-400',
 }
 
-function JsonNode({
+const JsonNode = ({
   name,
   value,
   depth,
@@ -48,7 +48,7 @@ function JsonNode({
   depth: number
   defaultExpanded: boolean
   maxDepth: number
-}) {
+}) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded && depth < maxDepth)
 
   const valueType = useMemo(() => {
@@ -196,7 +196,7 @@ function JsonNode({
   )
 }
 
-export function JsonViewer({
+export const JsonViewer = ({
   data,
   className,
   defaultExpanded = true,
@@ -205,7 +205,7 @@ export function JsonViewer({
   title,
   allowFullscreen = true,
   maxHeight = '300px',
-}: JsonViewerProps) {
+}: JsonViewerProps) => {
   const [copied, setCopied] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
 

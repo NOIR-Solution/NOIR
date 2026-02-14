@@ -49,11 +49,11 @@ interface UseUnsavedChangesReturn {
  *   </AlertDialog>
  * )}
  */
-export function useUnsavedChanges({
+export const useUnsavedChanges = ({
   isDirty,
   message = 'You have unsaved changes. Are you sure you want to leave?',
   enabled = true,
-}: UseUnsavedChangesOptions): UseUnsavedChangesReturn {
+}: UseUnsavedChangesOptions): UseUnsavedChangesReturn => {
   // Block SPA navigation
   const shouldBlock = enabled && isDirty
   const blocker = useBlocker(shouldBlock)

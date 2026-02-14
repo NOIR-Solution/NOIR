@@ -64,7 +64,7 @@ const sizeClasses = {
   },
 };
 
-function ActionButton({ action, variant = "outline" }: { action: EmptyStateAction; variant?: EmptyStateAction["variant"] }) {
+const ActionButton = ({ action, variant = "outline" }: { action: EmptyStateAction; variant?: EmptyStateAction["variant"] }) => {
   const buttonVariant = action.variant || variant;
 
   if (action.href) {

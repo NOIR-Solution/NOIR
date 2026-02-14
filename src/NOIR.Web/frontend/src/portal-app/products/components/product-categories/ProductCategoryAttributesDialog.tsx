@@ -44,11 +44,11 @@ interface ProductCategoryAttributesDialogProps {
   category: ProductCategoryListItem | null
 }
 
-export function ProductCategoryAttributesDialog({
+export const ProductCategoryAttributesDialog = ({
   open,
   onOpenChange,
   category,
-}: ProductCategoryAttributesDialogProps) {
+}: ProductCategoryAttributesDialogProps) => {
   const { t } = useTranslation('common')
   const [showAddAttribute, setShowAddAttribute] = useState(false)
   const [selectedAttributeId, setSelectedAttributeId] = useState<string>('')

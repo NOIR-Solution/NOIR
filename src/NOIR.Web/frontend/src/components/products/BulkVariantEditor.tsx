@@ -49,11 +49,11 @@ export interface VariantUpdate {
 
 type BulkAction = 'setPrice' | 'adjustPrice' | 'percentPrice' | 'setStock' | 'adjustStock'
 
-export function BulkVariantEditor({
+export const BulkVariantEditor = ({
   variants,
   onSave,
   disabled = false,
-}: BulkVariantEditorProps) {
+}: BulkVariantEditorProps) => {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())

@@ -92,7 +92,7 @@ interface TenantFormValidatedProps {
   onCancel: () => void
 }
 
-export function TenantFormValidated({ tenant, onSubmit, onCancel }: TenantFormValidatedProps) {
+export const TenantFormValidated = ({ tenant, onSubmit, onCancel }: TenantFormValidatedProps) => {
   const { t } = useTranslation("common")
   const isEditing = !!tenant
 

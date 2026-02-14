@@ -40,12 +40,12 @@ interface TestEmailDialogProps {
 /**
  * Dialog for sending test emails with sample data.
  */
-export function TestEmailDialog({
+export const TestEmailDialog = ({
   open,
   onOpenChange,
   templateId,
   availableVariables,
-}: TestEmailDialogProps) {
+}: TestEmailDialogProps) => {
   const { t } = useTranslation('common')
   const { user } = useAuthContext()
 

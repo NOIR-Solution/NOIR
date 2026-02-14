@@ -12,7 +12,7 @@ interface NotificationEmptyProps {
   className?: string
 }
 
-export function NotificationEmpty({ className }: NotificationEmptyProps) {
+export const NotificationEmpty = ({ className }: NotificationEmptyProps) => {
   const { t } = useTranslation('common')
 
   return (

@@ -38,14 +38,14 @@ import { ProductCategoryAttributesDialog } from '../../components/product-catego
 import type { ProductCategoryListItem } from '@/types/product'
 
 // Adapter to map ProductCategoryListItem to TreeCategory
-function toTreeCategory(category: ProductCategoryListItem): TreeCategory & ProductCategoryListItem {
+const toTreeCategory = (category: ProductCategoryListItem): TreeCategory & ProductCategoryListItem => {
   return {
     ...category,
     itemCount: category.productCount,
   }
 }
 
-export default function ProductCategoriesPage() {
+export const ProductCategoriesPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('Product Categories')
@@ -339,3 +339,5 @@ export default function ProductCategoriesPage() {
     </div>
   )
 }
+
+export default ProductCategoriesPage

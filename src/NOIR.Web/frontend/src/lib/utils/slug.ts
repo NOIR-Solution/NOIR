@@ -15,7 +15,7 @@
  * generateSlug('Sản phẩm mới') // 'san-pham-moi'
  * generateSlug('Product #1 (New!)') // 'product-1-new'
  */
-export function generateSlug(text: string): string {
+export const generateSlug = (text: string): string => {
   return text
     .toLowerCase()
     .normalize('NFD') // Decompose combined characters (e.g., ă → a + ̆)
@@ -33,7 +33,7 @@ export function generateSlug(text: string): string {
  * @param slug - The slug to validate
  * @returns true if valid, false otherwise
  */
-export function isValidSlug(slug: string): boolean {
+export const isValidSlug = (slug: string): boolean => {
   const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
   return slugRegex.test(slug)
 }

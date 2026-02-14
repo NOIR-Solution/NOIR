@@ -95,10 +95,10 @@ const validationPatterns = [
  * const translatedError = translateValidationError(error.message, t)
  * ```
  */
-export function translateValidationError(
+export const translateValidationError = (
   message: string | undefined,
   t: TranslationFn
-): string {
+): string => {
   if (!message) return ''
 
   for (const { pattern, key, extractParams } of validationPatterns) {
@@ -129,6 +129,6 @@ export function translateValidationError(
  * {error && <p>{translateError(error.message)}</p>}
  * ```
  */
-export function createValidationTranslator(t: TranslationFn) {
+export const createValidationTranslator = (t: TranslationFn) => {
   return (message: string | undefined) => translateValidationError(message, t)
 }

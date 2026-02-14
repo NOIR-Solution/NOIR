@@ -66,7 +66,7 @@ const operationConfig = {
 }
 
 // Format time only (used for inline display)
-function formatTimeOnly(timestamp: string, timezone: string): string {
+const formatTimeOnly = (timestamp: string, timezone: string): string => {
   const date = new Date(timestamp)
   try {
     return date.toLocaleTimeString('en-US', {
@@ -87,7 +87,7 @@ function formatTimeOnly(timestamp: string, timezone: string): string {
 }
 
 // Format exact timestamp for tooltip (uses tenant timezone and date format)
-function formatExactTime(timestamp: string, timezone: string, dateFormat: string): string {
+const formatExactTime = (timestamp: string, timezone: string, dateFormat: string): string => {
   const date = new Date(timestamp)
   const locale = getLocaleForFormat(dateFormat)
 
@@ -116,7 +116,7 @@ function formatExactTime(timestamp: string, timezone: string, dateFormat: string
 }
 
 // Timeline Entry Component - clickable card that opens details popup
-function TimelineEntry({
+const TimelineEntry = ({
   entry,
   isLast,
   onViewDetails,
@@ -124,7 +124,7 @@ function TimelineEntry({
   entry: ActivityTimelineEntry
   isLast: boolean
   onViewDetails: () => void
-}) {
+}) => {
   const config = operationConfig[entry.operationType as keyof typeof operationConfig] || operationConfig.Update
   const Icon = config.icon
   const { formatRelativeTime, timezone, dateFormat } = useRegionalSettings()
@@ -239,7 +239,7 @@ function TimelineEntry({
   )
 }
 
-export default function ActivityTimelinePage() {
+export const ActivityTimelinePage = () => {
   const { t } = useTranslation('common')
   const [searchParams, setSearchParams] = useSearchParams()
   usePageContext('Activity Timeline')
@@ -582,3 +582,5 @@ export default function ActivityTimelinePage() {
     </div>
   )
 }
+
+export default ActivityTimelinePage

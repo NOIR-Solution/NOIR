@@ -4,7 +4,7 @@ import type { BreadcrumbItem } from '@uikit'
 /**
  * Hook to generate breadcrumb items based on current route
  */
-export function useBreadcrumbs(): BreadcrumbItem[] {
+export const useBreadcrumbs = (): BreadcrumbItem[] => {
   const location = useLocation()
 
   return useMemo(() => {

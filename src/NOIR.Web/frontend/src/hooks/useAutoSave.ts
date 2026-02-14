@@ -59,7 +59,7 @@ const DEFAULT_MAX_AGE = 24 * 60 * 60 * 1000 // 24 hours
  *   clearDraft()
  * }
  */
-export function useAutoSave<T extends FieldValues>({
+export const useAutoSave = <T extends FieldValues>({
   form,
   storageKey,
   debounceMs = 2000,
@@ -67,7 +67,7 @@ export function useAutoSave<T extends FieldValues>({
   maxAge = DEFAULT_MAX_AGE,
   onRestore,
   restoreMessage = 'Draft restored',
-}: UseAutoSaveOptions<T>): UseAutoSaveReturn {
+}: UseAutoSaveOptions<T>): UseAutoSaveReturn => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSavedRef = useRef<string>('')
   const [hasDraft, setHasDraft] = useState(false)

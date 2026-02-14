@@ -57,7 +57,7 @@ const emailFrequencyOptions: { value: EmailFrequency; label: string }[] = [
   { value: 'weekly', label: 'Weekly digest' },
 ]
 
-export default function NotificationPreferencesPage() {
+export const NotificationPreferencesPage = () => {
   const [preferences, setPreferences] = useState<NotificationPreference[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -280,3 +280,5 @@ export default function NotificationPreferencesPage() {
     </div>
   )
 }
+
+export default NotificationPreferencesPage

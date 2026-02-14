@@ -25,7 +25,7 @@ export interface ContactSettingsTabProps {
   canEdit: boolean
 }
 
-export function ContactSettingsTab({ canEdit }: ContactSettingsTabProps) {
+export const ContactSettingsTab = ({ canEdit }: ContactSettingsTabProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

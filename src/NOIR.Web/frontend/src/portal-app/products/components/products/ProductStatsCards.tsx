@@ -193,12 +193,12 @@ const statKeyToStatus: Record<StatKey, ProductStatus | null> = {
   outOfStock: 'OutOfStock',
 }
 
-export function ProductStatsCards({
+export const ProductStatsCards = ({
   stats,
   hasActiveFilters = false,
   activeFilter,
   onFilterChange,
-}: ProductStatsCardsProps) {
+}: ProductStatsCardsProps) => {
   const { t } = useTranslation('common')
 
   const cards = PRODUCT_STAT_CARDS_CONFIG.map(config => {

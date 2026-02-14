@@ -58,7 +58,7 @@ export interface RegionalSettingsTabProps {
   canEdit: boolean
 }
 
-export function RegionalSettingsTab({ canEdit }: RegionalSettingsTabProps) {
+export const RegionalSettingsTab = ({ canEdit }: RegionalSettingsTabProps) => {
   const { t } = useTranslation('common')
   const { reloadRegional } = useRegionalSettings()
   const [loading, setLoading] = useState(true)

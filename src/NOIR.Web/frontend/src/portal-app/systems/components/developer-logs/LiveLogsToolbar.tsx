@@ -67,7 +67,7 @@ export interface LiveLogsToolbarProps {
   onClearBuffer: () => void
 }
 
-export function LiveLogsToolbar({
+export const LiveLogsToolbar = ({
   isPaused,
   onTogglePause,
   autoScroll,
@@ -85,7 +85,7 @@ export function LiveLogsToolbar({
   exceptionsOnly,
   onExceptionsOnlyChange,
   onClearBuffer,
-}: LiveLogsToolbarProps) {
+}: LiveLogsToolbarProps) => {
   const { t } = useTranslation('common')
   const hasActiveFilters = searchTerm || exceptionsOnly || selectedLevels.size > 0
 

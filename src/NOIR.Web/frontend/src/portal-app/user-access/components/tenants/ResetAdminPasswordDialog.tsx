@@ -24,12 +24,12 @@ interface ResetAdminPasswordDialogProps {
   onSuccess?: () => void
 }
 
-export function ResetAdminPasswordDialog({
+export const ResetAdminPasswordDialog = ({
   tenant,
   open,
   onOpenChange,
   onSuccess,
-}: ResetAdminPasswordDialogProps) {
+}: ResetAdminPasswordDialogProps) => {
   const { t } = useTranslation('common')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')

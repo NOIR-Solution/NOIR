@@ -12,7 +12,7 @@ export interface LegalPagesTabProps {
   onEdit: (id: string) => void
 }
 
-export function LegalPagesTab({ onEdit }: LegalPagesTabProps) {
+export const LegalPagesTab = ({ onEdit }: LegalPagesTabProps) => {
   const { t } = useTranslation('common')
   const { formatDate } = useRegionalSettings()
   const [loading, setLoading] = useState(true)

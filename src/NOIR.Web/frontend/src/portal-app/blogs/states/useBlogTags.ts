@@ -22,7 +22,7 @@ interface UseTagsReturn extends UseTagsState {
   params: GetTagsParams
 }
 
-export function useTags(initialParams: GetTagsParams = {}): UseTagsReturn {
+export const useTags = (initialParams: GetTagsParams = {}): UseTagsReturn => {
   const [state, setState] = useState<UseTagsState>({
     data: [],
     loading: true,

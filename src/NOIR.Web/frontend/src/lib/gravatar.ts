@@ -8,7 +8,7 @@
 /**
  * Generate SHA-256 hash of a string (for Gravatar email hashing)
  */
-async function sha256(message: string): Promise<string> {
+const sha256 = async (message: string): Promise<string> => {
   const msgBuffer = new TextEncoder().encode(message)
   const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
@@ -21,7 +21,7 @@ async function sha256(message: string): Promise<string> {
  * @param size The image size (default 80px)
  * @returns Promise with the Gravatar URL
  */
-export async function getGravatarUrl(email: string, size = 80): Promise<string> {
+export const getGravatarUrl = async (email: string, size = 80): Promise<string> => {
   const normalizedEmail = email.toLowerCase().trim()
   const hash = await sha256(normalizedEmail)
   // d=404 returns 404 if no Gravatar exists (we can fallback to initials)
@@ -35,11 +35,11 @@ export async function getGravatarUrl(email: string, size = 80): Promise<string> 
  * @param email Fallback email if no name
  * @returns 1-2 character initials (uppercase)
  */
-export function getInitials(
+export const getInitials = (
   firstName: string | null,
   lastName: string | null,
   email: string
-): string {
+): string => {
   // If we have names, use them
   if (firstName || lastName) {
     const first = firstName?.charAt(0) || ''
@@ -56,7 +56,7 @@ export function getInitials(
  * @param str Input string (usually email or name)
  * @returns HSL color string
  */
-export function getAvatarColor(str: string): string {
+export const getAvatarColor = (str: string): string => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash)

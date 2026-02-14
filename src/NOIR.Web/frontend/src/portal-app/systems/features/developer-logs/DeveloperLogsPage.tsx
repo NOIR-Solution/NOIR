@@ -41,7 +41,7 @@ import {
   ErrorClustersTab,
 } from '../../components/developer-logs'
 
-export default function DeveloperLogsPage() {
+export const DeveloperLogsPage = () => {
   useTranslation('common')
   usePageContext('Developer Logs')
 
@@ -320,3 +320,5 @@ export default function DeveloperLogsPage() {
     </div>
   )
 }
+
+export default DeveloperLogsPage

@@ -59,7 +59,7 @@ const NotificationContext = createContext<NotificationContextValue | undefined>(
 
 const PAGE_SIZE = 10
 
-export function NotificationProvider({ children }: { children: ReactNode }) {
+export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated, user } = useAuthContext()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
@@ -236,7 +236,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function useNotificationContext() {
+export const useNotificationContext = () => {
   const context = useContext(NotificationContext)
   if (!context) {
     throw new Error('useNotificationContext must be used within NotificationProvider')

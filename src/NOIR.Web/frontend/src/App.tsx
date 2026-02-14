@@ -12,8 +12,8 @@ import { PortalLayout } from '@/layouts/PortalLayout'
 import { PageSkeleton } from '@uikit'
 import { CommandProvider, CommandPalette } from '@/components/command-palette'
 
-import LoginPage from '@/layouts/auth/login/LoginPage'
-import WelcomePage from '@/portal-app/welcome/features/welcome/WelcomePage'
+import { LoginPage } from '@/layouts/auth/login/LoginPage'
+import { WelcomePage } from '@/portal-app/welcome/features/welcome/WelcomePage'
 import './index.css'
 
 // Loading fallback for lazy-loaded routes - uses skeleton for better UX
@@ -46,7 +46,7 @@ const PlatformSettingsPage = lazy(() => import('@/portal-app/settings/features/p
 // Tenant Settings (includes Payment Gateways tab)
 const TenantSettingsPage = lazy(() => import('@/portal-app/settings/features/tenant-settings/TenantSettingsPage'))
 // Email templates - edit page only (list is in Tenant Settings)
-import EmailTemplateEditPage from '@/portal-app/settings/features/email-template-edit/EmailTemplateEditPage'
+import { EmailTemplateEditPage } from '@/portal-app/settings/features/email-template-edit/EmailTemplateEditPage'
 // Legal pages - edit page only (list is in Tenant Settings)
 const LegalPageEditPage = lazy(() => import('@/portal-app/settings/features/legal-page-edit/LegalPageEditPage'))
 // Public legal pages
@@ -54,12 +54,12 @@ const TermsPage = lazy(() => import('@/portal-app/welcome/features/terms/TermsPa
 const PrivacyPage = lazy(() => import('@/portal-app/welcome/features/privacy/PrivacyPage'))
 
 // Forgot password flow - keep as eager load (auth flow should be fast)
-import ForgotPasswordPage from '@/layouts/auth/forgot-password/ForgotPasswordPage'
-import VerifyOtpPage from '@/layouts/auth/verify-otp/VerifyOtpPage'
-import ResetPasswordPage from '@/layouts/auth/reset-password/ResetPasswordPage'
-import AuthSuccessPage from '@/layouts/auth/auth-success/AuthSuccessPage'
+import { ForgotPasswordPage } from '@/layouts/auth/forgot-password/ForgotPasswordPage'
+import { VerifyOtpPage } from '@/layouts/auth/verify-otp/VerifyOtpPage'
+import { ResetPasswordPage } from '@/layouts/auth/reset-password/ResetPasswordPage'
+import { AuthSuccessPage } from '@/layouts/auth/auth-success/AuthSuccessPage'
 
-function App() {
+export const App = () => {
   return (
     <ThemeProvider defaultTheme="system">
       <AccessibilityProvider>
@@ -154,5 +154,3 @@ function App() {
     </ThemeProvider>
   )
 }
-
-export default App

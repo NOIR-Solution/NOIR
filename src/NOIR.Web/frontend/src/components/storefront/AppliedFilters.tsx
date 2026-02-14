@@ -19,12 +19,12 @@ export interface AppliedFiltersProps {
  * Displays active filters as removable chips/badges
  * Shows individual filter badges with remove buttons and a "Clear all" button
  */
-export function AppliedFilters({
+export const AppliedFilters = ({
   filters,
   onRemove,
   onClearAll,
   className,
-}: AppliedFiltersProps) {
+}: AppliedFiltersProps) => {
   if (filters.length === 0) {
     return null
   }

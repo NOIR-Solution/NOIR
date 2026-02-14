@@ -53,13 +53,13 @@ interface MatrixCell {
   colValue: string
 }
 
-export function VariantMatrixView({
+export const VariantMatrixView = ({
   variants,
   options,
   currency,
   onUpdateVariant,
   disabled = false,
-}: VariantMatrixViewProps) {
+}: VariantMatrixViewProps) => {
   const { t } = useTranslation('common')
   const [editingCell, setEditingCell] = useState<string | null>(null)
   const [editPrice, setEditPrice] = useState('')

@@ -32,14 +32,14 @@ export interface FilterMobileDrawerProps {
  * Mobile drawer component for filters using shadcn Sheet
  * Shows FilterSidebar content in a slide-out drawer on mobile
  */
-export function FilterMobileDrawer({
+export const FilterMobileDrawer = ({
   open,
   onOpenChange,
   children,
   activeFilterCount = 0,
   title = 'Filters',
   description = 'Refine your search results',
-}: FilterMobileDrawerProps) {
+}: FilterMobileDrawerProps) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="w-full sm:max-w-md p-0 flex flex-col">
@@ -88,11 +88,11 @@ export interface FilterMobileTriggerProps {
   className?: string
 }
 
-export function FilterMobileTrigger({
+export const FilterMobileTrigger = ({
   onClick,
   activeFilterCount = 0,
   className,
-}: FilterMobileTriggerProps) {
+}: FilterMobileTriggerProps) => {
   return (
     <Button
       type="button"

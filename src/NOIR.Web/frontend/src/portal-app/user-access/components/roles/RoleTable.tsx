@@ -28,7 +28,7 @@ interface RoleTableProps {
   loading?: boolean
 }
 
-export function RoleTable({ roles, onEdit, onDelete, onPermissions, loading }: RoleTableProps) {
+export const RoleTable = ({ roles, onEdit, onDelete, onPermissions, loading }: RoleTableProps) => {
   const { t } = useTranslation('common')
 
   if (loading) {

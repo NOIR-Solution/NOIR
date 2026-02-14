@@ -91,7 +91,7 @@ const createFormSchema = (t: (key: string, options?: Record<string, unknown>) =>
 
 type FormValues = z.output<ReturnType<typeof createFormSchema>>
 
-export default function BlogPostEditPage() {
+export const BlogPostEditPage = () => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
@@ -896,3 +896,5 @@ export default function BlogPostEditPage() {
     </div>
   )
 }
+
+export default BlogPostEditPage

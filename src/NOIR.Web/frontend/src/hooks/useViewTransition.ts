@@ -14,10 +14,10 @@ export const supportsViewTransitions =
  * Sets a direction attribute on <html> for CSS-based directional animations.
  * Falls back to calling the callback directly in unsupported browsers.
  */
-export function startViewTransition(
+export const startViewTransition = (
   callback: () => void,
   direction: 'forward' | 'back' = 'forward'
-): void {
+): void => {
   if (!supportsViewTransitions) {
     callback()
     return
@@ -48,7 +48,7 @@ export function startViewTransition(
  * navigate('/portal/products')
  * navigate('/portal', { vtDirection: 'back' })
  */
-export function useViewTransitionNavigate() {
+export const useViewTransitionNavigate = () => {
   const navigate = useNavigate()
 
   return useCallback(

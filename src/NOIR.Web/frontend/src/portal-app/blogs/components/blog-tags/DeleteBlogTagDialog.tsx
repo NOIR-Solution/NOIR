@@ -20,7 +20,7 @@ interface DeleteBlogTagDialogProps {
   onConfirm: (id: string) => Promise<{ success: boolean; error?: string }>
 }
 
-export function DeleteBlogTagDialog({ tag, open, onOpenChange, onConfirm }: DeleteBlogTagDialogProps) {
+export const DeleteBlogTagDialog = ({ tag, open, onOpenChange, onConfirm }: DeleteBlogTagDialogProps) => {
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {

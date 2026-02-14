@@ -11,7 +11,7 @@ interface TableRowSkeletonProps {
   className?: string
 }
 
-export function TableRowSkeleton({ columns = 5, className }: TableRowSkeletonProps) {
+export const TableRowSkeleton = ({ columns = 5, className }: TableRowSkeletonProps) => {
   return (
     <TableRow className={cn('animate-pulse', className)}>
       {Array.from({ length: columns }).map((_, i) => (
@@ -32,7 +32,7 @@ interface TableSkeletonProps {
   className?: string
 }
 
-export function TableSkeleton({ rows = 5, columns = 5, className }: TableSkeletonProps) {
+export const TableSkeleton = ({ rows = 5, columns = 5, className }: TableSkeletonProps) => {
   return (
     <>
       {Array.from({ length: rows }).map((_, i) => (
@@ -52,12 +52,12 @@ interface CardGridSkeletonProps {
   className?: string
 }
 
-export function CardGridSkeleton({
+export const CardGridSkeleton = ({
   count = 6,
   columns = 3,
   showImage = true,
   className,
-}: CardGridSkeletonProps) {
+}: CardGridSkeletonProps) => {
   const gridCols = {
     1: 'grid-cols-1',
     2: 'grid-cols-1 sm:grid-cols-2',
@@ -87,7 +87,7 @@ export function CardGridSkeleton({
 /**
  * PageHeaderSkeleton - Skeleton for page headers
  */
-export function PageHeaderSkeleton({ className }: { className?: string }) {
+export const PageHeaderSkeleton = ({ className }: { className?: string }) => {
   return (
     <div className={cn('flex items-center gap-4 animate-pulse', className)}>
       <Skeleton className="h-12 w-12 rounded-2xl" />
@@ -107,7 +107,7 @@ interface FormSkeletonProps {
   className?: string
 }
 
-export function FormSkeleton({ fields = 4, className }: FormSkeletonProps) {
+export const FormSkeleton = ({ fields = 4, className }: FormSkeletonProps) => {
   return (
     <div className={cn('space-y-6 animate-pulse', className)}>
       {Array.from({ length: fields }).map((_, i) => (
@@ -127,7 +127,7 @@ export function FormSkeleton({ fields = 4, className }: FormSkeletonProps) {
 /**
  * StatCardSkeleton - Skeleton for stat/metric cards
  */
-export function StatCardSkeleton({ className }: { className?: string }) {
+export const StatCardSkeleton = ({ className }: { className?: string }) => {
   return (
     <Card className={cn('animate-pulse', className)}>
       <CardHeader className="pb-2">
@@ -149,7 +149,7 @@ interface StatGridSkeletonProps {
   className?: string
 }
 
-export function StatGridSkeleton({ count = 4, className }: StatGridSkeletonProps) {
+export const StatGridSkeleton = ({ count = 4, className }: StatGridSkeletonProps) => {
   return (
     <div className={cn('grid grid-cols-2 lg:grid-cols-4 gap-4', className)}>
       {Array.from({ length: count }).map((_, i) => (
@@ -168,11 +168,11 @@ interface ListItemSkeletonProps {
   className?: string
 }
 
-export function ListItemSkeleton({
+export const ListItemSkeleton = ({
   showAvatar = true,
   showActions = true,
   className,
-}: ListItemSkeletonProps) {
+}: ListItemSkeletonProps) => {
   return (
     <div className={cn('flex items-center gap-4 p-4 animate-pulse', className)}>
       {showAvatar && <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />}
@@ -200,12 +200,12 @@ interface ListSkeletonProps {
   className?: string
 }
 
-export function ListSkeleton({
+export const ListSkeleton = ({
   count = 5,
   showAvatar = true,
   showActions = true,
   className,
-}: ListSkeletonProps) {
+}: ListSkeletonProps) => {
   return (
     <div className={cn('divide-y', className)}>
       {Array.from({ length: count }).map((_, i) => (
@@ -222,7 +222,7 @@ export function ListSkeleton({
 /**
  * DetailPageSkeleton - Full page skeleton for detail views
  */
-export function DetailPageSkeleton({ className }: { className?: string }) {
+export const DetailPageSkeleton = ({ className }: { className?: string }) => {
   return (
     <div className={cn('space-y-6 animate-pulse', className)}>
       {/* Header */}

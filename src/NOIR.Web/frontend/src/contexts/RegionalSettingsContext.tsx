@@ -58,7 +58,7 @@ const DEFAULT_LANGUAGE = 'en'
 /**
  * Convert date format pattern to Intl.DateTimeFormat options
  */
-function getDateFormatOptions(pattern: string): Intl.DateTimeFormatOptions {
+const getDateFormatOptions = (pattern: string): Intl.DateTimeFormatOptions => {
   switch (pattern) {
     case 'MM/DD/YYYY': // US format
       return { month: '2-digit', day: '2-digit', year: 'numeric' }
@@ -77,7 +77,7 @@ function getDateFormatOptions(pattern: string): Intl.DateTimeFormatOptions {
  * Exported so other components can use consistent locale mapping
  * for specialized date/time formatting (e.g., with seconds).
  */
-export function getLocaleForFormat(pattern: string): string {
+export const getLocaleForFormat = (pattern: string): string => {
   switch (pattern) {
     case 'MM/DD/YYYY':
       return 'en-US'
@@ -95,7 +95,7 @@ interface RegionalSettingsProviderProps {
   children: ReactNode
 }
 
-export function RegionalSettingsProvider({ children }: RegionalSettingsProviderProps) {
+export const RegionalSettingsProvider = ({ children }: RegionalSettingsProviderProps) => {
   const { isAuthenticated, user } = useAuthContext()
   const { changeLanguage } = useLanguage()
   const [regional, setRegional] = useState<RegionalSettingsDto | null>(null)
@@ -257,7 +257,7 @@ export function RegionalSettingsProvider({ children }: RegionalSettingsProviderP
   )
 }
 
-export function useRegionalSettings() {
+export const useRegionalSettings = () => {
   const context = useContext(RegionalSettingsContext)
   if (context === undefined) {
     throw new Error('useRegionalSettings must be used within a RegionalSettingsProvider')
@@ -269,6 +269,6 @@ export function useRegionalSettings() {
  * Optional hook that doesn't throw if used outside provider
  * Useful for components that may or may not have regional context
  */
-export function useRegionalSettingsOptional() {
+export const useRegionalSettingsOptional = () => {
   return useContext(RegionalSettingsContext)
 }

@@ -20,14 +20,14 @@ let currentPageContext: string | null = null
  * Set the current page context for audit logging.
  * @param context The page context name (e.g., "Users", "Tenants", "Roles")
  */
-export function setPageContext(context: string): void {
+export const setPageContext = (context: string): void => {
   currentPageContext = context
 }
 
 /**
  * Clear the current page context.
  */
-export function clearPageContext(): void {
+export const clearPageContext = (): void => {
   currentPageContext = null
 }
 
@@ -35,6 +35,6 @@ export function clearPageContext(): void {
  * Get the current page context.
  * Used by apiClient to add the X-Page-Context header.
  */
-export function getPageContext(): string | null {
+export const getPageContext = (): string | null => {
   return currentPageContext
 }

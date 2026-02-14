@@ -25,7 +25,7 @@ interface EditUserDialogProps {
   onSuccess: () => void
 }
 
-export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUserDialogProps) {
+export const EditUserDialog = ({ user, open, onOpenChange, onSuccess }: EditUserDialogProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const [loadingProfile, setLoadingProfile] = useState(false)

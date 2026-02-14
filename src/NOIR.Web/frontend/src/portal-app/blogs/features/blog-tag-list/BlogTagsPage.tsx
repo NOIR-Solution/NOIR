@@ -30,7 +30,7 @@ import { BlogTagDialog } from '../../components/blog-tags/BlogTagDialog'
 import { DeleteBlogTagDialog } from '../../components/blog-tags/DeleteBlogTagDialog'
 import type { PostTagListItem } from '@/types'
 
-export default function BlogTagsPage() {
+export const BlogTagsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Tags')
 
@@ -219,3 +219,5 @@ export default function BlogTagsPage() {
     </div>
   )
 }
+
+export default BlogTagsPage

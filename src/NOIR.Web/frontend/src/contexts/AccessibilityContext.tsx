@@ -32,7 +32,7 @@ interface AccessibilityProviderProps {
  * - 'polite' announcements wait for user to finish current task
  * - 'assertive' announcements interrupt immediately (use sparingly)
  */
-export function AccessibilityProvider({ children }: AccessibilityProviderProps) {
+export const AccessibilityProvider = ({ children }: AccessibilityProviderProps) => {
   const [politeMessage, setPoliteMessage] = useState('')
   const [assertiveMessage, setAssertiveMessage] = useState('')
 
@@ -87,7 +87,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps) 
 /**
  * Hook to access accessibility announcement function
  */
-export function useAccessibility() {
+export const useAccessibility = () => {
   const context = useContext(AccessibilityContext)
   if (!context) {
     throw new Error(

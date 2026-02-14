@@ -10,7 +10,7 @@ import { GatewayCard } from '../payment-gateways/GatewayCard'
 import { ConfigureGatewayDialog } from '../payment-gateways/ConfigureGatewayDialog'
 import type { PaymentGateway } from '@/types'
 
-export function PaymentGatewaysTab() {
+export const PaymentGatewaysTab = () => {
   const { t } = useTranslation('common')
 
   const {

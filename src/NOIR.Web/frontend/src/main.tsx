@@ -5,14 +5,14 @@ import './index.css'
 // Initialize i18n before App component
 import './i18n'
 import { LanguageProvider } from './i18n/LanguageContext'
-import App from './App.tsx'
+import { App } from './App.tsx'
 
 /**
  * AppLoadingSkeleton - Root-level loading skeleton
  * Shows during initial app bundle load before React hydrates
  * Uses CSS-only skeleton to avoid importing components before app loads
  */
-function AppLoadingSkeleton() {
+const AppLoadingSkeleton = () => {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar skeleton */}

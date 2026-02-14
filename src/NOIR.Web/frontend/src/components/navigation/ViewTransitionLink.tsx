@@ -19,13 +19,13 @@ interface ViewTransitionLinkProps extends LinkProps {
  * <ViewTransitionLink to="/portal/products">Products</ViewTransitionLink>
  * <ViewTransitionLink to="/portal" vtDirection="back">Back</ViewTransitionLink>
  */
-export function ViewTransitionLink({
+export const ViewTransitionLink = ({
   to,
   onClick,
   vtDirection = 'forward',
   children,
   ...props
-}: ViewTransitionLinkProps) {
+}: ViewTransitionLinkProps) => {
   const navigate = useNavigate()
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {

@@ -67,7 +67,7 @@ import { ApiError } from '@/services/apiClient'
  * Legal Page Edit Page
  * Admin page for editing legal page content with TinyMCE editor.
  */
-export default function LegalPageEditPage() {
+export const LegalPageEditPage = () => {
   usePageContext('Legal Pages')
   const { id } = useParams<{ id: string }>()
   const { t } = useTranslation('common')
@@ -550,3 +550,5 @@ export default function LegalPageEditPage() {
     </div>
   )
 }
+
+export default LegalPageEditPage

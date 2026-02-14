@@ -28,7 +28,7 @@ import { AssignRolesDialog } from '../../components/users/AssignRolesDialog'
 import { useUsers, useAvailableRoles } from '@/portal-app/user-access/states/useUsers'
 import type { UserListItem } from '@/types'
 
-export default function UsersPage() {
+export const UsersPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('Users')
@@ -221,3 +221,5 @@ export default function UsersPage() {
     </div>
   )
 }
+
+export default UsersPage

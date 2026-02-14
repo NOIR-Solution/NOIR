@@ -10,7 +10,7 @@ import { useNetworkStatus } from '@/hooks/useNetworkStatus'
  * Displays a fixed banner at the bottom-left when offline.
  * Shows a brief "Back online" message when connection is restored.
  */
-export function OfflineIndicator() {
+export const OfflineIndicator = () => {
   const { t } = useTranslation('common')
   const { isOnline, wasOffline, reconnectedAt } = useNetworkStatus()
   const [showReconnected, setShowReconnected] = useState(false)

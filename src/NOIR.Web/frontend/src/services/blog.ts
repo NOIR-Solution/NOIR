@@ -40,7 +40,7 @@ export interface GetPostsParams {
 /**
  * Fetch paginated list of posts
  */
-export async function getPosts(params: GetPostsParams = {}): Promise<BlogPagedResult<PostListItem>> {
+export const getPosts = async (params: GetPostsParams = {}): Promise<BlogPagedResult<PostListItem>> => {
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('search', params.search)
   if (params.status) queryParams.append('status', params.status)
@@ -58,21 +58,21 @@ export async function getPosts(params: GetPostsParams = {}): Promise<BlogPagedRe
 /**
  * Fetch a single post by ID
  */
-export async function getPostById(id: string): Promise<Post> {
+export const getPostById = async (id: string): Promise<Post> => {
   return apiClient<Post>(`/blog/posts/${id}`)
 }
 
 /**
  * Fetch a single post by slug
  */
-export async function getPostBySlug(slug: string): Promise<Post> {
+export const getPostBySlug = async (slug: string): Promise<Post> => {
   return apiClient<Post>(`/blog/posts/by-slug/${slug}`)
 }
 
 /**
  * Create a new post
  */
-export async function createPost(request: CreatePostRequest): Promise<Post> {
+export const createPost = async (request: CreatePostRequest): Promise<Post> => {
   return apiClient<Post>('/blog/posts', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -82,7 +82,7 @@ export async function createPost(request: CreatePostRequest): Promise<Post> {
 /**
  * Update an existing post
  */
-export async function updatePost(id: string, request: UpdatePostRequest): Promise<Post> {
+export const updatePost = async (id: string, request: UpdatePostRequest): Promise<Post> => {
   return apiClient<Post>(`/blog/posts/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -92,7 +92,7 @@ export async function updatePost(id: string, request: UpdatePostRequest): Promis
 /**
  * Delete a post
  */
-export async function deletePost(id: string): Promise<void> {
+export const deletePost = async (id: string): Promise<void> => {
   return apiClient<void>(`/blog/posts/${id}`, {
     method: 'DELETE',
   })
@@ -101,7 +101,7 @@ export async function deletePost(id: string): Promise<void> {
 /**
  * Publish or schedule a post
  */
-export async function publishPost(id: string, request?: PublishPostRequest): Promise<Post> {
+export const publishPost = async (id: string, request?: PublishPostRequest): Promise<Post> => {
   return apiClient<Post>(`/blog/posts/${id}/publish`, {
     method: 'POST',
     body: request ? JSON.stringify(request) : undefined,
@@ -111,7 +111,7 @@ export async function publishPost(id: string, request?: PublishPostRequest): Pro
 /**
  * Unpublish a post (revert to draft)
  */
-export async function unpublishPost(id: string): Promise<Post> {
+export const unpublishPost = async (id: string): Promise<Post> => {
   return apiClient<Post>(`/blog/posts/${id}/unpublish`, {
     method: 'POST',
   })
@@ -130,7 +130,7 @@ export interface GetCategoriesParams {
 /**
  * Fetch list of categories
  */
-export async function getCategories(params: GetCategoriesParams = {}): Promise<PostCategoryListItem[]> {
+export const getCategories = async (params: GetCategoriesParams = {}): Promise<PostCategoryListItem[]> => {
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('search', params.search)
   if (params.topLevelOnly) queryParams.append('topLevelOnly', 'true')
@@ -143,7 +143,7 @@ export async function getCategories(params: GetCategoriesParams = {}): Promise<P
 /**
  * Create a new category
  */
-export async function createCategory(request: CreateCategoryRequest): Promise<PostCategory> {
+export const createCategory = async (request: CreateCategoryRequest): Promise<PostCategory> => {
   return apiClient<PostCategory>('/blog/categories', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -153,7 +153,7 @@ export async function createCategory(request: CreateCategoryRequest): Promise<Po
 /**
  * Update an existing category
  */
-export async function updateCategory(id: string, request: UpdateCategoryRequest): Promise<PostCategory> {
+export const updateCategory = async (id: string, request: UpdateCategoryRequest): Promise<PostCategory> => {
   return apiClient<PostCategory>(`/blog/categories/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -163,7 +163,7 @@ export async function updateCategory(id: string, request: UpdateCategoryRequest)
 /**
  * Delete a category
  */
-export async function deleteCategory(id: string): Promise<void> {
+export const deleteCategory = async (id: string): Promise<void> => {
   return apiClient<void>(`/blog/categories/${id}`, {
     method: 'DELETE',
   })
@@ -180,7 +180,7 @@ export interface GetTagsParams {
 /**
  * Fetch list of tags
  */
-export async function getTags(params: GetTagsParams = {}): Promise<PostTagListItem[]> {
+export const getTags = async (params: GetTagsParams = {}): Promise<PostTagListItem[]> => {
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('search', params.search)
 
@@ -191,7 +191,7 @@ export async function getTags(params: GetTagsParams = {}): Promise<PostTagListIt
 /**
  * Create a new tag
  */
-export async function createTag(request: CreateTagRequest): Promise<PostTag> {
+export const createTag = async (request: CreateTagRequest): Promise<PostTag> => {
   return apiClient<PostTag>('/blog/tags', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -201,7 +201,7 @@ export async function createTag(request: CreateTagRequest): Promise<PostTag> {
 /**
  * Update an existing tag
  */
-export async function updateTag(id: string, request: UpdateTagRequest): Promise<PostTag> {
+export const updateTag = async (id: string, request: UpdateTagRequest): Promise<PostTag> => {
   return apiClient<PostTag>(`/blog/tags/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -211,7 +211,7 @@ export async function updateTag(id: string, request: UpdateTagRequest): Promise<
 /**
  * Delete a tag
  */
-export async function deleteTag(id: string): Promise<void> {
+export const deleteTag = async (id: string): Promise<void> => {
   return apiClient<void>(`/blog/tags/${id}`, {
     method: 'DELETE',
   })

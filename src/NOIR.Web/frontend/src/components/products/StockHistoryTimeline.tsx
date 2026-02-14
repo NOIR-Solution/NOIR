@@ -100,12 +100,12 @@ const movementConfig: Record<
   },
 }
 
-export function StockHistoryTimeline({
+export const StockHistoryTimeline = ({
   movements,
   currentStock,
   variantName,
   maxHeight = '400px',
-}: StockHistoryTimelineProps) {
+}: StockHistoryTimelineProps) => {
   const { t } = useTranslation()
 
   // Sort movements by date (newest first)

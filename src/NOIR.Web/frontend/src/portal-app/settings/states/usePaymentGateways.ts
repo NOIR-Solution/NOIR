@@ -39,7 +39,7 @@ interface UsePaymentGatewaysReturn extends UsePaymentGatewaysState {
   availableProviders: string[]
 }
 
-export function usePaymentGateways(): UsePaymentGatewaysReturn {
+export const usePaymentGateways = (): UsePaymentGatewaysReturn => {
   const [state, setState] = useState<UsePaymentGatewaysState>({
     gateways: [],
     schemas: null,

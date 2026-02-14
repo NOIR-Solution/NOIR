@@ -33,7 +33,7 @@ interface UseBrandsReturn extends UseBrandsState {
   params: GetBrandsParams
 }
 
-export function useBrands(initialParams: GetBrandsParams = {}): UseBrandsReturn {
+export const useBrands = (initialParams: GetBrandsParams = {}): UseBrandsReturn => {
   const [state, setState] = useState<UseBrandsState>({
     data: null,
     loading: true,
@@ -115,7 +115,7 @@ interface UseActiveBrandsReturn extends UseActiveBrandsState {
   refresh: () => Promise<void>
 }
 
-export function useActiveBrands(): UseActiveBrandsReturn {
+export const useActiveBrands = (): UseActiveBrandsReturn => {
   const [state, setState] = useState<UseActiveBrandsState>({
     data: [],
     loading: true,
@@ -159,7 +159,7 @@ interface UseBrandReturn extends UseBrandState {
   refresh: () => Promise<void>
 }
 
-export function useBrand(id: string | undefined): UseBrandReturn {
+export const useBrand = (id: string | undefined): UseBrandReturn => {
   const [state, setState] = useState<UseBrandState>({
     data: null,
     loading: !!id,
@@ -203,7 +203,7 @@ interface UseCreateBrandReturn {
   isPending: boolean
 }
 
-export function useCreateBrand(): UseCreateBrandReturn {
+export const useCreateBrand = (): UseCreateBrandReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const create = useCallback(
@@ -238,7 +238,7 @@ interface UseUpdateBrandReturn {
   isPending: boolean
 }
 
-export function useUpdateBrand(): UseUpdateBrandReturn {
+export const useUpdateBrand = (): UseUpdateBrandReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const update = useCallback(
@@ -273,7 +273,7 @@ interface UseDeleteBrandReturn {
   isPending: boolean
 }
 
-export function useDeleteBrand(): UseDeleteBrandReturn {
+export const useDeleteBrand = (): UseDeleteBrandReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const remove = useCallback(

@@ -5,7 +5,7 @@ import { LanguageContext, type LanguageContextType } from './LanguageContext'
  * Hook to access language context
  * Must be used within a LanguageProvider
  */
-export function useLanguage(): LanguageContextType {
+export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext)
   if (context === undefined) {
     throw new Error('useLanguage must be used within a LanguageProvider')

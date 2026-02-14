@@ -37,7 +37,7 @@ interface VirtualListProps<T> {
  *   getItemKey={(log) => log.id}
  * />
  */
-export function VirtualList<T>({
+export const VirtualList = <T,>({
   items,
   estimateSize,
   renderItem,
@@ -46,7 +46,7 @@ export function VirtualList<T>({
   itemClassName,
   height = '100%',
   getItemKey,
-}: VirtualListProps<T>) {
+}: VirtualListProps<T>) => {
   const parentRef = useRef<HTMLDivElement>(null)
 
   const virtualizer = useVirtualizer({
@@ -101,7 +101,7 @@ export function VirtualList<T>({
  *
  * Use when you need more control over the virtualization behavior.
  */
-export function useVirtualList<T>({
+export const useVirtualList = <T,>({
   items,
   estimateSize,
   overscan = 5,
@@ -111,7 +111,7 @@ export function useVirtualList<T>({
   estimateSize: number
   overscan?: number
   getItemKey?: (item: T, index: number) => string | number
-}) {
+}) => {
   const parentRef = useRef<HTMLDivElement>(null)
 
   const virtualizer = useVirtualizer({
@@ -137,7 +137,7 @@ export function useVirtualList<T>({
 /**
  * Style helper for virtual item positioning
  */
-export function getVirtualItemStyle(virtualItem: VirtualItem): CSSProperties {
+export const getVirtualItemStyle = (virtualItem: VirtualItem): CSSProperties => {
   return {
     position: 'absolute',
     top: 0,

@@ -28,7 +28,7 @@ import { apiClient, apiClientPublic, ApiError } from './apiClient'
  * @returns LoginResponse with either auth tokens or tenant selection requirement
  * @throws Error on login failure or storage unavailable
  */
-export async function login(request: LoginRequest): Promise<LoginResponse> {
+export const login = async (request: LoginRequest): Promise<LoginResponse> => {
   // useCookies=true sets HTTP-only cookies for server-rendered pages (/api/docs, /hangfire)
   const data = await apiClientPublic<LoginResponse>(
     '/auth/login?useCookies=true',
@@ -62,7 +62,7 @@ export async function login(request: LoginRequest): Promise<LoginResponse> {
  * @returns CurrentUser if authenticated, null if not logged in
  * @throws ApiError on network/server errors (not 401)
  */
-export async function getCurrentUser(): Promise<CurrentUser | null> {
+export const getCurrentUser = async (): Promise<CurrentUser | null> => {
   const token = getAccessToken()
   if (!token) {
     return null
@@ -86,7 +86,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
  * Clears stored tokens and optionally notifies the server
  * Never throws - tokens are cleared regardless of server response
  */
-export async function logout(): Promise<void> {
+export const logout = async (): Promise<void> => {
   try {
     await apiClient('/auth/logout', { method: 'POST' })
   } catch {
@@ -101,7 +101,7 @@ export async function logout(): Promise<void> {
  * @returns List of active sessions
  * @throws ApiError on network/server errors
  */
-export async function getActiveSessions(): Promise<ActiveSession[]> {
+export const getActiveSessions = async (): Promise<ActiveSession[]> => {
   return await apiClient<ActiveSession[]>('/auth/me/sessions')
 }
 
@@ -110,7 +110,7 @@ export async function getActiveSessions(): Promise<ActiveSession[]> {
  * @param sessionId The session ID to revoke
  * @throws ApiError on failure
  */
-export async function revokeSession(sessionId: string): Promise<void> {
+export const revokeSession = async (sessionId: string): Promise<void> => {
   await apiClient(`/auth/me/sessions/${sessionId}`, { method: 'DELETE' })
 }
 
@@ -129,6 +129,6 @@ export interface UserPermissions {
  * @returns UserPermissions with roles and permissions arrays
  * @throws ApiError on network/server errors
  */
-export async function getUserPermissions(): Promise<UserPermissions> {
+export const getUserPermissions = async (): Promise<UserPermissions> => {
   return await apiClient<UserPermissions>('/auth/me/permissions')
 }

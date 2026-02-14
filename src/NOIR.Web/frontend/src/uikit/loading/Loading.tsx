@@ -35,7 +35,7 @@ const spinnerSizes = {
  * Spinner - Standardized inline loading spinner using Loader2
  * Use for: Button loading states, inline actions, small loading indicators
  */
-export function Spinner({ className, size = 'sm' }: SpinnerProps) {
+export const Spinner = ({ className, size = 'sm' }: SpinnerProps) => {
   return (
     <Loader2
       className={cn('animate-spin', spinnerSizes[size], className)}
@@ -47,7 +47,7 @@ export function Spinner({ className, size = 'sm' }: SpinnerProps) {
  * RefreshSpinner - For refresh operations
  * Use for: Refresh buttons, data reload indicators
  */
-export function RefreshSpinner({ className, size = 'sm', isRefreshing = false }: SpinnerProps & { isRefreshing?: boolean }) {
+export const RefreshSpinner = ({ className, size = 'sm', isRefreshing = false }: SpinnerProps & { isRefreshing?: boolean }) => {
   return (
     <RefreshCw
       className={cn(spinnerSizes[size], isRefreshing && 'animate-spin', className)}
@@ -59,7 +59,7 @@ export function RefreshSpinner({ className, size = 'sm', isRefreshing = false }:
  * ButtonSpinner - Spinner with proper spacing for button content
  * Use for: Inside buttons during form submission
  */
-export function ButtonSpinner({ className }: { className?: string }) {
+export const ButtonSpinner = ({ className }: { className?: string }) => {
   return <Loader2 className={cn('mr-2 h-4 w-4 animate-spin', className)} />
 }
 
@@ -78,7 +78,7 @@ interface PageSpinnerProps {
  * Use for: Initial page load, route transitions, authentication checks
  * Note: Prefer skeleton loading for content areas when possible
  */
-export function PageSpinner({ className, text, fullScreen = false }: PageSpinnerProps) {
+export const PageSpinner = ({ className, text, fullScreen = false }: PageSpinnerProps) => {
   return (
     <div
       className={cn(
@@ -101,7 +101,7 @@ export function PageSpinner({ className, text, fullScreen = false }: PageSpinner
  * TableRowSkeleton - Skeleton for table rows
  * Use for: Table loading states (UserTable, RoleTable, TenantTable)
  */
-export function TableRowSkeleton({
+export const TableRowSkeleton = ({
   columns = 4,
   rows = 5,
   showAvatar = false,
@@ -109,7 +109,7 @@ export function TableRowSkeleton({
   columns?: number
   rows?: number
   showAvatar?: boolean
-}) {
+}) => {
   return (
     <div className="space-y-3">
       {Array.from({ length: rows }).map((_, i) => (
@@ -132,13 +132,13 @@ export function TableRowSkeleton({
  * CardSkeleton - Skeleton for card content
  * Use for: Card loading states, preference cards, settings panels
  */
-export function CardSkeleton({
+export const CardSkeleton = ({
   showIcon = true,
   lines = 2,
 }: {
   showIcon?: boolean
   lines?: number
-}) {
+}) => {
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center gap-3">
@@ -163,11 +163,11 @@ export function CardSkeleton({
  * TimelineEntrySkeleton - Skeleton for timeline/activity entries
  * Use for: Activity timeline, notification lists
  */
-export function TimelineEntrySkeleton({
+export const TimelineEntrySkeleton = ({
   count = 5,
 }: {
   count?: number
-}) {
+}) => {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
@@ -187,13 +187,13 @@ export function TimelineEntrySkeleton({
  * ListItemSkeleton - Skeleton for list items
  * Use for: Dropdown lists, notification lists, log entries
  */
-export function ListItemSkeleton({
+export const ListItemSkeleton = ({
   count = 3,
   showIcon = true,
 }: {
   count?: number
   showIcon?: boolean
-}) {
+}) => {
   return (
     <div className="space-y-2">
       {Array.from({ length: count }).map((_, i) => (
@@ -213,11 +213,11 @@ export function ListItemSkeleton({
  * FormSkeleton - Skeleton for form fields
  * Use for: Dialog form loading, settings form loading
  */
-export function FormSkeleton({
+export const FormSkeleton = ({
   fields = 3,
 }: {
   fields?: number
-}) {
+}) => {
   return (
     <div className="space-y-4">
       {Array.from({ length: fields }).map((_, i) => (
@@ -234,10 +234,10 @@ export function FormSkeleton({
  * InlineContentSkeleton - Inline skeleton for text content
  * Use for: Loading text within paragraphs, stats, counters
  */
-export function InlineContentSkeleton({
+export const InlineContentSkeleton = ({
   width = 'w-[60px]',
 }: {
   width?: string
-}) {
+}) => {
   return <Skeleton className={cn('h-4 inline-block', width)} />
 }

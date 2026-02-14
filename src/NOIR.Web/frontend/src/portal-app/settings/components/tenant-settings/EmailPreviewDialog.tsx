@@ -22,7 +22,7 @@ interface EmailPreviewDialogProps {
 /**
  * Dialog for previewing email template with rendered content.
  */
-export function EmailPreviewDialog({ open, onOpenChange, preview, loading }: EmailPreviewDialogProps) {
+export const EmailPreviewDialog = ({ open, onOpenChange, preview, loading }: EmailPreviewDialogProps) => {
   const { t } = useTranslation('common')
 
   return (

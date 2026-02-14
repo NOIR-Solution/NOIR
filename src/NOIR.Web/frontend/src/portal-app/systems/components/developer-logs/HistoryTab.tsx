@@ -51,7 +51,7 @@ import { LogDetailDialog } from './LogDetailDialog'
 import { LOG_LEVELS, LOG_STREAM_CONFIG, getLevelConfig, formatDateDisplay } from './log-utils'
 
 // History File Card Component
-function HistoryFileCard({
+const HistoryFileCard = ({
   date,
   onView,
   isSelected,
@@ -59,7 +59,7 @@ function HistoryFileCard({
   date: string
   onView: () => void
   isSelected: boolean
-}) {
+}) => {
   return (
     <button
       onClick={onView}
@@ -95,13 +95,13 @@ function HistoryFileCard({
 }
 
 // History File Viewer Component
-function HistoryFileViewer({
+const HistoryFileViewer = ({
   date,
   onBack,
 }: {
   date: string
   onBack: () => void
-}) {
+}) => {
   const { t } = useTranslation('common')
   const [entries, setEntries] = useState<LogEntryDto[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -351,7 +351,7 @@ function HistoryFileViewer({
 }
 
 // Main History Tab Content Component
-export function HistoryTab() {
+export const HistoryTab = () => {
   const [availableDates, setAvailableDates] = useState<string[]>([])
   const [isLoadingDates, setIsLoadingDates] = useState(true)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)

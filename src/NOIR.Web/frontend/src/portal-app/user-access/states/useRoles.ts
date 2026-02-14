@@ -33,7 +33,7 @@ interface UseRolesReturn extends UseRolesState {
   params: RolesParams
 }
 
-export function useRoles(initialParams: RolesParams = {}): UseRolesReturn {
+export const useRoles = (initialParams: RolesParams = {}): UseRolesReturn => {
   const [state, setState] = useState<UseRolesState>({
     data: null,
     loading: true,
@@ -111,7 +111,7 @@ interface UsePermissionsState {
   error: string | null
 }
 
-export function usePermissions() {
+export const usePermissions = () => {
   const [state, setState] = useState<UsePermissionsState>({
     permissions: [],
     permissionsByCategory: {},
@@ -169,7 +169,7 @@ interface UsePermissionTemplatesState {
   error: string | null
 }
 
-export function usePermissionTemplates() {
+export const usePermissionTemplates = () => {
   const [state, setState] = useState<UsePermissionTemplatesState>({
     templates: [],
     loading: true,

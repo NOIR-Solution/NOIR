@@ -28,7 +28,7 @@ export interface StoredTokens {
  * Store authentication tokens in localStorage
  * @returns true if successful, false if storage unavailable (e.g., Safari private mode)
  */
-export function storeTokens(tokens: StoredTokens): boolean {
+export const storeTokens = (tokens: StoredTokens): boolean => {
   try {
     localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken)
     localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken)
@@ -43,7 +43,7 @@ export function storeTokens(tokens: StoredTokens): boolean {
 /**
  * Retrieve stored tokens from localStorage
  */
-export function getStoredTokens(): StoredTokens | null {
+export const getStoredTokens = (): StoredTokens | null => {
   try {
     const accessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
     const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN)
@@ -63,7 +63,7 @@ export function getStoredTokens(): StoredTokens | null {
 /**
  * Get just the access token for Authorization header
  */
-export function getAccessToken(): string | null {
+export const getAccessToken = (): string | null => {
   try {
     return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
   } catch {
@@ -74,7 +74,7 @@ export function getAccessToken(): string | null {
 /**
  * Get the refresh token
  */
-export function getRefreshToken(): string | null {
+export const getRefreshToken = (): string | null => {
   try {
     return localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN)
   } catch {
@@ -85,7 +85,7 @@ export function getRefreshToken(): string | null {
 /**
  * Clear all stored tokens (logout)
  */
-export function clearTokens(): void {
+export const clearTokens = (): void => {
   try {
     localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN)
     localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN)
@@ -98,7 +98,7 @@ export function clearTokens(): void {
 /**
  * Check if the access token is expired
  */
-export function isTokenExpired(): boolean {
+export const isTokenExpired = (): boolean => {
   try {
     const expiresAt = localStorage.getItem(STORAGE_KEYS.TOKEN_EXPIRY)
     if (!expiresAt) return true

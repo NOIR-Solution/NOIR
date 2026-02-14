@@ -7,7 +7,7 @@ import { SkipLink } from '@/components/accessibility/SkipLink'
 import { OfflineIndicator } from '@/components/network/OfflineIndicator'
 import { AnimatedOutlet } from '@/components/layout/AnimatedOutlet'
 
-export function PortalLayout() {
+export const PortalLayout = () => {
   // Use lazy initialization to read from localStorage on mount (avoids extra render)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebar-collapsed')

@@ -19,13 +19,13 @@ export interface FacetColorSwatchProps {
  * Color swatch filter component for storefront filtering
  * Shows circular buttons with color backgrounds and selection state
  */
-export function FacetColorSwatch({
+export const FacetColorSwatch = ({
   name,
   options,
   selectedValues,
   onChange,
   className,
-}: FacetColorSwatchProps) {
+}: FacetColorSwatchProps) => {
   const handleToggle = (value: string) => {
     const newValues = selectedValues.includes(value)
       ? selectedValues.filter((v) => v !== value)

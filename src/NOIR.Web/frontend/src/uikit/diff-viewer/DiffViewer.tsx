@@ -32,7 +32,7 @@ const EXCLUDED_FIELDS = new Set([
   'passwordChangedAt',
 ])
 
-function formatValue(value: unknown): string {
+const formatValue = (value: unknown): string => {
   if (value === null || value === undefined) return '(null)'
   if (typeof value === 'string') return value
   if (typeof value === 'boolean') return value ? 'true' : 'false'
@@ -42,7 +42,7 @@ function formatValue(value: unknown): string {
 }
 
 // Find common prefix length between two strings
-function commonPrefixLength(a: string, b: string): number {
+const commonPrefixLength = (a: string, b: string): number => {
   let i = 0
   while (i < a.length && i < b.length && a[i] === b[i]) {
     i++
@@ -51,7 +51,7 @@ function commonPrefixLength(a: string, b: string): number {
 }
 
 // Find common suffix length between two strings (excluding prefix)
-function commonSuffixLength(a: string, b: string, prefixLen: number): number {
+const commonSuffixLength = (a: string, b: string, prefixLen: number): number => {
   let i = 0
   const maxLen = Math.min(a.length - prefixLen, b.length - prefixLen)
   while (i < maxLen && a[a.length - 1 - i] === b[b.length - 1 - i]) {
@@ -61,10 +61,10 @@ function commonSuffixLength(a: string, b: string, prefixLen: number): number {
 }
 
 // Split string into [unchanged, changed, unchanged] parts for inline diff
-function getInlineDiff(
+const getInlineDiff = (
   oldStr: string,
   newStr: string
-): { old: { prefix: string; changed: string; suffix: string }; new: { prefix: string; changed: string; suffix: string } } {
+): { old: { prefix: string; changed: string; suffix: string }; new: { prefix: string; changed: string; suffix: string } } => {
   const prefixLen = commonPrefixLength(oldStr, newStr)
   const suffixLen = commonSuffixLength(oldStr, newStr, prefixLen)
 
@@ -82,7 +82,7 @@ function getInlineDiff(
   }
 }
 
-function formatFieldName(name: string): string {
+const formatFieldName = (name: string): string => {
   // Convert camelCase to Title Case with spaces
   return name
     .replace(/([A-Z])/g, ' $1')
@@ -90,7 +90,7 @@ function formatFieldName(name: string): string {
     .trim()
 }
 
-function getChangeType(change: DiffChange): 'added' | 'removed' | 'modified' {
+const getChangeType = (change: DiffChange): 'added' | 'removed' | 'modified' => {
   const hasFrom = change.from !== undefined && change.from !== null
   const hasTo = change.to !== undefined && change.to !== null
 
@@ -100,13 +100,13 @@ function getChangeType(change: DiffChange): 'added' | 'removed' | 'modified' {
 }
 
 // Inline diff value display - highlights only changed parts
-function InlineDiffValue({
+const InlineDiffValue = ({
   parts,
   type,
 }: {
   parts: { prefix: string; changed: string; suffix: string }
   type: 'old' | 'new'
-}) {
+}) => {
   const isOld = type === 'old'
   const baseClasses = isOld
     ? 'bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800'
@@ -133,13 +133,13 @@ function InlineDiffValue({
   )
 }
 
-function DiffRow({
+const DiffRow = ({
   fieldName,
   change,
 }: {
   fieldName: string
   change: DiffChange
-}) {
+}) => {
   const changeType = getChangeType(change)
   const fromValue = formatValue(change.from)
   const toValue = formatValue(change.to)
@@ -216,7 +216,7 @@ function DiffRow({
   )
 }
 
-export function DiffViewer({ data, className }: DiffViewerProps) {
+export const DiffViewer = ({ data, className }: DiffViewerProps) => {
   // Parse if string
   const diffData: Record<string, DiffChange> =
     typeof data === 'string' ? JSON.parse(data) : data

@@ -11,11 +11,11 @@ export type MediaFolder = 'blog' | 'content' | 'avatars' | 'branding' | 'product
 /**
  * Upload a file to the media service
  */
-export async function uploadMedia(
+export const uploadMedia = async (
   file: File,
   folder: MediaFolder = 'content',
   entityId?: string
-): Promise<MediaUploadResult> {
+): Promise<MediaUploadResult> => {
   const formData = new FormData()
   formData.append('file', file)
 
@@ -42,28 +42,28 @@ export async function uploadMedia(
 /**
  * Get media file by ID
  */
-export async function getMediaById(id: string): Promise<MediaFile> {
+export const getMediaById = async (id: string): Promise<MediaFile> => {
   return apiClient<MediaFile>(`/media/${id}`)
 }
 
 /**
  * Get media file by slug
  */
-export async function getMediaBySlug(slug: string): Promise<MediaFile> {
+export const getMediaBySlug = async (slug: string): Promise<MediaFile> => {
   return apiClient<MediaFile>(`/media/by-slug/${slug}`)
 }
 
 /**
  * Get media file by short ID
  */
-export async function getMediaByShortId(shortId: string): Promise<MediaFile> {
+export const getMediaByShortId = async (shortId: string): Promise<MediaFile> => {
   return apiClient<MediaFile>(`/media/by-short-id/${shortId}`)
 }
 
 /**
  * Get media file by URL
  */
-export async function getMediaByUrl(url: string): Promise<MediaFile> {
+export const getMediaByUrl = async (url: string): Promise<MediaFile> => {
   const queryParams = new URLSearchParams()
   queryParams.append('url', url)
   return apiClient<MediaFile>(`/media/by-url?${queryParams.toString()}`)
@@ -72,7 +72,7 @@ export async function getMediaByUrl(url: string): Promise<MediaFile> {
 /**
  * Batch get media files by IDs
  */
-export async function getMediaByIds(ids: string[]): Promise<MediaFile[]> {
+export const getMediaByIds = async (ids: string[]): Promise<MediaFile[]> => {
   return apiClient<MediaFile[]>('/media/batch/by-ids', {
     method: 'POST',
     body: JSON.stringify({ ids }),
@@ -82,7 +82,7 @@ export async function getMediaByIds(ids: string[]): Promise<MediaFile[]> {
 /**
  * Batch get media files by slugs
  */
-export async function getMediaBySlugs(slugs: string[]): Promise<MediaFile[]> {
+export const getMediaBySlugs = async (slugs: string[]): Promise<MediaFile[]> => {
   return apiClient<MediaFile[]>('/media/batch/by-slugs', {
     method: 'POST',
     body: JSON.stringify({ slugs }),
@@ -92,7 +92,7 @@ export async function getMediaBySlugs(slugs: string[]): Promise<MediaFile[]> {
 /**
  * Batch get media files by short IDs
  */
-export async function getMediaByShortIds(shortIds: string[]): Promise<MediaFile[]> {
+export const getMediaByShortIds = async (shortIds: string[]): Promise<MediaFile[]> => {
   return apiClient<MediaFile[]>('/media/batch/by-short-ids', {
     method: 'POST',
     body: JSON.stringify({ shortIds }),

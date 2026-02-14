@@ -21,12 +21,12 @@ interface DeleteTenantDialogProps {
   onConfirm: (id: string) => Promise<{ success: boolean; error?: string }>
 }
 
-export function DeleteTenantDialog({
+export const DeleteTenantDialog = ({
   tenant,
   open,
   onOpenChange,
   onConfirm,
-}: DeleteTenantDialogProps) {
+}: DeleteTenantDialogProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
 

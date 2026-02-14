@@ -27,7 +27,7 @@ interface LanguageProviderProps {
  * Provider component for language context
  * Wraps the application to provide language switching functionality
  */
-export function LanguageProvider({ children }: LanguageProviderProps) {
+export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const { i18n } = useTranslation()
 
   const currentLanguage = (i18n.resolvedLanguage ||

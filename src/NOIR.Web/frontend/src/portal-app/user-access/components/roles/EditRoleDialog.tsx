@@ -53,7 +53,7 @@ interface EditRoleDialogProps {
   onSuccess: () => void
 }
 
-export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRoleDialogProps) {
+export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRoleDialogProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const [existingRoles, setExistingRoles] = useState<RoleListItem[]>([])

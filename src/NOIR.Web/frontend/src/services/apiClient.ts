@@ -19,7 +19,7 @@
 import { getAccessToken, getRefreshToken, storeTokens, clearTokens } from './tokenStorage'
 import { getPageContext } from './pageContext'
 import type { AuthResponse, ApiError as ApiErrorType } from '@/types'
-import i18n from '@/i18n'
+import { i18n } from '@/i18n'
 
 const API_BASE = '/api'
 
@@ -30,7 +30,7 @@ const API_BASE = '/api'
  *
  * For production multi-tenancy, derive from hostname/subdomain.
  */
-function getTenantIdentifier(): string {
+const getTenantIdentifier = (): string => {
   return 'default'
 }
 
@@ -131,7 +131,7 @@ export class ApiError extends Error {
  * Try to refresh the access token using stored refresh token
  * @returns true if refresh succeeded, false otherwise
  */
-async function tryRefreshToken(): Promise<boolean> {
+const tryRefreshToken = async (): Promise<boolean> => {
   const refreshTokenValue = getRefreshToken()
   const accessTokenValue = getAccessToken()
   if (!refreshTokenValue || !accessTokenValue) {
@@ -177,10 +177,10 @@ async function tryRefreshToken(): Promise<boolean> {
  * @returns Parsed JSON response
  * @throws ApiError on failure
  */
-export async function apiClient<T>(
+export const apiClient = async <T>(
   endpoint: string,
   options: RequestInit = {}
-): Promise<T> {
+): Promise<T> => {
   const token = getAccessToken()
   const pageContext = getPageContext()
 
@@ -258,10 +258,10 @@ export async function apiClient<T>(
 /**
  * API client without authentication (for public endpoints like login)
  */
-export async function apiClientPublic<T>(
+export const apiClientPublic = async <T>(
   endpoint: string,
   options: RequestInit = {}
-): Promise<T> {
+): Promise<T> => {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     'Accept-Language': i18n.language,

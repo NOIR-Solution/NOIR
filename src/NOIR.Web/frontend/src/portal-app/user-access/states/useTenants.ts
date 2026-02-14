@@ -18,7 +18,7 @@ interface UseTenantsReturn extends UseTenantsState {
   params: GetTenantsParams
 }
 
-export function useTenants(initialParams: GetTenantsParams = {}): UseTenantsReturn {
+export const useTenants = (initialParams: GetTenantsParams = {}): UseTenantsReturn => {
   const [state, setState] = useState<UseTenantsState>({
     data: null,
     loading: true,

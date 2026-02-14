@@ -30,7 +30,7 @@ interface EditableVariantRowProps {
   onSaveSuccess?: (updatedVariant: ProductVariant) => void
 }
 
-function StatusIndicator({ status, error }: { status: AutoSaveStatus; error: string | null }) {
+const StatusIndicator = ({ status, error }: { status: AutoSaveStatus; error: string | null }) => {
   const { t } = useTranslation('common')
 
   switch (status) {
@@ -107,13 +107,13 @@ function StatusIndicator({ status, error }: { status: AutoSaveStatus; error: str
   }
 }
 
-export function EditableVariantRow({
+export const EditableVariantRow = ({
   productId,
   variant,
   isReadOnly = false,
   onDelete,
   onSaveSuccess,
-}: EditableVariantRowProps) {
+}: EditableVariantRowProps) => {
   const { t } = useTranslation('common')
 
   const {

@@ -71,10 +71,10 @@ interface AnimatedOutletProps {
  *
  * Falls back to framer-motion AnimatePresence for unsupported browsers.
  */
-export function AnimatedOutlet({
+export const AnimatedOutlet = ({
   className,
   fallback,
-}: AnimatedOutletProps) {
+}: AnimatedOutletProps) => {
   const location = useLocation()
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 

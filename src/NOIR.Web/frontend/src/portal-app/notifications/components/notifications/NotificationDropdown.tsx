@@ -30,7 +30,7 @@ interface NotificationGroup {
 /**
  * Get time label for grouping notifications
  */
-function getTimeLabelKey(dateString: string): string {
+const getTimeLabelKey = (dateString: string): string => {
   const date = new Date(dateString)
   const now = new Date()
   const diffTime = Math.abs(now.getTime() - date.getTime())
@@ -45,7 +45,7 @@ function getTimeLabelKey(dateString: string): string {
 /**
  * Group notifications by time period
  */
-function groupNotificationsByTime(notifications: Notification[]): NotificationGroup[] {
+const groupNotificationsByTime = (notifications: Notification[]): NotificationGroup[] => {
   const groups: { [key: string]: Notification[] } = {
     today: [],
     yesterday: [],
@@ -63,7 +63,7 @@ function groupNotificationsByTime(notifications: Notification[]): NotificationGr
     .map(([label, notifs]) => ({ label, notifications: notifs }))
 }
 
-export function NotificationDropdown({ className }: NotificationDropdownProps) {
+export const NotificationDropdown = ({ className }: NotificationDropdownProps) => {
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)

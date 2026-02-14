@@ -43,16 +43,16 @@ export interface TestSmtpRequest {
 /**
  * Get platform SMTP settings.
  */
-export async function getSmtpSettings(): Promise<SmtpSettingsDto> {
+export const getSmtpSettings = async (): Promise<SmtpSettingsDto> => {
   return apiClient<SmtpSettingsDto>('/platform-settings/smtp')
 }
 
 /**
  * Update platform SMTP settings.
  */
-export async function updateSmtpSettings(
+export const updateSmtpSettings = async (
   request: UpdateSmtpSettingsRequest
-): Promise<SmtpSettingsDto> {
+): Promise<SmtpSettingsDto> => {
   return apiClient<SmtpSettingsDto>('/platform-settings/smtp', {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -62,9 +62,9 @@ export async function updateSmtpSettings(
 /**
  * Test SMTP connection by sending a test email.
  */
-export async function testSmtpConnection(
+export const testSmtpConnection = async (
   request: TestSmtpRequest
-): Promise<boolean> {
+): Promise<boolean> => {
   return apiClient<boolean>('/platform-settings/smtp/test', {
     method: 'POST',
     body: JSON.stringify(request),

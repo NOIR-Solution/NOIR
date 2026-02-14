@@ -174,7 +174,7 @@ interface UserProfileDropdownProps {
   user?: UserData | null
 }
 
-function UserProfileDropdown({ isExpanded, t, user }: UserProfileDropdownProps) {
+const UserProfileDropdown = ({ isExpanded, t, user }: UserProfileDropdownProps) => {
   const displayName = user?.fullName || 'User'
   const displayEmail = user?.email || 'user@example.com'
   // Use same initials logic as ProfileAvatar for consistency
@@ -372,7 +372,7 @@ interface SidebarContentProps {
  * Get time group key for grouping notifications.
  * Returns a stable key used for grouping; translate with t(`time.${key}`) for display.
  */
-function getNotificationTimeGroup(dateString: string): string {
+const getNotificationTimeGroup = (dateString: string): string => {
   const date = new Date(dateString)
   const now = new Date()
   const diffTime = Math.abs(now.getTime() - date.getTime())
@@ -387,7 +387,7 @@ function getNotificationTimeGroup(dateString: string): string {
 /**
  * Animated Empty State for Notifications
  */
-function NotificationEmptyState() {
+const NotificationEmptyState = () => {
   const { t } = useTranslation('common')
 
   return (
@@ -443,7 +443,7 @@ function NotificationEmptyState() {
 /**
  * Notification Sidebar Item with Dropdown
  */
-function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: boolean; t: (key: string, options?: Record<string, unknown>) => string; onItemClick?: (path: string) => void }) {
+const NotificationSidebarItem = ({ isExpanded, t, onItemClick }: { isExpanded: boolean; t: (key: string, options?: Record<string, unknown>) => string; onItemClick?: (path: string) => void }) => {
   const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead, connectionState } = useNotificationContext()
   const { formatRelativeTime } = useRegionalSettings()
   const location = useLocation()
@@ -660,7 +660,7 @@ function NotificationSidebarItem({ isExpanded, t, onItemClick }: { isExpanded: b
 /**
  * SidebarContent - Task-based navigation with sections
  */
-function SidebarContent({
+const SidebarContent = ({
   isExpanded,
   onToggle,
   onItemClick,
@@ -670,7 +670,7 @@ function SidebarContent({
   logoUrl,
   searchQuery = '',
   onSearchChange,
-}: SidebarContentProps) {
+}: SidebarContentProps) => {
   const isActive = (path: string) => isActivePath(pathname, path)
   const { hasPermission } = usePermissions()
 
@@ -865,7 +865,7 @@ interface SidebarProps {
 /**
  * Portal Sidebar - Simplified with Dashboard only
  */
-export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
+export const Sidebar = ({ collapsed = false, onToggle }: SidebarProps) => {
   const { t } = useTranslation('common')
   const location = useLocation()
   const { user } = useAuthContext()
@@ -903,13 +903,13 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
 /**
  * Mobile Sidebar Trigger - Task-based navigation sections
  */
-export function MobileSidebarTrigger({
+export const MobileSidebarTrigger = ({
   open,
   onOpenChange,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-}) {
+}) => {
   const { t } = useTranslation('common')
   const location = useLocation()
   const { user } = useAuthContext()

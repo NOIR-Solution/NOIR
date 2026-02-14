@@ -48,13 +48,13 @@ const typeConfig: Record<NotificationType, { icon: typeof Info; color: string; b
   },
 }
 
-export function NotificationItem({
+export const NotificationItem = ({
   notification,
   onMarkAsRead,
   onDelete,
   compact = false,
   className,
-}: NotificationItemProps) {
+}: NotificationItemProps) => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { formatRelativeTime } = useRegionalSettings()

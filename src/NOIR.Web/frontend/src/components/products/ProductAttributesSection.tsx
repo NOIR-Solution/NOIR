@@ -53,13 +53,13 @@ export interface ProductAttributesSectionProps {
  * ProductAttributesSection displays a dynamic form for product attributes
  * based on the product's category. Attributes are loaded from the form schema API.
  */
-export function ProductAttributesSection({
+export const ProductAttributesSection = ({
   productId,
   categoryId,
   isViewMode,
   onAttributesChange,
   variantId,
-}: ProductAttributesSectionProps) {
+}: ProductAttributesSectionProps) => {
   const { t } = useTranslation('common')
   const [isOpen, setIsOpen] = useState(true)
   const [localValues, setLocalValues] = useState<Record<string, unknown>>({})
@@ -338,10 +338,10 @@ export function ProductAttributesSection({
 /**
  * Hook to get the current attribute values for saving
  */
-export function useAttributeValues(
+export const useAttributeValues = (
   formSchema: { fields: ProductAttributeFormField[] } | null,
   localValues: Record<string, unknown>
-) {
+) => {
   return useMemo(() => {
     if (!formSchema?.fields) return []
 

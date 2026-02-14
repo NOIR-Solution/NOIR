@@ -20,11 +20,11 @@ interface LanguageSwitcherProps {
  * Language Switcher - 21st.dev inspired design
  * Features: Glassmorphism dropdown, smooth animations, accessible
  */
-export function LanguageSwitcher({
+export const LanguageSwitcher = ({
   showNativeName = true,
   className = '',
   variant = 'dropdown',
-}: LanguageSwitcherProps) {
+}: LanguageSwitcherProps) => {
   const { t } = useTranslation('common')
   const { currentLanguage, languages, changeLanguage } = useLanguage()
 

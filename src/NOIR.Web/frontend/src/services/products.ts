@@ -50,7 +50,7 @@ export interface GetProductsParams {
 /**
  * Fetch paginated list of products
  */
-export async function getProducts(params: GetProductsParams = {}): Promise<ProductPagedResult> {
+export const getProducts = async (params: GetProductsParams = {}): Promise<ProductPagedResult> => {
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('search', params.search)
   if (params.status) queryParams.append('status', params.status)
@@ -86,28 +86,28 @@ export interface ProductStatsDto {
  * Fetch global product statistics
  * Returns counts by status independent of current filters
  */
-export async function getProductStats(): Promise<ProductStatsDto> {
+export const getProductStats = async (): Promise<ProductStatsDto> => {
   return apiClient<ProductStatsDto>('/products/stats')
 }
 
 /**
  * Fetch a single product by ID
  */
-export async function getProductById(id: string): Promise<Product> {
+export const getProductById = async (id: string): Promise<Product> => {
   return apiClient<Product>(`/products/${id}`)
 }
 
 /**
  * Fetch a single product by slug
  */
-export async function getProductBySlug(slug: string): Promise<Product> {
+export const getProductBySlug = async (slug: string): Promise<Product> => {
   return apiClient<Product>(`/products/by-slug/${slug}`)
 }
 
 /**
  * Create a new product
  */
-export async function createProduct(request: CreateProductRequest): Promise<Product> {
+export const createProduct = async (request: CreateProductRequest): Promise<Product> => {
   return apiClient<Product>('/products', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -117,7 +117,7 @@ export async function createProduct(request: CreateProductRequest): Promise<Prod
 /**
  * Update an existing product
  */
-export async function updateProduct(id: string, request: UpdateProductRequest): Promise<Product> {
+export const updateProduct = async (id: string, request: UpdateProductRequest): Promise<Product> => {
   return apiClient<Product>(`/products/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -127,7 +127,7 @@ export async function updateProduct(id: string, request: UpdateProductRequest): 
 /**
  * Delete a product (soft delete)
  */
-export async function deleteProduct(id: string): Promise<void> {
+export const deleteProduct = async (id: string): Promise<void> => {
   return apiClient<void>(`/products/${id}`, {
     method: 'DELETE',
   })
@@ -136,7 +136,7 @@ export async function deleteProduct(id: string): Promise<void> {
 /**
  * Publish a product
  */
-export async function publishProduct(id: string): Promise<Product> {
+export const publishProduct = async (id: string): Promise<Product> => {
   return apiClient<Product>(`/products/${id}/publish`, {
     method: 'POST',
   })
@@ -145,7 +145,7 @@ export async function publishProduct(id: string): Promise<Product> {
 /**
  * Archive a product
  */
-export async function archiveProduct(id: string): Promise<Product> {
+export const archiveProduct = async (id: string): Promise<Product> => {
   return apiClient<Product>(`/products/${id}/archive`, {
     method: 'POST',
   })
@@ -164,10 +164,10 @@ export interface DuplicateProductOptions {
  * Duplicate a product
  * Creates a copy of the product as a new draft on the server
  */
-export async function duplicateProduct(
+export const duplicateProduct = async (
   id: string,
   options?: DuplicateProductOptions
-): Promise<Product> {
+): Promise<Product> => {
   return apiClient<Product>(`/products/${id}/duplicate`, {
     method: 'POST',
     body: JSON.stringify(options || {}),
@@ -213,9 +213,9 @@ export interface BulkImportResult {
 /**
  * Bulk import products from parsed CSV data
  */
-export async function bulkImportProducts(
+export const bulkImportProducts = async (
   products: ImportProductDto[]
-): Promise<BulkImportResult> {
+): Promise<BulkImportResult> => {
   return apiClient<BulkImportResult>('/products/import', {
     method: 'POST',
     body: JSON.stringify({ products }),
@@ -255,12 +255,12 @@ export interface ExportProductsResult {
 /**
  * Export products as flat rows
  */
-export async function exportProducts(params?: {
+export const exportProducts = async (params?: {
   categoryId?: string
   status?: string
   includeAttributes?: boolean
   includeImages?: boolean
-}): Promise<ExportProductsResult> {
+}): Promise<ExportProductsResult> => {
   const queryParams = new URLSearchParams()
   if (params?.categoryId) queryParams.append('categoryId', params.categoryId)
   if (params?.status) queryParams.append('status', params.status)
@@ -282,7 +282,7 @@ export interface BulkOperationResult {
 /**
  * Bulk publish products
  */
-export async function bulkPublishProducts(productIds: string[]): Promise<BulkOperationResult> {
+export const bulkPublishProducts = async (productIds: string[]): Promise<BulkOperationResult> => {
   return apiClient<BulkOperationResult>('/products/bulk-publish', {
     method: 'POST',
     body: JSON.stringify({ productIds }),
@@ -292,7 +292,7 @@ export async function bulkPublishProducts(productIds: string[]): Promise<BulkOpe
 /**
  * Bulk archive products
  */
-export async function bulkArchiveProducts(productIds: string[]): Promise<BulkOperationResult> {
+export const bulkArchiveProducts = async (productIds: string[]): Promise<BulkOperationResult> => {
   return apiClient<BulkOperationResult>('/products/bulk-archive', {
     method: 'POST',
     body: JSON.stringify({ productIds }),
@@ -302,7 +302,7 @@ export async function bulkArchiveProducts(productIds: string[]): Promise<BulkOpe
 /**
  * Bulk delete products
  */
-export async function bulkDeleteProducts(productIds: string[]): Promise<BulkOperationResult> {
+export const bulkDeleteProducts = async (productIds: string[]): Promise<BulkOperationResult> => {
   return apiClient<BulkOperationResult>('/products/bulk-delete', {
     method: 'POST',
     body: JSON.stringify({ productIds }),
@@ -316,10 +316,10 @@ export async function bulkDeleteProducts(productIds: string[]): Promise<BulkOper
 /**
  * Add a variant to a product
  */
-export async function addProductVariant(
+export const addProductVariant = async (
   productId: string,
   request: AddProductVariantRequest
-): Promise<ProductVariant> {
+): Promise<ProductVariant> => {
   return apiClient<ProductVariant>(`/products/${productId}/variants`, {
     method: 'POST',
     body: JSON.stringify(request),
@@ -329,11 +329,11 @@ export async function addProductVariant(
 /**
  * Update a product variant
  */
-export async function updateProductVariant(
+export const updateProductVariant = async (
   productId: string,
   variantId: string,
   request: UpdateProductVariantRequest
-): Promise<Product> {
+): Promise<Product> => {
   return apiClient<Product>(`/products/${productId}/variants/${variantId}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -343,7 +343,7 @@ export async function updateProductVariant(
 /**
  * Delete a product variant
  */
-export async function deleteProductVariant(productId: string, variantId: string): Promise<void> {
+export const deleteProductVariant = async (productId: string, variantId: string): Promise<void> => {
   return apiClient<void>(`/products/${productId}/variants/${variantId}`, {
     method: 'DELETE',
   })
@@ -356,10 +356,10 @@ export async function deleteProductVariant(productId: string, variantId: string)
 /**
  * Add an image to a product
  */
-export async function addProductImage(
+export const addProductImage = async (
   productId: string,
   request: AddProductImageRequest
-): Promise<ProductImage> {
+): Promise<ProductImage> => {
   return apiClient<ProductImage>(`/products/${productId}/images`, {
     method: 'POST',
     body: JSON.stringify(request),
@@ -369,11 +369,11 @@ export async function addProductImage(
 /**
  * Update a product image
  */
-export async function updateProductImage(
+export const updateProductImage = async (
   productId: string,
   imageId: string,
   request: UpdateProductImageRequest
-): Promise<Product> {
+): Promise<Product> => {
   return apiClient<Product>(`/products/${productId}/images/${imageId}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -383,7 +383,7 @@ export async function updateProductImage(
 /**
  * Delete a product image
  */
-export async function deleteProductImage(productId: string, imageId: string): Promise<void> {
+export const deleteProductImage = async (productId: string, imageId: string): Promise<void> => {
   return apiClient<void>(`/products/${productId}/images/${imageId}`, {
     method: 'DELETE',
   })
@@ -392,7 +392,7 @@ export async function deleteProductImage(productId: string, imageId: string): Pr
 /**
  * Set an image as primary
  */
-export async function setPrimaryProductImage(productId: string, imageId: string): Promise<Product> {
+export const setPrimaryProductImage = async (productId: string, imageId: string): Promise<Product> => {
   return apiClient<Product>(`/products/${productId}/images/${imageId}/set-primary`, {
     method: 'POST',
   })
@@ -420,12 +420,12 @@ export interface ProductImageUploadResult {
 /**
  * Upload an image to a product (with processing)
  */
-export async function uploadProductImage(
+export const uploadProductImage = async (
   productId: string,
   file: File,
   altText?: string,
   isPrimary: boolean = false
-): Promise<ProductImageUploadResult> {
+): Promise<ProductImageUploadResult> => {
   const formData = new FormData()
   formData.append('file', file)
 
@@ -462,10 +462,10 @@ export interface ReorderImagesRequest {
 /**
  * Reorder product images in bulk
  */
-export async function reorderProductImages(
+export const reorderProductImages = async (
   productId: string,
   items: { imageId: string; sortOrder: number }[]
-): Promise<Product> {
+): Promise<Product> => {
   return apiClient<Product>(`/products/${productId}/images/reorder`, {
     method: 'PUT',
     body: JSON.stringify({ items }),
@@ -485,9 +485,9 @@ export interface GetProductCategoriesParams {
 /**
  * Fetch list of product categories
  */
-export async function getProductCategories(
+export const getProductCategories = async (
   params: GetProductCategoriesParams = {}
-): Promise<ProductCategoryListItem[]> {
+): Promise<ProductCategoryListItem[]> => {
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('search', params.search)
   if (params.topLevelOnly) queryParams.append('topLevelOnly', 'true')
@@ -500,16 +500,16 @@ export async function getProductCategories(
 /**
  * Fetch a product category by ID
  */
-export async function getProductCategoryById(id: string): Promise<ProductCategory> {
+export const getProductCategoryById = async (id: string): Promise<ProductCategory> => {
   return apiClient<ProductCategory>(`/products/categories/${id}`)
 }
 
 /**
  * Create a new product category
  */
-export async function createProductCategory(
+export const createProductCategory = async (
   request: CreateProductCategoryRequest
-): Promise<ProductCategory> {
+): Promise<ProductCategory> => {
   return apiClient<ProductCategory>('/products/categories', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -519,10 +519,10 @@ export async function createProductCategory(
 /**
  * Update an existing product category
  */
-export async function updateProductCategory(
+export const updateProductCategory = async (
   id: string,
   request: UpdateProductCategoryRequest
-): Promise<ProductCategory> {
+): Promise<ProductCategory> => {
   return apiClient<ProductCategory>(`/products/categories/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -532,7 +532,7 @@ export async function updateProductCategory(
 /**
  * Delete a product category
  */
-export async function deleteProductCategory(id: string): Promise<void> {
+export const deleteProductCategory = async (id: string): Promise<void> => {
   return apiClient<void>(`/products/categories/${id}`, {
     method: 'DELETE',
   })
@@ -545,10 +545,10 @@ export async function deleteProductCategory(id: string): Promise<void> {
 /**
  * Add an option to a product
  */
-export async function addProductOption(
+export const addProductOption = async (
   productId: string,
   request: AddProductOptionRequest
-): Promise<ProductOption> {
+): Promise<ProductOption> => {
   return apiClient<ProductOption>(`/products/${productId}/options`, {
     method: 'POST',
     body: JSON.stringify(request),
@@ -558,11 +558,11 @@ export async function addProductOption(
 /**
  * Update a product option
  */
-export async function updateProductOption(
+export const updateProductOption = async (
   productId: string,
   optionId: string,
   request: UpdateProductOptionRequest
-): Promise<ProductOption> {
+): Promise<ProductOption> => {
   return apiClient<ProductOption>(`/products/${productId}/options/${optionId}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -572,7 +572,7 @@ export async function updateProductOption(
 /**
  * Delete a product option
  */
-export async function deleteProductOption(productId: string, optionId: string): Promise<void> {
+export const deleteProductOption = async (productId: string, optionId: string): Promise<void> => {
   return apiClient<void>(`/products/${productId}/options/${optionId}`, {
     method: 'DELETE',
   })
@@ -585,11 +585,11 @@ export async function deleteProductOption(productId: string, optionId: string): 
 /**
  * Add a value to a product option
  */
-export async function addProductOptionValue(
+export const addProductOptionValue = async (
   productId: string,
   optionId: string,
   request: AddProductOptionValueRequest
-): Promise<ProductOptionValue> {
+): Promise<ProductOptionValue> => {
   return apiClient<ProductOptionValue>(`/products/${productId}/options/${optionId}/values`, {
     method: 'POST',
     body: JSON.stringify(request),
@@ -599,12 +599,12 @@ export async function addProductOptionValue(
 /**
  * Update a product option value
  */
-export async function updateProductOptionValue(
+export const updateProductOptionValue = async (
   productId: string,
   optionId: string,
   valueId: string,
   request: UpdateProductOptionValueRequest
-): Promise<ProductOptionValue> {
+): Promise<ProductOptionValue> => {
   return apiClient<ProductOptionValue>(
     `/products/${productId}/options/${optionId}/values/${valueId}`,
     {
@@ -617,11 +617,11 @@ export async function updateProductOptionValue(
 /**
  * Delete a product option value
  */
-export async function deleteProductOptionValue(
+export const deleteProductOptionValue = async (
   productId: string,
   optionId: string,
   valueId: string
-): Promise<void> {
+): Promise<void> => {
   return apiClient<void>(`/products/${productId}/options/${optionId}/values/${valueId}`, {
     method: 'DELETE',
   })
@@ -636,9 +636,9 @@ import type { StockHistoryPagedResult, GetStockHistoryParams } from '@/types/inv
 /**
  * Get stock movement history for a product variant
  */
-export async function getStockHistory(
+export const getStockHistory = async (
   params: GetStockHistoryParams
-): Promise<StockHistoryPagedResult> {
+): Promise<StockHistoryPagedResult> => {
   const queryParams = new URLSearchParams()
   if (params.page) queryParams.append('page', params.page.toString())
   if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString())

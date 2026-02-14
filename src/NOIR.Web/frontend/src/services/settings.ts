@@ -16,7 +16,7 @@ export interface ChangePasswordRequest {
  * Requires authentication. After success, all sessions are revoked.
  * @throws ApiError on failure (incorrect password, validation errors, etc.)
  */
-export async function changePassword(request: ChangePasswordRequest): Promise<void> {
+export const changePassword = async (request: ChangePasswordRequest): Promise<void> => {
   return apiClient<void>('/auth/change-password', {
     method: 'POST',
     body: JSON.stringify(request),

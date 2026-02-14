@@ -2,7 +2,7 @@ import * as React from 'react'
 
 const MOBILE_BREAKPOINT = 768
 
-export function useIsMobile() {
+export const useIsMobile = () => {
   // Initialize with actual value if window exists (client-side)
   const [isMobile, setIsMobile] = React.useState<boolean>(() => {
     if (typeof window !== 'undefined') {

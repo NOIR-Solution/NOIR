@@ -63,9 +63,9 @@ interface UseProductAttributesReturn extends UseProductAttributesState {
   params: GetProductAttributesParams
 }
 
-export function useProductAttributes(
+export const useProductAttributes = (
   initialParams: GetProductAttributesParams = {}
-): UseProductAttributesReturn {
+): UseProductAttributesReturn => {
   const [state, setState] = useState<UseProductAttributesState>({
     data: null,
     loading: true,
@@ -147,7 +147,7 @@ interface UseActiveProductAttributesReturn extends UseActiveProductAttributesSta
   refresh: () => Promise<void>
 }
 
-export function useActiveProductAttributes(): UseActiveProductAttributesReturn {
+export const useActiveProductAttributes = (): UseActiveProductAttributesReturn => {
   const [state, setState] = useState<UseActiveProductAttributesState>({
     data: [],
     loading: true,
@@ -195,7 +195,7 @@ interface UseFilterableProductAttributesReturn extends UseFilterableProductAttri
  * Hook to fetch filterable attributes with their values.
  * Used for admin product list filtering by attributes.
  */
-export function useFilterableProductAttributes(): UseFilterableProductAttributesReturn {
+export const useFilterableProductAttributes = (): UseFilterableProductAttributesReturn => {
   const [state, setState] = useState<UseFilterableProductAttributesState>({
     data: [],
     loading: true,
@@ -239,7 +239,7 @@ interface UseProductAttributeReturn extends UseProductAttributeState {
   refresh: () => Promise<void>
 }
 
-export function useProductAttribute(id: string | undefined): UseProductAttributeReturn {
+export const useProductAttribute = (id: string | undefined): UseProductAttributeReturn => {
   const [state, setState] = useState<UseProductAttributeState>({
     data: null,
     loading: !!id,
@@ -285,7 +285,7 @@ interface UseCreateProductAttributeReturn {
   isPending: boolean
 }
 
-export function useCreateProductAttribute(): UseCreateProductAttributeReturn {
+export const useCreateProductAttribute = (): UseCreateProductAttributeReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const create = useCallback(
@@ -325,7 +325,7 @@ interface UseUpdateProductAttributeReturn {
   isPending: boolean
 }
 
-export function useUpdateProductAttribute(): UseUpdateProductAttributeReturn {
+export const useUpdateProductAttribute = (): UseUpdateProductAttributeReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const update = useCallback(
@@ -363,7 +363,7 @@ interface UseDeleteProductAttributeReturn {
   isPending: boolean
 }
 
-export function useDeleteProductAttribute(): UseDeleteProductAttributeReturn {
+export const useDeleteProductAttribute = (): UseDeleteProductAttributeReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const remove = useCallback(
@@ -401,7 +401,7 @@ interface UseAddProductAttributeValueReturn {
   isPending: boolean
 }
 
-export function useAddProductAttributeValue(): UseAddProductAttributeValueReturn {
+export const useAddProductAttributeValue = (): UseAddProductAttributeValueReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const add = useCallback(
@@ -439,7 +439,7 @@ interface UseUpdateProductAttributeValueReturn {
   isPending: boolean
 }
 
-export function useUpdateProductAttributeValue(): UseUpdateProductAttributeValueReturn {
+export const useUpdateProductAttributeValue = (): UseUpdateProductAttributeValueReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const update = useCallback(
@@ -477,7 +477,7 @@ interface UseRemoveProductAttributeValueReturn {
   isPending: boolean
 }
 
-export function useRemoveProductAttributeValue(): UseRemoveProductAttributeValueReturn {
+export const useRemoveProductAttributeValue = (): UseRemoveProductAttributeValueReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const remove = useCallback(
@@ -528,7 +528,7 @@ interface UseCategoryAttributesReturn extends UseCategoryAttributesState {
   handleRemove: (attributeId: string) => Promise<{ success: boolean; error?: string }>
 }
 
-export function useCategoryAttributes(categoryId: string | undefined): UseCategoryAttributesReturn {
+export const useCategoryAttributes = (categoryId: string | undefined): UseCategoryAttributesReturn => {
   const [state, setState] = useState<UseCategoryAttributesState>({
     data: [],
     loading: !!categoryId,
@@ -643,10 +643,10 @@ interface UseProductAttributeFormReturn extends UseProductAttributeFormState {
  * Hook to fetch the attribute form schema for a product.
  * Returns the fields based on the product's category with current values.
  */
-export function useProductAttributeForm(
+export const useProductAttributeForm = (
   productId: string | undefined,
   variantId?: string
-): UseProductAttributeFormReturn {
+): UseProductAttributeFormReturn => {
   const [state, setState] = useState<UseProductAttributeFormState>({
     data: null,
     loading: !!productId,
@@ -700,9 +700,9 @@ interface UseCategoryAttributeFormReturn extends UseCategoryAttributeFormState {
  * Used for new product creation - returns form fields without requiring a productId.
  * Unlike useProductAttributeForm, this works before the product is saved.
  */
-export function useCategoryAttributeForm(
+export const useCategoryAttributeForm = (
   categoryId: string | null | undefined
-): UseCategoryAttributeFormReturn {
+): UseCategoryAttributeFormReturn => {
   const [state, setState] = useState<UseCategoryAttributeFormState>({
     data: null,
     loading: !!categoryId,
@@ -752,7 +752,7 @@ interface UseBulkUpdateProductAttributesReturn {
 /**
  * Hook to bulk update multiple attribute values for a product.
  */
-export function useBulkUpdateProductAttributes(): UseBulkUpdateProductAttributesReturn {
+export const useBulkUpdateProductAttributes = (): UseBulkUpdateProductAttributesReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const bulkUpdate = useCallback(
@@ -797,7 +797,7 @@ interface UseSetProductAttributeValueReturn {
 /**
  * Hook to set a single attribute value for a product.
  */
-export function useSetProductAttributeValue(): UseSetProductAttributeValueReturn {
+export const useSetProductAttributeValue = (): UseSetProductAttributeValueReturn => {
   const [isPending, setIsPending] = useState(false)
 
   const setValue = useCallback(

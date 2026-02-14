@@ -27,7 +27,7 @@ export interface GetBrandsParams {
 /**
  * Fetch paginated list of brands
  */
-export async function getBrands(params: GetBrandsParams = {}): Promise<BrandPagedResult> {
+export const getBrands = async (params: GetBrandsParams = {}): Promise<BrandPagedResult> => {
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('search', params.search)
   if (params.isActive !== undefined) queryParams.append('isActive', String(params.isActive))
@@ -42,7 +42,7 @@ export async function getBrands(params: GetBrandsParams = {}): Promise<BrandPage
 /**
  * Fetch all active brands (for dropdowns)
  */
-export async function getActiveBrands(): Promise<BrandListItem[]> {
+export const getActiveBrands = async (): Promise<BrandListItem[]> => {
   const result = await getBrands({ isActive: true, pageSize: 1000 })
   return result.items
 }
@@ -50,14 +50,14 @@ export async function getActiveBrands(): Promise<BrandListItem[]> {
 /**
  * Fetch a single brand by ID
  */
-export async function getBrandById(id: string): Promise<Brand> {
+export const getBrandById = async (id: string): Promise<Brand> => {
   return apiClient<Brand>(`/brands/${id}`)
 }
 
 /**
  * Create a new brand
  */
-export async function createBrand(request: CreateBrandRequest): Promise<Brand> {
+export const createBrand = async (request: CreateBrandRequest): Promise<Brand> => {
   return apiClient<Brand>('/brands', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -67,7 +67,7 @@ export async function createBrand(request: CreateBrandRequest): Promise<Brand> {
 /**
  * Update an existing brand
  */
-export async function updateBrand(id: string, request: UpdateBrandRequest): Promise<Brand> {
+export const updateBrand = async (id: string, request: UpdateBrandRequest): Promise<Brand> => {
   return apiClient<Brand>(`/brands/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -77,7 +77,7 @@ export async function updateBrand(id: string, request: UpdateBrandRequest): Prom
 /**
  * Delete a brand (soft delete)
  */
-export async function deleteBrand(id: string): Promise<void> {
+export const deleteBrand = async (id: string): Promise<void> => {
   return apiClient<void>(`/brands/${id}`, {
     method: 'DELETE',
   })

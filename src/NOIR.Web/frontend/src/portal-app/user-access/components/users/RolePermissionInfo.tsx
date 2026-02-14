@@ -14,7 +14,7 @@ interface RolePermissionInfoProps {
   onPermissionsLoaded: (roleId: string, permissions: string[]) => void
 }
 
-export function RolePermissionInfo({ role, permissionsCache, onPermissionsLoaded }: RolePermissionInfoProps) {
+export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded }: RolePermissionInfoProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const [permissions, setPermissions] = useState<string[] | null>(null)

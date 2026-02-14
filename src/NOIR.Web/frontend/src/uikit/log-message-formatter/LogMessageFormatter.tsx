@@ -139,7 +139,7 @@ interface FormattedSegment {
  * - HTTP "GET" "/path" responded 200 in 5ms (quoted)
  * - HTTP GET /path Responded 200 in 5ms (unquoted)
  */
-function parseHttpRequest(message: string): FormattedSegment[] | null {
+const parseHttpRequest = (message: string): FormattedSegment[] | null => {
   const match = PATTERNS.httpRequest.exec(message)
   if (!match) return null
 
@@ -215,7 +215,7 @@ function parseHttpRequest(message: string): FormattedSegment[] | null {
  * Remaining text after the match is delegated to parseGenericMessage()
  * for secondary highlighting (durations, UUIDs, correlation IDs, etc.)
  */
-function parseHandlerMessage(message: string): FormattedSegment[] | null {
+const parseHandlerMessage = (message: string): FormattedSegment[] | null => {
   // Try to match "Handled X successfully/failed" first (more specific)
   const completeRegex = new RegExp(PATTERNS.handlerComplete.source, 'gi')
   const completeMatch = completeRegex.exec(message)
@@ -320,7 +320,7 @@ function parseHandlerMessage(message: string): FormattedSegment[] | null {
 /**
  * Parse generic log messages with highlighting
  */
-function parseGenericMessage(message: string): FormattedSegment[] {
+const parseGenericMessage = (message: string): FormattedSegment[] => {
   const segments: FormattedSegment[] = []
   let lastIndex = 0
 
@@ -422,7 +422,7 @@ function parseGenericMessage(message: string): FormattedSegment[] {
  * contains multiple patterns, the higher priority pattern takes precedence.
  * Remaining text is parsed generically for secondary highlights.
  */
-function parseLogMessage(message: string): FormattedSegment[] {
+const parseLogMessage = (message: string): FormattedSegment[] => {
   // Try HTTP request pattern first (highest priority)
   const httpSegments = parseHttpRequest(message)
   if (httpSegments) {
@@ -442,7 +442,7 @@ function parseLogMessage(message: string): FormattedSegment[] {
 /**
  * Render a formatted segment
  */
-function renderSegment(segment: FormattedSegment, index: number): React.ReactNode {
+const renderSegment = (segment: FormattedSegment, index: number): React.ReactNode => {
   switch (segment.type) {
     case 'http-method': {
       const style = HTTP_METHOD_STYLES[segment.metadata?.method || 'GET']
@@ -627,7 +627,7 @@ export interface LogMessageFormatterProps {
 /**
  * Format and highlight a log message with syntax highlighting
  */
-export function LogMessageFormatter({ message, className }: LogMessageFormatterProps) {
+export const LogMessageFormatter = ({ message, className }: LogMessageFormatterProps) => {
   const segments = useMemo(() => parseLogMessage(message), [message])
 
   return (

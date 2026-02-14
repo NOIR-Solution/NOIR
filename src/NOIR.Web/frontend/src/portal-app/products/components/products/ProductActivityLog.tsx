@@ -55,13 +55,13 @@ const operationConfig = {
 }
 
 // Compact Timeline Entry
-function CompactTimelineEntry({
+const CompactTimelineEntry = ({
   entry,
   onViewDetails,
 }: {
   entry: ActivityTimelineEntry
   onViewDetails: () => void
-}) {
+}) => {
   const { formatRelativeTime } = useRegionalSettings()
   const config = operationConfig[entry.operationType as keyof typeof operationConfig] || operationConfig.Update
   const Icon = config.icon
@@ -116,12 +116,12 @@ function CompactTimelineEntry({
   )
 }
 
-export function ProductActivityLog({
+export const ProductActivityLog = ({
   productId,
   productName: _productName,
   className,
   maxEntries = 10,
-}: ProductActivityLogProps) {
+}: ProductActivityLogProps) => {
   const { t } = useTranslation('common')
   const [entries, setEntries] = useState<ActivityTimelineEntry[]>([])
   const [loading, setLoading] = useState(true)

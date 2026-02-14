@@ -15,7 +15,7 @@ interface NotificationBellProps {
   className?: string
 }
 
-export function NotificationBell({ onClick, className }: NotificationBellProps) {
+export const NotificationBell = ({ onClick, className }: NotificationBellProps) => {
   const { unreadCount, connectionState } = useNotificationContext()
 
   const displayCount = unreadCount > 99 ? '99+' : unreadCount.toString()

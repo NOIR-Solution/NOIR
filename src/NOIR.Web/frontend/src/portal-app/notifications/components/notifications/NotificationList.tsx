@@ -21,7 +21,7 @@ interface NotificationListProps {
   className?: string
 }
 
-export function NotificationList({ className }: NotificationListProps) {
+export const NotificationList = ({ className }: NotificationListProps) => {
   const [filter, setFilter] = useState<FilterType>('all')
   const {
     notifications,

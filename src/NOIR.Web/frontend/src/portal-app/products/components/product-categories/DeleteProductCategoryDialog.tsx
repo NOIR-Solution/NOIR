@@ -20,12 +20,12 @@ interface DeleteProductCategoryDialogProps {
   onConfirm: (id: string) => Promise<{ success: boolean; error?: string }>
 }
 
-export function DeleteProductCategoryDialog({
+export const DeleteProductCategoryDialog = ({
   category,
   open,
   onOpenChange,
   onConfirm,
-}: DeleteProductCategoryDialogProps) {
+}: DeleteProductCategoryDialogProps) => {
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleConfirm = async () => {

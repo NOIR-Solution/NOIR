@@ -15,7 +15,7 @@ import { setPageContext, clearPageContext } from '@/services/pageContext'
  *
  * @param context The page context name (e.g., "Users", "Tenants", "Roles")
  */
-export function usePageContext(context: string): void {
+export const usePageContext = (context: string): void => {
   useEffect(() => {
     setPageContext(context)
     return () => clearPageContext()

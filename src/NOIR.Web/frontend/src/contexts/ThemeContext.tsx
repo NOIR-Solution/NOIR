@@ -32,7 +32,7 @@ const STORAGE_KEY = 'noir-theme'
 /**
  * Get system color scheme preference, including high contrast detection
  */
-function getSystemTheme(): ResolvedTheme {
+const getSystemTheme = (): ResolvedTheme => {
   if (typeof window === 'undefined') return 'light'
 
   // Check high contrast preference first
@@ -48,7 +48,7 @@ function getSystemTheme(): ResolvedTheme {
 /**
  * Apply theme class to document
  */
-function applyTheme(resolvedTheme: ResolvedTheme) {
+const applyTheme = (resolvedTheme: ResolvedTheme) => {
   const root = document.documentElement
   root.classList.remove('dark', 'high-contrast')
 
@@ -65,10 +65,10 @@ interface ThemeProviderProps {
   defaultTheme?: Theme
 }
 
-export function ThemeProvider({
+export const ThemeProvider = ({
   children,
   defaultTheme = 'system',
-}: ThemeProviderProps) {
+}: ThemeProviderProps) => {
   const [hasUserPreference, setHasUserPreference] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
     return localStorage.getItem(STORAGE_KEY) !== null
@@ -166,7 +166,7 @@ export function ThemeProvider({
   )
 }
 
-export function useTheme() {
+export const useTheme = () => {
   const context = useContext(ThemeContext)
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider')

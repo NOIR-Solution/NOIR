@@ -32,7 +32,7 @@ export interface PasswordResetResendResult {
  * Request a password reset OTP
  * Sends an email with OTP if user exists (always returns success for security)
  */
-export async function requestPasswordReset(email: string): Promise<PasswordResetRequestResult> {
+export const requestPasswordReset = async (email: string): Promise<PasswordResetRequestResult> => {
   return apiClientPublic<PasswordResetRequestResult>('/auth/forgot-password', {
     method: 'POST',
     body: JSON.stringify({ email }),
@@ -42,7 +42,7 @@ export async function requestPasswordReset(email: string): Promise<PasswordReset
 /**
  * Verify OTP and get reset token
  */
-export async function verifyOtp(sessionToken: string, otp: string): Promise<PasswordResetVerifyResult> {
+export const verifyOtp = async (sessionToken: string, otp: string): Promise<PasswordResetVerifyResult> => {
   return apiClientPublic<PasswordResetVerifyResult>('/auth/forgot-password/verify', {
     method: 'POST',
     body: JSON.stringify({ sessionToken, otp }),
@@ -52,7 +52,7 @@ export async function verifyOtp(sessionToken: string, otp: string): Promise<Pass
 /**
  * Resend OTP email
  */
-export async function resendOtp(sessionToken: string): Promise<PasswordResetResendResult> {
+export const resendOtp = async (sessionToken: string): Promise<PasswordResetResendResult> => {
   return apiClientPublic<PasswordResetResendResult>('/auth/forgot-password/resend', {
     method: 'POST',
     body: JSON.stringify({ sessionToken }),
@@ -62,7 +62,7 @@ export async function resendOtp(sessionToken: string): Promise<PasswordResetRese
 /**
  * Reset password with reset token
  */
-export async function resetPassword(resetToken: string, newPassword: string): Promise<void> {
+export const resetPassword = async (resetToken: string, newPassword: string): Promise<void> => {
   return apiClientPublic<void>('/auth/forgot-password/reset', {
     method: 'POST',
     body: JSON.stringify({ resetToken, newPassword }),

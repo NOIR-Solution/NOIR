@@ -31,7 +31,7 @@ interface EnhancedProductCardProps {
   canCreate?: boolean
 }
 
-export function EnhancedProductCard({
+export const EnhancedProductCard = ({
   product,
   displayAttributes,
   onDelete,
@@ -42,7 +42,7 @@ export function EnhancedProductCard({
   canDelete = true,
   canPublish = true,
   canCreate = true,
-}: EnhancedProductCardProps) {
+}: EnhancedProductCardProps) => {
   const { t } = useTranslation('common')
   const [isHovered, setIsHovered] = useState(false)
 

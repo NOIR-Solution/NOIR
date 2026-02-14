@@ -127,13 +127,13 @@ export interface UseValidatedFormReturn<TValues extends FieldValues> {
  * - Handles server-side errors
  * - Provides utilities for field-level error setting
  */
-export function useValidatedForm<TValues extends FieldValues>({
+export const useValidatedForm = <TValues extends FieldValues>({
   schema,
   defaultValues,
   onSubmit,
   onError,
   mode = "onBlur",
-}: UseValidatedFormOptions<TValues>): UseValidatedFormReturn<TValues> {
+}: UseValidatedFormOptions<TValues>): UseValidatedFormReturn<TValues> => {
   const [serverError, setServerError] = useState<string | null>(null)
 
   // Use type assertion for resolver to avoid complex generic compatibility issues

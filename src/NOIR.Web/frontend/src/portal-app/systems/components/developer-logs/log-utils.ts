@@ -81,12 +81,12 @@ export const LOG_LEVELS: LogLevelConfig[] = [
   },
 ]
 
-export function getLevelConfig(level: DevLogLevel): LogLevelConfig {
+export const getLevelConfig = (level: DevLogLevel): LogLevelConfig => {
   return LOG_LEVELS.find(l => l.value === level) || LOG_LEVELS[2] // Default to Information
 }
 
 // Format timestamp for display
-export function formatTimestamp(timestamp: string): string {
+export const formatTimestamp = (timestamp: string): string => {
   const date = new Date(timestamp)
   return date.toLocaleTimeString('en-US', {
     hour12: false,
@@ -98,7 +98,7 @@ export function formatTimestamp(timestamp: string): string {
 }
 
 // Format full timestamp with date
-export function formatFullTimestamp(timestamp: string): string {
+export const formatFullTimestamp = (timestamp: string): string => {
   const date = new Date(timestamp)
   return date.toLocaleString('en-US', {
     year: 'numeric',
@@ -112,7 +112,7 @@ export function formatFullTimestamp(timestamp: string): string {
 }
 
 // Format relative time (e.g., "2m ago")
-export function formatRelativeTime(timestamp: string): string {
+export const formatRelativeTime = (timestamp: string): string => {
   const date = new Date(timestamp)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
@@ -129,7 +129,7 @@ export function formatRelativeTime(timestamp: string): string {
 }
 
 // Format bytes to human-readable
-export function formatBytes(bytes: number): string {
+export const formatBytes = (bytes: number): string => {
   const sizes = ['B', 'KB', 'MB', 'GB']
   if (bytes === 0) return '0 B'
   const i = Math.floor(Math.log(bytes) / Math.log(1024))
@@ -137,7 +137,7 @@ export function formatBytes(bytes: number): string {
 }
 
 // Format date string for display
-export function formatDateDisplay(dateStr: string): string {
+export const formatDateDisplay = (dateStr: string): string => {
   try {
     const date = parseISO(dateStr)
     return format(date, 'MMM d, yyyy')
@@ -147,7 +147,7 @@ export function formatDateDisplay(dateStr: string): string {
 }
 
 // Get displayable message from log entry (handles empty message field)
-export function getDisplayMessage(entry: LogEntryDto): string {
+export const getDisplayMessage = (entry: LogEntryDto): string => {
   // If message exists, use it
   if (entry.message && entry.message.trim()) {
     return entry.message

@@ -83,12 +83,12 @@ interface ProductAttributeDialogProps {
   onSuccess?: () => void
 }
 
-export function ProductAttributeDialog({
+export const ProductAttributeDialog = ({
   open,
   onOpenChange,
   attribute,
   onSuccess,
-}: ProductAttributeDialogProps) {
+}: ProductAttributeDialogProps) => {
   const { t } = useTranslation('common')
   const isEditing = !!attribute
   const createAttributeHook = useCreateProductAttribute()

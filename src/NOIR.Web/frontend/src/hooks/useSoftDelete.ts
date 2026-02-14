@@ -50,7 +50,7 @@ interface UseSoftDeleteReturn<T> {
  * // In delete button onClick:
  * onClick={() => handleDelete(product)}
  */
-export function useSoftDelete<T>({
+export const useSoftDelete = <T>({
   onDelete,
   onRestore,
   undoDuration = 5000,
@@ -58,7 +58,7 @@ export function useSoftDelete<T>({
   entityType,
   successMessage = '{entityType} "{name}" deleted',
   restoredMessage = '{entityType} "{name}" restored',
-}: UseSoftDeleteOptions<T>): UseSoftDeleteReturn<T> {
+}: UseSoftDeleteOptions<T>): UseSoftDeleteReturn<T> => {
   const [pendingItem, setPendingItem] = useState<T | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const toastIdRef = useRef<string | number | null>(null)
