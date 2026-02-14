@@ -22,7 +22,7 @@ import {
   Skeleton,
 } from '@uikit'
 
-import { useCategoryAttributeForm } from '@/hooks/useProductAttributes'
+import { useCategoryAttributeForm } from '@/portal-app/products/states/useProductAttributes'
 import { AttributeInputFactory } from './AttributeInputs'
 import type { AttributeValue } from './AttributeInputs'
 

@@ -31,7 +31,7 @@ import {
   Skeleton,
 } from '@uikit'
 
-import { useProductAttributeForm } from '@/hooks/useProductAttributes'
+import { useProductAttributeForm } from '@/portal-app/products/states/useProductAttributes'
 import { AttributeInputFactory } from './AttributeInputs'
 import type { AttributeValue } from './AttributeInputs'
 import type { ProductAttributeFormField } from '@/types/productAttribute'
