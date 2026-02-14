@@ -19,30 +19,30 @@ import type {
 /**
  * Fetch all payment gateways for the tenant
  */
-export async function getPaymentGateways(): Promise<PaymentGateway[]> {
+export const getPaymentGateways = async (): Promise<PaymentGateway[]> => {
   return apiClient<PaymentGateway[]>('/payment-gateways')
 }
 
 /**
  * Fetch a single payment gateway by ID
  */
-export async function getPaymentGateway(id: string): Promise<PaymentGateway> {
+export const getPaymentGateway = async (id: string): Promise<PaymentGateway> => {
   return apiClient<PaymentGateway>(`/payment-gateways/${id}`)
 }
 
 /**
  * Fetch gateway credential schemas for all providers
  */
-export async function getGatewaySchemas(): Promise<GatewaySchemas> {
+export const getGatewaySchemas = async (): Promise<GatewaySchemas> => {
   return apiClient<GatewaySchemas>('/payment-gateways/schemas')
 }
 
 /**
  * Configure a new payment gateway
  */
-export async function configureGateway(
+export const configureGateway = async (
   request: ConfigureGatewayRequest
-): Promise<PaymentGateway> {
+): Promise<PaymentGateway> => {
   return apiClient<PaymentGateway>('/payment-gateways', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -52,10 +52,10 @@ export async function configureGateway(
 /**
  * Update an existing payment gateway
  */
-export async function updateGateway(
+export const updateGateway = async (
   id: string,
   request: UpdateGatewayRequest
-): Promise<PaymentGateway> {
+): Promise<PaymentGateway> => {
   return apiClient<PaymentGateway>(`/payment-gateways/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -65,19 +65,19 @@ export async function updateGateway(
 /**
  * Toggle gateway active status
  */
-export async function toggleGatewayActive(
+export const toggleGatewayActive = async (
   id: string,
   isActive: boolean
-): Promise<PaymentGateway> {
+): Promise<PaymentGateway> => {
   return updateGateway(id, { isActive })
 }
 
 /**
  * Test gateway connection
  */
-export async function testGatewayConnection(
+export const testGatewayConnection = async (
   id: string
-): Promise<TestConnectionResult> {
+): Promise<TestConnectionResult> => {
   return apiClient<TestConnectionResult>(`/payment-gateways/${id}/test`, {
     method: 'POST',
   })
@@ -90,10 +90,10 @@ export async function testGatewayConnection(
 /**
  * Get provider display name from schemas
  */
-export function getProviderDisplayName(
+export const getProviderDisplayName = (
   schemas: GatewaySchemas | null,
   provider: string
-): string {
+): string => {
   if (!schemas?.schemas[provider]) {
     // Fallback to capitalized provider name
     return provider.charAt(0).toUpperCase() + provider.slice(1)
@@ -104,10 +104,10 @@ export function getProviderDisplayName(
 /**
  * Get provider icon URL
  */
-export function getProviderIconUrl(
+export const getProviderIconUrl = (
   schemas: GatewaySchemas | null,
   provider: string
-): string {
+): string => {
   if (!schemas?.schemas[provider]) {
     return '/images/gateways/default.svg'
   }
@@ -117,16 +117,16 @@ export function getProviderIconUrl(
 /**
  * Check if a gateway is fully configured (has credentials)
  */
-export function isGatewayConfigured(gateway: PaymentGateway | null): boolean {
+export const isGatewayConfigured = (gateway: PaymentGateway | null): boolean => {
   return gateway?.hasCredentials ?? false
 }
 
 /**
  * Get gateway status label
  */
-export function getGatewayStatusLabel(
+export const getGatewayStatusLabel = (
   gateway: PaymentGateway | null
-): 'not-configured' | 'configured' | 'active' {
+): 'not-configured' | 'configured' | 'active' => {
   if (!gateway || !gateway.hasCredentials) {
     return 'not-configured'
   }
@@ -136,7 +136,7 @@ export function getGatewayStatusLabel(
 /**
  * Format health check time
  */
-export function formatLastHealthCheck(lastHealthCheck: string | null): string {
+export const formatLastHealthCheck = (lastHealthCheck: string | null): string => {
   if (!lastHealthCheck) return 'Never'
 
   const date = new Date(lastHealthCheck)

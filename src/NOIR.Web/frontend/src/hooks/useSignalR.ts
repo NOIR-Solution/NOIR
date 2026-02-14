@@ -53,7 +53,7 @@ interface UseSignalRReturn {
  * })
  * ```
  */
-export function useSignalR(options: UseSignalROptions = {}): UseSignalRReturn {
+export const useSignalR = (options: UseSignalROptions = {}): UseSignalRReturn => {
   const {
     autoConnect = true,
     onNotification,

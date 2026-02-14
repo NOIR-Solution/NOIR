@@ -24,7 +24,7 @@ export interface FacetPriceRangeProps {
  * Price range filter component with min/max inputs
  * Uses shadcn Input components and supports currency display
  */
-export function FacetPriceRange({
+export const FacetPriceRange = ({
   min,
   max,
   selectedMin,
@@ -32,7 +32,7 @@ export function FacetPriceRange({
   onChange,
   currency = '$',
   className,
-}: FacetPriceRangeProps) {
+}: FacetPriceRangeProps) => {
   const [localMin, setLocalMin] = React.useState<string>(
     selectedMin?.toString() || ''
   )

@@ -42,7 +42,7 @@ import type { ProductAttributeListItem } from '@/types/productAttribute'
 
 import { toast } from 'sonner'
 
-export default function ProductAttributesPage() {
+const ProductAttributesPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('ProductAttributes')
@@ -329,3 +329,5 @@ export default function ProductAttributesPage() {
     </div>
   )
 }
+
+export default ProductAttributesPage

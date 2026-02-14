@@ -28,7 +28,7 @@ interface UsePostsReturn extends UsePostsState {
   params: GetPostsParams
 }
 
-export function usePosts(initialParams: GetPostsParams = {}): UsePostsReturn {
+export const usePosts = (initialParams: GetPostsParams = {}): UsePostsReturn => {
   const [state, setState] = useState<UsePostsState>({
     data: null,
     loading: true,

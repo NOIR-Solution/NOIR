@@ -28,7 +28,7 @@ interface ComboboxProps {
   countLabel?: string
 }
 
-export function Combobox({
+export const Combobox = ({
   options,
   value,
   onValueChange,
@@ -38,7 +38,7 @@ export function Combobox({
   className,
   disabled,
   countLabel,
-}: ComboboxProps) {
+}: ComboboxProps) => {
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState('')
   const listRef = React.useRef<HTMLDivElement>(null)

@@ -24,7 +24,7 @@ interface TenantTableProps {
   loading?: boolean
 }
 
-export function TenantTable({ tenants, onEdit, onDelete, onResetPassword, loading }: TenantTableProps) {
+export const TenantTable = ({ tenants, onEdit, onDelete, onResetPassword, loading }: TenantTableProps) => {
   const { t } = useTranslation('common')
   const { formatDate } = useRegionalSettings()
 

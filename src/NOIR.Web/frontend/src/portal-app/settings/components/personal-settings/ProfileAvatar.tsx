@@ -22,7 +22,7 @@ interface ProfileAvatarProps {
   isRemoving?: boolean
 }
 
-export function ProfileAvatar({
+export const ProfileAvatar = ({
   email,
   firstName,
   lastName,
@@ -31,7 +31,7 @@ export function ProfileAvatar({
   onRemove,
   isUploading = false,
   isRemoving = false,
-}: ProfileAvatarProps) {
+}: ProfileAvatarProps) => {
   const { t } = useTranslation('auth')
   const [gravatarUrl, setGravatarUrl] = useState<string | null>(null)
   const [gravatarFailed, setGravatarFailed] = useState(false)

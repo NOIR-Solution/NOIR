@@ -52,7 +52,7 @@ interface ActivityDetailsDialogProps {
 }
 
 // Format timestamp for display (uses tenant timezone and date format)
-function formatTimestamp(timestamp: string, timezone: string, dateFormat: string): string {
+const formatTimestamp = (timestamp: string, timezone: string, dateFormat: string): string => {
   const date = new Date(timestamp)
   const locale = getLocaleForFormat(dateFormat)
   try {
@@ -104,7 +104,7 @@ const metadataVariants: Record<MetadataVariant, { bg: string; border: string; ic
 }
 
 // Copyable metadata item with click-to-copy functionality
-function CopyableMetadata({
+const CopyableMetadata = ({
   icon: Icon,
   label,
   value,
@@ -116,7 +116,7 @@ function CopyableMetadata({
   value: string
   variant?: MetadataVariant
   maxWidth?: string
-}) {
+}) => {
   const [copied, setCopied] = useState(false)
   const colors = metadataVariants[variant]
 
@@ -153,7 +153,7 @@ function CopyableMetadata({
 }
 
 // Component to display a field change
-function FieldChangeItem({ change }: { change: FieldChange }) {
+const FieldChangeItem = ({ change }: { change: FieldChange }) => {
   return (
     <div className="p-3 rounded-lg border bg-card">
       <div className="flex items-center gap-2 mb-2">
@@ -197,11 +197,11 @@ function FieldChangeItem({ change }: { change: FieldChange }) {
   )
 }
 
-export function ActivityDetailsDialog({
+export const ActivityDetailsDialog = ({
   entry,
   open,
   onOpenChange,
-}: ActivityDetailsDialogProps) {
+}: ActivityDetailsDialogProps) => {
   const [details, setDetails] = useState<ActivityDetails | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

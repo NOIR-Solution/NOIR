@@ -35,7 +35,7 @@ interface UseUsersReturn extends UseUsersState {
   params: UsersParams
 }
 
-export function useUsers(initialParams: UsersParams = {}): UseUsersReturn {
+export const useUsers = (initialParams: UsersParams = {}): UseUsersReturn => {
   const [state, setState] = useState<UseUsersState>({
     data: null,
     loading: true,
@@ -150,7 +150,7 @@ interface UseAvailableRolesState {
   error: string | null
 }
 
-export function useAvailableRoles() {
+export const useAvailableRoles = () => {
   const [state, setState] = useState<UseAvailableRolesState>({
     roles: [],
     loading: true,

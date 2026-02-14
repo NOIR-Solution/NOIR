@@ -99,7 +99,7 @@ export interface PageMetaProps {
  * - Robots meta (index/noindex)
  * - Keywords meta
  */
-export function PageMeta({
+export const PageMeta = ({
   title,
   description,
   keywords,
@@ -113,7 +113,7 @@ export function PageMeta({
   twitterCard = 'summary_large_image',
   twitterSite,
   customMeta = []
-}: PageMetaProps) {
+}: PageMetaProps) => {
   // Generate full title with site name
   const fullTitle = generateMetaTitle(title, siteName)
 

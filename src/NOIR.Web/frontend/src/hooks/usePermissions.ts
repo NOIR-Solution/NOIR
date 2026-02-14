@@ -28,7 +28,7 @@ interface UsePermissionsResult {
  * Automatically fetches permissions when authenticated and caches them
  * Provides utility functions for permission checking
  */
-export function usePermissions(): UsePermissionsResult {
+export const usePermissions = (): UsePermissionsResult => {
   const { isAuthenticated, user } = useAuthContext()
   const [permissionsData, setPermissionsData] = useState<UserPermissions | null>(null)
   const [isLoading, setIsLoading] = useState(false)

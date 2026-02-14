@@ -61,7 +61,7 @@ export type OnboardingItemId = (typeof ONBOARDING_ITEMS)[number]['id']
 /**
  * Hook for managing onboarding state
  */
-export function useOnboarding() {
+export const useOnboarding = () => {
   const [state, setState] = useState<OnboardingState>(() => {
     if (typeof window === 'undefined') return DEFAULT_STATE
 

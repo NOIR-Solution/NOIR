@@ -8,10 +8,10 @@
  * @param categoryCode - Optional category code (defaults to "GEN")
  * @returns Generated SKU string
  */
-export function generateSKU(
+export const generateSKU = (
   productName: string,
   categoryCode?: string
-): string {
+): string => {
   // Extract first 4 alphanumeric characters from product name
   const namePrefix = productName
     .toUpperCase()
@@ -38,7 +38,7 @@ export function generateSKU(
  *
  * Expected format: XXX-XXXX-XXXX (3 letters, 4 letters, 4 alphanumeric)
  */
-export function isValidSKU(sku: string): boolean {
+export const isValidSKU = (sku: string): boolean => {
   return /^[A-Z]{3}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(sku.toUpperCase())
 }
 
@@ -51,12 +51,12 @@ export function isValidSKU(sku: string): boolean {
  * @param maxAttempts - Maximum attempts to generate unique SKU (default: 10)
  * @returns Unique SKU string or null if unable to generate
  */
-export function generateUniqueSKU(
+export const generateUniqueSKU = (
   productName: string,
   existingSKUs: string[],
   categoryCode?: string,
   maxAttempts = 10
-): string | null {
+): string | null => {
   const existingSet = new Set(existingSKUs.map((s) => s.toUpperCase()))
 
   for (let i = 0; i < maxAttempts; i++) {

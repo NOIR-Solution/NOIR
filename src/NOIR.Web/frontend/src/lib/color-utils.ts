@@ -9,10 +9,10 @@
  * @param fallback The fallback color if invalid (default: #e5e5e5)
  * @returns A safe hex color code
  */
-export function sanitizeColorCode(
+export const sanitizeColorCode = (
   colorCode: string | undefined | null,
   fallback = '#e5e5e5'
-): string {
+): string => {
   if (!colorCode) return fallback
 
   // Only allow valid hex colors
@@ -31,7 +31,7 @@ export function sanitizeColorCode(
  * @param hexColor The hex color to evaluate
  * @returns 'light' if the text should be dark, 'dark' if text should be light
  */
-export function getContrastMode(hexColor: string): 'light' | 'dark' {
+export const getContrastMode = (hexColor: string): 'light' | 'dark' => {
   const hex = hexColor.replace('#', '')
   const r = parseInt(hex.substring(0, 2), 16) / 255
   const g = parseInt(hex.substring(2, 4), 16) / 255
@@ -51,6 +51,6 @@ export function getContrastMode(hexColor: string): 'light' | 'dark' {
  * Legacy helper for backward compatibility.
  * @deprecated Use getContrastMode instead
  */
-export function isLightColor(hexColor: string): boolean {
+export const isLightColor = (hexColor: string): boolean => {
   return getContrastMode(hexColor) === 'light'
 }

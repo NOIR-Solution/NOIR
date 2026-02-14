@@ -21,7 +21,7 @@ interface CreateTenantDialogProps {
   onSuccess: () => void
 }
 
-export function CreateTenantDialog({ onSuccess }: CreateTenantDialogProps) {
+export const CreateTenantDialog = ({ onSuccess }: CreateTenantDialogProps) => {
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
 

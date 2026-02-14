@@ -12,7 +12,7 @@ interface ThemeToggleProps {
  * Segmented theme toggle with animated sliding indicator
  * Design from 21st.dev
  */
-export function ThemeToggle({ className }: ThemeToggleProps) {
+export const ThemeToggle = ({ className }: ThemeToggleProps) => {
   const { t } = useTranslation('common')
   const { resolvedTheme, setTheme } = useTheme()
 
@@ -81,7 +81,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
 /**
  * Compact icon button for theme toggle (for collapsed sidebar)
  */
-export function ThemeToggleCompact({ className }: ThemeToggleProps) {
+export const ThemeToggleCompact = ({ className }: ThemeToggleProps) => {
   const { resolvedTheme, toggleTheme } = useTheme()
 
   return (

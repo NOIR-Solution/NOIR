@@ -62,7 +62,7 @@ interface UseProductsReturn extends UseProductsState {
   params: GetProductsParams
 }
 
-export function useProducts(initialParams: GetProductsParams = {}): UseProductsReturn {
+export const useProducts = (initialParams: GetProductsParams = {}): UseProductsReturn => {
   const [state, setState] = useState<UseProductsState>({
     data: null,
     stats: { total: 0, active: 0, draft: 0, archived: 0, outOfStock: 0, lowStock: 0 },
@@ -286,7 +286,7 @@ interface UseProductReturn extends UseProductState {
   refresh: () => Promise<void>
 }
 
-export function useProduct(id: string | undefined): UseProductReturn {
+export const useProduct = (id: string | undefined): UseProductReturn => {
   const [state, setState] = useState<UseProductState>({
     data: null,
     loading: !!id,

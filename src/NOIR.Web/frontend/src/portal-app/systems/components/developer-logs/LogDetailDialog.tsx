@@ -27,11 +27,11 @@ export interface LogDetailDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
-export function LogDetailDialog({
+export const LogDetailDialog = ({
   entry,
   open,
   onOpenChange,
-}: LogDetailDialogProps) {
+}: LogDetailDialogProps) => {
   const [copied, setCopied] = useState(false)
 
   if (!entry) return null

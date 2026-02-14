@@ -32,7 +32,7 @@ type ProfileFormData = z.infer<typeof updateUserProfileSchema>
 /** Notify other components (like Sidebar) that user profile data has changed */
 const notifyProfileChanged = () => window.dispatchEvent(new Event('avatar-updated'))
 
-export function ProfileForm() {
+export const ProfileForm = () => {
   const { t } = useTranslation('auth')
   const { t: tCommon } = useTranslation('common')
   const { user, refreshUser } = useAuthContext()

@@ -39,12 +39,12 @@ interface PermissionGateProps {
  *   <AdminPanel />
  * </PermissionGate>
  */
-export function PermissionGate({
+export const PermissionGate = ({
   permissions,
   requireAll = false,
   children,
   fallback = null,
-}: PermissionGateProps): ReactNode {
+}: PermissionGateProps): ReactNode => {
   const { hasPermission, hasAllPermissions, hasAnyPermission, isLoading } = usePermissions()
 
   // While loading, show nothing (or could show skeleton)
@@ -89,12 +89,12 @@ interface RoleGateProps {
  *   <ManageTeam />
  * </RoleGate>
  */
-export function RoleGate({
+export const RoleGate = ({
   roles,
   requireAll = false,
   children,
   fallback = null,
-}: RoleGateProps): ReactNode {
+}: RoleGateProps): ReactNode => {
   const { hasRole, isLoading } = usePermissions()
 
   if (isLoading) {

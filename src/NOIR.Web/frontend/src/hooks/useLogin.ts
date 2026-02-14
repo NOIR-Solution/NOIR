@@ -32,7 +32,7 @@ import type { LoginRequest, LoginResponse } from '@/types'
  *   }
  * }
  */
-export function useLogin() {
+export const useLogin = () => {
   const { checkAuth } = useAuthContext()
 
   const login = useCallback(async (credentials: LoginRequest): Promise<LoginResponse> => {

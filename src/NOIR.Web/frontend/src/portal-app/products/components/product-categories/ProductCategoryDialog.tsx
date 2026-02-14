@@ -60,13 +60,13 @@ interface ProductCategoryDialogProps {
   onSuccess: () => void
 }
 
-export function ProductCategoryDialog({
+export const ProductCategoryDialog = ({
   open,
   onOpenChange,
   category,
   categories: categoriesProp,
   onSuccess,
-}: ProductCategoryDialogProps) {
+}: ProductCategoryDialogProps) => {
   const { t } = useTranslation('common')
   const isEditing = !!category
   const [isSaving, setIsSaving] = useState(false)

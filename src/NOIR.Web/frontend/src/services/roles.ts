@@ -22,11 +22,11 @@ import type {
 /**
  * Fetch paginated list of roles
  */
-export async function getRoles(params: {
+export const getRoles = async (params: {
   search?: string
   page?: number
   pageSize?: number
-}): Promise<PaginatedResponse<RoleListItem>> {
+}): Promise<PaginatedResponse<RoleListItem>> => {
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('search', params.search)
   if (params.page) queryParams.append('page', params.page.toString())
@@ -39,21 +39,21 @@ export async function getRoles(params: {
 /**
  * Fetch a single role by ID with full details
  */
-export async function getRoleById(id: string): Promise<Role> {
+export const getRoleById = async (id: string): Promise<Role> => {
   return apiClient<Role>(`/roles/${id}`)
 }
 
 /**
  * Fetch role hierarchy (tree structure)
  */
-export async function getRoleHierarchy(): Promise<RoleHierarchy[]> {
+export const getRoleHierarchy = async (): Promise<RoleHierarchy[]> => {
   return apiClient<RoleHierarchy[]>('/roles/hierarchy')
 }
 
 /**
  * Create a new role
  */
-export async function createRole(request: CreateRoleRequest): Promise<Role> {
+export const createRole = async (request: CreateRoleRequest): Promise<Role> => {
   return apiClient<Role>('/roles', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -63,7 +63,7 @@ export async function createRole(request: CreateRoleRequest): Promise<Role> {
 /**
  * Update an existing role
  */
-export async function updateRole(request: UpdateRoleRequest): Promise<Role> {
+export const updateRole = async (request: UpdateRoleRequest): Promise<Role> => {
   return apiClient<Role>(`/roles/${request.roleId}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -73,7 +73,7 @@ export async function updateRole(request: UpdateRoleRequest): Promise<Role> {
 /**
  * Delete a role
  */
-export async function deleteRole(id: string): Promise<void> {
+export const deleteRole = async (id: string): Promise<void> => {
   return apiClient<void>(`/roles/${id}`, {
     method: 'DELETE',
   })
@@ -86,24 +86,24 @@ export async function deleteRole(id: string): Promise<void> {
 /**
  * Get permissions assigned to a role
  */
-export async function getRolePermissions(roleId: string): Promise<string[]> {
+export const getRolePermissions = async (roleId: string): Promise<string[]> => {
   return apiClient<string[]>(`/roles/${roleId}/permissions`)
 }
 
 /**
  * Get effective permissions (including inherited from parent roles)
  */
-export async function getEffectivePermissions(roleId: string): Promise<string[]> {
+export const getEffectivePermissions = async (roleId: string): Promise<string[]> => {
   return apiClient<string[]>(`/roles/${roleId}/effective-permissions`)
 }
 
 /**
  * Assign permissions to a role
  */
-export async function assignPermissions(
+export const assignPermissions = async (
   roleId: string,
   permissions: string[]
-): Promise<string[]> {
+): Promise<string[]> => {
   return apiClient<string[]>(`/roles/${roleId}/permissions`, {
     method: 'PUT',
     body: JSON.stringify({ roleId, permissions }),
@@ -113,10 +113,10 @@ export async function assignPermissions(
 /**
  * Remove permissions from a role
  */
-export async function removePermissions(
+export const removePermissions = async (
   roleId: string,
   permissions: string[]
-): Promise<string[]> {
+): Promise<string[]> => {
   return apiClient<string[]>(`/roles/${roleId}/permissions`, {
     method: 'DELETE',
     body: JSON.stringify({ roleId, permissions }),
@@ -130,14 +130,14 @@ export async function removePermissions(
 /**
  * Get all available permissions
  */
-export async function getAllPermissions(): Promise<Permission[]> {
+export const getAllPermissions = async (): Promise<Permission[]> => {
   return apiClient<Permission[]>('/permissions')
 }
 
 /**
  * Get permissions grouped by category
  */
-export async function getPermissionsByCategory(): Promise<Record<string, Permission[]>> {
+export const getPermissionsByCategory = async (): Promise<Record<string, Permission[]>> => {
   const permissions = await getAllPermissions()
   return permissions.reduce((groups, permission) => {
     const category = permission.category || 'Uncategorized'
@@ -156,24 +156,24 @@ export async function getPermissionsByCategory(): Promise<Record<string, Permiss
 /**
  * Get all permission templates
  */
-export async function getPermissionTemplates(): Promise<PermissionTemplate[]> {
+export const getPermissionTemplates = async (): Promise<PermissionTemplate[]> => {
   return apiClient<PermissionTemplate[]>('/permission-templates')
 }
 
 /**
  * Get a single permission template by ID
  */
-export async function getPermissionTemplateById(id: string): Promise<PermissionTemplate> {
+export const getPermissionTemplateById = async (id: string): Promise<PermissionTemplate> => {
   return apiClient<PermissionTemplate>(`/permission-templates/${id}`)
 }
 
 /**
  * Apply a permission template to a role
  */
-export async function applyTemplateToRole(
+export const applyTemplateToRole = async (
   roleId: string,
   templateId: string
-): Promise<string[]> {
+): Promise<string[]> => {
   return apiClient<string[]>(`/roles/${roleId}/apply-template/${templateId}`, {
     method: 'POST',
   })

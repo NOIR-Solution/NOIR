@@ -9,7 +9,7 @@ interface CountdownTimerProps {
 /**
  * Countdown timer component for resend cooldown
  */
-export function CountdownTimer({ targetTime, onComplete }: CountdownTimerProps) {
+export const CountdownTimer = ({ targetTime, onComplete }: CountdownTimerProps) => {
   const { t } = useTranslation('auth')
   const [remainingSeconds, setRemainingSeconds] = useState(0)
 

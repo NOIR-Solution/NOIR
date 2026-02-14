@@ -65,10 +65,10 @@ const BASE_EXPORT_FIELDS = [
   'images',
 ]
 
-export function ProductImportExport({
+export const ProductImportExport = ({
   products,
   onImportComplete,
-}: ProductImportExportProps) {
+}: ProductImportExportProps) => {
   const { t } = useTranslation('common')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isExporting, setIsExporting] = useState(false)
@@ -436,7 +436,7 @@ export function ProductImportExport({
 /**
  * Escape a value for CSV output
  */
-function escapeCSV(value: string): string {
+const escapeCSV = (value: string): string => {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
     return `"${value.replace(/"/g, '""')}"`
   }
@@ -447,7 +447,7 @@ function escapeCSV(value: string): string {
  * Parse CSV text into headers and rows
  * Handles quoted fields with commas and newlines
  */
-function parseCSV(text: string): { headers: string[]; rows: string[][] } {
+const parseCSV = (text: string): { headers: string[]; rows: string[][] } => {
   const lines: string[] = []
   let currentLine = ''
   let inQuotes = false

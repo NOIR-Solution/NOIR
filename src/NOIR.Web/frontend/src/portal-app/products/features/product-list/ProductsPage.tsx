@@ -72,7 +72,7 @@ import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/utils/currency'
 import { PRODUCT_STATUS_CONFIG, DEFAULT_PRODUCT_PAGE_SIZE, LOW_STOCK_THRESHOLD } from '@/lib/constants/product'
 
-export default function ProductsPage() {
+const ProductsPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('Products')
@@ -976,3 +976,5 @@ export default function ProductsPage() {
     </div>
   )
 }
+
+export default ProductsPage

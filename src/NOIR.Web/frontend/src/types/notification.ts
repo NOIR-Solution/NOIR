@@ -118,17 +118,17 @@ export const EmailFrequencyMap: Record<number, EmailFrequency> = {
 /**
  * Helper to convert backend enum values to frontend types
  */
-export function mapNotificationType(value: number | string): NotificationType {
+export const mapNotificationType = (value: number | string): NotificationType => {
   if (typeof value === 'number') return NotificationTypeMap[value] || 'info'
   return value as NotificationType
 }
 
-export function mapNotificationCategory(value: number | string): NotificationCategory {
+export const mapNotificationCategory = (value: number | string): NotificationCategory => {
   if (typeof value === 'number') return NotificationCategoryMap[value] || 'system'
   return value as NotificationCategory
 }
 
-export function mapEmailFrequency(value: number | string): EmailFrequency {
+export const mapEmailFrequency = (value: number | string): EmailFrequency => {
   if (typeof value === 'number') return EmailFrequencyMap[value] || 'none'
   return value as EmailFrequency
 }

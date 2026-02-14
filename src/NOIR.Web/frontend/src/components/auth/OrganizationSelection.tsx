@@ -15,14 +15,14 @@ interface OrganizationSelectionProps {
   error?: string | null
 }
 
-export function OrganizationSelection({
+export const OrganizationSelection = ({
   organizations,
   onSelect,
   onBack,
   userEmail,
   isLoading = false,
   error = null,
-}: OrganizationSelectionProps) {
+}: OrganizationSelectionProps) => {
   const [selectedOrg, setSelectedOrg] = useState<TenantOption | null>(null)
 
   const handleSelect = (org: TenantOption) => {

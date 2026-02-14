@@ -170,7 +170,7 @@ const createVariantSchema = (t: (key: string, options?: Record<string, unknown>)
 type VariantFormData = z.infer<ReturnType<typeof createVariantSchema>>
 
 // Inline edit form for variants
-function EditVariantForm({
+const EditVariantForm = ({
   variant,
   onSave,
   onCancel,
@@ -178,7 +178,7 @@ function EditVariantForm({
   variant: ProductVariant
   onSave: (data: VariantFormData) => void
   onCancel: () => void
-}) {
+}) => {
   const { t } = useTranslation('common')
   const [formData, setFormData] = useState<VariantFormData>({
     name: variant.name,
@@ -240,7 +240,7 @@ function EditVariantForm({
   )
 }
 
-export default function ProductFormPage() {
+const ProductFormPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   const { id } = useParams<{ id: string }>()
@@ -1666,3 +1666,5 @@ export default function ProductFormPage() {
     </div>
   )
 }
+
+export default ProductFormPage

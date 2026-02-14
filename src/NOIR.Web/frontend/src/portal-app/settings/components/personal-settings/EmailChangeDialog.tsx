@@ -58,13 +58,13 @@ interface EmailChangeDialogProps {
   onOpenChange?: (open: boolean) => void
 }
 
-export function EmailChangeDialog({
+export const EmailChangeDialog = ({
   currentEmail,
   onSuccess,
   trigger,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
-}: EmailChangeDialogProps) {
+}: EmailChangeDialogProps) => {
   const { t } = useTranslation('auth')
   const { t: tCommon } = useTranslation('common')
   // Support both controlled and uncontrolled modes

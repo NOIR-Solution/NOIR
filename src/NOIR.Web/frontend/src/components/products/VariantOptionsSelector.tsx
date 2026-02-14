@@ -19,12 +19,12 @@ interface VariantOptionsSelectorProps {
   disabled?: boolean
 }
 
-export function VariantOptionsSelector({
+export const VariantOptionsSelector = ({
   options,
   selectedValues,
   onChange,
   disabled = false,
-}: VariantOptionsSelectorProps) {
+}: VariantOptionsSelectorProps) => {
   const { t } = useTranslation()
 
   if (options.length === 0) {

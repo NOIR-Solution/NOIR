@@ -27,12 +27,12 @@ interface UseStockHistoryReturn extends UseStockHistoryState {
  * @param initialPage - Initial page number (default: 1)
  * @param pageSize - Number of items per page (default: 20)
  */
-export function useStockHistory(
+export const useStockHistory = (
   productId: string | undefined,
   variantId: string | undefined,
   initialPage = 1,
   pageSize = 20
-): UseStockHistoryReturn {
+): UseStockHistoryReturn => {
   const [state, setState] = useState<UseStockHistoryState>({
     data: null,
     loading: !!(productId && variantId),

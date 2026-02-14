@@ -23,7 +23,7 @@ export interface PasswordStrength {
  * Check password against all requirements
  * Production requirements: 12+ chars, upper, lower, digit, special, 4+ unique chars
  */
-export function validatePassword(password: string): PasswordRequirements {
+export const validatePassword = (password: string): PasswordRequirements => {
   return {
     length: password.length >= 12,
     lowercase: /[a-z]/.test(password),
@@ -37,7 +37,7 @@ export function validatePassword(password: string): PasswordRequirements {
 /**
  * Calculate password strength score and level
  */
-export function getPasswordStrength(password: string): PasswordStrength {
+export const getPasswordStrength = (password: string): PasswordStrength => {
   const requirements = validatePassword(password)
 
   // Count met requirements (excluding length which is mandatory)
@@ -73,7 +73,7 @@ export function getPasswordStrength(password: string): PasswordStrength {
 /**
  * Get color classes for password strength indicator
  */
-export function getStrengthColor(level: PasswordStrength['level']): string {
+export const getStrengthColor = (level: PasswordStrength['level']): string => {
   switch (level) {
     case 'weak':
       return 'bg-red-500'
@@ -89,7 +89,7 @@ export function getStrengthColor(level: PasswordStrength['level']): string {
 /**
  * Get text color for password strength label
  */
-export function getStrengthTextColor(level: PasswordStrength['level']): string {
+export const getStrengthTextColor = (level: PasswordStrength['level']): string => {
   switch (level) {
     case 'weak':
       return 'text-red-600'

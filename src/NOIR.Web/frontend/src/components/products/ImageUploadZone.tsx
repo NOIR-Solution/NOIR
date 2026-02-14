@@ -20,13 +20,13 @@ interface UploadProgress {
   error?: string
 }
 
-export function ImageUploadZone({
+export const ImageUploadZone = ({
   onUpload,
   disabled = false,
   maxSizeMB = 10,
   acceptedFormats = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'],
   className,
-}: ImageUploadZoneProps) {
+}: ImageUploadZoneProps) => {
   const { t } = useTranslation('common')
   const [uploads, setUploads] = useState<UploadProgress[]>([])
 

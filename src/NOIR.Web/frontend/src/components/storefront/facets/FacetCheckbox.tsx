@@ -23,14 +23,14 @@ export interface FacetCheckboxProps {
  * Multi-select checkbox filter component for storefront filtering
  * Shows options with product counts and supports "Show more/less"
  */
-export function FacetCheckbox({
+export const FacetCheckbox = ({
   name,
   options,
   selectedValues,
   onChange,
   maxVisible = 5,
   className,
-}: FacetCheckboxProps) {
+}: FacetCheckboxProps) => {
   const [showAll, setShowAll] = React.useState(false)
 
   const visibleOptions = showAll ? options : options.slice(0, maxVisible)

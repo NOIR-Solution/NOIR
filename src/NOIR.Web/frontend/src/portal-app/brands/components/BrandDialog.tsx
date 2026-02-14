@@ -52,7 +52,7 @@ interface BrandDialogProps {
   onSuccess?: () => void
 }
 
-export function BrandDialog({ open, onOpenChange, brand, onSuccess }: BrandDialogProps) {
+export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialogProps) => {
   const { t } = useTranslation('common')
   const isEditing = !!brand
   const createBrandHook = useCreateBrand()

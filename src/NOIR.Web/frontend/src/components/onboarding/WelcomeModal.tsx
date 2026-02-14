@@ -14,7 +14,7 @@ interface FeatureCardProps {
   delay: number
 }
 
-function FeatureCard({ icon: Icon, title, description, delay }: FeatureCardProps) {
+const FeatureCard = ({ icon: Icon, title, description, delay }: FeatureCardProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -33,7 +33,7 @@ function FeatureCard({ icon: Icon, title, description, delay }: FeatureCardProps
   )
 }
 
-export function WelcomeModal() {
+export const WelcomeModal = () => {
   const navigate = useNavigate()
   const { user } = useAuthContext()
   const { shouldShowWelcome, markWelcomeShown } = useOnboarding()

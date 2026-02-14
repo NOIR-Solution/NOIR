@@ -53,7 +53,7 @@ interface BlogCategoryDialogProps {
   onSuccess: () => void
 }
 
-export function BlogCategoryDialog({ open, onOpenChange, category, onSuccess }: BlogCategoryDialogProps) {
+export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: BlogCategoryDialogProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const [existingCategories, setExistingCategories] = useState<PostCategoryListItem[]>([])

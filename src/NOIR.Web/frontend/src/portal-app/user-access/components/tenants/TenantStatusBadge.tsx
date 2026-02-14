@@ -4,7 +4,7 @@ interface TenantStatusBadgeProps {
   isActive: boolean
 }
 
-export function TenantStatusBadge({ isActive }: TenantStatusBadgeProps) {
+export const TenantStatusBadge = ({ isActive }: TenantStatusBadgeProps) => {
   const { t } = useTranslation('common')
 
   return (

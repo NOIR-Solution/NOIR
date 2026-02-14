@@ -26,13 +26,13 @@ export interface ErrorClustersTabProps {
 }
 
 // Error Clusters Component
-function ErrorClusters({
+const ErrorClusters = ({
   clusters,
   onRefresh,
 }: {
   clusters: ErrorClusterDto[]
   onRefresh: () => void
-}) {
+}) => {
   const { formatDateTime } = useRegionalSettings()
 
   return (
@@ -96,7 +96,7 @@ function ErrorClusters({
   )
 }
 
-export function ErrorClustersTab({ clusters, onRefresh }: ErrorClustersTabProps) {
+export const ErrorClustersTab = ({ clusters, onRefresh }: ErrorClustersTabProps) => {
   return (
     <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
       <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">

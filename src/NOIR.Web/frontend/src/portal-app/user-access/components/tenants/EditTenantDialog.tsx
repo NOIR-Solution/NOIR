@@ -22,7 +22,7 @@ interface EditTenantDialogProps {
   onSuccess: () => void
 }
 
-export function EditTenantDialog({ tenant, open, onOpenChange, onSuccess }: EditTenantDialogProps) {
+export const EditTenantDialog = ({ tenant, open, onOpenChange, onSuccess }: EditTenantDialogProps) => {
   const { t } = useTranslation('common')
   const [fullTenant, setFullTenant] = useState<Tenant | null>(null)
   const [loading, setLoading] = useState(false)

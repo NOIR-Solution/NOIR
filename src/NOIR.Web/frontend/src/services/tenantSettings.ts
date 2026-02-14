@@ -97,7 +97,7 @@ export interface TestTenantSmtpRequest {
  * Get SMTP settings for the current tenant.
  * Returns platform defaults if tenant hasn't customized.
  */
-export async function getTenantSmtpSettings(): Promise<TenantSmtpSettingsDto> {
+export const getTenantSmtpSettings = async (): Promise<TenantSmtpSettingsDto> => {
   return apiClient<TenantSmtpSettingsDto>('/tenant-settings/smtp')
 }
 
@@ -105,9 +105,9 @@ export async function getTenantSmtpSettings(): Promise<TenantSmtpSettingsDto> {
  * Update SMTP settings for the current tenant (Copy-on-Write).
  * Creates tenant-specific settings on first save.
  */
-export async function updateTenantSmtpSettings(
+export const updateTenantSmtpSettings = async (
   request: UpdateTenantSmtpSettingsRequest
-): Promise<TenantSmtpSettingsDto> {
+): Promise<TenantSmtpSettingsDto> => {
   return apiClient<TenantSmtpSettingsDto>('/tenant-settings/smtp', {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -118,7 +118,7 @@ export async function updateTenantSmtpSettings(
  * Revert tenant SMTP settings to platform defaults.
  * Deletes tenant-specific settings.
  */
-export async function revertTenantSmtpSettings(): Promise<TenantSmtpSettingsDto> {
+export const revertTenantSmtpSettings = async (): Promise<TenantSmtpSettingsDto> => {
   return apiClient<TenantSmtpSettingsDto>('/tenant-settings/smtp/revert', {
     method: 'POST',
   })
@@ -127,9 +127,9 @@ export async function revertTenantSmtpSettings(): Promise<TenantSmtpSettingsDto>
 /**
  * Test tenant SMTP connection by sending a test email.
  */
-export async function testTenantSmtpConnection(
+export const testTenantSmtpConnection = async (
   request: TestTenantSmtpRequest
-): Promise<boolean> {
+): Promise<boolean> => {
   return apiClient<boolean>('/tenant-settings/smtp/test', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -143,16 +143,16 @@ export async function testTenantSmtpConnection(
 /**
  * Get branding settings for the current tenant
  */
-export async function getBrandingSettings(): Promise<BrandingSettingsDto> {
+export const getBrandingSettings = async (): Promise<BrandingSettingsDto> => {
   return apiClient<BrandingSettingsDto>('/tenant-settings/branding')
 }
 
 /**
  * Update branding settings for the current tenant
  */
-export async function updateBrandingSettings(
+export const updateBrandingSettings = async (
   request: UpdateBrandingSettingsRequest
-): Promise<BrandingSettingsDto> {
+): Promise<BrandingSettingsDto> => {
   return apiClient<BrandingSettingsDto>('/tenant-settings/branding', {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -166,16 +166,16 @@ export async function updateBrandingSettings(
 /**
  * Get contact settings for the current tenant
  */
-export async function getContactSettings(): Promise<ContactSettingsDto> {
+export const getContactSettings = async (): Promise<ContactSettingsDto> => {
   return apiClient<ContactSettingsDto>('/tenant-settings/contact')
 }
 
 /**
  * Update contact settings for the current tenant
  */
-export async function updateContactSettings(
+export const updateContactSettings = async (
   request: UpdateContactSettingsRequest
-): Promise<ContactSettingsDto> {
+): Promise<ContactSettingsDto> => {
   return apiClient<ContactSettingsDto>('/tenant-settings/contact', {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -189,16 +189,16 @@ export async function updateContactSettings(
 /**
  * Get regional settings for the current tenant
  */
-export async function getRegionalSettings(): Promise<RegionalSettingsDto> {
+export const getRegionalSettings = async (): Promise<RegionalSettingsDto> => {
   return apiClient<RegionalSettingsDto>('/tenant-settings/regional')
 }
 
 /**
  * Update regional settings for the current tenant
  */
-export async function updateRegionalSettings(
+export const updateRegionalSettings = async (
   request: UpdateRegionalSettingsRequest
-): Promise<RegionalSettingsDto> {
+): Promise<RegionalSettingsDto> => {
   return apiClient<RegionalSettingsDto>('/tenant-settings/regional', {
     method: 'PUT',
     body: JSON.stringify(request),

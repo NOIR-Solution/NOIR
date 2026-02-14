@@ -21,7 +21,7 @@ interface DeleteRoleDialogProps {
   onConfirm: (id: string) => Promise<{ success: boolean; error?: string }>
 }
 
-export function DeleteRoleDialog({ role, open, onOpenChange, onConfirm }: DeleteRoleDialogProps) {
+export const DeleteRoleDialog = ({ role, open, onOpenChange, onConfirm }: DeleteRoleDialogProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
 

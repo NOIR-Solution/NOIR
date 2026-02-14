@@ -26,7 +26,7 @@ const createChangePasswordFormSchema = (t: (key: string, options?: Record<string
 
 type ChangePasswordFormData = z.infer<ReturnType<typeof createChangePasswordFormSchema>>
 
-export function ChangePasswordForm() {
+export const ChangePasswordForm = () => {
   const { t } = useTranslation('auth')
   const { t: tCommon } = useTranslation('common')
   const navigate = useNavigate()

@@ -30,7 +30,7 @@ import { toast } from 'sonner'
 import { getActiveSessions, revokeSession } from '@/services/auth'
 import type { ActiveSession } from '@/types'
 
-function getDeviceIcon(userAgent: string | null) {
+const getDeviceIcon = (userAgent: string | null) => {
   if (!userAgent) return Globe
   const ua = userAgent.toLowerCase()
   if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone')) {
@@ -39,7 +39,7 @@ function getDeviceIcon(userAgent: string | null) {
   return Monitor
 }
 
-function getDeviceInfo(session: ActiveSession): string {
+const getDeviceInfo = (session: ActiveSession): string => {
   if (session.deviceName) return session.deviceName
 
   if (!session.userAgent) return 'Unknown Device'
@@ -63,7 +63,7 @@ function getDeviceInfo(session: ActiveSession): string {
   return `${browser} on ${os}`
 }
 
-export function SessionManagement() {
+export const SessionManagement = () => {
   const { t } = useTranslation('auth')
   const { formatRelativeTime } = useRegionalSettings()
   const [sessions, setSessions] = useState<ActiveSession[]>([])

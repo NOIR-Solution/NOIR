@@ -42,7 +42,7 @@ import type { BrandListItem } from '@/types/brand'
 
 import { toast } from 'sonner'
 
-export default function BrandsPage() {
+const BrandsPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('Brands')
@@ -326,3 +326,5 @@ export default function BrandsPage() {
     </div>
   )
 }
+
+export default BrandsPage

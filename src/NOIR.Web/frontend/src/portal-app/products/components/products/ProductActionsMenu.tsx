@@ -28,7 +28,7 @@ interface ProductActionsMenuProps {
  * Shared dropdown menu component for product actions.
  * Used by both ProductGridView and EnhancedProductCard to ensure consistent behavior.
  */
-export function ProductActionsMenu({
+export const ProductActionsMenu = ({
   product,
   onDelete,
   onPublish,
@@ -40,7 +40,7 @@ export function ProductActionsMenu({
   canDelete = true,
   canPublish = true,
   canCreate = true,
-}: ProductActionsMenuProps) {
+}: ProductActionsMenuProps) => {
   const { t } = useTranslation('common')
 
   return (

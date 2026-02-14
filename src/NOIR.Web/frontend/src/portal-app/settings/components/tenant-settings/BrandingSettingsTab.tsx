@@ -27,7 +27,7 @@ export interface BrandingSettingsTabProps {
   canEdit: boolean
 }
 
-export function BrandingSettingsTab({ canEdit }: BrandingSettingsTabProps) {
+export const BrandingSettingsTab = ({ canEdit }: BrandingSettingsTabProps) => {
   const { t } = useTranslation('common')
   const { reloadBranding } = useBranding()
   const [loading, setLoading] = useState(true)

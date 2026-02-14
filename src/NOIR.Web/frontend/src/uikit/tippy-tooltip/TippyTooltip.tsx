@@ -28,14 +28,14 @@ export interface TooltipProps {
  *
  * Uses primary color background with white text by default.
  */
-export function TippyTooltip({
+export const TippyTooltip = ({
   content,
   children,
   contentClassName,
   placement = 'right',
   delay = 100,
   onShow,
-}: TooltipProps) {
+}: TooltipProps) => {
   const delayDuration = Array.isArray(delay) ? delay[0] : delay
 
   return (
@@ -73,14 +73,14 @@ export interface RichTooltipProps extends Omit<TooltipProps, 'content'> {
   content?: React.ReactNode
 }
 
-export function RichTooltip({
+export const RichTooltip = ({
   title,
   items,
   content,
   children,
   placement = 'bottom',
   delay = 100,
-}: RichTooltipProps) {
+}: RichTooltipProps) => {
   const delayDuration = Array.isArray(delay) ? delay[0] : delay
 
   const tooltipContent = content || (

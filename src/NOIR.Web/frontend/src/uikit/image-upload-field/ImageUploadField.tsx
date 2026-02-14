@@ -33,7 +33,7 @@ interface ImageUploadFieldProps {
   label?: string
 }
 
-export function ImageUploadField({
+export const ImageUploadField = ({
   value,
   onChange,
   folder = 'branding',
@@ -43,7 +43,7 @@ export function ImageUploadField({
   accept = 'image/jpeg,image/png,image/gif,image/webp,image/x-icon,image/svg+xml',
   maxSize = 2 * 1024 * 1024,
   label,
-}: ImageUploadFieldProps) {
+}: ImageUploadFieldProps) => {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)

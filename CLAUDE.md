@@ -466,6 +466,32 @@ usePageContext('Customers')  // Required for Activity Timeline
 
 ## ⚛️ Frontend Rules (React/TypeScript)
 
+### ➡️ Arrow Functions & ES6 (MANDATORY)
+
+All frontend code MUST use arrow function syntax and modern ES6+ patterns:
+
+```typescript
+// ✅ CORRECT: Arrow functions everywhere
+export const MyComponent = () => { ... }
+export const useMyHook = () => { ... }
+export const helperFn = (a: string, b: number) => { ... }
+const internalFn = () => { ... }
+
+// ❌ WRONG: Function declarations
+export default function MyComponent() { ... }
+export function helperFn() { ... }
+function internalFn() { ... }
+```
+
+**Rules:**
+- All functions MUST use arrow function syntax (`const fn = () => {}`)
+- `export default function Name` → `const Name = () => { ... }; export default Name`
+- `export function name` → `export const name = () => { ... }`
+- Standalone `function name` → `const name = () => { ... }`
+- Use `const` over `let`/`var`
+- Use template literals, destructuring, spread/rest, optional chaining
+- ESLint enforces `prefer-arrow-callback` and `prefer-const`
+
 ### 🎨 UI Component Building (MANDATORY)
 
 **✅ We use `/ui-ux-pro-max` skill for ALL frontend UI/UX work.**

@@ -45,7 +45,7 @@ interface BlogTagDialogProps {
   onSuccess: () => void
 }
 
-export function BlogTagDialog({ open, onOpenChange, tag, onSuccess }: BlogTagDialogProps) {
+export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDialogProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const isEdit = !!tag

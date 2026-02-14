@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-export function cn(...inputs: ClassValue[]) {
+export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 }
 
@@ -14,7 +14,7 @@ const ACRONYMS = new Set(['otp', 'api', 'url', 'smtp', 'html', 'css', 'id', 'sso
  * @example "PasswordResetOtp" → "Password Reset OTP"
  * @example "WelcomeEmail" → "Welcome Email"
  */
-export function formatDisplayName(name: string): string {
+export const formatDisplayName = (name: string): string => {
   // Insert space before each uppercase letter (handles PascalCase)
   const spaced = name.replace(/([A-Z])/g, ' $1').trim()
   // Split into words and handle acronyms

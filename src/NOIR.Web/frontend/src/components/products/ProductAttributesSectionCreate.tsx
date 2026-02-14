@@ -39,11 +39,11 @@ export interface ProductAttributesSectionCreateProps {
  * ProductAttributesSectionCreate displays a dynamic form for product attributes
  * based on the selected category, for use in new product creation flow.
  */
-export function ProductAttributesSectionCreate({
+export const ProductAttributesSectionCreate = ({
   categoryId,
   isViewMode = false,
   onAttributesChange,
-}: ProductAttributesSectionCreateProps) {
+}: ProductAttributesSectionCreateProps) => {
   const { t } = useTranslation('common')
   const [isOpen, setIsOpen] = useState(true)
   const [localValues, setLocalValues] = useState<Record<string, unknown>>({})

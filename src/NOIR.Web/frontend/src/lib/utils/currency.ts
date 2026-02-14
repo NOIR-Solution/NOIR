@@ -25,7 +25,7 @@ const currencyLocaleMap: Record<string, string> = {
  * @param currency - ISO 4217 currency code (default: 'VND')
  * @returns Formatted currency string
  */
-export function formatCurrency(amount: number, currency: string = 'VND'): string {
+export const formatCurrency = (amount: number, currency: string = 'VND'): string => {
   const locale = currencyLocaleMap[currency] || 'en-US'
 
   return new Intl.NumberFormat(locale, {
@@ -39,7 +39,7 @@ export function formatCurrency(amount: number, currency: string = 'VND'): string
  * @param amount - The numeric amount to format
  * @returns Formatted VND string
  */
-export function formatVND(amount: number): string {
+export const formatVND = (amount: number): string => {
   return formatCurrency(amount, 'VND')
 }
 
@@ -48,6 +48,6 @@ export function formatVND(amount: number): string {
  * @param amount - The numeric amount to format
  * @returns Formatted USD string
  */
-export function formatUSD(amount: number): string {
+export const formatUSD = (amount: number): string => {
   return formatCurrency(amount, 'USD')
 }

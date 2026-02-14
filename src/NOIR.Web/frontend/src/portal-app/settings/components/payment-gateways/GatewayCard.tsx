@@ -37,14 +37,14 @@ const healthStatusConfig: Record<GatewayHealthStatus, {
   Unknown: { icon: Clock, color: 'text-muted-foreground', label: 'Unknown' },
 }
 
-export function GatewayCard({
+export const GatewayCard = ({
   gateway,
   schema,
   onConfigure,
   onToggleActive,
   onTestConnection,
   isTestingConnection,
-}: GatewayCardProps) {
+}: GatewayCardProps) => {
   const { t } = useTranslation('common')
   const [isToggling, setIsToggling] = useState(false)
 

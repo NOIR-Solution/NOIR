@@ -15,13 +15,13 @@ interface EditableVariantsTableProps {
   onSaveSuccess?: (updatedVariant: ProductVariant) => void
 }
 
-export function EditableVariantsTable({
+export const EditableVariantsTable = ({
   productId,
   variants,
   isReadOnly = false,
   onDelete,
   onSaveSuccess,
-}: EditableVariantsTableProps) {
+}: EditableVariantsTableProps) => {
   const { t } = useTranslation('common')
 
   if (variants.length === 0) {

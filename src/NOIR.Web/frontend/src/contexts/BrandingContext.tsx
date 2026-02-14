@@ -32,7 +32,7 @@ const BrandingContext = createContext<BrandingContextType | undefined>(undefined
  * Calculate perceived brightness of a hex color (0-255)
  * Uses standard luminance formula for perceived brightness
  */
-function getPerceivedBrightness(hex: string): number {
+const getPerceivedBrightness = (hex: string): number => {
   // Remove # if present
   const color = hex.replace('#', '')
   const r = parseInt(color.slice(0, 2), 16)
@@ -45,14 +45,14 @@ function getPerceivedBrightness(hex: string): number {
 /**
  * Get contrasting foreground color (black or white)
  */
-function getContrastForeground(hex: string): string {
+const getContrastForeground = (hex: string): string => {
   return getPerceivedBrightness(hex) > 128 ? '#171717' : '#fafafa'
 }
 
 /**
  * Apply branding CSS variables to document root
  */
-function applyBrandingColors(primaryColor: string | null, secondaryColor: string | null) {
+const applyBrandingColors = (primaryColor: string | null, secondaryColor: string | null) => {
   const root = document.documentElement
 
   if (primaryColor) {
@@ -84,7 +84,7 @@ function applyBrandingColors(primaryColor: string | null, secondaryColor: string
 /**
  * Update favicon dynamically
  */
-function updateFavicon(faviconUrl: string | null) {
+const updateFavicon = (faviconUrl: string | null) => {
   const existingLink = document.querySelector("link[rel*='icon']") as HTMLLinkElement | null
 
   if (faviconUrl) {
@@ -106,7 +106,7 @@ interface BrandingProviderProps {
   children: ReactNode
 }
 
-export function BrandingProvider({ children }: BrandingProviderProps) {
+export const BrandingProvider = ({ children }: BrandingProviderProps) => {
   const { isAuthenticated, user } = useAuthContext()
   const { setTheme, hasUserPreference } = useTheme()
   const [branding, setBranding] = useState<BrandingSettingsDto | null>(null)
@@ -178,7 +178,7 @@ export function BrandingProvider({ children }: BrandingProviderProps) {
   )
 }
 
-export function useBranding() {
+export const useBranding = () => {
   const context = useContext(BrandingContext)
   if (context === undefined) {
     throw new Error('useBranding must be used within a BrandingProvider')
@@ -190,6 +190,6 @@ export function useBranding() {
  * Optional hook that doesn't throw if used outside provider
  * Useful for components that may or may not have branding context
  */
-export function useBrandingOptional() {
+export const useBrandingOptional = () => {
   return useContext(BrandingContext)
 }

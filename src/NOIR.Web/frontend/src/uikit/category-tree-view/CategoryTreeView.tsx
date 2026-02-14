@@ -56,7 +56,7 @@ interface CategoryTreeViewProps<T extends TreeCategory> {
 }
 
 // Build tree structure from flat list
-function buildTree<T extends TreeCategory>(items: T[]): Map<string | null, T[]> {
+const buildTree = <T extends TreeCategory>(items: T[]): Map<string | null, T[]> => {
   const tree = new Map<string | null, T[]>()
 
   // Initialize with empty arrays
@@ -91,7 +91,7 @@ interface TreeNodeProps<T extends TreeCategory> {
   toggleExpanded: (id: string) => void
 }
 
-function TreeNode<T extends TreeCategory>({
+const TreeNode = <T extends TreeCategory>({
   category,
   tree,
   level,
@@ -102,7 +102,7 @@ function TreeNode<T extends TreeCategory>({
   itemCountLabel = 'items',
   expandedIds,
   toggleExpanded,
-}: TreeNodeProps<T>) {
+}: TreeNodeProps<T>) => {
   const { t } = useTranslation('common')
   const children = tree.get(category.id) || []
   const hasChildren = children.length > 0
@@ -240,7 +240,7 @@ function TreeNode<T extends TreeCategory>({
   )
 }
 
-export function CategoryTreeView<T extends TreeCategory>({
+export const CategoryTreeView = <T extends TreeCategory>({
   categories,
   loading = false,
   onEdit,
@@ -251,7 +251,7 @@ export function CategoryTreeView<T extends TreeCategory>({
   emptyMessage = 'No categories found',
   emptyDescription = 'Get started by creating your first category.',
   onCreateClick,
-}: CategoryTreeViewProps<T>) {
+}: CategoryTreeViewProps<T>) => {
   const { t } = useTranslation('common')
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 

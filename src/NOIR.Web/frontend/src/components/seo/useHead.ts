@@ -4,7 +4,7 @@ import { useEffect } from 'react'
  * Simple head management hook for SPAs.
  * Updates document title and meta tags.
  */
-export function useHead(config: HeadConfig) {
+export const useHead = (config: HeadConfig) => {
   useEffect(() => {
     const { title, meta, link, jsonLd } = config
 

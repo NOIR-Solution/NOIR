@@ -64,21 +64,21 @@ export interface UpdateLegalPageRequest {
 /**
  * Fetch list of all legal pages (admin)
  */
-export async function getLegalPages(): Promise<LegalPageListDto[]> {
+export const getLegalPages = async (): Promise<LegalPageListDto[]> => {
   return apiClient<LegalPageListDto[]>('/legal-pages')
 }
 
 /**
  * Fetch a single legal page by ID (admin)
  */
-export async function getLegalPageById(id: string): Promise<LegalPageDto> {
+export const getLegalPageById = async (id: string): Promise<LegalPageDto> => {
   return apiClient<LegalPageDto>(`/legal-pages/${id}`)
 }
 
 /**
  * Update a legal page (implements copy-on-write for tenants)
  */
-export async function updateLegalPage(id: string, request: UpdateLegalPageRequest): Promise<LegalPageDto> {
+export const updateLegalPage = async (id: string, request: UpdateLegalPageRequest): Promise<LegalPageDto> => {
   return apiClient<LegalPageDto>(`/legal-pages/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -88,7 +88,7 @@ export async function updateLegalPage(id: string, request: UpdateLegalPageReques
 /**
  * Revert a tenant's customized legal page to the platform default
  */
-export async function revertLegalPageToDefault(id: string): Promise<LegalPageDto> {
+export const revertLegalPageToDefault = async (id: string): Promise<LegalPageDto> => {
   return apiClient<LegalPageDto>(`/legal-pages/${id}/revert`, {
     method: 'POST',
   })
@@ -102,6 +102,6 @@ export async function revertLegalPageToDefault(id: string): Promise<LegalPageDto
  * Fetch a legal page by slug for public display
  * Resolves tenant override → platform default
  */
-export async function getPublicLegalPage(slug: string): Promise<PublicLegalPageDto> {
+export const getPublicLegalPage = async (slug: string): Promise<PublicLegalPageDto> => {
   return apiClient<PublicLegalPageDto>(`/public/legal/${slug}`)
 }

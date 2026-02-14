@@ -15,7 +15,7 @@ interface LogoUploadFieldProps {
   placeholder?: string
 }
 
-export function LogoUploadField({
+export const LogoUploadField = ({
   value,
   onChange,
   onUpload,
@@ -24,7 +24,7 @@ export function LogoUploadField({
   acceptedFormats = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
   className,
   placeholder,
-}: LogoUploadFieldProps) {
+}: LogoUploadFieldProps) => {
   const { t } = useTranslation('common')
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)

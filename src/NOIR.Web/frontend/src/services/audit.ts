@@ -75,7 +75,7 @@ export interface ActivityDetails {
 /**
  * Search the activity timeline with filtering and pagination
  */
-export async function searchActivityTimeline(params: {
+export const searchActivityTimeline = async (params: {
   pageContext?: string
   operationType?: string
   userId?: string
@@ -87,7 +87,7 @@ export async function searchActivityTimeline(params: {
   onlyFailed?: boolean
   page?: number
   pageSize?: number
-}): Promise<PaginatedResponse<ActivityTimelineEntry>> {
+}): Promise<PaginatedResponse<ActivityTimelineEntry>> => {
   const searchParams = new URLSearchParams()
 
   if (params.pageContext) searchParams.set('pageContext', params.pageContext)
@@ -111,13 +111,13 @@ export async function searchActivityTimeline(params: {
 /**
  * Get detailed information about a specific activity entry
  */
-export async function getActivityDetails(id: string): Promise<ActivityDetails> {
+export const getActivityDetails = async (id: string): Promise<ActivityDetails> => {
   return apiClient<ActivityDetails>(`/audit/activity-timeline/${id}`)
 }
 
 /**
  * Get list of distinct page contexts for filtering
  */
-export async function getPageContexts(): Promise<string[]> {
+export const getPageContexts = async (): Promise<string[]> => {
   return apiClient<string[]>('/audit/page-contexts')
 }

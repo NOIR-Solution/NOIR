@@ -24,7 +24,7 @@ export interface BreadcrumbSchemaProps {
  * />
  * ```
  */
-export function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
+export const BreadcrumbSchema = ({ items }: BreadcrumbSchemaProps) => {
   const siteUrl = window.location.origin
 
   const jsonLd = {

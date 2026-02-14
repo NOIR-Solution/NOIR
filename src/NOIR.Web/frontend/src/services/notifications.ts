@@ -35,11 +35,11 @@ interface RawNotificationPreference {
 /**
  * Get paginated notifications for the current user
  */
-export async function getNotifications(
+export const getNotifications = async (
   page: number = 1,
   pageSize: number = 10,
   unreadOnly: boolean = false
-): Promise<PaginatedNotificationsResponse> {
+): Promise<PaginatedNotificationsResponse> => {
   const params = new URLSearchParams({
     page: page.toString(),
     pageSize: pageSize.toString(),
@@ -53,7 +53,7 @@ export async function getNotifications(
 /**
  * Get the count of unread notifications
  */
-export async function getUnreadCount(): Promise<number> {
+export const getUnreadCount = async (): Promise<number> => {
   const response = await apiClient<{ count: number }>('/notifications/unread-count')
   return response.count
 }
@@ -61,7 +61,7 @@ export async function getUnreadCount(): Promise<number> {
 /**
  * Mark a single notification as read
  */
-export async function markAsRead(notificationId: string): Promise<void> {
+export const markAsRead = async (notificationId: string): Promise<void> => {
   await apiClient(`/notifications/${notificationId}/read`, {
     method: 'POST',
   })
@@ -70,7 +70,7 @@ export async function markAsRead(notificationId: string): Promise<void> {
 /**
  * Mark all notifications as read for the current user
  */
-export async function markAllAsRead(): Promise<void> {
+export const markAllAsRead = async (): Promise<void> => {
   await apiClient('/notifications/read-all', {
     method: 'POST',
   })
@@ -79,7 +79,7 @@ export async function markAllAsRead(): Promise<void> {
 /**
  * Delete (soft delete) a notification
  */
-export async function deleteNotification(notificationId: string): Promise<void> {
+export const deleteNotification = async (notificationId: string): Promise<void> => {
   await apiClient(`/notifications/${notificationId}`, {
     method: 'DELETE',
   })
@@ -88,7 +88,7 @@ export async function deleteNotification(notificationId: string): Promise<void> 
 /**
  * Get notification preferences for the current user
  */
-export async function getPreferences(): Promise<NotificationPreference[]> {
+export const getPreferences = async (): Promise<NotificationPreference[]> => {
   const raw = await apiClient<RawNotificationPreference[]>('/notifications/preferences')
   // Map backend enum numbers to frontend string types
   return raw.map((pref) => ({
@@ -103,9 +103,9 @@ export async function getPreferences(): Promise<NotificationPreference[]> {
 /**
  * Update notification preferences
  */
-export async function updatePreferences(
+export const updatePreferences = async (
   request: UpdatePreferencesRequest
-): Promise<void> {
+): Promise<void> => {
   // Convert frontend string enums to backend numeric enums
   const backendRequest = {
     preferences: request.preferences.map((p) => ({

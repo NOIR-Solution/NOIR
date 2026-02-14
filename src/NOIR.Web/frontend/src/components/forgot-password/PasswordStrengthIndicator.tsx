@@ -15,10 +15,10 @@ interface PasswordStrengthIndicatorProps {
 /**
  * Password strength indicator with visual bar and requirement checklist
  */
-export function PasswordStrengthIndicator({
+export const PasswordStrengthIndicator = ({
   password,
   showRequirements = true,
-}: PasswordStrengthIndicatorProps) {
+}: PasswordStrengthIndicatorProps) => {
   const { t } = useTranslation('auth')
   const strength = getPasswordStrength(password)
 
@@ -90,7 +90,7 @@ interface RequirementItemProps {
   label: string
 }
 
-function RequirementItem({ met, label }: RequirementItemProps) {
+const RequirementItem = ({ met, label }: RequirementItemProps) => {
   return (
     <div className={cn(
       'flex items-center gap-1.5 transition-colors',

@@ -22,13 +22,13 @@ import type {
 /**
  * Fetch paginated list of users
  */
-export async function getUsers(params: {
+export const getUsers = async (params: {
   search?: string
   role?: string
   isLocked?: boolean
   page?: number
   pageSize?: number
-}): Promise<PaginatedResponse<UserListItem>> {
+}): Promise<PaginatedResponse<UserListItem>> => {
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('Search', params.search)
   if (params.role) queryParams.append('Role', params.role)
@@ -43,7 +43,7 @@ export async function getUsers(params: {
 /**
  * Create a new user (admin only)
  */
-export async function createUser(request: CreateUserRequest): Promise<User> {
+export const createUser = async (request: CreateUserRequest): Promise<User> => {
   return apiClient<User>('/users', {
     method: 'POST',
     body: JSON.stringify(request),
@@ -53,14 +53,14 @@ export async function createUser(request: CreateUserRequest): Promise<User> {
 /**
  * Fetch a single user by ID with full details
  */
-export async function getUserById(id: string): Promise<UserProfile> {
+export const getUserById = async (id: string): Promise<UserProfile> => {
   return apiClient<UserProfile>(`/users/${id}`)
 }
 
 /**
  * Update user details
  */
-export async function updateUser(request: UpdateUserRequest): Promise<User> {
+export const updateUser = async (request: UpdateUserRequest): Promise<User> => {
   return apiClient<User>(`/users/${request.userId}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -70,7 +70,7 @@ export async function updateUser(request: UpdateUserRequest): Promise<User> {
 /**
  * Delete a user (soft delete - removes from system)
  */
-export async function deleteUser(id: string): Promise<void> {
+export const deleteUser = async (id: string): Promise<void> => {
   return apiClient<void>(`/users/${id}`, {
     method: 'DELETE',
   })
@@ -79,7 +79,7 @@ export async function deleteUser(id: string): Promise<void> {
 /**
  * Lock a user account (prevents login)
  */
-export async function lockUser(id: string): Promise<void> {
+export const lockUser = async (id: string): Promise<void> => {
   return apiClient<void>(`/users/${id}/lock`, {
     method: 'POST',
   })
@@ -88,7 +88,7 @@ export async function lockUser(id: string): Promise<void> {
 /**
  * Unlock a user account (allows login)
  */
-export async function unlockUser(id: string): Promise<void> {
+export const unlockUser = async (id: string): Promise<void> => {
   return apiClient<void>(`/users/${id}/unlock`, {
     method: 'POST',
   })
@@ -101,14 +101,14 @@ export async function unlockUser(id: string): Promise<void> {
 /**
  * Get roles assigned to a user
  */
-export async function getUserRoles(userId: string): Promise<string[]> {
+export const getUserRoles = async (userId: string): Promise<string[]> => {
   return apiClient<string[]>(`/users/${userId}/roles`)
 }
 
 /**
  * Assign roles to a user (replaces existing roles)
  */
-export async function assignRolesToUser(request: AssignRolesToUserRequest): Promise<User> {
+export const assignRolesToUser = async (request: AssignRolesToUserRequest): Promise<User> => {
   return apiClient<User>(`/users/${request.userId}/roles`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -122,6 +122,6 @@ export async function assignRolesToUser(request: AssignRolesToUserRequest): Prom
 /**
  * Get effective permissions for a user (combined from all roles)
  */
-export async function getUserPermissions(userId: string): Promise<UserPermissions> {
+export const getUserPermissions = async (userId: string): Promise<UserPermissions> => {
   return apiClient<UserPermissions>(`/users/${userId}/permissions`)
 }

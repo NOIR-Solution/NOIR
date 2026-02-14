@@ -33,7 +33,7 @@ interface UserTableProps {
   canAssignRoles?: boolean
 }
 
-export function UserTable({
+export const UserTable = ({
   users,
   onEdit,
   onDelete,
@@ -42,7 +42,7 @@ export function UserTable({
   canEdit = true,
   canDelete = true,
   canAssignRoles = true,
-}: UserTableProps) {
+}: UserTableProps) => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
 

@@ -2,11 +2,11 @@
  * Calculate pagination display range (from-to of total).
  * Returns { from, to } for "Showing X-Y of Z items".
  */
-export function getPaginationRange(
+export const getPaginationRange = (
   currentPage: number,
   pageSize: number,
   totalItems: number
-): { from: number; to: number } {
+): { from: number; to: number } => {
   if (totalItems === 0) {
     return { from: 0, to: 0 }
   }

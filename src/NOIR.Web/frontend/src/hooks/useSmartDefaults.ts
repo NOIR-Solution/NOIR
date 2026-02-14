@@ -10,7 +10,7 @@ import { generateSKU } from '@/lib/utils/sku'
 /**
  * Generate a URL-friendly slug from a string
  */
-function generateSlug(text: string): string {
+const generateSlug = (text: string): string => {
   return text
     .toLowerCase()
     .trim()
@@ -22,10 +22,10 @@ function generateSlug(text: string): string {
 /**
  * Debounce utility for duplicate checking
  */
-function debounce<T extends (...args: Parameters<T>) => void>(
+const debounce = <T extends (...args: Parameters<T>) => void>(
   func: T,
   wait: number
-): T {
+): T => {
   let timeout: ReturnType<typeof setTimeout> | null = null
 
   return ((...args: Parameters<T>) => {
@@ -70,7 +70,7 @@ interface UseSmartDefaultsOptions<T extends FieldValues> {
  *   isEditing: Boolean(productId),
  * })
  */
-export function useSmartDefaults<T extends FieldValues>({
+export const useSmartDefaults = <T extends FieldValues>({
   form,
   sourceField,
   targetFields,
@@ -78,7 +78,7 @@ export function useSmartDefaults<T extends FieldValues>({
   isEditing = false,
   checkDuplicate,
   onDuplicateFound,
-}: UseSmartDefaultsOptions<T>) {
+}: UseSmartDefaultsOptions<T>) => {
   const initialMount = useRef(true)
   const userModified = useRef<Set<string>>(new Set())
 

@@ -77,7 +77,7 @@ export interface EmailPreviewResponse {
 /**
  * Get all email templates with optional filtering.
  */
-export async function getEmailTemplates(search?: string): Promise<EmailTemplateListDto[]> {
+export const getEmailTemplates = async (search?: string): Promise<EmailTemplateListDto[]> => {
   const params = new URLSearchParams()
   if (search) params.append('search', search)
 
@@ -90,17 +90,17 @@ export async function getEmailTemplates(search?: string): Promise<EmailTemplateL
 /**
  * Get a single email template by ID.
  */
-export async function getEmailTemplate(id: string): Promise<EmailTemplateDto> {
+export const getEmailTemplate = async (id: string): Promise<EmailTemplateDto> => {
   return apiClient<EmailTemplateDto>(`/email-templates/${id}`)
 }
 
 /**
  * Update an email template.
  */
-export async function updateEmailTemplate(
+export const updateEmailTemplate = async (
   id: string,
   request: UpdateEmailTemplateRequest
-): Promise<EmailTemplateDto> {
+): Promise<EmailTemplateDto> => {
   return apiClient<EmailTemplateDto>(`/email-templates/${id}`, {
     method: 'PUT',
     body: JSON.stringify(request),
@@ -110,10 +110,10 @@ export async function updateEmailTemplate(
 /**
  * Send a test email using a template.
  */
-export async function sendTestEmail(
+export const sendTestEmail = async (
   id: string,
   request: SendTestEmailRequest
-): Promise<EmailPreviewResponse> {
+): Promise<EmailPreviewResponse> => {
   return apiClient<EmailPreviewResponse>(`/email-templates/${id}/test`, {
     method: 'POST',
     body: JSON.stringify(request),
@@ -123,10 +123,10 @@ export async function sendTestEmail(
 /**
  * Preview an email template with sample data.
  */
-export async function previewEmailTemplate(
+export const previewEmailTemplate = async (
   id: string,
   request: PreviewEmailTemplateRequest
-): Promise<EmailPreviewResponse> {
+): Promise<EmailPreviewResponse> => {
   return apiClient<EmailPreviewResponse>(`/email-templates/${id}/preview`, {
     method: 'POST',
     body: JSON.stringify(request),
@@ -137,7 +137,7 @@ export async function previewEmailTemplate(
  * Revert a tenant's customized template to the platform default.
  * Deletes the tenant's custom version and returns the platform template.
  */
-export async function revertToPlatformDefault(id: string): Promise<EmailTemplateDto> {
+export const revertToPlatformDefault = async (id: string): Promise<EmailTemplateDto> => {
   return apiClient<EmailTemplateDto>(`/email-templates/${id}/revert`, {
     method: 'DELETE',
   })
@@ -146,10 +146,10 @@ export async function revertToPlatformDefault(id: string): Promise<EmailTemplate
 /**
  * Toggle email template active/inactive status.
  */
-export async function toggleEmailTemplateActive(
+export const toggleEmailTemplateActive = async (
   id: string,
   isActive: boolean
-): Promise<EmailTemplateDto> {
+): Promise<EmailTemplateDto> => {
   return apiClient<EmailTemplateDto>(`/email-templates/${id}/toggle-active`, {
     method: 'PATCH',
     body: JSON.stringify({ isActive }),
@@ -159,7 +159,7 @@ export async function toggleEmailTemplateActive(
 /**
  * Get default sample data for a template's variables.
  */
-export function getDefaultSampleData(variables: string[]): Record<string, string> {
+export const getDefaultSampleData = (variables: string[]): Record<string, string> => {
   const sampleValues: Record<string, string> = {
     UserName: 'John Doe',
     OtpCode: '123456',

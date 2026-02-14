@@ -50,7 +50,7 @@ export interface LogTableProps {
   fullscreenTitle?: string
 }
 
-export const LogTable = forwardRef<HTMLDivElement, LogTableProps>(function LogTable(
+export const LogTable = forwardRef<HTMLDivElement, LogTableProps>((
   {
     entries,
     expandedEntries,
@@ -70,7 +70,7 @@ export const LogTable = forwardRef<HTMLDivElement, LogTableProps>(function LogTa
     fullscreenTitle = 'Logs',
   },
   ref
-) {
+) => {
   const entryCount = entries.length
   const showFilteredInfo = searchTerm && totalEntries !== undefined && totalEntries !== entryCount
 
@@ -165,9 +165,10 @@ export const LogTable = forwardRef<HTMLDivElement, LogTableProps>(function LogTa
     </>
   )
 })
+LogTable.displayName = 'LogTable'
 
 // Internal component for log content rendering
-function LogTableContent({
+const LogTableContent = ({
   entries,
   expandedEntries,
   onToggleExpand,
@@ -183,7 +184,7 @@ function LogTableContent({
   isLoading: boolean
   emptyMessage: string
   emptySubMessage?: string
-}) {
+}) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -220,7 +221,7 @@ function LogTableContent({
 }
 
 // Fullscreen Log Viewer Dialog
-function FullscreenLogDialog({
+const FullscreenLogDialog = ({
   entries,
   title,
   open,
@@ -236,7 +237,7 @@ function FullscreenLogDialog({
   expandedEntries: Set<number>
   onToggleExpand: (id: number) => void
   onViewDetail: (entry: LogEntryDto) => void
-}) {
+}) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] w-full max-h-[95vh] h-full flex flex-col p-0">

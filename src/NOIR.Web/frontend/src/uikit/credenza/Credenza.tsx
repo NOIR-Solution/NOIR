@@ -30,7 +30,7 @@ interface CredenzaContextValue {
 
 const CredenzaContext = React.createContext<CredenzaContextValue | undefined>(undefined)
 
-function useCredenzaContext() {
+const useCredenzaContext = () => {
   const context = React.useContext(CredenzaContext)
   if (!context) {
     throw new Error('Credenza components must be used within a Credenza')

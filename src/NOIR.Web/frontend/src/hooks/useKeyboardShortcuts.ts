@@ -18,7 +18,7 @@ interface Shortcut {
 /**
  * Check if the event target is an input element
  */
-function isInputElement(target: EventTarget | null): boolean {
+const isInputElement = (target: EventTarget | null): boolean => {
   if (!target || !(target instanceof HTMLElement)) return false
 
   const tagName = target.tagName.toLowerCase()
@@ -46,7 +46,7 @@ function isInputElement(target: EventTarget | null): boolean {
  *   { key: 'n', metaKey: true, shiftKey: true, callback: createNew },
  * ])
  */
-export function useKeyboardShortcuts(shortcuts: Shortcut[]) {
+export const useKeyboardShortcuts = (shortcuts: Shortcut[]) => {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       // Ignore when typing in inputs (unless it's Escape)
@@ -91,7 +91,7 @@ export function useKeyboardShortcuts(shortcuts: Shortcut[]) {
  * @example
  * formatShortcut({ key: 'k', metaKey: true }) // "⌘K" on Mac, "Ctrl+K" on Windows
  */
-export function formatShortcut(shortcut: Pick<Shortcut, 'key' | 'metaKey' | 'shiftKey' | 'altKey'>): string {
+export const formatShortcut = (shortcut: Pick<Shortcut, 'key' | 'metaKey' | 'shiftKey' | 'altKey'>): string => {
   const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform)
 
   const parts: string[] = []

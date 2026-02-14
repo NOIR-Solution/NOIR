@@ -26,9 +26,9 @@ export interface GetTenantsParams {
 /**
  * Get paginated list of tenants
  */
-export async function getTenants(
+export const getTenants = async (
   params: GetTenantsParams = {}
-): Promise<PaginatedResponse<TenantListItem>> {
+): Promise<PaginatedResponse<TenantListItem>> => {
   const searchParams = new URLSearchParams()
 
   if (params.pageNumber !== undefined) {
@@ -53,14 +53,14 @@ export async function getTenants(
 /**
  * Get tenant by ID
  */
-export async function getTenant(id: string): Promise<Tenant> {
+export const getTenant = async (id: string): Promise<Tenant> => {
   return apiClient<Tenant>(`/tenants/${id}`)
 }
 
 /**
  * Create a new tenant (basic)
  */
-export async function createTenant(data: CreateTenantRequest): Promise<Tenant> {
+export const createTenant = async (data: CreateTenantRequest): Promise<Tenant> => {
   return apiClient<Tenant>('/tenants', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -71,7 +71,7 @@ export async function createTenant(data: CreateTenantRequest): Promise<Tenant> {
  * Provision a new tenant with optional admin user
  * This is the preferred way to create tenants as it handles all setup in one operation.
  */
-export async function provisionTenant(data: ProvisionTenantRequest): Promise<ProvisionTenantResult> {
+export const provisionTenant = async (data: ProvisionTenantRequest): Promise<ProvisionTenantResult> => {
   return apiClient<ProvisionTenantResult>('/tenants/provision', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -81,10 +81,10 @@ export async function provisionTenant(data: ProvisionTenantRequest): Promise<Pro
 /**
  * Update an existing tenant
  */
-export async function updateTenant(
+export const updateTenant = async (
   id: string,
   data: UpdateTenantRequest
-): Promise<Tenant> {
+): Promise<Tenant> => {
   return apiClient<Tenant>(`/tenants/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -94,7 +94,7 @@ export async function updateTenant(
 /**
  * Delete a tenant (soft delete)
  */
-export async function deleteTenant(id: string): Promise<void> {
+export const deleteTenant = async (id: string): Promise<void> => {
   await apiClient<void>(`/tenants/${id}`, {
     method: 'DELETE',
   })
@@ -113,10 +113,10 @@ export interface ResetTenantAdminPasswordResult {
 /**
  * Reset the password for a tenant's admin user
  */
-export async function resetTenantAdminPassword(
+export const resetTenantAdminPassword = async (
   tenantId: string,
   newPassword: string
-): Promise<ResetTenantAdminPasswordResult> {
+): Promise<ResetTenantAdminPasswordResult> => {
   return apiClient<ResetTenantAdminPasswordResult>(`/tenants/${tenantId}/reset-admin-password`, {
     method: 'POST',
     body: JSON.stringify({ newPassword }),

@@ -66,7 +66,7 @@ interface ConfigureGatewayDialogProps {
   onTestConnection: (id: string) => Promise<TestConnectionResult>
 }
 
-export function ConfigureGatewayDialog({
+export const ConfigureGatewayDialog = ({
   open,
   onOpenChange,
   gateway,
@@ -74,7 +74,7 @@ export function ConfigureGatewayDialog({
   onConfigure,
   onUpdate,
   onTestConnection,
-}: ConfigureGatewayDialogProps) {
+}: ConfigureGatewayDialogProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const [testResult, setTestResult] = useState<TestConnectionResult | null>(null)

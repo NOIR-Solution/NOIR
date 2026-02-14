@@ -30,7 +30,7 @@ interface DateRangePickerProps {
   numberOfMonths?: number
 }
 
-export function DateRangePicker({
+export const DateRangePicker = ({
   value,
   onChange,
   placeholder = 'Pick a date range',
@@ -39,7 +39,7 @@ export function DateRangePicker({
   showClear = true,
   disabled = false,
   numberOfMonths = 2,
-}: DateRangePickerProps) {
+}: DateRangePickerProps) => {
   const [open, setOpen] = React.useState(false)
 
   const handleSelect = (range: DateRange | undefined) => {

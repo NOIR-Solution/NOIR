@@ -12,10 +12,10 @@ interface AttributeBadgesProps {
  * - Color attributes: Circular color swatches with overflow indicator
  * - Text/other attributes: Pills with value and optional unit
  */
-export function AttributeBadges({
+export const AttributeBadges = ({
   displayAttributes,
   maxColors = 5,
-}: AttributeBadgesProps) {
+}: AttributeBadgesProps) => {
   if (!displayAttributes || displayAttributes.length === 0) {
     return null
   }

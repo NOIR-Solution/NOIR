@@ -40,13 +40,13 @@ export interface GeneratedVariant {
   stockQuantity: number
 }
 
-export function VariantGenerator({
+export const VariantGenerator = ({
   options,
   existingVariants,
   basePrice,
   onGenerate,
   disabled = false,
-}: VariantGeneratorProps) {
+}: VariantGeneratorProps) => {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [defaultPrice, setDefaultPrice] = useState(basePrice.toString())

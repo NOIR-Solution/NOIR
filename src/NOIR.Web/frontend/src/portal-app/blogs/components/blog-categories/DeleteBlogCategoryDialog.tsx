@@ -20,7 +20,7 @@ interface DeleteBlogCategoryDialogProps {
   onConfirm: (id: string) => Promise<{ success: boolean; error?: string }>
 }
 
-export function DeleteBlogCategoryDialog({ category, open, onOpenChange, onConfirm }: DeleteBlogCategoryDialogProps) {
+export const DeleteBlogCategoryDialog = ({ category, open, onOpenChange, onConfirm }: DeleteBlogCategoryDialogProps) => {
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {

@@ -62,14 +62,14 @@ export interface UseVariantAutoSaveReturn {
   getFieldError: (field: keyof VariantRowData) => string | undefined
 }
 
-export function useVariantAutoSave({
+export const useVariantAutoSave = ({
   productId,
   variant,
   debounceMs = 1500,
   onSaveSuccess,
   onSaveError,
   savedDisplayMs = 2000,
-}: UseVariantAutoSaveOptions): UseVariantAutoSaveReturn {
+}: UseVariantAutoSaveOptions): UseVariantAutoSaveReturn => {
   // Current form values
   const [values, setValues] = useState<VariantRowData>(() => ({
     name: variant.name,

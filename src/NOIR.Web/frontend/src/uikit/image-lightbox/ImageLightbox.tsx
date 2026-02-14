@@ -30,7 +30,7 @@ interface ImageLightboxProps {
  * A clickable thumbnail that opens a lightbox to view the full image.
  * Supports zoom functionality for detailed viewing.
  */
-export function ImageLightbox({
+export const ImageLightbox = ({
   src,
   thumbnailSrc,
   alt = '',
@@ -40,7 +40,7 @@ export function ImageLightbox({
   imageClassName,
   fallback,
   showPlaceholder = true,
-}: ImageLightboxProps) {
+}: ImageLightboxProps) => {
   // Use thumbnailSrc for display, src for lightbox full view
   const displaySrc = thumbnailSrc || src
   const [open, setOpen] = useState(false)

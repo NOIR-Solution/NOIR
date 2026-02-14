@@ -48,7 +48,7 @@ const statusColors: Record<PostStatus, string> = {
   Archived: 'bg-yellow-100 text-yellow-800',
 }
 
-export default function BlogPostsPage() {
+const BlogPostsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Posts')
   const navigate = useNavigate()
@@ -285,3 +285,5 @@ export default function BlogPostsPage() {
     </div>
   )
 }
+
+export default BlogPostsPage

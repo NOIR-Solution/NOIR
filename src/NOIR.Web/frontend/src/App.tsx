@@ -59,7 +59,7 @@ import VerifyOtpPage from '@/layouts/auth/verify-otp/VerifyOtpPage'
 import ResetPasswordPage from '@/layouts/auth/reset-password/ResetPasswordPage'
 import AuthSuccessPage from '@/layouts/auth/auth-success/AuthSuccessPage'
 
-function App() {
+const App = () => {
   return (
     <ThemeProvider defaultTheme="system">
       <AccessibilityProvider>

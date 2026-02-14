@@ -51,7 +51,7 @@ interface CreateRoleDialogProps {
   onSuccess: () => void
 }
 
-export function CreateRoleDialog({ onSuccess }: CreateRoleDialogProps) {
+export const CreateRoleDialog = ({ onSuccess }: CreateRoleDialogProps) => {
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)

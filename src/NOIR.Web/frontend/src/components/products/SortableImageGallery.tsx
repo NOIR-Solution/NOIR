@@ -46,7 +46,7 @@ interface SortableImageCardProps {
   onSaveAltText: (imageId: string, altText: string) => void
 }
 
-function SortableImageCard({
+const SortableImageCard = ({
   image,
   productName,
   isViewMode,
@@ -57,7 +57,7 @@ function SortableImageCard({
   onSetPrimary,
   onDelete,
   onSaveAltText,
-}: SortableImageCardProps) {
+}: SortableImageCardProps) => {
   const { t } = useTranslation('common')
   const {
     attributes,
@@ -190,7 +190,7 @@ function SortableImageCard({
   )
 }
 
-export function SortableImageGallery({
+export const SortableImageGallery = ({
   images,
   productName,
   isViewMode = false,
@@ -198,7 +198,7 @@ export function SortableImageGallery({
   onSetPrimary,
   onDelete,
   onUpdateAltText,
-}: SortableImageGalleryProps) {
+}: SortableImageGalleryProps) => {
   const { t } = useTranslation('common')
   const [editingImageId, setEditingImageId] = useState<string | null>(null)
   const [editingAltText, setEditingAltText] = useState('')

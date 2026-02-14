@@ -16,7 +16,7 @@ interface OtpInputProps {
  * 6-digit OTP input component with individual boxes
  * Features: auto-focus next box, backspace navigation, paste support, auto-submit
  */
-export function OtpInput({
+export const OtpInput = ({
   length = 6,
   value,
   onChange,
@@ -24,7 +24,7 @@ export function OtpInput({
   disabled = false,
   error = false,
   autoFocus = true,
-}: OtpInputProps) {
+}: OtpInputProps) => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
   // Track the last value for which onComplete was called to prevent duplicate calls

@@ -16,7 +16,7 @@ interface NetworkStatus {
  * Note: This only detects if the browser has network access,
  * not if the API server is reachable.
  */
-export function useNetworkStatus(): NetworkStatus {
+export const useNetworkStatus = (): NetworkStatus => {
   const [status, setStatus] = useState<NetworkStatus>(() => ({
     isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
     wasOffline: false,

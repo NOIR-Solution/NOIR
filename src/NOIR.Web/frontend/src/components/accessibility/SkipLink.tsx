@@ -13,7 +13,7 @@ interface SkipLinkProps {
  * Visually hidden by default, becomes visible on focus.
  * Should be placed at the very top of the page.
  */
-export function SkipLink({ targetId, children }: SkipLinkProps) {
+export const SkipLink = ({ targetId, children }: SkipLinkProps) => {
   const { t } = useTranslation('common')
 
   return (

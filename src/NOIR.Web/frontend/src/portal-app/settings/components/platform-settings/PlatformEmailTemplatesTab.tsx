@@ -12,7 +12,7 @@ export interface PlatformEmailTemplatesTabProps {
   onEdit: (id: string) => void
 }
 
-export function PlatformEmailTemplatesTab({ onEdit }: PlatformEmailTemplatesTabProps) {
+export const PlatformEmailTemplatesTab = ({ onEdit }: PlatformEmailTemplatesTabProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(true)
   const [templates, setTemplates] = useState<EmailTemplateListDto[]>([])

@@ -34,7 +34,7 @@ interface PermissionsDialogProps {
   onSuccess: () => void
 }
 
-export function PermissionsDialog({ role, open, onOpenChange, onSuccess }: PermissionsDialogProps) {
+export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: PermissionsDialogProps) => {
   const { t } = useTranslation('common')
   const { permissions, permissionsByCategory, loading: permissionsLoading } = usePermissions()
   const { templates, loading: templatesLoading } = usePermissionTemplates()

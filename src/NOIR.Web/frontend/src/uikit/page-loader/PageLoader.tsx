@@ -12,7 +12,7 @@ interface PageLoaderProps {
  * PageLoader - Full-page or container loading indicator
  * Use for page transitions and initial data loading
  */
-export function PageLoader({ className, text, fullScreen = false }: PageLoaderProps) {
+export const PageLoader = ({ className, text, fullScreen = false }: PageLoaderProps) => {
   return (
     <div
       className={cn(
@@ -32,7 +32,7 @@ export function PageLoader({ className, text, fullScreen = false }: PageLoaderPr
  * Use as Suspense fallback for lazy-loaded pages - better UX than spinner
  * Shows layout structure with skeleton placeholders
  */
-export function PageSkeleton() {
+export const PageSkeleton = () => {
   return (
     <div className="space-y-6">
       {/* Page header skeleton */}

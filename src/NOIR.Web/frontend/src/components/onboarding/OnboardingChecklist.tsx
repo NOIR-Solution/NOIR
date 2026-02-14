@@ -19,13 +19,13 @@ interface ChecklistItemProps {
   onComplete: () => void
 }
 
-function ChecklistItem({
+const ChecklistItem = ({
   label,
   description,
   href,
   completed,
   onComplete,
-}: ChecklistItemProps) {
+}: ChecklistItemProps) => {
   return (
     <motion.div
       layout
@@ -89,11 +89,11 @@ interface OnboardingChecklistProps {
   onDismiss?: () => void
 }
 
-export function OnboardingChecklist({
+export const OnboardingChecklist = ({
   className,
   dismissible = true,
   onDismiss,
-}: OnboardingChecklistProps) {
+}: OnboardingChecklistProps) => {
   const { progress, completeItem, isItemCompleted, shouldShowChecklist } =
     useOnboarding()
 

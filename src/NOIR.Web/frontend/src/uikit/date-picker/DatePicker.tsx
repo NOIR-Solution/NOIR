@@ -27,7 +27,7 @@ interface DatePickerProps {
   disabled?: boolean
 }
 
-export function DatePicker({
+export const DatePicker = ({
   value,
   onChange,
   placeholder = 'Select date',
@@ -35,7 +35,7 @@ export function DatePicker({
   minDate,
   maxDate,
   disabled = false,
-}: DatePickerProps) {
+}: DatePickerProps) => {
   const [open, setOpen] = React.useState(false)
 
   const handleSelect = (date: Date | undefined) => {

@@ -21,12 +21,12 @@ interface DeleteProductDialogProps {
   onConfirm: (id: string) => Promise<{ success: boolean; error?: string }>
 }
 
-export function DeleteProductDialog({
+export const DeleteProductDialog = ({
   product,
   open,
   onOpenChange,
   onConfirm,
-}: DeleteProductDialogProps) {
+}: DeleteProductDialogProps) => {
   const { t } = useTranslation('common')
   const [isDeleting, setIsDeleting] = useState(false)
 

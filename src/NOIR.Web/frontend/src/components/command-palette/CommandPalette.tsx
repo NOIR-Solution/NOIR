@@ -74,7 +74,7 @@ interface QuickAction {
  * - Quick actions (theme toggle, create new)
  * - Keyboard navigation
  */
-export function CommandPalette() {
+export const CommandPalette = () => {
   const { t } = useTranslation('common')
   const navigate = useViewTransitionNavigate()
   const location = useLocation()

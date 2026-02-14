@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from "framer-motion"
  * Validates the return URL to prevent open redirect attacks (CWE-601).
  * Only allows relative URLs that start with a single forward slash.
  */
-function validateReturnUrl(url: string): string {
+const validateReturnUrl = (url: string): string => {
   // Only allow relative URLs that start with / and don't start with //
   // This prevents open redirect to external domains
   if (url && url.startsWith('/') && !url.startsWith('//')) {
@@ -31,7 +31,7 @@ function validateReturnUrl(url: string): string {
  * Step 2: If multiple tenants → Show organization selection step
  * Step 3: Complete login and redirect
  */
-export default function LoginPage() {
+const LoginPage = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const returnUrl = searchParams.get('returnUrl') || '/portal'
@@ -381,3 +381,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
+export default LoginPage

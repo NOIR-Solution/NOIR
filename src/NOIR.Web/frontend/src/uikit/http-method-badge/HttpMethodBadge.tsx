@@ -14,7 +14,7 @@ export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'
  * - DELETE: Red (destructive action)
  * - OPTIONS/HEAD: Gray (metadata operations)
  */
-export function getHttpMethodStyles(method: HttpMethod): string {
+export const getHttpMethodStyles = (method: HttpMethod): string => {
   switch (method.toUpperCase()) {
     case 'GET':
       return 'bg-blue-500 text-white border-transparent hover:bg-blue-600'
@@ -39,7 +39,7 @@ interface HttpMethodBadgeProps {
   className?: string
 }
 
-export function HttpMethodBadge({ method, className }: HttpMethodBadgeProps) {
+export const HttpMethodBadge = ({ method, className }: HttpMethodBadgeProps) => {
   return (
     <Badge className={cn('font-mono', getHttpMethodStyles(method), className)}>
       {method.toUpperCase()}

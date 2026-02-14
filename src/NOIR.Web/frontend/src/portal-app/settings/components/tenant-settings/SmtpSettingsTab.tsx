@@ -73,7 +73,7 @@ export interface SmtpSettingsTabProps {
   canEdit: boolean
 }
 
-export function SmtpSettingsTab({ canEdit }: SmtpSettingsTabProps) {
+export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
   const { t } = useTranslation('common')
 
   const [loading, setLoading] = useState(true)

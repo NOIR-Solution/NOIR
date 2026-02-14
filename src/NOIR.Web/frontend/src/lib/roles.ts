@@ -18,7 +18,7 @@ export type RoleName = (typeof Roles)[keyof typeof Roles]
  * Check if a user has a specific role.
  * Handles null/undefined safely.
  */
-export function hasRole(userRoles: string[] | undefined | null, role: RoleName): boolean {
+export const hasRole = (userRoles: string[] | undefined | null, role: RoleName): boolean => {
   return userRoles?.includes(role) ?? false
 }
 
@@ -27,6 +27,6 @@ export function hasRole(userRoles: string[] | undefined | null, role: RoleName):
  * Platform Admins have TenantId = null and full system access.
  * Platform Admins do not receive notifications (notifications are tenant-scoped).
  */
-export function isPlatformAdmin(userRoles: string[] | undefined | null): boolean {
+export const isPlatformAdmin = (userRoles: string[] | undefined | null): boolean => {
   return hasRole(userRoles, Roles.PlatformAdmin)
 }

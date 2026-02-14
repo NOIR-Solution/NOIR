@@ -27,7 +27,7 @@ interface ResponsiveDataViewProps<T> {
  * - Mobile (<768px): Shows cards
  * - Desktop (>=768px): Shows table
  */
-export function ResponsiveDataView<T>({
+export const ResponsiveDataView = <T,>({
   data,
   renderTable,
   renderCard,
@@ -36,7 +36,7 @@ export function ResponsiveDataView<T>({
   className,
   forceView,
   cardGap = 'md',
-}: ResponsiveDataViewProps<T>) {
+}: ResponsiveDataViewProps<T>) => {
   const isMobile = useIsMobile()
   const showCards = forceView === 'cards' || (forceView !== 'table' && isMobile)
 
@@ -92,7 +92,7 @@ interface MobileCardProps {
   onClick?: () => void
 }
 
-export function MobileCard({ children, className, onClick }: MobileCardProps) {
+export const MobileCard = ({ children, className, onClick }: MobileCardProps) => {
   return (
     <Card
       className={cn(
@@ -117,12 +117,12 @@ interface MobileCardHeaderProps {
   avatar?: React.ReactNode
 }
 
-export function MobileCardHeader({
+export const MobileCardHeader = ({
   title,
   subtitle,
   badge,
   avatar,
-}: MobileCardHeaderProps) {
+}: MobileCardHeaderProps) => {
   return (
     <div className="flex items-start gap-3">
       {avatar && <div className="flex-shrink-0">{avatar}</div>}
@@ -149,7 +149,7 @@ interface MobileCardActionsProps {
   className?: string
 }
 
-export function MobileCardActions({ children, className }: MobileCardActionsProps) {
+export const MobileCardActions = ({ children, className }: MobileCardActionsProps) => {
   return (
     <div className={cn('flex items-center gap-2 mt-3 pt-3 border-t', className)}>
       {children}
@@ -166,7 +166,7 @@ interface MobileCardFieldProps {
   className?: string
 }
 
-export function MobileCardField({ label, value, className }: MobileCardFieldProps) {
+export const MobileCardField = ({ label, value, className }: MobileCardFieldProps) => {
   return (
     <div className={cn('flex justify-between items-center text-sm', className)}>
       <span className="text-muted-foreground">{label}</span>

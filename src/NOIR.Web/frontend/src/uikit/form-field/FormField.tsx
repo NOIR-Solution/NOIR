@@ -101,7 +101,7 @@ export interface FormFieldProps<TValues extends FieldValues> {
   }) => React.ReactNode
 }
 
-export function FormField<TValues extends FieldValues>({
+export const FormField = <TValues extends FieldValues>({
   form,
   name,
   label,
@@ -115,7 +115,7 @@ export function FormField<TValues extends FieldValues>({
   autoFocus,
   autoComplete,
   render,
-}: FormFieldProps<TValues>) {
+}: FormFieldProps<TValues>) => {
   const error = form.formState.errors[name]
   const errorMessage = error?.message as string | undefined
   const id = `field-${String(name)}`
@@ -178,7 +178,7 @@ export function FormField<TValues extends FieldValues>({
 /**
  * FormTextarea - A textarea variant of FormField
  */
-export function FormTextarea<TValues extends FieldValues>({
+export const FormTextarea = <TValues extends FieldValues>({
   form,
   name,
   label,
@@ -188,7 +188,7 @@ export function FormTextarea<TValues extends FieldValues>({
   disabled,
   className,
   rows = 4,
-}: Omit<FormFieldProps<TValues>, "type" | "render"> & { rows?: number }) {
+}: Omit<FormFieldProps<TValues>, "type" | "render"> & { rows?: number }) => {
   return (
     <FormField
       form={form}
@@ -224,7 +224,7 @@ export function FormTextarea<TValues extends FieldValues>({
 /**
  * FormError - Display server-side or global form errors
  */
-export function FormError({ message }: { message?: string | null }) {
+export const FormError = ({ message }: { message?: string | null }) => {
   if (!message) return null
 
   return (

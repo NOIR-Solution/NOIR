@@ -23,7 +23,7 @@ interface TimePickerProps {
   disabled?: boolean
 }
 
-function generateTimeOptions(interval: number = 30): string[] {
+const generateTimeOptions = (interval: number = 30): string[] => {
   const times: string[] = []
   for (let hour = 0; hour < 24; hour++) {
     for (let minute = 0; minute < 60; minute += interval) {
@@ -35,21 +35,21 @@ function generateTimeOptions(interval: number = 30): string[] {
   return times
 }
 
-function formatTime(time: string): string {
+const formatTime = (time: string): string => {
   const [hours, minutes] = time.split(':').map(Number)
   const period = hours >= 12 ? 'PM' : 'AM'
   const displayHours = hours % 12 || 12
   return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
 }
 
-export function TimePicker({
+export const TimePicker = ({
   value,
   onChange,
   placeholder = 'Select time',
   className,
   interval = 30,
   disabled = false,
-}: TimePickerProps) {
+}: TimePickerProps) => {
   const [open, setOpen] = React.useState(false)
   const timeOptions = React.useMemo(() => generateTimeOptions(interval), [interval])
   const selectedRef = React.useRef<HTMLButtonElement>(null)

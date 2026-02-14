@@ -17,13 +17,13 @@ export interface StatsTabProps {
 }
 
 // Stats Card Component (Buffer Overview)
-function StatsCard({
+const StatsCard = ({
   stats,
   onRefresh,
 }: {
   stats: LogBufferStatsDto | null
   onRefresh: () => void
-}) {
+}) => {
   if (!stats) {
     return (
       <div className="space-y-3">
@@ -94,7 +94,7 @@ function StatsCard({
   )
 }
 
-export function StatsTab({ stats, onRefresh }: StatsTabProps) {
+export const StatsTab = ({ stats, onRefresh }: StatsTabProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <Card className="lg:col-span-2 shadow-sm hover:shadow-lg transition-all duration-300">

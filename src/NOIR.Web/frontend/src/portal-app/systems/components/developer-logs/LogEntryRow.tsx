@@ -32,12 +32,12 @@ export interface LogEntryRowProps {
   onViewDetail: () => void
 }
 
-export function LogEntryRow({
+export const LogEntryRow = ({
   entry,
   isExpanded,
   onToggleExpand,
   onViewDetail,
-}: LogEntryRowProps) {
+}: LogEntryRowProps) => {
   const config = getLevelConfig(entry.level)
   const [copied, setCopied] = useState(false)
   const hasException = !!entry.exception

@@ -18,11 +18,11 @@ interface LowStockAlertProps {
   className?: string
 }
 
-export function LowStockAlert({
+export const LowStockAlert = ({
   lowStockCount,
   onViewLowStock,
   className,
-}: LowStockAlertProps) {
+}: LowStockAlertProps) => {
   const { t } = useTranslation('common')
   const [isDismissed, setIsDismissed] = useState(false)
   const hasSeenCountRef = useRef(0)

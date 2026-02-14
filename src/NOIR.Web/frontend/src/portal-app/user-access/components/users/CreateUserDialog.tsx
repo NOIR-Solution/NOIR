@@ -76,7 +76,7 @@ interface FieldErrors {
   displayName?: string
 }
 
-export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDialogProps) {
+export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDialogProps) => {
   const { t } = useTranslation('common')
   const { roles: availableRoles, loading: loadingRoles } = useAvailableRoles()
   const [loading, setLoading] = useState(false)

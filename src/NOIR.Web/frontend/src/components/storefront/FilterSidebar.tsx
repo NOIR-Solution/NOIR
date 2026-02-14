@@ -95,14 +95,14 @@ const PLACEHOLDER_FILTERS: AvailableFilters = {
  * Main filter sidebar component for storefront
  * Contains collapsible sections for different filter types
  */
-export function FilterSidebar({
+export const FilterSidebar = ({
   onFilterChange,
   appliedFilters,
   availableFilters,
   isLoading = false,
   currency = '$',
   className,
-}: FilterSidebarProps) {
+}: FilterSidebarProps) => {
   // Use placeholder data if no available filters provided
   const filters = availableFilters || PLACEHOLDER_FILTERS
 

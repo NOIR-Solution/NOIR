@@ -36,7 +36,7 @@ export interface BlogPostMetaProps {
  * />
  * ```
  */
-export function BlogPostMeta({
+export const BlogPostMeta = ({
   title,
   slug,
   excerpt,
@@ -53,7 +53,7 @@ export function BlogPostMeta({
   canonicalUrl,
   siteUrl = window.location.origin,
   siteName = 'NOIR'
-}: BlogPostMetaProps) {
+}: BlogPostMetaProps) => {
   // Use effective meta values (custom or auto-generated)
   const pageTitle = metaTitle || title
   const fullTitle = generateMetaTitle(pageTitle, siteName)

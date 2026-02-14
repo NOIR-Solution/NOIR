@@ -12,7 +12,7 @@ import App from './App.tsx'
  * Shows during initial app bundle load before React hydrates
  * Uses CSS-only skeleton to avoid importing components before app loads
  */
-function AppLoadingSkeleton() {
+const AppLoadingSkeleton = () => {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar skeleton */}

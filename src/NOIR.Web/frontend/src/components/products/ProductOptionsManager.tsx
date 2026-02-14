@@ -64,7 +64,7 @@ interface ProductOptionsManagerProps {
   disabled?: boolean
 }
 
-export function ProductOptionsManager({
+export const ProductOptionsManager = ({
   options,
   onAddOption,
   onDeleteOption,
@@ -72,7 +72,7 @@ export function ProductOptionsManager({
   onUpdateValue,
   onDeleteValue,
   disabled = false,
-}: ProductOptionsManagerProps) {
+}: ProductOptionsManagerProps) => {
   const { t } = useTranslation()
   const [expandedOptions, setExpandedOptions] = useState<Set<string>>(new Set())
   const [newOptionName, setNewOptionName] = useState('')

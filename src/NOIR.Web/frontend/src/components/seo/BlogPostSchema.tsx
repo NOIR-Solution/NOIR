@@ -31,7 +31,7 @@ export interface BlogPostSchemaProps {
  * />
  * ```
  */
-export function BlogPostSchema({
+export const BlogPostSchema = ({
   title,
   slug,
   excerpt,
@@ -44,7 +44,7 @@ export function BlogPostSchema({
   featuredImageHeight,
   siteUrl = window.location.origin,
   siteName = 'NOIR'
-}: BlogPostSchemaProps) {
+}: BlogPostSchemaProps) => {
   const articleUrl = `${siteUrl}/blog/${slug}`
 
   const jsonLd: Record<string, unknown> = {
