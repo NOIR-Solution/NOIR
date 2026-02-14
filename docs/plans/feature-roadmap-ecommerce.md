@@ -1459,7 +1459,7 @@ public class VnPaySignatureHelperTests
 
 **Payment Method Selection:**
 ```tsx
-// src/NOIR.Web/frontend/src/pages/Checkout/PaymentMethodSelector.tsx
+// src/NOIR.Web/frontend/src/portal-app/checkout/components/PaymentMethodSelector.tsx
 // Built with 21st.dev: glassmorphism cards, smooth animations, mobile-first
 interface PaymentMethodOption {
   provider: string;

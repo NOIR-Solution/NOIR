@@ -285,8 +285,23 @@ src/NOIR.Web/             # 🌐 Endpoints, Middleware, Program.cs
     └── frontend/         # ⚛️ React SPA (pnpm)
         ├── .storybook/   # 📖 Storybook config
         ├── src/
-        │   ├── components/ui/  # shadcn/ui primitives
-        │   └── uikit/         # 📚 Component stories (Storybook)
+        │   ├── portal-app/    # Domain-driven feature modules
+        │   │   ├── blogs/         # Blog CMS
+        │   │   ├── brands/        # Brand management
+        │   │   ├── dashboard/     # Dashboard
+        │   │   ├── notifications/ # Notifications
+        │   │   ├── products/      # Product catalog
+        │   │   ├── settings/      # Personal, Tenant, Platform settings
+        │   │   ├── systems/       # Activity timeline, Developer logs
+        │   │   ├── user-access/   # Users, Roles, Tenants
+        │   │   └── welcome/       # Landing, Terms, Privacy
+        │   ├── layouts/           # Layout components
+        │   │   └── auth/          # Auth pages (login, forgot-password)
+        │   ├── uikit/             # UI components + stories (@uikit barrel)
+        │   ├── components/        # Shared app components
+        │   ├── contexts/          # React contexts
+        │   ├── hooks/             # Custom hooks
+        │   └── services/          # API services
         └── pnpm-lock.yaml
 ```
 
@@ -530,7 +545,7 @@ For dropdown menus that allow multi-selection (checkboxes), add `onSelect={(e) =
 // CORRECT: Use react-hook-form + Zod + FormField pattern (like CreateRoleDialog)
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@uikit'
 
 const form = useForm<FormData>({
   resolver: zodResolver(schema),

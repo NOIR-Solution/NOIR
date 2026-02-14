@@ -440,16 +440,28 @@ NOIR.Web/
     │   ├── main.ts                      # React + Vite + Tailwind CSS 4
     │   └── preview.ts                   # Global styles
     ├── src/
-    │   ├── components/                  # Reusable components
-    │   │   └── ui/                      # shadcn/ui primitives (57 components)
-    │   ├── uikit/                       # Storybook stories (57 components)
-    │   │   ├── button/Button.stories.tsx
-    │   │   ├── card/Card.stories.tsx
-    │   │   └── ...
-    │   ├── contexts/                    # React contexts (Auth, Theme, Notification, Branding, Regional)
-    │   ├── hooks/                       # Custom React hooks (27)
+    │   ├── portal-app/                  # Domain-driven feature modules
+    │   │   ├── blogs/                   # Blog CMS (features, components, states)
+    │   │   ├── brands/                  # Brand management (features)
+    │   │   ├── dashboard/               # Dashboard (features)
+    │   │   ├── notifications/           # Notifications (features, components)
+    │   │   ├── products/                # Product catalog (features, components, states)
+    │   │   ├── settings/                # All settings
+    │   │   │   ├── features/            # personal-settings, tenant-settings, platform-settings,
+    │   │   │   │                        # email-template-edit, legal-page-edit
+    │   │   │   ├── components/          # tenant-settings/, platform-settings/,
+    │   │   │   │                        # payment-gateways/, personal-settings/
+    │   │   │   └── states/              # usePaymentGateways.ts
+    │   │   ├── systems/                 # Activity timeline, Developer logs
+    │   │   ├── user-access/             # Users, Roles, Tenants (features, components, states)
+    │   │   └── welcome/                 # Landing, Terms, Privacy
     │   ├── layouts/                     # Layout components
-    │   ├── pages/                       # Route pages (95+ components)
+    │   │   ├── auth/                    # Auth pages (login, forgot-password, etc.)
+    │   │   └── PortalLayout.tsx
+    │   ├── uikit/                       # 56 UI components + stories (@uikit barrel)
+    │   ├── components/                  # Shared app-level components
+    │   ├── contexts/                    # React contexts (Auth, Theme, Notification, etc.)
+    │   ├── hooks/                       # Shared custom React hooks (27)
     │   ├── services/                    # API services (23)
     │   ├── types/                       # TypeScript types
     │   └── lib/                         # Utilities
@@ -1021,7 +1033,7 @@ pnpm build-storybook      # Static build
 | `src/NOIR.Application/Features/` | Vertical slices (CQRS) |
 | `src/NOIR.Infrastructure/Persistence/` | EF Core, repositories |
 | `src/NOIR.Web/Endpoints/` | Minimal API endpoints |
-| `src/NOIR.Web/frontend/src/pages/` | React pages |
+| `src/NOIR.Web/frontend/src/portal-app/` | Domain-driven frontend modules |
 | `tests/NOIR.IntegrationTests/Features/` | API integration tests |
 | `docs/backend/patterns/` | Backend patterns |
 | `docs/frontend/` | Frontend guides |

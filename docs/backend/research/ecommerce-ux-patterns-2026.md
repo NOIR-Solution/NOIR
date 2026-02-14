@@ -1094,7 +1094,7 @@ frontend/src/components/
 **Product Listing Page Implementation**
 
 ```tsx
-// frontend/src/pages/ProductListingPage.tsx
+// frontend/src/portal-app/products/features/product-list/ProductsPage.tsx
 const ProductListingPage = () => {
   const [filters, setFilters] = useState<ProductFilters>({
     categoryId: null,
@@ -1139,7 +1139,7 @@ const ProductListingPage = () => {
 **Checkout Accordion Implementation**
 
 ```tsx
-// frontend/src/pages/CheckoutPage.tsx
+// frontend/src/portal-app/checkout/features/checkout/CheckoutPage.tsx
 const CheckoutPage = () => {
   const [activeStep, setActiveStep] = useState<CheckoutStep>('contact');
   const [completedSteps, setCompletedSteps] = useState<Set<CheckoutStep>>(new Set());

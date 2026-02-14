@@ -1952,7 +1952,7 @@ src/NOIR.Web/frontend/src/
 ### 3.9 SEO Panel Component
 
 ```tsx
-// src/pages/portal/blog/components/SeoPanel.tsx
+// src/portal-app/blogs/components/blog-posts/SeoPanel.tsx
 export function SeoPanel({ seo, onChange, title, excerpt, featuredImage }) {
   const [score, setScore] = useState(0);
 

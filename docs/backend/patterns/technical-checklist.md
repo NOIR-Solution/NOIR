@@ -179,7 +179,7 @@ export default function UsersPage() {
 ```tsx
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@uikit'
 
 const form = useForm<FormData>({
   resolver: zodResolver(schema),

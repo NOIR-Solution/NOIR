@@ -371,7 +371,7 @@ if (user.Roles.Contains(RoleConstants.PlatformAdmin))  // ✅ Type-safe
 - Portal rendering (avoids z-index issues)
 - Consistent cross-browser behavior
 
-**Reference:** `src/NOIR.Web/frontend/src/components/ui/tooltip.tsx`
+**Reference:** `src/NOIR.Web/frontend/src/uikit/tooltip/Tooltip.tsx`
 
 ---
 
@@ -836,7 +836,7 @@ All OTP-based features (Password Reset, Email Change, Phone Verification, etc.) 
 
 **Related:** [AuditEndpoints](#audit-endpoints), [Activity Timeline](#activity-timeline-page)
 
-**Activity Timeline Page:** `frontend/src/pages/portal/admin/activity-timeline/`
+**Activity Timeline Page:** `frontend/src/portal-app/systems/features/activity-timeline/`
 - Hierarchical audit log viewer with correlation tracking
 - Date range filtering with `DateRangePicker`
 - User activity navigation (click user → filter by user)
@@ -1148,7 +1148,7 @@ public class LoginCommandHandler
 | Directory | Purpose |
 |-----------|---------|
 | `src/components/` | Reusable UI components (shadcn/ui + 21st.dev) |
-| `src/pages/` | Route pages |
+| `src/portal-app/` | Domain-driven feature modules |
 | `src/hooks/` | Custom React hooks (usePermissions, etc.) |
 | `src/services/` | API client and services |
 | `src/contexts/` | React contexts (Auth, Theme, Notification) |
@@ -1160,13 +1160,13 @@ public class LoginCommandHandler
 
 | Component | Path | Usage |
 |-----------|------|-------|
-| `EmptyState` | `components/ui/empty-state.tsx` | Tables with no data |
-| `Pagination` | `components/ui/pagination.tsx` | Data table pagination |
-| `ColorPicker` | `components/ui/color-picker.tsx` | Role color selection |
-| `TippyTooltip` | `components/ui/tippy-tooltip.tsx` | Rich tooltips with headers |
-| `DateRangePicker` | `components/ui/date-range-picker.tsx` | Date range selection |
-| `ThemeToggle` | `components/ui/theme-toggle.tsx` | Segmented Light/Dark toggle with animated indicator |
-| `ThemeToggleCompact` | `components/ui/theme-toggle.tsx` | Compact icon button for theme switching |
+| `EmptyState` | `uikit/empty-state/` | Tables with no data |
+| `Pagination` | `uikit/pagination/` | Data table pagination |
+| `ColorPicker` | `uikit/color-picker/` | Role color selection |
+| `TippyTooltip` | `uikit/tippy-tooltip/` | Rich tooltips with headers |
+| `DateRangePicker` | `uikit/date-range-picker/` | Date range selection |
+| `ThemeToggle` | `uikit/theme-toggle/` | Segmented Light/Dark toggle with animated indicator |
+| `ThemeToggleCompact` | `uikit/theme-toggle/` | Compact icon button for theme switching |
 
 #### Permission-Based UI Rendering
 
@@ -1245,7 +1245,7 @@ The `apiClient.ts` provides user-friendly error messages for HTTP status codes:
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@uikit'
 
 // 1. Define Zod schema
 const formSchema = z.object({
