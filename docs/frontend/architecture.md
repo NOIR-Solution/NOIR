@@ -25,38 +25,76 @@ frontend/
 │   ├── main.tsx             # React root entry point
 │   ├── index.css            # Global styles + Tailwind
 │   │
-│   ├── components/          # Reusable UI components
-│   │   ├── ui/              # shadcn/ui primitives (56 components)
-│   │   ├── PermissionGate.tsx  # Permission-based rendering
-│   │   ├── ProtectedRoute.tsx  # Route-level protection
-│   │   └── *.tsx            # App-level shared components
+│   ├── portal-app/          # Domain-driven feature modules
+│   │   ├── blogs/           # Blog CMS
+│   │   │   ├── features/    #   blog-post-list, blog-post-edit, blog-category-list, blog-tag-list
+│   │   │   ├── components/  #   blog-posts/, blog-categories/, blog-tags/
+│   │   │   └── states/      #   useBlogPosts.ts, useBlogCategories.ts, useBlogTags.ts
+│   │   ├── brands/          # Brand management
+│   │   │   └── features/    #   brand-list/BrandsPage.tsx
+│   │   ├── dashboard/       # Dashboard
+│   │   │   └── features/    #   dashboard/DashboardPage.tsx
+│   │   ├── notifications/   # Notifications
+│   │   │   ├── features/    #   notification-list, notification-preferences
+│   │   │   └── components/  #   notifications/ (Bell, Dropdown, Item, List, Empty)
+│   │   ├── products/        # Product catalog
+│   │   │   ├── features/    #   product-list, product-edit, product-category-list, product-attribute-list
+│   │   │   ├── components/  #   products/, product-categories/, product-attributes/
+│   │   │   └── states/      #   useProducts.ts, useProductCategories.ts
+│   │   ├── settings/        # All settings (personal, tenant, platform)
+│   │   │   ├── features/    #   personal-settings, tenant-settings, platform-settings,
+│   │   │   │                #   email-template-edit, legal-page-edit
+│   │   │   ├── components/  #   tenant-settings/, platform-settings/, payment-gateways/,
+│   │   │   │                #   personal-settings/
+│   │   │   └── states/      #   usePaymentGateways.ts
+│   │   ├── systems/         # System monitoring
+│   │   │   ├── features/    #   activity-timeline, developer-logs
+│   │   │   └── components/  #   activity-timeline/, developer-logs/
+│   │   ├── user-access/     # User & access management
+│   │   │   ├── features/    #   role-list, user-list, tenant-list, tenant-detail
+│   │   │   ├── components/  #   roles/, users/, tenants/
+│   │   │   └── states/      #   useRoles.ts, useUsers.ts, useTenants.ts
+│   │   └── welcome/         # Public pages
+│   │       └── features/    #   welcome/WelcomePage, terms/TermsPage, privacy/PrivacyPage
 │   │
-│   ├── uikit/               # Storybook stories (56 components)
-│   │   ├── button/Button.stories.tsx
-│   │   ├── card/Card.stories.tsx
-│   │   └── ...
+│   ├── layouts/             # Layout components
+│   │   ├── auth/            # Auth pages (each in own folder)
+│   │   │   ├── login/LoginPage.tsx
+│   │   │   ├── forgot-password/ForgotPasswordPage.tsx
+│   │   │   ├── verify-otp/VerifyOtpPage.tsx
+│   │   │   ├── reset-password/ResetPasswordPage.tsx
+│   │   │   └── auth-success/AuthSuccessPage.tsx
+│   │   └── PortalLayout.tsx
+│   │
+│   ├── uikit/               # UI component library (56 components + stories)
+│   │   ├── button/          #   Button.tsx, Button.stories.tsx, index.ts
+│   │   ├── dialog/          #   Dialog.tsx, Dialog.stories.tsx, index.ts
+│   │   ├── ...              #   Per-component folders (kebab-case)
+│   │   └── index.ts         #   Barrel export (@uikit alias)
+│   │
+│   ├── components/          # Shared app-level components
+│   │   ├── PermissionGate.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   ├── command-palette/
+│   │   └── navigation/
 │   │
 │   ├── contexts/            # React Context providers
-│   │   └── AuthContext.tsx  # Authentication state
+│   │   ├── AuthContext.tsx
+│   │   ├── ThemeContext.tsx
+│   │   └── ...
 │   │
-│   ├── hooks/               # Custom React hooks (28)
-│   │   └── usePermissions.ts  # Permission checking utilities
-│   │
-│   ├── lib/                 # Utility libraries
-│   │   └── utils.ts         # Helper functions (cn, etc.)
-│   │
-│   ├── pages/               # Page components (route targets)
-│   │   ├── Login.tsx
-│   │   └── Home.tsx
+│   ├── hooks/               # Shared custom React hooks
+│   │   └── usePermissions.ts
 │   │
 │   ├── services/            # API service functions
-│   │   ├── apiClient.ts     # Centralized API client with auth
-│   │   └── auth.ts          # Authentication API calls
+│   │   ├── apiClient.ts
+│   │   └── auth.ts, users.ts, ...
+│   │
+│   ├── lib/                 # Utility libraries
+│   │   └── utils.ts
 │   │
 │   └── types/               # TypeScript type definitions
-│       ├── api.ts           # Common API types
-│       ├── auth.ts          # Auth-specific types
-│       └── index.ts         # Barrel export
+│       └── index.ts
 │
 ├── package.json
 ├── pnpm-lock.yaml           # pnpm (disk-optimized)
@@ -67,49 +105,55 @@ frontend/
 
 ## Folder Conventions
 
-### `/components`
+### `/portal-app` (Domain Modules)
 
-**Purpose:** Reusable UI components shared across pages.
+**Purpose:** Domain-driven feature modules for the portal application. Each domain has its own folder with a consistent internal structure.
 
-**Guidelines:**
-- `ui/` contains shadcn/ui primitives - do not modify heavily
-- Other components should be self-contained and reusable
-- Name files in PascalCase matching component name
-
-**Key UI Components:**
-| Component | Purpose | Dependencies |
-|-----------|---------|--------------|
-| `button.tsx` | Button with variants | - |
-| `input.tsx` | Form input | - |
-| `dialog.tsx` | Modal dialogs | @radix-ui/react-dialog |
-| `popover.tsx` | Popover menus | @radix-ui/react-popover |
-| `calendar.tsx` | Date picker calendar | react-day-picker v9 |
-| `date-range-picker.tsx` | Date range selection | calendar, popover, date-fns |
-| `tippy-tooltip.tsx` | Rich tooltips with headers | @tippyjs/react, tippy.js |
-
-**Example:**
-```tsx
-// components/ProtectedRoute.tsx
-export function ProtectedRoute({ children }) { ... }
-
-// components/ui/date-range-picker.tsx
-import { DateRange } from 'react-day-picker'
-
-export function DateRangePicker({
-  value,
-  onChange,
-  numberOfMonths = 2,
-}: DateRangePickerProps) { ... }
+**Module Structure:**
+```
+portal-app/{domain}/
+├── features/           # Page-level components (one per route)
+│   └── {feature-name}/ #   e.g., product-list/
+│       └── {PageName}Page.tsx
+├── components/         # Domain-specific reusable components
+│   └── {group-name}/   #   e.g., products/
+│       ├── CreateProductDialog.tsx
+│       └── index.ts    #   Barrel export
+└── states/             # Domain-specific hooks (TanStack Query)
+    └── useProducts.ts
 ```
 
-### `/pages`
+**Guidelines:**
+- Page components always have `Page` suffix (e.g., `DashboardPage`, `ProductsPage`)
+- Each page lives in its own kebab-case folder
+- Components are prefixed with domain context (e.g., `EmailPreviewDialog`, not `PreviewDialog`)
+- States contain TanStack Query hooks for API data fetching
+- Cross-module imports use `@/portal-app/{domain}/` absolute paths
+- Intra-module imports use relative paths
 
-**Purpose:** Top-level page components rendered by routes.
+### `/layouts/auth`
+
+**Purpose:** Authentication-related pages outside the portal layout.
 
 **Guidelines:**
-- One component per route
-- Keep page components focused on layout and composition
-- Extract reusable logic into hooks or components
+- Each auth page gets its own folder (e.g., `login/`, `forgot-password/`)
+- Pages are eagerly loaded (not lazy) for fast auth flow
+
+### `/uikit` (UI Component Library)
+
+**Purpose:** 56 shadcn/ui-based primitives with per-component folders and a single barrel export.
+
+**Guidelines:**
+- Import via `@uikit` barrel alias: `import { Button, Dialog } from '@uikit'`
+- Internal cross-references use relative paths (`../button/Button`), NOT `@uikit`
+- Each component folder: `{kebab-case}/{PascalCase}.tsx` + `index.ts`
+- Stories colocated: `{Component}.stories.tsx`
+
+### `/components`
+
+**Purpose:** Shared app-level components (not domain-specific).
+
+**Examples:** `ProtectedRoute`, `PermissionGate`, `CommandPalette`, `ViewTransitionLink`
 
 ### `/services`
 
@@ -195,15 +239,27 @@ function UserActions() {
 
 ## Import Aliases
 
-Use `@/` alias for all imports from `src/`:
+| Alias | Maps To | Usage |
+|-------|---------|-------|
+| `@/` | `src/` | General source imports |
+| `@uikit` | `src/uikit/index.ts` | UI component barrel |
 
 ```tsx
-// Correct
-import { Button } from '@/components/ui/button'
+// UI components - use @uikit barrel
+import { Button, Dialog, Card } from '@uikit'
+
+// App-level imports - use @/ alias
+import { usePermissions } from '@/hooks/usePermissions'
 import type { CurrentUser } from '@/types'
 
-// Avoid relative paths
-import { Button } from '../../components/ui/button'
+// Cross-module imports - use @/ with full path
+import { DashboardPage } from '@/portal-app/dashboard/features/dashboard/DashboardPage'
+
+// Intra-module imports - use relative paths
+import { ProductTable } from '../../components/products/ProductTable'
+
+// Avoid bare relative paths from deep nesting
+import { Button } from '../../../../uikit/button/Button' // ❌ Use @uikit instead
 ```
 
 ## Naming Conventions
@@ -216,29 +272,29 @@ import { Button } from '../../components/ui/button'
 | Types | PascalCase | `CurrentUser`, `ApiError` |
 | Constants | SCREAMING_SNAKE_CASE | `API_BASE`, `MAX_RETRY` |
 
-## When to Add Feature Folders
+## Domain Module Pattern
 
-The current flat structure works well for small-to-medium apps. Consider feature-based organization when:
+The frontend uses a **domain-driven module pattern** under `portal-app/`. Each domain module is self-contained with features, components, and state management.
 
-1. **Multiple developers** work on distinct features simultaneously
-2. **Feature complexity** grows (5+ files per feature)
-3. **Code ownership** needs to be clear
-
-**Feature folder structure (future):**
+**Adding a new domain module:**
 ```
-src/
+portal-app/{new-domain}/
 ├── features/
-│   ├── auth/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── services/
-│   │   └── types.ts
-│   ├── dashboard/
-│   └── settings/
-└── shared/
-    ├── components/
-    ├── hooks/
-    └── utils/
+│   └── {feature-name}/
+│       └── {FeatureName}Page.tsx   # Default export for lazy loading
+├── components/
+│   └── {group-name}/
+│       ├── SomeDialog.tsx
+│       └── index.ts
+└── states/
+    └── use{Domain}.ts              # TanStack Query hooks
+```
+
+**Register in App.tsx:**
+```tsx
+const NewPage = lazy(() => import('@/portal-app/{new-domain}/features/{feature}/NewPage'))
+// ...
+<Route path="new-feature" element={<Suspense fallback={<LazyFallback />}><NewPage /></Suspense>} />
 ```
 
 ## Integration with Backend
@@ -264,14 +320,17 @@ NOIR/
 
 ## Adding New Features
 
-1. **Simple page:** Add to `/pages`, update routes in `App.tsx`
-2. **New API:** Add service in `/services`, types in `/types`
-3. **Shared component:** Add to `/components`
-4. **Global state:** Add context in `/contexts`
+1. **New portal page:** Create `portal-app/{domain}/features/{feature-name}/{PageName}Page.tsx`, add lazy route in `App.tsx`
+2. **New domain component:** Add to `portal-app/{domain}/components/{group-name}/`
+3. **New API hook:** Add to `portal-app/{domain}/states/use{Domain}.ts` (TanStack Query)
+4. **New API service:** Add to `/services/{domain}.ts`
+5. **Shared component:** Add to `/components/`
+6. **UI primitive:** Add to `/uikit/{name}/`, export from barrel
+7. **Global state:** Add context in `/contexts`
 
 ## UI/UX Standardization Patterns
 
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-02-13
 
 ### Interactive Elements - cursor-pointer
 
@@ -443,7 +502,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from '@uikit'
 
 // 1. Define Zod schema
 const formSchema = z.object({

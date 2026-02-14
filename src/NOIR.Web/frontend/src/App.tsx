@@ -12,52 +12,52 @@ import { PortalLayout } from '@/layouts/PortalLayout'
 import { PageSkeleton } from '@uikit'
 import { CommandProvider, CommandPalette } from '@/components/command-palette'
 
-import LoginPage from '@/pages/Login'
-import LandingPage from '@/pages/Landing'
+import LoginPage from '@/layouts/auth/login/LoginPage'
+import WelcomePage from '@/portal-app/welcome/features/welcome/WelcomePage'
 import './index.css'
 
 // Loading fallback for lazy-loaded routes - uses skeleton for better UX
 const LazyFallback = () => <PageSkeleton />
 
 // Lazy load portal pages for better loading experience
-const Dashboard = lazy(() => import('@/pages/portal/Dashboard'))
-const SettingsPage = lazy(() => import('@/pages/portal/Settings'))
-const Notifications = lazy(() => import('@/pages/portal/Notifications'))
-const NotificationPreferences = lazy(() => import('@/pages/portal/NotificationPreferences'))
-const TenantsPage = lazy(() => import('@/pages/portal/admin/tenants/TenantsPage'))
-const TenantDetailPage = lazy(() => import('@/pages/portal/admin/tenants/TenantDetailPage'))
-const RolesPage = lazy(() => import('@/pages/portal/admin/roles/RolesPage'))
-const UsersPage = lazy(() => import('@/pages/portal/admin/users/UsersPage'))
-const ActivityTimelinePage = lazy(() => import('@/pages/portal/admin/activity-timeline/ActivityTimelinePage'))
-const DeveloperLogsPage = lazy(() => import('@/pages/portal/admin/developer-logs/DeveloperLogsPage'))
+const DashboardPage = lazy(() => import('@/portal-app/dashboard/features/dashboard/DashboardPage'))
+const PersonalSettingsPage = lazy(() => import('@/portal-app/settings/features/personal-settings/PersonalSettingsPage'))
+const NotificationsPage = lazy(() => import('@/portal-app/notifications/features/notification-list/NotificationsPage'))
+const NotificationPreferencesPage = lazy(() => import('@/portal-app/notifications/features/notification-preferences/NotificationPreferencesPage'))
+const TenantsPage = lazy(() => import('@/portal-app/user-access/features/tenant-list/TenantsPage'))
+const TenantDetailPage = lazy(() => import('@/portal-app/user-access/features/tenant-detail/TenantDetailPage'))
+const RolesPage = lazy(() => import('@/portal-app/user-access/features/role-list/RolesPage'))
+const UsersPage = lazy(() => import('@/portal-app/user-access/features/user-list/UsersPage'))
+const ActivityTimelinePage = lazy(() => import('@/portal-app/systems/features/activity-timeline/ActivityTimelinePage'))
+const DeveloperLogsPage = lazy(() => import('@/portal-app/systems/features/developer-logs/DeveloperLogsPage'))
 // Blog CMS
-const BlogPostsPage = lazy(() => import('@/pages/portal/blog/posts/BlogPostsPage'))
-const PostEditorPage = lazy(() => import('@/pages/portal/blog/posts/PostEditorPage'))
-const BlogCategoriesPage = lazy(() => import('@/pages/portal/blog/categories/BlogCategoriesPage'))
-const BlogTagsPage = lazy(() => import('@/pages/portal/blog/tags/BlogTagsPage'))
+const BlogPostsPage = lazy(() => import('@/portal-app/blogs/features/blog-post-list/BlogPostsPage'))
+const BlogPostEditPage = lazy(() => import('@/portal-app/blogs/features/blog-post-edit/BlogPostEditPage'))
+const BlogCategoriesPage = lazy(() => import('@/portal-app/blogs/features/blog-category-list/BlogCategoriesPage'))
+const BlogTagsPage = lazy(() => import('@/portal-app/blogs/features/blog-tag-list/BlogTagsPage'))
 // E-commerce
-const ProductsPage = lazy(() => import('@/pages/portal/ecommerce/products/ProductsPage'))
-const ProductFormPage = lazy(() => import('@/pages/portal/ecommerce/products/ProductFormPage'))
-const ProductCategoriesPage = lazy(() => import('@/pages/portal/ecommerce/categories/ProductCategoriesPage'))
-const BrandsPage = lazy(() => import('@/pages/portal/ecommerce/brands/BrandsPage'))
-const ProductAttributesPage = lazy(() => import('@/pages/portal/ecommerce/attributes/ProductAttributesPage'))
+const ProductsPage = lazy(() => import('@/portal-app/products/features/product-list/ProductsPage'))
+const ProductFormPage = lazy(() => import('@/portal-app/products/features/product-edit/ProductFormPage'))
+const ProductCategoriesPage = lazy(() => import('@/portal-app/products/features/product-category-list/ProductCategoriesPage'))
+const BrandsPage = lazy(() => import('@/portal-app/brands/features/brand-list/BrandsPage'))
+const ProductAttributesPage = lazy(() => import('@/portal-app/products/features/product-attribute-list/ProductAttributesPage'))
 // Platform Settings
-const PlatformSettingsPage = lazy(() => import('@/pages/portal/admin/platform-settings/PlatformSettingsPage'))
+const PlatformSettingsPage = lazy(() => import('@/portal-app/settings/features/platform-settings/PlatformSettingsPage'))
 // Tenant Settings (includes Payment Gateways tab)
-const TenantSettingsPage = lazy(() => import('@/pages/portal/admin/tenant-settings/TenantSettingsPage'))
+const TenantSettingsPage = lazy(() => import('@/portal-app/settings/features/tenant-settings/TenantSettingsPage'))
 // Email templates - edit page only (list is in Tenant Settings)
-import { EmailTemplateEditPage } from '@/pages/portal/email-templates'
+import EmailTemplateEditPage from '@/portal-app/settings/features/email-template-edit/EmailTemplateEditPage'
 // Legal pages - edit page only (list is in Tenant Settings)
-const LegalPageEditPage = lazy(() => import('@/pages/portal/legal-pages/LegalPageEditPage'))
+const LegalPageEditPage = lazy(() => import('@/portal-app/settings/features/legal-page-edit/LegalPageEditPage'))
 // Public legal pages
-const TermsPage = lazy(() => import('@/pages/TermsPage'))
-const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'))
+const TermsPage = lazy(() => import('@/portal-app/welcome/features/terms/TermsPage'))
+const PrivacyPage = lazy(() => import('@/portal-app/welcome/features/privacy/PrivacyPage'))
 
 // Forgot password flow - keep as eager load (auth flow should be fast)
-import ForgotPasswordPage from '@/pages/forgot-password/ForgotPassword'
-import VerifyOtpPage from '@/pages/forgot-password/VerifyOtp'
-import ResetPasswordPage from '@/pages/forgot-password/ResetPassword'
-import SuccessPage from '@/pages/forgot-password/Success'
+import ForgotPasswordPage from '@/layouts/auth/forgot-password/ForgotPasswordPage'
+import VerifyOtpPage from '@/layouts/auth/verify-otp/VerifyOtpPage'
+import ResetPasswordPage from '@/layouts/auth/reset-password/ResetPasswordPage'
+import AuthSuccessPage from '@/layouts/auth/auth-success/AuthSuccessPage'
 
 function App() {
   return (
@@ -82,7 +82,7 @@ function App() {
                     />
                     <Routes>
                       {/* Public Routes */}
-                      <Route path="/" element={<LandingPage />} />
+                      <Route path="/" element={<WelcomePage />} />
                       <Route path="/login" element={<LoginPage />} />
 
                       {/* Public Legal Pages */}
@@ -93,7 +93,7 @@ function App() {
                       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                       <Route path="/forgot-password/verify" element={<VerifyOtpPage />} />
                       <Route path="/forgot-password/reset" element={<ResetPasswordPage />} />
-                      <Route path="/forgot-password/success" element={<SuccessPage />} />
+                      <Route path="/forgot-password/success" element={<AuthSuccessPage />} />
 
                       {/* Protected Portal Routes */}
                       <Route
@@ -104,13 +104,13 @@ function App() {
                           </ProtectedRoute>
                         }
                       >
-                        <Route index element={<Suspense fallback={<LazyFallback />}><Dashboard /></Suspense>} />
-                        <Route path="settings" element={<Suspense fallback={<LazyFallback />}><SettingsPage /></Suspense>} />
+                        <Route index element={<Suspense fallback={<LazyFallback />}><DashboardPage /></Suspense>} />
+                        <Route path="settings" element={<Suspense fallback={<LazyFallback />}><PersonalSettingsPage /></Suspense>} />
                         {/* Email templates and Legal pages edit routes - list views are in Tenant Settings */}
                         <Route path="email-templates/:id" element={<EmailTemplateEditPage />} />
                         <Route path="legal-pages/:id" element={<Suspense fallback={<LazyFallback />}><LegalPageEditPage /></Suspense>} />
-                        <Route path="notifications" element={<Suspense fallback={<LazyFallback />}><Notifications /></Suspense>} />
-                        <Route path="settings/notifications" element={<Suspense fallback={<LazyFallback />}><NotificationPreferences /></Suspense>} />
+                        <Route path="notifications" element={<Suspense fallback={<LazyFallback />}><NotificationsPage /></Suspense>} />
+                        <Route path="settings/notifications" element={<Suspense fallback={<LazyFallback />}><NotificationPreferencesPage /></Suspense>} />
                         {/* Admin Routes */}
                         <Route path="admin/platform-settings" element={<Suspense fallback={<LazyFallback />}><PlatformSettingsPage /></Suspense>} />
                         <Route path="admin/tenant-settings" element={<Suspense fallback={<LazyFallback />}><TenantSettingsPage /></Suspense>} />
@@ -124,8 +124,8 @@ function App() {
                         <Route path="developer-logs" element={<Suspense fallback={<LazyFallback />}><DeveloperLogsPage /></Suspense>} />
                         {/* Blog CMS */}
                         <Route path="blog/posts" element={<Suspense fallback={<LazyFallback />}><BlogPostsPage /></Suspense>} />
-                        <Route path="blog/posts/new" element={<Suspense fallback={<LazyFallback />}><PostEditorPage /></Suspense>} />
-                        <Route path="blog/posts/:id/edit" element={<Suspense fallback={<LazyFallback />}><PostEditorPage /></Suspense>} />
+                        <Route path="blog/posts/new" element={<Suspense fallback={<LazyFallback />}><BlogPostEditPage /></Suspense>} />
+                        <Route path="blog/posts/:id/edit" element={<Suspense fallback={<LazyFallback />}><BlogPostEditPage /></Suspense>} />
                         <Route path="blog/categories" element={<Suspense fallback={<LazyFallback />}><BlogCategoriesPage /></Suspense>} />
                         <Route path="blog/tags" element={<Suspense fallback={<LazyFallback />}><BlogTagsPage /></Suspense>} />
                         {/* E-commerce */}

@@ -21,15 +21,23 @@ NOIR frontend is a React SPA embedded within the .NET NOIR.Web project.
 src/NOIR.Web/frontend/
 ├── .storybook/         # Storybook configuration
 ├── src/
-│   ├── components/     # Reusable UI components
-│   │   └── ui/         # shadcn/ui primitives (56)
-│   ├── uikit/          # Storybook stories (56 components)
-│   ├── pages/          # Route page components
-│   ├── services/       # API communication
+│   ├── portal-app/     # Domain-driven feature modules
+│   │   ├── blogs/          # Blog CMS (features, components, states)
+│   │   ├── brands/         # Brand management
+│   │   ├── dashboard/      # Dashboard
+│   │   ├── notifications/  # Notifications
+│   │   ├── products/       # Product catalog
+│   │   ├── settings/       # Personal, Tenant, Platform settings
+│   │   ├── systems/        # Activity timeline, Developer logs
+│   │   ├── user-access/    # Users, Roles, Tenants
+│   │   └── welcome/        # Landing, Terms, Privacy
+│   ├── layouts/        # Layout components + auth pages
+│   ├── uikit/          # UI component library + stories (56 components, @uikit alias)
+│   ├── components/     # Shared app-level components
 │   ├── contexts/       # React Context providers
-│   ├── hooks/          # Custom React hooks (28)
+│   ├── hooks/          # Shared custom hooks
+│   ├── services/       # API communication
 │   ├── types/          # TypeScript definitions
-│   ├── config/         # App configuration
 │   └── lib/            # Utilities
 ├── package.json
 ├── pnpm-lock.yaml
@@ -81,7 +89,7 @@ pnpm run lint
 | Hooks | camelCase with `use` prefix | `useAuth.ts` |
 | Services | camelCase | `auth.ts` |
 | Types | PascalCase | `CurrentUser` |
-| Import Alias | `@/` for src/ | `@/components/ui/button` |
+| Import Alias | `@/` for src/, `@uikit` for UI kit | `import { Button } from '@uikit'` |
 
 ## Storybook & UIKit
 
@@ -115,13 +123,13 @@ src/uikit/
 
 | Component | Path | Description |
 |-----------|------|-------------|
-| `EmptyState` | `components/ui/empty-state.tsx` | Empty state with icon, title, description, action |
-| `Pagination` | `components/ui/pagination.tsx` | Pagination with page numbers and size selector |
-| `ColorPicker` | `components/ui/color-picker.tsx` | Color selector with swatches and custom picker |
-| `TippyTooltip` | `components/ui/tippy-tooltip.tsx` | Rich tooltips with headers and animations |
-| `VirtualList` | `components/ui/virtual-list.tsx` | Virtualized list for large datasets |
-| `DiffViewer` | `components/ui/diff-viewer.tsx` | Side-by-side diff viewer |
-| `JsonViewer` | `components/ui/json-viewer.tsx` | Syntax-highlighted JSON display |
+| `EmptyState` | `uikit/empty-state/` | Empty state with icon, title, description, action |
+| `Pagination` | `uikit/pagination/` | Pagination with page numbers and size selector |
+| `ColorPicker` | `uikit/color-picker/` | Color selector with swatches and custom picker |
+| `TippyTooltip` | `uikit/tippy-tooltip/` | Rich tooltips with headers and animations |
+| `VirtualList` | `uikit/virtual-list/` | Virtualized list for large datasets |
+| `DiffViewer` | `uikit/diff-viewer/` | Side-by-side diff viewer |
+| `JsonViewer` | `uikit/json-viewer/` | Syntax-highlighted JSON display |
 
 ## AI-Assisted Development
 

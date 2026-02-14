@@ -69,8 +69,8 @@ After making frontend changes:
 
 1. **Search for hardcoded strings:**
    ```bash
-   grep -r "placeholder=\"[A-Z]" src/NOIR.Web/frontend/src/pages/
-   grep -r ">[A-Z][a-z].*</" src/NOIR.Web/frontend/src/pages/
+   grep -r "placeholder=\"[A-Z]" src/NOIR.Web/frontend/src/portal-app/ src/NOIR.Web/frontend/src/layouts/
+   grep -r ">[A-Z][a-z].*</" src/NOIR.Web/frontend/src/portal-app/ src/NOIR.Web/frontend/src/layouts/
    ```
 
 2. **Compare EN and VI keys:**
@@ -105,4 +105,4 @@ After making frontend changes:
 
 ---
 
-**Last Updated:** 2026-01-28
+**Last Updated:** 2026-02-13

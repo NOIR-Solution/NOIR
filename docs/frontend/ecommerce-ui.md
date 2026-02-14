@@ -12,7 +12,7 @@ Modern glassmorphism product card built with 21st.dev Magic Component Builder.
 ### Files
 
 ```
-src/NOIR.Web/frontend/src/pages/portal/ecommerce/products/components/
+src/NOIR.Web/frontend/src/portal-app/products/components/products/
 ├── EnhancedProductCard.tsx      # Glassmorphism card
 ├── EnhancedProductGridView.tsx  # Grid wrapper
 ├── ProductActionsMenu.tsx       # Shared dropdown menu

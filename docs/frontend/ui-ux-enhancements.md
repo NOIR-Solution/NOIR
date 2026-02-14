@@ -208,10 +208,10 @@ Integrated in `PortalLayout.tsx`. Uses Framer Motion with:
 
 ### Virtual Scrolling
 
-**File:** `src/components/ui/virtual-list.tsx`
+**File:** `src/uikit/virtual-list/VirtualList.tsx`
 
 ```tsx
-import { VirtualList } from '@/components/ui/virtual-list'
+import { VirtualList } from '@uikit'
 
 <VirtualList
   items={logs}

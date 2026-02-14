@@ -661,8 +661,7 @@ export function useValidatedForm<T extends FieldValues>(
 ```typescript
 // src/NOIR.Web/frontend/src/components/form/FormField.tsx
 
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input, Label } from '@uikit';
 import { FieldValues, Path, UseFormReturn } from 'react-hook-form';
 import { cn } from '@/lib/utils';
 
@@ -718,10 +717,10 @@ export function FormField<T extends FieldValues>({
 #### 3.3 Updated TenantForm Example
 
 ```typescript
-// src/NOIR.Web/frontend/src/pages/portal/admin/tenants/components/TenantForm.tsx (updated)
+// src/NOIR.Web/frontend/src/portal-app/user-access/components/tenants/TenantFormValidated.tsx (updated)
 
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
+import { Button } from '@uikit';
 import { FormField } from '@/components/form/FormField';
 import { useValidatedForm } from '@/hooks/useValidatedForm';
 import { CreateTenantSchema, CreateTenantInput } from '@/validation/schemas.generated';
@@ -897,7 +896,7 @@ export function createLocalizedSchema<T extends z.ZodRawShape>(
 |------|---------|
 | `frontend/package.json` | Add dependencies and scripts |
 | `frontend/.gitignore` | Add `schemas.generated.ts` |
-| `frontend/src/pages/portal/admin/tenants/components/TenantForm.tsx` | Use new form hook |
+| `frontend/src/portal-app/user-access/components/tenants/TenantFormValidated.tsx` | Use new form hook |
 | (other forms) | Migrate to new pattern |
 
 ---
