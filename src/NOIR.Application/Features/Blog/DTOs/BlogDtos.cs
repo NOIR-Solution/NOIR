@@ -182,6 +182,20 @@ public sealed record UpdateCategoryRequest(
     Guid? ParentId);
 
 /// <summary>
+/// Request to reorder blog categories in bulk.
+/// </summary>
+public sealed record ReorderBlogCategoriesRequest(
+    List<ReorderBlogCategorySortOrderItem> Items);
+
+/// <summary>
+/// Single item in a blog category reorder request.
+/// </summary>
+public sealed record ReorderBlogCategorySortOrderItem(
+    Guid CategoryId,
+    Guid? ParentId,
+    int SortOrder);
+
+/// <summary>
 /// Request to create a tag.
 /// </summary>
 public sealed record CreateTagRequest(

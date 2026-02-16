@@ -117,6 +117,19 @@ public sealed class CategoryHasChildrenSpec : Specification<PostCategory>
 }
 
 /// <summary>
+/// Specification to retrieve multiple categories by IDs for bulk update (with tracking).
+/// </summary>
+public sealed class CategoriesByIdsForUpdateSpec : Specification<PostCategory>
+{
+    public CategoriesByIdsForUpdateSpec(List<Guid> ids)
+    {
+        Query.Where(c => ids.Contains(c.Id))
+             .AsTracking()
+             .TagWith("GetCategoriesByIdsForUpdate");
+    }
+}
+
+/// <summary>
 /// Specification to retrieve all active (non-deleted) categories for sitemap.
 /// </summary>
 public sealed class ActiveCategoriesSpec : Specification<PostCategory>
