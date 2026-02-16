@@ -147,6 +147,16 @@ export const Default: Story = {
   },
 }
 
+export const DragAndDrop: Story = {
+  args: {
+    categories: sampleCategories,
+    onEdit: action('edit'),
+    onDelete: action('delete'),
+    onReorder: action('reorder'),
+    itemCountLabel: 'products',
+  },
+}
+
 export const BlogCategories: Story = {
   args: {
     categories: [

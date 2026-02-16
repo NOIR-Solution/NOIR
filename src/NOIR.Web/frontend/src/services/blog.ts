@@ -169,6 +169,22 @@ export const deleteCategory = async (id: string): Promise<void> => {
   })
 }
 
+/**
+ * Reorder blog categories in bulk
+ */
+export interface ReorderBlogCategoriesRequest {
+  items: { categoryId: string; parentId: string | null; sortOrder: number }[]
+}
+
+export const reorderBlogCategories = async (
+  request: ReorderBlogCategoriesRequest
+): Promise<PostCategoryListItem[]> => {
+  return apiClient<PostCategoryListItem[]>('/blog/categories/reorder', {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}
+
 // ============================================================================
 // Tags
 // ============================================================================

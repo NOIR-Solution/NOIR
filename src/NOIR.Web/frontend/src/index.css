@@ -4,6 +4,7 @@
 @import "tippy.js/animations/shift-away-subtle.css";
 @import "./styles/tippy-custom.css";
 @import "./styles/view-transitions.css";
+@import "./styles/uikit.css";
 
 /* Custom dark variant for targeting dark mode elements */
 @custom-variant dark (&:is(.dark *));

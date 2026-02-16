@@ -1,6 +1,7 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, MoreHorizontal, List, GitBranch, Tags } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -27,9 +28,10 @@ import {
   TableHeader,
   TableRow,
   type TreeCategory,
+  type ReorderItem,
 } from '@uikit'
 
-import { useProductCategoriesQuery, useDeleteProductCategory } from '@/portal-app/products/queries'
+import { useProductCategoriesQuery, useDeleteProductCategory, useReorderProductCategories } from '@/portal-app/products/queries'
 import { ProductCategoryDialog } from '../../components/product-categories/ProductCategoryDialog'
 import { DeleteProductCategoryDialog } from '../../components/product-categories/DeleteProductCategoryDialog'
 import { ProductCategoryAttributesDialog } from '../../components/product-categories/ProductCategoryAttributesDialog'
@@ -66,6 +68,7 @@ export const ProductCategoriesPage = () => {
   const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
   const { data: categories = [], isLoading: loading, error: queryError, refetch: refresh } = useProductCategoriesQuery(queryParams)
   const deleteMutation = useDeleteProductCategory()
+  const reorderMutation = useReorderProductCategories()
   const error = queryError?.message ?? null
 
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
@@ -76,6 +79,16 @@ export const ProductCategoriesPage = () => {
       const message = err instanceof Error ? err.message : 'Failed to delete category'
       return { success: false, error: message }
     }
+  }
+
+  const handleReorder = (items: ReorderItem[]) => {
+    reorderMutation.mutate({
+      items: items.map(i => ({
+        categoryId: i.id,
+        parentId: i.parentId,
+        sortOrder: i.sortOrder,
+      })),
+    })
   }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,19 +128,29 @@ export const ProductCategoriesPage = () => {
               {/* View Toggle */}
               <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
                 <Button
-                  variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+                  variant={viewMode === 'table' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('table')}
-                  className="cursor-pointer h-8 px-3"
+                  className={cn(
+                    'cursor-pointer h-8 px-3 transition-all duration-200',
+                    viewMode === 'table'
+                      ? 'shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
                   aria-label={t('labels.tableView', 'Table view')}
                 >
                   <List className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant={viewMode === 'tree' ? 'secondary' : 'ghost'}
+                  variant={viewMode === 'tree' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('tree')}
-                  className="cursor-pointer h-8 px-3"
+                  className={cn(
+                    'cursor-pointer h-8 px-3 transition-all duration-200',
+                    viewMode === 'tree'
+                      ? 'shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
                   aria-label={t('labels.treeView', 'Tree view')}
                 >
                   <GitBranch className="h-4 w-4" />
@@ -168,6 +191,7 @@ export const ProductCategoriesPage = () => {
                 emptyMessage={t('categories.noCategoriesFound', 'No categories found')}
                 emptyDescription={t('categories.noCategoriesDescription', 'Get started by creating your first category to organize products.')}
                 onCreateClick={canCreateCategories ? () => setShowCreateDialog(true) : undefined}
+                onReorder={canUpdateCategories ? handleReorder : undefined}
               />
             </div>
           ) : (

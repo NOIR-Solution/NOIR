@@ -118,3 +118,17 @@ public sealed class ProductCategoryHasChildrenSpec : Specification<ProductCatego
              .TagWith("CheckProductCategoryHasChildren");
     }
 }
+
+/// <summary>
+/// Specification to load multiple product categories by IDs for bulk update (with tracking).
+/// </summary>
+public sealed class ProductCategoriesByIdsForUpdateSpec : Specification<ProductCategory>
+{
+    public ProductCategoriesByIdsForUpdateSpec(IEnumerable<Guid> ids)
+    {
+        var idList = ids.ToList();
+        Query.Where(c => idList.Contains(c.Id))
+             .AsTracking()
+             .TagWith("GetProductCategoriesByIdsForUpdate");
+    }
+}

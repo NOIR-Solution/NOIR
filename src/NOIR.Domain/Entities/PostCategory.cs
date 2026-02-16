@@ -135,6 +135,14 @@ public class PostCategory : TenantAggregateRoot<Guid>
     }
 
     /// <summary>
+    /// Updates the parent category.
+    /// </summary>
+    public void SetParent(Guid? parentId)
+    {
+        ParentId = parentId;
+    }
+
+    /// <summary>
     /// Increments the post count.
     /// </summary>
     public void IncrementPostCount()

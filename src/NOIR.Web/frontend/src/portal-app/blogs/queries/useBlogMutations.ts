@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deletePost, deleteCategory, deleteTag } from '@/services/blog'
+import { deletePost, deleteCategory, deleteTag, reorderBlogCategories } from '@/services/blog'
+import type { ReorderBlogCategoriesRequest } from '@/services/blog'
 import { blogPostKeys, blogCategoryKeys, blogTagKeys } from './queryKeys'
 import { optimisticListDelete, optimisticArrayDelete } from '@/hooks/useOptimisticMutation'
 
@@ -16,6 +17,16 @@ export const useDeleteBlogCategoryMutation = () => {
   return useMutation({
     mutationFn: (id: string) => deleteCategory(id),
     ...optimisticArrayDelete(queryClient, blogCategoryKeys.lists(), blogCategoryKeys.all),
+  })
+}
+
+export const useReorderBlogCategoriesMutation = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (request: ReorderBlogCategoriesRequest) => reorderBlogCategories(request),
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: blogCategoryKeys.all })
+    },
   })
 }
 

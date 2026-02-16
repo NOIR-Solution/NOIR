@@ -148,8 +148,8 @@ public class Product : TenantAggregateRoot<Guid>
     /// </summary>
     public void UpdateIdentification(string? sku, string? barcode)
     {
-        Sku = sku;
-        Barcode = barcode;
+        Sku = string.IsNullOrWhiteSpace(sku) ? null : sku.Trim();
+        Barcode = string.IsNullOrWhiteSpace(barcode) ? null : barcode.Trim();
     }
 
     /// <summary>

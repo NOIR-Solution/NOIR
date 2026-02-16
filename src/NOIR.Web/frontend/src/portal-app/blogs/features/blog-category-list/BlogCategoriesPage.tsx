@@ -1,6 +1,7 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, FolderTree, Plus, Pencil, Trash2, List, GitBranch, MoreHorizontal } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import {
   Badge,
   Button,
@@ -24,11 +25,12 @@ import {
   TableHeader,
   TableRow,
   type TreeCategory,
+  type ReorderItem,
 } from '@uikit'
 
 import { usePageContext } from '@/hooks/usePageContext'
 
-import { useBlogCategoriesQuery, useDeleteBlogCategoryMutation } from '@/portal-app/blogs/queries'
+import { useBlogCategoriesQuery, useDeleteBlogCategoryMutation, useReorderBlogCategoriesMutation } from '@/portal-app/blogs/queries'
 import { BlogCategoryDialog } from '../../components/blog-categories/BlogCategoryDialog'
 import { DeleteBlogCategoryDialog } from '../../components/blog-categories/DeleteBlogCategoryDialog'
 
@@ -57,10 +59,21 @@ export const BlogCategoriesPage = () => {
   const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
   const { data = [], isLoading: loading, error: queryError, refetch: refresh } = useBlogCategoriesQuery(queryParams)
   const deleteMutation = useDeleteBlogCategoryMutation()
+  const reorderMutation = useReorderBlogCategoriesMutation()
   const error = queryError?.message ?? null
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value)
+  }
+
+  const handleReorder = (items: ReorderItem[]) => {
+    reorderMutation.mutate({
+      items: items.map(i => ({
+        categoryId: i.id,
+        parentId: i.parentId,
+        sortOrder: i.sortOrder,
+      })),
+    })
   }
 
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
@@ -117,19 +130,29 @@ export const BlogCategoriesPage = () => {
               {/* View Toggle */}
               <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
                 <Button
-                  variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+                  variant={viewMode === 'table' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('table')}
-                  className="cursor-pointer h-8 px-3"
+                  className={cn(
+                    'cursor-pointer h-8 px-3 transition-all duration-200',
+                    viewMode === 'table'
+                      ? 'shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
                   aria-label={t('labels.tableView', 'Table view')}
                 >
                   <List className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant={viewMode === 'tree' ? 'secondary' : 'ghost'}
+                  variant={viewMode === 'tree' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('tree')}
-                  className="cursor-pointer h-8 px-3"
+                  className={cn(
+                    'cursor-pointer h-8 px-3 transition-all duration-200',
+                    viewMode === 'tree'
+                      ? 'shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
                   aria-label={t('labels.treeView', 'Tree view')}
                 >
                   <GitBranch className="h-4 w-4" />
@@ -170,6 +193,7 @@ export const BlogCategoriesPage = () => {
                 emptyMessage={t('blogCategories.noCategoriesFound', 'No categories found')}
                 emptyDescription={t('blogCategories.noCategoriesDescription', 'Get started by creating your first category to organize your blog posts.')}
                 onCreateClick={handleCreateClick}
+                onReorder={handleReorder}
               />
             </div>
           ) : (

@@ -1,4 +1,5 @@
 using NOIR.Application.Features.Blog.Commands.CreateCategory;
+using NOIR.Application.Features.Blog.Commands.ReorderCategories;
 using NOIR.Application.Features.Blog.Commands.CreatePost;
 using NOIR.Application.Features.Blog.Commands.CreateTag;
 using NOIR.Application.Features.Blog.Commands.DeleteCategory;
@@ -312,6 +313,30 @@ public static class BlogEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound)
         .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
+
+        // Reorder categories
+        group.MapPut("/reorder", async (
+            ReorderBlogCategoriesRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new ReorderBlogCategoriesCommand(
+                request.Items.Select(i => new BlogCategorySortOrderItem(
+                    i.CategoryId,
+                    i.ParentId,
+                    i.SortOrder)).ToList())
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<List<PostCategoryListDto>>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.BlogCategoriesUpdate)
+        .WithName("ReorderBlogCategories")
+        .WithSummary("Reorder blog categories")
+        .WithDescription("Updates the sort order and parent of multiple blog categories in a single request.")
+        .Produces<List<PostCategoryListDto>>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
 
         // Delete category (soft delete)
         group.MapDelete("/{id:guid}", async (
