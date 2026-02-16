@@ -538,6 +538,25 @@ export const deleteProductCategory = async (id: string): Promise<void> => {
   })
 }
 
+/**
+ * Request to reorder product categories
+ */
+export interface ReorderProductCategoriesRequest {
+  items: { categoryId: string; parentId: string | null; sortOrder: number }[]
+}
+
+/**
+ * Reorder product categories in bulk (sort order + reparenting)
+ */
+export const reorderProductCategories = async (
+  request: ReorderProductCategoriesRequest
+): Promise<ProductCategoryListItem[]> => {
+  return apiClient<ProductCategoryListItem[]>('/products/categories/reorder', {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}
+
 // ============================================================================
 // Options
 // ============================================================================

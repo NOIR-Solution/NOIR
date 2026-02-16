@@ -2,16 +2,27 @@
  * CategoryTreeView Component
  *
  * A reusable hierarchical tree view for displaying categories with
- * expand/collapse, drag-drop reordering, and inline actions.
+ * expand/collapse, drag-drop reordering/reparenting, and inline actions.
  *
+ * Built on @headless-tree for accessible, keyboard-navigable tree interactions.
  * Used by both ProductCategoriesPage and BlogCategoriesPage.
  */
-import { useState, useMemo } from 'react'
+import { useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useTree } from '@headless-tree/react'
+import {
+  syncDataLoaderFeature,
+  hotkeysCoreFeature,
+  dragAndDropFeature,
+  expandAllFeature,
+  removeItemsFromParents,
+  insertItemsAtTarget,
+} from '@headless-tree/core'
 import {
   ChevronRight,
   ChevronDown,
+  UnfoldVertical,
+  FoldVertical,
   FolderTree,
   Pencil,
   Trash2,
@@ -42,6 +53,13 @@ export interface TreeCategory {
   itemCount?: number
 }
 
+// Reorder event item
+export interface ReorderItem {
+  id: string
+  parentId: string | null
+  sortOrder: number
+}
+
 interface CategoryTreeViewProps<T extends TreeCategory> {
   categories: T[]
   loading?: boolean
@@ -53,191 +71,68 @@ interface CategoryTreeViewProps<T extends TreeCategory> {
   emptyMessage?: string
   emptyDescription?: string
   onCreateClick?: () => void
+  onReorder?: (items: ReorderItem[]) => void
 }
 
-// Build tree structure from flat list
-const buildTree = <T extends TreeCategory>(items: T[]): Map<string | null, T[]> => {
-  const tree = new Map<string | null, T[]>()
+// Internal tree data item
+interface TreeDataItem<T extends TreeCategory> {
+  name: string
+  children: string[]
+  category: T | null
+}
 
-  // Initialize with empty arrays
-  tree.set(null, [])
+// Build a flat data map for headless-tree from categories
+const buildDataMap = <T extends TreeCategory>(categories: T[]): Record<string, TreeDataItem<T>> => {
+  // Group by parentId to find children
+  const childrenMap = new Map<string | null, string[]>()
+  const catMap = new Map(categories.map(c => [c.id, c]))
 
-  items.forEach(item => {
-    const parentKey = item.parentId || null
-    if (!tree.has(parentKey)) {
-      tree.set(parentKey, [])
+  categories.forEach(cat => {
+    const parentKey = cat.parentId || null
+    if (!childrenMap.has(parentKey)) childrenMap.set(parentKey, [])
+    childrenMap.get(parentKey)!.push(cat.id)
+  })
+
+  // Sort children within each parent by sortOrder
+  childrenMap.forEach((ids) => {
+    ids.sort((a, b) => (catMap.get(a)!.sortOrder) - (catMap.get(b)!.sortOrder))
+  })
+
+  // Build data map with virtual root
+  const data: Record<string, TreeDataItem<T>> = {
+    root: {
+      name: 'Root',
+      children: childrenMap.get(null) || [],
+      category: null,
+    },
+  }
+
+  categories.forEach(cat => {
+    data[cat.id] = {
+      name: cat.name,
+      children: childrenMap.get(cat.id) || [],
+      category: cat,
     }
-    tree.get(parentKey)!.push(item)
   })
 
-  // Sort children by sortOrder
-  tree.forEach((children) => {
-    children.sort((a, b) => a.sortOrder - b.sortOrder)
-  })
-
-  return tree
+  return data
 }
 
-interface TreeNodeProps<T extends TreeCategory> {
-  category: T
-  tree: Map<string | null, T[]>
-  level: number
-  onEdit?: (category: T) => void
-  onDelete?: (category: T) => void
-  canEdit?: boolean
-  canDelete?: boolean
-  itemCountLabel?: string
-  expandedIds: Set<string>
-  toggleExpanded: (id: string) => void
-}
-
-const TreeNode = <T extends TreeCategory>({
-  category,
-  tree,
-  level,
-  onEdit,
-  onDelete,
-  canEdit = true,
-  canDelete = true,
-  itemCountLabel = 'items',
-  expandedIds,
-  toggleExpanded,
-}: TreeNodeProps<T>) => {
-  const { t } = useTranslation('common')
-  const children = tree.get(category.id) || []
-  const hasChildren = children.length > 0
-  const isExpanded = expandedIds.has(category.id)
-
-  return (
-    <div>
-      <motion.div
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.2, delay: level * 0.05 }}
-        className={cn(
-          'group flex items-center gap-2 py-2 px-3 rounded-lg transition-colors',
-          'hover:bg-muted/50',
-          level > 0 && 'ml-6'
-        )}
-        style={{ marginLeft: level * 24 }}
-      >
-        {/* Expand/Collapse Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            'h-6 w-6 p-0 cursor-pointer transition-transform',
-            !hasChildren && 'invisible'
-          )}
-          onClick={() => toggleExpanded(category.id)}
-          aria-label={isExpanded ? t('nav.collapse', 'Collapse') : t('nav.expand', 'Expand')}
-        >
-          {isExpanded ? (
-            <ChevronDown className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-        </Button>
-
-        {/* Drag Handle */}
-        <GripVertical className="h-4 w-4 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab" />
-
-        {/* Icon */}
-        <FolderTree className="h-4 w-4 text-muted-foreground" />
-
-        {/* Name & Description */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-medium truncate">{category.name}</span>
-            <code className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded hidden sm:inline">
-              {category.slug}
-            </code>
-          </div>
-          {category.description && (
-            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-              {category.description}
-            </p>
-          )}
-        </div>
-
-        {/* Badges */}
-        <div className="flex items-center gap-2">
-          {category.itemCount !== undefined && category.itemCount > 0 && (
-            <Badge variant="secondary" className="text-xs">
-              {category.itemCount} {itemCountLabel}
-            </Badge>
-          )}
-          {category.childCount > 0 && (
-            <Badge variant="outline" className="text-xs">
-              {category.childCount} {t('labels.children', 'children')}
-            </Badge>
-          )}
-        </div>
-
-        {/* Actions */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-              aria-label={`Actions for ${category.name}`}
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            {canEdit && onEdit && (
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => onEdit(category)}
-              >
-                <Pencil className="h-4 w-4 mr-2" />
-                {t('labels.edit', 'Edit')}
-              </DropdownMenuItem>
-            )}
-            {canDelete && onDelete && (
-              <DropdownMenuItem
-                className="text-destructive cursor-pointer"
-                onClick={() => onDelete(category)}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                {t('labels.delete', 'Delete')}
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </motion.div>
-
-      {/* Children */}
-      <AnimatePresence>
-        {isExpanded && hasChildren && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {children.map((child) => (
-              <TreeNode
-                key={child.id}
-                category={child}
-                tree={tree}
-                level={level + 1}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                canEdit={canEdit}
-                canDelete={canDelete}
-                itemCountLabel={itemCountLabel}
-                expandedIds={expandedIds}
-                toggleExpanded={toggleExpanded}
-              />
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
+// Compute changed items after a drop and produce ReorderItem[] for the backend
+const computeReorderItems = <T extends TreeCategory>(
+  dataMap: Record<string, TreeDataItem<T>>,
+  changedParentIds: Set<string>,
+): ReorderItem[] => {
+  const items: ReorderItem[] = []
+  for (const parentId of changedParentIds) {
+    const parent = dataMap[parentId]
+    if (!parent) continue
+    const resolvedParentId = parentId === 'root' ? null : parentId
+    parent.children.forEach((childId, index) => {
+      items.push({ id: childId, parentId: resolvedParentId, sortOrder: index })
+    })
+  }
+  return items
 }
 
 export const CategoryTreeView = <T extends TreeCategory>({
@@ -251,38 +146,92 @@ export const CategoryTreeView = <T extends TreeCategory>({
   emptyMessage = 'No categories found',
   emptyDescription = 'Get started by creating your first category.',
   onCreateClick,
+  onReorder,
 }: CategoryTreeViewProps<T>) => {
   const { t } = useTranslation('common')
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const dataMapRef = useRef<Record<string, TreeDataItem<T>>>(buildDataMap(categories))
+  const treeRef = useRef<ReturnType<typeof useTree<TreeDataItem<T>>> | null>(null)
+  const onReorderRef = useRef(onReorder)
+  onReorderRef.current = onReorder
+  // Skip server-data rebuilds briefly after a drop to prevent flicker
+  const dropTimestampRef = useRef(0)
 
-  // Build tree structure
-  const tree = useMemo(() => buildTree(categories), [categories])
-  const rootCategories = tree.get(null) || []
+  const canDrag = useMemo(() => !!onReorder, [onReorder])
 
-  const toggleExpanded = (id: string) => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
+  // Batch all parent changes from a single drop into one update + one API call
+  const handleDrop = useMemo(() => {
+    if (!onReorder) return undefined
+    return async (
+      items: import('@headless-tree/core').ItemInstance<TreeDataItem<T>>[],
+      target: import('@headless-tree/core').DragTarget<TreeDataItem<T>>,
+    ) => {
+      const changedParentIds = new Set<string>()
+      // Update dataMapRef.current immediately in the callback so that
+      // insertItemsAtTarget reads the already-updated children (with the
+      // dragged item removed) and doesn't duplicate it.
+      const applyChanges = (
+        item: import('@headless-tree/core').ItemInstance<TreeDataItem<T>>,
+        newChildren: string[],
+      ) => {
+        const parentId = item.getId()
+        changedParentIds.add(parentId)
+        dataMapRef.current = {
+          ...dataMapRef.current,
+          [parentId]: { ...dataMapRef.current[parentId], children: newChildren },
+        }
       }
-      return next
-    })
+      await removeItemsFromParents(items, applyChanges)
+      await insertItemsAtTarget(items.map(i => i.getId()), target, applyChanges)
+
+      // Single rebuild + single API call
+      dropTimestampRef.current = Date.now()
+      treeRef.current?.rebuildTree()
+      const reorderItems = computeReorderItems(dataMapRef.current, changedParentIds)
+      onReorderRef.current?.(reorderItems)
+    }
+  }, [onReorder])
+
+  const features = useMemo(
+    () => [syncDataLoaderFeature, hotkeysCoreFeature, dragAndDropFeature, expandAllFeature],
+    [],
+  )
+
+  const tree = useTree<TreeDataItem<T>>({
+    rootItemId: 'root',
+    getItemName: (item) => item.getItemData().name,
+    isItemFolder: () => true, // All categories can accept children
+    indent: 24,
+    canReorder: canDrag,
+    canDrag: () => canDrag,
+    dataLoader: {
+      getItem: (id) => dataMapRef.current[id],
+      getChildren: (id) => dataMapRef.current[id]?.children ?? [],
+    },
+    onDrop: handleDrop,
+    features,
+  })
+  treeRef.current = tree
+
+  // Rebuild tree when categories change from server.
+  // Skip rebuilds within 2s of a drop to prevent the server refetch from overwriting
+  // the local optimistic order and causing a visible flicker.
+  const prevCategoriesRef = useRef(categories)
+  if (prevCategoriesRef.current !== categories) {
+    prevCategoriesRef.current = categories
+    const msSinceDrop = Date.now() - dropTimestampRef.current
+    if (msSinceDrop > 2000) {
+      dataMapRef.current = buildDataMap(categories)
+      tree.rebuildTree()
+    }
   }
 
-  const expandAll = () => {
-    // Use tree map (built from parentId) to find categories with children,
-    // not childCount which may be stale or 0 when backend doesn't load Children nav
-    const allIds = new Set(
-      categories.filter(c => (tree.get(c.id) || []).length > 0).map(c => c.id)
-    )
-    setExpandedIds(allIds)
-  }
+  const expandAll = useCallback(() => {
+    tree.expandAll()
+  }, [tree])
 
-  const collapseAll = () => {
-    setExpandedIds(new Set())
-  }
+  const collapseAll = useCallback(() => {
+    tree.collapseAll()
+  }, [tree])
 
   if (loading) {
     return (
@@ -316,45 +265,169 @@ export const CategoryTreeView = <T extends TreeCategory>({
     )
   }
 
+  const treeItems = tree.getItems()
+
   return (
     <div className="space-y-2">
       {/* Toolbar */}
-      <div className="flex items-center justify-end gap-2 pb-2 border-b border-border/50">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={expandAll}
-          className="cursor-pointer text-xs"
-        >
-          {t('buttons.expandAll', 'Expand All')}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={collapseAll}
-          className="cursor-pointer text-xs"
-        >
-          {t('buttons.collapseAll', 'Collapse All')}
-        </Button>
+      <div className="flex items-center justify-end pb-2 border-b border-border/50">
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={expandAll}
+            className="cursor-pointer text-xs h-7 px-2.5 hover:bg-background hover:text-foreground hover:shadow-sm transition-all duration-200"
+          >
+            <UnfoldVertical className="h-3.5 w-3.5 mr-1.5" />
+            {t('buttons.expandAll', 'Expand All')}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={collapseAll}
+            className="cursor-pointer text-xs h-7 px-2.5 hover:bg-background hover:text-foreground hover:shadow-sm transition-all duration-200"
+          >
+            <FoldVertical className="h-3.5 w-3.5 mr-1.5" />
+            {t('buttons.collapseAll', 'Collapse All')}
+          </Button>
+        </div>
       </div>
 
       {/* Tree */}
-      <div className="space-y-1">
-        {rootCategories.map((category) => (
-          <TreeNode
-            key={category.id}
-            category={category}
-            tree={tree}
-            level={0}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            canEdit={canEdit}
-            canDelete={canDelete}
-            itemCountLabel={itemCountLabel}
-            expandedIds={expandedIds}
-            toggleExpanded={toggleExpanded}
+      <div
+        {...tree.getContainerProps('Category Tree')}
+        className="space-y-1 relative"
+      >
+        {treeItems.map((item) => {
+          const data = item.getItemData()
+          const category = data.category
+          if (!category) return null // Skip virtual root
+
+          const meta = item.getItemMeta()
+          const hasChildren = data.children.length > 0
+          const isExpanded = item.isExpanded()
+          const isDragOver = item.isDraggingOver()
+
+          return (
+            <div
+              {...item.getProps()}
+              key={item.getId()}
+              className={cn(
+                'group flex items-center gap-2 py-2 px-3 rounded-lg transition-colors',
+                'hover:bg-muted/50',
+                isDragOver && 'bg-accent/50 ring-2 ring-primary/30',
+                item.isFocused() && 'bg-muted/30',
+              )}
+              style={{ paddingLeft: `${meta.level * 24 + 12}px` }}
+            >
+              {/* Expand/Collapse Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  'h-6 w-6 p-0 cursor-pointer transition-transform shrink-0',
+                  !hasChildren && 'invisible'
+                )}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (isExpanded) {
+                    item.collapse()
+                  } else {
+                    item.expand()
+                  }
+                }}
+                aria-label={isExpanded ? t('nav.collapse', 'Collapse') : t('nav.expand', 'Expand')}
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
+
+              {/* Drag Handle */}
+              {canDrag ? (
+                <GripVertical className="h-4 w-4 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab shrink-0" />
+              ) : (
+                <GripVertical className="h-4 w-4 text-muted-foreground/50 opacity-0 shrink-0" />
+              )}
+
+              {/* Icon */}
+              <FolderTree className="h-4 w-4 text-muted-foreground shrink-0" />
+
+              {/* Name & Description */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium truncate">{category.name}</span>
+                  <code className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded hidden sm:inline">
+                    {category.slug}
+                  </code>
+                </div>
+                {category.description && (
+                  <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                    {category.description}
+                  </p>
+                )}
+              </div>
+
+              {/* Badges */}
+              <div className="flex items-center gap-2 shrink-0">
+                {category.itemCount !== undefined && category.itemCount > 0 && (
+                  <Badge variant="secondary" className="text-xs">
+                    {category.itemCount} {itemCountLabel}
+                  </Badge>
+                )}
+                {category.childCount > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    {category.childCount} {t('labels.children', 'children')}
+                  </Badge>
+                )}
+              </div>
+
+              {/* Actions */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0"
+                    aria-label={`Actions for ${category.name}`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  {canEdit && onEdit && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => onEdit(category)}
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      {t('labels.edit', 'Edit')}
+                    </DropdownMenuItem>
+                  )}
+                  {canDelete && onDelete && (
+                    <DropdownMenuItem
+                      className="text-destructive cursor-pointer"
+                      onClick={() => onDelete(category)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {t('labels.delete', 'Delete')}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )
+        })}
+        {/* Drag indicator line */}
+        {canDrag && (
+          <div
+            style={tree.getDragLineStyle()}
+            className="absolute h-0.5 bg-primary rounded-full pointer-events-none"
           />
-        ))}
+        )}
       </div>
     </div>
   )

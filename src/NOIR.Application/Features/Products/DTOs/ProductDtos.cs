@@ -321,6 +321,20 @@ public sealed record ImageSortOrderItem(
     Guid ImageId,
     int SortOrder);
 
+/// <summary>
+/// Request to reorder product categories in bulk.
+/// </summary>
+public sealed record ReorderProductCategoriesRequest(
+    List<ReorderCategorySortOrderItem> Items);
+
+/// <summary>
+/// Single item for category reordering.
+/// </summary>
+public sealed record ReorderCategorySortOrderItem(
+    Guid CategoryId,
+    Guid? ParentId,
+    int SortOrder);
+
 // ===== Option DTOs =====
 
 /// <summary>

@@ -6,6 +6,7 @@ using NOIR.Application.Features.ProductAttributes.Queries.GetCategoryAttributes;
 using NOIR.Application.Features.ProductAttributes.Queries.GetCategoryAttributeFormSchema;
 using NOIR.Application.Features.Products.Commands.CreateProductCategory;
 using NOIR.Application.Features.Products.Commands.DeleteProductCategory;
+using NOIR.Application.Features.Products.Commands.ReorderProductCategories;
 using NOIR.Application.Features.Products.Commands.UpdateProductCategory;
 using NOIR.Application.Features.Products.DTOs;
 using NOIR.Application.Features.Products.Queries.GetProductCategories;
@@ -134,6 +135,27 @@ public static class ProductCategoryEndpoints
         .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound)
         .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
+
+        // Reorder categories
+        group.MapPut("/reorder", async (
+            ReorderProductCategoriesRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new ReorderProductCategoriesCommand(
+                request.Items.Select(i => new CategorySortOrderItem(i.CategoryId, i.ParentId, i.SortOrder)).ToList())
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<List<ProductCategoryListDto>>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductCategoriesUpdate)
+        .WithName("ReorderProductCategories")
+        .WithSummary("Reorder product categories")
+        .WithDescription("Updates the sort order and parent of multiple categories in bulk.")
+        .Produces<List<ProductCategoryListDto>>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
 
         // ===== Category Attributes =====
 

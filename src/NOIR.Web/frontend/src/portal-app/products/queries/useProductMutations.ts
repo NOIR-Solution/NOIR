@@ -12,6 +12,7 @@ import {
   createProductCategory,
   updateProductCategory,
   deleteProductCategory,
+  reorderProductCategories,
   addProductVariant,
   deleteProductVariant,
   addProductImage,
@@ -21,6 +22,7 @@ import {
   uploadProductImage,
   reorderProductImages,
 } from '@/services/products'
+import type { ReorderProductCategoriesRequest } from '@/services/products'
 import type {
   CreateProductRequest,
   UpdateProductRequest,
@@ -152,6 +154,18 @@ export const useDeleteProductCategory = () => {
   return useMutation({
     mutationFn: (id: string) => deleteProductCategory(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: productCategoryKeys.all })
+    },
+  })
+}
+
+export const useReorderProductCategories = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (request: ReorderProductCategoriesRequest) => reorderProductCategories(request),
+    // Don't invalidate on success — the tree already shows the correct order locally.
+    // Only refetch on error to revert to server state.
+    onError: () => {
       queryClient.invalidateQueries({ queryKey: productCategoryKeys.all })
     },
   })
