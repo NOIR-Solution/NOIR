@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Tags, Plus, Pencil, Trash2, MoreHorizontal, Filter, List } from 'lucide-react'
+import { Search, Tags, Plus, Pencil, Trash2, MoreHorizontal, Filter, List, Check } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -39,6 +39,7 @@ import { useProductAttributesQuery, useDeleteProductAttributeMutation } from '@/
 import type { GetProductAttributesParams } from '@/services/productAttributes'
 import { ProductAttributeDialog } from '../../components/product-attributes/ProductAttributeDialog'
 import type { ProductAttributeListItem } from '@/types/productAttribute'
+import { getTypeBadge } from '../../utils/attribute.utils'
 
 import { toast } from 'sonner'
 
@@ -82,26 +83,6 @@ export const ProductAttributesPage = () => {
       const message = err instanceof Error ? err.message : t('productAttributes.deleteError', 'Failed to delete product attribute')
       toast.error(message)
     }
-  }
-
-  // Helper to get type display label
-  const getTypeLabel = (type: string) => {
-    const typeLabels: Record<string, string> = {
-      Select: t('productAttributes.types.select', 'Select'),
-      MultiSelect: t('productAttributes.types.multiSelect', 'Multi-Select'),
-      Text: t('productAttributes.types.text', 'Text'),
-      TextArea: t('productAttributes.types.textArea', 'Text Area'),
-      Number: t('productAttributes.types.number', 'Number'),
-      Decimal: t('productAttributes.types.decimal', 'Decimal'),
-      Boolean: t('productAttributes.types.boolean', 'Boolean'),
-      Date: t('productAttributes.types.date', 'Date'),
-      DateTime: t('productAttributes.types.dateTime', 'Date Time'),
-      Color: t('productAttributes.types.color', 'Color'),
-      Range: t('productAttributes.types.range', 'Range'),
-      Url: t('productAttributes.types.url', 'URL'),
-      File: t('productAttributes.types.file', 'File'),
-    }
-    return typeLabels[type] || type
   }
 
   return (
@@ -214,20 +195,31 @@ export const ProductAttributesPage = () => {
                         </code>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{getTypeLabel(attribute.type)}</Badge>
+                        {(() => {
+                          const { label, className } = getTypeBadge(attribute.type, t)
+                          return (
+                            <Badge variant="outline" className={className}>
+                              {label}
+                            </Badge>
+                          )
+                        })()}
                       </TableCell>
                       <TableCell className="text-center">
                         <Badge variant="secondary">{attribute.valueCount}</Badge>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Badge variant={attribute.isFilterable ? 'default' : 'secondary'}>
-                          {attribute.isFilterable ? t('labels.yes', 'Yes') : t('labels.no', 'No')}
-                        </Badge>
+                        {attribute.isFilterable ? (
+                          <Check className="h-4 w-4 text-emerald-500 mx-auto" />
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-center">
-                        <Badge variant={attribute.isVariantAttribute ? 'default' : 'secondary'}>
-                          {attribute.isVariantAttribute ? t('labels.yes', 'Yes') : t('labels.no', 'No')}
-                        </Badge>
+                        {attribute.isVariantAttribute ? (
+                          <Check className="h-4 w-4 text-emerald-500 mx-auto" />
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Badge variant={attribute.isActive ? 'default' : 'secondary'}>
