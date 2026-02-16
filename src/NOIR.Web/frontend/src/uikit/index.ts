@@ -21,6 +21,7 @@ export * from './diff-viewer'
 export * from './drawer'
 export * from './dropdown-menu'
 export * from './empty-state'
+export * from './file-preview'
 export * from './form'
 // form-field: rename FormField to avoid conflict with form's FormField
 export { FormField as SimpleFormField, FormTextarea, FormError } from './form-field'

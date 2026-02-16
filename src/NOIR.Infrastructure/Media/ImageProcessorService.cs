@@ -148,6 +148,7 @@ public class ImageProcessorService : IImageProcessor, IScopedService
                 Height = originalHeight,
                 Format = DetectFormat(fileName),
                 MimeType = GetMimeTypeFromFileName(fileName),
+                SizeBytes = inputStream.CanSeek ? inputStream.Length : 0,
                 HasTransparency = false // Would need more analysis to detect
             };
 

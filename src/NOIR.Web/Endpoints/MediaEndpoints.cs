@@ -164,7 +164,7 @@ public static class MediaEndpoints
                     height: result.Metadata?.Height ?? 0,
                     format: result.Metadata?.Format ?? "unknown",
                     mimeType: result.Metadata?.MimeType ?? "application/octet-stream",
-                    sizeBytes: result.Metadata?.SizeBytes ?? file.Length,
+                    sizeBytes: result.Metadata?.SizeBytes > 0 ? result.Metadata.SizeBytes : file.Length,
                     hasTransparency: result.Metadata?.HasTransparency ?? false,
                     variantsJson: variantsJson,
                     srcsetsJson: srcsetsJson,
