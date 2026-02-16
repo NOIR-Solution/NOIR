@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Tag, Plus, Pencil, Trash2 } from 'lucide-react'
+import { Search, Tag, Plus, Pencil, Trash2, MoreHorizontal } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import {
   Badge,
@@ -10,6 +10,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  ColorPopover,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -17,6 +18,7 @@ import {
   EmptyState,
   Input,
   PageHeader,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -74,12 +76,12 @@ export const BlogTagsPage = () => {
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
       <PageHeader
         icon={Tag}
-        title="Tags"
-        description="Label and organize your content"
+        title={t('blogTags.title', 'Tags')}
+        description={t('blogTags.description', 'Label and organize your content')}
         action={
           <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={handleCreateClick}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-            New Tag
+            {t('blogTags.newTag', 'New Tag')}
           </Button>
         }
       />
@@ -88,19 +90,19 @@ export const BlogTagsPage = () => {
         <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
-              <CardTitle>All Tags</CardTitle>
+              <CardTitle>{t('blogTags.allTags', 'All Tags')}</CardTitle>
               <CardDescription>
-                {data ? `${data.length} tags` : ''}
+                {data ? t('blogTags.totalCount', { count: data.length, defaultValue: `${data.length} tags` }) : ''}
               </CardDescription>
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search tags..."
+                placeholder={t('blogTags.searchPlaceholder', 'Search tags...')}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10 w-full sm:w-64"
-                aria-label={t('labels.searchTags', 'Search tags')}
+                aria-label={t('blogTags.searchTags', 'Search tags')}
               />
             </div>
           </div>
@@ -116,29 +118,36 @@ export const BlogTagsPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[30%]">Name</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead>Color</TableHead>
-                  <TableHead>Posts</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="w-[35%]">{t('labels.name', 'Name')}</TableHead>
+                  <TableHead>{t('labels.slug', 'Slug')}</TableHead>
+                  <TableHead className="text-center">{t('blogTags.posts', 'Posts')}</TableHead>
+                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      Loading...
-                    </TableCell>
-                  </TableRow>
+                  [...Array(5)].map((_, i) => (
+                    <TableRow key={i} className="animate-pulse">
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-4 w-4 rounded-full" />
+                          <Skeleton className="h-4 w-28" />
+                        </div>
+                      </TableCell>
+                      <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
+                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
+                    </TableRow>
+                  ))
                 ) : data.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="p-0">
+                    <TableCell colSpan={4} className="p-0">
                       <EmptyState
                         icon={Tag}
-                        title="No tags found"
-                        description="Get started by creating your first tag to label and organize your content."
+                        title={t('blogTags.noTagsFound', 'No tags found')}
+                        description={t('blogTags.noTagsDescription', 'Get started by creating your first tag to label and organize your content.')}
                         action={{
-                          label: 'New Tag',
+                          label: t('blogTags.newTag', 'New Tag'),
                           onClick: handleCreateClick,
                         }}
                         className="border-0 rounded-none px-4 py-12"
@@ -147,36 +156,33 @@ export const BlogTagsPage = () => {
                   </TableRow>
                 ) : (
                   data.map((tag) => (
-                    <TableRow key={tag.id}>
+                    <TableRow key={tag.id} className="group transition-colors hover:bg-muted/50">
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          {tag.color && (
-                            <div
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: tag.color }}
-                            />
+                        <div className="flex items-center gap-2.5">
+                          {tag.color ? (
+                            <ColorPopover color={tag.color} />
+                          ) : (
+                            <div className="w-4 h-4 rounded-full bg-muted border border-border shrink-0" />
                           )}
                           <span className="font-medium">{tag.name}</span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <code className="text-sm text-muted-foreground">{tag.slug}</code>
+                        <code className="text-sm text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{tag.slug}</code>
                       </TableCell>
-                      <TableCell>
-                        {tag.color ? (
-                          <code className="text-xs">{tag.color}</code>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         <Badge variant="secondary">{tag.postCount}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="cursor-pointer" aria-label={`Actions for ${tag.name}`}>
-                              •••
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                              aria-label={t('labels.actionsFor', { name: tag.name, defaultValue: `Actions for ${tag.name}` })}
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -185,14 +191,14 @@ export const BlogTagsPage = () => {
                               onClick={() => handleEditClick(tag)}
                             >
                               <Pencil className="h-4 w-4 mr-2" />
-                              Edit
+                              {t('labels.edit', 'Edit')}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-destructive cursor-pointer"
                               onClick={() => setTagToDelete(tag)}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
+                              {t('labels.delete', 'Delete')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
