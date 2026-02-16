@@ -1070,6 +1070,12 @@
     "fileTooLarge": "Tệp phải nhỏ hơn {{maxSize}}MB",
     "uploadFailed": "Tải lên thất bại"
   },
+  "filePreview": {
+    "openPreview": "Xem trước {{name}}",
+    "clickToPreview": "Nhấn để xem trước",
+    "previewNotAvailable": "Không thể xem trước loại tệp này",
+    "downloadFile": "Tải tệp"
+  },
   "messages": {
     "saveSuccess": "Lưu thành công",
     "deleteSuccess": "Xóa thành công",

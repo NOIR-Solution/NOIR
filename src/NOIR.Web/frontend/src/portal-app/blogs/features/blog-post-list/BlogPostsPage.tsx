@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   EmptyState,
-  ImageLightbox,
+  FilePreviewTrigger,
   Input,
   PageHeader,
   Pagination,
@@ -204,10 +204,12 @@ export const BlogPostsPage = () => {
                         <div className="flex items-center gap-3">
                           {/* Featured Image Thumbnail - Click to view full image */}
                           <div style={{ viewTransitionName: `blog-featured-${post.id}` }}>
-                            <ImageLightbox
-                              src={post.featuredImageUrl ?? ''}
-                              thumbnailSrc={post.featuredImageThumbnailUrl}
-                              alt={post.title}
+                            <FilePreviewTrigger
+                              file={{
+                                url: post.featuredImageUrl ?? '',
+                                name: post.title,
+                                thumbnailUrl: post.featuredImageThumbnailUrl,
+                              }}
                               thumbnailWidth={48}
                               thumbnailHeight={48}
                             />

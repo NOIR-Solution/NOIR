@@ -937,6 +937,12 @@
     "fileTooLarge": "File must be less than {{maxSize}}MB",
     "uploadFailed": "Upload failed"
   },
+  "filePreview": {
+    "openPreview": "Open preview for {{name}}",
+    "clickToPreview": "Click to preview",
+    "previewNotAvailable": "Preview not available for this file type",
+    "downloadFile": "Download file"
+  },
   "messages": {
     "saveSuccess": "Saved successfully",
     "deleteSuccess": "Deleted successfully",
