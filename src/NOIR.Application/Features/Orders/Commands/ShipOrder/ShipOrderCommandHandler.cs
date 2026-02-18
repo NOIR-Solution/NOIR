@@ -29,7 +29,10 @@ public class ShipOrderCommandHandler
                 Error.NotFound($"Order with ID '{command.OrderId}' not found.", "NOIR-ORDER-002"));
         }
 
-        // Ensure order is in Processing status first
+        // Intentional auto-transition: If order is in Confirmed state, automatically
+        // transition through Processing before Shipping. The Processing state has no
+        // dedicated frontend action - it's an internal fulfillment step.
+        // This produces two domain events (OrderProcessingStarted + OrderShipped).
         if (order.Status == OrderStatus.Confirmed)
         {
             order.StartProcessing();

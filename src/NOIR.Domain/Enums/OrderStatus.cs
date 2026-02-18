@@ -43,5 +43,10 @@ public enum OrderStatus
     /// <summary>
     /// Order was refunded.
     /// </summary>
-    Refunded = 7
+    Refunded = 7,
+
+    /// <summary>
+    /// Order was returned by customer.
+    /// </summary>
+    Returned = 8
 }

@@ -126,34 +126,38 @@ export const ProductCategoriesPage = () => {
             </div>
             <div className="flex items-center gap-3">
               {/* View Toggle */}
-              <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
+              <div className="flex items-center gap-1 p-1 rounded-lg bg-muted border border-border/50">
                 <Button
                   variant={viewMode === 'table' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('table')}
                   className={cn(
-                    'cursor-pointer h-8 px-3 transition-all duration-200',
+                    'cursor-pointer h-8 px-3 gap-1.5 transition-all duration-200',
                     viewMode === 'table'
-                      ? 'shadow-sm'
+                      ? 'shadow-sm font-medium'
                       : 'text-muted-foreground hover:text-foreground',
                   )}
                   aria-label={t('labels.tableView', 'Table view')}
+                  aria-pressed={viewMode === 'table'}
                 >
                   <List className="h-4 w-4" />
+                  <span className="text-xs hidden sm:inline">{t('labels.list', 'List')}</span>
                 </Button>
                 <Button
                   variant={viewMode === 'tree' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('tree')}
                   className={cn(
-                    'cursor-pointer h-8 px-3 transition-all duration-200',
+                    'cursor-pointer h-8 px-3 gap-1.5 transition-all duration-200',
                     viewMode === 'tree'
-                      ? 'shadow-sm'
+                      ? 'shadow-sm font-medium'
                       : 'text-muted-foreground hover:text-foreground',
                   )}
                   aria-label={t('labels.treeView', 'Tree view')}
+                  aria-pressed={viewMode === 'tree'}
                 >
                   <GitBranch className="h-4 w-4" />
+                  <span className="text-xs hidden sm:inline">{t('labels.tree', 'Tree')}</span>
                 </Button>
               </div>
 

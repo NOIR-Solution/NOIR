@@ -91,6 +91,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Cart> Carts => Set<Cart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
 
+    // Inventory Receipt entities
+    public DbSet<InventoryReceipt> InventoryReceipts => Set<InventoryReceipt>();
+    public DbSet<InventoryReceiptItem> InventoryReceiptItems => Set<InventoryReceiptItem>();
+
     // Analytics entities (Phase 7)
     public DbSet<FilterAnalyticsEvent> FilterAnalyticsEvents => Set<FilterAnalyticsEvent>();
 

@@ -2,7 +2,7 @@
 
 > **Complete reference of all features, commands, queries, and endpoints in the NOIR platform.**
 
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-02-18
 
 ---
 
@@ -15,6 +15,8 @@
 - [Multi-Tenancy](#multi-tenancy)
 - [Payment Processing](#payment-processing)
 - [Product Catalog](#product-catalog) ⭐
+- [Product Attributes](#product-attributes) ⭐
+- [Brands](#brands) ⭐
 - [Shopping Cart](#shopping-cart) ⭐
 - [Checkout](#checkout) ⭐ **NEW**
 - [Orders](#orders) ⭐ **NEW**
@@ -24,6 +26,8 @@
 - [Legal Pages](#legal-pages)
 - [Media Management](#media-management)
 - [Blog CMS](#blog-cms)
+- [Shipping](#shipping) ⭐
+- [Inventory](#inventory) ⭐
 - [Developer Tools](#developer-tools)
 - [Feature Matrix](#feature-matrix)
 
@@ -639,6 +643,261 @@ GET /api/users?search=john&roleFilter=Admin&pageNumber=1&pageSize=10
 
 ---
 
+## Product Attributes
+
+**Namespace:** `NOIR.Application.Features.ProductAttributes`
+**Endpoint:** `/api/product-attributes`
+**Permissions:** `attributes:*`
+
+> Dynamic attribute system supporting 13 attribute types with category linkage, product assignment, and faceted filtering.
+
+### Attribute Management
+
+#### Create Product Attribute
+- **Command:** `CreateProductAttributeCommand`
+- **Endpoint:** `POST /api/product-attributes`
+- **Permission:** `attributes:create`
+- **Purpose:** Create a new product attribute definition
+- **Returns:** ProductAttributeDto
+- **Validation:**
+  - Code: Required, unique within tenant
+  - Name: Required
+  - Type: Required, valid AttributeType
+- **Audit:** IAuditableCommand
+
+**Example Request:**
+```json
+{
+  "code": "color",
+  "name": "Color",
+  "type": "Select",
+  "isFilterable": true,
+  "isSearchable": true,
+  "isVariantAttribute": true,
+  "showInProductCard": true,
+  "showInSpecifications": true,
+  "placeholder": "Select a color"
+}
+```
+
+#### Update Product Attribute
+- **Command:** `UpdateProductAttributeCommand`
+- **Endpoint:** `PUT /api/product-attributes/{id}`
+- **Permission:** `attributes:update`
+- **Purpose:** Update attribute definition (code, name, flags, validation)
+- **Returns:** ProductAttributeDto
+- **Audit:** IAuditableCommand
+
+#### Delete Product Attribute
+- **Command:** `DeleteProductAttributeCommand`
+- **Endpoint:** `DELETE /api/product-attributes/{id}`
+- **Permission:** `attributes:delete`
+- **Purpose:** Soft delete a product attribute
+- **Returns:** Success
+- **Audit:** IAuditableCommand
+
+#### Get Product Attributes
+- **Query:** `GetProductAttributesQuery`
+- **Endpoint:** `GET /api/product-attributes`
+- **Permission:** `attributes:read`
+- **Purpose:** List attributes with pagination and filtering
+- **Returns:** PagedResult<ProductAttributeListDto>
+- **Query Parameters:**
+  - `search`: Search by code or name
+  - `isActive`: Filter by active status
+  - `isFilterable`: Filter by filterable flag
+  - `isVariantAttribute`: Filter by variant attribute flag
+  - `type`: Filter by attribute type
+
+#### Get Product Attribute By Id
+- **Query:** `GetProductAttributeByIdQuery`
+- **Endpoint:** `GET /api/product-attributes/{id}`
+- **Permission:** `attributes:read`
+- **Purpose:** Get attribute details with all values
+- **Returns:** ProductAttributeDto
+
+### Attribute Values
+
+#### Add Attribute Value
+- **Command:** `AddProductAttributeValueCommand`
+- **Endpoint:** `POST /api/product-attributes/{id}/values`
+- **Permission:** `attributes:update`
+- **Purpose:** Add a predefined value to a Select/MultiSelect attribute
+- **Returns:** ProductAttributeValueDto
+
+**Example Request:**
+```json
+{
+  "value": "red",
+  "displayValue": "Red",
+  "colorCode": "#FF0000",
+  "sortOrder": 1
+}
+```
+
+#### Update Attribute Value
+- **Command:** `UpdateProductAttributeValueCommand`
+- **Endpoint:** `PUT /api/product-attributes/{id}/values/{valueId}`
+- **Permission:** `attributes:update`
+- **Returns:** ProductAttributeValueDto
+
+#### Remove Attribute Value
+- **Command:** `RemoveProductAttributeValueCommand`
+- **Endpoint:** `DELETE /api/product-attributes/{id}/values/{valueId}`
+- **Permission:** `attributes:update`
+- **Returns:** Success
+
+### Category-Attribute Linkage
+
+#### Assign Attribute to Category
+- **Command:** `AssignCategoryAttributeCommand`
+- **Purpose:** Link an attribute to a product category
+- **Returns:** CategoryAttributeDto
+
+#### Update Category Attribute
+- **Command:** `UpdateCategoryAttributeCommand`
+- **Purpose:** Update linkage settings (isRequired, sortOrder)
+
+#### Remove Category Attribute
+- **Command:** `RemoveCategoryAttributeCommand`
+- **Purpose:** Unlink an attribute from a category
+
+#### Get Category Attributes
+- **Query:** `GetCategoryAttributesQuery`
+- **Purpose:** Get all attributes linked to a category
+
+### Product-Attribute Assignment
+
+#### Set Product Attribute Value
+- **Command:** `SetProductAttributeValueCommand`
+- **Purpose:** Set a single attribute value on a product (or variant)
+
+#### Bulk Update Product Attributes
+- **Command:** `BulkUpdateProductAttributesCommand`
+- **Purpose:** Set multiple attribute values for a product at once
+
+#### Get Product Attribute Assignments
+- **Query:** `GetProductAttributeAssignmentsQuery`
+- **Purpose:** Get all attribute values assigned to a product
+
+### Form Schema Queries
+
+#### Get Product Attribute Form Schema
+- **Query:** `GetProductAttributeFormSchemaQuery`
+- **Purpose:** Generate a dynamic form schema for a specific product (with current values)
+- **Returns:** ProductAttributeFormSchemaDto (fields, types, options, current values)
+
+#### Get Category Attribute Form Schema
+- **Query:** `GetCategoryAttributeFormSchemaQuery`
+- **Purpose:** Generate a dynamic form schema for a category (for new product creation)
+- **Returns:** CategoryAttributeFormSchemaDto
+
+### Attribute Types
+
+| Type | Description | Use Case |
+|------|-------------|----------|
+| `Select` | Single selection from predefined options | Color, Size, Material |
+| `MultiSelect` | Multiple selections from predefined options | Features, Tags |
+| `Text` | Short text input | Brand model number |
+| `TextArea` | Long text input | Custom description |
+| `Number` | Integer input | Warranty months |
+| `Decimal` | Decimal input | Weight (kg) |
+| `Boolean` | Yes/No toggle | Is Organic, Is Waterproof |
+| `Date` | Date picker | Manufacturing date |
+| `DateTime` | Date + time picker | Expiration date |
+| `Color` | Color picker with hex value | Primary color |
+| `Range` | Min/max range input | Price range |
+| `Url` | URL input with validation | Product manual link |
+| `File` | File upload | Technical spec PDF |
+
+### Domain Entities
+
+- **ProductAttribute** - Attribute definition (code, name, type, validation rules)
+- **ProductAttributeValue** - Predefined options for Select/MultiSelect attributes
+- **CategoryAttribute** - Many-to-many link between Category and Attribute
+- **ProductAttributeAssignment** - Actual attribute values assigned to products
+
+---
+
+## Brands
+
+**Namespace:** `NOIR.Application.Features.Brands`
+**Endpoint:** `/api/brands`
+**Permissions:** `brands:*`
+
+> Product brand management with logo, banner, SEO metadata, and featured status.
+
+### Commands
+
+#### Create Brand
+- **Command:** `CreateBrandCommand`
+- **Endpoint:** `POST /api/brands`
+- **Permission:** `brands:create`
+- **Purpose:** Create a new product brand
+- **Returns:** BrandDto
+- **Validation:**
+  - Name: Required
+  - Slug: Required, unique within tenant
+- **Audit:** IAuditableCommand
+
+**Example Request:**
+```json
+{
+  "name": "Nike",
+  "slug": "nike",
+  "logoUrl": "/media/brands/nike-logo.webp",
+  "bannerUrl": "/media/brands/nike-banner.webp",
+  "description": "Leading sports apparel brand",
+  "website": "https://nike.com",
+  "metaTitle": "Nike | Premium Sportswear",
+  "metaDescription": "Shop Nike products",
+  "isFeatured": true
+}
+```
+
+#### Update Brand
+- **Command:** `UpdateBrandCommand`
+- **Endpoint:** `PUT /api/brands/{id}`
+- **Permission:** `brands:update`
+- **Purpose:** Update brand details
+- **Returns:** BrandDto
+- **Audit:** IAuditableCommand
+
+#### Delete Brand
+- **Command:** `DeleteBrandCommand`
+- **Endpoint:** `DELETE /api/brands/{id}`
+- **Permission:** `brands:delete`
+- **Purpose:** Soft delete brand
+- **Returns:** Success
+- **Validation:** Brand must not have associated products
+- **Audit:** IAuditableCommand
+
+### Queries
+
+#### Get Brands
+- **Query:** `GetBrandsQuery`
+- **Endpoint:** `GET /api/brands`
+- **Permission:** `brands:read`
+- **Purpose:** List brands with pagination and filtering
+- **Returns:** PagedResult<BrandListDto>
+- **Query Parameters:**
+  - `search`: Search by name
+  - `isActive`: Filter by active status
+  - `isFeatured`: Filter by featured status
+
+#### Get Brand By Id
+- **Query:** `GetBrandByIdQuery`
+- **Endpoint:** `GET /api/brands/{id}`
+- **Permission:** `brands:read`
+- **Purpose:** Get brand details with product count
+- **Returns:** BrandDto
+
+### Domain Entity
+
+- **Brand** - Aggregate root with Name, Slug, LogoUrl, BannerUrl, Description, Website, SEO fields (MetaTitle, MetaDescription), IsActive, IsFeatured, SortOrder
+
+---
+
 ## Shopping Cart
 
 **Namespace:** `NOIR.Application.Features.Cart`
@@ -950,10 +1209,37 @@ Shopping cart supports both authenticated and guest users:
 }
 ```
 
+#### Deliver Order
+- **Command:** `DeliverOrderCommand`
+- **Endpoint:** `POST /api/orders/{id}/deliver`
+- **Permission:** `OrdersWrite`
+- **Purpose:** Mark order as delivered to customer
+- **Returns:** OrderDto
+- **Validation:** Order must be in Shipped status
+- **Audit:** IAuditableCommand (Update)
+
+#### Complete Order
+- **Command:** `CompleteOrderCommand`
+- **Endpoint:** `POST /api/orders/{id}/complete`
+- **Permission:** `OrdersWrite`
+- **Purpose:** Mark order as completed after successful delivery
+- **Returns:** OrderDto
+- **Validation:** Order must be in Delivered status
+- **Audit:** IAuditableCommand (Update)
+
+#### Return Order
+- **Command:** `ReturnOrderCommand`
+- **Endpoint:** `POST /api/orders/{id}/return`
+- **Permission:** `OrdersManage`
+- **Purpose:** Mark order as returned, release inventory back to stock
+- **Returns:** OrderDto
+- **Accepts:** Optional return reason
+- **Audit:** IAuditableCommand (Update)
+
 #### Cancel Order
 - **Command:** `CancelOrderCommand`
 - **Endpoint:** `POST /api/orders/{id}/cancel`
-- **Permission:** `orders:update`
+- **Permission:** `OrdersWrite`
 - **Purpose:** Cancel order and release inventory
 - **Returns:** OrderDto
 - **Validation:**
@@ -966,8 +1252,7 @@ Shopping cart supports both authenticated and guest users:
 **Example Request:**
 ```json
 {
-  "reason": "Customer requested cancellation",
-  "refundRequested": true
+  "reason": "Customer requested cancellation"
 }
 ```
 
@@ -1054,6 +1339,15 @@ Shopping cart supports both authenticated and guest users:
 | `Completed` | Order fulfilled, review period ended |
 | `Cancelled` | Order cancelled |
 | `Refunded` | Order refunded |
+| `Returned` | Order returned by customer |
+
+### Order Lifecycle State Machine
+
+```
+Pending → Confirmed → Processing → Shipped → Delivered → Completed
+   ↓                                  ↓         ↓
+Cancelled                          Cancelled  Returned
+```
 
 ### Domain Events
 
@@ -1061,6 +1355,8 @@ Shopping cart supports both authenticated and guest users:
 - **OrderConfirmedEvent** - Payment verified
 - **OrderShippedEvent** - Order dispatched
 - **OrderDeliveredEvent** - Order delivered
+- **OrderCompletedEvent** - Order fulfilled
+- **OrderReturnedEvent** - Order returned by customer
 - **OrderCancelledEvent** - Order cancelled
 
 ### Inventory Integration
@@ -1069,6 +1365,7 @@ Orders integrate with inventory through:
 1. **Reservation on Checkout** - Inventory reserved when checkout initiated
 2. **Deduction on Ship** - Actual inventory deducted when shipped
 3. **Release on Cancel** - Reservation released if cancelled before ship
+4. **Return Restock** - Inventory restored on customer returns
 
 ---
 
@@ -1647,6 +1944,409 @@ Similar structure to Categories:
 
 ---
 
+## Shipping
+
+**Namespace:** `NOIR.Application.Features.Shipping`
+**Endpoint:** `/api/shipping`, `/api/shipping-providers`
+**Permissions:** `shipping:*`
+
+> Vietnam-focused shipping provider integration with multi-carrier rate calculation, order tracking, and webhook support.
+
+### Shipping Provider Management
+
+#### Configure Shipping Provider
+- **Command:** `ConfigureShippingProviderCommand`
+- **Endpoint:** `POST /api/shipping-providers`
+- **Permission:** `shipping:providers:write`
+- **Purpose:** Configure a shipping provider for the tenant
+- **Returns:** ShippingProviderDto
+- **Validation:**
+  - ProviderCode: Required, valid ShippingProviderCode
+  - DisplayName: Required
+  - Credentials: Required (encrypted storage)
+- **Audit:** IAuditableCommand
+
+#### Update Shipping Provider
+- **Command:** `UpdateShippingProviderCommand`
+- **Endpoint:** `PUT /api/shipping-providers/{id}`
+- **Permission:** `shipping:providers:write`
+- **Purpose:** Update provider configuration
+- **Returns:** ShippingProviderDto
+- **Audit:** IAuditableCommand
+
+#### Get Shipping Providers
+- **Query:** `GetShippingProvidersQuery`
+- **Endpoint:** `GET /api/shipping-providers`
+- **Permission:** `shipping:providers:read`
+- **Purpose:** List all configured shipping providers
+- **Returns:** PagedResult<ShippingProviderListDto>
+
+#### Get Shipping Provider By Id
+- **Query:** `GetShippingProviderByIdQuery`
+- **Endpoint:** `GET /api/shipping-providers/{id}`
+- **Permission:** `shipping:providers:read`
+- **Purpose:** Get provider details
+- **Returns:** ShippingProviderDto
+
+#### Get Active Shipping Providers
+- **Query:** `GetActiveShippingProvidersQuery`
+- **Endpoint:** `GET /api/shipping-providers/active`
+- **Permission:** `shipping:read`
+- **Purpose:** Get active providers for checkout
+- **Returns:** List<CheckoutShippingProviderDto>
+
+### Shipping Orders
+
+#### Create Shipping Order
+- **Command:** `CreateShippingOrderCommand`
+- **Endpoint:** `POST /api/shipping/orders`
+- **Permission:** `shipping:orders:write`
+- **Purpose:** Create a shipping order with a provider
+- **Returns:** ShippingOrderDto
+- **Validation:**
+  - OrderId: Required
+  - ProviderCode: Required, active provider
+  - Addresses: Required (pickup + delivery)
+  - Items: At least one item
+- **Audit:** IAuditableCommand
+
+**Example Request:**
+```json
+{
+  "orderId": "order-123",
+  "providerCode": "GHTK",
+  "serviceTypeCode": "standard",
+  "pickupAddress": {
+    "fullName": "NOIR Store",
+    "phone": "+84901234567",
+    "addressLine1": "123 Nguyen Hue",
+    "ward": "Ben Nghe",
+    "district": "District 1",
+    "province": "Ho Chi Minh City"
+  },
+  "deliveryAddress": {
+    "fullName": "Customer Name",
+    "phone": "+84987654321",
+    "addressLine1": "456 Le Loi",
+    "ward": "Ben Thanh",
+    "district": "District 1",
+    "province": "Ho Chi Minh City"
+  },
+  "items": [
+    { "name": "T-Shirt", "quantity": 2, "weightGrams": 300, "value": 599000 }
+  ],
+  "totalWeightGrams": 600,
+  "declaredValue": 1198000,
+  "codAmount": 1198000
+}
+```
+
+#### Cancel Shipping Order
+- **Command:** `CancelShippingOrderCommand`
+- **Endpoint:** `POST /api/shipping/orders/{id}/cancel`
+- **Permission:** `shipping:orders:write`
+- **Purpose:** Cancel a shipping order before pickup
+- **Returns:** ShippingOrderDto
+- **Validation:** Order must be in cancellable state (Draft, AwaitingPickup)
+- **Audit:** IAuditableCommand
+
+#### Get Shipping Order
+- **Query:** `GetShippingOrderQuery`
+- **Endpoint:** `GET /api/shipping/orders/{id}`
+- **Permission:** `shipping:orders:read`
+- **Purpose:** Get shipping order details
+- **Returns:** ShippingOrderDto
+
+#### Get Shipping Tracking
+- **Query:** `GetShippingTrackingQuery`
+- **Endpoint:** `GET /api/shipping/orders/{id}/tracking`
+- **Permission:** `shipping:orders:read`
+- **Purpose:** Get tracking events for a shipping order
+- **Returns:** List<TrackingEventDto>
+
+### Rate Calculation
+
+#### Calculate Shipping Rates
+- **Query:** `CalculateShippingRatesQuery`
+- **Endpoint:** `POST /api/shipping/rates`
+- **Permission:** `shipping:read`
+- **Purpose:** Calculate rates across all active providers
+- **Returns:** ShippingRatesResponse (rates + recommended rate)
+
+**Example Request:**
+```json
+{
+  "origin": { "province": "Ho Chi Minh City", "district": "District 1" },
+  "destination": { "province": "Ha Noi", "district": "Hoan Kiem" },
+  "weightGrams": 500,
+  "declaredValue": 500000,
+  "codAmount": 500000
+}
+```
+
+**Example Response:**
+```json
+{
+  "rates": [
+    {
+      "providerCode": "GHTK",
+      "providerName": "Giao Hang Tiet Kiem",
+      "serviceTypeCode": "standard",
+      "serviceTypeName": "Standard Delivery",
+      "baseRate": 25000,
+      "codFee": 5000,
+      "insuranceFee": 0,
+      "totalRate": 30000,
+      "estimatedDaysMin": 2,
+      "estimatedDaysMax": 3,
+      "currency": "VND"
+    }
+  ],
+  "recommendedRate": { ... }
+}
+```
+
+### Supported Providers (Vietnam Market)
+
+| Code | Provider | Description |
+|------|----------|-------------|
+| `GHTK` | Giao Hang Tiet Kiem | Most popular, fastest delivery (40 hrs avg) |
+| `GHN` | Giao Hang Nhanh | Second largest, excellent API |
+| `JTExpress` | J&T Express | 100% on-time rate, fresh product support |
+| `ViettelPost` | Viettel Post | State-owned, strong rural coverage |
+| `NinjaVan` | Ninja Van | Tech-focused, returns management |
+| `VNPost` | Vietnam Post | National postal service, widest coverage |
+| `BestExpress` | Best Express | Budget-friendly option |
+| `Custom` | Custom | For future extensions |
+
+### Shipping Enums
+
+#### ShippingStatus
+| Value | Description |
+|-------|-------------|
+| `Draft` | Order created but not yet submitted |
+| `AwaitingPickup` | Submitted to provider, awaiting pickup |
+| `PickedUp` | Package picked up from sender |
+| `InTransit` | Package in transit |
+| `OutForDelivery` | Out for delivery |
+| `Delivered` | Delivered successfully |
+| `DeliveryFailed` | Delivery failed |
+| `Cancelled` | Order cancelled |
+| `Returning` | Package being returned |
+| `Returned` | Package returned to sender |
+
+#### ShippingProviderHealthStatus
+| Value | Description |
+|-------|-------------|
+| `Unknown` | Not yet checked |
+| `Healthy` | API responding normally |
+| `Degraded` | Partial issues |
+| `Unhealthy` | API unavailable |
+
+### Domain Entities
+
+- **ShippingProvider** - Provider configuration (credentials, settings, health)
+- **ShippingOrder** - Shipping order tracking (status, tracking number, fees)
+- **ShippingTrackingEvent** - Individual tracking events with timestamps
+- **ShippingWebhookLog** - Webhook audit trail
+
+---
+
+## Inventory
+
+**Namespace:** `NOIR.Application.Features.Inventory`
+**Endpoint:** `/api/inventory`
+**Permissions:** `inventory:*`
+
+> Stock management tracked at ProductVariant level with movement history and reservation support.
+
+### Queries
+
+#### Get Stock History
+- **Query:** `GetStockHistoryQuery`
+- **Endpoint:** `GET /api/inventory/history`
+- **Permission:** `inventory:read`
+- **Purpose:** Get inventory movement history for a product variant
+- **Returns:** PagedResult<InventoryMovementDto>
+- **Query Parameters:**
+  - `productVariantId`: Required
+  - `movementType`: Optional filter
+  - `dateFrom` / `dateTo`: Optional date range
+
+**Example Response:**
+```json
+{
+  "items": [
+    {
+      "id": "mov-123",
+      "productVariantId": "var-456",
+      "productId": "prod-789",
+      "movementType": "StockIn",
+      "quantityBefore": 50,
+      "quantityMoved": 100,
+      "quantityAfter": 150,
+      "reference": "PO-2026-001",
+      "notes": "Supplier delivery",
+      "createdAt": "2026-01-28T10:00:00Z"
+    }
+  ]
+}
+```
+
+### Commands
+
+#### Create Stock Movement
+- **Command:** `CreateStockMovementCommand`
+- **Endpoint:** `POST /api/inventory/movements`
+- **Permission:** `OrdersManage`
+- **Purpose:** Create a manual stock movement (StockIn, StockOut, or Adjustment)
+- **Returns:** `InventoryMovementDto`
+- **Audit:** Implements `IAuditableCommand`
+
+#### Create Inventory Receipt
+- **Command:** `CreateInventoryReceiptCommand`
+- **Endpoint:** `POST /api/inventory/receipts`
+- **Permission:** `OrdersManage`
+- **Purpose:** Create a batch stock movement receipt (draft) with items
+- **Returns:** `InventoryReceiptDto`
+- **Receipt Number:** Auto-generated as `RCV-YYYYMMDD-NNNN` (StockIn) or `SHP-YYYYMMDD-NNNN` (StockOut)
+
+#### Confirm Inventory Receipt
+- **Command:** `ConfirmInventoryReceiptCommand`
+- **Endpoint:** `POST /api/inventory/receipts/{id}/confirm`
+- **Permission:** `OrdersManage`
+- **Purpose:** Confirm receipt and adjust stock for all items
+- **Business Rules:**
+  - Receipt must be in Draft status
+  - Receipt must have at least one item
+  - StockIn: Increases variant stock via `ReleaseStock()`
+  - StockOut: Decreases variant stock via `ReserveStock()` (validates sufficient stock)
+  - Each item logs an `InventoryMovement` record
+
+#### Cancel Inventory Receipt
+- **Command:** `CancelInventoryReceiptCommand`
+- **Endpoint:** `POST /api/inventory/receipts/{id}/cancel`
+- **Permission:** `OrdersManage`
+- **Purpose:** Cancel a draft receipt (no stock adjustment)
+- **Accepts:** Optional cancellation reason
+
+### Queries
+
+#### Get Stock History
+- **Query:** `GetStockHistoryQuery`
+- **Endpoint:** `GET /api/inventory/products/{productId}/variants/{variantId}/history`
+- **Permission:** `OrdersRead`
+- **Purpose:** Get paginated inventory movement history for a product variant
+- **Returns:** `PagedResult<InventoryMovementDto>`
+
+#### Get Inventory Receipts
+- **Query:** `GetInventoryReceiptsQuery`
+- **Endpoint:** `GET /api/inventory/receipts`
+- **Permission:** `OrdersRead`
+- **Purpose:** Get paginated receipts with optional type/status filter
+- **Returns:** `PagedResult<InventoryReceiptSummaryDto>`
+
+#### Get Inventory Receipt By ID
+- **Query:** `GetInventoryReceiptByIdQuery`
+- **Endpoint:** `GET /api/inventory/receipts/{id}`
+- **Permission:** `OrdersRead`
+- **Purpose:** Get full receipt details with items
+- **Returns:** `InventoryReceiptDto`
+
+### Inventory Receipt Workflow
+
+```
+  ┌─────────┐     Confirm()     ┌───────────┐
+  │  Draft  │ ────────────────> │ Confirmed │
+  └────┬────┘                   └───────────┘
+       │                          (stock adjusted)
+       │
+       │ Cancel()
+       ▼
+  ┌───────────┐
+  │ Cancelled │
+  └───────────┘
+    (no stock change)
+```
+
+**Receipt Types:**
+- `StockIn` - Inbound receipt (phieu nhap kho), prefix `RCV`
+- `StockOut` - Outbound receipt (phieu xuat kho), prefix `SHP`
+
+### Inventory Movement Types
+
+| Type | Description |
+|------|-------------|
+| `StockIn` | Stock received from supplier |
+| `StockOut` | Stock shipped to customer |
+| `Adjustment` | Manual stock adjustment (audit, correction) |
+| `Return` | Customer return restocking |
+| `Reserved` | Stock reserved for checkout session |
+| `Released` | Reserved stock released (cancelled/expired) |
+
+### Integration with Orders
+
+Orders integrate with inventory through:
+1. **Reservation on Checkout** - Inventory reserved when checkout initiated
+2. **Deduction on Ship** - Actual inventory deducted when shipped
+3. **Release on Cancel** - Reservation released if cancelled before ship
+4. **Return Restock** - Inventory restored on customer returns
+
+### Domain Entities
+
+- **InventoryReceipt** (`TenantAggregateRoot<Guid>`) - Batch stock movement receipt with status workflow
+- **InventoryReceiptItem** (`TenantEntity<Guid>`) - Line items with product snapshots (name, variant, SKU)
+- **InventoryMovement** - Records each stock change with before/after quantities
+- **ProductVariant.StockQuantity** - Current available stock
+- **ProductVariant.ReservedQuantity** - Currently reserved stock
+
+**Pattern Documentation:** See `docs/backend/patterns/inventory-receipt-pattern.md` for detailed architecture.
+
+---
+
+## Dashboard
+
+**Namespace:** `NOIR.Application.Features.Dashboard`
+**Endpoint:** `/api/dashboard`
+**Permission:** `OrdersRead`
+
+> Aggregated metrics for the admin dashboard with revenue, order counts, top products, and more.
+
+### Queries
+
+#### Get Dashboard Metrics
+- **Query:** `GetDashboardMetricsQuery`
+- **Endpoint:** `GET /api/dashboard/metrics`
+- **Purpose:** Get aggregated dashboard metrics
+- **Returns:** `DashboardMetricsDto`
+- **Query Parameters:**
+  - `topProducts` - Number of top selling products (default: 5)
+  - `lowStockThreshold` - Stock quantity alert threshold (default: 10)
+  - `recentOrders` - Number of recent orders to show (default: 10)
+  - `salesDays` - Number of days for sales chart (default: 30)
+
+### Metrics Included
+
+| Metric | DTO | Description |
+|--------|-----|-------------|
+| Revenue | `RevenueMetricsDto` | Total, this month, last month, today, average order value |
+| Order Counts | `OrderStatusCountsDto` | Count per status (all 9 statuses) |
+| Top Products | `TopSellingProductDto[]` | By quantity sold with revenue |
+| Low Stock | `LowStockProductDto[]` | Variants below threshold |
+| Recent Orders | `RecentOrderDto[]` | Latest orders with status |
+| Sales Over Time | `SalesOverTimeDto[]` | Daily revenue + order count for charts |
+| Product Distribution | `ProductStatusDistributionDto` | Draft/Active/Archived counts |
+
+### Architecture
+
+- Handler delegates to `IDashboardQueryService` interface (Application layer)
+- Implementation in `DashboardQueryService` (Infrastructure layer) uses direct `DbContext`
+- 7 independent aggregation queries run in parallel via `Task.WhenAll()` for performance
+- Revenue metrics exclude Cancelled/Refunded orders
+- All queries use `TagWith()` for SQL debugging
+
+---
+
 ## Developer Tools
 
 **Namespace:** `NOIR.Application.Features.DeveloperLogs`
@@ -2031,6 +2731,8 @@ Similar structure to Categories:
 | **Roles** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Permissions** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Tenants** | ✅ CRUD | ❌ | ❌ |
+| **Product Attributes** | ✅ All tenants | ✅ Own tenant | ❌ |
+| **Brands** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Payments** | ✅ All tenants | ✅ Own tenant | ✅ Own orders |
 | **Checkout** | ✅ All tenants | ✅ Own tenant | ✅ Own sessions |
 | **Orders** | ✅ All tenants | ✅ Own tenant | ✅ Own orders |
@@ -2040,6 +2742,9 @@ Similar structure to Categories:
 | **Legal Pages** | ✅ Platform defaults | ✅ Tenant overrides | ❌ |
 | **Media** | ✅ | ✅ | ✅ Own files |
 | **Blog** | ✅ All tenants | ✅ Own tenant | ❌ |
+| **Shipping** | ✅ All tenants | ✅ Own tenant | ✅ Own orders |
+| **Inventory** | ✅ All tenants | ✅ Own tenant | ❌ |
+| **Dashboard** | ✅ All tenants | ✅ Own tenant | ❌ |
 | **Developer Logs** | ✅ | ❌ | ❌ |
 | **Hangfire Dashboard** | ✅ | ❌ | ❌ |
 
@@ -2054,7 +2759,7 @@ Similar structure to Categories:
 | `/api/tenants` | 6 | Tenant management |
 | `/api/payments` | 15 | Transactions, gateways, refunds, webhooks, COD |
 | `/api/checkout` | 6 | ⭐ **NEW:** initiate, address, shipping, payment, complete |
-| `/api/orders` | 6 | ⭐ **NEW:** create, confirm, ship, cancel, list, details |
+| `/api/orders` | 9 | ⭐ **NEW:** create, confirm, ship, deliver, complete, return, cancel, list, details |
 | `/api/audit` | 3 | Audit logs, entity history, export |
 | `/api/notifications` | 4 | Notification CRUD |
 | `/api/email-templates` | 4 | Template customization |
@@ -2063,8 +2768,14 @@ Similar structure to Categories:
 | `/api/media` | 3 | File upload, delete, list |
 | `/api/blog/posts` | 6 | Blog post CRUD |
 | `/api/blog/categories` | 4 | Category CRUD |
+| `/api/product-attributes` | 7 | ⭐ **NEW:** Attribute CRUD + value management |
+| `/api/brands` | 5 | ⭐ **NEW:** Brand CRUD |
+| `/api/shipping` | 4 | ⭐ **NEW:** Shipping orders, rates, tracking |
+| `/api/shipping-providers` | 4 | ⭐ **NEW:** Provider configuration |
+| `/api/inventory` | 7 | ⭐ **NEW:** Stock movements, receipts CRUD, confirm, cancel |
 | `/api/blog/tags` | 4 | Tag CRUD |
-| **Total** | **90** | |
+| `/api/dashboard` | 1 | ⭐ **NEW:** Aggregated metrics |
+| **Total** | **121** | |
 
 ### Commands vs Queries
 
@@ -2077,7 +2788,7 @@ Similar structure to Categories:
 | Tenants | 4 | 4 | 8 |
 | **Payments** | **9** | **9** | **18** |
 | **Checkout** | **5** | **1** | **6** |
-| **Orders** | **4** | **2** | **6** |
+| **Orders** | **7** | **2** | **9** |
 | Audit | 1 | 2 | 3 |
 | Notifications | 3 | 2 | 5 |
 | Email Templates | 1 | 3 | 4 |
@@ -2086,8 +2797,13 @@ Similar structure to Categories:
 | Blog Posts | 4 | 2 | 6 |
 | Blog Categories | 3 | 1 | 4 |
 | Blog Tags | 3 | 1 | 4 |
+| **Product Attributes** | **10** | **7** | **17** |
+| **Brands** | **3** | **2** | **5** |
+| **Shipping** | **3** | **5** | **8** |
+| **Inventory** | **4** | **3** | **7** |
+| **Dashboard** | **0** | **1** | **1** |
 | Developer Logs | 0 | 1 | 1 |
-| **Total** | **57** | **39** | **96** |
+| **Total** | **80** | **57** | **137** |
 
 ---
 
@@ -2101,13 +2817,37 @@ Similar structure to Categories:
 
 ---
 
-**Last Updated:** 2026-01-26
-**Version:** 2.3
+**Last Updated:** 2026-02-18
+**Version:** 2.6
 **Maintainer:** NOIR Team
 
 ---
 
 ## Changelog
+
+### Version 2.6 (2026-02-18)
+- Added **Dashboard** feature section (1 query, 7 metric categories, parallel aggregation)
+- Added Dashboard to Feature Matrix and endpoint/query counts
+- Updated totals: 121 endpoints, 137 commands/queries
+
+### Version 2.5 (2026-02-18)
+- Expanded **Inventory** feature with receipt system (4 commands, 3 queries, 7 endpoints)
+- Documented inventory receipt workflow: Draft -> Confirmed/Cancelled
+- Updated **Orders** with full lifecycle (7 commands: create, confirm, ship, deliver, complete, return, cancel)
+- Updated endpoint counts (111 -> 120) and command/query totals (127 -> 136)
+- Added pattern reference: `docs/backend/patterns/inventory-receipt-pattern.md`
+
+### Version 2.4 (2026-02-18)
+- Added **Product Attributes** feature section (10 commands, 7 queries, 13 attribute types)
+- Added **Brands** feature section (3 commands, 2 queries)
+- Added **Shipping** feature section (3 commands, 5 queries, 8 Vietnam providers)
+- Added **Inventory** feature section (1 query, 6 movement types)
+- Updated Feature Matrix with new feature permissions
+- Updated API Endpoints Summary (now 111 total endpoints)
+- Updated Commands vs Queries (now 127 total)
+- Added attribute types reference table
+- Added shipping provider reference table with Vietnam market providers
+- Added inventory movement types reference table
 
 ### Version 2.3 (2026-01-26)
 - Added **Checkout** feature section with 5 commands, 1 query (hybrid accordion pattern)

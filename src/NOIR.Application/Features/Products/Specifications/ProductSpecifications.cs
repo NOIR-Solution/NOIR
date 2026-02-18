@@ -367,6 +367,19 @@ public sealed class ProductWithVariantByIdSpec : Specification<Product>
 }
 
 /// <summary>
+/// Specification to get a product variant by ID with tracking for update.
+/// </summary>
+public sealed class ProductVariantByIdForUpdateSpec : Specification<ProductVariant>
+{
+    public ProductVariantByIdForUpdateSpec(Guid variantId)
+    {
+        Query.Where(v => v.Id == variantId)
+            .AsTracking()
+            .TagWith("ProductVariantByIdForUpdate");
+    }
+}
+
+/// <summary>
 /// Specification to count products by status.
 /// Uses lightweight query for efficient counting.
 /// </summary>

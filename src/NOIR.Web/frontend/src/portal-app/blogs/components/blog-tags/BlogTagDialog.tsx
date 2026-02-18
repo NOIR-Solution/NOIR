@@ -109,10 +109,10 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
 
       if (isEdit && tag) {
         await updateTag(tag.id, request)
-        toast.success('Tag updated')
+        toast.success(t('blog.tagUpdated'))
       } else {
         await createTag(request)
-        toast.success('Tag created')
+        toast.success(t('blog.tagCreated'))
       }
 
       form.reset()
@@ -121,7 +121,7 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
     } catch (err) {
       const message = err instanceof ApiError
         ? err.message
-        : isEdit ? 'Failed to update tag' : 'Failed to create tag'
+        : isEdit ? t('blog.failedToUpdateTag') : t('blog.failedToCreateTag')
       toast.error(message)
     } finally {
       setLoading(false)
@@ -142,12 +142,12 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
             </div>
             <div>
               <DialogTitle>
-                {isEdit ? 'Edit Tag' : 'Create New Tag'}
+                {isEdit ? t('blog.editTag') : t('blog.createNewTag')}
               </DialogTitle>
               <DialogDescription>
                 {isEdit
-                  ? 'Update the tag details below.'
-                  : 'Add a new tag to label your blog posts.'}
+                  ? t('blog.editTagDescription')
+                  : t('blog.createTagDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -160,9 +160,9 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tag Name</FormLabel>
+                  <FormLabel>{t('blog.tagName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., JavaScript, Tutorial" {...field} />
+                    <Input placeholder={t('blog.tagNamePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,9 +174,9 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
               name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel>{t('labels.slug')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., javascript, tutorial" {...field} />
+                    <Input placeholder={t('blog.tagSlugPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -188,10 +188,10 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (optional)</FormLabel>
+                  <FormLabel>{t('blog.descriptionOptional')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe what this tag is about..."
+                      placeholder={t('blog.tagDescription')}
                       {...field}
                     />
                   </FormControl>
@@ -205,7 +205,7 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
               name="color"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Color</FormLabel>
+                  <FormLabel>{t('blog.color')}</FormLabel>
                   <FormControl>
                     <ColorPicker
                       value={field.value}
@@ -219,12 +219,12 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
+                {t('buttons.cancel')}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading
-                  ? (isEdit ? 'Updating...' : 'Creating...')
-                  : (isEdit ? 'Update' : 'Create')}
+                  ? t('buttons.saving')
+                  : (isEdit ? t('buttons.update') : t('buttons.create'))}
               </Button>
             </DialogFooter>
           </form>

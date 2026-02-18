@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import {
   getProducts,
   getProductStats,
@@ -13,12 +13,14 @@ export const useProductsQuery = (params: GetProductsParams) =>
   useQuery({
     queryKey: productKeys.list(params),
     queryFn: () => getProducts(params),
+    placeholderData: keepPreviousData,
   })
 
 export const useProductStatsQuery = () =>
   useQuery({
     queryKey: productKeys.stats(),
     queryFn: () => getProductStats(),
+    staleTime: 30_000,
   })
 
 export const useProductQuery = (id: string | undefined) =>

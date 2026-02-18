@@ -125,6 +125,17 @@ public class Order : TenantAggregateRoot<Guid>
     /// </summary>
     public DateTimeOffset? CancelledAt { get; private set; }
 
+    // Return
+    /// <summary>
+    /// Reason for return if applicable.
+    /// </summary>
+    public string? ReturnReason { get; private set; }
+
+    /// <summary>
+    /// When the order was returned.
+    /// </summary>
+    public DateTimeOffset? ReturnedAt { get; private set; }
+
     // Timestamps
     /// <summary>
     /// When the order was confirmed (payment received).
@@ -391,6 +402,23 @@ public class Order : TenantAggregateRoot<Guid>
 
         AddDomainEvent(new OrderStatusChangedEvent(Id, OrderNumber, oldStatus, Status, reason));
         AddDomainEvent(new OrderCancelledEvent(Id, OrderNumber, reason));
+    }
+
+    /// <summary>
+    /// Returns the order.
+    /// </summary>
+    public void Return(string? reason = null)
+    {
+        if (Status is not (OrderStatus.Delivered or OrderStatus.Completed))
+            throw new InvalidOperationException($"Cannot return order in {Status} status");
+
+        var oldStatus = Status;
+        Status = OrderStatus.Returned;
+        ReturnReason = reason;
+        ReturnedAt = DateTimeOffset.UtcNow;
+
+        AddDomainEvent(new OrderStatusChangedEvent(Id, OrderNumber, oldStatus, Status, reason));
+        AddDomainEvent(new OrderReturnedEvent(Id, OrderNumber, reason));
     }
 
     /// <summary>

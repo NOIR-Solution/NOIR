@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-13 | **Index Version:** 3.6
+**Last Updated:** 2026-02-18 | **Index Version:** 3.7
 
 ---
 
@@ -43,7 +43,7 @@
 | **Custom Hooks** | 27 | React hooks in `hooks/` |
 | **API Services** | 23 | Frontend API clients |
 | **Frontend Pages** | 95+ | React page components |
-| **Documentation Files** | 47 | Markdown docs in `docs/` |
+| **Documentation Files** | 48 | Markdown docs in `docs/` |
 | **Backend Tests** | 6,750+ | Unit (842 + 5,231) + Integration (654) + Architecture (25) |
 | **Database Indexes** | 233+ | Including 14 filtered indexes |
 | **Enums** | 24 | Domain enumerations |
@@ -67,7 +67,7 @@ NOIR/
 │   ├── NOIR.Application.UnitTests/ # Handler/service/validator tests
 │   ├── NOIR.IntegrationTests/    # API integration tests (requires DB)
 │   └── NOIR.ArchitectureTests/   # Architectural rule tests
-└── docs/                         # 📚 47 documentation files
+└── docs/                         # 📚 50 documentation files
 
 ```
 
@@ -967,6 +967,7 @@ public void Domain_Should_Not_HaveDependencyOn_Application()
 | [JSON Enum Serialization](backend/patterns/json-enum-serialization.md) | String-based enum serialization |
 | [JWT Refresh Token](backend/patterns/jwt-refresh-token.md) | Token rotation and security |
 | [Tenant Isolation](backend/architecture/tenant-id-interceptor.md) | Multi-tenancy implementation |
+| [Architecture Diagrams](architecture/diagrams.md) | ER, CQRS flow, multi-tenancy, order lifecycle diagrams |
 | [Payment Gateway Design](../docs/designs/payment-gateway-admin-ui.md) | Payment gateway admin UI |
 
 ### Frontend
@@ -1209,7 +1210,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 - **Statistics Update**
   - Updated source file counts: 1,255 C# files, 456 test files, 305 TypeScript files
-  - 43 documentation files in `docs/` folder
+  - 50 documentation files in `docs/` folder
   - 4 test projects: Domain.UnitTests, Application.UnitTests, IntegrationTests, ArchitectureTests
 - **UI/UX Improvements** (from recent sessions)
   - Fixed Active toggle alignment in BrandDialog (full-width row pattern)

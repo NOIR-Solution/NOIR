@@ -2,7 +2,7 @@
 
 > **Complete reference of technologies, libraries, and frameworks used in NOIR.**
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-02-18
 
 ---
 
@@ -309,6 +309,7 @@ public static partial class UserMapper
 **Hubs:**
 - `NotificationHub` - Push notifications
 - `DeveloperLogHub` - Real-time log streaming
+- `PaymentHub` - Real-time payment status updates
 
 **Configuration:**
 - `src/NOIR.Infrastructure/Hubs/`
@@ -489,6 +490,7 @@ const form = useForm<FormData>({
 **Hubs:**
 - `NotificationHub` - Push notifications
 - `DeveloperLogHub` - Log streaming
+- `PaymentHub` - Payment status updates
 
 **Configuration:**
 - `src/NOIR.Web/frontend/src/contexts/NotificationContext.tsx`
@@ -649,12 +651,20 @@ const form = useForm<FormData>({
 | **VS Code** | C# Dev Kit, ESLint, Tailwind IntelliSense |
 | **Rider** | Built-in support |
 
+### Component Development
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| **Storybook** | 10.2 | Interactive component catalog |
+
+**Storybook** provides an isolated development environment for 56 UI components in `src/uikit/`. Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
+
 ### Package Management
 
 | Tool | Purpose |
 |------|---------|
 | **NuGet** | .NET packages |
-| **pnpm** | JavaScript packages |
+| **pnpm** | JavaScript packages (disk-optimized) |
 
 ---
 
@@ -736,5 +746,5 @@ const form = useForm<FormData>({
 
 ---
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-02-18
 **Maintainer:** NOIR Team

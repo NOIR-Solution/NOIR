@@ -67,6 +67,14 @@ public record OrderRefundedEvent(
     decimal RefundAmount) : DomainEvent;
 
 /// <summary>
+/// Raised when an order is returned by the customer.
+/// </summary>
+public record OrderReturnedEvent(
+    Guid OrderId,
+    string OrderNumber,
+    string? ReturnReason) : DomainEvent;
+
+/// <summary>
 /// Raised when order notes are added.
 /// </summary>
 public record OrderNoteAddedEvent(

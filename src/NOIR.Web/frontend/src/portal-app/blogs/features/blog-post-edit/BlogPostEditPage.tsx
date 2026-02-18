@@ -173,7 +173,7 @@ export const BlogPostEditPage = () => {
           }
         })
         .catch((err) => {
-          const message = err instanceof ApiError ? err.message : 'Failed to load post'
+          const message = err instanceof ApiError ? err.message : t('blog.failedToLoad')
           toast.error(message)
           navigate('/portal/blog/posts')
         })
@@ -199,14 +199,14 @@ export const BlogPostEditPage = () => {
     // Validate schedule date if scheduling
     if (publishOption === 'schedule') {
       if (!scheduledDate) {
-        toast.error('Please select a date for scheduling')
+        toast.error(t('blog.pleaseSelectDate'))
         return
       }
       const [hours, minutes] = scheduledTime.split(':').map(Number)
       const scheduledDateTime = new Date(scheduledDate)
       scheduledDateTime.setHours(hours, minutes, 0, 0)
       if (scheduledDateTime <= new Date()) {
-        toast.error('Scheduled date must be in the future')
+        toast.error(t('blog.scheduleMustBeFuture'))
         return
       }
     }
@@ -243,17 +243,17 @@ export const BlogPostEditPage = () => {
         // If post was published or scheduled, unpublish it
         if (savedPost.status === 'Published' || savedPost.status === 'Scheduled') {
           await unpublishPost(savedPost.id)
-          toast.success('Post saved as draft')
+          toast.success(t('blog.savedAsDraft'))
         } else {
-          toast.success(isEdit ? 'Post saved' : 'Post created')
+          toast.success(isEdit ? t('blog.postSaved') : t('blog.postCreated'))
         }
       } else if (publishOption === 'publish') {
         // Publish immediately
         if (savedPost.status !== 'Published') {
           await publishPost(savedPost.id)
-          toast.success('Post published')
+          toast.success(t('blog.postPublished'))
         } else {
-          toast.success('Post saved')
+          toast.success(t('blog.postSaved'))
         }
       } else if (publishOption === 'schedule') {
         // Schedule for future
@@ -261,12 +261,12 @@ export const BlogPostEditPage = () => {
         const scheduledDateTime = new Date(scheduledDate!)
         scheduledDateTime.setHours(hours, minutes, 0, 0)
         await publishPost(savedPost.id, { scheduledPublishAt: scheduledDateTime.toISOString() })
-        toast.success(`Post scheduled for ${formatDateTime(scheduledDateTime)}`)
+        toast.success(t('blog.postScheduled', { date: formatDateTime(scheduledDateTime) }))
       }
 
       navigate('/portal/blog/posts')
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to save post'
+      const message = err instanceof ApiError ? err.message : t('blog.failedToSave')
       toast.error(message)
     } finally {
       setSaving(false)
@@ -282,13 +282,13 @@ export const BlogPostEditPage = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file')
+      toast.error(t('blog.selectImageFile'))
       return
     }
 
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('Image must be less than 10MB')
+      toast.error(t('blog.imageTooLarge'))
       return
     }
 
@@ -298,12 +298,12 @@ export const BlogPostEditPage = () => {
       if (result.success && result.mediaFileId) {
         form.setValue('featuredImageId', result.mediaFileId)
         form.setValue('featuredImageUrl', result.defaultUrl || result.location || '')
-        toast.success('Image uploaded successfully')
+        toast.success(t('blog.imageUploaded'))
       } else {
-        toast.error(result.error || 'Failed to upload image')
+        toast.error(result.error || t('blog.failedToUpload'))
       }
     } catch (err) {
-      toast.error('Failed to upload image')
+      toast.error(t('blog.failedToUpload'))
     } finally {
       setUploadingImage(false)
       // Reset file input
@@ -323,7 +323,7 @@ export const BlogPostEditPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">Loading...</p>
+        <p className="text-muted-foreground">{t('labels.loading')}</p>
       </div>
     )
   }
@@ -341,10 +341,10 @@ export const BlogPostEditPage = () => {
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              {isEdit ? 'Edit Post' : 'New Post'}
+              {isEdit ? t('blog.editPost') : t('blog.newPost')}
             </h1>
             <p className="text-muted-foreground">
-              {isEdit ? `Editing: ${post?.title || 'Loading...'}` : 'Create a new blog post'}
+              {isEdit ? t('blog.editing', { title: post?.title || t('labels.loading') }) : t('blog.createNewPost')}
             </p>
           </div>
         </div>
@@ -355,20 +355,20 @@ export const BlogPostEditPage = () => {
               post.status === 'Scheduled' ? 'secondary' : 'outline'
             }>
               {post.status === 'Scheduled' && post.scheduledPublishAt
-                ? `Scheduled: ${formatDate(post.scheduledPublishAt!)}`
-                : post.status}
+                ? t('blog.scheduledLabel', { date: formatDate(post.scheduledPublishAt!) })
+                : t(`blog.status.${post.status.toLowerCase()}`)}
             </Badge>
           )}
           <Button onClick={() => form.handleSubmit(onSubmit)()} disabled={saving}>
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
+                {t('buttons.saving')}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4 mr-2" />
-                Save
+                {t('buttons.save')}
               </>
             )}
           </Button>
@@ -382,8 +382,8 @@ export const BlogPostEditPage = () => {
             <div className="lg:col-span-2 space-y-6">
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                  <CardTitle>Content</CardTitle>
-                  <CardDescription>Write your blog post content</CardDescription>
+                  <CardTitle>{t('blog.content', 'Content')}</CardTitle>
+                  <CardDescription>{t('blog.contentDescription', 'Write your blog post content')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -391,9 +391,9 @@ export const BlogPostEditPage = () => {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Title</FormLabel>
+                        <FormLabel>{t('blog.titleColumn', 'Title')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter post title" className="text-lg" {...field} />
+                          <Input placeholder={t('blog.enterPostTitle')} className="text-lg" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -405,9 +405,9 @@ export const BlogPostEditPage = () => {
                     name="slug"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Slug</FormLabel>
+                        <FormLabel>{t('labels.slug')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="post-url-slug" {...field} />
+                          <Input placeholder={t('blog.slugPlaceholder', 'post-url-slug')} {...field} />
                         </FormControl>
                         <FormDescription>
                           URL: /blog/{field.value || 'post-slug'}
@@ -422,16 +422,16 @@ export const BlogPostEditPage = () => {
                     name="excerpt"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Excerpt</FormLabel>
+                        <FormLabel>{t('blog.excerpt', 'Excerpt')}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="A brief summary of your post..."
+                            placeholder={t('blog.postSummary')}
                             rows={3}
                             {...field}
                           />
                         </FormControl>
                         <FormDescription>
-                          Shown in post lists and search results
+                          {t('blog.excerptDescription')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -439,7 +439,7 @@ export const BlogPostEditPage = () => {
                   />
 
                   <div>
-                    <FormLabel className="mb-2 block">Content</FormLabel>
+                    <FormLabel className="mb-2 block">{t('blog.contentLabel')}</FormLabel>
                     <Editor
                       onInit={(_evt, editor) => {
                         editorRef.current = editor
@@ -557,9 +557,9 @@ export const BlogPostEditPage = () => {
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    Publishing
+                    {t('blog.publishing')}
                   </CardTitle>
-                  <CardDescription>Choose when to publish your post</CardDescription>
+                  <CardDescription>{t('blog.publishingDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <RadioGroup value={publishOption} onValueChange={(v) => setPublishOption(v as PublishOption)} className="space-y-2">
@@ -569,9 +569,9 @@ export const BlogPostEditPage = () => {
                     >
                       <RadioGroupItem value="draft" id="draft" />
                       <div className="space-y-0.5">
-                        <span className="font-medium text-sm">Save as Draft</span>
+                        <span className="font-medium text-sm">{t('blog.saveAsDraft')}</span>
                         <p className="text-xs text-muted-foreground">
-                          Post won't be visible to public
+                          {t('blog.draftDescription')}
                         </p>
                       </div>
                     </label>
@@ -582,9 +582,9 @@ export const BlogPostEditPage = () => {
                     >
                       <RadioGroupItem value="publish" id="publish" />
                       <div className="space-y-0.5">
-                        <span className="font-medium text-sm">Publish Now</span>
+                        <span className="font-medium text-sm">{t('blog.publishNow')}</span>
                         <p className="text-xs text-muted-foreground">
-                          Post will be visible immediately
+                          {t('blog.publishDescription')}
                         </p>
                       </div>
                     </label>
@@ -595,9 +595,9 @@ export const BlogPostEditPage = () => {
                     >
                       <RadioGroupItem value="schedule" id="schedule" />
                       <div className="space-y-0.5">
-                        <span className="font-medium text-sm">Schedule</span>
+                        <span className="font-medium text-sm">{t('blog.schedule')}</span>
                         <p className="text-xs text-muted-foreground">
-                          Post will auto-publish at the set time
+                          {t('blog.scheduleDescription')}
                         </p>
                       </div>
                     </label>
@@ -608,27 +608,27 @@ export const BlogPostEditPage = () => {
                     <div className="pt-4 mt-2 border-t space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Date</Label>
+                          <Label className="text-sm font-medium">{t('labels.date')}</Label>
                           <DatePicker
                             value={scheduledDate}
                             onChange={setScheduledDate}
                             minDate={new Date()}
-                            placeholder="Select date"
+                            placeholder={t('blog.selectDate')}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Time</Label>
+                          <Label className="text-sm font-medium">{t('labels.time')}</Label>
                           <TimePicker
                             value={scheduledTime}
                             onChange={(time) => setScheduledTime(time)}
-                            placeholder="Select time"
+                            placeholder={t('blog.selectTime')}
                             interval={30}
                           />
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                         <Info className="h-3.5 w-3.5 flex-shrink-0" />
-                        Uses your local timezone
+                        {t('blog.localTimezone')}
                       </p>
                     </div>
                   )}
@@ -636,10 +636,10 @@ export const BlogPostEditPage = () => {
                   {/* Status info for existing posts */}
                   {post && post.status !== 'Draft' && publishOption === 'draft' && (
                     <div className="p-3 rounded-md bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
-                      <p className="text-sm text-amber-800 dark:text-amber-200">
-                        This post is currently <strong>{post.status}</strong>.
-                        Saving as draft will unpublish it.
-                      </p>
+                      <p
+                        className="text-sm text-amber-800 dark:text-amber-200"
+                        dangerouslySetInnerHTML={{ __html: t('blog.currentlyStatus', { status: post.status }) }}
+                      />
                     </div>
                   )}
                 </CardContent>
@@ -648,7 +648,7 @@ export const BlogPostEditPage = () => {
               {/* Organization */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                  <CardTitle>Organization</CardTitle>
+                  <CardTitle>{t('blog.organization')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -656,18 +656,18 @@ export const BlogPostEditPage = () => {
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Category</FormLabel>
+                        <FormLabel>{t('labels.category')}</FormLabel>
                         <Select
                           onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
                           value={field.value || '__none__'}
                         >
                           <FormControl>
                             <SelectTrigger className="cursor-pointer" aria-label={t('blog.selectPostCategory', 'Select blog post category')}>
-                              <SelectValue placeholder="Select category" />
+                              <SelectValue placeholder={t('blog.selectCategory')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="__none__" className="cursor-pointer">No category</SelectItem>
+                            <SelectItem value="__none__" className="cursor-pointer">{t('blog.noCategory')}</SelectItem>
                             {categories.map((cat) => (
                               <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
                                 {cat.name}
@@ -685,7 +685,7 @@ export const BlogPostEditPage = () => {
                     name="tagIds"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Tags</FormLabel>
+                        <FormLabel>{t('labels.tags')}</FormLabel>
                         <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[40px]">
                           {tags.map((tag) => {
                             const isSelected = field.value?.includes(tag.id)
@@ -709,10 +709,10 @@ export const BlogPostEditPage = () => {
                             )
                           })}
                           {tags.length === 0 && (
-                            <span className="text-muted-foreground text-sm">No tags available</span>
+                            <span className="text-muted-foreground text-sm">{t('blog.noTagsAvailable')}</span>
                           )}
                         </div>
-                        <FormDescription>Click to toggle tags</FormDescription>
+                        <FormDescription>{t('blog.clickToToggleTags')}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -723,7 +723,7 @@ export const BlogPostEditPage = () => {
               {/* Featured Image */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                  <CardTitle>Featured Image</CardTitle>
+                  <CardTitle>{t('blog.featuredImage')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Upload button and preview */}
@@ -731,8 +731,8 @@ export const BlogPostEditPage = () => {
                     {uploadingImage ? (
                       <div className="border-2 border-dashed border-primary/50 rounded-lg p-8 text-center bg-primary/5">
                         <Loader2 className="h-10 w-10 mx-auto text-primary mb-3 animate-spin" />
-                        <p className="text-sm font-medium text-primary">Uploading image...</p>
-                        <p className="text-xs text-muted-foreground mt-1">Please wait while we process your image</p>
+                        <p className="text-sm font-medium text-primary">{t('blog.uploadingImage')}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('blog.processingImage')}</p>
                       </div>
                     ) : form.watch('featuredImageUrl') ? (
                       <div
@@ -763,8 +763,8 @@ export const BlogPostEditPage = () => {
                         onClick={() => fileInputRef.current?.click()}
                       >
                         <ImageIcon className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                        <p className="text-sm font-medium">Click to upload featured image</p>
-                        <p className="text-xs text-muted-foreground mt-1">JPG, PNG, GIF, WebP up to 10MB</p>
+                        <p className="text-sm font-medium">{t('blog.clickToUpload')}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('blog.imageFormats')}</p>
                       </div>
                     )}
 
@@ -787,7 +787,7 @@ export const BlogPostEditPage = () => {
                         disabled={uploadingImage}
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        {uploadingImage ? 'Uploading...' : 'Replace Image'}
+                        {uploadingImage ? t('labels.uploading') : t('blog.replaceImage')}
                       </Button>
                     )}
                   </div>
@@ -797,9 +797,9 @@ export const BlogPostEditPage = () => {
                     name="featuredImageAlt"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Alt Text</FormLabel>
+                        <FormLabel>{t('blog.altText')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Describe the image" {...field} />
+                          <Input placeholder={t('blog.describeImage')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -811,7 +811,7 @@ export const BlogPostEditPage = () => {
               {/* SEO */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                  <CardTitle>SEO</CardTitle>
+                  <CardTitle>{t('blog.seo')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -819,12 +819,12 @@ export const BlogPostEditPage = () => {
                     name="metaTitle"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Meta Title</FormLabel>
+                        <FormLabel>{t('blog.metaTitle')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="SEO title" maxLength={60} {...field} />
+                          <Input placeholder={t('blog.seoTitle')} maxLength={60} {...field} />
                         </FormControl>
                         <FormDescription>
-                          {field.value?.length || 0}/60 characters
+                          {t('blog.characters', { count: field.value?.length || 0, max: 60 })}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -836,12 +836,12 @@ export const BlogPostEditPage = () => {
                     name="metaDescription"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Meta Description</FormLabel>
+                        <FormLabel>{t('blog.metaDescription')}</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="SEO description" maxLength={160} rows={3} {...field} />
+                          <Textarea placeholder={t('blog.seoDescription')} maxLength={160} rows={3} {...field} />
                         </FormControl>
                         <FormDescription>
-                          {field.value?.length || 0}/160 characters
+                          {t('blog.characters', { count: field.value?.length || 0, max: 160 })}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -853,12 +853,12 @@ export const BlogPostEditPage = () => {
                     name="canonicalUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Canonical URL</FormLabel>
+                        <FormLabel>{t('blog.canonicalUrl')}</FormLabel>
                         <FormControl>
                           <Input placeholder="https://..." {...field} />
                         </FormControl>
                         <FormDescription>
-                          Leave empty to use default
+                          {t('blog.canonicalUrlHint')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -871,9 +871,9 @@ export const BlogPostEditPage = () => {
                     render={({ field }) => (
                       <FormItem className="flex items-center justify-between rounded-lg border p-3">
                         <div className="space-y-0.5">
-                          <FormLabel>Allow Indexing</FormLabel>
+                          <FormLabel>{t('blog.allowIndexing')}</FormLabel>
                           <FormDescription>
-                            Let search engines index this post
+                            {t('blog.allowIndexingDescription')}
                           </FormDescription>
                         </div>
                         <FormControl>

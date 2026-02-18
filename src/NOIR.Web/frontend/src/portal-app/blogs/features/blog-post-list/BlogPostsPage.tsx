@@ -96,13 +96,13 @@ export const BlogPostsPage = () => {
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
       <PageHeader
         icon={FileText}
-        title="Blog Posts"
-        description="Manage your blog content"
+        title={t('blog.posts')}
+        description={t('blog.postsDescription')}
         action={
           <ViewTransitionLink to="/portal/blog/posts/new">
             <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-              New Post
+              {t('blog.newPost')}
             </Button>
           </ViewTransitionLink>
         }
@@ -121,31 +121,31 @@ export const BlogPostsPage = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search posts..."
+                  placeholder={t('blog.searchPlaceholder')}
                   value={searchInput}
                   onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
                   className="pl-10 w-full sm:w-48"
-                  aria-label={t('labels.searchPosts', 'Search posts')}
+                  aria-label={t('labels.searchPosts')}
                 />
               </div>
               <Select onValueChange={handleStatusChange} defaultValue="all">
-                <SelectTrigger className="w-32 cursor-pointer" aria-label={t('labels.filterByStatus', 'Filter by status')}>
-                  <SelectValue placeholder="Status" />
+                <SelectTrigger className="w-32 cursor-pointer" aria-label={t('blog.filterByStatus')}>
+                  <SelectValue placeholder={t('labels.status')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">All Status</SelectItem>
-                  <SelectItem value="Draft" className="cursor-pointer">Draft</SelectItem>
-                  <SelectItem value="Published" className="cursor-pointer">Published</SelectItem>
-                  <SelectItem value="Scheduled" className="cursor-pointer">Scheduled</SelectItem>
-                  <SelectItem value="Archived" className="cursor-pointer">Archived</SelectItem>
+                  <SelectItem value="all" className="cursor-pointer">{t('labels.allStatus')}</SelectItem>
+                  <SelectItem value="Draft" className="cursor-pointer">{t('blog.status.draft')}</SelectItem>
+                  <SelectItem value="Published" className="cursor-pointer">{t('blog.status.published')}</SelectItem>
+                  <SelectItem value="Scheduled" className="cursor-pointer">{t('blog.status.scheduled')}</SelectItem>
+                  <SelectItem value="Archived" className="cursor-pointer">{t('blog.status.archived')}</SelectItem>
                 </SelectContent>
               </Select>
               <Select onValueChange={handleCategoryChange} defaultValue="all">
-                <SelectTrigger className="w-36 cursor-pointer" aria-label={t('labels.filterByCategory', 'Filter by category')}>
-                  <SelectValue placeholder="Category" />
+                <SelectTrigger className="w-36 cursor-pointer" aria-label={t('blog.filterByCategory')}>
+                  <SelectValue placeholder={t('labels.category')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">All Categories</SelectItem>
+                  <SelectItem value="all" className="cursor-pointer">{t('labels.allCategories')}</SelectItem>
                   {categories.map((cat) => (
                     <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
                       {cat.name}
@@ -167,19 +167,19 @@ export const BlogPostsPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[40%]">Title</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Views</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="w-[40%]">{t('blog.titleColumn', 'Title')}</TableHead>
+                  <TableHead>{t('labels.status')}</TableHead>
+                  <TableHead>{t('labels.category')}</TableHead>
+                  <TableHead>{t('blog.views', 'Views')}</TableHead>
+                  <TableHead>{t('labels.created')}</TableHead>
+                  <TableHead className="text-right">{t('labels.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
-                      Loading...
+                      {t('labels.loading')}
                     </TableCell>
                   </TableRow>
                 ) : data?.items.length === 0 ? (
@@ -187,10 +187,10 @@ export const BlogPostsPage = () => {
                     <TableCell colSpan={6} className="p-0">
                       <EmptyState
                         icon={FileText}
-                        title="No posts found"
-                        description="Get started by creating your first blog post to share with your audience."
+                        title={t('blog.noPostsFound', 'No posts found')}
+                        description={t('blog.noPostsDescription', 'Get started by creating your first blog post to share with your audience.')}
                         action={{
-                          label: 'New Post',
+                          label: t('blog.newPost'),
                           onClick: () => navigate('/portal/blog/posts/new'),
                         }}
                         className="border-0 rounded-none px-4 py-12"
@@ -226,7 +226,7 @@ export const BlogPostsPage = () => {
                       </TableCell>
                       <TableCell>
                         <Badge className={statusColors[post.status]} variant="secondary">
-                          {post.status}
+                          {t(`blog.status.${post.status.toLowerCase()}`)}
                         </Badge>
                       </TableCell>
                       <TableCell>{post.categoryName || '-'}</TableCell>
@@ -245,19 +245,19 @@ export const BlogPostsPage = () => {
                             <DropdownMenuItem className="cursor-pointer" asChild>
                               <ViewTransitionLink to={`/portal/blog/posts/${post.id}`}>
                                 <Eye className="h-4 w-4 mr-2" />
-                                View
+                                {t('blog.viewPost', 'View')}
                               </ViewTransitionLink>
                             </DropdownMenuItem>
                             <DropdownMenuItem className="cursor-pointer" asChild>
                               <ViewTransitionLink to={`/portal/blog/posts/${post.id}/edit`}>
                                 <Pencil className="h-4 w-4 mr-2" />
-                                Edit
+                                {t('buttons.edit')}
                               </ViewTransitionLink>
                             </DropdownMenuItem>
                             {post.status === 'Draft' && (
                               <DropdownMenuItem className="cursor-pointer">
                                 <Send className="h-4 w-4 mr-2" />
-                                Publish
+                                {t('buttons.publish')}
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
@@ -265,7 +265,7 @@ export const BlogPostsPage = () => {
                               onClick={() => setPostToDelete(post)}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
+                              {t('buttons.delete')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

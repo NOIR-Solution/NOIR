@@ -161,6 +161,8 @@ global using NOIR.Application.Features.Cart.Queries.GetCartById;
 global using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeValueById;
 global using NOIR.Application.Features.ProductAttributes.Queries.GetCategoryAttributeById;
 global using NOIR.Application.Features.Shipping.Queries.GetShippingOrder;
+global using NOIR.Application.Features.Inventory.DTOs;
+global using NOIR.Application.Features.Inventory.Queries.GetInventoryReceiptById;
 
 // NOIR Domain
 global using NOIR.Domain.Common;
@@ -201,6 +203,7 @@ global using NOIR.Domain.Entities.Order;
 global using NOIR.Domain.Entities.Payment;
 global using NOIR.Domain.Entities.Product;
 global using NOIR.Domain.Entities.Analytics;
+global using NOIR.Domain.Entities.Inventory;
 global using NOIR.Domain.Entities.Shipping;
 global using NOIR.Domain.Events.Cart;
 global using NOIR.Domain.Events.Checkout;

@@ -123,6 +123,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(e => e.CancellationReason)
             .HasMaxLength(500);
 
+        // Return
+        builder.Property(e => e.ReturnReason)
+            .HasMaxLength(500);
+
         // Coupon
         builder.Property(e => e.CouponCode)
             .HasMaxLength(50);

@@ -133,10 +133,10 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
 
       if (isEdit && category) {
         await updateCategory(category.id, request)
-        toast.success('Category updated')
+        toast.success(t('blog.categoryUpdated'))
       } else {
         await createCategory(request)
-        toast.success('Category created')
+        toast.success(t('blog.categoryCreated'))
       }
 
       form.reset()
@@ -145,7 +145,7 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
     } catch (err) {
       const message = err instanceof ApiError
         ? err.message
-        : isEdit ? 'Failed to update category' : 'Failed to create category'
+        : isEdit ? t('blog.failedToUpdateCategory') : t('blog.failedToCreateCategory')
       toast.error(message)
     } finally {
       setLoading(false)
@@ -166,12 +166,12 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
             </div>
             <div>
               <DialogTitle>
-                {isEdit ? 'Edit Category' : 'Create New Category'}
+                {isEdit ? t('blog.editCategory') : t('blog.createNewCategory')}
               </DialogTitle>
               <DialogDescription>
                 {isEdit
-                  ? 'Update the category details below.'
-                  : 'Add a new category to organize your blog posts.'}
+                  ? t('blog.editCategoryDescription')
+                  : t('blog.createCategoryDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -184,9 +184,9 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category Name</FormLabel>
+                  <FormLabel>{t('blog.categoryName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Technology, News" {...field} />
+                    <Input placeholder={t('blog.categoryNamePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -198,9 +198,9 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
               name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel>{t('labels.slug')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., technology, news" {...field} />
+                    <Input placeholder={t('blog.categorySlugPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -212,10 +212,10 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (optional)</FormLabel>
+                  <FormLabel>{t('blog.descriptionOptional')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe what this category is about..."
+                      placeholder={t('blog.categoryDescription')}
                       {...field}
                     />
                   </FormControl>
@@ -230,7 +230,7 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
                 name="sortOrder"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sort Order</FormLabel>
+                    <FormLabel>{t('labels.sortOrder')}</FormLabel>
                     <FormControl>
                       <Input type="number" min="0" {...field} />
                     </FormControl>
@@ -244,18 +244,18 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
                 name="parentId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Parent Category</FormLabel>
+                    <FormLabel>{t('blog.parentCategory')}</FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
                       value={field.value || '__none__'}
                     >
                       <FormControl>
                         <SelectTrigger className="cursor-pointer" aria-label={t('blog.selectParentCategoryOptional', 'Select parent category (optional)')}>
-                          <SelectValue placeholder="Select parent (optional)" />
+                          <SelectValue placeholder={t('blog.selectParentOptional')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="__none__" className="cursor-pointer">No parent</SelectItem>
+                        <SelectItem value="__none__" className="cursor-pointer">{t('blog.noParent')}</SelectItem>
                         {existingCategories.map((cat) => (
                           <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
                             {cat.name}
@@ -271,12 +271,12 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
+                {t('buttons.cancel')}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading
-                  ? (isEdit ? 'Updating...' : 'Creating...')
-                  : (isEdit ? 'Update' : 'Create')}
+                  ? t('buttons.saving')
+                  : (isEdit ? t('buttons.update') : t('buttons.create'))}
               </Button>
             </DialogFooter>
           </form>

@@ -104,7 +104,7 @@ export const ProductsPage = () => {
   const isSearchStale = searchInput !== deferredSearch
   const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
 
-  const { data, isLoading: loading, error: queryError } = useProductsQuery(queryParams)
+  const { data, isLoading: loading, isPlaceholderData, error: queryError } = useProductsQuery(queryParams)
   const { data: stats = { total: 0, active: 0, draft: 0, archived: 0, outOfStock: 0, lowStock: 0 } } = useProductStatsQuery()
   const { data: categories = [] } = useProductCategoriesQuery()
   const { data: brands = [] } = useActiveBrandsQuery()
@@ -645,7 +645,7 @@ export const ProductsPage = () => {
           </div>
         </CardHeader>
 
-        <CardContent className={(isFilterPending || isSearchStale) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isFilterPending || isSearchStale || isPlaceholderData) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive animate-in fade-in-0 slide-in-from-top-2 duration-300">
               <p className="text-sm font-medium">{error}</p>
@@ -762,7 +762,7 @@ export const ProductsPage = () => {
             )
           ) : (
             // Table View
-            <div className="rounded-xl border border-border/50 overflow-hidden">
+            <div className="rounded-xl border border-border/50 overflow-hidden min-h-[400px]">
               <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">

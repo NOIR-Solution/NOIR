@@ -1,6 +1,9 @@
 using NOIR.Application.Features.Orders.Commands.CancelOrder;
+using NOIR.Application.Features.Orders.Commands.CompleteOrder;
 using NOIR.Application.Features.Orders.Commands.ConfirmOrder;
 using NOIR.Application.Features.Orders.Commands.CreateOrder;
+using NOIR.Application.Features.Orders.Commands.DeliverOrder;
+using NOIR.Application.Features.Orders.Commands.ReturnOrder;
 using NOIR.Application.Features.Orders.Commands.ShipOrder;
 using NOIR.Application.Features.Orders.DTOs;
 using NOIR.Application.Features.Orders.Queries.GetOrderById;
@@ -117,6 +120,61 @@ public static class OrderEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
+        // Deliver order
+        group.MapPost("/{id:guid}/deliver", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new DeliverOrderCommand(id) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<OrderDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.OrdersWrite)
+        .WithName("DeliverOrder")
+        .WithSummary("Mark order as delivered")
+        .WithDescription("Marks an order as delivered to the customer.")
+        .Produces<OrderDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Complete order
+        group.MapPost("/{id:guid}/complete", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new CompleteOrderCommand(id) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<OrderDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.OrdersWrite)
+        .WithName("CompleteOrder")
+        .WithSummary("Complete an order")
+        .WithDescription("Marks an order as completed after successful delivery.")
+        .Produces<OrderDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Return order
+        group.MapPost("/{id:guid}/return", async (
+            Guid id,
+            [FromBody] ReturnOrderRequest? request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new ReturnOrderCommand(id, request?.Reason) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<OrderDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.OrdersManage)
+        .WithName("ReturnOrder")
+        .WithSummary("Return an order")
+        .WithDescription("Marks an order as returned and releases inventory back to stock.")
+        .Produces<OrderDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
         // Cancel order
         group.MapPost("/{id:guid}/cancel", async (
             Guid id,
@@ -147,3 +205,8 @@ public sealed record ShipOrderRequest(string TrackingNumber, string ShippingCarr
 /// Request DTO for cancelling an order.
 /// </summary>
 public sealed record CancelOrderRequest(string? Reason);
+
+/// <summary>
+/// Request DTO for returning an order.
+/// </summary>
+public sealed record ReturnOrderRequest(string? Reason);

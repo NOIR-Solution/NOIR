@@ -465,6 +465,8 @@ app.MapBrandEndpoints();
 app.MapProductAttributeEndpoints();
 app.MapCartEndpoints();
 app.MapOrderEndpoints();
+app.MapInventoryEndpoints();
+app.MapDashboardEndpoints();
 app.MapCheckoutEndpoints();
 app.MapShippingProviderEndpoints();
 app.MapShippingEndpoints();

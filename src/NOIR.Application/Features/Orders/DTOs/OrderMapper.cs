@@ -40,7 +40,9 @@ public static class OrderMapper
             DeliveredAt = order.DeliveredAt,
             CompletedAt = order.CompletedAt,
             CancelledAt = order.CancelledAt,
-            CancellationReason = order.CancellationReason
+            CancellationReason = order.CancellationReason,
+            ReturnedAt = order.ReturnedAt,
+            ReturnReason = order.ReturnReason
         };
     }
 

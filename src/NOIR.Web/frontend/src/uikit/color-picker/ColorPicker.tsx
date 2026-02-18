@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Check, Pipette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '../input/Input';
+import { Popover, PopoverContent, PopoverTrigger } from '../popover/Popover';
 
 interface ColorSwatchProps {
   color: string;
@@ -127,5 +128,55 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   );
 };
 
-export { ColorPicker, ColorSwatch, defaultColors };
-export type { ColorPickerProps, ColorSwatchProps };
+interface CompactColorPickerProps {
+  value?: string;
+  onChange?: (color: string) => void;
+  colors?: string[];
+  showCustomInput?: boolean;
+  className?: string;
+  triggerClassName?: string;
+  align?: 'start' | 'center' | 'end';
+  side?: 'top' | 'bottom' | 'left' | 'right';
+}
+
+const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
+  value = '#3B82F6',
+  onChange = () => {},
+  colors = defaultColors,
+  showCustomInput = true,
+  className,
+  triggerClassName,
+  align = 'start',
+  side = 'bottom',
+}) => {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            'w-8 h-8 rounded-md cursor-pointer ring-1 ring-border hover:ring-2 hover:ring-primary/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+            triggerClassName,
+          )}
+          style={{ backgroundColor: value }}
+          aria-label={`Color: ${value}. Click to change.`}
+        />
+      </PopoverTrigger>
+      <PopoverContent
+        className={cn('w-auto p-3', className)}
+        align={align}
+        side={side}
+      >
+        <ColorPicker
+          value={value}
+          onChange={onChange}
+          colors={colors}
+          showCustomInput={showCustomInput}
+        />
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+export { ColorPicker, CompactColorPicker, ColorSwatch, defaultColors };
+export type { ColorPickerProps, CompactColorPickerProps, ColorSwatchProps };

@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-02-01
-**Version:** 2.7
+**Last Updated:** 2026-02-18
+**Version:** 3.0
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -521,6 +521,77 @@ Domain ← Application ← Infrastructure ← Web
 | `EmailChangeOtp` | `Entities/EmailChangeOtp.cs` | Email change verification |
 | `PasswordResetOtp` | `Entities/PasswordResetOtp.cs` | Password reset flow |
 
+#### E-commerce Entities
+
+| Entity | Path | Base Class |
+|--------|------|------------|
+| `Product` | `Entities/Product/Product.cs` | `TenantAggregateRoot<Guid>` |
+| `ProductVariant` | `Entities/Product/ProductVariant.cs` | `TenantEntity<Guid>` |
+| `ProductImage` | `Entities/Product/ProductImage.cs` | `TenantEntity<Guid>` |
+| `ProductCategory` | `Entities/Product/ProductCategory.cs` | `TenantAggregateRoot<Guid>` |
+| `ProductOption` | `Entities/Product/ProductOption.cs` | `TenantEntity<Guid>` |
+| `ProductOptionValue` | `Entities/Product/ProductOptionValue.cs` | `TenantEntity<Guid>` |
+| `ProductAttribute` | `Entities/Product/ProductAttribute.cs` | `TenantAggregateRoot<Guid>` |
+| `ProductAttributeValue` | `Entities/Product/ProductAttributeValue.cs` | `TenantEntity<Guid>` |
+| `ProductAttributeAssignment` | `Entities/Product/ProductAttributeAssignment.cs` | `TenantEntity<Guid>` |
+| `ProductFilterIndex` | `Entities/Product/ProductFilterIndex.cs` | `TenantEntity<Guid>` |
+| `Brand` | `Entities/Product/Brand.cs` | `TenantAggregateRoot<Guid>` |
+| `InventoryMovement` | `Entities/Product/InventoryMovement.cs` | `TenantAggregateRoot<Guid>` |
+
+#### Cart & Checkout Entities
+
+| Entity | Path | Base Class |
+|--------|------|------------|
+| `Cart` | `Entities/Cart/Cart.cs` | `TenantAggregateRoot<Guid>` |
+| `CartItem` | `Entities/Cart/CartItem.cs` | `TenantEntity<Guid>` |
+| `CheckoutSession` | `Entities/Checkout/CheckoutSession.cs` | `TenantAggregateRoot<Guid>` |
+
+#### Order Entities
+
+| Entity | Path | Base Class |
+|--------|------|------------|
+| `Order` | `Entities/Order/Order.cs` | `TenantAggregateRoot<Guid>` |
+| `OrderItem` | `Entities/Order/OrderItem.cs` | `TenantEntity<Guid>` |
+
+#### Shipping Entities
+
+| Entity | Path | Base Class |
+|--------|------|------------|
+| `ShippingProvider` | `Entities/Shipping/ShippingProvider.cs` | `TenantAggregateRoot<Guid>` |
+| `ShippingOrder` | `Entities/Shipping/ShippingOrder.cs` | `TenantAggregateRoot<Guid>` |
+| `ShippingTrackingEvent` | `Entities/Shipping/ShippingTrackingEvent.cs` | `TenantEntity<Guid>` |
+| `ShippingWebhookLog` | `Entities/Shipping/ShippingWebhookLog.cs` | `Entity<Guid>` |
+
+#### Payment Entities
+
+| Entity | Path | Base Class |
+|--------|------|------------|
+| `PaymentGateway` | `Entities/Payment/PaymentGateway.cs` | `TenantAggregateRoot<Guid>` |
+| `PaymentTransaction` | `Entities/Payment/PaymentTransaction.cs` | `TenantAggregateRoot<Guid>` |
+| `PaymentWebhookLog` | `Entities/Payment/PaymentWebhookLog.cs` | `TenantAggregateRoot<Guid>` |
+| `PaymentOperationLog` | `Entities/Payment/PaymentOperationLog.cs` | `TenantAggregateRoot<Guid>` |
+| `PaymentInstallment` | `Entities/Payment/PaymentInstallment.cs` | `TenantEntity<Guid>` |
+| `Refund` | `Entities/Payment/Refund.cs` | [Payment Feature](#payments-feature-new) |
+
+#### Inventory Entities
+
+| Entity | Path | Base Class |
+|--------|------|------------|
+| `InventoryReceipt` | `Entities/Inventory/InventoryReceipt.cs` | `TenantAggregateRoot<Guid>` |
+| `InventoryReceiptItem` | `Entities/Inventory/InventoryReceiptItem.cs` | `TenantEntity<Guid>` |
+
+#### Analytics Entities
+
+| Entity | Path | Base Class |
+|--------|------|------------|
+| `FilterAnalyticsEvent` | `Entities/Analytics/FilterAnalyticsEvent.cs` | `TenantEntity<Guid>` |
+
+#### Legal & Content Entities
+
+| Entity | Path | Base Class |
+|--------|------|------------|
+| `LegalPage` | `Entities/LegalPage.cs` | `PlatformTenantAggregateRoot<Guid>` |
+
 #### Identity Entities (Infrastructure Layer)
 
 | Entity | Path | Related To |
@@ -830,9 +901,17 @@ All OTP-based features (Password Reset, Email Change, Phone Verification, etc.) 
 
 | Type | Name | Path |
 |------|------|------|
-| Query | `GetAuditLogsQuery` | `Queries/GetAuditLogs/` |
-| Query | `GetUserActivityQuery` | `Queries/GetUserActivity/` |
-| DTO | `AuditLogDto` | `DTOs/AuditLogDto.cs` |
+| Query | `SearchActivityTimelineQuery` | `Queries/SearchActivityTimeline/` |
+| Query | `GetActivityDetailsQuery` | `Queries/GetActivityDetails/` |
+| Query | `GetAuditableEntityTypesQuery` | `Queries/GetAuditableEntityTypes/` |
+| Query | `GetEntityHistoryQuery` | `Queries/GetEntityHistory/` |
+| Query | `GetEntityVersionsQuery` | `Queries/GetEntityVersions/` |
+| Query | `SearchEntitiesWithHistoryQuery` | `Queries/SearchEntitiesWithHistory/` |
+| DTO | `ActivityTimelineEntryDto` | `DTOs/ActivityTimelineEntryDto.cs` |
+| DTO | `EntityHistoryEntryDto` | `DTOs/EntityHistoryEntryDto.cs` |
+| DTO | `EntityVersionDto` | `DTOs/EntityVersionDto.cs` |
+| DTO | `EntitySearchResultDto` | `DTOs/EntitySearchResultDto.cs` |
+| DTO | `FieldChangeDto` | `DTOs/FieldChangeDto.cs` |
 
 **Related:** [AuditEndpoints](#audit-endpoints), [Activity Timeline](#activity-timeline-page)
 
@@ -842,6 +921,375 @@ All OTP-based features (Password Reset, Email Change, Phone Verification, etc.) 
 - User activity navigation (click user → filter by user)
 - Search across entity ID, user email, handler name, field values
 - Expandable rows showing entity changes (before/after diff)
+
+#### Products Feature
+**Path:** `Features/Products/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreateProductCommand` | `Commands/CreateProduct/` |
+| Command | `UpdateProductCommand` | `Commands/UpdateProduct/` |
+| Command | `DeleteProductCommand` | `Commands/DeleteProduct/` |
+| Command | `PublishProductCommand` | `Commands/PublishProduct/` |
+| Command | `ArchiveProductCommand` | `Commands/ArchiveProduct/` |
+| Command | `DuplicateProductCommand` | `Commands/DuplicateProduct/` |
+| Command | `BulkPublishProductsCommand` | `Commands/BulkPublishProducts/` |
+| Command | `BulkArchiveProductsCommand` | `Commands/BulkArchiveProducts/` |
+| Command | `BulkDeleteProductsCommand` | `Commands/BulkDeleteProducts/` |
+| Command | `BulkImportProductsCommand` | `Commands/BulkImportProducts/` |
+| Command | `AddProductVariantCommand` | `Commands/AddProductVariant/` |
+| Command | `UpdateProductVariantCommand` | `Commands/UpdateProductVariant/` |
+| Command | `DeleteProductVariantCommand` | `Commands/DeleteProductVariant/` |
+| Command | `AddProductImageCommand` | `Commands/AddProductImage/` |
+| Command | `UpdateProductImageCommand` | `Commands/UpdateProductImage/` |
+| Command | `DeleteProductImageCommand` | `Commands/DeleteProductImage/` |
+| Command | `UploadProductImageCommand` | `Commands/UploadProductImage/` |
+| Command | `SetPrimaryProductImageCommand` | `Commands/SetPrimaryProductImage/` |
+| Command | `ReorderProductImagesCommand` | `Commands/ReorderProductImages/` |
+| Command | `AddProductOptionCommand` | `Commands/AddProductOption/` |
+| Command | `UpdateProductOptionCommand` | `Commands/UpdateProductOption/` |
+| Command | `DeleteProductOptionCommand` | `Commands/DeleteProductOption/` |
+| Command | `AddProductOptionValueCommand` | `Commands/AddProductOptionValue/` |
+| Command | `UpdateProductOptionValueCommand` | `Commands/UpdateProductOptionValue/` |
+| Command | `DeleteProductOptionValueCommand` | `Commands/DeleteProductOptionValue/` |
+| Command | `CreateProductCategoryCommand` | `Commands/CreateProductCategory/` |
+| Command | `UpdateProductCategoryCommand` | `Commands/UpdateProductCategory/` |
+| Command | `DeleteProductCategoryCommand` | `Commands/DeleteProductCategory/` |
+| Query | `GetProductsQuery` | `Queries/GetProducts/` |
+| Query | `GetProductByIdQuery` | `Queries/GetProductById/` |
+| Query | `GetProductStatsQuery` | `Queries/GetProductStats/` |
+| Query | `GetProductCategoriesQuery` | `Queries/GetProductCategories/` |
+| Query | `GetProductCategoryByIdQuery` | `Queries/GetProductCategoryById/` |
+| Query | `GetProductOptionByIdQuery` | `Queries/GetProductOptionById/` |
+| Query | `GetProductOptionValueByIdQuery` | `Queries/GetProductOptionValueById/` |
+| Query | `ExportProductsQuery` | `Queries/ExportProducts/` |
+
+**Related:** [ProductEndpoints](#product-endpoints), [ProductCategoryEndpoints](#product-category-endpoints)
+
+**Domain Entities:**
+- `Product` - Core product with name, slug, description, SEO metadata, status (Draft/Active/Archived)
+- `ProductVariant` - SKU-level variants with price, inventory, weight
+- `ProductImage` - Multiple images with display order, alt text, ThumbHash
+- `ProductCategory` - Hierarchical categories with parent-child relationships
+- `ProductOption` - Configurable options (Size, Color, Material)
+- `ProductOptionValue` - Option values (Small, Medium, Large)
+
+#### Brands Feature
+**Path:** `Features/Brands/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreateBrandCommand` | `Commands/CreateBrand/` |
+| Command | `UpdateBrandCommand` | `Commands/UpdateBrand/` |
+| Command | `DeleteBrandCommand` | `Commands/DeleteBrand/` |
+| Query | `GetBrandsQuery` | `Queries/GetBrands/` |
+| Query | `GetBrandByIdQuery` | `Queries/GetBrandById/` |
+| DTO | `BrandDto`, `BrandListDto` | `DTOs/BrandDtos.cs` |
+| Spec | `BrandSpecifications` | `Specifications/BrandSpecifications.cs` |
+
+**Related:** [BrandEndpoints](#brand-endpoints)
+
+**Domain Entity:** `Brand` - Brand with name, slug, logo URL, banner URL, description, SEO metadata, featured status
+
+#### ProductAttributes Feature
+**Path:** `Features/ProductAttributes/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreateProductAttributeCommand` | `Commands/CreateProductAttribute/` |
+| Command | `UpdateProductAttributeCommand` | `Commands/UpdateProductAttribute/` |
+| Command | `DeleteProductAttributeCommand` | `Commands/DeleteProductAttribute/` |
+| Command | `AddProductAttributeValueCommand` | `Commands/AddProductAttributeValue/` |
+| Command | `UpdateProductAttributeValueCommand` | `Commands/UpdateProductAttributeValue/` |
+| Command | `RemoveProductAttributeValueCommand` | `Commands/RemoveProductAttributeValue/` |
+| Command | `AssignAttributeToCategoryCommand` | `Commands/AssignAttributeToCategory/` |
+| Command | `RemoveAttributeFromCategoryCommand` | `Commands/RemoveAttributeFromCategory/` |
+| Command | `AssignAttributeToProductCommand` | `Commands/AssignAttributeToProduct/` |
+| Query | `GetProductAttributesQuery` | `Queries/GetProductAttributes/` |
+| Query | `GetProductAttributeByIdQuery` | `Queries/GetProductAttributeById/` |
+| Query | `GetCategoryAttributesQuery` | `Queries/GetCategoryAttributes/` |
+| Query | `GetProductAttributeFormSchemaQuery` | `Queries/GetProductAttributeFormSchema/` |
+| Query | `GetCategoryAttributeFormSchemaQuery` | `Queries/GetCategoryAttributeFormSchema/` |
+| DTO | `ProductAttributeDto`, `ProductAttributeValueDto`, `CategoryAttributeDto` | `DTOs/ProductAttributeDtos.cs` |
+| Spec | `ProductAttributeSpecifications`, `CategoryAttributeSpecifications` | `Specifications/` |
+
+**Related:** [ProductAttributeEndpoints](#product-attribute-endpoints)
+
+**13 Attribute Types:** Select, MultiSelect, Text, TextArea, Number, Decimal, Boolean, Date, DateTime, Color, Range, Url, File
+
+**Domain Entities:**
+- `ProductAttribute` - Attribute definition with type, validation rules
+- `ProductAttributeValue` - Predefined values for Select/MultiSelect attributes
+- `CategoryAttribute` - M:N linkage between categories and attributes
+- `ProductAttributeAssignment` - Actual attribute values assigned to products
+
+#### Cart Feature
+**Path:** `Features/Cart/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `AddToCartCommand` | `Commands/AddToCart/` |
+| Command | `UpdateCartItemCommand` | `Commands/UpdateCartItem/` |
+| Command | `RemoveCartItemCommand` | `Commands/RemoveCartItem/` |
+| Command | `ClearCartCommand` | `Commands/ClearCart/` |
+| Command | `MergeCartCommand` | `Commands/MergeCart/` |
+| Query | `GetCartQuery` | `Queries/GetCart/` |
+| Query | `GetCartByIdQuery` | `Queries/GetCartById/` |
+| Query | `GetCartSummaryQuery` | `Queries/GetCartSummary/` |
+| DTO | `CartDto`, `CartItemDto`, `CartSummaryDto`, `CartMergeResultDto` | `DTOs/CartDtos.cs` |
+| Spec | `CartSpecifications` | `Specifications/CartSpecifications.cs` |
+
+**Related:** [CartEndpoints](#cart-endpoints)
+
+**Key Features:**
+- Supports both authenticated users (UserId) and guest sessions (SessionId via cookie)
+- Guest carts can be merged with user carts on login via `MergeCartCommand`
+- CartStatus: Active → Converted (on checkout) or Abandoned (cleanup)
+
+#### Checkout Feature
+**Path:** `Features/Checkout/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `InitiateCheckoutCommand` | `Commands/InitiateCheckout/` |
+| Command | `SetCheckoutAddressCommand` | `Commands/SetCheckoutAddress/` |
+| Command | `SelectShippingMethodCommand` | `Commands/SelectShippingMethod/` |
+| Command | `SelectPaymentMethodCommand` | `Commands/SelectPaymentMethod/` |
+| Command | `CompleteCheckoutCommand` | `Commands/CompleteCheckout/` |
+| Query | `GetCheckoutSessionQuery` | `Queries/GetCheckoutSession/` |
+| DTO | `CheckoutSessionDto`, `InitiateCheckoutRequest`, `SetCheckoutAddressRequest` | `DTOs/CheckoutDtos.cs` |
+| Spec | `CheckoutSpecs` | `Specifications/CheckoutSpecs.cs` |
+
+**Related:** [CheckoutEndpoints](#checkout-endpoints)
+
+**Checkout Flow:**
+1. `InitiateCheckout` - Creates session from cart
+2. `SetCheckoutAddress` - Shipping/billing address (Vietnam format)
+3. `SelectShippingMethod` - Shipping carrier selection
+4. `SelectPaymentMethod` - Payment gateway + method
+5. `CompleteCheckout` - Creates Order, reserves inventory
+
+#### Orders Feature
+**Path:** `Features/Orders/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreateOrderCommand` | `Commands/CreateOrder/` |
+| Command | `ConfirmOrderCommand` | `Commands/ConfirmOrder/` |
+| Command | `ShipOrderCommand` | `Commands/ShipOrder/` |
+| Command | `DeliverOrderCommand` | `Commands/DeliverOrder/` |
+| Command | `CompleteOrderCommand` | `Commands/CompleteOrder/` |
+| Command | `CancelOrderCommand` | `Commands/CancelOrder/` |
+| Command | `ReturnOrderCommand` | `Commands/ReturnOrder/` |
+| Query | `GetOrdersQuery` | `Queries/GetOrders/` |
+| Query | `GetOrderByIdQuery` | `Queries/GetOrderById/` |
+| DTO | `OrderDto`, `OrderSummaryDto`, `OrderItemDto`, `AddressDto` | `DTOs/OrderDtos.cs` |
+| Spec | `OrderSpecs` | `Specifications/OrderSpecs.cs` |
+
+**Related:** [OrderEndpoints](#order-endpoints)
+
+**Order Lifecycle:** Pending → Confirmed → Processing → Shipped → Delivered → Completed (or Cancelled/Returned at various stages)
+
+**Financial Fields:** SubTotal, DiscountAmount, ShippingAmount, TaxAmount, GrandTotal (VND currency)
+
+#### Shipping Feature
+**Path:** `Features/Shipping/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreateShippingProviderCommand` | `Commands/CreateShippingProvider/` |
+| Command | `UpdateShippingProviderCommand` | `Commands/UpdateShippingProvider/` |
+| Command | `DeleteShippingProviderCommand` | `Commands/DeleteShippingProvider/` |
+| Command | `CreateShippingOrderCommand` | `Commands/CreateShippingOrder/` |
+| Query | `GetShippingProvidersQuery` | `Queries/GetShippingProviders/` |
+| Query | `GetShippingOrdersQuery` | `Queries/GetShippingOrders/` |
+| Query | `CalculateShippingRatesQuery` | `Queries/CalculateShippingRates/` |
+| DTO | `ShippingProviderDto`, `ShippingOrderDto`, `ShippingRateDto` | `DTOs/` |
+
+**Related:** [ShippingEndpoints](#shipping-endpoints), [ShippingProviderEndpoints](#shipping-provider-endpoints)
+
+**Supported Carriers (Vietnam):** GHTK, GHN, J&T Express, Viettel Post, NinjaVan, VNPost, BestExpress, Custom
+
+**Enums:**
+- `ShippingStatus` - Draft, Pending, PickingUp, InTransit, OutForDelivery, Delivered, Failed, Cancelled, Returning, Returned
+- `ShippingProviderCode` - GHTK, GHN, JTExpress, ViettelPost, NinjaVan, VNPost, BestExpress, Custom
+- `ShippingProviderHealthStatus` - Unknown, Healthy, Degraded, Unhealthy
+
+#### Inventory Feature
+**Path:** `Features/Inventory/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreateStockMovementCommand` | `Commands/CreateStockMovement/` |
+| Command | `CreateInventoryReceiptCommand` | `Commands/CreateInventoryReceipt/` |
+| Command | `ConfirmInventoryReceiptCommand` | `Commands/ConfirmInventoryReceipt/` |
+| Command | `CancelInventoryReceiptCommand` | `Commands/CancelInventoryReceipt/` |
+| Query | `GetStockHistoryQuery` | `Queries/GetStockHistory/` |
+| Query | `GetInventoryReceiptsQuery` | `Queries/GetInventoryReceipts/` |
+| Query | `GetInventoryReceiptByIdQuery` | `Queries/GetInventoryReceiptById/` |
+| DTO | `InventoryMovementDto` | `DTOs/InventoryMovementDto.cs` |
+| DTO | `InventoryReceiptDto`, `InventoryReceiptSummaryDto`, `InventoryReceiptItemDto`, `CreateInventoryReceiptItemDto` | `DTOs/InventoryReceiptDtos.cs` |
+| Mapper | `InventoryMovementMapper` | `Mappers/InventoryMovementMapper.cs` |
+| Mapper | `InventoryReceiptMapper` | `Mappers/InventoryReceiptMapper.cs` |
+| Spec | `InventoryMovementSpecs` | `Specifications/InventoryMovementSpecs.cs` |
+| Spec | `InventoryReceiptByIdSpec`, `InventoryReceiptByIdForUpdateSpec`, `InventoryReceiptsListSpec`, `InventoryReceiptsCountSpec`, `LatestReceiptNumberTodaySpec` | `Specifications/InventoryReceiptSpecs.cs` |
+
+**Related:** [InventoryEndpoints](#inventory-endpoints)
+
+**Key Concepts:**
+- Inventory tracked at `ProductVariant` level. Movement types: StockIn, StockOut, Adjustment, Return, Reserved, Released
+- **Inventory Receipts** (phieu nhap/xuat kho): Batch stock movement receipts with approval workflow
+- Receipt number format: `RCV-YYYYMMDD-NNNN` (StockIn) or `SHP-YYYYMMDD-NNNN` (StockOut)
+- Receipt status workflow: `Draft` → `Confirmed` (stock adjusted) or `Cancelled`
+- Receipt types: `StockIn` (inbound), `StockOut` (outbound)
+- `CreateStockMovementCommand` for individual manual movements
+- `InventoryReceiptByIdForUpdateSpec` uses `AsTracking()` for mutation operations
+
+**Domain Entities:**
+- `InventoryReceipt` (`TenantAggregateRoot<Guid>`) - Receipt header with status/type/notes
+- `InventoryReceiptItem` (`TenantEntity<Guid>`) - Line items with product snapshot (name, variant, SKU, quantity, unit cost)
+- Computed: `TotalQuantity` (sum of item quantities), `TotalCost` (sum of item line totals), `LineTotal` (quantity x unit cost)
+
+#### ProductFilter Feature
+**Path:** `Features/ProductFilter/`
+
+| Type | Name | Path |
+|------|------|------|
+| Query | `FilterProductsQuery` | `Queries/FilterProducts/` |
+| Query | `GetCategoryFiltersQuery` | `Queries/GetCategoryFilters/` |
+| DTO | `ProductFilterRequest`, `FilteredProductsResult`, `FacetsDto`, `CategoryFiltersDto` | `DTOs/FilterDtos.cs` |
+| Spec | `ProductFilterSpecifications` | `Specifications/ProductFilterSpecifications.cs` |
+| Service | `FacetCalculator` | `Services/FacetCalculator.cs` |
+
+**Related:** [ProductFilterEndpoints](#product-filter-endpoints)
+
+**Key Features:**
+- Faceted filtering by category, brand, price range, attributes, stock status
+- Dynamic facet calculation with counts per filter value
+- Supports 4 display types: Checkbox, Color, Range, Boolean
+- Sort options: newest, price, rating
+
+#### ProductFilterIndex Feature
+**Path:** `Features/ProductFilterIndex/`
+
+| Type | Name | Path |
+|------|------|------|
+| Service | `AttributeJsonBuilder` | `Services/AttributeJsonBuilder.cs` |
+| Handler | `ProductFilterIndexSyncHandler` | `EventHandlers/ProductFilterIndexSyncHandler.cs` |
+
+**Purpose:** Denormalized index for fast faceted filtering. Syncs attribute data into a JSON column on `ProductFilterIndex` table when product attributes change.
+
+#### FilterAnalytics Feature
+**Path:** `Features/FilterAnalytics/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `CreateFilterEventCommand` | `Commands/CreateFilterEvent/` |
+| Query | `GetPopularFiltersQuery` | `Queries/GetPopularFilters/` |
+| DTO | `FilterAnalyticsEventDto`, `PopularFilterDto`, `PopularFiltersResult` | `DTOs/FilterAnalyticsDtos.cs` |
+
+**Related:** [FilterAnalyticsEndpoints](#filter-analytics-endpoints)
+
+**Purpose:** Tracks filter usage analytics (session, user, filter code/value, product count, conversion rate) for business intelligence.
+
+#### LegalPages Feature
+**Path:** `Features/LegalPages/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `UpdateLegalPageCommand` | `Commands/UpdateLegalPage/` |
+| Command | `RevertLegalPageToDefaultCommand` | `Commands/RevertLegalPageToDefault/` |
+| Query | `GetLegalPagesQuery` | `Queries/GetLegalPages/` |
+| Query | `GetLegalPageQuery` | `Queries/GetLegalPage/` |
+| Query | `GetPublicLegalPageQuery` | `Queries/GetPublicLegalPage/` |
+| DTO | `LegalPageDto`, `LegalPageListDto`, `PublicLegalPageDto` | `DTOs/LegalPageDtos.cs` |
+
+**Related:** [LegalPageEndpoints](#legal-page-endpoints), [PublicLegalPageEndpoints](#public-legal-page-endpoints)
+
+**Key Features:**
+- Platform/Tenant pattern with inheritance (platform defaults, tenant overrides)
+- SEO metadata (MetaTitle, MetaDescription, CanonicalUrl, AllowIndexing)
+- Public endpoint for website visitors (unauthenticated)
+- Revert to platform default functionality
+
+#### PlatformSettings Feature
+**Path:** `Features/PlatformSettings/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `UpdateSmtpSettingsCommand` | `Commands/UpdateSmtpSettings/` |
+| Command | `TestSmtpConnectionCommand` | `Commands/TestSmtpConnection/` |
+| Query | `GetSmtpSettingsQuery` | `Queries/GetSmtpSettings/` |
+| DTO | `SmtpSettingsDto` | `DTOs/SmtpSettingsDto.cs` |
+
+**Related:** [PlatformSettingsEndpoints](#platform-settings-endpoints)
+
+**Purpose:** Platform-level SMTP email configuration (host, port, credentials, TLS).
+
+#### TenantSettings Feature
+**Path:** `Features/TenantSettings/`
+
+| Type | Name | Path |
+|------|------|------|
+| Command | `UpdateBrandingSettingsCommand` | `Commands/UpdateBrandingSettings/` |
+| Command | `UpdateContactSettingsCommand` | `Commands/UpdateContactSettings/` |
+| Command | `UpdateRegionalSettingsCommand` | `Commands/UpdateRegionalSettings/` |
+| Command | `UpdateTenantSmtpSettingsCommand` | `Commands/UpdateTenantSmtpSettings/` |
+| Command | `TestTenantSmtpConnectionCommand` | `Commands/TestTenantSmtpConnection/` |
+| Command | `RevertTenantSmtpSettingsCommand` | `Commands/RevertTenantSmtpSettings/` |
+| Query | `GetBrandingSettingsQuery` | `Queries/GetBrandingSettings/` |
+| Query | `GetContactSettingsQuery` | `Queries/GetContactSettings/` |
+| Query | `GetRegionalSettingsQuery` | `Queries/GetRegionalSettings/` |
+| Query | `GetTenantSmtpSettingsQuery` | `Queries/GetTenantSmtpSettings/` |
+| DTO | `BrandingSettingsDto`, `ContactSettingsDto`, `RegionalSettingsDto`, `TenantSmtpSettingsDto` | `DTOs/TenantSettingsDtos.cs` |
+
+**Related:** [TenantSettingsEndpoints](#tenant-settings-endpoints)
+
+**Settings Categories:**
+- **Branding** - Logo, favicon, colors, dark mode default
+- **Contact** - Email, phone, address
+- **Regional** - Timezone, language, date format
+- **SMTP** - Tenant-specific email configuration with inheritance from platform defaults
+
+#### Media Feature
+**Path:** `Features/Media/`
+
+| Type | Name | Path |
+|------|------|------|
+| DTO | `MediaUploadResultDto` | `Dtos/MediaUploadResultDto.cs` |
+| DTO | `MediaFileDto` | `Dtos/MediaFileDto.cs` |
+
+**Related:** [MediaEndpoints](#media-endpoints), [FileEndpoints](#file-endpoints)
+
+**Purpose:** Image upload and processing with automatic variant generation (Thumb 150px, ExtraLarge 1920px), WebP encoding, ThumbHash blur placeholders, and dominant color extraction.
+
+#### Dashboard Feature
+**Path:** `Features/Dashboard/`
+
+| Type | Name | Path |
+|------|------|------|
+| Query | `GetDashboardMetricsQuery` | `Queries/GetDashboardMetrics/` |
+| DTO | `DashboardMetricsDto`, `RevenueMetricsDto`, `OrderStatusCountsDto`, `TopSellingProductDto`, `LowStockProductDto`, `RecentOrderDto`, `SalesOverTimeDto`, `ProductStatusDistributionDto` | `DTOs/DashboardDtos.cs` |
+| Service Interface | `IDashboardQueryService` | `IDashboardQueryService.cs` |
+| Service Implementation | `DashboardQueryService` | `Infrastructure/Services/DashboardQueryService.cs` |
+
+**Related:** [DashboardEndpoints](#dashboard-endpoints)
+
+**Key Features:**
+- Revenue metrics with period comparisons (today, this month, last month, total)
+- Order counts by status (all 9 statuses)
+- Top selling products by quantity sold (configurable count, default 5)
+- Low stock products below threshold (configurable, default 10)
+- Recent orders for activity feed (configurable count, default 10)
+- Sales over time for chart rendering (configurable days, default 30)
+- Product status distribution (Draft/Active/Archived)
+
+**Architecture:**
+- Handler delegates to `IDashboardQueryService` (Clean Architecture separation)
+- Infrastructure implementation uses direct `DbContext` for efficient aggregation queries
+- 7 independent queries run in parallel via `Task.WhenAll()` for performance
+- All queries use `TagWith()` for SQL debugging (e.g., "Dashboard_TotalRevenue")
+- Revenue excludes Cancelled/Refunded orders (only Confirmed through Completed)
 
 ### Specifications
 
@@ -1131,6 +1579,255 @@ public class LoginCommandHandler
 
 **Response:** `MediaUploadResultDto` with absolute URLs, ThumbHash, variants
 
+#### Product Endpoints
+**Path:** `Endpoints/ProductEndpoints.cs`
+**Prefix:** `/api/products`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/` | `GetProductsQuery` |
+| GET | `/{id}` | `GetProductByIdQuery` |
+| POST | `/` | `CreateProductCommand` |
+| PUT | `/{id}` | `UpdateProductCommand` |
+| DELETE | `/{id}` | `DeleteProductCommand` |
+| POST | `/{id}/publish` | `PublishProductCommand` |
+| POST | `/{id}/archive` | `ArchiveProductCommand` |
+| POST | `/{id}/duplicate` | `DuplicateProductCommand` |
+| POST | `/bulk/publish` | `BulkPublishProductsCommand` |
+| POST | `/bulk/archive` | `BulkArchiveProductsCommand` |
+| POST | `/bulk/delete` | `BulkDeleteProductsCommand` |
+| POST | `/bulk/import` | `BulkImportProductsCommand` |
+| GET | `/export` | `ExportProductsQuery` |
+| GET | `/stats` | `GetProductStatsQuery` |
+| POST | `/{id}/variants` | `AddProductVariantCommand` |
+| PUT | `/{id}/variants/{variantId}` | `UpdateProductVariantCommand` |
+| DELETE | `/{id}/variants/{variantId}` | `DeleteProductVariantCommand` |
+| POST | `/{id}/images` | `AddProductImageCommand` |
+| POST | `/{id}/images/upload` | `UploadProductImageCommand` |
+| PUT | `/{id}/images/{imageId}` | `UpdateProductImageCommand` |
+| DELETE | `/{id}/images/{imageId}` | `DeleteProductImageCommand` |
+| POST | `/{id}/images/{imageId}/primary` | `SetPrimaryProductImageCommand` |
+| POST | `/{id}/images/reorder` | `ReorderProductImagesCommand` |
+| POST | `/{id}/options` | `AddProductOptionCommand` |
+| PUT | `/{id}/options/{optionId}` | `UpdateProductOptionCommand` |
+| DELETE | `/{id}/options/{optionId}` | `DeleteProductOptionCommand` |
+| POST | `/{id}/options/{optionId}/values` | `AddProductOptionValueCommand` |
+| PUT | `/{id}/options/{optionId}/values/{valueId}` | `UpdateProductOptionValueCommand` |
+| DELETE | `/{id}/options/{optionId}/values/{valueId}` | `DeleteProductOptionValueCommand` |
+
+#### Product Category Endpoints
+**Path:** `Endpoints/ProductCategoryEndpoints.cs`
+**Prefix:** `/api/product-categories`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/` | `GetProductCategoriesQuery` |
+| GET | `/{id}` | `GetProductCategoryByIdQuery` |
+| POST | `/` | `CreateProductCategoryCommand` |
+| PUT | `/{id}` | `UpdateProductCategoryCommand` |
+| DELETE | `/{id}` | `DeleteProductCategoryCommand` |
+
+#### Product Attribute Endpoints
+**Path:** `Endpoints/ProductAttributeEndpoints.cs`
+**Prefix:** `/api/product-attributes`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/` | `GetProductAttributesQuery` |
+| GET | `/{id}` | `GetProductAttributeByIdQuery` |
+| POST | `/` | `CreateProductAttributeCommand` |
+| PUT | `/{id}` | `UpdateProductAttributeCommand` |
+| DELETE | `/{id}` | `DeleteProductAttributeCommand` |
+| POST | `/{id}/values` | `AddProductAttributeValueCommand` |
+| PUT | `/{id}/values/{valueId}` | `UpdateProductAttributeValueCommand` |
+
+#### Brand Endpoints
+**Path:** `Endpoints/BrandEndpoints.cs`
+**Prefix:** `/api/brands`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/` | `GetBrandsQuery` |
+| GET | `/{id}` | `GetBrandByIdQuery` |
+| POST | `/` | `CreateBrandCommand` |
+| PUT | `/{id}` | `UpdateBrandCommand` |
+| DELETE | `/{id}` | `DeleteBrandCommand` |
+
+#### Cart Endpoints
+**Path:** `Endpoints/CartEndpoints.cs`
+**Prefix:** `/api/cart`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/` | `GetCartQuery` (AllowAnonymous) |
+| GET | `/summary` | `GetCartSummaryQuery` (AllowAnonymous) |
+| POST | `/items` | `AddToCartCommand` (AllowAnonymous) |
+| PUT | `/items/{itemId}` | `UpdateCartItemCommand` (AllowAnonymous) |
+| DELETE | `/items/{itemId}` | `RemoveCartItemCommand` (AllowAnonymous) |
+| DELETE | `/` | `ClearCartCommand` (AllowAnonymous) |
+| POST | `/merge` | `MergeCartCommand` (RequireAuthorization) |
+
+**Note:** Guest cart uses `noir_cart_session` cookie for session identification.
+
+#### Checkout Endpoints
+**Path:** `Endpoints/CheckoutEndpoints.cs`
+**Prefix:** `/api/checkout`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/{sessionId}` | `GetCheckoutSessionQuery` |
+| POST | `/initiate` | `InitiateCheckoutCommand` |
+| PUT | `/{sessionId}/address` | `SetCheckoutAddressCommand` |
+| PUT | `/{sessionId}/shipping` | `SelectShippingMethodCommand` |
+| PUT | `/{sessionId}/payment` | `SelectPaymentMethodCommand` |
+| POST | `/{sessionId}/complete` | `CompleteCheckoutCommand` |
+
+#### Order Endpoints
+**Path:** `Endpoints/OrderEndpoints.cs`
+**Prefix:** `/api/orders`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/` | `GetOrdersQuery` |
+| GET | `/{id}` | `GetOrderByIdQuery` |
+| POST | `/` | `CreateOrderCommand` |
+| POST | `/{id}/confirm` | `ConfirmOrderCommand` |
+| POST | `/{id}/ship` | `ShipOrderCommand` |
+| POST | `/{id}/deliver` | `DeliverOrderCommand` |
+| POST | `/{id}/complete` | `CompleteOrderCommand` |
+| POST | `/{id}/cancel` | `CancelOrderCommand` |
+| POST | `/{id}/return` | `ReturnOrderCommand` |
+
+#### Shipping Endpoints
+**Path:** `Endpoints/ShippingEndpoints.cs`, `Endpoints/ShippingProviderEndpoints.cs`
+**Prefix:** `/api/shipping`, `/api/shipping-providers`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/providers` | `GetShippingProvidersQuery` |
+| GET | `/providers/{id}` | Provider details |
+| POST | `/providers` | `CreateShippingProviderCommand` |
+| PUT | `/providers/{id}` | `UpdateShippingProviderCommand` |
+| DELETE | `/providers/{id}` | `DeleteShippingProviderCommand` |
+| POST | `/orders` | `CreateShippingOrderCommand` |
+| GET | `/orders` | `GetShippingOrdersQuery` |
+| POST | `/rates/calculate` | `CalculateShippingRatesQuery` |
+
+#### Inventory Endpoints
+**Path:** `Endpoints/InventoryEndpoints.cs`
+**Prefix:** `/api/inventory`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/products/{productId}/variants/{variantId}/history` | `GetStockHistoryQuery` |
+| POST | `/movements` | `CreateStockMovementCommand` |
+| GET | `/receipts` | `GetInventoryReceiptsQuery` |
+| GET | `/receipts/{id}` | `GetInventoryReceiptByIdQuery` |
+| POST | `/receipts` | `CreateInventoryReceiptCommand` |
+| POST | `/receipts/{id}/confirm` | `ConfirmInventoryReceiptCommand` |
+| POST | `/receipts/{id}/cancel` | `CancelInventoryReceiptCommand` |
+
+**Permissions:** `OrdersRead` for GET endpoints, `OrdersManage` for POST endpoints.
+
+#### Payment Endpoints
+**Path:** `Endpoints/PaymentEndpoints.cs`
+**Prefix:** `/api/payments`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/transactions` | `GetPaymentTransactionsQuery` |
+| GET | `/transactions/{id}` | `GetPaymentTransactionQuery` |
+| POST | `/` | `CreatePaymentCommand` |
+| POST | `/{id}/cancel` | `CancelPaymentCommand` |
+| GET | `/gateways` | `GetPaymentGatewaysQuery` |
+| GET | `/gateways/{id}` | `GetPaymentGatewayQuery` |
+| GET | `/gateways/active` | `GetActiveGatewaysQuery` |
+| POST | `/gateways` | `ConfigureGatewayCommand` |
+| PUT | `/gateways/{id}` | `UpdateGatewayCommand` |
+| POST | `/webhook` | `ProcessWebhookCommand` |
+| GET | `/refunds` | `GetRefundsQuery` |
+| POST | `/refunds/request` | `RequestRefundCommand` |
+| POST | `/refunds/{id}/approve` | `ApproveRefundCommand` |
+| POST | `/refunds/{id}/reject` | `RejectRefundCommand` |
+| GET | `/cod/pending` | `GetPendingCodPaymentsQuery` |
+| POST | `/cod/{id}/confirm` | `ConfirmCodCollectionCommand` |
+| GET | `/webhook-logs` | `GetWebhookLogsQuery` |
+
+#### Product Filter Endpoints
+**Path:** `Endpoints/ProductFilterEndpoints.cs`
+**Prefix:** `/api/product-filters`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| POST | `/filter` | `FilterProductsQuery` |
+| GET | `/categories/{slug}/filters` | `GetCategoryFiltersQuery` |
+
+#### Filter Analytics Endpoints
+**Path:** `Endpoints/FilterAnalyticsEndpoints.cs`
+**Prefix:** `/api/filter-analytics`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| POST | `/events` | `CreateFilterEventCommand` |
+| GET | `/popular` | `GetPopularFiltersQuery` |
+
+#### Legal Page Endpoints
+**Path:** `Endpoints/LegalPageEndpoints.cs`
+**Prefix:** `/api/legal-pages`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/` | `GetLegalPagesQuery` |
+| GET | `/{id}` | `GetLegalPageQuery` |
+| PUT | `/{id}` | `UpdateLegalPageCommand` |
+| POST | `/{id}/revert` | `RevertLegalPageToDefaultCommand` |
+
+#### Public Legal Page Endpoints
+**Path:** `Endpoints/PublicLegalPageEndpoints.cs`
+**Prefix:** `/api/public/legal-pages`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/{slug}` | `GetPublicLegalPageQuery` (AllowAnonymous) |
+
+#### Platform Settings Endpoints
+**Path:** `Endpoints/PlatformSettingsEndpoints.cs`
+**Prefix:** `/api/platform-settings`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/smtp` | `GetSmtpSettingsQuery` |
+| PUT | `/smtp` | `UpdateSmtpSettingsCommand` |
+| POST | `/smtp/test` | `TestSmtpConnectionCommand` |
+
+#### Tenant Settings Endpoints
+**Path:** `Endpoints/TenantSettingsEndpoints.cs`
+**Prefix:** `/api/tenant-settings`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/branding` | `GetBrandingSettingsQuery` |
+| PUT | `/branding` | `UpdateBrandingSettingsCommand` |
+| GET | `/contact` | `GetContactSettingsQuery` |
+| PUT | `/contact` | `UpdateContactSettingsCommand` |
+| GET | `/regional` | `GetRegionalSettingsQuery` |
+| PUT | `/regional` | `UpdateRegionalSettingsCommand` |
+| GET | `/smtp` | `GetTenantSmtpSettingsQuery` |
+| PUT | `/smtp` | `UpdateTenantSmtpSettingsCommand` |
+| POST | `/smtp/test` | `TestTenantSmtpConnectionCommand` |
+| POST | `/smtp/revert` | `RevertTenantSmtpSettingsCommand` |
+
+#### Dashboard Endpoints
+**Path:** `Endpoints/DashboardEndpoints.cs`
+**Prefix:** `/api/dashboard`
+
+| Method | Route | Handler |
+|--------|-------|---------|
+| GET | `/metrics` | `GetDashboardMetricsQuery` |
+
+**Query Parameters:** `topProducts` (default 5), `lowStockThreshold` (default 10), `recentOrders` (default 10), `salesDays` (default 30)
+**Permission:** `OrdersRead`
+
 ### Middleware
 
 **Path:** `Middleware/`
@@ -1147,7 +1844,7 @@ public class LoginCommandHandler
 
 | Directory | Purpose |
 |-----------|---------|
-| `src/components/` | Reusable UI components (shadcn/ui + 21st.dev) |
+| `src/components/` | Reusable UI components (shadcn/ui) |
 | `src/portal-app/` | Domain-driven feature modules |
 | `src/hooks/` | Custom React hooks (usePermissions, etc.) |
 | `src/services/` | API client and services |
@@ -1492,11 +2189,11 @@ new Error(ErrorCodes.Auth.DuplicateEmail, "This email address is already in use.
 
 | Project | Tests | Purpose |
 |---------|-------|---------|
-| `NOIR.Domain.UnitTests` | 400+ | Domain entity tests |
-| `NOIR.Application.UnitTests` | 900+ | Handler, specification tests |
-| `NOIR.ArchitectureTests` | 30+ | Dependency constraints |
-| `NOIR.IntegrationTests` | 400+ | API integration tests |
-| **Total** | **1,800+** | |
+| `NOIR.Domain.UnitTests` | 842 | Domain entity tests |
+| `NOIR.Application.UnitTests` | 5,231 | Handler, specification, validator tests |
+| `NOIR.ArchitectureTests` | 25 | Dependency constraints |
+| `NOIR.IntegrationTests` | 654 | API integration tests |
+| **Total** | **6,750+** | |
 
 ### Test Patterns
 
@@ -1656,4 +2353,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-02-01 | Total Tests: 5,188+ | Features: 25 | Endpoints: 200+ | Entities: 47*
+*Updated: 2026-02-18 | Total Tests: 6,750+ | Features: 26 | Endpoints: 200+ | Entities: 50+*

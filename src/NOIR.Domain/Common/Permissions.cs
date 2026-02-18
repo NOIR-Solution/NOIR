@@ -99,6 +99,11 @@ public static class Permissions
     public const string OrdersWrite = "orders:write";
     public const string OrdersManage = "orders:manage";
 
+    // Inventory
+    public const string InventoryRead = "inventory:read";
+    public const string InventoryWrite = "inventory:write";
+    public const string InventoryManage = "inventory:manage";
+
     // Legal Pages
     public const string LegalPagesRead = "legal-pages:read";
     public const string LegalPagesUpdate = "legal-pages:update";
@@ -168,6 +173,9 @@ public static class Permissions
         public static readonly IReadOnlyList<string> Orders =
             [OrdersRead, OrdersWrite, OrdersManage];
 
+        public static readonly IReadOnlyList<string> Inventory =
+            [InventoryRead, InventoryWrite, InventoryManage];
+
         public static readonly IReadOnlyList<string> LegalPages =
             [LegalPagesRead, LegalPagesUpdate];
 
@@ -215,6 +223,8 @@ public static class Permissions
         AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
         // Orders
         OrdersRead, OrdersWrite, OrdersManage,
+        // Inventory
+        InventoryRead, InventoryWrite, InventoryManage,
         // Legal Pages
         LegalPagesRead, LegalPagesUpdate,
         // Tenant Settings
@@ -275,6 +285,8 @@ public static class Permissions
         AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
         // Orders within tenant
         OrdersRead, OrdersWrite, OrdersManage,
+        // Inventory within tenant
+        InventoryRead, InventoryWrite, InventoryManage,
         // Payments within tenant
         PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
         PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead
@@ -380,6 +392,10 @@ public static class Permissions
             OrdersRead,
             OrdersWrite,
             OrdersManage,
+            // Inventory within tenant
+            InventoryRead,
+            InventoryWrite,
+            InventoryManage,
             // Payments within tenant
             PaymentsRead,
             PaymentsCreate,

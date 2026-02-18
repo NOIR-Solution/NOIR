@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Tags, Plus, Pencil, Trash2, MoreHorizontal, Filter, List, Check } from 'lucide-react'
+import { Check, Filter, List, Minus, MoreHorizontal, Pencil, Plus, Search, Tags, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -196,9 +196,10 @@ export const ProductAttributesPage = () => {
                       </TableCell>
                       <TableCell>
                         {(() => {
-                          const { label, className } = getTypeBadge(attribute.type, t)
+                          const { label, className, icon: TypeIcon } = getTypeBadge(attribute.type, t)
                           return (
                             <Badge variant="outline" className={className}>
+                              <TypeIcon className="h-3 w-3 mr-1" />
                               {label}
                             </Badge>
                           )
@@ -211,14 +212,14 @@ export const ProductAttributesPage = () => {
                         {attribute.isFilterable ? (
                           <Check className="h-4 w-4 text-emerald-500 mx-auto" />
                         ) : (
-                          <span className="text-muted-foreground">—</span>
+                          <Minus className="h-4 w-4 text-muted-foreground/40 mx-auto" />
                         )}
                       </TableCell>
                       <TableCell className="text-center">
                         {attribute.isVariantAttribute ? (
                           <Check className="h-4 w-4 text-emerald-500 mx-auto" />
                         ) : (
-                          <span className="text-muted-foreground">—</span>
+                          <Minus className="h-4 w-4 text-muted-foreground/40 mx-auto" />
                         )}
                       </TableCell>
                       <TableCell>

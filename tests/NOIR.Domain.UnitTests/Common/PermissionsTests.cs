@@ -281,6 +281,7 @@ public class PermissionsTests
             + Permissions.Groups.Brands.Count
             + Permissions.Groups.Attributes.Count
             + Permissions.Groups.Orders.Count
+            + Permissions.Groups.Inventory.Count
             + Permissions.Groups.Payments.Count;
 
         // Assert

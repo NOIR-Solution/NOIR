@@ -1,8 +1,41 @@
 import type { TFunction } from 'i18next'
+import type { LucideIcon } from 'lucide-react'
+import {
+  ListFilter,
+  CheckSquare,
+  Type,
+  AlignLeft,
+  Hash,
+  Calculator,
+  ToggleLeft,
+  Calendar,
+  CalendarClock,
+  Palette,
+  SlidersHorizontal,
+  Link,
+  FileUp,
+} from 'lucide-react'
 
 interface TypeBadgeConfig {
   label: string
   className: string
+  icon: LucideIcon
+}
+
+const TYPE_ICONS: Record<string, LucideIcon> = {
+  Select: ListFilter,
+  MultiSelect: CheckSquare,
+  Text: Type,
+  TextArea: AlignLeft,
+  Number: Hash,
+  Decimal: Calculator,
+  Boolean: ToggleLeft,
+  Date: Calendar,
+  DateTime: CalendarClock,
+  Color: Palette,
+  Range: SlidersHorizontal,
+  Url: Link,
+  File: FileUp,
 }
 
 const TYPE_STYLES: Record<string, string> = {
@@ -41,5 +74,6 @@ export const getTypeBadge = (type: string, t: TFunction): TypeBadgeConfig => {
   const labelConfig = TYPE_LABEL_KEYS[type]
   const label = labelConfig ? t(labelConfig.key, labelConfig.fallback) : type
   const className = TYPE_STYLES[type] || ''
-  return { label, className }
+  const icon = TYPE_ICONS[type] || Type
+  return { label, className, icon }
 }

@@ -195,6 +195,14 @@ export const Permissions = {
   AttributesCreate: 'attributes:create',
   AttributesUpdate: 'attributes:update',
   AttributesDelete: 'attributes:delete',
+  // Orders
+  OrdersRead: 'orders:read',
+  OrdersWrite: 'orders:write',
+  OrdersManage: 'orders:manage',
+  // Inventory
+  InventoryRead: 'inventory:read',
+  InventoryWrite: 'inventory:write',
+  InventoryManage: 'inventory:manage',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

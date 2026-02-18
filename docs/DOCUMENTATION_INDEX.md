@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-02-13
+**Last Updated:** 2026-02-18
 
 ---
 
@@ -24,7 +24,7 @@
 
 | Document | Purpose | Size |
 |----------|---------|------|
-| [KNOWLEDGE_BASE.md](KNOWLEDGE_BASE.md) | Comprehensive codebase reference | ~500 lines |
+| [KNOWLEDGE_BASE.md](KNOWLEDGE_BASE.md) | Comprehensive codebase reference | ~2275 lines |
 | [PROJECT_INDEX.md](PROJECT_INDEX.md) | Project navigation and structure | ~1000 lines |
 | [FEATURE_CATALOG.md](FEATURE_CATALOG.md) | All features, commands, endpoints | ~1100 lines |
 | [TECH_STACK.md](TECH_STACK.md) | Technology stack reference | ~750 lines |
@@ -48,12 +48,15 @@
 | JSON Enum Serialization | [json-enum-serialization.md](backend/patterns/json-enum-serialization.md) |
 | JWT Refresh Token | [jwt-refresh-token.md](backend/patterns/jwt-refresh-token.md) |
 | Technical Checklist | [technical-checklist.md](backend/patterns/technical-checklist.md) |
+| Inventory Receipt Pattern | [inventory-receipt-pattern.md](backend/patterns/inventory-receipt-pattern.md) |
+| Attribute-Category Inheritance | [attribute-category-inheritance.md](backend/patterns/attribute-category-inheritance.md) |
 
-### Architecture (`backend/architecture/`)
+### Architecture (`backend/architecture/`, `architecture/`)
 
 | Document | Purpose |
 |----------|---------|
 | [tenant-id-interceptor.md](backend/architecture/tenant-id-interceptor.md) | Multi-tenancy query filtering |
+| [diagrams.md](architecture/diagrams.md) | Architecture diagrams (ER, CQRS flow, multi-tenancy, order lifecycle) |
 
 ### Research (`backend/research/`)
 
@@ -83,6 +86,12 @@
 | [ui-ux-enhancements.md](frontend/ui-ux-enhancements.md) | 11 UI/UX features |
 | [ecommerce-ui.md](frontend/ecommerce-ui.md) | E-commerce components |
 | [vibe-kanban-integration.md](frontend/vibe-kanban-integration.md) | Task management |
+
+### Patterns (`frontend/patterns/`)
+
+| Document | Purpose |
+|----------|---------|
+| [form-resolver-type-assertions.md](frontend/patterns/form-resolver-type-assertions.md) | Zod + react-hook-form type assertion pattern |
 
 ### Designs (`frontend/designs/`)
 
@@ -137,6 +146,7 @@
 |----------|-------|
 | [admin-portal-features-2026.md](research/admin-portal-features-2026.md) | Admin portal features |
 | [essential-erp-cms-features-2026.md](research/essential-erp-cms-features-2026.md) | ERP/CMS features |
+| [admin-portal-ux-research.md](research/admin-portal-ux-research.md) | Admin portal UX patterns |
 
 ---
 
@@ -162,17 +172,17 @@
 | Metric | Count |
 |--------|-------|
 | **Total Docs** | 50 |
-| **Backend Patterns** | 9 |
-| **Backend Architecture** | 1 |
+| **Backend Patterns** | 11 |
+| **Backend Architecture** | 2 |
 | **Backend Research** | 7 |
-| **Frontend Guides** | 9 |
+| **Frontend Guides** | 10 |
 | **Testing Docs** | 3 |
 | **ADRs** | 3 |
 | **Plans** | 2 |
-| **Research (General)** | 2 |
+| **Research (General)** | 3 |
 | **Designs** | 1 |
 | **Backend Tests** | 6,750+ |
 
 ---
 
-**Version:** 2.9 (Updated 2026-02-13 - Storybook/UIKit/pnpm docs, fixed broken test doc links)
+**Version:** 3.2 (Updated 2026-02-18 - Added inventory receipt pattern and attribute-category inheritance docs)

@@ -759,7 +759,7 @@ export const ProductFormPage = () => {
           <div className="p-4 rounded-xl bg-muted/50 border border-border shadow-sm">
             <Package className="h-8 w-8 text-muted-foreground animate-pulse" />
           </div>
-          <p className="text-muted-foreground">Loading product...</p>
+          <p className="text-muted-foreground">{t('labels.loading')}</p>
         </div>
       </div>
     )
@@ -785,10 +785,10 @@ export const ProductFormPage = () => {
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              {isViewMode ? 'View Product' : isEditing ? 'Edit Product' : 'New Product'}
+              {isViewMode ? t('products.viewProduct') : isEditing ? t('products.editProduct') : t('products.newProduct')}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {isViewMode ? product?.name : isEditing ? `Editing: ${product?.name}` : 'Create a new product'}
+              {isViewMode ? product?.name : isEditing ? product?.name : t('products.description')}
             </p>
           </div>
         </div>
@@ -797,7 +797,7 @@ export const ProductFormPage = () => {
             <ViewTransitionLink to={`/portal/ecommerce/products/${id}/edit`}>
               <Button>
                 <Pencil className="h-4 w-4 mr-2" />
-                Edit
+                {t('labels.edit', 'Edit')}
               </Button>
             </ViewTransitionLink>
           ) : (
@@ -825,8 +825,8 @@ export const ProductFormPage = () => {
               {/* Basic Information */}
               <Card className="shadow-sm hover:shadow-lg transition-shadow duration-300">
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                  <CardTitle>Basic Information</CardTitle>
-                  <CardDescription>Product name, description, and identifiers</CardDescription>
+                  <CardTitle>{t('products.basicInfo')}</CardTitle>
+                  <CardDescription>{t('products.basicInfoDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -834,7 +834,7 @@ export const ProductFormPage = () => {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Product Name</FormLabel>
+                        <FormLabel>{t('products.productName')}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -853,12 +853,12 @@ export const ProductFormPage = () => {
                     name="slug"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>URL Slug</FormLabel>
+                        <FormLabel>{t('products.urlSlug')}</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder={t('products.urlSlugPlaceholder')} disabled={isViewMode} />
                         </FormControl>
                         <FormDescription>
-                          Used in the product URL. Auto-generated from name.
+                          {t('products.urlSlugDescription')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -960,7 +960,7 @@ export const ProductFormPage = () => {
                       name="sku"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>SKU</FormLabel>
+                          <FormLabel>{t('products.sku')}</FormLabel>
                           <FormControl>
                             <Input {...field} value={field.value || ''} placeholder={t('products.skuPlaceholder')} disabled={isViewMode} />
                           </FormControl>
@@ -974,7 +974,7 @@ export const ProductFormPage = () => {
                       name="barcode"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Barcode</FormLabel>
+                          <FormLabel>{t('products.barcode')}</FormLabel>
                           <FormControl>
                             <Input {...field} value={field.value || ''} placeholder="1234567890123" disabled={isViewMode} />
                           </FormControl>
@@ -1019,8 +1019,8 @@ export const ProductFormPage = () => {
               {/* Pricing */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                  <CardTitle>Pricing</CardTitle>
-                  <CardDescription>Set the product base price (VND)</CardDescription>
+                  <CardTitle>{t('products.pricing')}</CardTitle>
+                  <CardDescription>{t('products.pricingDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -1028,7 +1028,7 @@ export const ProductFormPage = () => {
                     name="basePrice"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Base Price (VND)</FormLabel>
+                        <FormLabel>{t('products.basePrice')}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -1040,7 +1040,7 @@ export const ProductFormPage = () => {
                           />
                         </FormControl>
                         <FormDescription>
-                          Enter price in Vietnamese Dong (VND)
+                          {t('products.priceDescription')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -1052,8 +1052,8 @@ export const ProductFormPage = () => {
               {/* Inventory */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                  <CardTitle>Inventory</CardTitle>
-                  <CardDescription>Manage stock tracking for this product</CardDescription>
+                  <CardTitle>{t('products.inventory')}</CardTitle>
+                  <CardDescription>{t('products.inventoryDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -1062,9 +1062,9 @@ export const ProductFormPage = () => {
                     render={({ field }) => (
                       <FormItem className="flex items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Track Inventory</FormLabel>
+                          <FormLabel className="text-base">{t('products.trackInventory')}</FormLabel>
                           <FormDescription>
-                            Enable stock tracking for this product
+                            {t('products.trackInventoryDescription')}
                           </FormDescription>
                         </div>
                         <FormControl>
@@ -1089,8 +1089,8 @@ export const ProductFormPage = () => {
             <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Variants</CardTitle>
-                  <CardDescription>Product variations like size, color</CardDescription>
+                  <CardTitle>{t('products.variantsTitle')}</CardTitle>
+                  <CardDescription>{t('products.variantsDescription')}</CardDescription>
                 </div>
                 {!isViewMode && (
                   <Button
@@ -1100,7 +1100,7 @@ export const ProductFormPage = () => {
                     onClick={() => setNewVariant({ name: '', price: 0, sku: '', compareAtPrice: null, stockQuantity: 0, sortOrder: 0 })}
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Variant
+                    {t('products.addVariant')}
                   </Button>
                 )}
               </div>
@@ -1110,27 +1110,27 @@ export const ProductFormPage = () => {
                 {/* New Variant Form */}
                 {newVariant && (
                   <div className="p-4 border rounded-lg bg-muted/50 space-y-4">
-                    <h4 className="font-medium">New Variant</h4>
+                    <h4 className="font-medium">{t('products.newVariant')}</h4>
                     <div className="grid grid-cols-2 gap-4">
                       <Input
-                        placeholder="Variant name"
+                        placeholder={t('products.variantName')}
                         value={newVariant.name}
                         onChange={(e) => setNewVariant({ ...newVariant, name: e.target.value })}
                       />
                       <Input
                         type="number"
-                        placeholder="Price"
+                        placeholder={t('products.variantPrice')}
                         value={newVariant.price}
                         onChange={(e) => setNewVariant({ ...newVariant, price: parseFloat(e.target.value) || 0 })}
                       />
                       <Input
-                        placeholder="SKU"
+                        placeholder={t('products.variantSku')}
                         value={newVariant.sku || ''}
                         onChange={(e) => setNewVariant({ ...newVariant, sku: e.target.value })}
                       />
                       <Input
                         type="number"
-                        placeholder="Stock"
+                        placeholder={t('products.variantStock')}
                         value={newVariant.stockQuantity}
                         onChange={(e) => setNewVariant({ ...newVariant, stockQuantity: parseInt(e.target.value) || 0 })}
                       />
@@ -1207,7 +1207,7 @@ export const ProductFormPage = () => {
                                 {formatCurrency(variant.price)}
                               </div>
                             </div>
-                            <Badge variant="outline" className="text-xs">Pending</Badge>
+                            <Badge variant="outline" className="text-xs">{t('labels.pending', 'Pending')}</Badge>
                             <div className="flex items-center gap-1">
                               <Button
                                 variant="ghost"
@@ -1245,7 +1245,7 @@ export const ProductFormPage = () => {
           {isEditing && product && (
             <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
               <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-                <CardTitle>Status</CardTitle>
+                <CardTitle>{t('products.statusTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Badge
@@ -1261,7 +1261,7 @@ export const ProductFormPage = () => {
           {/* Category */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-              <CardTitle>Organization</CardTitle>
+              <CardTitle>{t('products.organization')}</CardTitle>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -1270,7 +1270,7 @@ export const ProductFormPage = () => {
                   name="categoryId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel>{t('labels.category')}</FormLabel>
                       <Select
                         onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
                         value={field.value || 'none'}
@@ -1282,7 +1282,7 @@ export const ProductFormPage = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="none" className="cursor-pointer">No category</SelectItem>
+                          <SelectItem value="none" className="cursor-pointer">{t('products.noCategory')}</SelectItem>
                           {categories.map((cat) => (
                             <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
                               {cat.parentName ? `${cat.parentName} > ${cat.name}` : cat.name}
@@ -1317,8 +1317,8 @@ export const ProductFormPage = () => {
           {/* SEO */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-              <CardTitle>SEO</CardTitle>
-              <CardDescription>Search engine optimization</CardDescription>
+              <CardTitle>{t('products.seoTitle')}</CardTitle>
+              <CardDescription>{t('products.seoDescription')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Form {...form}>
@@ -1327,18 +1327,18 @@ export const ProductFormPage = () => {
                   name="metaTitle"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Meta Title</FormLabel>
+                      <FormLabel>{t('blog.metaTitle')}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           value={field.value || ''}
-                          placeholder="SEO title"
+                          placeholder={t('blog.seoTitle')}
                           maxLength={60}
                           disabled={isViewMode}
                         />
                       </FormControl>
                       <FormDescription>
-                        {(field.value || '').length}/60 characters
+                        {t('blog.characters', { count: (field.value || '').length, max: 60 })}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -1350,19 +1350,19 @@ export const ProductFormPage = () => {
                   name="metaDescription"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Meta Description</FormLabel>
+                      <FormLabel>{t('blog.metaDescription')}</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
                           value={field.value || ''}
-                          placeholder="SEO description"
+                          placeholder={t('blog.seoDescription')}
                           maxLength={160}
                           rows={3}
                           disabled={isViewMode}
                         />
                       </FormControl>
                       <FormDescription>
-                        {(field.value || '').length}/160 characters
+                        {t('blog.characters', { count: (field.value || '').length, max: 160 })}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -1375,8 +1375,8 @@ export const ProductFormPage = () => {
           {/* Images - works in both create and edit modes */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-              <CardTitle>Images</CardTitle>
-              <CardDescription>Product gallery images</CardDescription>
+              <CardTitle>{t('products.imagesTitle')}</CardTitle>
+              <CardDescription>{t('products.imagesDescription')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {isEditing ? (
@@ -1405,10 +1405,10 @@ export const ProductFormPage = () => {
                   {/* Fallback: Add Image by URL */}
                   {!isViewMode && (
                     <div className="space-y-2 pt-4 border-t">
-                      <p className="text-xs font-medium text-muted-foreground">Or add by URL</p>
+                      <p className="text-xs font-medium text-muted-foreground">{t('products.addByUrl')}</p>
                       <div className="flex gap-2">
                         <Input
-                          placeholder="Image URL"
+                          placeholder={t('products.imageUrl')}
                           value={newImageUrl}
                           onChange={(e) => setNewImageUrl(e.target.value)}
                           aria-label={t('products.imageUrlAriaLabel', 'Image URL')}
@@ -1581,15 +1581,15 @@ export const ProductFormPage = () => {
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <AlertDialogTitle>Delete Variant</AlertDialogTitle>
+              <AlertDialogTitle>{t('products.deleteVariant')}</AlertDialogTitle>
             </div>
             <AlertDialogDescription className="pt-2">
-              Are you sure you want to delete the variant "{variantToDelete?.name}"? This action cannot be undone.
+              {t('products.deleteVariantConfirmation', { name: variantToDelete?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeletingVariant} className="cursor-pointer">
-              Cancel
+              {t('buttons.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDeleteVariant}
@@ -1597,7 +1597,7 @@ export const ProductFormPage = () => {
               className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
             >
               {isDeletingVariant && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isDeletingVariant ? 'Deleting...' : 'Delete'}
+              {isDeletingVariant ? t('buttons.saving') : t('buttons.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1611,15 +1611,15 @@ export const ProductFormPage = () => {
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <AlertDialogTitle>Delete Image</AlertDialogTitle>
+              <AlertDialogTitle>{t('products.deleteImageTitle')}</AlertDialogTitle>
             </div>
             <AlertDialogDescription className="pt-2">
-              Are you sure you want to delete this image? This action cannot be undone.
+              {t('products.deleteImageConfirmation')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeletingImage} className="cursor-pointer">
-              Cancel
+              {t('buttons.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDeleteImage}
@@ -1627,7 +1627,7 @@ export const ProductFormPage = () => {
               className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
             >
               {isDeletingImage && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isDeletingImage ? 'Deleting...' : 'Delete'}
+              {isDeletingImage ? t('buttons.saving') : t('buttons.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1641,19 +1641,19 @@ export const ProductFormPage = () => {
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <AlertDialogTitle>Remove Variant</AlertDialogTitle>
+              <AlertDialogTitle>{t('products.removeVariant')}</AlertDialogTitle>
             </div>
             <AlertDialogDescription className="pt-2">
-              Are you sure you want to remove the variant "{localVariantToDelete?.name}"?
+              {t('products.removeVariantConfirmation')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="cursor-pointer">{t('buttons.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDeleteLocalVariant}
               className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
             >
-              Remove
+              {t('buttons.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1667,19 +1667,19 @@ export const ProductFormPage = () => {
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <AlertDialogTitle>Remove Image</AlertDialogTitle>
+              <AlertDialogTitle>{t('products.deleteImageTitle')}</AlertDialogTitle>
             </div>
             <AlertDialogDescription className="pt-2">
-              Are you sure you want to remove this image?
+              {t('products.deleteImageConfirmation')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="cursor-pointer">{t('buttons.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDeleteTempImage}
               className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
             >
-              Remove
+              {t('buttons.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -50,6 +50,8 @@ public sealed record OrderDto
     public DateTimeOffset? CompletedAt { get; init; }
     public DateTimeOffset? CancelledAt { get; init; }
     public string? CancellationReason { get; init; }
+    public DateTimeOffset? ReturnedAt { get; init; }
+    public string? ReturnReason { get; init; }
 }
 
 /// <summary>

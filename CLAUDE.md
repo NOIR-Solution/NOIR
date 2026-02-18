@@ -915,10 +915,13 @@ src/NOIR.Web/frontend/src/uikit/
 ```typescript
 // OrderStatus workflow:
 // Pending → Confirmed → Processing → Shipped → Delivered → Completed
-//    ↓
-// Cancelled (with inventory release)
+//    ↓                                  ↓          ↓
+// Cancelled (with inventory release)  Cancelled  Returned (inventory restored)
 
+// 7 lifecycle commands: CreateOrder, ConfirmOrder, ShipOrder,
+//   DeliverOrder, CompleteOrder, ReturnOrder, CancelOrder
 // Location: src/NOIR.Application/Features/Orders/
+// Endpoints: /api/orders (CRUD + lifecycle actions)
 // OrderItem captures product snapshot (name, price, image) at order time
 ```
 
@@ -931,6 +934,37 @@ src/NOIR.Web/frontend/src/uikit/
 // Release on order cancel
 
 // InventoryMovementType: StockIn, StockOut, Adjustment, Return, Reserved, Released
+
+// Inventory Receipt System (phieu nhap/xuat kho)
+// Location: src/NOIR.Application/Features/Inventory/
+// Domain: src/NOIR.Domain/Entities/Inventory/
+
+// Receipt workflow: Draft → Confirmed (stock adjusted) or Cancelled
+// Receipt types: StockIn (RCV-YYYYMMDD-NNNN), StockOut (SHP-YYYYMMDD-NNNN)
+// Commands: CreateInventoryReceipt, ConfirmInventoryReceipt, CancelInventoryReceipt
+// Queries: GetInventoryReceipts, GetInventoryReceiptById, GetStockHistory
+// Endpoints: /api/inventory/receipts (CRUD + confirm/cancel)
+// Pattern doc: docs/backend/patterns/inventory-receipt-pattern.md
+```
+
+### Dashboard Metrics
+
+```typescript
+// Dashboard API: GET /api/dashboard/metrics
+// Location: src/NOIR.Application/Features/Dashboard/
+// Implementation: src/NOIR.Infrastructure/Services/DashboardQueryService.cs
+
+// 7 metrics aggregated in parallel via Task.WhenAll():
+// - Revenue: total, this month, last month, today, average order value
+// - Order counts by status (all 9 statuses)
+// - Top selling products (configurable count)
+// - Low stock products below threshold
+// - Recent orders for activity feed
+// - Sales over time for charts (configurable days)
+// - Product status distribution (Draft/Active/Archived)
+
+// Architecture: Handler -> IDashboardQueryService -> DashboardQueryService (direct DbContext)
+// Revenue excludes Cancelled/Refunded orders
 ```
 
 ---

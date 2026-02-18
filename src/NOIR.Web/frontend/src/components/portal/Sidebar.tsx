@@ -37,6 +37,8 @@ import {
   X,
   Award,
   Tags,
+  ShoppingCart,
+  Warehouse,
 } from 'lucide-react'
 import {
   Badge,
@@ -107,6 +109,8 @@ const navSections: NavSection[] = [
       { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead },
       { titleKey: 'ecommerce.brands', icon: Award, path: '/portal/ecommerce/brands', permission: Permissions.BrandsRead },
       { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead },
+      { titleKey: 'ecommerce.orders', icon: ShoppingCart, path: '/portal/ecommerce/orders', permission: Permissions.OrdersRead },
+      { titleKey: 'ecommerce.inventory', icon: Warehouse, path: '/portal/ecommerce/inventory', permission: Permissions.InventoryRead },
     ],
   },
   {
