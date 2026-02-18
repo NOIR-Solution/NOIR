@@ -41,10 +41,21 @@ const ProductFormPage = lazy(() => import('@/portal-app/products/features/produc
 const ProductCategoriesPage = lazy(() => import('@/portal-app/products/features/product-category-list/ProductCategoriesPage'))
 const BrandsPage = lazy(() => import('@/portal-app/brands/features/brand-list/BrandsPage'))
 const ProductAttributesPage = lazy(() => import('@/portal-app/products/features/product-attribute-list/ProductAttributesPage'))
-// Orders & Inventory
+// Orders, Inventory & Shipping
 const OrdersPage = lazy(() => import('@/portal-app/orders/features/order-list/OrdersPage'))
 const OrderDetailPage = lazy(() => import('@/portal-app/orders/features/order-detail/OrderDetailPage'))
 const InventoryReceiptsPage = lazy(() => import('@/portal-app/inventory/features/inventory-receipts/InventoryReceiptsPage'))
+const ShippingPage = lazy(() => import('@/portal-app/shipping/features/shipping-page/ShippingPage'))
+// Customers
+const CustomersPage = lazy(() => import('@/portal-app/customers/features/customer-list/CustomersPage'))
+const CustomerDetailPage = lazy(() => import('@/portal-app/customers/features/customer-detail/CustomerDetailPage'))
+// Reviews
+const ReviewsPage = lazy(() => import('@/portal-app/reviews/features/review-list/ReviewsPage'))
+// Wishlists
+const WishlistAnalyticsPage = lazy(() => import('@/portal-app/wishlists/features/wishlist-analytics/WishlistAnalyticsPage'))
+// Marketing
+const PromotionsPage = lazy(() => import('@/portal-app/promotions/features/promotion-list/PromotionsPage'))
+const ReportsPage = lazy(() => import('@/portal-app/reports/features/reports-page/ReportsPage'))
 // Platform Settings
 const PlatformSettingsPage = lazy(() => import('@/portal-app/settings/features/platform-settings/PlatformSettingsPage'))
 // Tenant Settings (includes Payment Gateways tab)
@@ -143,6 +154,17 @@ export const App = () => {
                         <Route path="ecommerce/orders" element={<Suspense fallback={<LazyFallback />}><OrdersPage /></Suspense>} />
                         <Route path="ecommerce/orders/:id" element={<Suspense fallback={<LazyFallback />}><OrderDetailPage /></Suspense>} />
                         <Route path="ecommerce/inventory" element={<Suspense fallback={<LazyFallback />}><InventoryReceiptsPage /></Suspense>} />
+                        <Route path="ecommerce/shipping" element={<Suspense fallback={<LazyFallback />}><ShippingPage /></Suspense>} />
+                        {/* Customers */}
+                        <Route path="ecommerce/customers" element={<Suspense fallback={<LazyFallback />}><CustomersPage /></Suspense>} />
+                        <Route path="ecommerce/customers/:id" element={<Suspense fallback={<LazyFallback />}><CustomerDetailPage /></Suspense>} />
+                        {/* Reviews */}
+                        <Route path="ecommerce/reviews" element={<Suspense fallback={<LazyFallback />}><ReviewsPage /></Suspense>} />
+                        {/* Wishlists */}
+                        <Route path="ecommerce/wishlists" element={<Suspense fallback={<LazyFallback />}><WishlistAnalyticsPage /></Suspense>} />
+                        {/* Marketing */}
+                        <Route path="marketing/promotions" element={<Suspense fallback={<LazyFallback />}><PromotionsPage /></Suspense>} />
+                        <Route path="marketing/reports" element={<Suspense fallback={<LazyFallback />}><ReportsPage /></Suspense>} />
                       </Route>
 
                       {/* Catch-all redirect to landing */}

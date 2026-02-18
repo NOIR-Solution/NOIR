@@ -256,6 +256,36 @@ public class PermissionsTests
         Permissions.Groups.Orders.Should().Contain(Permissions.OrdersManage);
     }
 
+    [Fact]
+    public void Groups_Customers_ShouldContainAllCustomerPermissions()
+    {
+        // Assert
+        Permissions.Groups.Customers.Should().HaveCount(5);
+        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersRead);
+        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersCreate);
+        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersUpdate);
+        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersDelete);
+        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersManage);
+    }
+
+    [Fact]
+    public void Groups_Wishlists_ShouldContainAllWishlistPermissions()
+    {
+        // Assert
+        Permissions.Groups.Wishlists.Should().HaveCount(3);
+        Permissions.Groups.Wishlists.Should().Contain(Permissions.WishlistsRead);
+        Permissions.Groups.Wishlists.Should().Contain(Permissions.WishlistsWrite);
+        Permissions.Groups.Wishlists.Should().Contain(Permissions.WishlistsManage);
+    }
+
+    [Fact]
+    public void Groups_Reports_ShouldContainAllReportPermissions()
+    {
+        // Assert
+        Permissions.Groups.Reports.Should().HaveCount(1);
+        Permissions.Groups.Reports.Should().Contain(Permissions.ReportsRead);
+    }
+
     #endregion
 
     #region All Permissions Tests
@@ -280,9 +310,14 @@ public class PermissionsTests
             + Permissions.Groups.ProductCategories.Count
             + Permissions.Groups.Brands.Count
             + Permissions.Groups.Attributes.Count
+            + Permissions.Groups.Reviews.Count
             + Permissions.Groups.Orders.Count
+            + Permissions.Groups.Promotions.Count
             + Permissions.Groups.Inventory.Count
-            + Permissions.Groups.Payments.Count;
+            + Permissions.Groups.Wishlists.Count
+            + Permissions.Groups.Reports.Count
+            + Permissions.Groups.Payments.Count
+            + Permissions.Groups.Customers.Count;
 
         // Assert
         Permissions.All.Should().HaveCount(expectedCount);
@@ -333,6 +368,36 @@ public class PermissionsTests
     {
         // Assert
         foreach (var permission in Permissions.Groups.Audit)
+        {
+            Permissions.All.Should().Contain(permission);
+        }
+    }
+
+    [Fact]
+    public void All_ShouldContainAllCustomerPermissions()
+    {
+        // Assert
+        foreach (var permission in Permissions.Groups.Customers)
+        {
+            Permissions.All.Should().Contain(permission);
+        }
+    }
+
+    [Fact]
+    public void All_ShouldContainAllWishlistPermissions()
+    {
+        // Assert
+        foreach (var permission in Permissions.Groups.Wishlists)
+        {
+            Permissions.All.Should().Contain(permission);
+        }
+    }
+
+    [Fact]
+    public void All_ShouldContainAllReportPermissions()
+    {
+        // Assert
+        foreach (var permission in Permissions.Groups.Reports)
         {
             Permissions.All.Should().Contain(permission);
         }

@@ -225,5 +225,72 @@ global using NOIR.Application.Features.Shipping.DTOs;
 global using NOIR.Application.Features.Shipping.Specifications;
 global using NOIR.Domain.Entities.Shipping;
 
+// NOIR Application - Promotions
+global using NOIR.Application.Features.Promotions.Commands.CreatePromotion;
+global using NOIR.Application.Features.Promotions.Commands.UpdatePromotion;
+global using NOIR.Application.Features.Promotions.Commands.DeletePromotion;
+global using NOIR.Application.Features.Promotions.Commands.ActivatePromotion;
+global using NOIR.Application.Features.Promotions.Commands.DeactivatePromotion;
+global using NOIR.Application.Features.Promotions.Commands.ApplyPromotion;
+global using NOIR.Application.Features.Promotions.Queries.GetPromotions;
+global using NOIR.Application.Features.Promotions.Queries.GetPromotionById;
+global using NOIR.Application.Features.Promotions.Queries.ValidatePromoCode;
+global using NOIR.Application.Features.Promotions.DTOs;
+global using NOIR.Application.Features.Promotions.Specifications;
+global using NOIR.Domain.Entities.Promotion;
+
+// NOIR Application - Reviews
+global using NOIR.Application.Features.Reviews.Commands.CreateReview;
+global using NOIR.Application.Features.Reviews.Commands.ApproveReview;
+global using NOIR.Application.Features.Reviews.Commands.RejectReview;
+global using NOIR.Application.Features.Reviews.Commands.AddAdminResponse;
+global using NOIR.Application.Features.Reviews.Commands.BulkApproveReviews;
+global using NOIR.Application.Features.Reviews.Commands.BulkRejectReviews;
+global using NOIR.Application.Features.Reviews.Commands.VoteReview;
+global using NOIR.Application.Features.Reviews.Queries.GetReviews;
+global using NOIR.Application.Features.Reviews.Queries.GetProductReviews;
+global using NOIR.Application.Features.Reviews.Queries.GetReviewStats;
+global using NOIR.Application.Features.Reviews.Queries.GetReviewById;
+global using NOIR.Application.Features.Reviews.DTOs;
+global using NOIR.Application.Features.Reviews.Specifications;
+global using NOIR.Application.Features.Orders.Specifications;
+global using NOIR.Domain.Entities.Review;
+
+// NOIR Application - Wishlists
+global using NOIR.Application.Features.Wishlists.Commands.CreateWishlist;
+global using NOIR.Application.Features.Wishlists.Commands.UpdateWishlist;
+global using NOIR.Application.Features.Wishlists.Commands.DeleteWishlist;
+global using NOIR.Application.Features.Wishlists.Commands.AddToWishlist;
+global using NOIR.Application.Features.Wishlists.Commands.RemoveFromWishlist;
+global using NOIR.Application.Features.Wishlists.Commands.MoveToCart;
+global using NOIR.Application.Features.Wishlists.Commands.ShareWishlist;
+global using NOIR.Application.Features.Wishlists.Commands.UpdateWishlistItemPriority;
+global using NOIR.Application.Features.Wishlists.Queries.GetWishlists;
+global using NOIR.Application.Features.Wishlists.Queries.GetWishlistById;
+global using NOIR.Application.Features.Wishlists.Queries.GetSharedWishlist;
+global using NOIR.Application.Features.Wishlists.Queries.GetWishlistAnalytics;
+global using NOIR.Application.Features.Wishlists.DTOs;
+global using NOIR.Application.Features.Wishlists.Common;
+global using NOIR.Application.Features.Wishlists.Specifications;
+global using NOIR.Domain.Entities.Wishlist;
+
+// NOIR Application - Customers
+global using NOIR.Application.Features.Customers.Commands.CreateCustomer;
+global using NOIR.Application.Features.Customers.Commands.UpdateCustomer;
+global using NOIR.Application.Features.Customers.Commands.DeleteCustomer;
+global using NOIR.Application.Features.Customers.Commands.AddCustomerAddress;
+global using NOIR.Application.Features.Customers.Commands.UpdateCustomerAddress;
+global using NOIR.Application.Features.Customers.Commands.DeleteCustomerAddress;
+global using NOIR.Application.Features.Customers.Commands.AddLoyaltyPoints;
+global using NOIR.Application.Features.Customers.Commands.RedeemLoyaltyPoints;
+global using NOIR.Application.Features.Customers.Commands.UpdateCustomerSegment;
+global using NOIR.Application.Features.Customers.Queries.GetCustomerById;
+global using NOIR.Application.Features.Customers.Queries.GetCustomers;
+global using NOIR.Application.Features.Customers.Queries.GetCustomerOrders;
+global using NOIR.Application.Features.Customers.Queries.GetCustomerStats;
+global using NOIR.Application.Features.Customers.DTOs;
+global using NOIR.Application.Features.Customers.Specifications;
+global using NOIR.Domain.Entities.Customer;
+
 // NOIR Test Helpers
 global using NOIR.Application.UnitTests.Common;

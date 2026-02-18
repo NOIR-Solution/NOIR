@@ -24,7 +24,7 @@ public sealed class UpdateLegalPageCommandValidator : AbstractValidator<UpdateLe
             .MaximumLength(160).WithMessage("Meta description must not exceed 160 characters.");
 
         RuleFor(x => x.CanonicalUrl)
-            .Must(url => string.IsNullOrEmpty(url) || Uri.TryCreate(url, UriKind.Absolute, out _))
+            .Must(url => string.IsNullOrEmpty(url) || (Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)))
             .WithMessage("Canonical URL must be a valid absolute URL.");
     }
 }

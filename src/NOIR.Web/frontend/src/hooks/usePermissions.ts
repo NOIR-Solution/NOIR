@@ -121,14 +121,13 @@ export const Permissions = {
   UsersCreate: 'users:create',
   UsersUpdate: 'users:update',
   UsersDelete: 'users:delete',
+  UsersManageRoles: 'users:manage-roles',
   // Roles
   RolesRead: 'roles:read',
   RolesCreate: 'roles:create',
   RolesUpdate: 'roles:update',
   RolesDelete: 'roles:delete',
-  // Permissions
-  PermissionsRead: 'permissions:read',
-  PermissionsAssign: 'permissions:assign',
+  RolesManagePermissions: 'roles:manage-permissions',
   // Email Templates
   EmailTemplatesRead: 'email-templates:read',
   EmailTemplatesUpdate: 'email-templates:update',
@@ -203,6 +202,27 @@ export const Permissions = {
   InventoryRead: 'inventory:read',
   InventoryWrite: 'inventory:write',
   InventoryManage: 'inventory:manage',
+  // Reviews
+  ReviewsRead: 'reviews:read',
+  ReviewsWrite: 'reviews:write',
+  ReviewsManage: 'reviews:manage',
+  // Customers
+  CustomersRead: 'customers:read',
+  CustomersCreate: 'customers:create',
+  CustomersUpdate: 'customers:update',
+  CustomersDelete: 'customers:delete',
+  CustomersManage: 'customers:manage',
+  // Promotions
+  PromotionsRead: 'promotions:read',
+  PromotionsWrite: 'promotions:write',
+  PromotionsDelete: 'promotions:delete',
+  PromotionsManage: 'promotions:manage',
+  // Wishlists
+  WishlistsRead: 'wishlists:read',
+  WishlistsWrite: 'wishlists:write',
+  WishlistsManage: 'wishlists:manage',
+  // Reports
+  ReportsRead: 'reports:read',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

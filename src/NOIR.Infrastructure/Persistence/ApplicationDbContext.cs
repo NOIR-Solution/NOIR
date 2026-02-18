@@ -91,12 +91,30 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Cart> Carts => Set<Cart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
 
+    // Wishlist entities
+    public DbSet<Domain.Entities.Wishlist.Wishlist> Wishlists => Set<Domain.Entities.Wishlist.Wishlist>();
+    public DbSet<Domain.Entities.Wishlist.WishlistItem> WishlistItems => Set<Domain.Entities.Wishlist.WishlistItem>();
+
+    // Customer entities
+    public DbSet<Domain.Entities.Customer.Customer> Customers => Set<Domain.Entities.Customer.Customer>();
+    public DbSet<Domain.Entities.Customer.CustomerAddress> CustomerAddresses => Set<Domain.Entities.Customer.CustomerAddress>();
+
     // Inventory Receipt entities
     public DbSet<InventoryReceipt> InventoryReceipts => Set<InventoryReceipt>();
     public DbSet<InventoryReceiptItem> InventoryReceiptItems => Set<InventoryReceiptItem>();
 
+    // Review entities
+    public DbSet<ProductReview> ProductReviews => Set<ProductReview>();
+    public DbSet<ReviewMedia> ReviewMedia => Set<ReviewMedia>();
+
     // Analytics entities (Phase 7)
     public DbSet<FilterAnalyticsEvent> FilterAnalyticsEvents => Set<FilterAnalyticsEvent>();
+
+    // Promotion entities
+    public DbSet<Domain.Entities.Promotion.Promotion> Promotions => Set<Domain.Entities.Promotion.Promotion>();
+    public DbSet<Domain.Entities.Promotion.PromotionProduct> PromotionProducts => Set<Domain.Entities.Promotion.PromotionProduct>();
+    public DbSet<Domain.Entities.Promotion.PromotionCategory> PromotionCategories => Set<Domain.Entities.Promotion.PromotionCategory>();
+    public DbSet<Domain.Entities.Promotion.PromotionUsage> PromotionUsages => Set<Domain.Entities.Promotion.PromotionUsage>();
 
     /// <summary>
     /// Configures global type conventions.

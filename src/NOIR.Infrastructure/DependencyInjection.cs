@@ -286,6 +286,9 @@ public static class DependencyInjection
         services.AddBeforeStateResolver<OrderDto, GetOrderByIdQuery>(
             targetId => new GetOrderByIdQuery(Guid.Parse(targetId.ToString()!)));
 
+        services.AddBeforeStateResolver<CustomerDto, GetCustomerByIdQuery>(
+            targetId => new GetCustomerByIdQuery(Guid.Parse(targetId.ToString()!)));
+
         services.AddBeforeStateResolver<ProductOptionDto, GetProductOptionByIdQuery>(
             targetId => new GetProductOptionByIdQuery(Guid.Parse(targetId.ToString()!)));
 
@@ -315,6 +318,15 @@ public static class DependencyInjection
 
         services.AddBeforeStateResolver<InventoryReceiptDto, GetInventoryReceiptByIdQuery>(
             targetId => new GetInventoryReceiptByIdQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<PromotionDto, GetPromotionByIdQuery>(
+            targetId => new GetPromotionByIdQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<WishlistDetailDto, GetWishlistByIdQuery>(
+            targetId => new GetWishlistByIdQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<ReviewDetailDto, GetReviewByIdQuery>(
+            targetId => new GetReviewByIdQuery(Guid.Parse(targetId.ToString()!)));
 
         // Settings DTOs use parameterless query resolvers (tenant-scoped singletons, no ID needed)
         services.AddSettingsBeforeStateResolver<SmtpSettingsDto, GetSmtpSettingsQuery>();

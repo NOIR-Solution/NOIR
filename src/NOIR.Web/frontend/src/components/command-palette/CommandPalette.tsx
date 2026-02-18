@@ -15,6 +15,7 @@ import {
   Layers,
   Settings,
   Search,
+  Truck,
   Moon,
   Sun,
   Monitor,
@@ -55,6 +56,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   { icon: Palette, label: 'Tenant Settings', path: '/portal/admin/tenant-settings', keywords: ['branding'], permission: 'TenantSettingsRead' },
   { icon: Activity, label: 'Activity Timeline', path: '/portal/activity-timeline', keywords: ['audit', 'logs'], permission: 'AuditRead' },
   { icon: Terminal, label: 'Developer Logs', path: '/portal/developer-logs', keywords: ['debug'], permission: 'SystemAdmin' },
+  { icon: Truck, label: 'Shipping', path: '/portal/ecommerce/shipping', keywords: ['carrier', 'delivery', 'tracking'], permission: 'OrdersManage' },
   { icon: Settings, label: 'Settings', path: '/portal/settings', keywords: ['profile', 'preferences'] },
 ]
 

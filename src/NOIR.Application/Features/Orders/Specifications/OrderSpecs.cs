@@ -162,3 +162,15 @@ public sealed class LatestOrderNumberTodaySpec : Specification<Order>
             .TagWith("LatestOrderNumberToday");
     }
 }
+
+/// <summary>
+/// Specification to count orders for a specific customer.
+/// </summary>
+public sealed class OrdersByCustomerIdCountSpec : Specification<Order>
+{
+    public OrdersByCustomerIdCountSpec(Guid customerId)
+    {
+        Query.Where(o => o.CustomerId == customerId)
+            .TagWith("OrdersByCustomerIdCount");
+    }
+}

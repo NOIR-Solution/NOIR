@@ -92,7 +92,8 @@ public class ProductAttributeAssignment : TenantEntity<Guid>
     {
         ClearAllValues();
         NumberValue = value;
-        DisplayValue = unit != null ? $"{value} {unit}" : value.ToString();
+        var formattedValue = value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        DisplayValue = unit != null ? $"{formattedValue} {unit}" : formattedValue;
     }
 
     /// <summary>
@@ -143,7 +144,9 @@ public class ProductAttributeAssignment : TenantEntity<Guid>
         ClearAllValues();
         MinRangeValue = min;
         MaxRangeValue = max;
-        DisplayValue = unit != null ? $"{min} - {max} {unit}" : $"{min} - {max}";
+        var formattedMin = min.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var formattedMax = max.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        DisplayValue = unit != null ? $"{formattedMin} - {formattedMax} {unit}" : $"{formattedMin} - {formattedMax}";
     }
 
     /// <summary>

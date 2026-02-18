@@ -84,7 +84,7 @@ export const UsersPage = () => {
   const canCreateUsers = hasPermission(Permissions.UsersCreate)
   const canEditUsers = hasPermission(Permissions.UsersUpdate)
   const canDeleteUsers = hasPermission(Permissions.UsersDelete)
-  const canAssignRoles = hasPermission(Permissions.PermissionsAssign)
+  const canAssignRoles = hasPermission(Permissions.UsersManageRoles)
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [userToEdit, setUserToEdit] = useState<UserListItem | null>(null)

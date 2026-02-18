@@ -465,11 +465,16 @@ app.MapBrandEndpoints();
 app.MapProductAttributeEndpoints();
 app.MapCartEndpoints();
 app.MapOrderEndpoints();
+app.MapCustomerEndpoints();
 app.MapInventoryEndpoints();
 app.MapDashboardEndpoints();
+app.MapReportEndpoints();
 app.MapCheckoutEndpoints();
 app.MapShippingProviderEndpoints();
 app.MapShippingEndpoints();
+app.MapPromotionEndpoints();
+app.MapWishlistEndpoints();
+app.MapReviewEndpoints();
 
 // Dev-only endpoints for E2E testing (not available in production)
 if (app.Environment.IsDevelopment())

@@ -94,15 +94,41 @@ public static class Permissions
     public const string AttributesUpdate = "attributes:update";
     public const string AttributesDelete = "attributes:delete";
 
+    // Reviews
+    public const string ReviewsRead = "reviews:read";
+    public const string ReviewsWrite = "reviews:write";
+    public const string ReviewsManage = "reviews:manage";
+
+    // Customers
+    public const string CustomersRead = "customers:read";
+    public const string CustomersCreate = "customers:create";
+    public const string CustomersUpdate = "customers:update";
+    public const string CustomersDelete = "customers:delete";
+    public const string CustomersManage = "customers:manage";
+
     // Orders
     public const string OrdersRead = "orders:read";
     public const string OrdersWrite = "orders:write";
     public const string OrdersManage = "orders:manage";
 
+    // Promotions
+    public const string PromotionsRead = "promotions:read";
+    public const string PromotionsWrite = "promotions:write";
+    public const string PromotionsDelete = "promotions:delete";
+    public const string PromotionsManage = "promotions:manage";
+
     // Inventory
     public const string InventoryRead = "inventory:read";
     public const string InventoryWrite = "inventory:write";
     public const string InventoryManage = "inventory:manage";
+
+    // Wishlists
+    public const string WishlistsRead = "wishlists:read";
+    public const string WishlistsWrite = "wishlists:write";
+    public const string WishlistsManage = "wishlists:manage";
+
+    // Reports
+    public const string ReportsRead = "reports:read";
 
     // Legal Pages
     public const string LegalPagesRead = "legal-pages:read";
@@ -170,11 +196,26 @@ public static class Permissions
         public static readonly IReadOnlyList<string> Attributes =
             [AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete];
 
+        public static readonly IReadOnlyList<string> Reviews =
+            [ReviewsRead, ReviewsWrite, ReviewsManage];
+
+        public static readonly IReadOnlyList<string> Customers =
+            [CustomersRead, CustomersCreate, CustomersUpdate, CustomersDelete, CustomersManage];
+
         public static readonly IReadOnlyList<string> Orders =
             [OrdersRead, OrdersWrite, OrdersManage];
 
+        public static readonly IReadOnlyList<string> Promotions =
+            [PromotionsRead, PromotionsWrite, PromotionsDelete, PromotionsManage];
+
         public static readonly IReadOnlyList<string> Inventory =
             [InventoryRead, InventoryWrite, InventoryManage];
+
+        public static readonly IReadOnlyList<string> Wishlists =
+            [WishlistsRead, WishlistsWrite, WishlistsManage];
+
+        public static readonly IReadOnlyList<string> Reports =
+            [ReportsRead];
 
         public static readonly IReadOnlyList<string> LegalPages =
             [LegalPagesRead, LegalPagesUpdate];
@@ -221,10 +262,20 @@ public static class Permissions
         BrandsRead, BrandsCreate, BrandsUpdate, BrandsDelete,
         // Product Attributes
         AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
+        // Reviews
+        ReviewsRead, ReviewsWrite, ReviewsManage,
+        // Customers
+        CustomersRead, CustomersCreate, CustomersUpdate, CustomersDelete, CustomersManage,
         // Orders
         OrdersRead, OrdersWrite, OrdersManage,
+        // Promotions
+        PromotionsRead, PromotionsWrite, PromotionsDelete, PromotionsManage,
         // Inventory
         InventoryRead, InventoryWrite, InventoryManage,
+        // Wishlists
+        WishlistsRead, WishlistsWrite, WishlistsManage,
+        // Reports
+        ReportsRead,
         // Legal Pages
         LegalPagesRead, LegalPagesUpdate,
         // Tenant Settings
@@ -283,10 +334,20 @@ public static class Permissions
         ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete,
         BrandsRead, BrandsCreate, BrandsUpdate, BrandsDelete,
         AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
+        // Reviews within tenant
+        ReviewsRead, ReviewsWrite, ReviewsManage,
+        // Customers within tenant
+        CustomersRead, CustomersCreate, CustomersUpdate, CustomersDelete, CustomersManage,
         // Orders within tenant
         OrdersRead, OrdersWrite, OrdersManage,
+        // Promotions within tenant
+        PromotionsRead, PromotionsWrite, PromotionsDelete, PromotionsManage,
         // Inventory within tenant
         InventoryRead, InventoryWrite, InventoryManage,
+        // Wishlists within tenant
+        WishlistsRead, WishlistsWrite, WishlistsManage,
+        // Reports within tenant
+        ReportsRead,
         // Payments within tenant
         PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
         PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead
@@ -388,14 +449,35 @@ public static class Permissions
             AttributesCreate,
             AttributesUpdate,
             AttributesDelete,
+            // Reviews within tenant
+            ReviewsRead,
+            ReviewsWrite,
+            ReviewsManage,
+            // Customers within tenant
+            CustomersRead,
+            CustomersCreate,
+            CustomersUpdate,
+            CustomersDelete,
+            CustomersManage,
             // Orders within tenant
             OrdersRead,
             OrdersWrite,
             OrdersManage,
+            // Promotions within tenant
+            PromotionsRead,
+            PromotionsWrite,
+            PromotionsDelete,
+            PromotionsManage,
             // Inventory within tenant
             InventoryRead,
             InventoryWrite,
             InventoryManage,
+            // Wishlists within tenant
+            WishlistsRead,
+            WishlistsWrite,
+            WishlistsManage,
+            // Reports within tenant
+            ReportsRead,
             // Payments within tenant
             PaymentsRead,
             PaymentsCreate,

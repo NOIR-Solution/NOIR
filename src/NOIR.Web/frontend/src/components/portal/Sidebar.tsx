@@ -38,7 +38,13 @@ import {
   Award,
   Tags,
   ShoppingCart,
+  Truck,
   Warehouse,
+  Percent,
+  Star,
+  UserCheck,
+  BarChart3,
+  Heart,
 } from 'lucide-react'
 import {
   Badge,
@@ -111,6 +117,18 @@ const navSections: NavSection[] = [
       { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead },
       { titleKey: 'ecommerce.orders', icon: ShoppingCart, path: '/portal/ecommerce/orders', permission: Permissions.OrdersRead },
       { titleKey: 'ecommerce.inventory', icon: Warehouse, path: '/portal/ecommerce/inventory', permission: Permissions.InventoryRead },
+      { titleKey: 'ecommerce.shipping', icon: Truck, path: '/portal/ecommerce/shipping', permission: Permissions.OrdersRead },
+      { titleKey: 'ecommerce.customers', icon: UserCheck, path: '/portal/ecommerce/customers', permission: Permissions.CustomersRead },
+      { titleKey: 'ecommerce.reviews', icon: Star, path: '/portal/ecommerce/reviews', permission: Permissions.ReviewsRead },
+      { titleKey: 'ecommerce.wishlists', icon: Heart, path: '/portal/ecommerce/wishlists', permission: Permissions.WishlistsRead },
+    ],
+  },
+  {
+    // Marketing - Promotions and campaigns
+    labelKey: 'nav.marketing',
+    items: [
+      { titleKey: 'ecommerce.promotions', icon: Percent, path: '/portal/marketing/promotions', permission: Permissions.PromotionsRead },
+      { titleKey: 'ecommerce.reports', icon: BarChart3, path: '/portal/marketing/reports', permission: Permissions.ReportsRead },
     ],
   },
   {

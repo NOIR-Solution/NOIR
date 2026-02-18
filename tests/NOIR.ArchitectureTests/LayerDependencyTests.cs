@@ -321,6 +321,8 @@ public class LayerDependencyTests
             .DoNotHaveNameEndingWith("Request") // Exclude Request DTOs co-located with commands
             .And()
             .DoNotHaveNameEndingWith("Result") // Exclude Result types co-located with commands
+            .And()
+            .DoNotHaveNameEndingWith("Item") // Exclude Item DTOs co-located with commands (e.g., CategorySortOrderItem)
             .GetTypes();
 
         // Assert
@@ -418,8 +420,7 @@ public class LayerDependencyTests
     {
         // Join entities (many-to-many relationships) don't need Entity<> base
         // Tenant inherits from TenantInfo (Finbuckle requirement for EFCoreStore)
-        // AttributeType is an enum, not an entity
-        var joinEntityNames = new HashSet<string> { "RolePermission", "Tenant", "AttributeType" };
+        var excludedNames = new HashSet<string> { "RolePermission", "Tenant" };
 
         // Act
         var entityTypes = Types
@@ -431,7 +432,7 @@ public class LayerDependencyTests
             .And()
             .AreNotAbstract()
             .GetTypes()
-            .Where(t => !joinEntityNames.Contains(t.Name));
+            .Where(t => !excludedNames.Contains(t.Name) && !t.IsEnum);
 
         // Assert
         foreach (var type in entityTypes)
