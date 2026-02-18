@@ -33,7 +33,7 @@ src/NOIR.Web/frontend/
 │   │   ├── user-access/    # Users, Roles, Tenants
 │   │   └── welcome/        # Landing, Terms, Privacy
 │   ├── layouts/        # Layout components + auth pages
-│   ├── uikit/          # UI component library + stories (56 components, @uikit alias)
+│   ├── uikit/          # UI component library + stories (58 components, @uikit alias)
 │   ├── components/     # Shared app-level components
 │   ├── contexts/       # React Context providers
 │   ├── hooks/          # Shared custom hooks
@@ -95,7 +95,7 @@ pnpm run lint
 
 ## Storybook & UIKit
 
-The project includes a **Storybook** setup for interactive component documentation with 56 component stories.
+The project includes a **Storybook** setup for interactive component documentation with 58 component stories.
 
 ```bash
 # Run Storybook (component catalog)

@@ -458,7 +458,7 @@ NOIR.Web/
     │   ├── layouts/                     # Layout components
     │   │   ├── auth/                    # Auth pages (login, forgot-password, etc.)
     │   │   └── PortalLayout.tsx
-    │   ├── uikit/                       # 56 UI components + stories (@uikit barrel)
+    │   ├── uikit/                       # 58 UI components + stories (@uikit barrel)
     │   ├── components/                  # Shared app-level components
     │   ├── contexts/                    # React contexts (Auth, Theme, Notification, etc.)
     │   ├── hooks/                       # Shared custom React hooks (27)

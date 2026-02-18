@@ -361,8 +361,8 @@ public class CustomerService : ICustomerService, IScopedService { }
 | Technology | Version | Purpose | Docs |
 |------------|---------|---------|------|
 | **React** | 19.0 | UI library | [React](https://react.dev/) |
-| **TypeScript** | 5.7 | Type safety | [TypeScript](https://www.typescriptlang.org/) |
-| **Vite** | 6.0 | Build tool | [Vite](https://vite.dev/) |
+| **TypeScript** | 5.9 | Type safety | [TypeScript](https://www.typescriptlang.org/) |
+| **Vite** | 7.3 | Build tool | [Vite](https://vite.dev/) |
 
 **Why React 19?**
 - **React Compiler** - Automatic optimization
@@ -395,7 +395,7 @@ public class CustomerService : ICustomerService, IScopedService { }
 
 **Configuration:**
 - `src/NOIR.Web/frontend/src/components/ui/` - Component source
-- `src/NOIR.Web/frontend/src/uikit/` - Storybook stories (56 components)
+- `src/NOIR.Web/frontend/src/uikit/` - Storybook stories (58 components)
 - `.storybook/main.ts` - Storybook config (Vite + Tailwind CSS 4)
 
 ---
@@ -657,7 +657,7 @@ const form = useForm<FormData>({
 |------|---------|---------|
 | **Storybook** | 10.2 | Interactive component catalog |
 
-**Storybook** provides an isolated development environment for 56 UI components in `src/uikit/`. Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
+**Storybook** provides an isolated development environment for 58 UI components in `src/uikit/`. Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
 
 ### Package Management
 

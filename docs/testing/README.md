@@ -4,25 +4,12 @@
 
 ---
 
-## Quick Navigation
-
-### 🎯 Start Here
-
-| Document | Purpose | When to Use |
-|----------|---------|-------------|
-| **[TESTING-INFRASTRUCTURE-SUMMARY.md](./TESTING-INFRASTRUCTURE-SUMMARY.md)** | **Complete testing overview** | Understanding the testing strategy |
-| [TEST_PLAN.md](./TEST_PLAN.md) | Test strategy and roadmap | Planning new tests or understanding scope |
-| [TEST_CASES.md](./TEST_CASES.md) | Test case catalog | Finding existing tests, planning coverage |
-
----
-
 ## Testing at a Glance
 
 ### Backend Testing (6,750+ tests)
 
 ```bash
 # Run all backend tests
-cd /d/GIT/TOP/NOIR
 dotnet test src/NOIR.sln
 
 # Run specific test project
@@ -256,6 +243,6 @@ Tests run automatically on every push to `main` branch via GitHub Actions.
 
 ---
 
-**Last Updated:** 2026-02-10
+**Last Updated:** 2026-02-18
 **Test Count:** 6,750+ tests
 **Focus:** Backend unit, integration, and architecture testing

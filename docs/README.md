@@ -2,7 +2,7 @@
 
 > **Start Here:** [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)
 
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-02-18
 
 ## Core Documentation
 
@@ -30,9 +30,9 @@ docs/
 │   ├── API_INDEX.md                 # API documentation
 │   └── ARCHITECTURE.md              # Architecture overview
 │
-├── backend/                          # .NET backend (17 files)
+├── backend/                          # .NET backend (20 files)
 │   ├── README.md                    # Backend overview
-│   ├── patterns/ (9 files)          # Implementation patterns
+│   ├── patterns/ (11 files)         # Implementation patterns
 │   │   ├── repository-specification.md
 │   │   ├── di-auto-registration.md
 │   │   ├── entity-configuration.md
@@ -41,7 +41,9 @@ docs/
 │   │   ├── bulk-operations.md
 │   │   ├── json-enum-serialization.md
 │   │   ├── jwt-refresh-token.md
-│   │   └── technical-checklist.md
+│   │   ├── technical-checklist.md
+│   │   ├── inventory-receipt-pattern.md
+│   │   └── attribute-category-inheritance.md
 │   ├── architecture/ (1 file)
 │   │   └── tenant-id-interceptor.md
 │   └── research/ (7 files)          # Research documents
@@ -62,6 +64,8 @@ docs/
 │   ├── ui-ux-enhancements.md
 │   ├── ecommerce-ui.md
 │   ├── vibe-kanban-integration.md
+│   ├── patterns/ (1 file)
+│   │   └── form-resolver-type-assertions.md
 │   └── designs/ (1 file)
 │       └── notification-dropdown-ui-design.md
 │
@@ -78,12 +82,19 @@ docs/
 │   ├── feature-roadmap-basic.md     # Phases 1-4 (Complete)
 │   └── feature-roadmap-ecommerce.md # E-commerce (In Progress)
 │
-└── research/ (2 files)               # General research
-    ├── admin-portal-features-2026.md
-    └── essential-erp-cms-features-2026.md
+├── research/ (3 files)               # General research
+│   ├── admin-portal-features-2026.md
+│   ├── admin-portal-ux-research.md
+│   └── essential-erp-cms-features-2026.md
+│
+├── architecture/ (1 file)            # Architecture diagrams
+│   └── diagrams.md
+│
+└── testing/ (1 file)                 # Testing documentation
+    └── README.md
 ```
 
-**Total: 47 documentation files**
+**Total: 50 documentation files**
 
 ## Quick Links
 

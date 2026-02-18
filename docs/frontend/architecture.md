@@ -67,7 +67,7 @@ frontend/
 │   │   │   └── auth-success/AuthSuccessPage.tsx
 │   │   └── PortalLayout.tsx
 │   │
-│   ├── uikit/               # UI component library (56 components + stories)
+│   ├── uikit/               # UI component library (58 components + stories)
 │   │   ├── button/          #   Button.tsx, Button.stories.tsx, index.ts
 │   │   ├── dialog/          #   Dialog.tsx, Dialog.stories.tsx, index.ts
 │   │   ├── ...              #   Per-component folders (kebab-case)

@@ -8,7 +8,7 @@
 
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-6750+-green.svg?style=flat-square)](tests/)
 
@@ -168,7 +168,7 @@ dotnet run --project src/NOIR.Web -c Release
 
 - **Hot Reload** - Backend and frontend live reloading
 - **Type Generation** - Swagger → TypeScript types
-- **Storybook** - 56 interactive component stories with UIKit catalog
+- **Storybook** - 58 interactive component stories with UIKit catalog
 - **6,750+ Tests** - Unit, Integration, Architecture
 - **Architecture Tests** - Enforce layer boundaries
 - **Comprehensive Docs** - 15,000+ lines of documentation
@@ -251,8 +251,8 @@ dotnet run --project src/NOIR.Web -c Release
 | Technology | Purpose |
 |------------|---------|
 | **React 19** | UI library |
-| **TypeScript 5.7** | Type safety |
-| **Vite 6** | Build tool |
+| **TypeScript 5.9** | Type safety |
+| **Vite 7** | Build tool |
 | **Tailwind CSS 4** | Utility-first CSS |
 | **shadcn/ui** | Component library |
 | **Storybook 10** | Component catalog |
@@ -281,7 +281,7 @@ NOIR/
 │   └── NOIR.Web/              # 🌐 API endpoints, middleware, SPA host
 │       └── frontend/          # ⚛️  React application (pnpm)
 │           ├── .storybook/    # 📖 Storybook configuration
-│           └── src/uikit/     # 📚 56 component stories
+│           └── src/uikit/     # 📚 58 component stories
 ├── ✅ tests/                  # 6,750+ tests (Unit, Integration, Architecture)
 ├── 📚 docs/                   # 15,000+ lines of documentation
 └── ⚙️  .github/               # CI/CD workflows and templates

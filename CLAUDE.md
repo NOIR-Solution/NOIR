@@ -6,7 +6,7 @@
 
 *Specific instructions for Claude Code. For universal AI agent instructions, see [AGENTS.md](AGENTS.md).*
 
-**Last Updated:** 2026-02-15 | **Version:** 2.6
+**Last Updated:** 2026-02-18 | **Version:** 2.7
 
 </div>
 
@@ -828,7 +828,7 @@ pnpm build-storybook
 
 ### UIKit Structure
 
-All 56 UI components have Storybook stories in `src/uikit/`:
+All 58 UI components have Storybook stories in `src/uikit/`:
 
 ```
 src/NOIR.Web/frontend/src/uikit/
@@ -836,7 +836,7 @@ src/NOIR.Web/frontend/src/uikit/
 ├── card/Card.stories.tsx
 ├── dialog/Dialog.stories.tsx
 ├── table/Table.stories.tsx
-├── ... (56 component stories total)
+├── ... (58 component stories total)
 ```
 
 **Path alias:** `@uikit` maps to `src/uikit/` (configured in `tsconfig.app.json`)
@@ -1026,6 +1026,13 @@ For detailed documentation, see the `docs/` folder:
 
 ## 📝 Changelog
 
+### Version 2.7 (2026-02-18)
+- **Updated:** UIKit component count from 56 to 58 (verified: 58 story files in `src/uikit/`)
+- **Audited:** Full documentation inventory (56 files across docs/, root, and .claude/rules/)
+- **Updated:** Dependency versions to match actual: TypeScript 5.9.3, Vite 7.3.0, Zod 4.3.5, React Router 7.11.0
+- **Fixed:** Dead links in testing README (removed references to non-existent files)
+- **Updated:** docs/README.md file counts and structure tree to match reality
+
 ### Version 2.6 (2026-02-15)
 - **Added:** React 19 + TanStack Query performance patterns (useDeferredValue, useTransition, optimistic mutations)
 - **Added:** `useOptimisticMutation` shared utility documentation (optimisticListDelete, optimisticListPatch, optimisticArrayDelete)
@@ -1033,7 +1040,7 @@ For detailed documentation, see the `docs/` folder:
 - **Coverage:** 15 pages use React 19 hooks, all mutation files use shared optimistic helpers
 
 ### Version 2.5 (2026-02-13)
-- **Added:** Storybook v10.2.8 with 56 component stories in `src/uikit/`
+- **Added:** Storybook v10.2.8 with 58 component stories in `src/uikit/`
 - **Added:** UIKit structure documentation and `@uikit` path alias
 - **Migrated:** npm → pnpm for disk-optimized dependency management
 - **Added:** Storybook access point (http://localhost:6006) to Quick Reference

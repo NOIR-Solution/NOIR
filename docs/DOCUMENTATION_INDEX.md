@@ -109,7 +109,7 @@
 |----------|---------|
 | [README.md](testing/README.md) | Testing overview, conventions, and running tests |
 
-### Test Coverage Summary (2026-02-13)
+### Test Coverage Summary (2026-02-18)
 
 **Backend Tests:** 6,750+ tests across 4 test projects
 - 842 Domain unit tests
@@ -176,7 +176,7 @@
 | **Backend Architecture** | 2 |
 | **Backend Research** | 7 |
 | **Frontend Guides** | 10 |
-| **Testing Docs** | 3 |
+| **Testing Docs** | 1 |
 | **ADRs** | 3 |
 | **Plans** | 2 |
 | **Research (General)** | 3 |
@@ -185,4 +185,4 @@
 
 ---
 
-**Version:** 3.2 (Updated 2026-02-18 - Added inventory receipt pattern and attribute-category inheritance docs)
+**Version:** 3.3 (Updated 2026-02-18 - Documentation audit: fixed testing docs count, updated coverage date, verified all links)
