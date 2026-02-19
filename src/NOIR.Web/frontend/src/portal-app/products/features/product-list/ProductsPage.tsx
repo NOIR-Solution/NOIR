@@ -394,7 +394,7 @@ export const ProductsPage = () => {
     : { from: 0, to: 0 }
 
   return (
-    <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6">
       <PageHeader
         icon={Package}
         title={t('products.title', 'Products')}

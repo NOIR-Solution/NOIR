@@ -236,7 +236,7 @@ export const OrderDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+      <div className="space-y-6">
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-10 rounded" />
           <div className="space-y-2">
@@ -284,7 +284,7 @@ export const OrderDetailPage = () => {
   const canReturn = canManageOrders && order.status === 'Delivered'
 
   return (
-    <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/portal/ecommerce/orders')} className="cursor-pointer" aria-label={t('orders.backToOrders', 'Back to Orders')}>

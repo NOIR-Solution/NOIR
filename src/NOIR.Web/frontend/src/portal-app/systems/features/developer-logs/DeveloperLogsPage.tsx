@@ -202,7 +202,7 @@ export const DeveloperLogsPage = () => {
   }, [entries, deferredSearchTerm, exceptionsOnly, sortOrder, liveSelectedLevels])
 
   return (
-    <div className="flex flex-col h-[calc(100vh-48px)] overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-48px)] overflow-hidden animate-in fade-in-0 duration-300">
       <PageHeader
         icon={Terminal}
         title="Developer Logs"

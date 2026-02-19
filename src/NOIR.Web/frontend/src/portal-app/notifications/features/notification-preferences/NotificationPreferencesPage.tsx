@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
+import { usePageContext } from '@/hooks/usePageContext'
 import { ArrowLeft, Save, Bell, Mail, Shield, Workflow, Users, Settings2, Loader2 } from 'lucide-react'
 import {
   Button,
@@ -40,6 +41,7 @@ const emailFrequencyOptions: { value: EmailFrequency }[] = [
 
 export const NotificationPreferencesPage = () => {
   const { t } = useTranslation('common')
+  usePageContext('NotificationPreferences')
   const [preferences, setPreferences] = useState<NotificationPreference[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)

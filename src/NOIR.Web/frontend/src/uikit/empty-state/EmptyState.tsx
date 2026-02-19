@@ -111,7 +111,7 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col items-center justify-center text-center rounded-xl border-2 border-dashed border-border bg-background hover:bg-muted/50 transition-colors duration-300 group animate-in fade-in-0 slide-in-from-bottom-4",
+          "flex flex-col items-center justify-center text-center rounded-xl border-2 border-dashed border-border bg-background hover:bg-muted/50 transition-colors duration-300 group",
           sizes.container,
           className
         )}

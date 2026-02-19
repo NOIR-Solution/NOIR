@@ -115,8 +115,8 @@ public sealed class CustomersFilterSpec : Specification<Domain.Entities.Customer
                 else Query.OrderBy(c => c.LoyaltyPoints);
                 break;
             case "lastorderdate":
-                if (sortDescending) Query.OrderByDescending(c => c.LastOrderDate);
-                else Query.OrderBy(c => c.LastOrderDate);
+                if (sortDescending) Query.OrderByDescending(c => c.LastOrderDate ?? DateTimeOffset.MinValue);
+                else Query.OrderBy(c => c.LastOrderDate ?? DateTimeOffset.MinValue);
                 break;
             default:
                 Query.OrderByDescending(c => c.CreatedAt);

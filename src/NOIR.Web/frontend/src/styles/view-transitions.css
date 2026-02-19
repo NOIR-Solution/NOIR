@@ -47,54 +47,17 @@
   to { opacity: 0; }
 }
 
-@keyframes vt-slide-in-from-right {
-  from { transform: translateX(24px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
 
-@keyframes vt-slide-out-to-left {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(-24px); opacity: 0; }
-}
-
-@keyframes vt-slide-in-from-left {
-  from { transform: translateX(-24px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes vt-slide-out-to-right {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(24px); opacity: 0; }
-}
-
-/* --- Default transition: crossfade --- */
+/* --- Default transition: instant swap for fastest perceived performance --- */
+/* Skeleton handles loading state; no animation delay before showing real data. */
+/* Shared elements (page-title, page-icon, product-image) still morph smoothly. */
 
 ::view-transition-old(main-content) {
-  animation: 180ms cubic-bezier(0.4, 0, 0.2, 1) both vt-fade-out;
+  animation: none;
 }
 
 ::view-transition-new(main-content) {
-  animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) both vt-fade-in;
-}
-
-/* --- Forward navigation: slide left --- */
-
-html[data-vt-direction="forward"]::view-transition-old(main-content) {
-  animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) both vt-slide-out-to-left;
-}
-
-html[data-vt-direction="forward"]::view-transition-new(main-content) {
-  animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) both vt-slide-in-from-right;
-}
-
-/* --- Back navigation: slide right --- */
-
-html[data-vt-direction="back"]::view-transition-old(main-content) {
-  animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) both vt-slide-out-to-right;
-}
-
-html[data-vt-direction="back"]::view-transition-new(main-content) {
-  animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) both vt-slide-in-from-left;
+  animation: none;
 }
 
 /* --- Stable layout elements: NO animation --- */

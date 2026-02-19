@@ -99,7 +99,7 @@ export const ProductCategoriesPage = () => {
   const treeCategories = categories.map(toTreeCategory)
 
   return (
-    <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6">
       <PageHeader
         icon={FolderTree}
         title={t('categories.title', 'Product Categories')}

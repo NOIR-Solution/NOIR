@@ -808,7 +808,7 @@ export const ProductFormPage = () => {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6">
       {/* Page Header with Glassmorphism */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">

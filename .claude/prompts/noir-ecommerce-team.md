@@ -18,6 +18,7 @@ You MUST use the agent team system to execute this project:
    assign work, review results, and unblock issues.
 5. **Quality gate**: After each phase, verify all quality checks yourself
    before moving to next phase.
+6. All team member use opus 4.6 thinking
 
 Do NOT try to do everything yourself in a single context.
 Delegate to specialized teammates. You are the coordinator, not the builder.
