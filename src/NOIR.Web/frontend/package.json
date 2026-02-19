@@ -76,6 +76,11 @@
     "yet-another-react-lightbox": "^3.21.7",
     "zod": "^4.3.5"
   },
+  "pnpm": {
+    "overrides": {
+      "glob>minimatch": ">=10.2.1"
+    }
+  },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@eslint/js": "^9.39.2",
