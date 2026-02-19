@@ -1,322 +1,284 @@
 # NOIR — Best-in-Class E-commerce Admin Portal
 
-## Vision
-Create the most professional, robust open-source multi-tenant e-commerce
-admin portal on GitHub. Targeting Vietnam market. The codebase should be
-a reference implementation that developers look at and say "this is how
-it's done."
+## Primary Goals (All 5 Must Be Achieved)
 
-## Execution Method: Agent Team (MANDATORY)
+### Goal 1: UI/UX Consistency — One Design Language
+Every page, component, dialog, table, card, and form MUST follow ONE unified design language.
+No page should look like it was built by a different team.
 
-You MUST use the agent team system to execute this project:
+**Calibration example:** Payment Provider config page = gold standard UI/UX in the app.
+Shipping Provider config (and similar pages) currently looks different → mismatch.
+When two pages serve the same purpose but look different, find the best one and unify all others to match.
 
-1. **Create team**: Use `TeamCreate` tool to create a team named "noir-ecommerce"
-2. **Create tasks**: Use task management to track all work items
-3. **Spawn teammates**: Use `Task` tool with `team_name: "noir-ecommerce"`
-   to spawn specialized agents. Give each a clear name and role.
-4. **Coordinate via messages**: Use `SendMessage` to communicate with teammates,
-   assign work, review results, and unblock issues.
-5. **Quality gate**: After each phase, verify all quality checks yourself
-   before moving to next phase.
-6. All team member use opus 4.6 thinking
+**Pattern categories to audit and unify:**
+Cards, Tables, Dialogs, Forms, Buttons, Spacing, Typography, Colors, Shadows, Animations,
+Empty states, Loading states, Toasts, Status badges, Config/Settings pages.
 
-Do NOT try to do everything yourself in a single context.
-Delegate to specialized teammates. You are the coordinator, not the builder.
+For each category: identify all variants in codebase → pick BEST (existing or researched) → apply everywhere.
 
-## How to Work
-You are the **Team Lead**. Think like a CTO building a product.
+### Goal 2: Storybook 100% Sync
+Every UI component used in the website MUST have a Storybook story showing all variants, states, and sizes.
+- Story location: `src/uikit/{component-name}/{Component}.stories.tsx`
+- Cross-reference `src/components/ui/` (actual) vs `src/uikit/` (stories) vs app imports
+- Missing stories → create. Outdated stories → update. `pnpm build-storybook` → 0 errors.
 
-### Phase 0: Research & Audit
-1. **Audit codebase** — Read CLAUDE.md, scan src/, tests/, docs/.
-   Map what EXISTS (features, patterns, components, tests, pages).
+### Goal 3: Backend Consistency — Same Pattern Everywhere
+Every feature MUST follow the EXACT same code patterns. A developer reading any handler
+should feel like the same person wrote all of them.
 
-2. **Research features** — Study what the best e-commerce admin portals offer:
-   Shopify Admin, Shopee Seller Center, Haravan, Sapo, WooCommerce, Medusa.js,
-   Saleor. Determine the complete feature set a serious VN e-commerce platform
-   needs. Don't copy my list — think independently, be comprehensive.
+**Backend pattern categories to audit and unify:**
+| Category | What to Check |
+|----------|--------------|
+| Handler structure | Same shape for get-by-id, get-paged-list, create, update, soft-delete |
+| Specifications | Composable, TagWith() on all, AsTracking for mutations, consistent naming |
+| Folder structure | Commands/{Action}/ and Queries/{Action}/ consistent across all features |
+| Error handling | Result<T> flow from handler → endpoint → API → frontend, Error.Validation() param order |
+| Audit commands | IAuditableCommand on ALL mutation commands, before-state resolvers for updates |
+| Validators | FluentValidation on all Commands/Queries, consistent rule patterns |
+| DI registration | Marker interfaces (IScopedService, etc.) on all services, no manual registration |
+| Entity configuration | IEntityTypeConfiguration per entity, TenantId in unique constraints |
+| Repository pattern | IRepository<T, TId> + IUnitOfWork, never direct DbContext in services |
+| DTOs | Consistent mapping patterns, no leaking domain entities to API |
+| Endpoint structure | Consistent route naming, HTTP verbs, response types |
+| Dead code | Zero unused imports, zero commented-out blocks, zero duplicate logic |
 
-3. **Research UI/UX** — Deep research into modern admin dashboard design:
-   - Color scheme: what conveys trust, professionalism, and works for
-     long-hour usage (eye strain matters for admin panels)
-   - Typography: optimal for Vietnamese diacritics + data-dense tables
-   - Layout patterns: navigation, information hierarchy, data visualization
-   - Micro-interactions: transitions, feedback, loading states
-   - Study: Linear, Vercel Dashboard, Stripe Dashboard, Shopify Polaris,
-     Ant Design Pro, Tremor. Extract what makes them feel premium.
+For each category: audit all features → identify inconsistencies → unify to ONE pattern.
 
-4. **Gap analysis** — Compare what EXISTS vs what SHOULD EXIST.
-   This becomes your roadmap.
+### Goal 4: Fill All Test Coverage Gaps
+Audit existing tests (10,595+), find what's NOT covered, fill every gap.
 
-### Phase 1-N: Build (You Decide the Phases)
-For each phase:
-- Decide scope, agent count, specializations
-- Spawn only what's needed for THIS phase
-- Every phase must pass quality gates before next phase starts
+- Every handler: unit tests (happy path + every error branch)
+- Every validator: unit tests (valid input, each invalid field, boundary values)
+- Every domain entity: unit tests (creation, state transitions, business rules)
+- Every endpoint: integration tests (success, auth, forbidden, validation error, not found)
+- Architecture tests: naming conventions, folder structure, DI registration completeness
+- `dotnet test src/NOIR.sln` → ALL pass, zero skipped
+- Phase 0 auditor MUST produce a **Test Gap Report**: which handlers/validators/endpoints lack tests
 
-### Continuous: Quality Gates
-After EVERY phase:
-```bash
-dotnet build src/NOIR.sln           # 0 errors
-dotnet test src/NOIR.sln            # ALL pass
-cd src/NOIR.Web/frontend && pnpm run build  # 0 errors, 0 warnings (strict)
+### Goal 5: Feature Completeness — Match Top E-commerce Platforms
+Research what the best e-commerce admin portals offer and fill gaps:
+Shopify Admin, Shopee Seller Center, Haravan, Sapo, WooCommerce, Medusa.js, Saleor.
+
+Don't just copy a feature list — think critically about what a serious VN e-commerce
+platform NEEDS. **Scope per round:** identify top 10 missing features, prioritize top 3-5
+for implementation based on business value. Don't try to build everything at once.
+
+---
+
+## Execution Method: Agent Team (NON-NEGOTIABLE)
+
+**HARD RULE: You MUST use TeamCreate + Task tool to spawn agent teammates.**
+- Minimum 2 teammates per phase. No exceptions.
+- You are the **Team Lead / Coordinator**. You do NOT write code yourself.
+- Your job: plan phases, spawn teammates, assign tasks, review results, enforce quality gates.
+- If you catch yourself writing code directly instead of delegating → STOP → spawn a teammate.
+- Spawn teammates with `model: "opus"` parameter for maximum quality.
+
+### Team Patterns (Pick Per Phase)
+
+| Phase Type | Min Agents | Recommended Roles |
+|------------|-----------|-------------------|
+| Research/Audit | 2-3 | `codebase-auditor` + `ui-explorer` (+ `ecommerce-researcher`) |
+| UI Consistency | 2-3 | `pattern-researcher` + `component-fixer` (+ `storybook-updater`) |
+| Backend Feature | 2-3 | `backend-dev` + `test-writer` (+ `migration-handler`) |
+| Frontend Feature | 2-3 | `frontend-dev` + `storybook-writer` (+ `localization`) |
+| Full-Stack Feature | 3 | `backend-dev` + `frontend-dev` + `test-writer` |
+| Storybook Sync | 2 | `story-writer` + `story-reviewer` |
+| QA Round | 2 | `qa-visual` + `qa-functional` |
+
+### Team Lifecycle (Every Phase)
+
+```
+1. TeamCreate → create team for this phase
+2. Task tool → spawn teammates with clear, scoped assignments
+3. Monitor → read task list, respond to teammate messages
+4. Quality Gate → run build + test + frontend build + storybook build
+5. Shutdown teammates → SendMessage type: "shutdown_request"
+6. TeamDelete → clean up before next phase
 ```
 
-## Architecture & Automation Philosophy
+### Delegation Rules
+- Each teammate gets ONE focused responsibility (not "do everything")
+- Teammates work in PARALLEL when tasks are independent
+- You coordinate handoffs when tasks have dependencies
+- You run quality gates yourself (dotnet build, dotnet test, pnpm build, pnpm build-storybook)
+
+---
+
+## Phased Execution
+
+### Phase 0: Research & Audit (ALWAYS START HERE)
+
+**Prerequisites:** Start the app with `./start-dev.sh` before this phase (needed for `ui-explorer`).
+
+**Team:** `codebase-auditor` + `ui-explorer` + `ecommerce-researcher`
+
+**codebase-auditor:**
+- Read CLAUDE.md, docs/FEATURE_CATALOG.md, docs/PROJECT_INDEX.md
+- Scan src/: map every feature, entity, handler, endpoint, specification
+- Scan tests/: map test coverage per feature (which handlers/validators/endpoints have tests, which don't)
+- Scan frontend src/portal-app/: map every page, component, hook, query, mutation
+- Scan src/uikit/: map all Storybook stories, cross-reference with components actually used
+- Produce: **Feature Inventory Matrix** (what exists, what's missing tests, what's incomplete)
+- Produce: **Storybook Coverage Report** (components with stories, without stories, outdated stories)
+
+**ui-explorer:**
+- Use Playwright MCP tools to navigate EVERY page in the live app
+- Screenshot every page at desktop viewport (1920x1080)
+- For each page, catalog: card style, table style, dialog style, spacing, shadows, typography, colors
+- Produce: **UI Pattern Matrix** (rows = pages, columns = pattern categories, cells = which variant)
+- Highlight mismatches: "Products page uses X, Orders page uses Y for same pattern"
+- Flag the best patterns (Payment Provider config = known gold standard)
+
+**ecommerce-researcher:**
+- Research Shopify Admin, Shopee Seller Center, Haravan, Sapo, WooCommerce, Medusa.js, Saleor
+- For each: list their feature set, identify what NOIR is missing
+- Research modern admin UI/UX: Linear, Vercel Dashboard, Stripe Dashboard, Shopify Polaris
+- Identify design patterns that make them feel premium
+- Produce: **Feature Gap Analysis** + **UI/UX Research Report**
+
+**You (Team Lead) then:**
+- Synthesize all 3 reports into a prioritized roadmap
+- Group work into phases: UI consistency first, then backend consistency, then new features, then QA
+- Present roadmap to user for approval before Phase 1
+
+### Phase 1-N: Build (You Decide Scope Per Phase)
+
+For each phase:
+1. Define scope (which goal(s) this phase advances)
+2. Choose team pattern from table above
+3. Spawn teammates with specific, bounded assignments
+4. Monitor progress, unblock teammates
+5. Run quality gates
+6. Shutdown team, clean up, move to next phase
+
+**Suggested phase ordering** (adjust based on audit findings):
+1. UI Consistency — unify design patterns, establish standards
+2. Storybook Sync — fill gaps, update outdated stories
+3. Backend Consistency — unify handler/spec patterns, eliminate duplication
+4. Test Coverage — fill testing gaps found in audit
+5. New Features — implement features from gap analysis
+6. Final QA — visual + functional verification
+
+---
+
+## Architecture Philosophy
 
 ### The Golden Rule
 > Adding a new feature should require writing ONLY the unique business logic.
 > Everything else — registration, wiring, routing, validation plumbing,
 > test scaffolding — should be automatic or one-line.
 
-### Backend Structure: Convention Over Configuration
-- **Auto-discovery everything**: DI registration via marker interfaces
-  (IScopedService, ITransientService) — never manually register.
-  Endpoint mapping via assembly scanning — never manually add routes.
-  Entity configuration via ApplyConfigurationsFromAssembly — never manually list.
-  Validators auto-discovered by Wolverine pipeline — never manually wire.
-- **Generic base patterns**: If 10 handlers do the same shaped work
-  (get by id, get paged list, soft delete), extract a generic base or
-  shared behavior. Don't copy-paste the same 30 lines across 10 handlers.
-- **Shared specifications**: Common query patterns (paged, filtered, sorted,
-  searched) should be composable, not rewritten per entity.
-- **Consistent folder structure**: A developer finding one feature folder
-  should know EXACTLY where to find the same file in any other feature.
-  No surprises. No special cases.
-- **Pipeline behaviors**: Cross-cutting concerns (logging, validation,
-  caching, audit) live in pipeline middleware — never duplicated in handlers.
-- **One-step feature creation**: Adding "Promotions" feature should be:
-  (1) Create entity, (2) Create command/handler, (3) Create endpoint.
-  DI, validation, audit, localization, error handling — all automatic via
-  conventions. If it takes more than 3 steps, the architecture is wrong.
+### Backend: Convention Over Configuration
+- Auto-discovery everything: DI via marker interfaces, endpoint mapping via assembly scanning,
+  entity config via ApplyConfigurationsFromAssembly, validators auto-discovered by pipeline
+- Generic base patterns: if 10 handlers do the same shaped work, extract shared behavior
+- Shared specifications: common query patterns (paged, filtered, sorted) should be composable
+- Consistent folder structure: finding one feature folder = knowing ALL feature folders
+- Pipeline behaviors: cross-cutting concerns in middleware, never duplicated in handlers
+- One-step feature creation: Entity → Command/Handler → Endpoint. That's it.
 
-### Frontend Structure: Shared & Composable
-- **Feature modules are self-contained**: Each portal-app/{feature}/ owns
-  its pages, queries, mutations, types, components. No reaching across modules.
-- **Shared hooks eliminate repetition**: If 10 pages do search + filter +
-  paginate + sort, there's ONE hook (or composable) that handles it. Pages
-  just provide config, not implementation.
-- **Shared table/list pattern**: Data tables have a standard wrapper that
-  handles column config, search, filter, sort, pagination, bulk select,
-  export — pages just declare columns and data source.
-- **Shared form pattern**: Form dialogs (create/edit) follow one pattern
-  with Zod schema + react-hook-form. Adding a new form = define schema +
-  define fields. No manual wiring of error states, loading, submission.
-- **Shared mutation patterns**: Optimistic delete, optimistic update,
-  cache invalidation — all via shared utility hooks, not copy-pasted per feature.
-- **Component composition > component props**: Don't make a God component
-  with 30 props. Make small composable pieces. Follow shadcn/ui philosophy.
-- **Type-safe end-to-end**: Backend DTO shape → API response → Frontend type →
-  Form schema → UI rendering. One source of truth, no manual type syncing.
+### Frontend: Shared & Composable
+- Feature modules self-contained: each portal-app/{feature}/ owns its pages, queries, mutations
+- Shared hooks: ONE hook for search + filter + paginate + sort. Pages just provide config.
+- Shared form pattern: Zod schema + react-hook-form. New form = schema + fields. Done.
+- Shared mutation patterns: optimistic operations via shared utility hooks
+- Type-safe end-to-end: Backend DTO → API response → Frontend type → Form schema → UI
 
-### Automation Rules (No Manual Labor)
-- **Localization**: If a pattern can auto-generate i18n keys from feature
-  names, do it. Don't hand-write 500 translation keys.
-- **API client generation**: Frontend API service types should derive from
-  backend contracts, not be manually maintained.
-- **Test patterns**: Base test classes for common scenarios (CRUD handler
-  tests, validation tests, endpoint tests). Writing a test = inherit base +
-  provide test data. Not rewrite 50 lines of setup.
-- **Error handling**: Consistent Result<T> pattern flows from handler →
-  endpoint → API response → frontend error display. No ad-hoc try/catch.
-- **Audit trail**: IAuditableCommand + pipeline behavior = automatic.
-  Developers don't "remember" to add audit logging — it's enforced by type system.
-- **Multi-tenancy**: Finbuckle middleware handles tenant resolution globally.
-  Features never manually filter by TenantId in business logic — it's automatic.
+### Storybook as Living Documentation
+- Storybook is NOT optional — it IS the component documentation
+- Every component change MUST include a story update
+- Stories show all variants, not just the default
+- `pnpm storybook` at http://localhost:6006 is the component reference
 
-### How to Evaluate Structure Quality
-Ask these questions after each phase:
-1. Can a new developer add a feature by copying an existing one? → YES required
-2. How many files must be touched to add a simple CRUD feature? → MINIMIZE this
-3. Are there any manual registration steps? → ELIMINATE all of them
-4. Is there copy-pasted logic across features? → EXTRACT to shared patterns
-5. If I rename an entity, does the type system catch all the places? → YES required
-6. Are cross-cutting concerns (auth, audit, cache, validation) in ONE place? → YES required
+---
 
-## What "Best on GitHub" Means
+## Quality Gates (Run After EVERY Phase)
 
-### Backend: Bulletproof
-- **Consistency**: every feature follows the EXACT same patterns.
-  A developer reading any handler should feel like the same person wrote all of them.
-- **No waste**: zero dead code, zero unused imports, zero commented-out blocks,
-  zero duplicate logic. Every line earns its place.
-- **Complete testing**: if code exists, tests exist. No exceptions.
-  Unit tests for logic, integration tests for endpoints, architecture tests for rules.
-- **Maintainable**: a new developer can add a feature by copying an existing one
-  and changing the names. That's how consistent patterns should be.
-
-### Frontend: Premium Feel
-- **Research-driven design**: don't guess colors or layouts. Research what top
-  products use and WHY. Then make informed decisions.
-- **Smooth navigation**: the project uses Browser Navigation API / View Transitions
-  for smooth page transitions. Ensure ALL pages leverage this — no jarring full reloads.
-- **Consistency**: every page follows the same layout grid, same spacing scale,
-  same component patterns, same animation timing. It should feel like ONE product.
-- **Localization**: every string in EN + VI. Zero hardcoded text.
-- **Responsive**: works on desktop (primary), tablet (secondary).
-- **Accessibility**: keyboard navigation, aria-labels, focus management.
-- **Performance**: skeleton loading, optimistic updates, deferred search,
-  transition-wrapped filters. The UI should never feel slow.
-
-### Codebase: Reference Quality
-- **README.md**: professional, badges, screenshots, quick-start in < 5 steps.
-  Someone landing on this GitHub repo should immediately understand what it is
-  and want to try it.
-- **CLAUDE.md**: concise, accurate, effective. Every rule pulls its weight.
-- **docs/**: architecture diagrams, API reference, development guide.
-  Enough for a new dev to be productive in day one.
-- **No debt**: no TODOs left unresolved, no FIXME without a fix,
-  no HACK without removal.
-
-## Testing: 100% Coverage, Zero Blind Spots
-
-### Backend: Unit + Integration (100% Coverage)
-- **Every handler** has unit tests: happy path + every error branch
-- **Every validator** has unit tests: valid input, each invalid field,
-  boundary values, combination errors
-- **Every domain entity** has unit tests: creation, state transitions,
-  business rules, invariant enforcement
-- **Every endpoint** has integration tests: success response, auth required,
-  forbidden for wrong role, validation error response, not found
-- **Architecture tests**: enforce naming conventions, folder structure,
-  DI registration completeness, no direct DbContext usage in services
-- **Coverage target**: 100% line coverage on Application + Domain layers.
-  No untested handler. No untested validator. No untested entity method.
-- `dotnet test src/NOIR.sln` → ALL pass, zero skipped, zero ignored
-
-### Frontend: Type Safety as Test Suite
-- `pnpm run build` in strict mode = compile-time verification of all components
-- Zero `any` types, zero `@ts-ignore`, zero suppressed warnings
-- Type-safe API contracts: if backend changes a DTO, frontend build breaks
-  immediately — that's the design
-
-### E2E: Playwright MCP — Claude Tests Like a Human (CRITICAL)
-
-Spawn a dedicated **QA Agent** that uses Playwright MCP tools DIRECTLY —
-not writing test files, but navigating the live application with Claude's
-own intelligence, thinking about what it sees, and verifying correctness.
-
-**How the QA Agent works:**
-1. Start the application (backend + frontend)
-2. Use Playwright MCP tools: `browser_navigate`, `browser_click`,
-   `browser_fill`, `browser_snapshot`, `browser_take_screenshot`
-3. THINK about what's on screen — read the DOM snapshot, evaluate if
-   the UI is correct, check data integrity
-4. Report issues with screenshots and detailed description
-
-**The QA Agent MUST test every single one of these for EVERY feature:**
-
-**Authentication & Authorization:**
-- Login as Platform Admin → verify sees all tenants' data
-- Login as Tenant Admin → verify sees only own tenant's data
-- Access denied pages → verify proper 403 handling
-- Session expiry → verify redirect to login
-
-**CRUD Operations (for EVERY entity):**
-- **Create**: open dialog/page → fill all fields → submit → verify success
-  toast → verify item appears in list with correct data
-- **Read**: verify list shows correct columns, data, formatting (VND, dates)
-- **Update**: click edit → verify form pre-filled → modify fields → submit →
-  verify changes reflected in list AND detail view
-- **Delete**: click delete → verify confirmation dialog appears → confirm →
-  verify item removed from list → verify soft delete (not hard delete)
-
-**Form Validation (for EVERY form):**
-- Submit empty form → verify all required field errors appear
-- Submit invalid data (wrong format, too long, too short) → verify
-  specific error messages per field
-- Fix errors one by one → verify errors clear as fields become valid
-- Verify validation triggers on blur (not on every keystroke)
-
-**Dialogs & Popups:**
-- Open dialog → verify it renders correctly, focus trapped inside
-- Close via X button → verify dialog closes, no data saved
-- Close via Escape key → verify same behavior
-- Close via clicking overlay → verify same behavior
-- Submit dialog → verify loading state on button → verify success
-
-**Tables & Lists:**
-- Search: type in search box → verify results filter in real-time
-  (with deferred value, not janky)
-- Filter: apply filter → verify table updates → clear filter → verify reset
-- Sort: click column header → verify sort direction → click again → reverse
-- Pagination: navigate pages → verify correct data per page → verify
-  page count updates with filters
-- Bulk select: select multiple → verify bulk action bar appears →
-  execute bulk action → verify all selected items affected
-- Export: click export → verify file downloads with correct data
-- Empty state: clear all data → verify illustrated empty state, not blank page
-
-**Workflows (multi-step processes):**
-- Order lifecycle: create order → confirm → process → ship → deliver →
-  complete. Verify status changes at each step, verify timeline updates.
-- Checkout flow: add to cart → initiate checkout → set address →
-  select shipping → select payment → complete → verify order created
-- Inventory: create stock-in receipt → confirm → verify stock levels
-  updated on product
-
-**Cross-Feature Data Integrity:**
-- Create a product → verify it appears in inventory view
-- Create an order → verify customer's order history updates
-- Delete a category → verify products in that category handle gracefully
-- Apply a voucher to order → verify discount calculated correctly
-- Change product price → verify existing orders keep original price
-
-**Page Transitions & Navigation:**
-- Navigate between all pages via sidebar → verify smooth transitions
-  (View Transitions API, no full page reloads)
-- Use browser back/forward → verify correct page state restoration
-- Deep link to specific page → verify it loads correctly
-- Breadcrumb navigation → verify correct hierarchy and links
-
-**Localization:**
-- Switch language EN → VI → verify ALL text changes, no untranslated strings
-- Verify VND formatting (1.000.000₫)
-- Verify date formatting (DD/MM/YYYY in VI)
-- Verify form validation messages appear in selected language
-
-**Responsive & Visual:**
-- Take screenshots at desktop (1920x1080) and tablet (768x1024) viewports
-- Verify no horizontal scrolling, no overlapping elements, no cut-off text
-- Verify interactive elements have cursor-pointer
-
-**Error Handling:**
-- Trigger API error (e.g., network off) → verify error toast/message
-- Submit duplicate data → verify backend validation error displayed correctly
-- Access non-existent route → verify 404 page
-
-**The QA Agent must produce a report:**
-```
-Feature: [Name]
-Pages tested: [count]
-CRUD verified: ✅/❌ (Create/Read/Update/Delete)
-Validation verified: ✅/❌
-Dialogs verified: ✅/❌
-Workflows verified: ✅/❌
-Cross-feature verified: ✅/❌
-Localization verified: ✅/❌
-Screenshots: [attached]
-Issues found: [list with screenshots]
+```bash
+dotnet build src/NOIR.sln                              # 0 errors
+dotnet test src/NOIR.sln                               # ALL pass, zero skipped
+cd src/NOIR.Web/frontend && pnpm run build             # 0 errors, 0 warnings (strict)
+cd src/NOIR.Web/frontend && pnpm build-storybook       # 0 errors, 0 warnings
 ```
 
-**IMPORTANT**: The QA Agent does NOT write .spec.ts files. It uses Playwright
-MCP tools directly, applying Claude's reasoning to evaluate what it sees.
-This is smarter than scripted tests because Claude can catch visual issues,
-UX problems, and logical inconsistencies that scripts cannot.
+**Additional checks:**
+- No hardcoded strings (all text uses `t('key')` with EN + VI translations)
+- All interactive elements have `cursor-pointer`
+- All icon-only buttons have `aria-label`
+- All destructive actions have confirmation dialogs
+
+---
+
+## QA: Playwright MCP Testing (Dedicated QA Agent)
+
+Spawn a QA agent that uses Playwright MCP tools DIRECTLY to navigate the live app.
+Not writing test files — navigating, observing, reasoning about what it sees.
+
+**QA Agent tests per feature:**
+- CRUD operations (create → list → update → delete → verify)
+- Form validation (empty submit, invalid data, error clearing)
+- Dialogs (open, close X/Escape/overlay, submit with loading state)
+- Tables (search, filter, sort, pagination, bulk select, empty state)
+- Localization (switch EN↔VI, verify all text changes, VND formatting)
+- Cross-feature data integrity (create product → appears in inventory)
+- Page transitions (smooth via View Transitions, no full reloads)
+- Error handling (API errors, duplicate data, 404 pages)
+
+**QA Report format:**
+```
+Feature: [Name] | Pages: [count]
+CRUD: ✅/❌ | Validation: ✅/❌ | Dialogs: ✅/❌
+Localization: ✅/❌ | Consistency: ✅/❌
+Issues: [list with screenshots]
+```
+
+---
 
 ## Vietnam Market Context
-- Currency: VND (no decimals, 1.000.000₫)
-- Phone: +84 format
-- Address hierarchy: Tỉnh/TP → Quận/Huyện → Phường/Xã → Chi tiết
-- Tax: VAT 8%/10%
-- Date: DD/MM/YYYY
-- Carriers: GHN, GHTK, VNPost, J&T
-- Payments: VNPay, MoMo, ZaloPay, COD
-- Language: VI primary, EN secondary
+
+| Aspect | Value |
+|--------|-------|
+| Currency | VND (no decimals, 1.000.000₫) |
+| Phone | +84 format |
+| Address | Tỉnh/TP → Quận/Huyện → Phường/Xã → Chi tiết |
+| Tax | VAT 8%/10% |
+| Date | DD/MM/YYYY |
+| Carriers | GHN, GHTK, VNPost, J&T |
+| Payments | VNPay, MoMo, ZaloPay, COD |
+| Language | VI primary, EN secondary |
+
+---
 
 ## Rules
-- Follow ALL rules in CLAUDE.md
+
+- Follow ALL rules in CLAUDE.md — no exceptions
 - When unsure about a pattern, check existing code first — consistency > creativity
 - Don't over-engineer. Don't under-engineer. Engineer exactly right.
-- Ship working increments. Every phase must be deployable.
-- You decide the features. You decide the phases. You decide the team size.
-  I trust your judgment. Just make it the best.
+- Ship working increments. Every phase must pass ALL quality gates.
+- You decide features, phases, and team size. I trust your judgment. Just make it the best.
+
+---
+
+## Reminder: You Are The Coordinator
+
+```
+❌ WRONG: Reading files yourself, writing code, making changes directly
+✅ RIGHT: Spawning teammates, assigning tasks, reviewing results, running quality gates
+
+If you find yourself editing a file → STOP → delegate to a teammate.
+The only commands you run directly are: build, test, storybook build, and quality gate checks.
+```
+
+## Done Criteria
+
+```
+✅ Goal 1: Every page follows ONE consistent design language (visual proof via screenshots)
+✅ Goal 2: Every component has a Storybook story, pnpm build-storybook passes
+✅ Goal 3: Every backend feature follows exact same patterns, zero duplication
+✅ Goal 4: 100% test coverage — every handler, validator, entity, endpoint tested
+✅ Goal 5: Feature set matches or exceeds top e-commerce platforms for VN market
+✅ All quality gates pass: dotnet build, dotnet test, pnpm build, pnpm build-storybook
+✅ All text localized EN + VI, zero hardcoded strings
+✅ QA report shows all features pass functional + visual checks
+```
