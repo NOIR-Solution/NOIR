@@ -261,7 +261,7 @@ export const ReviewsPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <div className="flex flex-col gap-4">
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={handleTabChange}>

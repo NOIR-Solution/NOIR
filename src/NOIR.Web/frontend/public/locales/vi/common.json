@@ -1610,6 +1610,8 @@
     "tree": "Cây",
     "tableView": "Xem dạng bảng",
     "treeView": "Xem dạng cây",
+    "grid": "Lưới",
+    "gridView": "Xem dạng lưới",
     "pending": "Đang chờ",
     "edit": "Sửa",
     "customer": "Khách hàng",

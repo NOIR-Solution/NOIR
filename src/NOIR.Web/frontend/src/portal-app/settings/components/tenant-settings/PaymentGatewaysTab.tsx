@@ -115,7 +115,7 @@ export const PaymentGatewaysTab = () => {
   if (loading) {
     return (
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-64" />
         </CardHeader>
@@ -133,7 +133,7 @@ export const PaymentGatewaysTab = () => {
   if (error) {
     return (
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <CardTitle>{t('paymentGateways.title', 'Payment Gateways')}</CardTitle>
           <CardDescription>
             {t('paymentGateways.description', 'Configure payment methods for your store')}
@@ -160,7 +160,7 @@ export const PaymentGatewaysTab = () => {
 
   return (
     <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+      <CardHeader>
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>{t('paymentGateways.title', 'Payment Gateways')}</CardTitle>

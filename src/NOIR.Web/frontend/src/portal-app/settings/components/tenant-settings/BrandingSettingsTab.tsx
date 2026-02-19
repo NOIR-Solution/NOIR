@@ -112,7 +112,7 @@ export const BrandingSettingsTab = ({ canEdit }: BrandingSettingsTabProps) => {
 
   return (
     <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+      <CardHeader>
         <CardTitle>{t('tenantSettings.branding.title')}</CardTitle>
         <CardDescription>{t('tenantSettings.branding.description')}</CardDescription>
       </CardHeader>

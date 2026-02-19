@@ -866,7 +866,7 @@ export const ProductFormPage = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Basic Information */}
               <Card className="shadow-sm hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                <CardHeader>
                   <CardTitle>{t('products.basicInfo')}</CardTitle>
                   <CardDescription>{t('products.basicInfoDescription')}</CardDescription>
                 </CardHeader>
@@ -1060,7 +1060,7 @@ export const ProductFormPage = () => {
 
               {/* Pricing */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                <CardHeader>
                   <CardTitle>{t('products.pricing')}</CardTitle>
                   <CardDescription>{t('products.pricingDescription')}</CardDescription>
                 </CardHeader>
@@ -1093,7 +1093,7 @@ export const ProductFormPage = () => {
 
               {/* Inventory */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                <CardHeader>
                   <CardTitle>{t('products.inventory')}</CardTitle>
                   <CardDescription>{t('products.inventoryDescription')}</CardDescription>
                 </CardHeader>
@@ -1125,7 +1125,7 @@ export const ProductFormPage = () => {
 
               {/* Shipping / Physical Properties */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                <CardHeader>
                   <div className="flex items-center gap-2">
                     <Truck className="h-5 w-5 text-muted-foreground" />
                     <div>
@@ -1292,7 +1292,7 @@ export const ProductFormPage = () => {
 
           {/* Variants Section - works in both create and edit modes */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>{t('products.variantsTitle')}</CardTitle>
@@ -1455,7 +1455,7 @@ export const ProductFormPage = () => {
           {/* Status */}
           {isEditing && product && (
             <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-              <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+              <CardHeader>
                 <CardTitle>{t('products.statusTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
@@ -1471,7 +1471,7 @@ export const ProductFormPage = () => {
 
           {/* Category */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle>{t('products.organization')}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -1527,7 +1527,7 @@ export const ProductFormPage = () => {
 
           {/* SEO */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle>{t('products.seoTitle')}</CardTitle>
               <CardDescription>{t('products.seoDescription')}</CardDescription>
             </CardHeader>
@@ -1585,7 +1585,7 @@ export const ProductFormPage = () => {
 
           {/* Images - works in both create and edit modes */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle>{t('products.imagesTitle')}</CardTitle>
               <CardDescription>{t('products.imagesDescription')}</CardDescription>
             </CardHeader>

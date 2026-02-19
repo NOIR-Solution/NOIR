@@ -15,7 +15,7 @@ import {
   MoreHorizontal,
   Filter,
   LayoutGrid,
-  List,
+  List as ListIcon,
   X,
   Loader2,
   Copy,
@@ -54,6 +54,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  ViewModeToggle,
+  type ViewModeOption,
 } from '@uikit'
 
 import {
@@ -164,6 +166,10 @@ export const ProductsPage = () => {
   const [productToDelete, setProductToDelete] = useState<ProductListItem | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
+  const viewModeOptions: ViewModeOption<'table' | 'grid'>[] = useMemo(() => [
+    { value: 'table', label: t('labels.list', 'List'), icon: ListIcon, ariaLabel: t('labels.tableView', 'Table view') },
+    { value: 'grid', label: t('labels.grid', 'Grid'), icon: LayoutGrid, ariaLabel: t('labels.gridView', 'Grid view') },
+  ], [t])
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   // Transition for bulk operations
@@ -450,28 +456,7 @@ export const ProductsPage = () => {
             </div>
             <div className="flex items-center gap-2">
               {/* View Toggle */}
-              <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
-                <Button
-                  variant={viewMode === 'table' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                  className="cursor-pointer h-8 px-3"
-                  aria-label={t('products.viewModeTable', 'Table view')}
-                  aria-pressed={viewMode === 'table'}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                  className="cursor-pointer h-8 px-3"
-                  aria-label={t('products.viewModeGrid', 'Grid view')}
-                  aria-pressed={viewMode === 'grid'}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                </Button>
-              </div>
+              <ViewModeToggle options={viewModeOptions} value={viewMode} onChange={setViewMode} />
               <Button
                 variant="outline"
                 size="sm"

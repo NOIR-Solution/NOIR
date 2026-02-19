@@ -101,7 +101,7 @@ export const WishlistAnalyticsPage = () => {
 
       {/* Top Wishlisted Products */}
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/20 to-rose-500/10 border border-rose-500/20">
               <ListChecks className="h-4.5 w-4.5 text-rose-500" />

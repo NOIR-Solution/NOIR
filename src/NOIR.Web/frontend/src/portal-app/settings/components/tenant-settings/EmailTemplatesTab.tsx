@@ -73,7 +73,7 @@ export const EmailTemplatesTab = ({ onEdit }: EmailTemplatesTabProps) => {
   return (
     <>
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <CardTitle className="text-lg">{t('emailTemplates.title')}</CardTitle>
           <CardDescription>{t('emailTemplates.description')}</CardDescription>
         </CardHeader>

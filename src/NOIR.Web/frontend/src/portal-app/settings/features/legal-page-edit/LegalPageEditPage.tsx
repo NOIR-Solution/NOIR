@@ -318,7 +318,7 @@ export const LegalPageEditPage = () => {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-4">
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle className="text-base">{t('legalPages.content')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -455,7 +455,7 @@ export const LegalPageEditPage = () => {
         {/* Sidebar */}
         <div className="space-y-4">
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle className="text-base">{t('legalPages.seo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -522,7 +522,7 @@ export const LegalPageEditPage = () => {
           </Card>
 
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle className="text-base">{t('legalPages.info')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">

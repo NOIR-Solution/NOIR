@@ -153,7 +153,7 @@ export const ProductActivityLog = ({
   return (
     <>
       <Card className={cn('shadow-sm hover:shadow-lg transition-all duration-300', className)}>
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg pb-3">
+        <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Activity className="h-4 w-4 text-muted-foreground" />

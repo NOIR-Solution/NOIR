@@ -79,7 +79,7 @@ export const ShipmentLookup = () => {
   return (
     <div className="space-y-6">
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <CardTitle>{t('shipping.lookupShipment', 'Look Up Shipment')}</CardTitle>
           <CardDescription>
             {t('shipping.lookupDescription', 'Search by tracking number or order ID to view shipment details.')}

@@ -43,7 +43,7 @@ export const LegalPagesTab = ({ onEdit }: LegalPagesTabProps) => {
 
   return (
     <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+      <CardHeader>
         <CardTitle className="text-lg">{t('legalPages.title')}</CardTitle>
         <CardDescription>{t('legalPages.description')}</CardDescription>
       </CardHeader>

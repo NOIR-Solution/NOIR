@@ -219,7 +219,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
   return (
     <>
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-md bg-blue-500/10 flex items-center justify-center">

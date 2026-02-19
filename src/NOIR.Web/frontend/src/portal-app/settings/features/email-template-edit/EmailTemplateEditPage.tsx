@@ -443,7 +443,7 @@ export const EmailTemplateEditPage = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Subject */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="pb-3 backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle className="text-base">{t('emailTemplates.subject')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -504,7 +504,7 @@ export const EmailTemplateEditPage = () => {
 
           {/* HTML Body Editor */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="pb-3 backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">{t('emailTemplates.htmlBody')}</CardTitle>
                 <DropdownMenu>
@@ -646,7 +646,7 @@ export const EmailTemplateEditPage = () => {
           {/* Plain Text Body (Collapsible) */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader
-              className="pb-3 cursor-pointer backdrop-blur-sm bg-background/95 rounded-t-lg"
+              className="cursor-pointer"
               onClick={() => setShowPlainText(!showPlainText)}
             >
               <div className="flex items-center justify-between">
@@ -685,7 +685,7 @@ export const EmailTemplateEditPage = () => {
         <div className="space-y-6">
           {/* Template Info */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle className="text-base">{t('emailTemplates.templateInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
@@ -736,7 +736,7 @@ export const EmailTemplateEditPage = () => {
 
           {/* Available Variables */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle className="text-base">{t('emailTemplates.variables')}</CardTitle>
               <CardDescription>
                 {t('emailTemplates.variablesHint', 'Drag to editor or click to copy. Type {{ in editor for autocomplete.')}
@@ -776,7 +776,7 @@ export const EmailTemplateEditPage = () => {
 
           {/* Description */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+            <CardHeader>
               <CardTitle className="text-base">{t('labels.description')}</CardTitle>
             </CardHeader>
             <CardContent>

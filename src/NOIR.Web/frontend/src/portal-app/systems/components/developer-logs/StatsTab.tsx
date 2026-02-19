@@ -102,7 +102,7 @@ export const StatsTab = ({ stats, onRefresh }: StatsTabProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <Card className="lg:col-span-2 shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Database className="h-5 w-5" />
             {t('developerLogs.bufferOverview')}
@@ -114,7 +114,7 @@ export const StatsTab = ({ stats, onRefresh }: StatsTabProps) => {
       </Card>
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
             {t('developerLogs.timeRange')}

@@ -381,7 +381,7 @@ export const BlogPostEditPage = () => {
             {/* Main Content Area */}
             <div className="lg:col-span-2 space-y-6">
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                <CardHeader>
                   <CardTitle>{t('blog.content', 'Content')}</CardTitle>
                   <CardDescription>{t('blog.contentDescription', 'Write your blog post content')}</CardDescription>
                 </CardHeader>
@@ -554,7 +554,7 @@ export const BlogPostEditPage = () => {
             <div className="space-y-6">
               {/* Publishing Options */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     {t('blog.publishing')}
@@ -647,7 +647,7 @@ export const BlogPostEditPage = () => {
 
               {/* Organization */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                <CardHeader>
                   <CardTitle>{t('blog.organization')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -722,7 +722,7 @@ export const BlogPostEditPage = () => {
 
               {/* Featured Image */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                <CardHeader>
                   <CardTitle>{t('blog.featuredImage')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -810,7 +810,7 @@ export const BlogPostEditPage = () => {
 
               {/* SEO */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                <CardHeader>
                   <CardTitle>{t('blog.seo')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">

@@ -157,7 +157,7 @@ export const ProductAttributesSection = ({
   if (loading) {
     return (
       <Card className="shadow-sm">
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <div className="flex items-center gap-3">
             <Skeleton className="h-6 w-6 rounded" />
             <Skeleton className="h-6 w-40" />
@@ -181,7 +181,7 @@ export const ProductAttributesSection = ({
   if (error) {
     return (
       <Card className="shadow-sm border-destructive/30">
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <AlertCircle className="h-5 w-5" />
             {t('products.attributes.loadError')}
@@ -209,7 +209,7 @@ export const ProductAttributesSection = ({
   if (!formSchema || !formSchema.fields || formSchema.fields.length === 0) {
     return (
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
               <Package className="h-4 w-4 text-muted-foreground" />
@@ -237,7 +237,7 @@ export const ProductAttributesSection = ({
   return (
     <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm">

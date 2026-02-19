@@ -1,7 +1,6 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, FolderTree, Plus, Pencil, Trash2, List, GitBranch, MoreHorizontal } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import {
   Badge,
   Button,
@@ -24,6 +23,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  ViewModeToggle,
+  type ViewModeOption,
   type TreeCategory,
   type ReorderItem,
 } from '@uikit'
@@ -55,6 +56,10 @@ export const BlogCategoriesPage = () => {
   const [categoryToEdit, setCategoryToEdit] = useState<PostCategoryListItem | null>(null)
   const [categoryToDelete, setCategoryToDelete] = useState<PostCategoryListItem | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
+  const viewModeOptions: ViewModeOption<'table' | 'tree'>[] = useMemo(() => [
+    { value: 'table', label: t('labels.list', 'List'), icon: List, ariaLabel: t('labels.tableView', 'Table view') },
+    { value: 'tree', label: t('labels.tree', 'Tree'), icon: GitBranch, ariaLabel: t('labels.treeView', 'Tree view') },
+  ], [t])
 
   const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
   const { data = [], isLoading: loading, error: queryError, refetch: refresh } = useBlogCategoriesQuery(queryParams)
@@ -118,7 +123,7 @@ export const BlogCategoriesPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="pb-4 backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <CardHeader>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <CardTitle>{t('blogCategories.allCategories', 'All Categories')}</CardTitle>
@@ -128,36 +133,7 @@ export const BlogCategoriesPage = () => {
             </div>
             <div className="flex items-center gap-3">
               {/* View Toggle */}
-              <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
-                <Button
-                  variant={viewMode === 'table' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                  className={cn(
-                    'cursor-pointer h-8 px-3 transition-all duration-200',
-                    viewMode === 'table'
-                      ? 'shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground',
-                  )}
-                  aria-label={t('labels.tableView', 'Table view')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'tree' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('tree')}
-                  className={cn(
-                    'cursor-pointer h-8 px-3 transition-all duration-200',
-                    viewMode === 'tree'
-                      ? 'shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground',
-                  )}
-                  aria-label={t('labels.treeView', 'Tree view')}
-                >
-                  <GitBranch className="h-4 w-4" />
-                </Button>
-              </div>
+              <ViewModeToggle options={viewModeOptions} value={viewMode} onChange={setViewMode} />
 
               {/* Search */}
               <div className="relative">

@@ -102,7 +102,7 @@ export const ErrorClustersTab = ({ clusters, onRefresh }: ErrorClustersTabProps)
   const { t } = useTranslation('common')
   return (
     <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-      <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+      <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-red-500" />
           {t('developerLogs.errorPatternAnalysis')}
