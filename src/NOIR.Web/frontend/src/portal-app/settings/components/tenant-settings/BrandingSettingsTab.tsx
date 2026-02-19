@@ -138,7 +138,7 @@ export const BrandingSettingsTab = ({ canEdit }: BrandingSettingsTabProps) => {
               value={logoUrl}
               onChange={setLogoUrl}
               folder="branding"
-              placeholder="Click to upload"
+              placeholder={t('tenantSettings.branding.clickToUpload')}
               aspectClass="aspect-video"
               disabled={!canEdit}
             />
@@ -163,7 +163,7 @@ export const BrandingSettingsTab = ({ canEdit }: BrandingSettingsTabProps) => {
               value={faviconUrl}
               onChange={setFaviconUrl}
               folder="branding"
-              placeholder="Upload"
+              placeholder={t('tenantSettings.branding.upload')}
               aspectClass="aspect-square max-w-[120px]"
               accept="image/jpeg,image/png,image/gif,image/webp,image/x-icon,image/svg+xml"
               disabled={!canEdit}

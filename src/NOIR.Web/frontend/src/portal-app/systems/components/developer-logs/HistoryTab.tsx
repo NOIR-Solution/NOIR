@@ -166,7 +166,7 @@ const HistoryFileViewer = ({
       <div className="flex items-center gap-3 pb-4 border-b flex-shrink-0">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-1">
           <ChevronLeft className="h-4 w-4" />
-          Back
+          {t('developerLogs.back')}
         </Button>
         <div className="flex-1">
           <h2 className="font-semibold">noir-{date}.json</h2>
@@ -186,12 +186,12 @@ const HistoryFileViewer = ({
           {sortOrder === 'newest' ? (
             <>
               <ArrowDown className="h-4 w-4" />
-              Newest First
+              {t('developerLogs.newestFirst')}
             </>
           ) : (
             <>
               <ArrowUp className="h-4 w-4" />
-              Oldest First
+              {t('developerLogs.oldestFirst')}
             </>
           )}
         </Button>
@@ -202,7 +202,7 @@ const HistoryFileViewer = ({
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search logs..."
+            placeholder={t('developerLogs.searchLogsPlaceholder')}
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value)
@@ -237,16 +237,16 @@ const HistoryFileViewer = ({
             className={cn(errorsOnly && 'data-[state=checked]:bg-destructive')}
           />
           <Label htmlFor="history-errors-only" className="text-sm cursor-pointer whitespace-nowrap">
-            Errors only
+            {t('developerLogs.errorsOnly')}
           </Label>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2 cursor-pointer" disabled={errorsOnly} aria-label={t('developerLogs.filterByLevel', 'Filter by log level')}>
-              <span className="text-muted-foreground">Levels:</span>
+              <span className="text-muted-foreground">{t('developerLogs.filterColon')}</span>
               {selectedLevels.size === 0 ? (
-                <span>All</span>
+                <span>{t('developerLogs.allLevels')}</span>
               ) : (
                 <span className="flex items-center gap-1">
                   {Array.from(selectedLevels).slice(0, 2).map(level => {
@@ -305,7 +305,7 @@ const HistoryFileViewer = ({
                     setPage(1)
                   }}
                 >
-                  Clear filters
+                  {t('developerLogs.clearFilters')}
                 </Button>
               </>
             )}
@@ -320,7 +320,7 @@ const HistoryFileViewer = ({
         onToggleExpand={toggleEntryExpanded}
         onViewDetail={setDetailEntry}
         isLoading={isLoading}
-        emptyMessage="No log entries found"
+        emptyMessage={t('developerLogs.noLogEntriesFound')}
         isFullscreen={isFullscreen}
         onFullscreenChange={setIsFullscreen}
         fullscreenTitle={`noir-${date}.json`}
@@ -352,6 +352,7 @@ const HistoryFileViewer = ({
 
 // Main History Tab Content Component
 export const HistoryTab = () => {
+  const { t } = useTranslation('common')
   const [availableDates, setAvailableDates] = useState<string[]>([])
   const [isLoadingDates, setIsLoadingDates] = useState(true)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -402,7 +403,7 @@ export const HistoryTab = () => {
       {/* Filter Bar */}
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="secondary">
-          {filteredDates.length} of {availableDates.length} files
+          {t('developerLogs.filesCount', { filtered: filteredDates.length, total: availableDates.length })}
         </Badge>
 
         <div className="flex-1" />
@@ -410,7 +411,7 @@ export const HistoryTab = () => {
         <DateRangePicker
           value={dateRange}
           onChange={setDateRange}
-          placeholder="Filter by date range"
+          placeholder={t('developerLogs.filterByDateRange')}
           className="h-9 w-[220px]"
           numberOfMonths={2}
         />
@@ -427,9 +428,9 @@ export const HistoryTab = () => {
         <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
           <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
             <History className="h-12 w-12 mb-4 opacity-50" />
-            <p>No historical log files found</p>
+            <p>{t('developerLogs.noHistoricalFiles')}</p>
             <p className="text-xs mt-1">
-              {dateRange?.from ? 'Try adjusting the date range' : 'Log files are created daily'}
+              {dateRange?.from ? t('developerLogs.adjustDateRange') : t('developerLogs.logFilesCreatedDaily')}
             </p>
           </CardContent>
         </Card>

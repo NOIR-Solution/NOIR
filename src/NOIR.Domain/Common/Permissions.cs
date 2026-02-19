@@ -99,6 +99,13 @@ public static class Permissions
     public const string ReviewsWrite = "reviews:write";
     public const string ReviewsManage = "reviews:manage";
 
+    // Customer Groups
+    public const string CustomerGroupsRead = "customer-groups:read";
+    public const string CustomerGroupsCreate = "customer-groups:create";
+    public const string CustomerGroupsUpdate = "customer-groups:update";
+    public const string CustomerGroupsDelete = "customer-groups:delete";
+    public const string CustomerGroupsManageMembers = "customer-groups:manage-members";
+
     // Customers
     public const string CustomersRead = "customers:read";
     public const string CustomersCreate = "customers:create";
@@ -199,6 +206,9 @@ public static class Permissions
         public static readonly IReadOnlyList<string> Reviews =
             [ReviewsRead, ReviewsWrite, ReviewsManage];
 
+        public static readonly IReadOnlyList<string> CustomerGroups =
+            [CustomerGroupsRead, CustomerGroupsCreate, CustomerGroupsUpdate, CustomerGroupsDelete, CustomerGroupsManageMembers];
+
         public static readonly IReadOnlyList<string> Customers =
             [CustomersRead, CustomersCreate, CustomersUpdate, CustomersDelete, CustomersManage];
 
@@ -264,6 +274,8 @@ public static class Permissions
         AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
         // Reviews
         ReviewsRead, ReviewsWrite, ReviewsManage,
+        // Customer Groups
+        CustomerGroupsRead, CustomerGroupsCreate, CustomerGroupsUpdate, CustomerGroupsDelete, CustomerGroupsManageMembers,
         // Customers
         CustomersRead, CustomersCreate, CustomersUpdate, CustomersDelete, CustomersManage,
         // Orders
@@ -336,6 +348,8 @@ public static class Permissions
         AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
         // Reviews within tenant
         ReviewsRead, ReviewsWrite, ReviewsManage,
+        // Customer Groups within tenant
+        CustomerGroupsRead, CustomerGroupsCreate, CustomerGroupsUpdate, CustomerGroupsDelete, CustomerGroupsManageMembers,
         // Customers within tenant
         CustomersRead, CustomersCreate, CustomersUpdate, CustomersDelete, CustomersManage,
         // Orders within tenant
@@ -453,6 +467,12 @@ public static class Permissions
             ReviewsRead,
             ReviewsWrite,
             ReviewsManage,
+            // Customer Groups within tenant
+            CustomerGroupsRead,
+            CustomerGroupsCreate,
+            CustomerGroupsUpdate,
+            CustomerGroupsDelete,
+            CustomerGroupsManageMembers,
             // Customers within tenant
             CustomersRead,
             CustomersCreate,

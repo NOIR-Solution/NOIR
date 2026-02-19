@@ -68,7 +68,7 @@ export const PlatformEmailTemplatesTab = ({ onEdit }: PlatformEmailTemplatesTabP
                       </Badge>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => onEdit(template.id)}>
+                  <Button variant="ghost" size="icon" onClick={() => onEdit(template.id)} className="cursor-pointer" aria-label={`${t('buttons.edit')} ${formatDisplayName(template.name)}`}>
                     <Pencil className="h-4 w-4" />
                   </Button>
                 </div>

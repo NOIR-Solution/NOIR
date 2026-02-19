@@ -174,3 +174,4 @@ public sealed class OrdersByCustomerIdCountSpec : Specification<Order>
             .TagWith("OrdersByCustomerIdCount");
     }
 }
+

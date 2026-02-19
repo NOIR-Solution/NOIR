@@ -9,6 +9,7 @@ public sealed record AddProductVariantCommand(
     decimal Price,
     string? Sku,
     decimal? CompareAtPrice,
+    decimal? CostPrice,
     int StockQuantity,
     Dictionary<string, string>? Options,
     int SortOrder) : IAuditableCommand<ProductVariantDto>

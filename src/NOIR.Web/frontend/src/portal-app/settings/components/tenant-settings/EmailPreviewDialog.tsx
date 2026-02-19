@@ -31,10 +31,10 @@ export const EmailPreviewDialog = ({ open, onOpenChange, preview, loading }: Ema
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5 text-blue-600" />
-            Email Preview
+            {t('emailTemplates.emailPreviewTitle')}
           </DialogTitle>
           <DialogDescription>
-            Preview of the email template with sample data applied.
+            {t('emailTemplates.emailPreviewDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -49,7 +49,7 @@ export const EmailPreviewDialog = ({ open, onOpenChange, preview, loading }: Ema
             {/* Subject Line */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Badge variant="outline">Subject</Badge>
+                <Badge variant="outline">{t('emailTemplates.subjectBadge')}</Badge>
               </div>
               <p className="text-sm font-medium text-foreground bg-muted/50 rounded-lg p-3">
                 {preview.subject}
@@ -59,12 +59,12 @@ export const EmailPreviewDialog = ({ open, onOpenChange, preview, loading }: Ema
             {/* HTML Preview */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Badge variant="outline">HTML Body</Badge>
+                <Badge variant="outline">{t('emailTemplates.htmlBodyBadge')}</Badge>
               </div>
               <div className="border rounded-lg overflow-hidden bg-white">
                 <iframe
                   srcDoc={preview.htmlBody}
-                  title="Email Preview"
+                  title={t('emailTemplates.emailPreviewIframe')}
                   className="w-full h-[400px] border-0"
                   sandbox="allow-same-origin"
                 />
@@ -77,7 +77,7 @@ export const EmailPreviewDialog = ({ open, onOpenChange, preview, loading }: Ema
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">
                     <FileText className="h-3 w-3 mr-1" />
-                    Plain Text
+                    {t('emailTemplates.plainTextBadge')}
                   </Badge>
                 </div>
                 <pre className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 whitespace-pre-wrap font-mono">

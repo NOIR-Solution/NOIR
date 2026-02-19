@@ -16,12 +16,32 @@ export default defineConfig({
     // Output to wwwroot folder for C# to serve
     outDir: '../wwwroot',
     emptyOutDir: true,
+    chunkSizeWarningLimit: 300,
     rollupOptions: {
       output: {
         // Use hashed filenames for cache busting
         entryFileNames: 'assets/[name].[hash].js',
         chunkFileNames: 'assets/[name].[hash].js',
         assetFileNames: 'assets/[name].[hash].[ext]',
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('tinymce')) {
+              return 'vendor-tinymce'
+            }
+            if (id.includes('recharts') || id.includes('d3-')) {
+              return 'vendor-recharts'
+            }
+            if (id.includes('framer-motion')) {
+              return 'vendor-framer'
+            }
+            if (id.includes('@radix-ui')) {
+              return 'vendor-radix'
+            }
+            if (id.includes('react-dom') || (id.includes('/react/') && !id.includes('react-'))) {
+              return 'vendor-react'
+            }
+          }
+        },
       },
     },
   },

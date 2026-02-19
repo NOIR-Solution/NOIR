@@ -144,8 +144,9 @@ public class ProductFilterIndexReindexJob : IScopedService
         // Load existing indexes for this batch
         var productIds = products.Select(p => p.Id).ToList();
         var existingIndexes = await _dbContext.ProductFilterIndexes
+            .IgnoreQueryFilters()
             .TagWith("ProductFilterIndexReindexJob.LoadExistingIndexes")
-            .Where(fi => productIds.Contains(fi.ProductId))
+            .Where(fi => productIds.Contains(fi.ProductId) && !fi.IsDeleted)
             .ToDictionaryAsync(fi => fi.ProductId, ct);
 
         // Load categories and brands in bulk
@@ -247,7 +248,8 @@ public class ProductFilterIndexReindexJob : IScopedService
         var attributesJson = _attributeJsonBuilder.BuildAttributesJson(assignments);
 
         var filterIndex = await _dbContext.ProductFilterIndexes
-            .FirstOrDefaultAsync(fi => fi.ProductId == product.Id, ct);
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(fi => fi.ProductId == product.Id && !fi.IsDeleted, ct);
 
         if (filterIndex != null)
         {

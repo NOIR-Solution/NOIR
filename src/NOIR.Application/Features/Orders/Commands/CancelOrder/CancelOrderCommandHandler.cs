@@ -26,7 +26,7 @@ public class CancelOrderCommandHandler
         if (order is null)
         {
             return Result.Failure<OrderDto>(
-                Error.NotFound($"Order with ID '{command.OrderId}' not found.", "NOIR-ORDER-002"));
+                Error.NotFound($"Order with ID '{command.OrderId}' not found.", ErrorCodes.Order.NotFound));
         }
 
         try
@@ -36,7 +36,7 @@ public class CancelOrderCommandHandler
         catch (InvalidOperationException ex)
         {
             return Result.Failure<OrderDto>(
-                Error.Validation("Status", ex.Message, "NOIR-ORDER-005"));
+                Error.Validation("Status", ex.Message, ErrorCodes.Order.InvalidCancelTransition));
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

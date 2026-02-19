@@ -150,10 +150,11 @@ public class CompleteCheckoutCommandHandler
             // Add order items from cart
             foreach (var cartItem in cart.Items)
             {
-                // TODO: [TECH-DEBT] SKU and optionsSnapshot should be populated from CartItem
-            // CartItem should store SKU during AddToCart operation for inventory tracking
-            // See: Phase 8 Sprint 4 - Enhance CartItem with SKU and product options
-            order.AddItem(
+                // SKU and optionsSnapshot are passed as null because CartItem does not yet store them.
+                // To enable SKU-level inventory tracking at checkout, CartItem would need to capture
+                // the SKU and selected option values during the AddToCart operation, then forward
+                // them here. Until then, inventory is tracked at the ProductVariant level only.
+                order.AddItem(
                     productId: cartItem.ProductId,
                     productVariantId: cartItem.ProductVariantId,
                     productName: cartItem.ProductName,

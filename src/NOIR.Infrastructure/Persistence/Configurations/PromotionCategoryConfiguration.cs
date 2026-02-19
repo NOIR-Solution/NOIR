@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for PromotionCategory junction entity.
 /// </summary>
-public class PromotionCategoryConfiguration : IEntityTypeConfiguration<Domain.Entities.Promotion.PromotionCategory>
+public class PromotionCategoryConfiguration : TenantEntityConfiguration<Domain.Entities.Promotion.PromotionCategory>
 {
-    public void Configure(EntityTypeBuilder<Domain.Entities.Promotion.PromotionCategory> builder)
+    public override void Configure(EntityTypeBuilder<Domain.Entities.Promotion.PromotionCategory> builder)
     {
-        builder.ToTable("PromotionCategories");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("PromotionCategories");
 
         // Relationship with Promotion
         builder.HasOne(e => e.Promotion)
@@ -21,13 +20,10 @@ public class PromotionCategoryConfiguration : IEntityTypeConfiguration<Domain.En
         // Index for lookups
         builder.HasIndex(e => new { e.PromotionId, e.CategoryId })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_PromotionCategories_PromotionId_CategoryId");
 
         builder.HasIndex(e => e.CategoryId)
             .HasDatabaseName("IX_PromotionCategories_CategoryId");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
     }
 }

@@ -4,18 +4,18 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// EF Core configuration for ProductFilterIndex entity.
 /// Optimized for high-performance filtering queries.
 /// </summary>
-public class ProductFilterIndexConfiguration : IEntityTypeConfiguration<ProductFilterIndex>
+public class ProductFilterIndexConfiguration : TenantEntityConfiguration<ProductFilterIndex>
 {
-    public void Configure(EntityTypeBuilder<ProductFilterIndex> builder)
+    public override void Configure(EntityTypeBuilder<ProductFilterIndex> builder)
     {
-        builder.ToTable("ProductFilterIndexes");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("ProductFilterIndexes");
 
         // 1:1 relationship with Product
         builder.HasIndex(e => new { e.TenantId, e.ProductId })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_ProductFilterIndexes_TenantId_ProductId");
 
         builder.HasOne(e => e.Product)
@@ -160,15 +160,5 @@ public class ProductFilterIndexConfiguration : IEntityTypeConfiguration<ProductF
 
         #endregion
 
-        #region Tenant
-
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
-        builder.HasIndex(e => e.TenantId);
-
-        #endregion
-
-        // Note: No CreatedBy/ModifiedBy - this is an auto-synced index table
-        // that follows the product's lifecycle via domain events.
     }
 }

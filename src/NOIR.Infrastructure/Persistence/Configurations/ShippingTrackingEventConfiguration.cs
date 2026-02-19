@@ -1,14 +1,12 @@
 namespace NOIR.Infrastructure.Persistence.Configurations;
 
-public class ShippingTrackingEventConfiguration : IEntityTypeConfiguration<ShippingTrackingEvent>
+public class ShippingTrackingEventConfiguration : TenantEntityConfiguration<ShippingTrackingEvent>
 {
-    public void Configure(EntityTypeBuilder<ShippingTrackingEvent> builder)
+    public override void Configure(EntityTypeBuilder<ShippingTrackingEvent> builder)
     {
-        builder.ToTable("ShippingTrackingEvents");
+        base.Configure(builder);
 
-        // Primary key
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("ShippingTrackingEvents");
 
         // Shipping order reference
         builder.Property(e => e.ShippingOrderId).IsRequired();
@@ -41,13 +39,9 @@ public class ShippingTrackingEventConfiguration : IEntityTypeConfiguration<Shipp
         builder.Property(e => e.RawPayload)
             .HasColumnType("nvarchar(max)");
 
-        // Tenant
-        builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);
-
         // Performance index: events by shipping order and date
         builder.HasIndex(e => new { e.ShippingOrderId, e.EventDate })
             .IsDescending(false, true)
             .HasDatabaseName("IX_ShippingTrackingEvents_Order_Date");
-
     }
 }

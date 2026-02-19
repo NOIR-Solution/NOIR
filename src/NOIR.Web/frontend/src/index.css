@@ -6,6 +6,10 @@
 @import "./styles/view-transitions.css";
 @import "./styles/uikit.css";
 
+/* Typography: Inter (sans) + Geist Mono (mono) */
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/geist-mono";
+
 /* Custom dark variant for targeting dark mode elements */
 @custom-variant dark (&:is(.dark *));
 
@@ -15,6 +19,10 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  /* Typography */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  /* Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -30,6 +38,9 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -45,79 +56,89 @@
 }
 
 /*
- * Color Scheme: Blue-Teal (Universally Accessible)
- * - Blue: Trust, professionalism, stability
- * - Teal undertones: Modern, accessible to colorblind users
- * - Avoids red-green combinations (problematic for 8% of men)
- * - High contrast ratios for WCAG compliance
+ * Color Scheme: Deep Indigo (OKLCH)
+ * - Indigo primary: Trust, professionalism, depth
+ * - Warm-tinted neutrals: Approachable, modern feel
+ * - Semantic colors: Success (green), Warning (amber), Destructive (red), Info (cyan)
+ * - WCAG AA compliant contrast ratios throughout
  */
 
 /* Light theme variables */
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  /* Blue primary - matches sidebar-primary for consistency */
-  --primary: oklch(0.50 0.20 250);
+  /* Backgrounds & surfaces */
+  --background: oklch(0.985 0.002 250);
+  --foreground: oklch(0.205 0.015 260);
+  --card: oklch(1.0 0 0);
+  --card-foreground: oklch(0.205 0.015 260);
+  --popover: oklch(1.0 0 0);
+  --popover-foreground: oklch(0.205 0.015 260);
+  /* Deep indigo primary */
+  --primary: oklch(0.55 0.18 265);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
+  --secondary: oklch(0.97 0.002 250);
+  --secondary-foreground: oklch(0.205 0.015 260);
+  --muted: oklch(0.97 0.002 250);
   /* Darkened for WCAG AA compliance (4.5:1 contrast on white background) */
-  --muted-foreground: oklch(0.48 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.50 0.20 250);
-  /* Sidebar - Light theme uses deeper blue for consistency with Landing/Login */
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  /* Deeper blue: oklch(0.50 0.20 250) - matches blue-600/700 level */
-  --sidebar-primary: oklch(0.50 0.20 250);
+  --muted-foreground: oklch(0.48 0.01 260);
+  --accent: oklch(0.97 0.002 250);
+  --accent-foreground: oklch(0.205 0.015 260);
+  /* Semantic colors */
+  --destructive: oklch(0.55 0.22 25);
+  --success: oklch(0.65 0.18 155);
+  --warning: oklch(0.75 0.15 75);
+  --info: oklch(0.70 0.12 220);
+  /* Borders & inputs */
+  --border: oklch(0.922 0.004 250);
+  --input: oklch(0.922 0.004 250);
+  --ring: oklch(0.55 0.18 265);
+  /* Sidebar - uses deeper indigo for consistency */
+  --sidebar: oklch(0.985 0.002 250);
+  --sidebar-foreground: oklch(0.205 0.015 260);
+  --sidebar-primary: oklch(0.55 0.18 265);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.50 0.20 250);
+  --sidebar-accent: oklch(0.97 0.002 250);
+  --sidebar-accent-foreground: oklch(0.205 0.015 260);
+  --sidebar-border: oklch(0.922 0.004 250);
+  --sidebar-ring: oklch(0.55 0.18 265);
 }
 
-/* Dark theme variables - Blue-teal primary for accessibility */
+/* Dark theme variables */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  /* Blue primary - lighter blue for dark backgrounds */
-  --primary: oklch(0.60 0.20 250);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  /* Deep blue-black background */
+  --background: oklch(0.145 0.014 260);
+  --foreground: oklch(0.93 0.005 260);
+  --card: oklch(0.195 0.014 260);
+  --card-foreground: oklch(0.93 0.005 260);
+  --popover: oklch(0.195 0.014 260);
+  --popover-foreground: oklch(0.93 0.005 260);
+  /* Lighter indigo for dark backgrounds */
+  --primary: oklch(0.65 0.18 265);
+  --primary-foreground: oklch(0.145 0.014 260);
+  --secondary: oklch(0.25 0.014 260);
+  --secondary-foreground: oklch(0.93 0.005 260);
+  --muted: oklch(0.25 0.014 260);
+  --muted-foreground: oklch(0.65 0.005 260);
+  --accent: oklch(0.25 0.014 260);
+  --accent-foreground: oklch(0.93 0.005 260);
+  /* Semantic colors (lighter for dark mode) */
+  --destructive: oklch(0.65 0.22 25);
+  --success: oklch(0.72 0.18 155);
+  --warning: oklch(0.80 0.15 75);
+  --info: oklch(0.75 0.12 220);
+  /* Borders & inputs */
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.60 0.20 250);
-  /* Sidebar - Deeper blue primary (accessible, professional) */
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  /* Deeper blue: oklch(0.60 0.20 250) - matches blue-600 level for dark mode */
-  --sidebar-primary: oklch(0.60 0.20 250);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.65 0.18 265);
+  /* Sidebar */
+  --sidebar: oklch(0.195 0.014 260);
+  --sidebar-foreground: oklch(0.93 0.005 260);
+  --sidebar-primary: oklch(0.65 0.18 265);
+  --sidebar-primary-foreground: oklch(0.145 0.014 260);
+  --sidebar-accent: oklch(0.25 0.014 260);
+  --sidebar-accent-foreground: oklch(0.93 0.005 260);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.60 0.20 250);
+  --sidebar-ring: oklch(0.65 0.18 265);
 }
 
 /*
@@ -133,8 +154,8 @@
   --card-foreground: oklch(0 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0 0 0);
-  /* High contrast blue - darker for maximum contrast */
-  --primary: oklch(0.35 0.25 250);
+  /* High contrast indigo - darker for maximum contrast */
+  --primary: oklch(0.35 0.25 265);
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0 0);
   --secondary-foreground: oklch(0 0 0);
@@ -142,14 +163,17 @@
   --muted-foreground: oklch(0.25 0 0);
   --accent: oklch(0.95 0 0);
   --accent-foreground: oklch(0 0 0);
-  --destructive: oklch(0.45 0.3 27);
+  --destructive: oklch(0.45 0.3 25);
+  --success: oklch(0.45 0.22 155);
+  --warning: oklch(0.55 0.2 75);
+  --info: oklch(0.50 0.18 220);
   --border: oklch(0 0 0);
   --input: oklch(0 0 0);
   --ring: oklch(0 0 0);
   /* Sidebar - high contrast */
   --sidebar: oklch(0.98 0 0);
   --sidebar-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0.35 0.25 250);
+  --sidebar-primary: oklch(0.35 0.25 265);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.95 0 0);
   --sidebar-accent-foreground: oklch(0 0 0);
@@ -177,9 +201,61 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    font-size: 14px; /* Base font size: 0.875rem of browser default 16px */
+  }
   body {
     @apply bg-background text-foreground;
+    line-height: 1.5; /* Minimum 1.5 for Vietnamese diacritics */
   }
+}
+
+/*
+ * Typography Scale
+ * --text-xs:   0.75rem  (12px) - labels, captions
+ * --text-sm:   0.8125rem (13px) - table cells, secondary
+ * --text-base: 0.875rem (14px) - body text (= 1rem at 14px root)
+ * --text-lg:   1rem     (16px) - section headers
+ * --text-xl:   1.25rem  (20px) - page titles
+ * --text-2xl:  1.5rem   (24px) - KPI values
+ * --text-3xl:  2rem     (32px) - hero numbers
+ *
+ * Note: With 14px root, Tailwind's default rem classes map naturally:
+ * text-xs=12px, text-sm≈13px, text-base=14px, text-lg=16px, etc.
+ */
+
+/* Tabular numbers for aligned data columns */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Content Density System
+ * Three modes: compact (power users), comfortable (default), spacious (accessibility)
+ * Applied via data-density attribute on <html> element
+ */
+:root, [data-density="comfortable"] {
+  --density-row-height: 44px;
+  --density-cell-padding-y: 8px;
+  --density-cell-padding-x: 12px;
+  --density-font-size: 0.875rem;
+  --density-header-height: 48px;
+}
+
+[data-density="compact"] {
+  --density-row-height: 36px;
+  --density-cell-padding-y: 4px;
+  --density-cell-padding-x: 8px;
+  --density-font-size: 0.8125rem;
+  --density-header-height: 40px;
+}
+
+[data-density="spacious"] {
+  --density-row-height: 52px;
+  --density-cell-padding-y: 12px;
+  --density-cell-padding-x: 16px;
+  --density-font-size: 0.875rem;
+  --density-header-height: 56px;
 }
 
 /* Custom animations for landing and login pages */
@@ -311,7 +387,7 @@
 /* Highlight matched text in autocomplete */
 .tox .tox-autocompleter .tox-collection__item-label mark,
 .tox .tox-autocompleter .tox-collection__item mark {
-  background-color: hsl(var(--primary) / 0.2);
+  background-color: color-mix(in oklch, var(--primary) 20%, transparent);
   color: inherit;
   border-radius: 2px;
   padding: 0 2px;

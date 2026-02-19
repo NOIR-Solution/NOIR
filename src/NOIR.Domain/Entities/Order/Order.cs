@@ -170,6 +170,7 @@ public class Order : TenantAggregateRoot<Guid>
 
     // Navigation
     public virtual ICollection<OrderItem> Items { get; private set; } = new List<OrderItem>();
+    public virtual ICollection<OrderNote> Notes { get; private set; } = new List<OrderNote>();
     public virtual ICollection<Payment.PaymentTransaction> Payments { get; private set; } = new List<Payment.PaymentTransaction>();
 
     /// <summary>

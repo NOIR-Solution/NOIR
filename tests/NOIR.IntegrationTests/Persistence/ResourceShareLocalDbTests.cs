@@ -111,9 +111,8 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
             context.ResourceShares.Add(share);
             await context.SaveChangesAsync();
 
-            // Act - Soft delete
-            share.IsDeleted = true;
-            share.DeletedAt = DateTimeOffset.UtcNow;
+            // Act - Soft delete via Remove (AuditableEntityInterceptor converts to soft-delete)
+            context.ResourceShares.Remove(share);
             await context.SaveChangesAsync();
 
             // Clear change tracker to get fresh query results

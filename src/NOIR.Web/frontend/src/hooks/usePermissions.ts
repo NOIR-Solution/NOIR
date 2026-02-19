@@ -212,6 +212,12 @@ export const Permissions = {
   CustomersUpdate: 'customers:update',
   CustomersDelete: 'customers:delete',
   CustomersManage: 'customers:manage',
+  // Customer Groups
+  CustomerGroupsRead: 'customer-groups:read',
+  CustomerGroupsCreate: 'customer-groups:create',
+  CustomerGroupsUpdate: 'customer-groups:update',
+  CustomerGroupsDelete: 'customer-groups:delete',
+  CustomerGroupsManageMembers: 'customer-groups:manage-members',
   // Promotions
   PromotionsRead: 'promotions:read',
   PromotionsWrite: 'promotions:write',

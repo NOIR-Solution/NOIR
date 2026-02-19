@@ -23,6 +23,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -177,11 +178,25 @@ export const BlogPostsPage = () => {
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
-                      {t('labels.loading')}
-                    </TableCell>
-                  </TableRow>
+                  // Skeleton loading
+                  [...Array(5)].map((_, i) => (
+                    <TableRow key={i} className="animate-pulse">
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Skeleton className="h-12 w-12 rounded-lg flex-shrink-0" />
+                          <div className="space-y-1.5">
+                            <Skeleton className="h-4 w-40" />
+                            <Skeleton className="h-3 w-24" />
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
+                    </TableRow>
+                  ))
                 ) : data?.items.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="p-0">

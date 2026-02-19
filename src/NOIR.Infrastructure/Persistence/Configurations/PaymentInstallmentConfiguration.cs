@@ -1,14 +1,12 @@
 namespace NOIR.Infrastructure.Persistence.Configurations;
 
-public class PaymentInstallmentConfiguration : IEntityTypeConfiguration<PaymentInstallment>
+public class PaymentInstallmentConfiguration : TenantEntityConfiguration<PaymentInstallment>
 {
-    public void Configure(EntityTypeBuilder<PaymentInstallment> builder)
+    public override void Configure(EntityTypeBuilder<PaymentInstallment> builder)
     {
-        builder.ToTable("PaymentInstallments");
+        base.Configure(builder);
 
-        // Primary key
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("PaymentInstallments");
 
         // Payment transaction relationship
         builder.HasOne(e => e.PaymentTransaction)
@@ -30,6 +28,7 @@ public class PaymentInstallmentConfiguration : IEntityTypeConfiguration<PaymentI
         // Unique installment number per transaction
         builder.HasIndex(e => new { e.PaymentTransactionId, e.InstallmentNumber })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_PaymentInstallments_Transaction_Number");
 
         // Amount
@@ -70,9 +69,5 @@ public class PaymentInstallmentConfiguration : IEntityTypeConfiguration<PaymentI
         // Status and due date index for processing due installments
         builder.HasIndex(e => new { e.Status, e.DueDate })
             .HasDatabaseName("IX_PaymentInstallments_Status_DueDate");
-
-        // Tenant ID
-        builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);
-        builder.HasIndex(e => e.TenantId);
     }
 }

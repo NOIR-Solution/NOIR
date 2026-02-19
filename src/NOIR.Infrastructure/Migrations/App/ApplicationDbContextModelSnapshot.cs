@@ -177,6 +177,19 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("EventType")
                         .HasColumnType("int");
 
@@ -190,8 +203,18 @@ namespace NOIR.Infrastructure.Migrations.App
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ProductCount")
                         .HasColumnType("int");
@@ -219,6 +242,8 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("TenantId");
 
@@ -348,13 +373,36 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
@@ -389,8 +437,12 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("ProductId")
                         .HasDatabaseName("IX_CartItems_ProductId");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("CartId", "ProductVariantId")
                         .HasDatabaseName("IX_CartItems_CartId_ProductVariantId");
@@ -570,6 +622,420 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("CheckoutSessions", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Customer.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("AverageOrderValue")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTimeOffset?>("LastOrderDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("LifetimeLoyaltyPoints")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("LoyaltyPoints")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Segment")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Tags")
+                        .HasMaxLength(1000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Tier")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("TotalOrders")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<decimal>("TotalSpent")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "Email")
+                        .HasDatabaseName("IX_Customers_TenantId_Email");
+
+                    b.HasIndex("TenantId", "Segment")
+                        .HasDatabaseName("IX_Customers_TenantId_Segment");
+
+                    b.HasIndex("TenantId", "Tier")
+                        .HasDatabaseName("IX_Customers_TenantId_Tier");
+
+                    b.HasIndex("TenantId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Customers_TenantId_UserId")
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("Customers", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Customer.CustomerAddress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AddressLine1")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("AddressLine2")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("AddressType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("District")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Ward")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "CustomerId")
+                        .HasDatabaseName("IX_CustomerAddresses_TenantId_CustomerId");
+
+                    b.ToTable("CustomerAddresses", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Customer.CustomerGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("MemberCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CustomerGroups_TenantId_Name");
+
+                    b.HasIndex("TenantId", "Slug")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CustomerGroups_TenantId_Slug");
+
+                    b.ToTable("CustomerGroups", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Customer.CustomerGroupMembership", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("CustomerGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "CustomerId")
+                        .HasDatabaseName("IX_CustomerGroupMemberships_TenantId_CustomerId");
+
+                    b.HasIndex("CustomerGroupId", "CustomerId", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CustomerGroupMemberships_GroupId_CustomerId_TenantId")
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("CustomerGroupMemberships", (string)null);
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
@@ -1122,6 +1588,195 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasDatabaseName("IX_HttpRequestAuditLogs_Tenant_StartTime");
 
                     b.ToTable("HttpRequestAuditLogs", (string)null);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Inventory.InventoryReceipt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("CancelledAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CancelledBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("ConfirmedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ConfirmedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ReceiptNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("ReceiptNumber", "TenantId")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "Status", "CreatedAt")
+                        .HasDatabaseName("IX_InventoryReceipts_TenantId_Status_CreatedAt");
+
+                    b.HasIndex("TenantId", "Type", "CreatedAt")
+                        .HasDatabaseName("IX_InventoryReceipts_TenantId_Type_CreatedAt");
+
+                    b.ToTable("InventoryReceipts", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Inventory.InventoryReceiptItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("InventoryReceiptId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("ProductVariantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Sku")
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("VariantName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryReceiptId")
+                        .HasDatabaseName("IX_InventoryReceiptItems_ReceiptId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("InventoryReceiptItems", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
             modelBuilder.Entity("NOIR.Domain.Entities.LegalPage", b =>
@@ -1701,6 +2356,14 @@ namespace NOIR.Infrastructure.Migrations.App
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("ReturnReason")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("ReturnedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset?>("ShippedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -1786,6 +2449,19 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<decimal>("DiscountAmount")
                         .ValueGeneratedOnAdd()
                         .HasPrecision(18, 2)
@@ -1797,8 +2473,18 @@ namespace NOIR.Infrastructure.Migrations.App
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("OptionsSnapshot")
                         .HasMaxLength(500)
@@ -1852,6 +2538,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("OrderId");
 
                     b.HasIndex("ProductId")
@@ -1860,7 +2548,90 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.HasIndex("ProductVariantId")
                         .HasDatabaseName("IX_OrderItems_ProductVariantId");
 
+                    b.HasIndex("TenantId");
+
                     b.ToTable("OrderItems", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Order.OrderNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CreatedByUserName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsInternal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("OrderId", "CreatedAt")
+                        .HasDatabaseName("IX_OrderNotes_OrderId_CreatedAt");
+
+                    b.ToTable("OrderNotes", (string)null);
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
@@ -2128,11 +2899,24 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasMaxLength(3)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(3)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTimeOffset>("DueDate")
                         .HasColumnType("datetimeoffset");
@@ -2150,8 +2934,18 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<int>("InstallmentNumber")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTimeOffset?>("PaidAt")
                         .HasColumnType("datetimeoffset");
@@ -2182,6 +2976,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("PaymentTransactionId")
                         .HasDatabaseName("IX_PaymentInstallments_TransactionId");
 
@@ -2189,7 +2985,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("PaymentTransactionId", "InstallmentNumber")
                         .IsUnique()
-                        .HasDatabaseName("IX_PaymentInstallments_Transaction_Number");
+                        .HasDatabaseName("IX_PaymentInstallments_Transaction_Number")
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.HasIndex("Status", "DueDate")
                         .HasDatabaseName("IX_PaymentInstallments_Status_DueDate");
@@ -2940,7 +3737,7 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.HasIndex("Name", "TenantId")
                         .IsUnique()
                         .HasDatabaseName("IX_PermissionTemplates_Name_TenantId")
-                        .HasFilter("[TenantId] IS NOT NULL");
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("PermissionTemplates", (string)null);
                 });
@@ -2990,7 +3787,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("TemplateId", "PermissionId")
                         .IsUnique()
-                        .HasDatabaseName("IX_PermissionTemplateItems_TemplateId_PermissionId");
+                        .HasDatabaseName("IX_PermissionTemplateItems_TemplateId_PermissionId")
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("PermissionTemplateItems", (string)null);
                 });
@@ -3520,6 +4318,24 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsRequired")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -3527,6 +4343,11 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SortOrder")
                         .ValueGeneratedOnAdd()
@@ -3545,12 +4366,17 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
                     b.HasIndex("TenantId", "AttributeId")
                         .HasDatabaseName("IX_CategoryAttributes_TenantId_AttributeId");
 
                     b.HasIndex("TenantId", "CategoryId", "AttributeId")
                         .IsUnique()
-                        .HasDatabaseName("IX_CategoryAttributes_TenantId_CategoryId_AttributeId");
+                        .HasDatabaseName("IX_CategoryAttributes_TenantId_CategoryId_AttributeId")
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.HasIndex("TenantId", "CategoryId", "SortOrder")
                         .HasDatabaseName("IX_CategoryAttributes_TenantId_CategoryId_SortOrder");
@@ -3726,10 +4552,23 @@ namespace NOIR.Infrastructure.Migrations.App
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("DimensionUnit")
+                        .HasMaxLength(10)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal?>("Height")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<decimal?>("Length")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<string>("MetaDescription")
                         .HasMaxLength(300)
@@ -3785,6 +4624,19 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.Property<bool>("TrackInventory")
                         .HasColumnType("bit");
+
+                    b.Property<decimal?>("Weight")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("WeightUnit")
+                        .HasMaxLength(10)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal?>("Width")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.HasKey("Id");
 
@@ -4010,11 +4862,24 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime?>("DateTimeValue")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateValue")
                         .HasColumnType("date");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DisplayValue")
                         .HasMaxLength(500)
@@ -4026,6 +4891,11 @@ namespace NOIR.Infrastructure.Migrations.App
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<decimal?>("MaxRangeValue")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,4)");
@@ -4036,6 +4906,11 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal?>("NumberValue")
                         .HasPrecision(18, 2)
@@ -4064,7 +4939,11 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("AttributeValueId");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("VariantId");
 
@@ -4080,7 +4959,7 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.HasIndex("TenantId", "ProductId", "AttributeId", "VariantId")
                         .IsUnique()
                         .HasDatabaseName("IX_ProductAttributeAssignments_TenantId_ProductId_AttributeId_VariantId")
-                        .HasFilter("[TenantId] IS NOT NULL AND [VariantId] IS NOT NULL");
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("ProductAttributeAssignments", (string)null);
 
@@ -4104,6 +4983,19 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("DisplayValue")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -4120,8 +5012,18 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ProductCount")
                         .ValueGeneratedOnAdd()
@@ -4154,6 +5056,10 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("AttributeId");
 
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
                     b.HasIndex("TenantId", "AttributeId", "IsActive")
                         .HasDatabaseName("IX_ProductAttributeValues_TenantId_AttributeId_IsActive");
 
@@ -4162,7 +5068,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("TenantId", "AttributeId", "Value")
                         .IsUnique()
-                        .HasDatabaseName("IX_ProductAttributeValues_TenantId_AttributeId_Value");
+                        .HasDatabaseName("IX_ProductAttributeValues_TenantId_AttributeId_Value")
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("ProductAttributeValues", (string)null);
 
@@ -4323,6 +5230,11 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Currency")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -4331,8 +5243,21 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasColumnType("nvarchar(10)")
                         .HasDefaultValue("VND");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<bool>("InStock")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime>("LastSyncedAt")
                         .HasColumnType("datetime2");
@@ -4347,6 +5272,11 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PrimaryImageUrl")
                         .HasMaxLength(500)
@@ -4402,6 +5332,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("ProductId")
                         .IsUnique();
 
@@ -4427,7 +5359,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("TenantId", "ProductId")
                         .IsUnique()
-                        .HasDatabaseName("IX_ProductFilterIndexes_TenantId_ProductId");
+                        .HasDatabaseName("IX_ProductFilterIndexes_TenantId_ProductId")
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.HasIndex("TenantId", "MinPrice", "MaxPrice")
                         .HasDatabaseName("IX_ProductFilterIndexes_TenantId_Price");
@@ -4457,6 +5390,24 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsPrimary")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -4464,6 +5415,11 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
@@ -4487,8 +5443,9 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("IX_ProductImages_TenantId");
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("ProductId", "SortOrder")
                         .HasDatabaseName("IX_ProductImages_Product_Sort");
@@ -4511,13 +5468,36 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("DisplayName")
                         .HasMaxLength(100)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -4541,6 +5521,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("TenantId");
 
                     b.HasIndex("ProductId", "SortOrder")
@@ -4548,7 +5530,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("TenantId", "ProductId", "Name")
                         .IsUnique()
-                        .HasDatabaseName("IX_ProductOptions_TenantId_Product_Name");
+                        .HasDatabaseName("IX_ProductOptions_TenantId_Product_Name")
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("ProductOptions", (string)null);
 
@@ -4569,13 +5552,36 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("DisplayValue")
                         .HasMaxLength(100)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("OptionId")
                         .HasColumnType("uniqueidentifier");
@@ -4604,6 +5610,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("TenantId");
 
                     b.HasIndex("OptionId", "SortOrder")
@@ -4611,7 +5619,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("TenantId", "OptionId", "Value")
                         .IsUnique()
-                        .HasDatabaseName("IX_ProductOptionValues_TenantId_Option_Value");
+                        .HasDatabaseName("IX_ProductOptionValues_TenantId_Option_Value")
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("ProductOptionValues", (string)null);
 
@@ -4628,14 +5637,41 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal?>("CostPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid?>("ImageId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -4679,6 +5715,8 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("ImageId");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("TenantId");
 
                     b.HasIndex("ProductId", "SortOrder")
@@ -4687,13 +5725,358 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.HasIndex("TenantId", "Sku")
                         .IsUnique()
                         .HasDatabaseName("IX_ProductVariants_TenantId_Sku")
-                        .HasFilter("[Sku] IS NOT NULL");
+                        .HasFilter("[Sku] IS NOT NULL AND [IsDeleted] = 0");
 
                     b.HasIndex("TenantId", "StockQuantity")
                         .HasDatabaseName("IX_ProductVariants_TenantId_InStock")
                         .HasFilter("[StockQuantity] > 0");
 
                     b.ToTable("ProductVariants", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Promotion.Promotion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplyLevel")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CurrentUsageCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("DiscountType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<decimal>("DiscountValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset>("EndDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<decimal?>("MaxDiscountAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("MinItemQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("MinOrderValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PromotionType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTimeOffset>("StartDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int?>("UsageLimitPerUser")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsageLimitTotal")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("Code", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Promotions_Code_TenantId");
+
+                    b.HasIndex("TenantId", "IsActive")
+                        .HasDatabaseName("IX_Promotions_TenantId_IsActive");
+
+                    b.HasIndex("TenantId", "PromotionType")
+                        .HasDatabaseName("IX_Promotions_TenantId_PromotionType");
+
+                    b.HasIndex("TenantId", "Status", "StartDate", "EndDate")
+                        .HasDatabaseName("IX_Promotions_TenantId_Status_Dates");
+
+                    b.ToTable("Promotions", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Promotion.PromotionCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("PromotionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("IX_PromotionCategories_CategoryId");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("PromotionId", "CategoryId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PromotionCategories_PromotionId_CategoryId")
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("PromotionCategories", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Promotion.PromotionProduct", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PromotionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_PromotionProducts_ProductId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("PromotionId", "ProductId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PromotionProducts_PromotionId_ProductId")
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("PromotionProducts", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Promotion.PromotionUsage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PromotionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTimeOffset>("UsedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("IX_PromotionUsages_OrderId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("PromotionId", "UserId")
+                        .HasDatabaseName("IX_PromotionUsages_PromotionId_UserId");
+
+                    b.HasIndex("TenantId", "UsedAt")
+                        .HasDatabaseName("IX_PromotionUsages_TenantId_UsedAt");
+
+                    b.ToTable("PromotionUsages", (string)null);
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
@@ -4905,9 +6288,196 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("ResourceType", "ResourceId", "SharedWithUserId", "TenantId")
                         .IsUnique()
-                        .HasDatabaseName("IX_ResourceShares_Unique");
+                        .HasDatabaseName("IX_ResourceShares_Unique")
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("ResourceShares", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Review.ProductReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("AdminRespondedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("AdminResponse")
+                        .HasMaxLength(2000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("HelpfulVotes")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsVerifiedPurchase")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("NotHelpfulVotes")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_ProductReviews_TenantId");
+
+                    b.HasIndex("TenantId", "ProductId")
+                        .HasDatabaseName("IX_ProductReviews_TenantId_ProductId");
+
+                    b.HasIndex("TenantId", "Status")
+                        .HasDatabaseName("IX_ProductReviews_TenantId_Status");
+
+                    b.HasIndex("TenantId", "UserId")
+                        .HasDatabaseName("IX_ProductReviews_TenantId_UserId");
+
+                    b.HasIndex("TenantId", "ProductId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ProductReviews_TenantId_ProductId_UserId");
+
+                    b.ToTable("ProductReviews", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Review.ReviewMedia", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("MediaType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("MediaUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("ReviewId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("ReviewId", "DisplayOrder")
+                        .HasDatabaseName("IX_ReviewMedia_Review_Sort");
+
+                    b.ToTable("ReviewMedia", (string)null);
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
@@ -5344,6 +6914,19 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -5359,6 +6942,11 @@ namespace NOIR.Infrastructure.Migrations.App
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("Location")
                         .HasMaxLength(500)
                         .IsUnicode(true)
@@ -5366,6 +6954,11 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RawPayload")
                         .HasMaxLength(500)
@@ -5390,6 +6983,10 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("ShippingOrderId", "EventDate")
                         .IsDescending(false, true)
@@ -5575,9 +7172,176 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.HasIndex("TenantId", "Key")
                         .IsUnique()
                         .HasDatabaseName("IX_TenantSettings_TenantId_Key")
-                        .HasFilter("[TenantId] IS NOT NULL");
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("TenantSettings", (string)null);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Wishlist.Wishlist", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsPublic")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ShareToken")
+                        .HasMaxLength(128)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "ShareToken")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Wishlists_TenantId_ShareToken")
+                        .HasFilter("[ShareToken] IS NOT NULL");
+
+                    b.HasIndex("TenantId", "UserId")
+                        .HasDatabaseName("IX_Wishlists_TenantId_UserId");
+
+                    b.ToTable("Wishlists", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Wishlist.WishlistItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AddedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Priority")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductVariantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("WishlistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_WishlistItems_ProductId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("WishlistId", "ProductId", "ProductVariantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_WishlistItems_WishlistId_ProductId_VariantId")
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("WishlistItems", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
             modelBuilder.Entity("NOIR.Infrastructure.Identity.ApplicationRole", b =>
@@ -6079,6 +7843,36 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Navigation("ShippingAddress");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Customer.CustomerAddress", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Customer.Customer", "Customer")
+                        .WithMany("Addresses")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Customer.CustomerGroupMembership", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Customer.CustomerGroup", "CustomerGroup")
+                        .WithMany("Memberships")
+                        .HasForeignKey("CustomerGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NOIR.Domain.Entities.Customer.Customer", "Customer")
+                        .WithMany("GroupMemberships")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("CustomerGroup");
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.EntityAuditLog", b =>
                 {
                     b.HasOne("NOIR.Domain.Entities.HandlerAuditLog", "HandlerAuditLog")
@@ -6097,6 +7891,17 @@ namespace NOIR.Infrastructure.Migrations.App
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("HttpRequestAuditLog");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Inventory.InventoryReceiptItem", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Inventory.InventoryReceipt", "Receipt")
+                        .WithMany("Items")
+                        .HasForeignKey("InventoryReceiptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receipt");
                 });
 
             modelBuilder.Entity("NOIR.Domain.Entities.Order.Order", b =>
@@ -6266,6 +8071,17 @@ namespace NOIR.Infrastructure.Migrations.App
                 {
                     b.HasOne("NOIR.Domain.Entities.Order.Order", "Order")
                         .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Order.OrderNote", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Order.Order", "Order")
+                        .WithMany("Notes")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -6546,6 +8362,50 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Promotion.PromotionCategory", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Promotion.Promotion", "Promotion")
+                        .WithMany("Categories")
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Promotion");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Promotion.PromotionProduct", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Promotion.Promotion", "Promotion")
+                        .WithMany("Products")
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Promotion");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Promotion.PromotionUsage", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Promotion.Promotion", "Promotion")
+                        .WithMany("Usages")
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Promotion");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Review.ReviewMedia", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Review.ProductReview", "Review")
+                        .WithMany("Media")
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Review");
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.RolePermission", b =>
                 {
                     b.HasOne("NOIR.Domain.Entities.Permission", "Permission")
@@ -6579,6 +8439,25 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Navigation("ShippingOrder");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Wishlist.WishlistItem", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Product.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NOIR.Domain.Entities.Wishlist.Wishlist", "Wishlist")
+                        .WithMany("Items")
+                        .HasForeignKey("WishlistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Wishlist");
+                });
+
             modelBuilder.Entity("NOIR.Infrastructure.Identity.ApplicationRole", b =>
                 {
                     b.HasOne("NOIR.Infrastructure.Identity.ApplicationRole", "ParentRole")
@@ -6594,6 +8473,18 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Customer.Customer", b =>
+                {
+                    b.Navigation("Addresses");
+
+                    b.Navigation("GroupMemberships");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Customer.CustomerGroup", b =>
+                {
+                    b.Navigation("Memberships");
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.HandlerAuditLog", b =>
                 {
                     b.Navigation("EntityAuditLogs");
@@ -6604,9 +8495,16 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Navigation("HandlerAuditLogs");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Inventory.InventoryReceipt", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.Order.Order", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("Notes");
 
                     b.Navigation("Payments");
                 });
@@ -6678,9 +8576,28 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Navigation("Values");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Promotion.Promotion", b =>
+                {
+                    b.Navigation("Categories");
+
+                    b.Navigation("Products");
+
+                    b.Navigation("Usages");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Review.ProductReview", b =>
+                {
+                    b.Navigation("Media");
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.Shipping.ShippingOrder", b =>
                 {
                     b.Navigation("TrackingEvents");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Wishlist.Wishlist", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("NOIR.Infrastructure.Identity.ApplicationRole", b =>

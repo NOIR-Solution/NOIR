@@ -368,7 +368,7 @@ public class ReturnOrderCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-ORDER-002");
+        result.Error.Code.Should().Be(ErrorCodes.Order.NotFound);
         result.Error.Message.Should().Contain("not found");
 
         _unitOfWorkMock.Verify(
@@ -400,7 +400,7 @@ public class ReturnOrderCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-ORDER-008");
+        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidReturnTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -428,7 +428,7 @@ public class ReturnOrderCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-ORDER-008");
+        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidReturnTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -458,7 +458,7 @@ public class ReturnOrderCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-ORDER-008");
+        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidReturnTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -486,7 +486,7 @@ public class ReturnOrderCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-ORDER-008");
+        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidReturnTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

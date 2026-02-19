@@ -69,6 +69,12 @@ public class DuplicateProductCommandHandler
         // Copy SEO
         duplicate.UpdateSeo(original.MetaTitle, original.MetaDescription);
 
+        // Copy physical properties
+        duplicate.UpdatePhysicalProperties(
+            original.Weight, original.WeightUnit,
+            original.Length, original.Width, original.Height,
+            original.DimensionUnit);
+
         // Copy options if requested (must be done before variants if variants reference options)
         if (command.CopyOptions && original.Options.Any())
         {
@@ -110,6 +116,12 @@ public class DuplicateProductCommandHandler
                 if (variant.CompareAtPrice.HasValue)
                 {
                     newVariant.SetCompareAtPrice(variant.CompareAtPrice);
+                }
+
+                // Copy cost price
+                if (variant.CostPrice.HasValue)
+                {
+                    newVariant.SetCostPrice(variant.CostPrice);
                 }
             }
         }

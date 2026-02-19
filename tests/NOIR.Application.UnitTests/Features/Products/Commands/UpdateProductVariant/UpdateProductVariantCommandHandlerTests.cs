@@ -38,6 +38,7 @@ public class UpdateProductVariantCommandHandlerTests
         decimal price = 149.99m,
         string? sku = null,
         decimal? compareAtPrice = null,
+        decimal? costPrice = null,
         int stockQuantity = 10,
         Dictionary<string, string>? options = null,
         int sortOrder = 0)
@@ -49,6 +50,7 @@ public class UpdateProductVariantCommandHandlerTests
             price,
             sku,
             compareAtPrice,
+            costPrice,
             stockQuantity,
             options,
             sortOrder);

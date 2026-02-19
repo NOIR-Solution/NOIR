@@ -209,6 +209,25 @@ export const EditableVariantRow = ({
         />
       </td>
 
+      {/* Cost Price */}
+      <td className="p-2">
+        <InlineEditInput
+          type="number"
+          value={values.costPrice?.toString() || ''}
+          onChange={(value) => setFieldValue('costPrice', value ? parseFloat(value) : null)}
+          onEnterPress={saveNow}
+          onEscapePress={revert}
+          error={getFieldError('costPrice')}
+          hasError={hasFieldError('costPrice')}
+          placeholder="—"
+          disabled={isReadOnly}
+          align="right"
+          className="min-w-[80px]"
+          min={0}
+          step="any"
+        />
+      </td>
+
       {/* Stock */}
       <td className="p-2">
         <div className="flex items-center gap-2">

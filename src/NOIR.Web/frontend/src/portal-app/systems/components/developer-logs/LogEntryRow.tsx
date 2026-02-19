@@ -6,6 +6,7 @@
  * Supports expanding exceptions inline.
  */
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   ChevronDown,
   ChevronRight,
@@ -38,6 +39,7 @@ export const LogEntryRow = ({
   onToggleExpand,
   onViewDetail,
 }: LogEntryRowProps) => {
+  const { t } = useTranslation('common')
   const config = getLevelConfig(entry.level)
   const [copied, setCopied] = useState(false)
   const hasException = !!entry.exception
@@ -122,7 +124,7 @@ export const LogEntryRow = ({
           <button
             onClick={handleCopy}
             className="p-1 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground hover:text-foreground"
-            title="Copy entry as JSON"
+            title={t('developerLogs.copyEntryAsJson')}
           >
             {copied ? (
               <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
@@ -136,7 +138,7 @@ export const LogEntryRow = ({
               onViewDetail()
             }}
             className="p-1 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground hover:text-foreground"
-            title="View full details"
+            title={t('developerLogs.viewFullDetails')}
           >
             <Maximize2 className="h-3 w-3" />
           </button>

@@ -475,27 +475,5 @@ public class ResourceShareTests
         share.DeletedBy.Should().BeNull();
     }
 
-    [Fact]
-    public void AuditableProperties_ShouldBeSettable()
-    {
-        // Arrange
-        var share = ResourceShare.Create("doc", Guid.NewGuid(), "user", SharePermission.View);
-        var now = DateTimeOffset.UtcNow;
-
-        // Act
-        share.CreatedBy = "creator-user";
-        share.ModifiedBy = "modifier-user";
-        share.IsDeleted = true;
-        share.DeletedAt = now;
-        share.DeletedBy = "deleter-user";
-
-        // Assert
-        share.CreatedBy.Should().Be("creator-user");
-        share.ModifiedBy.Should().Be("modifier-user");
-        share.IsDeleted.Should().BeTrue();
-        share.DeletedAt.Should().Be(now);
-        share.DeletedBy.Should().Be("deleter-user");
-    }
-
     #endregion
 }

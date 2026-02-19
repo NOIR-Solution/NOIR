@@ -367,11 +367,11 @@ export const LoginPage = () => {
             <div className="flex flex-wrap justify-center gap-3 pt-4">
               <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-sm">
                 <Sparkles className="w-4 h-4" />
-                <span>Enterprise Grade</span>
+                <span>{t('login.enterpriseGrade')}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-sm">
                 <ShieldCheck className="w-4 h-4" />
-                <span>256-bit Encryption</span>
+                <span>{t('login.encryption256')}</span>
               </div>
             </div>
 

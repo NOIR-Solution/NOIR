@@ -102,8 +102,8 @@ export const WelcomePage = () => {
                   <ShieldCheck className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <p className="text-[15px] font-semibold text-foreground">Enterprise Security</p>
-                  <p className="text-sm text-muted-foreground font-normal">Bank-level encryption</p>
+                  <p className="text-[15px] font-semibold text-foreground">{t('landing.enterpriseSecurity')}</p>
+                  <p className="text-sm text-muted-foreground font-normal">{t('landing.bankLevelEncryption')}</p>
                 </div>
               </div>
               <div className="flex items-center justify-center gap-3 p-5 rounded-2xl backdrop-blur-xl bg-background/60 border border-border/50 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.01]">
@@ -111,8 +111,8 @@ export const WelcomePage = () => {
                   <Zap className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <p className="text-[15px] font-semibold text-foreground">Real-time Sync</p>
-                  <p className="text-sm text-muted-foreground font-normal">99.9% uptime SLA</p>
+                  <p className="text-[15px] font-semibold text-foreground">{t('landing.realTimeSync')}</p>
+                  <p className="text-sm text-muted-foreground font-normal">{t('landing.uptimeSla')}</p>
                 </div>
               </div>
               <div className="flex items-center justify-center gap-3 p-5 rounded-2xl backdrop-blur-xl bg-background/60 border border-border/50 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.01]">
@@ -120,8 +120,8 @@ export const WelcomePage = () => {
                   <Users className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <p className="text-[15px] font-semibold text-foreground">Multi-tenant</p>
-                  <p className="text-sm text-muted-foreground font-normal">Scalable architecture</p>
+                  <p className="text-[15px] font-semibold text-foreground">{t('landing.multiTenant')}</p>
+                  <p className="text-sm text-muted-foreground font-normal">{t('landing.scalableArchitecture')}</p>
                 </div>
               </div>
             </div>
@@ -141,10 +141,10 @@ export const WelcomePage = () => {
             </div>
             <div className="flex items-center gap-6">
               <ViewTransitionLink to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Terms
+                {t('landing.terms')}
               </ViewTransitionLink>
               <ViewTransitionLink to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Privacy
+                {t('landing.privacy')}
               </ViewTransitionLink>
               <p className="text-sm text-muted-foreground">
                 © {new Date().getFullYear()} NOIR. {t('landing.allRightsReserved')}

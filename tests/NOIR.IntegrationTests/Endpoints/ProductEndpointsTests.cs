@@ -130,6 +130,12 @@ public class ProductEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             MetaTitle: null,
             MetaDescription: null,
             SortOrder: 0,
+            Weight: null,
+            WeightUnit: null,
+            Length: null,
+            Width: null,
+            Height: null,
+            DimensionUnit: null,
             Variants: null,
             Images: null);
 
@@ -166,6 +172,12 @@ public class ProductEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             MetaTitle: null,
             MetaDescription: null,
             SortOrder: 0,
+            Weight: null,
+            WeightUnit: null,
+            Length: null,
+            Width: null,
+            Height: null,
+            DimensionUnit: null,
             Variants: null,
             Images: null);
 
@@ -203,7 +215,13 @@ public class ProductEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             TrackInventory: true,
             MetaTitle: null,
             MetaDescription: null,
-            SortOrder: 0);
+            SortOrder: 0,
+            Weight: null,
+            WeightUnit: null,
+            Length: null,
+            Width: null,
+            Height: null,
+            DimensionUnit: null);
 
         // Act
         var response = await adminClient.PutAsJsonAsync($"/api/products/{invalidId}", command);

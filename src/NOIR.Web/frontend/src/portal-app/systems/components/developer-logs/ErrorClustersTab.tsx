@@ -4,6 +4,7 @@
  * Displays error pattern analysis with collapsible cluster details.
  * Shows severity, count, first/last seen timestamps for each error pattern.
  */
+import { useTranslation } from 'react-i18next'
 import { RefreshCw, ChevronRight, AlertCircle } from 'lucide-react'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import {
@@ -33,12 +34,13 @@ const ErrorClusters = ({
   clusters: ErrorClusterDto[]
   onRefresh: () => void
 }) => {
+  const { t } = useTranslation('common')
   const { formatDateTime } = useRegionalSettings()
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">Error Patterns</span>
+        <span className="text-sm font-medium">{t('developerLogs.errorPatterns')}</span>
         <Button variant="ghost" size="sm" onClick={onRefresh} className="group">
           <RefreshCw className="h-3 w-3 transition-transform duration-300 group-hover:rotate-180" />
         </Button>
@@ -46,7 +48,7 @@ const ErrorClusters = ({
 
       {clusters.length === 0 ? (
         <div className="text-center py-6 text-muted-foreground text-sm">
-          No error patterns detected
+          {t('developerLogs.noErrorPatterns')}
         </div>
       ) : (
         <div className="space-y-2">
@@ -75,15 +77,15 @@ const ErrorClusters = ({
               <CollapsibleContent>
                 <div className="mt-1 p-2 bg-muted/50 rounded text-xs space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">First seen:</span>
+                    <span className="text-muted-foreground">{t('developerLogs.firstSeen')}</span>
                     <span className="font-mono">{formatDateTime(cluster.firstSeen)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Last seen:</span>
+                    <span className="text-muted-foreground">{t('developerLogs.lastSeen')}</span>
                     <span className="font-mono">{formatDateTime(cluster.lastSeen)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Severity:</span>
+                    <span className="text-muted-foreground">{t('developerLogs.severity')}</span>
                     <Badge variant="outline" className="capitalize">{cluster.severity}</Badge>
                   </div>
                 </div>
@@ -97,12 +99,13 @@ const ErrorClusters = ({
 }
 
 export const ErrorClustersTab = ({ clusters, onRefresh }: ErrorClustersTabProps) => {
+  const { t } = useTranslation('common')
   return (
     <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
       <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
         <CardTitle className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-red-500" />
-          Error Pattern Analysis
+          {t('developerLogs.errorPatternAnalysis')}
         </CardTitle>
       </CardHeader>
       <CardContent>

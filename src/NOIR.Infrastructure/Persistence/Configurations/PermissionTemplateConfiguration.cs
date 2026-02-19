@@ -37,6 +37,7 @@ public class PermissionTemplateConfiguration : IEntityTypeConfiguration<Permissi
         // Unique name within tenant (or system if TenantId is null)
         builder.HasIndex(e => new { e.Name, e.TenantId })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_PermissionTemplates_Name_TenantId");
 
         // Filtered index for platform defaults lookup optimization
@@ -45,8 +46,8 @@ public class PermissionTemplateConfiguration : IEntityTypeConfiguration<Permissi
             .HasDatabaseName("IX_PermissionTemplates_Platform_Lookup")
             .HasFilter("[TenantId] IS NULL AND [IsDeleted] = 0");
 
-        // Soft delete filter
-        builder.HasQueryFilter(e => !e.IsDeleted);
+        // Soft delete filter (named to avoid conflicts with other query filters)
+        builder.HasQueryFilter("SoftDelete", e => !e.IsDeleted);
         builder.HasIndex(e => e.IsDeleted);
     }
 }
@@ -67,6 +68,7 @@ public class PermissionTemplateItemConfiguration : IEntityTypeConfiguration<Perm
         // Unique constraint on (TemplateId, PermissionId)
         builder.HasIndex(e => new { e.TemplateId, e.PermissionId })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_PermissionTemplateItems_TemplateId_PermissionId");
 
         // Relationships

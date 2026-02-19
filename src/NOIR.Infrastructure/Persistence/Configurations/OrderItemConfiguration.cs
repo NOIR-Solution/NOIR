@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for OrderItem entity.
 /// </summary>
-public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
+public class OrderItemConfiguration : TenantEntityConfiguration<OrderItem>
 {
-    public void Configure(EntityTypeBuilder<OrderItem> builder)
+    public override void Configure(EntityTypeBuilder<OrderItem> builder)
     {
-        builder.ToTable("OrderItems");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("OrderItems");
 
         // Product reference
         builder.Property(e => e.ProductId)
@@ -65,10 +64,6 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
 
         builder.HasIndex(e => e.ProductVariantId)
             .HasDatabaseName("IX_OrderItems_ProductVariantId");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
 
         // Ignore computed properties
         builder.Ignore(e => e.LineTotal);

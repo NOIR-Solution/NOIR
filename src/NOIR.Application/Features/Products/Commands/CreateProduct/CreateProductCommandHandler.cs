@@ -109,6 +109,15 @@ public class CreateProductCommandHandler
         // Update SEO
         product.UpdateSeo(command.MetaTitle, command.MetaDescription);
 
+        // Update physical properties
+        product.UpdatePhysicalProperties(
+            command.Weight,
+            command.WeightUnit,
+            command.Length,
+            command.Width,
+            command.Height,
+            command.DimensionUnit);
+
         // Add variants
         var variantDtos = new List<ProductVariantDto>();
         if (command.Variants?.Any() == true)
@@ -122,6 +131,7 @@ public class CreateProductCommandHandler
                     variantCmd.Options);
 
                 variant.SetCompareAtPrice(variantCmd.CompareAtPrice);
+                variant.SetCostPrice(variantCmd.CostPrice);
                 variant.SetStock(variantCmd.StockQuantity);
                 variant.SetSortOrder(variantCmd.SortOrder);
 

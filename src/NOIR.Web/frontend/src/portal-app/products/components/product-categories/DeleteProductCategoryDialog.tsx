@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import {
   AlertDialog,
@@ -26,6 +27,7 @@ export const DeleteProductCategoryDialog = ({
   onOpenChange,
   onConfirm,
 }: DeleteProductCategoryDialogProps) => {
+  const { t } = useTranslation('common')
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleConfirm = async () => {
@@ -36,10 +38,10 @@ export const DeleteProductCategoryDialog = ({
       const result = await onConfirm(category.id)
 
       if (result.success) {
-        toast.success(`Category "${category.name}" deleted successfully`)
+        toast.success(t('productCategories.categoryDeleted', { name: category.name }))
         onOpenChange(false)
       } else {
-        toast.error(result.error || 'Failed to delete category')
+        toast.error(result.error || t('productCategories.deleteFailed'))
       }
     } finally {
       setIsDeleting(false)
@@ -57,7 +59,7 @@ export const DeleteProductCategoryDialog = ({
             <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <AlertDialogTitle>Delete Category</AlertDialogTitle>
+            <AlertDialogTitle>{t('productCategories.deleteCategory')}</AlertDialogTitle>
           </div>
           <AlertDialogDescription className="pt-2 space-y-2">
             <span>
@@ -66,19 +68,19 @@ export const DeleteProductCategoryDialog = ({
             </span>
             {hasProducts && (
               <span className="block p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-sm">
-                <strong>Warning:</strong> This category has {category?.productCount} products that will be uncategorized.
+                <strong>{t('productCategories.warning')}:</strong> {t('productCategories.hasProducts', { count: category?.productCount })}
               </span>
             )}
             {hasChildren && (
               <span className="block p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm">
-                <strong>Blocked:</strong> This category has {category?.childCount} child categories that must be moved or deleted first.
+                <strong>{t('productCategories.blocked')}:</strong> {t('productCategories.hasChildren', { count: category?.childCount })}
               </span>
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting} className="cursor-pointer">
-            Cancel
+            {t('buttons.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
@@ -86,7 +88,7 @@ export const DeleteProductCategoryDialog = ({
             className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
           >
             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            {isDeleting ? t('buttons.deleting') : t('buttons.delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -94,6 +94,9 @@ public class Customer : TenantAggregateRoot<Guid>
     // Navigation
     public virtual ICollection<CustomerAddress> Addresses { get; private set; } = new List<CustomerAddress>();
 
+    private readonly List<CustomerGroupMembership> _groupMemberships = new();
+    public IReadOnlyCollection<CustomerGroupMembership> GroupMemberships => _groupMemberships.AsReadOnly();
+
     /// <summary>
     /// Creates a new customer.
     /// </summary>

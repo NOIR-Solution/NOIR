@@ -36,6 +36,7 @@ public class TenantSettingConfiguration : IEntityTypeConfiguration<TenantSetting
         // Unique constraint: one key per tenant (NULL counts as a unique tenant)
         builder.HasIndex(e => new { e.TenantId, e.Key })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_TenantSettings_TenantId_Key");
 
         // Index for platform defaults lookup

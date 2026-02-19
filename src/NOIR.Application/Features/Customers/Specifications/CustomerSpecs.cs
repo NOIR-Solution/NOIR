@@ -185,3 +185,15 @@ public sealed class CustomerByEmailSpec : Specification<Domain.Entities.Customer
             .TagWith("CustomerByEmail");
     }
 }
+
+/// <summary>
+/// Specification to get customers by a list of IDs (batch validation).
+/// </summary>
+public sealed class CustomersByIdsSpec : Specification<Domain.Entities.Customer.Customer>
+{
+    public CustomersByIdsSpec(List<Guid> customerIds)
+    {
+        Query.Where(c => customerIds.Contains(c.Id))
+            .TagWith("CustomersByIds");
+    }
+}

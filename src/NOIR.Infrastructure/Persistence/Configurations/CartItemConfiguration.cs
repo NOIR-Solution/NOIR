@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for CartItem entity.
 /// </summary>
-public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
+public class CartItemConfiguration : TenantEntityConfiguration<CartItem>
 {
-    public void Configure(EntityTypeBuilder<CartItem> builder)
+    public override void Configure(EntityTypeBuilder<CartItem> builder)
     {
-        builder.ToTable("CartItems");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("CartItems");
 
         // Product reference
         builder.Property(e => e.ProductId)
@@ -52,10 +51,6 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
         // Index for product lookup (e.g., when product is deleted)
         builder.HasIndex(e => e.ProductId)
             .HasDatabaseName("IX_CartItems_ProductId");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
 
         // Ignore computed properties
         builder.Ignore(e => e.LineTotal);

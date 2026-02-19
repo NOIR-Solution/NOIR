@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for ProductImage entity.
 /// </summary>
-public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
+public class ProductImageConfiguration : TenantEntityConfiguration<ProductImage>
 {
-    public void Configure(EntityTypeBuilder<ProductImage> builder)
+    public override void Configure(EntityTypeBuilder<ProductImage> builder)
     {
-        builder.ToTable("ProductImages");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("ProductImages");
 
         builder.Property(e => e.Url)
             .HasMaxLength(500)
@@ -39,11 +38,5 @@ public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
         builder.HasIndex(e => new { e.TenantId, e.ProductId })
             .HasFilter("[IsPrimary] = 1")
             .HasDatabaseName("IX_ProductImages_TenantId_Primary");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
-        builder.HasIndex(e => e.TenantId)
-            .HasDatabaseName("IX_ProductImages_TenantId");
     }
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AlertTriangle, FolderTree } from 'lucide-react'
 import {
   AlertDialog,
@@ -21,6 +22,7 @@ interface DeleteBlogCategoryDialogProps {
 }
 
 export const DeleteBlogCategoryDialog = ({ category, open, onOpenChange, onConfirm }: DeleteBlogCategoryDialogProps) => {
+  const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {
@@ -31,10 +33,10 @@ export const DeleteBlogCategoryDialog = ({ category, open, onOpenChange, onConfi
       const result = await onConfirm(category.id)
 
       if (result.success) {
-        toast.success('Category deleted')
+        toast.success(t('blog.categoryDeleted'))
         onOpenChange(false)
       } else {
-        toast.error(result.error || 'Failed to delete category')
+        toast.error(result.error || t('blog.deleteCategoryFailed'))
       }
     } finally {
       setLoading(false)
@@ -52,9 +54,9 @@ export const DeleteBlogCategoryDialog = ({ category, open, onOpenChange, onConfi
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <AlertDialogTitle>Delete Category</AlertDialogTitle>
+              <AlertDialogTitle>{t('blog.deleteCategory')}</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this category? This action cannot be undone.
+                {t('blog.deleteCategoryConfirm')}
               </AlertDialogDescription>
             </div>
           </div>
@@ -74,12 +76,12 @@ export const DeleteBlogCategoryDialog = ({ category, open, onOpenChange, onConfi
             {!canDelete && (
               <div className="mt-3 p-2 bg-destructive/10 rounded text-sm text-destructive">
                 {category.postCount > 0 && (
-                  <p>This category has {category.postCount} posts assigned to it.</p>
+                  <p>{t('blog.categoryHasPosts', { count: category.postCount })}</p>
                 )}
                 {category.childCount > 0 && (
-                  <p>This category has {category.childCount} child categories.</p>
+                  <p>{t('blog.categoryHasChildren', { count: category.childCount })}</p>
                 )}
-                <p className="mt-1 font-medium">Please reassign or delete them first.</p>
+                <p className="mt-1 font-medium">{t('blog.reassignFirst')}</p>
               </div>
             )}
           </div>
@@ -87,14 +89,14 @@ export const DeleteBlogCategoryDialog = ({ category, open, onOpenChange, onConfi
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading} className="cursor-pointer">
-            Cancel
+            {t('buttons.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={loading || !canDelete}
             className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
           >
-            {loading ? 'Deleting...' : 'Delete'}
+            {loading ? t('buttons.deleting') : t('buttons.delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

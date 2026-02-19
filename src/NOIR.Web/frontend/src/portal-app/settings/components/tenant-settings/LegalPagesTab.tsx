@@ -77,7 +77,7 @@ export const LegalPagesTab = ({ onEdit }: LegalPagesTabProps) => {
                     </p>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => onEdit(page.id)} className="cursor-pointer">
+                    <Button variant="ghost" size="icon" onClick={() => onEdit(page.id)} className="cursor-pointer" aria-label={`${t('buttons.edit')} ${page.title}`}>
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
@@ -85,6 +85,7 @@ export const LegalPagesTab = ({ onEdit }: LegalPagesTabProps) => {
                       size="icon"
                       onClick={() => window.open(`/${page.slug === 'terms-of-service' ? 'terms' : 'privacy'}`, '_blank')}
                       className="cursor-pointer"
+                      aria-label={`${t('buttons.preview')} ${page.title}`}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>

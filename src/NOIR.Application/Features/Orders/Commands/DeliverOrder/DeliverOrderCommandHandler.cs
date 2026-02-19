@@ -26,7 +26,7 @@ public class DeliverOrderCommandHandler
         if (order is null)
         {
             return Result.Failure<OrderDto>(
-                Error.NotFound($"Order with ID '{command.OrderId}' not found.", "NOIR-ORDER-002"));
+                Error.NotFound($"Order with ID '{command.OrderId}' not found.", ErrorCodes.Order.NotFound));
         }
 
         try
@@ -36,7 +36,7 @@ public class DeliverOrderCommandHandler
         catch (InvalidOperationException ex)
         {
             return Result.Failure<OrderDto>(
-                Error.Validation("Status", ex.Message, "NOIR-ORDER-006"));
+                Error.Validation("Status", ex.Message, ErrorCodes.Order.InvalidDeliverTransition));
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

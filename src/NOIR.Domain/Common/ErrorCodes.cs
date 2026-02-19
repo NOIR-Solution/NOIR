@@ -312,6 +312,65 @@ public static class ErrorCodes
     }
 
     /// <summary>
+    /// Order-related errors (ORDER-xxx)
+    /// </summary>
+    public static class Order
+    {
+        /// <summary>Order must contain at least one item</summary>
+        public const string MustHaveItems = "NOIR-ORDER-001";
+
+        /// <summary>Order not found</summary>
+        public const string NotFound = "NOIR-ORDER-002";
+
+        /// <summary>Invalid confirm transition</summary>
+        public const string InvalidConfirmTransition = "NOIR-ORDER-003";
+
+        /// <summary>Invalid ship transition</summary>
+        public const string InvalidShipTransition = "NOIR-ORDER-004";
+
+        /// <summary>Invalid cancel transition</summary>
+        public const string InvalidCancelTransition = "NOIR-ORDER-005";
+
+        /// <summary>Invalid deliver transition</summary>
+        public const string InvalidDeliverTransition = "NOIR-ORDER-006";
+
+        /// <summary>Invalid complete transition</summary>
+        public const string InvalidCompleteTransition = "NOIR-ORDER-007";
+
+        /// <summary>Invalid return transition</summary>
+        public const string InvalidReturnTransition = "NOIR-ORDER-008";
+
+        // NOIR-ORDER-009 reserved / not allocated
+
+        /// <summary>Order note not found</summary>
+        public const string NoteNotFound = "NOIR-ORDER-010";
+    }
+
+    /// <summary>
+    /// CustomerGroup-related errors (CUSTGRP-xxx)
+    /// </summary>
+    public static class CustomerGroup
+    {
+        /// <summary>Customer group not found</summary>
+        public const string NotFound = "NOIR-CUSTGRP-001";
+
+        /// <summary>Customer group name already exists</summary>
+        public const string DuplicateName = "NOIR-CUSTGRP-002";
+
+        /// <summary>Cannot delete group with members</summary>
+        public const string HasMembers = "NOIR-CUSTGRP-003";
+
+        /// <summary>Customer is already a member of this group</summary>
+        public const string AlreadyMember = "NOIR-CUSTGRP-004";
+
+        /// <summary>Customer is not a member of this group</summary>
+        public const string NotMember = "NOIR-CUSTGRP-005";
+
+        /// <summary>Customer not found for membership</summary>
+        public const string CustomerNotFound = "NOIR-CUSTGRP-006";
+    }
+
+    /// <summary>
     /// Product-related errors (PRODUCT-xxx)
     /// </summary>
     public static class Product

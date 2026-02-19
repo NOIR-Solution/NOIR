@@ -4,6 +4,7 @@
  * Displays buffer statistics including entry counts by level,
  * memory usage, and time range of logged entries.
  */
+import { useTranslation } from 'react-i18next'
 import { RefreshCw, Database, Clock } from 'lucide-react'
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from '@uikit'
 
@@ -24,6 +25,8 @@ const StatsCard = ({
   stats: LogBufferStatsDto | null
   onRefresh: () => void
 }) => {
+  const { t } = useTranslation('common')
+
   if (!stats) {
     return (
       <div className="space-y-3">
@@ -37,7 +40,7 @@ const StatsCard = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">Buffer Statistics</span>
+        <span className="text-sm font-medium">{t('developerLogs.bufferStats')}</span>
         <Button variant="ghost" size="sm" onClick={onRefresh} className="group">
           <RefreshCw className="h-3 w-3 transition-transform duration-300 group-hover:rotate-180" />
         </Button>
@@ -45,13 +48,13 @@ const StatsCard = ({
 
       <div className="grid grid-cols-2 gap-3 text-sm">
         <div className="p-2 bg-muted rounded">
-          <div className="text-muted-foreground text-xs">Entries</div>
+          <div className="text-muted-foreground text-xs">{t('developerLogs.entries')}</div>
           <div className="font-mono font-semibold">
             {stats.totalEntries.toLocaleString()} / {stats.maxCapacity.toLocaleString()}
           </div>
         </div>
         <div className="p-2 bg-muted rounded">
-          <div className="text-muted-foreground text-xs">Memory</div>
+          <div className="text-muted-foreground text-xs">{t('developerLogs.memory')}</div>
           <div className="font-mono font-semibold">
             {formatBytes(stats.memoryUsageBytes)}
           </div>
@@ -60,7 +63,7 @@ const StatsCard = ({
 
       {/* Entries by level */}
       <div className="space-y-2">
-        <div className="text-xs text-muted-foreground">By Level</div>
+        <div className="text-xs text-muted-foreground">{t('developerLogs.byLevel')}</div>
         <div className="space-y-1">
           {LOG_LEVELS.map(level => {
             const count = stats.entriesByLevel[level.value] || 0
@@ -95,13 +98,14 @@ const StatsCard = ({
 }
 
 export const StatsTab = ({ stats, onRefresh }: StatsTabProps) => {
+  const { t } = useTranslation('common')
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <Card className="lg:col-span-2 shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
           <CardTitle className="flex items-center gap-2">
             <Database className="h-5 w-5" />
-            Buffer Overview
+            {t('developerLogs.bufferOverview')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -113,20 +117,20 @@ export const StatsTab = ({ stats, onRefresh }: StatsTabProps) => {
         <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Time Range
+            {t('developerLogs.timeRange')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {stats ? (
             <>
               <div className="p-3 bg-muted rounded-lg">
-                <div className="text-xs text-muted-foreground mb-1">Oldest Entry</div>
+                <div className="text-xs text-muted-foreground mb-1">{t('developerLogs.oldestEntry')}</div>
                 <div className="font-mono text-sm">
                   {stats.oldestEntry ? formatFullTimestamp(stats.oldestEntry) : 'N/A'}
                 </div>
               </div>
               <div className="p-3 bg-muted rounded-lg">
-                <div className="text-xs text-muted-foreground mb-1">Newest Entry</div>
+                <div className="text-xs text-muted-foreground mb-1">{t('developerLogs.newestEntry')}</div>
                 <div className="font-mono text-sm">
                   {stats.newestEntry ? formatFullTimestamp(stats.newestEntry) : 'N/A'}
                 </div>

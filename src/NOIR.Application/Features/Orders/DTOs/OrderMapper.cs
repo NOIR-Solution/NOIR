@@ -110,6 +110,23 @@ public static class OrderMapper
     }
 
     /// <summary>
+    /// Maps an OrderNote entity to OrderNoteDto.
+    /// </summary>
+    public static OrderNoteDto ToDto(OrderNote note)
+    {
+        return new OrderNoteDto
+        {
+            Id = note.Id,
+            OrderId = note.OrderId,
+            Content = note.Content,
+            CreatedByUserId = note.CreatedByUserId,
+            CreatedByUserName = note.CreatedByUserName,
+            IsInternal = note.IsInternal,
+            CreatedAt = note.CreatedAt
+        };
+    }
+
+    /// <summary>
     /// Maps a CreateAddressDto to Address value object.
     /// </summary>
     public static Address ToAddress(CreateAddressDto dto)

@@ -32,6 +32,10 @@ public sealed class UpdateProductVariantCommandValidator : AbstractValidator<Upd
             .GreaterThan(x => x.Price).WithMessage("Compare-at price must be higher than the regular price.")
             .When(x => x.CompareAtPrice.HasValue);
 
+        RuleFor(x => x.CostPrice)
+            .GreaterThanOrEqualTo(0).WithMessage("Cost price must be non-negative.")
+            .When(x => x.CostPrice.HasValue);
+
         RuleFor(x => x.StockQuantity)
             .GreaterThanOrEqualTo(0).WithMessage("Stock quantity must be non-negative.");
 

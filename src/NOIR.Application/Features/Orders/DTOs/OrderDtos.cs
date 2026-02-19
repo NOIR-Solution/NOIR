@@ -109,6 +109,20 @@ public sealed record OrderSummaryDto
 }
 
 /// <summary>
+/// DTO for OrderNote entity.
+/// </summary>
+public sealed record OrderNoteDto
+{
+    public Guid Id { get; init; }
+    public Guid OrderId { get; init; }
+    public string Content { get; init; } = string.Empty;
+    public string CreatedByUserId { get; init; } = string.Empty;
+    public string CreatedByUserName { get; init; } = string.Empty;
+    public bool IsInternal { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
+}
+
+/// <summary>
 /// Request DTO for creating an order item.
 /// </summary>
 public sealed record CreateOrderItemDto(

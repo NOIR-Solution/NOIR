@@ -24,7 +24,7 @@ public class FacetCalculator : IScopedService
     /// <summary>
     /// Calculates facets for the given filtered query.
     /// </summary>
-    public async Task<FacetsDto> CalculateFacetsAsync(
+    public virtual async Task<FacetsDto> CalculateFacetsAsync(
         IQueryable<ProductFilterIndexEntity> filteredQuery,
         Dictionary<string, List<string>> appliedFilters,
         decimal? priceMin,

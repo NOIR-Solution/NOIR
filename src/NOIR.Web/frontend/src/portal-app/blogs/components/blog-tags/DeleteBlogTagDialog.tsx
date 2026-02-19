@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Tag } from 'lucide-react'
 import {
   AlertDialog,
@@ -21,6 +22,7 @@ interface DeleteBlogTagDialogProps {
 }
 
 export const DeleteBlogTagDialog = ({ tag, open, onOpenChange, onConfirm }: DeleteBlogTagDialogProps) => {
+  const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {
@@ -31,10 +33,10 @@ export const DeleteBlogTagDialog = ({ tag, open, onOpenChange, onConfirm }: Dele
       const result = await onConfirm(tag.id)
 
       if (result.success) {
-        toast.success('Tag deleted')
+        toast.success(t('blog.tagDeleted'))
         onOpenChange(false)
       } else {
-        toast.error(result.error || 'Failed to delete tag')
+        toast.error(result.error || t('blog.deleteTagFailed'))
       }
     } finally {
       setLoading(false)
@@ -50,9 +52,9 @@ export const DeleteBlogTagDialog = ({ tag, open, onOpenChange, onConfirm }: Dele
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <AlertDialogTitle>Delete Tag</AlertDialogTitle>
+              <AlertDialogTitle>{t('blog.deleteTag')}</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this tag? This action cannot be undone.
+                {t('blog.deleteTagConfirm')}
               </AlertDialogDescription>
             </div>
           </div>
@@ -74,7 +76,7 @@ export const DeleteBlogTagDialog = ({ tag, open, onOpenChange, onConfirm }: Dele
             </div>
             {tag.postCount > 0 && (
               <div className="mt-3 p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded text-sm text-yellow-800 dark:text-yellow-200">
-                This tag is used in {tag.postCount} posts. Deleting it will remove the tag from those posts.
+                {t('blog.tagUsedInPosts', { count: tag.postCount })}
               </div>
             )}
           </div>
@@ -82,14 +84,14 @@ export const DeleteBlogTagDialog = ({ tag, open, onOpenChange, onConfirm }: Dele
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading} className="cursor-pointer">
-            Cancel
+            {t('buttons.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={loading}
             className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
           >
-            {loading ? 'Deleting...' : 'Delete'}
+            {loading ? t('buttons.deleting') : t('buttons.delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

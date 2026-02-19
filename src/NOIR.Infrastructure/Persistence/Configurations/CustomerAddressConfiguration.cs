@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for CustomerAddress entity.
 /// </summary>
-public class CustomerAddressConfiguration : IEntityTypeConfiguration<Domain.Entities.Customer.CustomerAddress>
+public class CustomerAddressConfiguration : TenantEntityConfiguration<Domain.Entities.Customer.CustomerAddress>
 {
-    public void Configure(EntityTypeBuilder<Domain.Entities.Customer.CustomerAddress> builder)
+    public override void Configure(EntityTypeBuilder<Domain.Entities.Customer.CustomerAddress> builder)
     {
-        builder.ToTable("CustomerAddresses");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("CustomerAddresses");
 
         // CustomerId FK
         builder.Property(e => e.CustomerId)
@@ -55,10 +54,5 @@ public class CustomerAddressConfiguration : IEntityTypeConfiguration<Domain.Enti
 
         builder.Property(e => e.IsDefault)
             .HasDefaultValue(false);
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
-        builder.HasIndex(e => e.TenantId);
     }
 }

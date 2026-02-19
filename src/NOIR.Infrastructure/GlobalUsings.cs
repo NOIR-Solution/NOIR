@@ -147,6 +147,8 @@ global using NOIR.Application.Features.ProductAttributes.DTOs;
 global using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeById;
 global using NOIR.Application.Features.Customers.DTOs;
 global using NOIR.Application.Features.Customers.Queries.GetCustomerById;
+global using NOIR.Application.Features.CustomerGroups.DTOs;
+global using NOIR.Application.Features.CustomerGroups.Queries.GetCustomerGroupById;
 global using NOIR.Application.Features.Orders.DTOs;
 global using NOIR.Application.Features.Orders.Queries.GetOrderById;
 global using NOIR.Application.Features.Reviews.DTOs;

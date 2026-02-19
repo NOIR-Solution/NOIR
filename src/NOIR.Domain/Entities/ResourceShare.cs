@@ -4,7 +4,7 @@ namespace NOIR.Domain.Entities;
 /// Represents a share of a resource with a specific user.
 /// Enables fine-grained access control beyond role-based permissions.
 /// </summary>
-public class ResourceShare : TenantEntity<Guid>, IAuditableEntity
+public class ResourceShare : TenantEntity<Guid>
 {
     /// <summary>
     /// Type of the shared resource (e.g., "document", "folder").
@@ -48,16 +48,6 @@ public class ResourceShare : TenantEntity<Guid>, IAuditableEntity
     /// Copied from the resource when the share is created.
     /// </summary>
     public Guid? ParentResourceId { get; private set; }
-
-    #region IAuditableEntity Implementation
-
-    public string? CreatedBy { get; set; }
-    public string? ModifiedBy { get; set; }
-    public bool IsDeleted { get; set; }
-    public DateTimeOffset? DeletedAt { get; set; }
-    public string? DeletedBy { get; set; }
-
-    #endregion
 
     // Private constructor for EF Core
     private ResourceShare() : base() { }

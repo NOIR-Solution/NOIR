@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for ReviewMedia entity.
 /// </summary>
-public class ReviewMediaConfiguration : IEntityTypeConfiguration<ReviewMedia>
+public class ReviewMediaConfiguration : TenantEntityConfiguration<ReviewMedia>
 {
-    public void Configure(EntityTypeBuilder<ReviewMedia> builder)
+    public override void Configure(EntityTypeBuilder<ReviewMedia> builder)
     {
-        builder.ToTable("ReviewMedia");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("ReviewMedia");
 
         builder.Property(e => e.MediaUrl)
             .HasMaxLength(500)
@@ -33,11 +32,5 @@ public class ReviewMediaConfiguration : IEntityTypeConfiguration<ReviewMedia>
         // Index for ordering
         builder.HasIndex(e => new { e.ReviewId, e.DisplayOrder })
             .HasDatabaseName("IX_ReviewMedia_Review_Sort");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
-        builder.HasIndex(e => e.TenantId)
-            .HasDatabaseName("IX_ReviewMedia_TenantId");
     }
 }

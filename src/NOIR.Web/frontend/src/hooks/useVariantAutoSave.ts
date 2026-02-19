@@ -11,9 +11,13 @@ export const variantRowSchema = z.object({
   sku: z.string().optional().nullable(),
   price: z.coerce.number().min(0, 'Price must be non-negative'),
   compareAtPrice: z.coerce.number().min(0, 'Compare price must be non-negative').optional().nullable(),
+  costPrice: z.coerce.number().min(0, 'Cost price must be non-negative').optional().nullable(),
   stockQuantity: z.coerce.number().int('Stock must be a whole number').min(0, 'Stock must be non-negative'),
   sortOrder: z.coerce.number().int('Sort order must be a whole number').min(0, 'Sort order must be non-negative'),
-})
+}).refine(
+  (data) => !data.compareAtPrice || data.compareAtPrice > data.price,
+  { message: 'Compare-at price must be higher than the regular price', path: ['compareAtPrice'] },
+)
 
 export type VariantRowData = z.infer<typeof variantRowSchema>
 
@@ -76,6 +80,7 @@ export const useVariantAutoSave = ({
     sku: variant.sku || null,
     price: variant.price,
     compareAtPrice: variant.compareAtPrice || null,
+    costPrice: variant.costPrice || null,
     stockQuantity: variant.stockQuantity,
     sortOrder: variant.sortOrder,
   }))
@@ -101,6 +106,7 @@ export const useVariantAutoSave = ({
       sku: variant.sku || null,
       price: variant.price,
       compareAtPrice: variant.compareAtPrice || null,
+      costPrice: variant.costPrice || null,
       stockQuantity: variant.stockQuantity,
       sortOrder: variant.sortOrder,
     }
@@ -154,6 +160,7 @@ export const useVariantAutoSave = ({
         price: data.price,
         sku: data.sku || null,
         compareAtPrice: data.compareAtPrice || null,
+        costPrice: data.costPrice || null,
         stockQuantity: data.stockQuantity,
         sortOrder: data.sortOrder,
       }

@@ -124,7 +124,7 @@ export const PlatformSmtpSettingsTab = () => {
           useSsl: settings.useSsl,
         })
       } catch (err) {
-        const message = err instanceof ApiError ? err.message : 'Failed to load settings'
+        const message = err instanceof ApiError ? err.message : t('platformSettings.smtp.failedToLoadSettings')
         toast.error(message)
       } finally {
         setLoading(false)
@@ -153,7 +153,7 @@ export const PlatformSmtpSettingsTab = () => {
 
       toast.success(t('platformSettings.smtp.saveSuccess'))
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to save settings'
+      const message = err instanceof ApiError ? err.message : t('platformSettings.smtp.failedToSaveSettings')
       toast.error(message)
     } finally {
       setSaving(false)
@@ -201,12 +201,12 @@ export const PlatformSmtpSettingsTab = () => {
               {isConfigured ? (
                 <>
                   <Check className="h-3 w-3 mr-1" />
-                  Configured
+                  {t('platformSettings.smtp.configured')}
                 </>
               ) : (
                 <>
                   <Server className="h-3 w-3 mr-1" />
-                  Using defaults
+                  {t('platformSettings.smtp.usingDefaults')}
                 </>
               )}
             </Badge>
@@ -216,7 +216,7 @@ export const PlatformSmtpSettingsTab = () => {
           {!isConfigured && (
             <Alert className="mb-6">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Using Default Configuration</AlertTitle>
+              <AlertTitle>{t('platformSettings.smtp.usingDefaultConfig')}</AlertTitle>
               <AlertDescription>
                 {t('platformSettings.smtp.notConfigured')}
               </AlertDescription>
@@ -284,7 +284,7 @@ export const PlatformSmtpSettingsTab = () => {
                           placeholder={
                             hasPassword
                               ? t('platformSettings.smtp.passwordPlaceholder')
-                              : 'Enter password'
+                              : t('platformSettings.smtp.enterPassword')
                           }
                           {...field}
                           value={field.value ?? ''}
@@ -413,12 +413,12 @@ export const PlatformSmtpSettingsTab = () => {
                   {testing ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Sending...
+                      {t('platformSettings.smtp.sendingTest')}
                     </>
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Send Test
+                      {t('platformSettings.smtp.sendTestButton')}
                     </>
                   )}
                 </Button>

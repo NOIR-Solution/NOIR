@@ -1,6 +1,6 @@
-import { useState, useDeferredValue, useMemo } from 'react'
+import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Award, Plus, Pencil, Trash2, MoreHorizontal, Globe, ExternalLink } from 'lucide-react'
+import { Search, Award, Plus, Pencil, Trash2, MoreHorizontal, Globe, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -55,6 +55,7 @@ export const BrandsPage = () => {
   const [searchInput, setSearchInput] = useState('')
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
+  const [isFilterPending, startFilterTransition] = useTransition()
   const [brandToEdit, setBrandToEdit] = useState<BrandListItem | null>(null)
   const [brandToDelete, setBrandToDelete] = useState<BrandListItem | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
@@ -66,10 +67,19 @@ export const BrandsPage = () => {
   const error = queryError?.message ?? null
 
   const brands = brandsResponse?.items ?? []
+  const totalCount = brandsResponse?.totalCount ?? 0
+  const totalPages = brandsResponse?.totalPages ?? 1
+  const currentPage = params.page ?? 1
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value)
-    setParams((prev) => ({ ...prev, page: 1 }))
+    startFilterTransition(() => setParams((prev) => ({ ...prev, page: 1 })))
+  }
+
+  const handlePageChange = (page: number) => {
+    startFilterTransition(() => {
+      setParams(prev => ({ ...prev, page }))
+    })
   }
 
   const handleDelete = async () => {
@@ -107,7 +117,7 @@ export const BrandsPage = () => {
             <div className="space-y-1">
               <CardTitle>{t('brands.allBrands', 'All Brands')}</CardTitle>
               <CardDescription>
-                {t('brands.totalCount', { count: brands.length, defaultValue: `${brands.length} brands total` })}
+                {t('brands.totalCount', { count: totalCount, defaultValue: `${totalCount} brands total` })}
               </CardDescription>
             </div>
             <div className="flex items-center gap-3">
@@ -125,7 +135,7 @@ export const BrandsPage = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
               {error}
@@ -271,6 +281,37 @@ export const BrandsPage = () => {
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <p className="text-sm text-muted-foreground">
+                {t('labels.pageOf', { current: currentPage, total: totalPages, defaultValue: `Page ${currentPage} of ${totalPages}` })}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="cursor-pointer"
+                  disabled={currentPage <= 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  aria-label={t('labels.previousPage', 'Previous page')}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="cursor-pointer"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  aria-label={t('labels.nextPage', 'Next page')}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

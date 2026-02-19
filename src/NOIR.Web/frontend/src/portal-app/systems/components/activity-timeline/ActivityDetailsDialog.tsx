@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRegionalSettings, getLocaleForFormat } from '@/contexts/RegionalSettingsContext'
 import {
   Clock,
@@ -154,6 +155,7 @@ const CopyableMetadata = ({
 
 // Component to display a field change
 const FieldChangeItem = ({ change }: { change: FieldChange }) => {
+  const { t } = useTranslation('common')
   return (
     <div className="p-3 rounded-lg border bg-card">
       <div className="flex items-center gap-2 mb-2">
@@ -170,25 +172,25 @@ const FieldChangeItem = ({ change }: { change: FieldChange }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
         {change.operation !== 'Added' && (
           <div className="p-2 rounded bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800">
-            <span className="text-xs text-muted-foreground block mb-1">Old Value:</span>
+            <span className="text-xs text-muted-foreground block mb-1">{t('activityTimeline.oldValue')}:</span>
             <code className="text-xs break-all">
               {change.oldValue !== null && change.oldValue !== undefined
                 ? typeof change.oldValue === 'object'
                   ? JSON.stringify(change.oldValue, null, 2)
                   : String(change.oldValue)
-                : '(null)'}
+                : t('activityTimeline.null')}
             </code>
           </div>
         )}
         {change.operation !== 'Removed' && (
           <div className="p-2 rounded bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800">
-            <span className="text-xs text-muted-foreground block mb-1">New Value:</span>
+            <span className="text-xs text-muted-foreground block mb-1">{t('activityTimeline.newValue')}:</span>
             <code className="text-xs break-all">
               {change.newValue !== null && change.newValue !== undefined
                 ? typeof change.newValue === 'object'
                   ? JSON.stringify(change.newValue, null, 2)
                   : String(change.newValue)
-                : '(null)'}
+                : t('activityTimeline.null')}
             </code>
           </div>
         )}
@@ -202,6 +204,7 @@ export const ActivityDetailsDialog = ({
   open,
   onOpenChange,
 }: ActivityDetailsDialogProps) => {
+  const { t } = useTranslation('common')
   const [details, setDetails] = useState<ActivityDetails | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -213,7 +216,7 @@ export const ActivityDetailsDialog = ({
       setError(null)
       getActivityDetails(entry.id)
         .then(setDetails)
-        .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load details'))
+        .catch((err) => setError(err instanceof Error ? err.message : t('activityTimeline.failedToLoadDetails')))
         .finally(() => setLoading(false))
     } else {
       setDetails(null)
@@ -330,7 +333,7 @@ export const ActivityDetailsDialog = ({
                 {details.entityChanges.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No entity changes recorded</p>
+                    <p>{t('activityTimeline.noEntityChanges')}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -367,27 +370,27 @@ export const ActivityDetailsDialog = ({
                     <div className="space-y-1.5">
                       <h4 className="text-xs text-muted-foreground font-medium uppercase tracking-wide flex items-center gap-2">
                         <FileJson className="h-3.5 w-3.5" />
-                        Handler Changes
+                        {t('activityTimeline.handlerChanges')}
                       </h4>
                       <DiffViewer data={details.dtoDiff} />
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
                       <FileJson className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No handler diff available</p>
+                      <p>{t('activityTimeline.noHandlerDiff')}</p>
                     </div>
                   )}
 
                   {details.inputParameters && (
                     <div className="space-y-1.5">
-                      <h4 className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Input Parameters</h4>
+                      <h4 className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.inputParameters')}</h4>
                       <JsonViewer data={details.inputParameters} defaultExpanded={true} maxDepth={4} />
                     </div>
                   )}
 
                   {details.outputResult && (
                     <div className="space-y-1.5">
-                      <h4 className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Output Result</h4>
+                      <h4 className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.outputResult')}</h4>
                       <JsonViewer data={details.outputResult} defaultExpanded={false} maxDepth={3} />
                     </div>
                   )}
@@ -403,12 +406,12 @@ export const ActivityDetailsDialog = ({
                     {/* Method and Status in a nice row */}
                     <div className="flex items-center gap-6 p-3 bg-muted/50 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Method</span>
+                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.method')}</span>
                         <HttpMethodBadge method={details.httpRequest.method} />
                       </div>
                       <div className="h-6 w-px bg-border" />
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Status</span>
+                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.status')}</span>
                         <Badge
                           variant={
                             details.httpRequest.statusCode >= 200 && details.httpRequest.statusCode < 300
@@ -424,7 +427,7 @@ export const ActivityDetailsDialog = ({
                       </div>
                       <div className="h-6 w-px bg-border" />
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Duration</span>
+                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.duration')}</span>
                         <span className="text-sm font-mono font-medium">
                           {details.httpRequest.durationMs ?? 'N/A'}ms
                         </span>
@@ -433,7 +436,7 @@ export const ActivityDetailsDialog = ({
 
                     {/* Path */}
                     <div className="space-y-1.5">
-                      <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Path</span>
+                      <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.path')}</span>
                       <code className="block p-3 bg-muted/50 rounded-lg text-sm font-mono break-all">
                         {details.httpRequest.path}
                         {details.httpRequest.queryString && (
@@ -444,7 +447,7 @@ export const ActivityDetailsDialog = ({
 
                     {/* Client IP */}
                     <div className="space-y-1.5">
-                      <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Client IP</span>
+                      <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.clientIp')}</span>
                       <code className="block p-3 bg-muted/50 rounded-lg text-sm font-mono">
                         {details.httpRequest.clientIpAddress || 'N/A'}
                       </code>
@@ -453,7 +456,7 @@ export const ActivityDetailsDialog = ({
                     {/* User Agent */}
                     {details.httpRequest.userAgent && (
                       <div className="space-y-1.5">
-                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">User Agent</span>
+                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.userAgent')}</span>
                         <code className="block p-3 bg-muted/50 rounded-lg text-xs font-mono break-all text-muted-foreground">
                           {details.httpRequest.userAgent}
                         </code>
@@ -463,7 +466,7 @@ export const ActivityDetailsDialog = ({
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
                     <Globe className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No HTTP request information available</p>
+                    <p>{t('activityTimeline.noHttpRequest')}</p>
                   </div>
                 )}
               </ScrollArea>
@@ -476,7 +479,7 @@ export const ActivityDetailsDialog = ({
                   data={details.entry}
                   defaultExpanded={true}
                   maxDepth={4}
-                  title="Entry Information"
+                  title={t('activityTimeline.entryInformation')}
                   maxHeight="340px"
                 />
 
@@ -484,7 +487,7 @@ export const ActivityDetailsDialog = ({
                   <div className="space-y-1.5">
                     <h4 className="text-xs font-medium uppercase tracking-wide text-destructive flex items-center gap-2">
                       <AlertCircle className="h-3.5 w-3.5" />
-                      Error Message
+                      {t('activityTimeline.errorMessage')}
                     </h4>
                     <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm font-mono break-all">
                       {details.errorMessage}

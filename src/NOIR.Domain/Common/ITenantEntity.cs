@@ -18,13 +18,24 @@ public interface ITenantEntity
 }
 
 /// <summary>
-/// Base class for tenant-specific entities.
+/// Base class for tenant-specific entities with audit tracking and soft delete.
+/// Implements IAuditableEntity so that AuditableEntityInterceptor automatically
+/// converts Remove() calls to soft-delete for all tenant entities.
 /// </summary>
 /// <typeparam name="TId">The type of the entity's identifier.</typeparam>
-public abstract class TenantEntity<TId> : Entity<TId>, ITenantEntity
+public abstract class TenantEntity<TId> : Entity<TId>, ITenantEntity, IAuditableEntity
     where TId : notnull
 {
     public string? TenantId { get; protected set; }
+
+    // Audit fields - managed by AuditableEntityInterceptor
+    public string? CreatedBy { get; protected set; }
+    public string? ModifiedBy { get; protected set; }
+
+    // Soft delete fields - managed by AuditableEntityInterceptor
+    public bool IsDeleted { get; protected set; }
+    public DateTimeOffset? DeletedAt { get; protected set; }
+    public string? DeletedBy { get; protected set; }
 
     protected TenantEntity() : base()
     {

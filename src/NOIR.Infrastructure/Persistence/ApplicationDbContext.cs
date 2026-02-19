@@ -107,6 +107,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<ProductReview> ProductReviews => Set<ProductReview>();
     public DbSet<ReviewMedia> ReviewMedia => Set<ReviewMedia>();
 
+    // Order Note entities
+    public DbSet<OrderNote> OrderNotes => Set<OrderNote>();
+
+    // Customer Group entities
+    public DbSet<CustomerGroupMembership> CustomerGroupMemberships => Set<CustomerGroupMembership>();
+
     // Analytics entities (Phase 7)
     public DbSet<FilterAnalyticsEvent> FilterAnalyticsEvents => Set<FilterAnalyticsEvent>();
 

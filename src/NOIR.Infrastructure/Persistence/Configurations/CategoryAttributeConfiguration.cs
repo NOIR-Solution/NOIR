@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for CategoryAttribute junction entity.
 /// </summary>
-public class CategoryAttributeConfiguration : IEntityTypeConfiguration<CategoryAttribute>
+public class CategoryAttributeConfiguration : TenantEntityConfiguration<CategoryAttribute>
 {
-    public void Configure(EntityTypeBuilder<CategoryAttribute> builder)
+    public override void Configure(EntityTypeBuilder<CategoryAttribute> builder)
     {
-        builder.ToTable("CategoryAttributes");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("CategoryAttributes");
 
         // Foreign keys
         builder.Property(e => e.CategoryId)
@@ -22,6 +21,7 @@ public class CategoryAttributeConfiguration : IEntityTypeConfiguration<CategoryA
         // Multi-tenant unique constraint: One link per Category-Attribute pair per Tenant (CLAUDE.md Rule 18)
         builder.HasIndex(e => new { e.TenantId, e.CategoryId, e.AttributeId })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_CategoryAttributes_TenantId_CategoryId_AttributeId");
 
         // Category-specific overrides
@@ -54,9 +54,5 @@ public class CategoryAttributeConfiguration : IEntityTypeConfiguration<CategoryA
 
         builder.HasIndex(e => new { e.TenantId, e.AttributeId })
             .HasDatabaseName("IX_CategoryAttributes_TenantId_AttributeId");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
     }
 }

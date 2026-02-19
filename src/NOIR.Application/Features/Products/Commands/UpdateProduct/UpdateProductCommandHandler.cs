@@ -109,6 +109,15 @@ public class UpdateProductCommandHandler
         product.SetInventoryTracking(command.TrackInventory);
         product.UpdateSeo(command.MetaTitle, command.MetaDescription);
 
+        // Update physical properties
+        product.UpdatePhysicalProperties(
+            command.Weight,
+            command.WeightUnit,
+            command.Length,
+            command.Width,
+            command.Height,
+            command.DimensionUnit);
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success(ProductMapper.ToDtoWithCollections(product, categoryName, categorySlug));

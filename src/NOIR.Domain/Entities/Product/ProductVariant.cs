@@ -10,6 +10,7 @@ public class ProductVariant : TenantEntity<Guid>
     public string? Sku { get; private set; }
     public decimal Price { get; private set; }
     public decimal? CompareAtPrice { get; private set; }
+    public decimal? CostPrice { get; private set; }
 
     /// <summary>
     /// Stock quantity with concurrency check for safe updates.
@@ -82,6 +83,14 @@ public class ProductVariant : TenantEntity<Guid>
     public void SetCompareAtPrice(decimal? compareAtPrice)
     {
         CompareAtPrice = compareAtPrice;
+    }
+
+    /// <summary>
+    /// Sets the cost price for profit margin calculations.
+    /// </summary>
+    public void SetCostPrice(decimal? costPrice)
+    {
+        CostPrice = costPrice;
     }
 
     /// <summary>

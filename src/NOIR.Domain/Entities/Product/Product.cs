@@ -35,6 +35,14 @@ public class Product : TenantAggregateRoot<Guid>
     public string? MetaTitle { get; private set; }
     public string? MetaDescription { get; private set; }
 
+    // Physical Properties
+    public decimal? Weight { get; private set; }
+    public string? WeightUnit { get; private set; }  // "kg", "g", "lb", "oz"
+    public decimal? Length { get; private set; }
+    public decimal? Width { get; private set; }
+    public decimal? Height { get; private set; }
+    public string? DimensionUnit { get; private set; }  // "cm", "in", "m"
+
     // Display
     public int SortOrder { get; private set; }
 
@@ -159,6 +167,26 @@ public class Product : TenantAggregateRoot<Guid>
     {
         MetaTitle = metaTitle;
         MetaDescription = metaDescription;
+    }
+
+    /// <summary>
+    /// Updates physical properties (weight and dimensions) for shipping calculations.
+    /// </summary>
+    public void UpdatePhysicalProperties(
+        decimal? weight,
+        string? weightUnit,
+        decimal? length,
+        decimal? width,
+        decimal? height,
+        string? dimensionUnit)
+    {
+        Weight = weight;
+        WeightUnit = weightUnit;
+        Length = length;
+        Width = width;
+        Height = height;
+        DimensionUnit = dimensionUnit;
+        AddDomainEvent(new ProductUpdatedEvent(Id, Name));
     }
 
     /// <summary>

@@ -20,6 +20,12 @@ public sealed record CreateProductCommand(
     string? MetaTitle,
     string? MetaDescription,
     int SortOrder,
+    decimal? Weight,
+    string? WeightUnit,
+    decimal? Length,
+    decimal? Width,
+    decimal? Height,
+    string? DimensionUnit,
     List<CreateProductVariantDto>? Variants,
     List<CreateProductImageDto>? Images) : IAuditableCommand<ProductDto>
 {

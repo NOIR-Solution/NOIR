@@ -7,6 +7,7 @@ import { RegionalSettingsProvider } from '@/contexts/RegionalSettingsContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { AccessibilityProvider } from '@/contexts/AccessibilityContext'
+import { DensityProvider } from '@/contexts/DensityContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { PortalLayout } from '@/layouts/PortalLayout'
 import { PageSkeleton } from '@uikit'
@@ -49,10 +50,13 @@ const ShippingPage = lazy(() => import('@/portal-app/shipping/features/shipping-
 // Customers
 const CustomersPage = lazy(() => import('@/portal-app/customers/features/customer-list/CustomersPage'))
 const CustomerDetailPage = lazy(() => import('@/portal-app/customers/features/customer-detail/CustomerDetailPage'))
+// Customer Groups
+const CustomerGroupsPage = lazy(() => import('@/portal-app/customer-groups/features/customer-group-list/CustomerGroupsPage'))
 // Reviews
 const ReviewsPage = lazy(() => import('@/portal-app/reviews/features/review-list/ReviewsPage'))
 // Wishlists
 const WishlistAnalyticsPage = lazy(() => import('@/portal-app/wishlists/features/wishlist-analytics/WishlistAnalyticsPage'))
+const WishlistPage = lazy(() => import('@/portal-app/wishlists/features/wishlist-page/WishlistPage'))
 // Marketing
 const PromotionsPage = lazy(() => import('@/portal-app/promotions/features/promotion-list/PromotionsPage'))
 const ReportsPage = lazy(() => import('@/portal-app/reports/features/reports-page/ReportsPage'))
@@ -78,7 +82,8 @@ export const App = () => {
   return (
     <ThemeProvider defaultTheme="system">
       <AccessibilityProvider>
-        <AuthProvider>
+        <DensityProvider>
+          <AuthProvider>
           <BrandingProvider>
             <RegionalSettingsProvider>
               <NotificationProvider>
@@ -158,10 +163,13 @@ export const App = () => {
                         {/* Customers */}
                         <Route path="ecommerce/customers" element={<Suspense fallback={<LazyFallback />}><CustomersPage /></Suspense>} />
                         <Route path="ecommerce/customers/:id" element={<Suspense fallback={<LazyFallback />}><CustomerDetailPage /></Suspense>} />
+                        {/* Customer Groups */}
+                        <Route path="ecommerce/customer-groups" element={<Suspense fallback={<LazyFallback />}><CustomerGroupsPage /></Suspense>} />
                         {/* Reviews */}
                         <Route path="ecommerce/reviews" element={<Suspense fallback={<LazyFallback />}><ReviewsPage /></Suspense>} />
                         {/* Wishlists */}
                         <Route path="ecommerce/wishlists" element={<Suspense fallback={<LazyFallback />}><WishlistAnalyticsPage /></Suspense>} />
+                        <Route path="ecommerce/wishlists/manage" element={<Suspense fallback={<LazyFallback />}><WishlistPage /></Suspense>} />
                         {/* Marketing */}
                         <Route path="marketing/promotions" element={<Suspense fallback={<LazyFallback />}><PromotionsPage /></Suspense>} />
                         <Route path="marketing/reports" element={<Suspense fallback={<LazyFallback />}><ReportsPage /></Suspense>} />
@@ -178,7 +186,8 @@ export const App = () => {
               </NotificationProvider>
             </RegionalSettingsProvider>
           </BrandingProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </DensityProvider>
       </AccessibilityProvider>
     </ThemeProvider>
   )

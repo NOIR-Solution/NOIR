@@ -1,5 +1,5 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { getOrders, getOrderById, type GetOrdersParams } from '@/services/orders'
+import { getOrders, getOrderById, getOrderNotes, type GetOrdersParams } from '@/services/orders'
 import { orderKeys } from './queryKeys'
 
 export const useOrdersQuery = (params: GetOrdersParams) =>
@@ -14,4 +14,11 @@ export const useOrderQuery = (id: string | undefined) =>
     queryKey: orderKeys.detail(id!),
     queryFn: () => getOrderById(id!),
     enabled: !!id,
+  })
+
+export const useOrderNotesQuery = (orderId: string | undefined) =>
+  useQuery({
+    queryKey: orderKeys.notes(orderId!),
+    queryFn: () => getOrderNotes(orderId!),
+    enabled: !!orderId,
   })

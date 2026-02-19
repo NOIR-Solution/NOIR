@@ -50,6 +50,9 @@ export const EditableVariantsTable = ({
               {t('products.variants.columnComparePrice')}
             </th>
             <th className="p-2 text-right text-sm font-medium text-muted-foreground">
+              {t('products.variants.columnCostPrice')}
+            </th>
+            <th className="p-2 text-right text-sm font-medium text-muted-foreground">
               {t('products.variants.columnStock')}
             </th>
             <th className="p-2 text-right text-sm font-medium text-muted-foreground">

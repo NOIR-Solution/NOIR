@@ -4,14 +4,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// EF Core configuration for ProductAttributeAssignment junction entity.
 /// Stores a product's actual attribute values with polymorphic value storage.
 /// </summary>
-public class ProductAttributeAssignmentConfiguration : IEntityTypeConfiguration<ProductAttributeAssignment>
+public class ProductAttributeAssignmentConfiguration : TenantEntityConfiguration<ProductAttributeAssignment>
 {
-    public void Configure(EntityTypeBuilder<ProductAttributeAssignment> builder)
+    public override void Configure(EntityTypeBuilder<ProductAttributeAssignment> builder)
     {
-        builder.ToTable("ProductAttributeAssignments");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("ProductAttributeAssignments");
 
         // Foreign keys
         builder.Property(e => e.ProductId)
@@ -26,6 +25,7 @@ public class ProductAttributeAssignmentConfiguration : IEntityTypeConfiguration<
         // Note: VariantId can be null for product-level attributes, so we need a filtered index for non-variant
         builder.HasIndex(e => new { e.TenantId, e.ProductId, e.AttributeId, e.VariantId })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_ProductAttributeAssignments_TenantId_ProductId_AttributeId_VariantId");
 
         // Polymorphic value storage
@@ -114,9 +114,5 @@ public class ProductAttributeAssignmentConfiguration : IEntityTypeConfiguration<
 
         builder.HasIndex(e => new { e.TenantId, e.AttributeValueId })
             .HasDatabaseName("IX_ProductAttributeAssignments_TenantId_AttributeValueId");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
     }
 }

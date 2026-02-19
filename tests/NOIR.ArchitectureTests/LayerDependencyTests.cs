@@ -140,12 +140,18 @@ public class LayerDependencyTests
     public void Application_Core_ShouldNotDependOn_EntityFrameworkCore()
     {
         // Act
-        // Note: Some features use IApplicationDbContext for direct EF Core access:
+        // Note: Some features use IApplicationDbContext for direct EF Core access
+        // on non-aggregate entities (TenantEntity) where IRepository is not applicable:
         // - EmailTemplates and LegalPages: copy-on-write pattern for tenant override queries
         // - FilterAnalytics: analytics aggregation queries
         // - ProductFilter: faceted search and filter queries
         // - ProductFilterIndex: sync handler for denormalized filter indexes
         // - ProductAttributes: complex attribute assignment queries
+        // - Orders.Commands.AddOrderNote/DeleteOrderNote, Orders.Queries.GetOrderNotes:
+        //     OrderNote is TenantEntity (not AggregateRoot)
+        // - CustomerGroups.Commands.DeleteCustomerGroup: queries CustomerGroupMemberships for HasMembers guard
+        // - CustomerGroups.Commands.AssignCustomersToGroup: directly adds CustomerGroupMembership entities
+        // - CustomerGroups.Commands.RemoveCustomersFromGroup: directly removes CustomerGroupMembership entities
         var result = Types
             .InAssembly(ApplicationAssembly)
             .That()
@@ -162,6 +168,18 @@ public class LayerDependencyTests
             .DoNotResideInNamespace("NOIR.Application.Features.ProductFilterIndex")
             .And()
             .DoNotResideInNamespace("NOIR.Application.Features.ProductAttributes")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.Orders.Commands.AddOrderNote")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.Orders.Commands.DeleteOrderNote")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.Orders.Queries.GetOrderNotes")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.CustomerGroups.Commands.DeleteCustomerGroup")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.CustomerGroups.Commands.AssignCustomersToGroup")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.CustomerGroups.Commands.RemoveCustomersFromGroup")
             .ShouldNot()
             .HaveDependencyOn("Microsoft.EntityFrameworkCore")
             .GetResult();
@@ -409,6 +427,56 @@ public class LayerDependencyTests
         // Assert
         implementedInterfaces.Should().NotBeEmpty(
             because: "Infrastructure layer should implement Application layer interfaces");
+    }
+
+    #endregion
+
+    #region Soft Delete Consistency Tests
+
+    [Fact]
+    public void AllTenantEntities_ShouldImplement_IAuditableEntity()
+    {
+        // Act - All concrete TenantEntity<> and PlatformTenantEntity<> subclasses must implement IAuditableEntity
+        var tenantBaseTypes = new[]
+        {
+            typeof(Domain.Common.TenantEntity<>),
+            typeof(Domain.Common.PlatformTenantEntity<>)
+        };
+
+        var tenantEntityTypes = Types
+            .InAssembly(DomainAssembly)
+            .That()
+            .ResideInNamespace("NOIR.Domain")
+            .And()
+            .AreClasses()
+            .And()
+            .AreNotAbstract()
+            .GetTypes()
+            .Where(t =>
+            {
+                var baseType = t.BaseType;
+                while (baseType != null && baseType != typeof(object))
+                {
+                    if (baseType.IsGenericType &&
+                        tenantBaseTypes.Contains(baseType.GetGenericTypeDefinition()))
+                    {
+                        return true;
+                    }
+                    baseType = baseType.BaseType;
+                }
+                return false;
+            });
+
+        // Assert
+        foreach (var type in tenantEntityTypes)
+        {
+            typeof(Domain.Common.IAuditableEntity).IsAssignableFrom(type).Should().BeTrue(
+                because: $"Tenant entity '{type.Name}' must implement IAuditableEntity for universal soft-delete support");
+        }
+
+        // Verify we actually found tenant entities (guard against false positive)
+        tenantEntityTypes.Should().NotBeEmpty(
+            because: "There should be concrete TenantEntity<> or PlatformTenantEntity<> implementations in the domain");
     }
 
     #endregion

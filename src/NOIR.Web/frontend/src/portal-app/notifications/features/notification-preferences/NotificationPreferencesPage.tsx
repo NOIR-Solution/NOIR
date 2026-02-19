@@ -4,6 +4,7 @@
  * Manage notification preferences per category.
  */
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { ArrowLeft, Save, Bell, Mail, Shield, Workflow, Users, Settings2, Loader2 } from 'lucide-react'
 import {
@@ -22,42 +23,23 @@ import { getPreferences, updatePreferences } from '@/services/notifications'
 import type { NotificationPreference, NotificationCategory, EmailFrequency } from '@/types'
 import { cn } from '@/lib/utils'
 
-const categoryConfig: Record<NotificationCategory, { icon: typeof Bell; label: string; description: string }> = {
-  system: {
-    icon: Settings2,
-    label: 'System',
-    description: 'System updates, maintenance notices, and announcements',
-  },
-  userAction: {
-    icon: Users,
-    label: 'User Actions',
-    description: 'Notifications about user activity and interactions',
-  },
-  workflow: {
-    icon: Workflow,
-    label: 'Workflow',
-    description: 'Approvals, task assignments, and workflow updates',
-  },
-  security: {
-    icon: Shield,
-    label: 'Security',
-    description: 'Login alerts, password changes, and security events',
-  },
-  integration: {
-    icon: Bell,
-    label: 'Integration',
-    description: 'External service notifications and API events',
-  },
+const categoryConfig: Record<NotificationCategory, { icon: typeof Bell }> = {
+  system: { icon: Settings2 },
+  userAction: { icon: Users },
+  workflow: { icon: Workflow },
+  security: { icon: Shield },
+  integration: { icon: Bell },
 }
 
-const emailFrequencyOptions: { value: EmailFrequency; label: string }[] = [
-  { value: 'none', label: 'Never' },
-  { value: 'immediate', label: 'Immediate' },
-  { value: 'daily', label: 'Daily digest' },
-  { value: 'weekly', label: 'Weekly digest' },
+const emailFrequencyOptions: { value: EmailFrequency }[] = [
+  { value: 'none' },
+  { value: 'immediate' },
+  { value: 'daily' },
+  { value: 'weekly' },
 ]
 
 export const NotificationPreferencesPage = () => {
+  const { t } = useTranslation('common')
   const [preferences, setPreferences] = useState<NotificationPreference[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -70,7 +52,7 @@ export const NotificationPreferencesPage = () => {
         const data = await getPreferences()
         setPreferences(data)
       } catch {
-        toast.error('Failed to load preferences')
+        toast.error(t('notifications.failedToLoad'))
       } finally {
         setIsLoading(false)
       }
@@ -106,10 +88,10 @@ export const NotificationPreferencesPage = () => {
           emailFrequency: p.emailFrequency,
         })),
       })
-      toast.success('Preferences saved successfully')
+      toast.success(t('notifications.savedSuccessfully'))
       setHasChanges(false)
     } catch {
-      toast.error('Failed to save preferences')
+      toast.error(t('notifications.failedToSave'))
     } finally {
       setIsSaving(false)
     }
@@ -180,10 +162,10 @@ export const NotificationPreferencesPage = () => {
                 <ArrowLeft className="size-4" />
               </ViewTransitionLink>
             </Button>
-            <h1 className="text-2xl font-bold text-foreground">Notification Preferences</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t('notifications.preferencesTitle')}</h1>
           </div>
           <p className="text-muted-foreground ml-11">
-            Choose how you want to receive notifications for each category.
+            {t('notifications.preferencesDescription')}
           </p>
         </div>
         <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
@@ -192,7 +174,7 @@ export const NotificationPreferencesPage = () => {
           ) : (
             <Save className="size-4 mr-2" />
           )}
-          {isSaving ? 'Saving...' : 'Save Changes'}
+          {isSaving ? t('buttons.saving') : t('notifications.saveChanges')}
         </Button>
       </div>
 
@@ -210,8 +192,8 @@ export const NotificationPreferencesPage = () => {
                     <Icon className="size-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">{config.label}</CardTitle>
-                    <CardDescription className="text-sm">{config.description}</CardDescription>
+                    <CardTitle className="text-base">{t(`notifications.categories.${pref.category}`)}</CardTitle>
+                    <CardDescription className="text-sm">{t(`notifications.categories.${pref.category}Description`)}</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -221,7 +203,7 @@ export const NotificationPreferencesPage = () => {
                   <div className="flex items-center gap-3">
                     <Bell className="size-4 text-muted-foreground" />
                     <Label htmlFor={`inapp-${pref.category}`} className="cursor-pointer font-normal">
-                      In-app notifications
+                      {t('notifications.inAppNotifications')}
                     </Label>
                   </div>
                   <button
@@ -248,7 +230,7 @@ export const NotificationPreferencesPage = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <Mail className="size-4 text-muted-foreground" />
-                    <Label className="font-normal">Email notifications</Label>
+                    <Label className="font-normal">{t('notifications.emailNotifications')}</Label>
                   </div>
                   <div className="flex flex-wrap gap-2 ml-7">
                     {emailFrequencyOptions.map((option) => (
@@ -262,7 +244,7 @@ export const NotificationPreferencesPage = () => {
                             : 'bg-background hover:bg-muted border-input'
                         )}
                       >
-                        {option.label}
+                        {t(`notifications.emailFrequency.${option.value}`)}
                       </button>
                     ))}
                   </div>
@@ -275,7 +257,7 @@ export const NotificationPreferencesPage = () => {
 
       {/* Info */}
       <p className="text-sm text-muted-foreground mt-6">
-        Note: Security notifications are always sent immediately by email for your protection.
+        {t('notifications.securityNote')}
       </p>
     </div>
   )

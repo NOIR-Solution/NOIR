@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for PromotionUsage entity.
 /// </summary>
-public class PromotionUsageConfiguration : IEntityTypeConfiguration<Domain.Entities.Promotion.PromotionUsage>
+public class PromotionUsageConfiguration : TenantEntityConfiguration<Domain.Entities.Promotion.PromotionUsage>
 {
-    public void Configure(EntityTypeBuilder<Domain.Entities.Promotion.PromotionUsage> builder)
+    public override void Configure(EntityTypeBuilder<Domain.Entities.Promotion.PromotionUsage> builder)
     {
-        builder.ToTable("PromotionUsages");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("PromotionUsages");
 
         // UserId
         builder.Property(e => e.UserId)
@@ -36,9 +35,5 @@ public class PromotionUsageConfiguration : IEntityTypeConfiguration<Domain.Entit
 
         builder.HasIndex(e => new { e.TenantId, e.UsedAt })
             .HasDatabaseName("IX_PromotionUsages_TenantId_UsedAt");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
     }
 }

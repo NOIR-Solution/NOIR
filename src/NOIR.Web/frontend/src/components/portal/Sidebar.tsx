@@ -45,6 +45,7 @@ import {
   UserCheck,
   BarChart3,
   Heart,
+  UsersRound,
 } from 'lucide-react'
 import {
   Badge,
@@ -119,6 +120,7 @@ const navSections: NavSection[] = [
       { titleKey: 'ecommerce.inventory', icon: Warehouse, path: '/portal/ecommerce/inventory', permission: Permissions.InventoryRead },
       { titleKey: 'ecommerce.shipping', icon: Truck, path: '/portal/ecommerce/shipping', permission: Permissions.OrdersRead },
       { titleKey: 'ecommerce.customers', icon: UserCheck, path: '/portal/ecommerce/customers', permission: Permissions.CustomersRead },
+      { titleKey: 'ecommerce.customerGroups', icon: UsersRound, path: '/portal/ecommerce/customer-groups', permission: Permissions.CustomerGroupsRead },
       { titleKey: 'ecommerce.reviews', icon: Star, path: '/portal/ecommerce/reviews', permission: Permissions.ReviewsRead },
       { titleKey: 'ecommerce.wishlists', icon: Heart, path: '/portal/ecommerce/wishlists', permission: Permissions.WishlistsRead },
     ],

@@ -106,10 +106,10 @@ export const EmailTemplatesTab = ({ onEdit }: EmailTemplatesTabProps) => {
                       </div>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => onEdit(template.id)} className="cursor-pointer">
+                      <Button variant="ghost" size="icon" onClick={() => onEdit(template.id)} className="cursor-pointer" aria-label={`${t('buttons.edit')} ${formatDisplayName(template.name)}`}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handlePreview(template)} className="cursor-pointer">
+                      <Button variant="ghost" size="icon" onClick={() => handlePreview(template)} className="cursor-pointer" aria-label={`${t('buttons.preview')} ${formatDisplayName(template.name)}`}>
                         <Eye className="h-4 w-4" />
                       </Button>
                     </div>

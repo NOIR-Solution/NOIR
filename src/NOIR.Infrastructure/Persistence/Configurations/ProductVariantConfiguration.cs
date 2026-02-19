@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for ProductVariant entity.
 /// </summary>
-public class ProductVariantConfiguration : IEntityTypeConfiguration<ProductVariant>
+public class ProductVariantConfiguration : TenantEntityConfiguration<ProductVariant>
 {
-    public void Configure(EntityTypeBuilder<ProductVariant> builder)
+    public override void Configure(EntityTypeBuilder<ProductVariant> builder)
     {
-        builder.ToTable("ProductVariants");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("ProductVariants");
 
         builder.Property(e => e.Name)
             .HasMaxLength(100)
@@ -21,13 +20,16 @@ public class ProductVariantConfiguration : IEntityTypeConfiguration<ProductVaria
 
         builder.HasIndex(e => new { e.TenantId, e.Sku })
             .IsUnique()
-            .HasFilter("[Sku] IS NOT NULL")
+            .HasFilter("[Sku] IS NOT NULL AND [IsDeleted] = 0")
             .HasDatabaseName("IX_ProductVariants_TenantId_Sku");
 
         builder.Property(e => e.Price)
             .HasPrecision(18, 2);
 
         builder.Property(e => e.CompareAtPrice)
+            .HasPrecision(18, 2);
+
+        builder.Property(e => e.CostPrice)
             .HasPrecision(18, 2);
 
         // Concurrency token for stock updates
@@ -60,12 +62,6 @@ public class ProductVariantConfiguration : IEntityTypeConfiguration<ProductVaria
         // Product lookup index
         builder.HasIndex(e => new { e.ProductId, e.SortOrder })
             .HasDatabaseName("IX_ProductVariants_Product_Sort");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
-
-        builder.HasIndex(e => e.TenantId);
 
         // Ignore computed properties
         builder.Ignore(e => e.InStock);

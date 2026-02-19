@@ -29,7 +29,7 @@ public class CreateOrderCommandHandler
         if (command.Items is null || command.Items.Count == 0)
         {
             return Result.Failure<OrderDto>(
-                Error.Validation("Items", "Order must contain at least one item.", "NOIR-ORDER-001"));
+                Error.Validation("Items", "Order must contain at least one item.", ErrorCodes.Order.MustHaveItems));
         }
 
         // Generate order number

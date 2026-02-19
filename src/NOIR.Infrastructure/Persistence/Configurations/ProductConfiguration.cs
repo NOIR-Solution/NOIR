@@ -41,6 +41,25 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMaxLength(10)
             .HasDefaultValue("VND");
 
+        // Physical Properties
+        builder.Property(e => e.Weight)
+            .HasPrecision(18, 4);
+
+        builder.Property(e => e.WeightUnit)
+            .HasMaxLength(10);
+
+        builder.Property(e => e.Length)
+            .HasPrecision(18, 4);
+
+        builder.Property(e => e.Width)
+            .HasPrecision(18, 4);
+
+        builder.Property(e => e.Height)
+            .HasPrecision(18, 4);
+
+        builder.Property(e => e.DimensionUnit)
+            .HasMaxLength(10);
+
         // Status
         builder.Property(e => e.Status)
             .HasConversion<int>();

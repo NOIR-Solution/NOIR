@@ -123,6 +123,16 @@ export interface CreateAddressRequest {
   postalCode?: string | null
 }
 
+export interface OrderNoteDto {
+  id: string
+  orderId: string
+  content: string
+  createdByUserId: string
+  createdByUserName: string
+  isInternal: boolean
+  createdAt: string
+}
+
 export interface CreateOrderRequest {
   customerEmail: string
   customerPhone?: string | null

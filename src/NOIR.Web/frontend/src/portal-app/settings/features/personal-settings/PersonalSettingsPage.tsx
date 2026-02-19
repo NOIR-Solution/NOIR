@@ -1,13 +1,14 @@
 import { useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Shield, User } from 'lucide-react'
+import { Shield, User, Paintbrush } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ChangePasswordForm } from '../../components/personal-settings/ChangePasswordForm'
 import { ProfileForm } from '../../components/personal-settings/ProfileForm'
 import { SessionManagement } from '../../components/personal-settings/SessionManagement'
+import { AppearanceSettings } from '../../components/personal-settings/AppearanceSettings'
 import { usePageContext } from '@/hooks/usePageContext'
 
-type SettingsSection = 'profile' | 'security'
+type SettingsSection = 'profile' | 'security' | 'appearance'
 
 interface NavItem {
   id: SettingsSection
@@ -18,6 +19,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: 'profile', icon: User, labelKey: 'profile.personalInfo' },
   { id: 'security', icon: Shield, labelKey: 'profile.security' },
+  { id: 'appearance', icon: Paintbrush, labelKey: 'profile.appearance' },
 ]
 
 export const PersonalSettingsPage = () => {
@@ -44,6 +46,7 @@ export const PersonalSettingsPage = () => {
               const isActive = activeSection === item.id
               return (
                 <button
+                  type="button"
                   key={item.id}
                   onClick={() => startSectionTransition(() => setActiveSection(item.id))}
                   className={cn(
@@ -70,6 +73,7 @@ export const PersonalSettingsPage = () => {
               <SessionManagement />
             </div>
           )}
+          {activeSection === 'appearance' && <AppearanceSettings />}
         </main>
       </div>
     </div>

@@ -1,16 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NOIR.Domain.Entities.Inventory;
-
 namespace NOIR.Infrastructure.Persistence.Configurations;
 
-public class InventoryReceiptItemConfiguration : IEntityTypeConfiguration<InventoryReceiptItem>
+public class InventoryReceiptItemConfiguration : TenantEntityConfiguration<InventoryReceiptItem>
 {
-    public void Configure(EntityTypeBuilder<InventoryReceiptItem> builder)
+    public override void Configure(EntityTypeBuilder<InventoryReceiptItem> builder)
     {
-        builder.ToTable("InventoryReceiptItems");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
+        builder.ToTable("InventoryReceiptItems");
 
         builder.Property(e => e.ProductName)
             .IsRequired()
@@ -32,12 +28,5 @@ public class InventoryReceiptItemConfiguration : IEntityTypeConfiguration<Invent
         // Index for receipt items lookup
         builder.HasIndex(e => e.InventoryReceiptId)
             .HasDatabaseName("IX_InventoryReceiptItems_ReceiptId");
-
-        // TenantId index
-        builder.HasIndex(e => e.TenantId);
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
     }
 }

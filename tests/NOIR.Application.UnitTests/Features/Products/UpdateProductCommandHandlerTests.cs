@@ -54,7 +54,13 @@ public class UpdateProductCommandHandlerTests
         bool trackInventory = true,
         string? metaTitle = null,
         string? metaDescription = null,
-        int sortOrder = 0)
+        int sortOrder = 0,
+        decimal? weight = null,
+        string? weightUnit = null,
+        decimal? length = null,
+        decimal? width = null,
+        decimal? height = null,
+        string? dimensionUnit = null)
     {
         return new UpdateProductCommand(
             id ?? Guid.NewGuid(),
@@ -73,7 +79,13 @@ public class UpdateProductCommandHandlerTests
             trackInventory,
             metaTitle,
             metaDescription,
-            sortOrder);
+            sortOrder,
+            weight,
+            weightUnit,
+            length,
+            width,
+            height,
+            dimensionUnit);
     }
 
     private static ProductCategory CreateTestCategory(

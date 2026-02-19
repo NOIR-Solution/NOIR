@@ -26,7 +26,7 @@ public class ShipOrderCommandHandler
         if (order is null)
         {
             return Result.Failure<OrderDto>(
-                Error.NotFound($"Order with ID '{command.OrderId}' not found.", "NOIR-ORDER-002"));
+                Error.NotFound($"Order with ID '{command.OrderId}' not found.", ErrorCodes.Order.NotFound));
         }
 
         // Intentional auto-transition: If order is in Confirmed state, automatically
@@ -45,7 +45,7 @@ public class ShipOrderCommandHandler
         catch (InvalidOperationException ex)
         {
             return Result.Failure<OrderDto>(
-                Error.Validation("Status", ex.Message, "NOIR-ORDER-004"));
+                Error.Validation("Status", ex.Message, ErrorCodes.Order.InvalidShipTransition));
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

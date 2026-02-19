@@ -47,6 +47,7 @@ public class UpdateProductVariantCommandHandler
         // Update variant
         variant.UpdateDetails(command.Name, command.Price, command.Sku);
         variant.SetCompareAtPrice(command.CompareAtPrice);
+        variant.SetCostPrice(command.CostPrice);
         variant.SetStock(command.StockQuantity);
         variant.SetSortOrder(command.SortOrder);
 

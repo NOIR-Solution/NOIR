@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for ProductAttributeValue entity.
 /// </summary>
-public class ProductAttributeValueConfiguration : IEntityTypeConfiguration<ProductAttributeValue>
+public class ProductAttributeValueConfiguration : TenantEntityConfiguration<ProductAttributeValue>
 {
-    public void Configure(EntityTypeBuilder<ProductAttributeValue> builder)
+    public override void Configure(EntityTypeBuilder<ProductAttributeValue> builder)
     {
-        builder.ToTable("ProductAttributeValues");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("ProductAttributeValues");
 
         // Identity
         builder.Property(e => e.Value)
@@ -24,6 +23,7 @@ public class ProductAttributeValueConfiguration : IEntityTypeConfiguration<Produ
         // Multi-tenant unique constraint: Value unique within Attribute per Tenant (CLAUDE.md Rule 18)
         builder.HasIndex(e => new { e.TenantId, e.AttributeId, e.Value })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_ProductAttributeValues_TenantId_AttributeId_Value");
 
         // Visual display
@@ -59,9 +59,5 @@ public class ProductAttributeValueConfiguration : IEntityTypeConfiguration<Produ
 
         builder.HasIndex(e => new { e.TenantId, e.AttributeId, e.SortOrder })
             .HasDatabaseName("IX_ProductAttributeValues_TenantId_AttributeId_SortOrder");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
     }
 }

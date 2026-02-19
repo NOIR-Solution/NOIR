@@ -78,6 +78,7 @@ interface FieldErrors {
 
 export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDialogProps) => {
   const { t } = useTranslation('common')
+  const { t: tAuth } = useTranslation('auth')
   const { data: availableRoles = [], isLoading: loadingRoles } = useAvailableRolesQuery()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -307,6 +308,7 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? tAuth('login.hidePassword') : tAuth('login.showPassword')}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4 text-muted-foreground" />

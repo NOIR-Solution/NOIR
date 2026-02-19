@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { OrderDto } from '@/types/order'
+import type { OrderDto, OrderNoteDto } from '@/types/order'
 import {
   createOrder,
   confirmOrder,
@@ -8,6 +8,8 @@ import {
   completeOrder,
   cancelOrder,
   returnOrder,
+  addOrderNote,
+  deleteOrderNote,
 } from '@/services/orders'
 import { orderKeys } from './queryKeys'
 
@@ -78,5 +80,40 @@ export const useReturnOrderMutation = () => {
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) => returnOrder(id, reason),
     onSuccess: onOrderMutationSuccess(queryClient),
+  })
+}
+
+export const useAddOrderNoteMutation = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ orderId, content }: { orderId: string; content: string }) =>
+      addOrderNote(orderId, content),
+    onSuccess: (newNote, variables) => {
+      queryClient.setQueryData<OrderNoteDto[]>(
+        orderKeys.notes(variables.orderId),
+        (old) => [newNote, ...(old ?? [])],
+      )
+    },
+  })
+}
+
+export const useDeleteOrderNoteMutation = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ orderId, noteId }: { orderId: string; noteId: string }) =>
+      deleteOrderNote(orderId, noteId),
+    onMutate: async ({ orderId, noteId }) => {
+      const key = orderKeys.notes(orderId)
+      await queryClient.cancelQueries({ queryKey: key })
+      const prev = queryClient.getQueryData<OrderNoteDto[]>(key)
+      queryClient.setQueryData<OrderNoteDto[]>(key, (old) => old?.filter((n) => n.id !== noteId) ?? [])
+      return { prev, key }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.prev !== undefined) queryClient.setQueryData(ctx.key, ctx.prev)
+    },
+    onSettled: (_data, _err, variables) => {
+      queryClient.invalidateQueries({ queryKey: orderKeys.notes(variables.orderId) })
+    },
   })
 }

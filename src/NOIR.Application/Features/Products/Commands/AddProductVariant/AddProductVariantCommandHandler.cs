@@ -46,6 +46,11 @@ public class AddProductVariantCommandHandler
             variant.SetCompareAtPrice(command.CompareAtPrice);
         }
 
+        if (command.CostPrice.HasValue)
+        {
+            variant.SetCostPrice(command.CostPrice);
+        }
+
         if (command.StockQuantity > 0)
         {
             variant.SetStock(command.StockQuantity);

@@ -1,12 +1,15 @@
+using NOIR.Application.Features.Orders.Commands.AddOrderNote;
 using NOIR.Application.Features.Orders.Commands.CancelOrder;
 using NOIR.Application.Features.Orders.Commands.CompleteOrder;
 using NOIR.Application.Features.Orders.Commands.ConfirmOrder;
 using NOIR.Application.Features.Orders.Commands.CreateOrder;
 using NOIR.Application.Features.Orders.Commands.DeliverOrder;
+using NOIR.Application.Features.Orders.Commands.DeleteOrderNote;
 using NOIR.Application.Features.Orders.Commands.ReturnOrder;
 using NOIR.Application.Features.Orders.Commands.ShipOrder;
 using NOIR.Application.Features.Orders.DTOs;
 using NOIR.Application.Features.Orders.Queries.GetOrderById;
+using NOIR.Application.Features.Orders.Queries.GetOrderNotes;
 using NOIR.Application.Features.Orders.Queries.GetOrders;
 
 namespace NOIR.Web.Endpoints;
@@ -193,6 +196,62 @@ public static class OrderEndpoints
         .Produces<OrderDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Get order notes
+        group.MapGet("/{orderId:guid}/notes", async (Guid orderId, IMessageBus bus) =>
+        {
+            var query = new GetOrderNotesQuery(orderId);
+            var result = await bus.InvokeAsync<Result<IReadOnlyList<OrderNoteDto>>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.OrdersRead)
+        .WithName("GetOrderNotes")
+        .WithSummary("Get notes for an order")
+        .WithDescription("Returns all internal staff notes for an order, ordered by newest first.")
+        .Produces<IReadOnlyList<OrderNoteDto>>(StatusCodes.Status200OK);
+
+        // Add order note
+        group.MapPost("/{orderId:guid}/notes", async (
+            Guid orderId,
+            [FromBody] AddOrderNoteRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new AddOrderNoteCommand(orderId, request.Content)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<OrderNoteDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.OrdersWrite)
+        .WithName("AddOrderNote")
+        .WithSummary("Add a note to an order")
+        .WithDescription("Adds an internal staff note to an order.")
+        .Produces<OrderNoteDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Delete order note
+        group.MapDelete("/{orderId:guid}/notes/{noteId:guid}", async (
+            Guid orderId,
+            Guid noteId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new DeleteOrderNoteCommand(orderId, noteId)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<OrderNoteDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.OrdersWrite)
+        .WithName("DeleteOrderNote")
+        .WithSummary("Delete an order note")
+        .WithDescription("Permanently deletes an internal staff note from an order.")
+        .Produces<OrderNoteDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 }
 
@@ -210,3 +269,8 @@ public sealed record CancelOrderRequest(string? Reason);
 /// Request DTO for returning an order.
 /// </summary>
 public sealed record ReturnOrderRequest(string? Reason);
+
+/// <summary>
+/// Request DTO for adding an order note.
+/// </summary>
+public sealed record AddOrderNoteRequest(string Content);

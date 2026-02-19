@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for WishlistItem entity.
 /// </summary>
-public class WishlistItemConfiguration : IEntityTypeConfiguration<Domain.Entities.Wishlist.WishlistItem>
+public class WishlistItemConfiguration : TenantEntityConfiguration<Domain.Entities.Wishlist.WishlistItem>
 {
-    public void Configure(EntityTypeBuilder<Domain.Entities.Wishlist.WishlistItem> builder)
+    public override void Configure(EntityTypeBuilder<Domain.Entities.Wishlist.WishlistItem> builder)
     {
-        builder.ToTable("WishlistItems");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("WishlistItems");
 
         // Product reference
         builder.Property(e => e.ProductId)
@@ -46,14 +45,11 @@ public class WishlistItemConfiguration : IEntityTypeConfiguration<Domain.Entitie
         // Unique constraint: no duplicate product+variant per wishlist
         builder.HasIndex(e => new { e.WishlistId, e.ProductId, e.ProductVariantId })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_WishlistItems_WishlistId_ProductId_VariantId");
 
         // Index for product lookup
         builder.HasIndex(e => e.ProductId)
             .HasDatabaseName("IX_WishlistItems_ProductId");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
     }
 }

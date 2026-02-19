@@ -57,6 +57,12 @@ public class CreateProductCommandHandlerTests
         string? metaTitle = null,
         string? metaDescription = null,
         int sortOrder = 0,
+        decimal? weight = null,
+        string? weightUnit = null,
+        decimal? length = null,
+        decimal? width = null,
+        decimal? height = null,
+        string? dimensionUnit = null,
         List<CreateProductVariantDto>? variants = null,
         List<CreateProductImageDto>? images = null)
     {
@@ -77,6 +83,12 @@ public class CreateProductCommandHandlerTests
             metaTitle,
             metaDescription,
             sortOrder,
+            weight,
+            weightUnit,
+            length,
+            width,
+            height,
+            dimensionUnit,
             variants,
             images);
     }
@@ -275,8 +287,8 @@ public class CreateProductCommandHandlerTests
         // Arrange
         var variants = new List<CreateProductVariantDto>
         {
-            new("Small", "SKU-S", 19.99m, null, 10, null, 0),
-            new("Large", "SKU-L", 24.99m, 29.99m, 5, null, 1)
+            new("Small", "SKU-S", 19.99m, null, null, 10, null, 0),
+            new("Large", "SKU-L", 24.99m, 29.99m, null, 5, null, 1)
         };
         var command = CreateTestCommand(variants: variants);
 
@@ -641,8 +653,8 @@ public class CreateProductCommandHandlerTests
         // Arrange
         var variants = new List<CreateProductVariantDto>
         {
-            new("Small", "SKU-VAR-001", 19.99m, null, 10, null, 0),
-            new("Large", "SKU-VAR-002", 24.99m, null, 5, null, 1)
+            new("Small", "SKU-VAR-001", 19.99m, null, null, 10, null, 0),
+            new("Large", "SKU-VAR-002", 24.99m, null, null, 5, null, 1)
         };
         var command = CreateTestCommand(variants: variants);
 
@@ -678,8 +690,8 @@ public class CreateProductCommandHandlerTests
         // This test documents current behavior - if validation is added, this test should be updated.
         var variants = new List<CreateProductVariantDto>
         {
-            new("Small", "DUPLICATE-SKU", 19.99m, null, 10, null, 0),
-            new("Large", "DUPLICATE-SKU", 24.99m, null, 5, null, 1)
+            new("Small", "DUPLICATE-SKU", 19.99m, null, null, 10, null, 0),
+            new("Large", "DUPLICATE-SKU", 24.99m, null, null, 5, null, 1)
         };
         var command = CreateTestCommand(variants: variants);
 
@@ -713,7 +725,7 @@ public class CreateProductCommandHandlerTests
         // Arrange
         var variants = new List<CreateProductVariantDto>
         {
-            new("No SKU Variant", null, 19.99m, null, 10, null, 0)
+            new("No SKU Variant", null, 19.99m, null, null, 10, null, 0)
         };
         var command = CreateTestCommand(variants: variants);
 

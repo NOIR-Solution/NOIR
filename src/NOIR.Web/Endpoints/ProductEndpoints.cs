@@ -151,7 +151,7 @@ public static class ProductEndpoints
         {
             // Map request variants to command DTOs
             var variants = request.Variants?.Select(v => new CreateProductVariantDto(
-                v.Name, v.Sku, v.Price, v.CompareAtPrice,
+                v.Name, v.Sku, v.Price, v.CompareAtPrice, v.CostPrice,
                 v.StockQuantity, v.Options, v.SortOrder)).ToList();
 
             // Map request images to command DTOs
@@ -175,6 +175,12 @@ public static class ProductEndpoints
                 request.MetaTitle,
                 request.MetaDescription,
                 request.SortOrder,
+                request.Weight,
+                request.WeightUnit,
+                request.Length,
+                request.Width,
+                request.Height,
+                request.DimensionUnit,
                 variants,
                 images)
             {
@@ -215,7 +221,13 @@ public static class ProductEndpoints
                 request.TrackInventory,
                 request.MetaTitle,
                 request.MetaDescription,
-                request.SortOrder)
+                request.SortOrder,
+                request.Weight,
+                request.WeightUnit,
+                request.Length,
+                request.Width,
+                request.Height,
+                request.DimensionUnit)
             {
                 UserId = currentUser.UserId
             };
@@ -409,6 +421,7 @@ public static class ProductEndpoints
                 request.Price,
                 request.Sku,
                 request.CompareAtPrice,
+                request.CostPrice,
                 request.StockQuantity,
                 request.Options,
                 request.SortOrder)
@@ -441,6 +454,7 @@ public static class ProductEndpoints
                 request.Price,
                 request.Sku,
                 request.CompareAtPrice,
+                request.CostPrice,
                 request.StockQuantity,
                 request.Options,
                 request.SortOrder)
@@ -496,7 +510,7 @@ public static class ProductEndpoints
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.ProductsRead)
-        .WithName("GetStockHistory")
+        .WithName("GetProductVariantStockHistory")
         .WithSummary("Get stock movement history for a product variant")
         .WithDescription("Returns paginated stock movement history including reservations, releases, adjustments, and other inventory changes.")
         .Produces<Application.Features.Products.Queries.GetProducts.PagedResult<Application.Features.Inventory.DTOs.InventoryMovementDto>>(StatusCodes.Status200OK)

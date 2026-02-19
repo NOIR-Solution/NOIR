@@ -5,6 +5,7 @@
  * Includes message, metadata grid, exception details, properties, and raw JSON.
  */
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Copy, Check } from 'lucide-react'
 import {
   Badge,
@@ -32,6 +33,7 @@ export const LogDetailDialog = ({
   open,
   onOpenChange,
 }: LogDetailDialogProps) => {
+  const { t } = useTranslation('common')
   const [copied, setCopied] = useState(false)
 
   if (!entry) return null
@@ -69,10 +71,10 @@ export const LogDetailDialog = ({
           {/* Message */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-muted-foreground">Message</label>
+              <label className="text-sm font-medium text-muted-foreground">{t('developerLogs.message')}</label>
               <Button variant="ghost" size="sm" onClick={handleCopyMessage} className="h-7 gap-1.5">
                 {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                Copy
+                {t('developerLogs.copy')}
               </Button>
             </div>
             <div className="p-3 bg-muted rounded-lg font-mono text-sm">
@@ -84,7 +86,7 @@ export const LogDetailDialog = ({
           <div className="grid grid-cols-2 gap-4">
             {entry.sourceContext && (
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Source</label>
+                <label className="text-xs font-medium text-muted-foreground">{t('developerLogs.source')}</label>
                 <div className="p-2 bg-muted rounded text-sm font-mono truncate">
                   {entry.sourceContext}
                 </div>
@@ -92,7 +94,7 @@ export const LogDetailDialog = ({
             )}
             {entry.requestId && (
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Request ID</label>
+                <label className="text-xs font-medium text-muted-foreground">{t('developerLogs.requestId')}</label>
                 <div className="p-2 bg-muted rounded text-sm font-mono truncate">
                   {entry.requestId}
                 </div>
@@ -100,7 +102,7 @@ export const LogDetailDialog = ({
             )}
             {entry.traceId && (
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Trace ID</label>
+                <label className="text-xs font-medium text-muted-foreground">{t('developerLogs.traceId')}</label>
                 <div className="p-2 bg-muted rounded text-sm font-mono truncate">
                   {entry.traceId}
                 </div>
@@ -108,7 +110,7 @@ export const LogDetailDialog = ({
             )}
             {entry.userId && (
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">User ID</label>
+                <label className="text-xs font-medium text-muted-foreground">{t('developerLogs.userId')}</label>
                 <div className="p-2 bg-muted rounded text-sm font-mono truncate">
                   {entry.userId}
                 </div>
@@ -116,7 +118,7 @@ export const LogDetailDialog = ({
             )}
             {entry.tenantId && (
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Tenant ID</label>
+                <label className="text-xs font-medium text-muted-foreground">{t('developerLogs.tenantId')}</label>
                 <div className="p-2 bg-muted rounded text-sm font-mono truncate">
                   {entry.tenantId}
                 </div>
@@ -127,7 +129,7 @@ export const LogDetailDialog = ({
           {/* Exception */}
           {entry.exception && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-red-600 dark:text-red-400">Exception</label>
+              <label className="text-sm font-medium text-red-600 dark:text-red-400">{t('developerLogs.exception')}</label>
               <div className="p-3 bg-red-50 dark:bg-red-950/50 rounded-lg border border-red-200 dark:border-red-800">
                 <div className="font-semibold text-red-700 dark:text-red-300">
                   {entry.exception.type}
@@ -147,28 +149,28 @@ export const LogDetailDialog = ({
           {/* Properties */}
           {entry.properties && Object.keys(entry.properties).length > 0 && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Properties</label>
+              <label className="text-sm font-medium text-muted-foreground">{t('developerLogs.properties')}</label>
               <JsonViewer
                 data={entry.properties}
                 defaultExpanded={true}
                 maxDepth={4}
                 maxHeight="200px"
                 allowFullscreen={true}
-                title="Log Properties"
+                title={t('developerLogs.logProperties')}
               />
             </div>
           )}
 
           {/* Raw JSON */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Raw JSON</label>
+            <label className="text-sm font-medium text-muted-foreground">{t('developerLogs.rawJson')}</label>
             <JsonViewer
               data={entry}
               defaultExpanded={true}
               maxDepth={4}
               maxHeight="250px"
               allowFullscreen={true}
-              title="Log Entry"
+              title={t('developerLogs.logEntry')}
             />
           </div>
         </div>

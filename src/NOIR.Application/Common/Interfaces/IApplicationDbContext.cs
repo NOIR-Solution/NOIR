@@ -70,6 +70,18 @@ public interface IApplicationDbContext
     DbSet<FilterAnalyticsEvent> FilterAnalyticsEvents { get; }
 
     /// <summary>
+    /// Order notes DbSet for non-aggregate entity CRUD.
+    /// OrderNote is a TenantEntity (not AggregateRoot), so IRepository is not applicable.
+    /// </summary>
+    DbSet<OrderNote> OrderNotes { get; }
+
+    /// <summary>
+    /// Customer group memberships DbSet for junction table CRUD.
+    /// CustomerGroupMembership is a TenantEntity (not AggregateRoot), so IRepository is not applicable.
+    /// </summary>
+    DbSet<CustomerGroupMembership> CustomerGroupMemberships { get; }
+
+    /// <summary>
     /// Attaches an entity to the context for tracking.
     EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
 

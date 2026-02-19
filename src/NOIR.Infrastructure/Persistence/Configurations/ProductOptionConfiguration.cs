@@ -3,14 +3,13 @@ namespace NOIR.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// EF Core configuration for ProductOption entity.
 /// </summary>
-public class ProductOptionConfiguration : IEntityTypeConfiguration<ProductOption>
+public class ProductOptionConfiguration : TenantEntityConfiguration<ProductOption>
 {
-    public void Configure(EntityTypeBuilder<ProductOption> builder)
+    public override void Configure(EntityTypeBuilder<ProductOption> builder)
     {
-        builder.ToTable("ProductOptions");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("ProductOptions");
 
         builder.Property(e => e.Name)
             .HasMaxLength(50)
@@ -31,15 +30,11 @@ public class ProductOptionConfiguration : IEntityTypeConfiguration<ProductOption
         // Unique constraint: same option name cannot exist twice for same product per tenant (CLAUDE.md Rule 18)
         builder.HasIndex(e => new { e.TenantId, e.ProductId, e.Name })
             .IsUnique()
+            .HasFilter("[IsDeleted] = 0")
             .HasDatabaseName("IX_ProductOptions_TenantId_Product_Name");
 
         // Product lookup index
         builder.HasIndex(e => new { e.ProductId, e.SortOrder })
             .HasDatabaseName("IX_ProductOptions_Product_Sort");
-
-        // Tenant
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
-        builder.HasIndex(e => e.TenantId);
     }
 }

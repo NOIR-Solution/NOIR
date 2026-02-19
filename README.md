@@ -4,13 +4,13 @@
 
 **Enterprise-ready .NET 10 + React 19 SaaS Foundation**
 
-*Multi-tenancy • E-commerce • Clean Architecture • 6,750+ Tests*
+*Multi-tenancy • E-commerce • Clean Architecture • 10,595+ Tests*
 
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-6750+-green.svg?style=flat-square)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-10595+-green.svg?style=flat-square)](tests/)
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Tech Stack](#-tech-stack) • [Contributing](#-contributing)
 
@@ -169,7 +169,7 @@ dotnet run --project src/NOIR.Web -c Release
 - **Hot Reload** - Backend and frontend live reloading
 - **Type Generation** - Swagger → TypeScript types
 - **Storybook** - 58 interactive component stories with UIKit catalog
-- **6,750+ Tests** - Unit, Integration, Architecture
+- **10,595+ Tests** - Unit, Integration, Architecture
 - **Architecture Tests** - Enforce layer boundaries
 - **Comprehensive Docs** - 15,000+ lines of documentation
 - **AI-Assisted** - SuperClaude Framework integration
@@ -282,7 +282,7 @@ NOIR/
 │       └── frontend/          # ⚛️  React application (pnpm)
 │           ├── .storybook/    # 📖 Storybook configuration
 │           └── src/uikit/     # 📚 58 component stories
-├── ✅ tests/                  # 6,750+ tests (Unit, Integration, Architecture)
+├── ✅ tests/                  # 10,595+ tests (Unit, Integration, Architecture)
 ├── 📚 docs/                   # 15,000+ lines of documentation
 └── ⚙️  .github/               # CI/CD workflows and templates
 ```
@@ -295,11 +295,11 @@ NOIR/
 
 | Test Type | Project | Count | Coverage |
 |-----------|---------|-------|----------|
-| **Unit Tests** | Domain.UnitTests | 842 | Domain logic, business rules |
-| **Unit Tests** | Application.UnitTests | 5,231 | CQRS handlers, validators |
+| **Unit Tests** | Domain.UnitTests | 2,568 | Domain logic, business rules |
+| **Unit Tests** | Application.UnitTests | 7,348 | CQRS handlers, validators |
 | **Integration** | IntegrationTests | 654 | API endpoints with database |
 | **Architecture** | ArchitectureTests | 25 | Layer dependency rules |
-| **Total** | **All Projects** | **6,750+** | **Comprehensive coverage** |
+| **Total** | **All Projects** | **10,595+** | **Comprehensive coverage** |
 
 ### Running Tests
 
@@ -471,7 +471,7 @@ NOIR builds on the shoulders of giants:
 
 | Aspect | NOIR Advantage |
 |--------|----------------|
-| **Production-Ready** | Battle-tested patterns, 6,750+ tests, security built-in |
+| **Production-Ready** | Battle-tested patterns, 10,595+ tests, security built-in |
 | **E-commerce Ready** | Products, cart, checkout, orders, payments - all included |
 | **Developer-Friendly** | Hot reload, type generation, extensive docs, AI-assisted development |
 | **Performance** | Source generators, compiled queries, hybrid caching, optimized builds |

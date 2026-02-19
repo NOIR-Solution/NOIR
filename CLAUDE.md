@@ -131,7 +131,7 @@ dotnet watch --project src/NOIR.Web
 ### Testing
 
 ```bash
-# All tests (6,750+ tests)
+# All tests (10,595+ tests)
 dotnet test src/NOIR.sln
 
 # Specific project
@@ -1051,7 +1051,7 @@ For detailed documentation, see the `docs/` folder:
 - **Removed:** GitHub Actions workflows (accessibility.yml, visual-regression.yml)
 - **Removed:** E2E testing documentation (4 guides, 3 test docs)
 - **Updated:** All documentation to reflect backend-only testing focus
-- **Focus:** Backend testing only (6,750+ xUnit tests: domain, application, integration, architecture)
+- **Focus:** Backend testing only (10,595+ xUnit tests: domain, application, integration, architecture)
 - **Reason:** Simplified project maintenance, focus on core backend functionality
 
 ### Version 2.3 (2026-02-09)
@@ -1062,7 +1062,7 @@ For detailed documentation, see the `docs/` folder:
 - **Added:** Explanatory comments to all form resolver usages explaining TypeScript limitation
 
 ### Version 2.2 (2026-02-08)
-- **Updated:** Test count to 6,750+ (verified 2026-02-08: 842 domain + 5,231 application + 654 integration + 25 architecture)
+- **Updated:** Test count to 10,595+ (verified 2026-02-08: 842 domain + 5,231 application + 654 integration + 25 architecture)
 - **Updated:** Documentation audit - removed outdated PRODUCT_E2E_TESTS.md, updated ADR-002 to reflect shadcn/ui
 
 ### Version 2.1 (2026-01-29)

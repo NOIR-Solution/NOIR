@@ -58,6 +58,7 @@ import type { OrderStatus, AddressDto } from '@/types/order'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { formatCurrency } from '@/lib/utils/currency'
 import { getOrderStatusColor } from '@/portal-app/orders/utils/orderStatus'
+import { OrderNotes } from './OrderNotes'
 
 // Status timeline steps with their order
 const STATUS_STEPS: { status: OrderStatus; icon: React.ElementType }[] = [
@@ -566,6 +567,9 @@ export const OrderDetailPage = () => {
               </CardContent>
             </Card>
           )}
+
+          {/* Internal Notes */}
+          <OrderNotes orderId={order.id} canWrite={canWriteOrders} />
         </div>
 
         {/* Right Column - Customer & Shipping Info */}
@@ -827,6 +831,7 @@ export const OrderDetailPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
     </div>
   )
 }

@@ -25,6 +25,12 @@ public sealed record ProductDto(
     string? MetaTitle,
     string? MetaDescription,
     int SortOrder,
+    decimal? Weight,
+    string? WeightUnit,
+    decimal? Length,
+    decimal? Width,
+    decimal? Height,
+    string? DimensionUnit,
     int TotalStock,
     bool InStock,
     List<ProductVariantDto> Variants,
@@ -75,6 +81,7 @@ public sealed record ProductVariantDto(
     string? Sku,
     decimal Price,
     decimal? CompareAtPrice,
+    decimal? CostPrice,
     int StockQuantity,
     bool InStock,
     bool LowStock,
@@ -174,6 +181,12 @@ public sealed record CreateProductRequest(
     string? MetaTitle,
     string? MetaDescription,
     int SortOrder,
+    decimal? Weight,
+    string? WeightUnit,
+    decimal? Length,
+    decimal? Width,
+    decimal? Height,
+    string? DimensionUnit,
     List<CreateProductVariantRequest>? Variants,
     List<CreateProductImageRequest>? Images);
 
@@ -196,7 +209,13 @@ public sealed record UpdateProductRequest(
     bool TrackInventory,
     string? MetaTitle,
     string? MetaDescription,
-    int SortOrder);
+    int SortOrder,
+    decimal? Weight,
+    string? WeightUnit,
+    decimal? Length,
+    decimal? Width,
+    decimal? Height,
+    string? DimensionUnit);
 
 /// <summary>
 /// Request to create a product variant.
@@ -206,6 +225,7 @@ public sealed record CreateProductVariantRequest(
     string? Sku,
     decimal Price,
     decimal? CompareAtPrice,
+    decimal? CostPrice,
     int StockQuantity,
     Dictionary<string, string>? Options,
     int SortOrder);
@@ -229,6 +249,7 @@ public sealed record CreateProductVariantDto(
     string? Sku,
     decimal Price,
     decimal? CompareAtPrice,
+    decimal? CostPrice,
     int StockQuantity,
     Dictionary<string, string>? Options,
     int SortOrder);
@@ -252,6 +273,7 @@ public sealed record AddProductVariantRequest(
     decimal Price,
     string? Sku,
     decimal? CompareAtPrice,
+    decimal? CostPrice,
     int StockQuantity,
     Dictionary<string, string>? Options,
     int SortOrder);
@@ -264,6 +286,7 @@ public sealed record UpdateProductVariantRequest(
     decimal Price,
     string? Sku,
     decimal? CompareAtPrice,
+    decimal? CostPrice,
     int StockQuantity,
     Dictionary<string, string>? Options,
     int SortOrder);

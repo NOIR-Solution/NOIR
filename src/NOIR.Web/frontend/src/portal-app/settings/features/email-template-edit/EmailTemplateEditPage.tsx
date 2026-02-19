@@ -275,7 +275,7 @@ export const EmailTemplateEditPage = () => {
   const handleRevert = async () => {
     if (!id || !template) return
 
-    if (!confirm('Are you sure you want to revert to the platform default? Your customizations will be lost.')) {
+    if (!confirm(t('emailTemplates.revertConfirm'))) {
       return
     }
 
@@ -288,7 +288,7 @@ export const EmailTemplateEditPage = () => {
       setPlainTextBody(reverted.plainTextBody || '')
       setDescription(reverted.description || '')
       setHasChanges(false)
-      toast.success('Template reverted to platform default successfully.')
+      toast.success(t('emailTemplates.revertSuccess'))
     } catch (error) {
       if (error instanceof ApiError) {
         toast.error(error.message)
@@ -308,12 +308,12 @@ export const EmailTemplateEditPage = () => {
     try {
       const updated = await toggleEmailTemplateActive(id, isActive)
       setTemplate(updated)
-      toast.success(isActive ? 'Template activated' : 'Template deactivated')
+      toast.success(isActive ? t('emailTemplates.templateActivated') : t('emailTemplates.templateDeactivated'))
     } catch (error) {
       if (error instanceof ApiError) {
         toast.error(error.message)
       } else {
-        toast.error('Failed to toggle template status')
+        toast.error(t('emailTemplates.toggleStatusFailed'))
       }
     } finally {
       setToggling(false)
@@ -408,7 +408,7 @@ export const EmailTemplateEditPage = () => {
           {template.isInherited === false && (
             <Button variant="outline" onClick={handleRevert} disabled={saving}>
               <GitFork className="h-4 w-4 mr-2" />
-              Revert to Default
+              {t('buttons.revert')}
             </Button>
           )}
           <Button onClick={handleSave} disabled={!hasChanges || saving}>
@@ -423,10 +423,9 @@ export const EmailTemplateEditPage = () => {
         <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 text-sm text-purple-800 dark:text-purple-200 flex items-start gap-3">
           <Info className="h-5 w-5 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-medium">Customizing Platform Template</p>
+            <p className="font-medium">{t('emailTemplates.customizingPlatformTemplate')}</p>
             <p className="text-purple-600 dark:text-purple-300 mt-1">
-              This is a default platform template. When you save changes, a customized copy will be created for your tenant.
-              The original platform template will remain unchanged.
+              {t('emailTemplates.platformTemplateNotice')}
             </p>
           </div>
         </div>
@@ -435,7 +434,7 @@ export const EmailTemplateEditPage = () => {
       {/* Unsaved changes warning */}
       {hasChanges && (
         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-sm text-yellow-800 dark:text-yellow-200">
-          {t('messages.unsavedChanges')} Press Ctrl+S to save.
+          {t('messages.unsavedChanges')} {t('emailTemplates.pressCtrlS')}
         </div>
       )}
 
@@ -473,7 +472,7 @@ export const EmailTemplateEditPage = () => {
                       setSubject(e.target.value)
                       if (errors.subject) setErrors((prev) => ({ ...prev, subject: undefined }))
                     }}
-                    placeholder="Enter email subject..."
+                    placeholder={t('emailTemplates.subjectPlaceholder')}
                     aria-label={t('emailTemplates.emailSubject', 'Email subject')}
                     className={`w-full ${errors.subject ? 'border-destructive' : ''}`}
                     aria-invalid={!!errors.subject}
@@ -655,7 +654,7 @@ export const EmailTemplateEditPage = () => {
                   <FileText className="h-4 w-4" />
                   <CardTitle className="text-base">{t('emailTemplates.plainTextBody')}</CardTitle>
                   <Badge variant="outline" className="text-xs">
-                    Optional
+                    {t('emailTemplates.optional')}
                   </Badge>
                 </div>
                 {showPlainText ? (
@@ -665,7 +664,7 @@ export const EmailTemplateEditPage = () => {
                 )}
               </div>
               <CardDescription>
-                Fallback content for email clients that don't support HTML.
+                {t('emailTemplates.fallbackContent')}
               </CardDescription>
             </CardHeader>
             {showPlainText && (
@@ -673,7 +672,7 @@ export const EmailTemplateEditPage = () => {
                 <textarea
                   value={plainTextBody}
                   onChange={(e) => setPlainTextBody(e.target.value)}
-                  placeholder="Enter plain text version of the email..."
+                  placeholder={t('emailTemplates.plainTextPlaceholder')}
                   aria-label={t('emailTemplates.plainTextBodyAriaLabel', 'Plain text email body')}
                   className="w-full h-48 p-3 border rounded-lg resize-none font-mono text-sm bg-background text-foreground"
                 />
@@ -687,15 +686,15 @@ export const EmailTemplateEditPage = () => {
           {/* Template Info */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-              <CardTitle className="text-base">Template Info</CardTitle>
+              <CardTitle className="text-base">{t('emailTemplates.templateInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Name:</span>
+                <span className="text-muted-foreground">{t('emailTemplates.name')}:</span>
                 <span className="font-medium">{formatDisplayName(template.name)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Language:</span>
+                <span className="text-muted-foreground">{t('emailTemplates.language')}:</span>
                 <Badge variant="secondary">HTML</Badge>
               </div>
               <div className="flex justify-between">
@@ -704,11 +703,11 @@ export const EmailTemplateEditPage = () => {
               </div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="template-active" className="text-muted-foreground cursor-pointer">
-                  Status:
+                  {t('emailTemplates.status')}:
                 </Label>
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-medium ${template.isActive ? 'text-green-600' : 'text-muted-foreground'}`}>
-                    {template.isActive ? 'Active' : 'Inactive'}
+                    {template.isActive ? t('emailTemplates.active') : t('emailTemplates.inactive')}
                   </span>
                   <Switch
                     id="template-active"
@@ -720,15 +719,15 @@ export const EmailTemplateEditPage = () => {
                 </div>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Source:</span>
+                <span className="text-muted-foreground">{t('emailTemplates.source')}:</span>
                 {template.isInherited ? (
                   <Badge variant="outline" className="text-purple-600 border-purple-600/30">
                     <GitFork className="h-3 w-3 mr-1" />
-                    Platform
+                    {t('emailTemplates.platform')}
                   </Badge>
                 ) : (
                   <Badge variant="outline" className="text-blue-600 border-blue-600/30">
-                    Custom
+                    {t('emailTemplates.custom')}
                   </Badge>
                 )}
               </div>
@@ -787,7 +786,7 @@ export const EmailTemplateEditPage = () => {
                   setDescription(e.target.value)
                   if (errors.description) setErrors((prev) => ({ ...prev, description: undefined }))
                 }}
-                placeholder="Template description..."
+                placeholder={t('emailTemplates.descriptionPlaceholder')}
                 aria-label={t('emailTemplates.templateDescription', 'Template description')}
                 className={`w-full h-24 p-3 border rounded-lg resize-none text-sm bg-background text-foreground ${errors.description ? 'border-destructive' : ''}`}
               />

@@ -99,7 +99,7 @@ export const TestEmailDialog = ({
               {t('emailTemplates.sendTestEmail')}
             </DialogTitle>
             <DialogDescription>
-              Send a test email to verify the template rendering with your sample data.
+              {t('emailTemplates.testEmailDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -114,7 +114,7 @@ export const TestEmailDialog = ({
                 id="recipient-email"
                 type="email"
                 {...form.register('recipientEmail')}
-                placeholder="Enter email address..."
+                placeholder={t('emailTemplates.enterEmailPlaceholder')}
                 aria-label={t('emailTemplates.recipientEmail', 'Recipient email address')}
                 aria-invalid={!!form.formState.errors.recipientEmail}
               />
@@ -137,8 +137,8 @@ export const TestEmailDialog = ({
                         id={`sample-${variable}`}
                         value={sampleData[variable] || ''}
                         onChange={(e) => updateSampleData(variable, e.target.value)}
-                        placeholder={`Value for ${variable}...`}
-                        aria-label={`Sample data for ${variable}`}
+                        placeholder={t('emailTemplates.valueForVariable', { variable })}
+                        aria-label={t('emailTemplates.sampleDataFor', { variable })}
                         className="h-8 text-sm"
                       />
                     </div>
@@ -163,12 +163,12 @@ export const TestEmailDialog = ({
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Sending...
+                  {t('emailTemplates.sending')}
                 </>
               ) : (
                 <>
                   <Send className="h-4 w-4 mr-2" />
-                  Send Test
+                  {t('emailTemplates.sendTest')}
                 </>
               )}
             </Button>

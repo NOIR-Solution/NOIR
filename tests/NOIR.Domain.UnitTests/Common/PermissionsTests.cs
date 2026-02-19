@@ -317,7 +317,8 @@ public class PermissionsTests
             + Permissions.Groups.Wishlists.Count
             + Permissions.Groups.Reports.Count
             + Permissions.Groups.Payments.Count
-            + Permissions.Groups.Customers.Count;
+            + Permissions.Groups.Customers.Count
+            + Permissions.Groups.CustomerGroups.Count;
 
         // Assert
         Permissions.All.Should().HaveCount(expectedCount);

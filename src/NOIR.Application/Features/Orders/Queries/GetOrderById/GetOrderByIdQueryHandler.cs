@@ -22,7 +22,7 @@ public class GetOrderByIdQueryHandler
         if (order is null)
         {
             return Result.Failure<OrderDto>(
-                Error.NotFound($"Order with ID '{query.OrderId}' not found.", "NOIR-ORDER-002"));
+                Error.NotFound($"Order with ID '{query.OrderId}' not found.", ErrorCodes.Order.NotFound));
         }
 
         return Result.Success(OrderMapper.ToDto(order));

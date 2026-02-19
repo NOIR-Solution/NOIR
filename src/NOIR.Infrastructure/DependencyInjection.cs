@@ -80,8 +80,10 @@ public static class DependencyInjection
 #if DEBUG
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
-                // TODO: [TECH-DEBT] Remove after EF Core Roslyn tooling fix (2026-01-25)
-                // Issue: ReflectionTypeLoadException in dotnet ef migrations
+                // Suppress PendingModelChangesWarning to work around EF Core design-time tooling issue.
+                // Without this, `dotnet ef migrations add` throws ReflectionTypeLoadException because
+                // Roslyn-based tooling loads assemblies in a way that triggers false-positive warnings
+                // about pending model changes. This only affects DEBUG builds (migration authoring).
                 // See: docs/KNOWLEDGE_BASE.md#ef-core-migration-tooling-workaround
                 options.ConfigureWarnings(warnings =>
                     warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
@@ -288,6 +290,9 @@ public static class DependencyInjection
 
         services.AddBeforeStateResolver<CustomerDto, GetCustomerByIdQuery>(
             targetId => new GetCustomerByIdQuery(Guid.Parse(targetId.ToString()!)));
+
+        services.AddBeforeStateResolver<CustomerGroupDto, GetCustomerGroupByIdQuery>(
+            targetId => new GetCustomerGroupByIdQuery(Guid.Parse(targetId.ToString()!)));
 
         services.AddBeforeStateResolver<ProductOptionDto, GetProductOptionByIdQuery>(
             targetId => new GetProductOptionByIdQuery(Guid.Parse(targetId.ToString()!)));

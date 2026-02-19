@@ -476,7 +476,7 @@ public class CreateOrderCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-ORDER-001");
+        result.Error.Code.Should().Be(ErrorCodes.Order.MustHaveItems);
         result.Error.Message.Should().Contain("at least one item");
 
         _orderRepositoryMock.Verify(
@@ -496,7 +496,7 @@ public class CreateOrderCommandHandlerTests
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-ORDER-001");
+        result.Error.Code.Should().Be(ErrorCodes.Order.MustHaveItems);
         result.Error.Message.Should().Contain("at least one item");
 
         _orderRepositoryMock.Verify(

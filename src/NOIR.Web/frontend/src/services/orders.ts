@@ -6,6 +6,7 @@
 import { apiClient } from './apiClient'
 import type {
   OrderDto,
+  OrderNoteDto,
   OrderPagedResult,
   OrderStatus,
   CreateOrderRequest,
@@ -75,4 +76,21 @@ export const returnOrder = async (id: string, reason: string): Promise<OrderDto>
     method: 'POST',
     body: JSON.stringify({ reason }),
   })
+}
+
+// --- Order Notes ---
+
+export const getOrderNotes = async (orderId: string): Promise<OrderNoteDto[]> => {
+  return apiClient<OrderNoteDto[]>(`/orders/${orderId}/notes`)
+}
+
+export const addOrderNote = async (orderId: string, content: string): Promise<OrderNoteDto> => {
+  return apiClient<OrderNoteDto>(`/orders/${orderId}/notes`, {
+    method: 'POST',
+    body: JSON.stringify({ content }),
+  })
+}
+
+export const deleteOrderNote = async (orderId: string, noteId: string): Promise<OrderNoteDto> => {
+  return apiClient<OrderNoteDto>(`/orders/${orderId}/notes/${noteId}`, { method: 'DELETE' })
 }

@@ -44,6 +44,7 @@ import {
   Pencil,
   AlertTriangle,
   Loader2,
+  Truck,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -118,6 +119,7 @@ interface LocalVariant {
   price: number
   sku: string | null
   compareAtPrice: number | null
+  costPrice: number | null
   stockQuantity: number
   sortOrder: number
 }
@@ -152,6 +154,12 @@ const createProductSchema = (t: (key: string, options?: Record<string, unknown>)
     metaTitle: z.string().optional().nullable(),
     metaDescription: z.string().optional().nullable(),
     sortOrder: z.coerce.number().default(0),
+    weight: z.coerce.number().positive(t('validation.positive')).optional().nullable(),
+    weightUnit: z.enum(['kg', 'g', 'lb', 'oz']).optional().nullable(),
+    length: z.coerce.number().positive(t('validation.positive')).optional().nullable(),
+    width: z.coerce.number().positive(t('validation.positive')).optional().nullable(),
+    height: z.coerce.number().positive(t('validation.positive')).optional().nullable(),
+    dimensionUnit: z.enum(['cm', 'in', 'm']).optional().nullable(),
   })
 
 type ProductFormData = z.infer<ReturnType<typeof createProductSchema>>
@@ -163,9 +171,13 @@ const createVariantSchema = (t: (key: string, options?: Record<string, unknown>)
     price: z.coerce.number().min(0, t('validation.minValue', { value: 0 })),
     sku: z.string().optional().nullable(),
     compareAtPrice: z.coerce.number().optional().nullable(),
+    costPrice: z.coerce.number().min(0, t('validation.minValue', { value: 0 })).optional().nullable(),
     stockQuantity: z.coerce.number().min(0, t('validation.minValue', { value: 0 })).default(0),
     sortOrder: z.coerce.number().default(0),
-  })
+  }).refine(
+    (data) => !data.compareAtPrice || data.compareAtPrice > data.price,
+    { message: t('validation.compareAtPriceHigher'), path: ['compareAtPrice'] },
+  )
 
 type VariantFormData = z.infer<ReturnType<typeof createVariantSchema>>
 
@@ -185,6 +197,7 @@ const EditVariantForm = ({
     price: variant.price,
     sku: variant.sku || '',
     compareAtPrice: variant.compareAtPrice || null,
+    costPrice: variant.costPrice || null,
     stockQuantity: variant.stockQuantity,
     sortOrder: variant.sortOrder,
   })
@@ -195,45 +208,58 @@ const EditVariantForm = ({
       <div className="grid grid-cols-2 gap-4">
         <Input
           placeholder={t('products.variantName')}
+          aria-label={t('products.variantName')}
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
         />
         <Input
           type="number"
           placeholder={t('products.variantPrice')}
+          aria-label={t('products.variantPrice')}
           value={formData.price}
           onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
         />
         <Input
           placeholder={t('products.variantSku')}
+          aria-label={t('products.variantSku')}
           value={formData.sku || ''}
           onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
         />
         <Input
           type="number"
           placeholder={t('products.variantStock')}
+          aria-label={t('products.variantStock')}
           value={formData.stockQuantity}
           onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value) || 0 })}
         />
         <Input
           type="number"
           placeholder={t('products.variantCompareAtPrice')}
+          aria-label={t('products.variantCompareAtPrice')}
           value={formData.compareAtPrice || ''}
           onChange={(e) => setFormData({ ...formData, compareAtPrice: e.target.value ? parseFloat(e.target.value) : null })}
         />
         <Input
           type="number"
+          placeholder={t('products.variantCostPrice')}
+          aria-label={t('products.variantCostPrice')}
+          value={formData.costPrice || ''}
+          onChange={(e) => setFormData({ ...formData, costPrice: e.target.value ? parseFloat(e.target.value) : null })}
+        />
+        <Input
+          type="number"
           placeholder={t('products.variantSortOrder')}
+          aria-label={t('products.variantSortOrder')}
           value={formData.sortOrder}
           onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
         />
       </div>
       <div className="flex justify-end gap-2">
         <Button variant="ghost" size="sm" className="cursor-pointer" onClick={onCancel}>
-          Cancel
+          {t('buttons.cancel')}
         </Button>
         <Button size="sm" className="cursor-pointer" onClick={() => onSave(formData)}>
-          Save
+          {t('buttons.save')}
         </Button>
       </div>
     </div>
@@ -353,6 +379,12 @@ export const ProductFormPage = () => {
       metaTitle: '',
       metaDescription: '',
       sortOrder: 0,
+      weight: null,
+      weightUnit: null,
+      length: null,
+      width: null,
+      height: null,
+      dimensionUnit: null,
     },
   })
 
@@ -375,6 +407,12 @@ export const ProductFormPage = () => {
         metaTitle: product.metaTitle || '',
         metaDescription: product.metaDescription || '',
         sortOrder: product.sortOrder,
+        weight: product.weight || null,
+        weightUnit: (product.weightUnit as 'kg' | 'g' | 'lb' | 'oz') || null,
+        length: product.length || null,
+        width: product.width || null,
+        height: product.height || null,
+        dimensionUnit: (product.dimensionUnit as 'cm' | 'in' | 'm') || null,
       })
       setVariants(product.variants || [])
       setImages(product.images || [])
@@ -412,6 +450,7 @@ export const ProductFormPage = () => {
           price: v.price,
           sku: v.sku,
           compareAtPrice: v.compareAtPrice,
+          costPrice: v.costPrice,
           stockQuantity: v.stockQuantity,
           options: null,
           sortOrder: v.sortOrder,
@@ -456,13 +495,13 @@ export const ProductFormPage = () => {
         }
       }
 
-      toast.success(isEditing ? 'Product updated successfully' : 'Product created successfully')
+      toast.success(isEditing ? t('products.messages.productUpdated') : t('products.messages.productCreated'))
 
       if (!isEditing && productId) {
         navigate(`/portal/ecommerce/products/${productId}/edit`)
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to save product'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToSaveProduct')
       toast.error(message)
     } finally {
       setIsSaving(false)
@@ -475,10 +514,10 @@ export const ProductFormPage = () => {
     setIsPublishing(true)
     try {
       await publishProductMutation.mutateAsync(id)
-      toast.success('Product published successfully')
+      toast.success(t('products.messages.productPublished'))
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to publish product'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToPublishProduct')
       toast.error(message)
     } finally {
       setIsPublishing(false)
@@ -497,16 +536,17 @@ export const ProductFormPage = () => {
           price: newVariant.price,
           sku: newVariant.sku || null,
           compareAtPrice: newVariant.compareAtPrice || null,
+          costPrice: newVariant.costPrice || null,
           stockQuantity: newVariant.stockQuantity,
           options: null,
           sortOrder: newVariant.sortOrder,
         },
       })
-      toast.success('Variant added successfully')
+      toast.success(t('products.messages.variantAdded'))
       setNewVariant(null)
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to add variant'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToAddVariant')
       toast.error(message)
     }
   }
@@ -517,11 +557,11 @@ export const ProductFormPage = () => {
     setIsDeletingVariant(true)
     try {
       await deleteVariantMutation.mutateAsync({ productId: id, variantId: variantToDelete.id })
-      toast.success(`Variant "${variantToDelete.name}" deleted successfully`)
+      toast.success(t('products.messages.variantDeleted', { name: variantToDelete.name }))
       setVariantToDelete(null)
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete variant'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToDeleteVariant')
       toast.error(message)
     } finally {
       setIsDeletingVariant(false)
@@ -538,13 +578,14 @@ export const ProductFormPage = () => {
       price: newVariant.price,
       sku: newVariant.sku || null,
       compareAtPrice: newVariant.compareAtPrice || null,
+      costPrice: newVariant.costPrice || null,
       stockQuantity: newVariant.stockQuantity,
       sortOrder: newVariant.sortOrder || localVariants.length,
     }
 
     setLocalVariants((prev) => [...prev, localVariant])
     setNewVariant(null)
-    toast.success('Variant added (will be saved with product)')
+    toast.success(t('products.messages.variantAddedLocal'))
   }
 
   const handleUpdateLocalVariant = (tempId: string, data: VariantFormData) => {
@@ -557,6 +598,7 @@ export const ProductFormPage = () => {
               price: data.price,
               sku: data.sku || null,
               compareAtPrice: data.compareAtPrice || null,
+              costPrice: data.costPrice || null,
               stockQuantity: data.stockQuantity,
               sortOrder: data.sortOrder,
             }
@@ -564,14 +606,14 @@ export const ProductFormPage = () => {
       )
     )
     setEditingVariantId(null)
-    toast.success('Variant updated')
+    toast.success(t('products.messages.variantUpdated'))
   }
 
   const handleConfirmDeleteLocalVariant = () => {
     if (!localVariantToDelete) return
 
     setLocalVariants((prev) => prev.filter((v) => v.tempId !== localVariantToDelete.tempId))
-    toast.success(`Variant "${localVariantToDelete.name}" removed`)
+    toast.success(t('products.messages.variantRemoved', { name: localVariantToDelete.name }))
     setLocalVariantToDelete(null)
   }
 
@@ -589,7 +631,7 @@ export const ProductFormPage = () => {
       setTempImages((prev) => [...prev, tempImage])
       toast.success(t('messages.uploadSuccess', 'Image uploaded successfully'))
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to upload image'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToUploadImage')
       toast.error(message)
       throw err
     }
@@ -607,7 +649,7 @@ export const ProductFormPage = () => {
     }
     setTempImages((prev) => [...prev, tempImage])
     setNewImageUrl('')
-    toast.success('Image added (will be saved with product)')
+    toast.success(t('products.messages.imageAddedLocal'))
   }
 
   const handleSetPrimaryTempImage = (tempId: string) => {
@@ -617,7 +659,7 @@ export const ProductFormPage = () => {
         isPrimary: img.tempId === tempId,
       }))
     )
-    toast.success('Primary image set')
+    toast.success(t('products.messages.primaryImageSet'))
   }
 
   const handleConfirmDeleteTempImage = () => {
@@ -631,7 +673,7 @@ export const ProductFormPage = () => {
       }
       return filtered
     })
-    toast.success('Image removed')
+    toast.success(t('products.messages.imageRemoved'))
     setTempImageToDelete(null)
   }
 
@@ -649,11 +691,11 @@ export const ProductFormPage = () => {
           isPrimary: images.length === 0,
         },
       })
-      toast.success('Image added successfully')
+      toast.success(t('products.messages.imageAdded'))
       setNewImageUrl('')
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to add image'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToAddImage')
       toast.error(message)
     }
   }
@@ -664,11 +706,11 @@ export const ProductFormPage = () => {
     setIsDeletingImage(true)
     try {
       await deleteImageMutation.mutateAsync({ productId: id, imageId: imageToDelete.id })
-      toast.success('Image deleted successfully')
+      toast.success(t('products.messages.imageDeleted'))
       setImageToDelete(null)
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete image'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToDeleteImage')
       toast.error(message)
     } finally {
       setIsDeletingImage(false)
@@ -680,10 +722,10 @@ export const ProductFormPage = () => {
 
     try {
       await setPrimaryImageMutation.mutateAsync({ productId: id, imageId })
-      toast.success('Primary image set successfully')
+      toast.success(t('products.messages.primaryImageSetSuccess'))
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to set primary image'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToSetPrimaryImage')
       toast.error(message)
     }
   }
@@ -697,7 +739,7 @@ export const ProductFormPage = () => {
       toast.success(t('messages.uploadSuccess', 'Image uploaded successfully'))
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to upload image'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToUploadImage')
       toast.error(message)
       throw err // Re-throw to let ImageUploadZone show error state
     }
@@ -720,7 +762,7 @@ export const ProductFormPage = () => {
       })
       toast.success(t('products.imagesReordered', 'Images reordered successfully'))
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to reorder images'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToReorderImages')
       toast.error(message)
       // Revert on error
       await refreshProduct()
@@ -744,10 +786,10 @@ export const ProductFormPage = () => {
           sortOrder: image.sortOrder,
         },
       })
-      toast.success('Alt text updated successfully')
+      toast.success(t('products.messages.altTextUpdated'))
       await refreshProduct()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update alt text'
+      const message = err instanceof Error ? err.message : t('products.messages.failedToUpdateAltText')
       toast.error(message)
     }
   }
@@ -805,12 +847,12 @@ export const ProductFormPage = () => {
               {isEditing && product?.status === 'Draft' && canPublishProducts && (
                 <Button variant="outline" onClick={handlePublish} disabled={isPublishing}>
                   <Send className="h-4 w-4 mr-2" />
-                  {isPublishing ? t('labels.publishing', 'Publishing...') : t('labels.publish', 'Publish')}
+                  {isPublishing ? t('products.publishing') : t('buttons.publish')}
                 </Button>
               )}
               <Button onClick={form.handleSubmit(onSubmit)} disabled={isSaving}>
                 <Save className="h-4 w-4 mr-2" />
-                {isSaving ? 'Saving...' : 'Save'}
+                {isSaving ? t('buttons.saving') : t('buttons.save')}
               </Button>
             </>
           )}
@@ -1081,6 +1123,170 @@ export const ProductFormPage = () => {
                 </CardContent>
               </Card>
 
+              {/* Shipping / Physical Properties */}
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+                <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
+                  <div className="flex items-center gap-2">
+                    <Truck className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <CardTitle>{t('products.shipping.title')}</CardTitle>
+                      <CardDescription>{t('products.shipping.description')}</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="weight"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('products.shipping.weight')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={field.value ?? ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                              placeholder="0.00"
+                              disabled={isViewMode}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="weightUnit"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('products.shipping.weightUnit')}</FormLabel>
+                          <Select
+                            onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
+                            value={field.value || 'none'}
+                            disabled={isViewMode}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="cursor-pointer" aria-label={t('products.shipping.weightUnit')}>
+                                <SelectValue placeholder={t('products.shipping.selectUnit')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="none" className="cursor-pointer">—</SelectItem>
+                              <SelectItem value="kg" className="cursor-pointer">kg</SelectItem>
+                              <SelectItem value="g" className="cursor-pointer">g</SelectItem>
+                              <SelectItem value="lb" className="cursor-pointer">lb</SelectItem>
+                              <SelectItem value="oz" className="cursor-pointer">oz</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="length"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('products.shipping.length')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={field.value ?? ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                              placeholder="0.00"
+                              disabled={isViewMode}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="width"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('products.shipping.width')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={field.value ?? ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                              placeholder="0.00"
+                              disabled={isViewMode}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="height"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('products.shipping.height')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={field.value ?? ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                              placeholder="0.00"
+                              disabled={isViewMode}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="dimensionUnit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('products.shipping.dimensionUnit')}</FormLabel>
+                        <Select
+                          onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
+                          value={field.value || 'none'}
+                          disabled={isViewMode}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="cursor-pointer" aria-label={t('products.shipping.dimensionUnit')}>
+                              <SelectValue placeholder={t('products.shipping.selectUnit')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="none" className="cursor-pointer">—</SelectItem>
+                            <SelectItem value="cm" className="cursor-pointer">cm</SelectItem>
+                            <SelectItem value="in" className="cursor-pointer">in</SelectItem>
+                            <SelectItem value="m" className="cursor-pointer">m</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
             </form>
           </Form>
 
@@ -1097,7 +1303,7 @@ export const ProductFormPage = () => {
                     variant="outline"
                     size="sm"
                     className="cursor-pointer"
-                    onClick={() => setNewVariant({ name: '', price: 0, sku: '', compareAtPrice: null, stockQuantity: 0, sortOrder: 0 })}
+                    onClick={() => setNewVariant({ name: '', price: 0, sku: '', compareAtPrice: null, costPrice: null, stockQuantity: 0, sortOrder: 0 })}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     {t('products.addVariant')}
@@ -1114,33 +1320,37 @@ export const ProductFormPage = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <Input
                         placeholder={t('products.variantName')}
+                        aria-label={t('products.variantName')}
                         value={newVariant.name}
                         onChange={(e) => setNewVariant({ ...newVariant, name: e.target.value })}
                       />
                       <Input
                         type="number"
                         placeholder={t('products.variantPrice')}
+                        aria-label={t('products.variantPrice')}
                         value={newVariant.price}
                         onChange={(e) => setNewVariant({ ...newVariant, price: parseFloat(e.target.value) || 0 })}
                       />
                       <Input
                         placeholder={t('products.variantSku')}
+                        aria-label={t('products.variantSku')}
                         value={newVariant.sku || ''}
                         onChange={(e) => setNewVariant({ ...newVariant, sku: e.target.value })}
                       />
                       <Input
                         type="number"
                         placeholder={t('products.variantStock')}
+                        aria-label={t('products.variantStock')}
                         value={newVariant.stockQuantity}
                         onChange={(e) => setNewVariant({ ...newVariant, stockQuantity: parseInt(e.target.value) || 0 })}
                       />
                     </div>
                     <div className="flex justify-end gap-2">
                       <Button variant="ghost" size="sm" className="cursor-pointer" onClick={() => setNewVariant(null)}>
-                        Cancel
+                        {t('buttons.cancel')}
                       </Button>
                       <Button size="sm" className="cursor-pointer" onClick={isEditing ? handleAddVariant : handleAddLocalVariant}>
-                        Add
+                        {t('buttons.add')}
                       </Button>
                     </div>
                   </div>
@@ -1167,7 +1377,7 @@ export const ProductFormPage = () => {
                   // Create mode: show local variants
                   localVariants.length === 0 && !newVariant ? (
                     <p className="text-center text-muted-foreground py-8">
-                      No variants yet. Add variants for different sizes, colors, etc.
+                      {t('products.noVariants')}
                     </p>
                   ) : (
                     <div className="space-y-2">
@@ -1181,6 +1391,7 @@ export const ProductFormPage = () => {
                               price: variant.price,
                               sku: variant.sku,
                               compareAtPrice: variant.compareAtPrice,
+                              costPrice: variant.costPrice,
                               stockQuantity: variant.stockQuantity,
                               sortOrder: variant.sortOrder,
                               inStock: true,
@@ -1456,7 +1667,7 @@ export const ProductFormPage = () => {
                             <div className="absolute top-2 left-2">
                               <Badge className="bg-primary text-primary-foreground text-xs">
                                 <Star className="h-3 w-3 mr-1" />
-                                Primary
+                                {t('products.messages.primaryBadge')}
                               </Badge>
                             </div>
                           )}
@@ -1487,13 +1698,13 @@ export const ProductFormPage = () => {
 
                   {/* Add Image by URL */}
                   <div className="space-y-2 pt-4 border-t">
-                    <p className="text-xs font-medium text-muted-foreground">Or add by URL</p>
+                    <p className="text-xs font-medium text-muted-foreground">{t('products.addByUrl')}</p>
                     <div className="flex gap-2">
                       <Input
-                        placeholder="Image URL"
+                        placeholder={t('products.imageUrl')}
                         value={newImageUrl}
                         onChange={(e) => setNewImageUrl(e.target.value)}
-                        aria-label="Image URL"
+                        aria-label={t('products.imageUrlAriaLabel', 'Image URL')}
                       />
                       <Button
                         variant="outline"
@@ -1501,7 +1712,7 @@ export const ProductFormPage = () => {
                         className="cursor-pointer"
                         onClick={handleAddTempImageByUrl}
                         disabled={!newImageUrl}
-                        aria-label="Add image"
+                        aria-label={t('products.addImageAriaLabel', 'Add image')}
                       >
                         <ImagePlus className="h-4 w-4" />
                       </Button>

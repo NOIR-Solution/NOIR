@@ -1,19 +1,16 @@
-using NOIR.Domain.Entities.Analytics;
-
 namespace NOIR.Infrastructure.Persistence.Configurations;
 
 /// <summary>
 /// EF Core configuration for FilterAnalyticsEvent entity.
 /// Optimized for time-series analytics queries.
 /// </summary>
-public class FilterAnalyticsEventConfiguration : IEntityTypeConfiguration<FilterAnalyticsEvent>
+public class FilterAnalyticsEventConfiguration : TenantEntityConfiguration<FilterAnalyticsEvent>
 {
-    public void Configure(EntityTypeBuilder<FilterAnalyticsEvent> builder)
+    public override void Configure(EntityTypeBuilder<FilterAnalyticsEvent> builder)
     {
-        builder.ToTable("FilterAnalyticsEvents");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+        builder.ToTable("FilterAnalyticsEvents");
 
         #region Core Properties
 
@@ -67,14 +64,6 @@ public class FilterAnalyticsEventConfiguration : IEntityTypeConfiguration<Filter
         // Index for user behavior analysis
         builder.HasIndex(e => new { e.TenantId, e.UserId, e.CreatedAt })
             .HasDatabaseName("IX_FilterAnalyticsEvents_TenantId_UserId_CreatedAt");
-
-        #endregion
-
-        #region Tenant
-
-        builder.Property(e => e.TenantId)
-            .HasMaxLength(DatabaseConstants.TenantIdMaxLength);
-        builder.HasIndex(e => e.TenantId);
 
         #endregion
     }

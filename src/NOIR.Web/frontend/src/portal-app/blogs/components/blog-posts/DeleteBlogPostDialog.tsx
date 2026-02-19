@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AlertTriangle, FileText } from 'lucide-react'
 import {
   AlertDialog,
@@ -30,6 +31,7 @@ interface DeleteBlogPostDialogProps {
 }
 
 export const DeleteBlogPostDialog = ({ post, open, onOpenChange, onConfirm }: DeleteBlogPostDialogProps) => {
+  const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {
@@ -40,10 +42,10 @@ export const DeleteBlogPostDialog = ({ post, open, onOpenChange, onConfirm }: De
       const result = await onConfirm(post.id)
 
       if (result.success) {
-        toast.success('Post deleted')
+        toast.success(t('blog.postDeleted'))
         onOpenChange(false)
       } else {
-        toast.error(result.error || 'Failed to delete post')
+        toast.error(result.error || t('blog.deletePostFailed'))
       }
     } finally {
       setLoading(false)
@@ -59,9 +61,9 @@ export const DeleteBlogPostDialog = ({ post, open, onOpenChange, onConfirm }: De
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <AlertDialogTitle>Delete Post</AlertDialogTitle>
+              <AlertDialogTitle>{t('blog.deletePost')}</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this post? This action cannot be undone.
+                {t('blog.deletePostConfirm')}
               </AlertDialogDescription>
             </div>
           </div>
@@ -87,7 +89,7 @@ export const DeleteBlogPostDialog = ({ post, open, onOpenChange, onConfirm }: De
             </div>
             {post.status === 'Published' && (
               <div className="mt-3 p-2 bg-destructive/10 rounded text-sm text-destructive">
-                This post is currently published and visible to readers. Deleting it will remove it permanently.
+                {t('blog.postPublishedWarning')}
               </div>
             )}
           </div>
@@ -95,14 +97,14 @@ export const DeleteBlogPostDialog = ({ post, open, onOpenChange, onConfirm }: De
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading} className="cursor-pointer">
-            Cancel
+            {t('buttons.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={loading}
             className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
           >
-            {loading ? 'Deleting...' : 'Delete'}
+            {loading ? t('buttons.deleting') : t('buttons.delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

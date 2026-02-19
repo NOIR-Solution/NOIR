@@ -105,12 +105,12 @@ export const LiveLogsToolbar = ({
               {isPaused ? (
                 <>
                   <Play className="h-4 w-4" />
-                  Resume
+                  {t('developerLogs.resume')}
                 </>
               ) : (
                 <>
                   <Pause className="h-4 w-4" />
-                  Pause
+                  {t('developerLogs.pause')}
                 </>
               )}
             </Button>
@@ -119,7 +119,7 @@ export const LiveLogsToolbar = ({
               size="sm"
               onClick={onToggleAutoScroll}
               className="gap-1.5"
-              title="Auto-scroll to new entries"
+              title={t('developerLogs.autoScroll')}
             >
               <ArrowDownToLine className={cn('h-4 w-4', autoScroll && 'text-primary')} />
             </Button>
@@ -127,7 +127,7 @@ export const LiveLogsToolbar = ({
               variant="ghost"
               size="sm"
               onClick={onToggleSortOrder}
-              title={sortOrder === 'newest' ? 'Showing newest first' : 'Showing oldest first'}
+              title={sortOrder === 'newest' ? t('developerLogs.showingNewestFirst') : t('developerLogs.showingOldestFirst')}
             >
               {sortOrder === 'newest' ? (
                 <ArrowDown className="h-4 w-4" />
@@ -144,7 +144,7 @@ export const LiveLogsToolbar = ({
             disabled={isChangingLevel}
           >
             <SelectTrigger className="w-[160px] h-8" title="Server minimum log level - also filters display" aria-label={t('developerLogs.serverMinLevel', 'Server minimum log level')}>
-              <span className="text-muted-foreground mr-1">Min:</span>
+              <span className="text-muted-foreground mr-1">{t('developerLogs.minLabel')}</span>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -166,9 +166,9 @@ export const LiveLogsToolbar = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-8 gap-2 cursor-pointer" aria-label={t('developerLogs.filterDisplayedLevels', 'Filter displayed log levels')}>
-                <span className="text-muted-foreground">Filter:</span>
+                <span className="text-muted-foreground">{t('developerLogs.filterColon')}</span>
                 {selectedLevels.size === 0 ? (
-                  <span>All</span>
+                  <span>{t('developerLogs.allLevels')}</span>
                 ) : (
                   <span className="flex items-center gap-1">
                     {Array.from(selectedLevels).slice(0, 2).map(level => {
@@ -223,7 +223,7 @@ export const LiveLogsToolbar = ({
                       onSelectedLevelsChange(new Set())
                     }}
                   >
-                    Clear filters
+                    {t('developerLogs.clearFilters')}
                   </Button>
                 </>
               )}
@@ -235,7 +235,7 @@ export const LiveLogsToolbar = ({
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search logs..."
+                placeholder={t('developerLogs.searchLogsPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => onSearchTermChange(e.target.value)}
                 className="pl-8 h-8"
@@ -260,7 +260,7 @@ export const LiveLogsToolbar = ({
               className={cn(exceptionsOnly && 'data-[state=checked]:bg-destructive')}
             />
             <Label htmlFor="errors-only" className="text-sm cursor-pointer whitespace-nowrap">
-              Errors only
+              {t('developerLogs.errorsOnly')}
             </Label>
           </div>
 
@@ -277,7 +277,7 @@ export const LiveLogsToolbar = ({
               }}
             >
               <X className="h-3.5 w-3.5" />
-              Clear
+              {t('developerLogs.clear')}
             </Button>
           )}
 
@@ -289,7 +289,7 @@ export const LiveLogsToolbar = ({
             className="h-9 gap-1.5 text-muted-foreground hover:text-destructive"
           >
             <Trash2 className="h-4 w-4" />
-            Clear Buffer
+            {t('developerLogs.clearBuffer')}
           </Button>
         </div>
       </CardContent>

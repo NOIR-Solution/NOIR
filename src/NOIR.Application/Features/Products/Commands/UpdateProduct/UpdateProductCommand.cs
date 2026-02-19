@@ -20,7 +20,13 @@ public sealed record UpdateProductCommand(
     bool TrackInventory,
     string? MetaTitle,
     string? MetaDescription,
-    int SortOrder) : IAuditableCommand<ProductDto>
+    int SortOrder,
+    decimal? Weight,
+    string? WeightUnit,
+    decimal? Length,
+    decimal? Width,
+    decimal? Height,
+    string? DimensionUnit) : IAuditableCommand<ProductDto>
 {
     [System.Text.Json.Serialization.JsonIgnore]
     public string? UserId { get; init; }

@@ -38,6 +38,12 @@ export interface Product {
   metaTitle?: string | null
   metaDescription?: string | null
   sortOrder: number
+  weight?: number | null
+  weightUnit?: string | null
+  length?: number | null
+  width?: number | null
+  height?: number | null
+  dimensionUnit?: string | null
   totalStock: number
   inStock: boolean
   variants: ProductVariant[]
@@ -97,6 +103,7 @@ export interface ProductVariant {
   sku?: string | null
   price: number
   compareAtPrice?: number | null
+  costPrice?: number | null
   stockQuantity: number
   inStock: boolean
   lowStock: boolean
@@ -200,6 +207,12 @@ export interface CreateProductRequest {
   metaTitle?: string | null
   metaDescription?: string | null
   sortOrder: number
+  weight?: number | null
+  weightUnit?: string | null
+  length?: number | null
+  width?: number | null
+  height?: number | null
+  dimensionUnit?: string | null
   variants?: CreateProductVariantRequest[] | null
   images?: CreateProductImageRequest[] | null
 }
@@ -221,6 +234,12 @@ export interface UpdateProductRequest {
   metaTitle?: string | null
   metaDescription?: string | null
   sortOrder: number
+  weight?: number | null
+  weightUnit?: string | null
+  length?: number | null
+  width?: number | null
+  height?: number | null
+  dimensionUnit?: string | null
 }
 
 export interface CreateProductVariantRequest {
@@ -228,6 +247,7 @@ export interface CreateProductVariantRequest {
   sku?: string | null
   price: number
   compareAtPrice?: number | null
+  costPrice?: number | null
   stockQuantity: number
   options?: Record<string, string> | null
   sortOrder: number
@@ -245,6 +265,7 @@ export interface AddProductVariantRequest {
   price: number
   sku?: string | null
   compareAtPrice?: number | null
+  costPrice?: number | null
   stockQuantity: number
   options?: Record<string, string> | null
   sortOrder: number
@@ -255,6 +276,7 @@ export interface UpdateProductVariantRequest {
   price: number
   sku?: string | null
   compareAtPrice?: number | null
+  costPrice?: number | null
   stockQuantity: number
   options?: Record<string, string> | null
   sortOrder: number

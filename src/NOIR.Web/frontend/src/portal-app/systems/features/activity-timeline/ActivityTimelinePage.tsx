@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useDeferredValue } from 'react'
+import { useState, useEffect, useCallback, useDeferredValue, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import type { DateRange } from 'react-day-picker'
@@ -261,6 +261,7 @@ export const ActivityTimelinePage = () => {
   const [searchInput, setSearchInput] = useState('')
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
+  const [isFilterPending, startFilterTransition] = useTransition()
   const [pageContext, setPageContext] = useState<string>('')
   const [operationType, setOperationType] = useState<string>('')
   const [onlyFailed, setOnlyFailed] = useState(false)
@@ -310,9 +311,9 @@ export const ActivityTimelinePage = () => {
     fetchData()
   }
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page: number) => startFilterTransition(() => {
     setCurrentPage(page)
-  }
+  })
 
   return (
     <div className="space-y-6">
@@ -338,7 +339,7 @@ export const ActivityTimelinePage = () => {
                 <CardTitle className="text-lg">{t('activityTimeline.recentActivity', 'Recent Activity')}</CardTitle>
                 <CardDescription className="text-xs">
                   {totalCount > 0
-                    ? `${entries.length} of ${totalCount} entries`
+                    ? t('activityTimeline.entriesCount', { shown: entries.length, total: totalCount })
                     : t('activityTimeline.noActivity', 'No activity found')}
                 </CardDescription>
               </div>
@@ -349,7 +350,7 @@ export const ActivityTimelinePage = () => {
               <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <User className="h-4 w-4 text-blue-600" />
                 <span className="text-sm text-blue-700 dark:text-blue-300">
-                  Showing activity for user:{' '}
+                  {t('activityTimeline.showingActivityForUser')}{' '}
                   <span className="font-medium">{userEmailParam || userIdParam}</span>
                 </span>
                 <Button
@@ -359,7 +360,7 @@ export const ActivityTimelinePage = () => {
                   onClick={() => setSearchParams({})}
                 >
                   <X className="h-3.5 w-3.5 mr-1" />
-                  Clear user filter
+                  {t('activityTimeline.clearUserFilter')}
                 </Button>
               </div>
             )}
@@ -371,24 +372,25 @@ export const ActivityTimelinePage = () => {
                 <div className="relative flex-1 min-w-[280px]">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Search by ID, user, handler, field name, value..."
+                    placeholder={t('activityTimeline.searchDetailedPlaceholder')}
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     className="pl-9 pr-9 h-9"
                   />
                   <RichTooltip
-                    title="Search across:"
+                    title={t('activityTimeline.searchTooltipTitle')}
                     items={[
-                      'Entity ID, Correlation ID',
-                      'User email',
-                      'Handler name, HTTP path',
-                      'Field names and values',
+                      t('activityTimeline.searchTooltipEntityId'),
+                      t('activityTimeline.searchTooltipUserEmail'),
+                      t('activityTimeline.searchTooltipHandler'),
+                      t('activityTimeline.searchTooltipFields'),
                     ]}
                     placement="bottom"
                   >
                     <button
                       type="button"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      aria-label={t('activityTimeline.searchHelp')}
                     >
                       <HelpCircle className="h-4 w-4" />
                     </button>
@@ -398,11 +400,11 @@ export const ActivityTimelinePage = () => {
                 {/* Date Range Picker - beside search */}
                 <DateRangePicker
                   value={dateRange}
-                  onChange={(range) => {
+                  onChange={(range) => startFilterTransition(() => {
                     setDateRange(range)
                     setCurrentPage(1)
-                  }}
-                  placeholder="Date range"
+                  })}
+                  placeholder={t('activityTimeline.dateRange')}
                   className="h-9 w-[220px]"
                   numberOfMonths={2}
                 />
@@ -410,10 +412,10 @@ export const ActivityTimelinePage = () => {
                 {/* Context dropdown */}
                 <Select
                   value={pageContext || 'all'}
-                  onValueChange={(value) => {
+                  onValueChange={(value) => startFilterTransition(() => {
                     setPageContext(value === 'all' ? '' : value)
                     setCurrentPage(1)
-                  }}
+                  })}
                 >
                   <SelectTrigger className="w-[130px] h-9" aria-label={t('labels.filterByContext', 'Filter by context')}>
                     <SelectValue placeholder={t('activityTimeline.allContexts')} />
@@ -431,32 +433,32 @@ export const ActivityTimelinePage = () => {
                 {/* Action dropdown */}
                 <Select
                   value={operationType || 'all'}
-                  onValueChange={(value) => {
+                  onValueChange={(value) => startFilterTransition(() => {
                     setOperationType(value === 'all' ? '' : value)
                     setCurrentPage(1)
-                  }}
+                  })}
                 >
                   <SelectTrigger className="w-[130px] h-9" aria-label={t('labels.filterByAction', 'Filter by action')}>
-                    <SelectValue placeholder="All Actions" />
+                    <SelectValue placeholder={t('activityTimeline.allActions')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Actions</SelectItem>
+                    <SelectItem value="all">{t('activityTimeline.allActions')}</SelectItem>
                     <SelectItem value="Create">
                       <span className="flex items-center gap-2">
                         <Plus className="h-3 w-3 text-green-600" />
-                        Create
+                        {t('activityTimeline.operations.create')}
                       </span>
                     </SelectItem>
                     <SelectItem value="Update">
                       <span className="flex items-center gap-2">
                         <Pencil className="h-3 w-3 text-blue-600" />
-                        Update
+                        {t('activityTimeline.operations.update')}
                       </span>
                     </SelectItem>
                     <SelectItem value="Delete">
                       <span className="flex items-center gap-2">
                         <Trash2 className="h-3 w-3 text-red-600" />
-                        Delete
+                        {t('activityTimeline.operations.delete')}
                       </span>
                     </SelectItem>
                   </SelectContent>
@@ -467,14 +469,14 @@ export const ActivityTimelinePage = () => {
                   <Switch
                     id="only-failed"
                     checked={onlyFailed}
-                    onCheckedChange={(checked: boolean) => {
+                    onCheckedChange={(checked: boolean) => startFilterTransition(() => {
                       setOnlyFailed(checked)
                       setCurrentPage(1)
-                    }}
+                    })}
                     className={cn(onlyFailed && 'data-[state=checked]:bg-destructive')}
                   />
                   <Label htmlFor="only-failed" className="text-sm cursor-pointer whitespace-nowrap">
-                    Failed only
+                    {t('activityTimeline.onlyFailed')}
                   </Label>
                 </div>
 
@@ -487,7 +489,7 @@ export const ActivityTimelinePage = () => {
                       variant="ghost"
                       size="sm"
                       className="h-9 gap-1.5"
-                      onClick={() => {
+                      onClick={() => startFilterTransition(() => {
                         setSearchInput('')
                         setPageContext('')
                         setOperationType('')
@@ -498,10 +500,10 @@ export const ActivityTimelinePage = () => {
                         if (userIdParam) {
                           setSearchParams({})
                         }
-                      }}
+                      })}
                     >
                       <X className="h-3.5 w-3.5" />
-                      Clear
+                      {t('developerLogs.clear')}
                     </Button>
                   )}
                 </div>
@@ -509,7 +511,7 @@ export const ActivityTimelinePage = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md flex items-center gap-2">
               <AlertCircle className="h-4 w-4" />

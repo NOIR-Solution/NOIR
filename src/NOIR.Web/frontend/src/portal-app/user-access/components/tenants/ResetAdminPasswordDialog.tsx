@@ -142,6 +142,7 @@ export const ResetAdminPasswordDialog = ({
                   className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
+                  aria-label={showPassword ? t('buttons.hidePassword') : t('buttons.showPassword')}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -171,6 +172,7 @@ export const ResetAdminPasswordDialog = ({
                   className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   tabIndex={-1}
+                  aria-label={showConfirmPassword ? t('buttons.hidePassword') : t('buttons.showPassword')}
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4 text-muted-foreground" />

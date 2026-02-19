@@ -56,6 +56,8 @@ global using NOIR.Application.Features.Products.DTOs;
 global using NOIR.Application.Features.Products.Specifications;
 global using NOIR.Application.Features.Customers.DTOs;
 global using NOIR.Application.Features.Customers.Specifications;
+global using NOIR.Application.Features.CustomerGroups.DTOs;
+global using NOIR.Application.Features.CustomerGroups.Specifications;
 global using NOIR.Application.Features.Orders.DTOs;
 global using NOIR.Application.Features.Orders.Specifications;
 global using NOIR.Application.Features.Reviews.DTOs;

@@ -126,23 +126,23 @@ export const LegalPageEditPage = () => {
     if (!id || !canEdit) return
 
     if (!title.trim()) {
-      toast.error('Title is required')
+      toast.error(t('legalPages.titleRequired'))
       return
     }
     if (!htmlContent.trim()) {
-      toast.error('Content is required')
+      toast.error(t('legalPages.contentRequired'))
       return
     }
     if (metaTitle.length > 60) {
-      toast.error('Meta title must not exceed 60 characters')
+      toast.error(t('legalPages.metaTitleMaxLength'))
       return
     }
     if (metaDescription.length > 160) {
-      toast.error('Meta description must not exceed 160 characters')
+      toast.error(t('legalPages.metaDescriptionMaxLength'))
       return
     }
     if (canonicalUrl && !isValidUrl(canonicalUrl)) {
-      toast.error('Canonical URL must be a valid absolute URL')
+      toast.error(t('legalPages.canonicalUrlInvalid'))
       return
     }
 
@@ -157,7 +157,7 @@ export const LegalPageEditPage = () => {
         allowIndexing,
       })
       setPage(updated)
-      toast.success('Legal page saved successfully')
+      toast.success(t('legalPages.savedSuccess'))
       // If COW created a new page, navigate to the new ID
       if (updated.id !== id) {
         navigate(`/portal/legal-pages/${updated.id}`, { replace: true })
@@ -196,7 +196,7 @@ export const LegalPageEditPage = () => {
       setMetaDescription(reverted.metaDescription || '')
       setCanonicalUrl(reverted.canonicalUrl || '')
       setAllowIndexing(reverted.allowIndexing)
-      toast.success('Reverted to platform default')
+      toast.success(t('legalPages.revertedSuccess'))
       // Navigate to the platform page ID
       if (reverted.id !== id) {
         navigate(`/portal/legal-pages/${reverted.id}`, { replace: true })
@@ -254,12 +254,12 @@ export const LegalPageEditPage = () => {
               <span className="text-sm text-muted-foreground">/{page.slug}</span>
               {page.isInherited && (
                 <Badge variant="outline" className="text-purple-600 border-purple-600/30">
-                  Platform Default
+                  {t('legalPages.platformDefault')}
                 </Badge>
               )}
               {!page.isInherited && page.version > 1 && (
                 <Badge variant="outline" className="text-blue-600 border-blue-600/30">
-                  Customized (v{page.version})
+                  {t('legalPages.customized', { version: page.version })}
                 </Badge>
               )}
             </div>
@@ -272,21 +272,20 @@ export const LegalPageEditPage = () => {
               <AlertDialogTrigger asChild>
                 <Button variant="outline" disabled={reverting}>
                   <RotateCcw className="h-4 w-4 mr-2" />
-                  Revert to Default
+                  {t('buttons.revert')}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Revert to Platform Default?</AlertDialogTitle>
+                  <AlertDialogTitle>{t('legalPages.revertTitle')}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will delete your customized version and restore the platform default content.
-                    This action cannot be undone.
+                    {t('legalPages.revertDescription')}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleRevert}>
-                    Revert
+                    {t('buttons.revert')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -295,7 +294,7 @@ export const LegalPageEditPage = () => {
           {canEdit && (
             <Button onClick={handleSave} disabled={saving || !hasChanges}>
               <Save className="h-4 w-4 mr-2" />
-              {saving ? 'Saving...' : 'Save'}
+              {saving ? t('buttons.saving') : t('buttons.save')}
             </Button>
           )}
         </div>
@@ -320,22 +319,22 @@ export const LegalPageEditPage = () => {
         <div className="lg:col-span-2 space-y-4">
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-              <CardTitle className="text-base">Content</CardTitle>
+              <CardTitle className="text-base">{t('legalPages.content')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">{t('legalPages.title')}</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Page title"
+                  placeholder={t('legalPages.pageTitlePlaceholder')}
                   aria-label={t('legalPages.pageTitle', 'Page title')}
                   disabled={!canEdit}
                 />
               </div>
               <div className="space-y-2">
-                <Label>HTML Content</Label>
+                <Label>{t('legalPages.htmlContent')}</Label>
                 <Editor
                   onInit={(_evt, editor) => {
                     editorRef.current = editor
@@ -457,42 +456,42 @@ export const LegalPageEditPage = () => {
         <div className="space-y-4">
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-              <CardTitle className="text-base">SEO</CardTitle>
+              <CardTitle className="text-base">{t('legalPages.seo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="metaTitle">Meta Title</Label>
+                <Label htmlFor="metaTitle">{t('legalPages.metaTitle')}</Label>
                 <Input
                   id="metaTitle"
                   value={metaTitle}
                   onChange={(e) => setMetaTitle(e.target.value)}
-                  placeholder="Page title for search engines..."
+                  placeholder={t('legalPages.seoTitlePlaceholder')}
                   aria-label={t('legalPages.seoMetaTitle', 'SEO meta title')}
                   maxLength={60}
                   disabled={!canEdit}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {metaTitle.length}/60 characters
+                  {metaTitle.length}/60 {t('legalPages.characters')}
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="metaDescription">Meta Description</Label>
+                <Label htmlFor="metaDescription">{t('legalPages.metaDescription')}</Label>
                 <Textarea
                   id="metaDescription"
                   value={metaDescription}
                   onChange={(e) => setMetaDescription(e.target.value)}
-                  placeholder="Brief description for search engines..."
+                  placeholder={t('legalPages.seoDescriptionPlaceholder')}
                   aria-label={t('legalPages.seoMetaDescription', 'SEO meta description')}
                   className="min-h-[80px]"
                   maxLength={160}
                   disabled={!canEdit}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {metaDescription.length}/160 characters
+                  {metaDescription.length}/160 {t('legalPages.characters')}
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="canonicalUrl">Canonical URL</Label>
+                <Label htmlFor="canonicalUrl">{t('legalPages.canonicalUrlLabel')}</Label>
                 <Input
                   id="canonicalUrl"
                   value={canonicalUrl}
@@ -502,14 +501,14 @@ export const LegalPageEditPage = () => {
                   disabled={!canEdit}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Leave empty to use default URL
+                  {t('legalPages.canonicalUrlHint')}
                 </p>
               </div>
               <div className="flex items-center justify-between pt-2">
                 <div className="space-y-0.5">
-                  <Label htmlFor="allowIndexing">Allow Search Indexing</Label>
+                  <Label htmlFor="allowIndexing">{t('legalPages.allowIndexing')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Allow search engines to index this page
+                    {t('legalPages.allowIndexingHint')}
                   </p>
                 </div>
                 <Switch
@@ -524,23 +523,23 @@ export const LegalPageEditPage = () => {
 
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader className="backdrop-blur-sm bg-background/95 rounded-t-lg">
-              <CardTitle className="text-base">Info</CardTitle>
+              <CardTitle className="text-base">{t('legalPages.info')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Slug:</span>
+                <span className="text-muted-foreground">{t('legalPages.slug')}:</span>
                 <span className="font-mono">{page.slug}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Status:</span>
-                <span>{page.isActive ? 'Active' : 'Inactive'}</span>
+                <span className="text-muted-foreground">{t('legalPages.status')}:</span>
+                <span>{page.isActive ? t('legalPages.active') : t('legalPages.inactive')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Version:</span>
+                <span className="text-muted-foreground">{t('legalPages.version')}:</span>
                 <span>{page.version}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Last Modified:</span>
+                <span className="text-muted-foreground">{t('legalPages.lastModified')}:</span>
                 <span>{formatDate(page.lastModified)}</span>
               </div>
             </CardContent>

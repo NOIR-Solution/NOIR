@@ -66,5 +66,32 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
 
         RuleFor(x => x.SortOrder)
             .GreaterThanOrEqualTo(0).WithMessage("Sort order must be a non-negative number.");
+
+        // Physical properties validation
+        RuleFor(x => x.Weight)
+            .GreaterThan(0).WithMessage("Weight must be a positive number.")
+            .When(x => x.Weight.HasValue);
+
+        RuleFor(x => x.WeightUnit)
+            .Must(u => u is "kg" or "g" or "lb" or "oz")
+            .WithMessage("Weight unit must be one of: kg, g, lb, oz.")
+            .When(x => x.WeightUnit is not null);
+
+        RuleFor(x => x.Length)
+            .GreaterThan(0).WithMessage("Length must be a positive number.")
+            .When(x => x.Length.HasValue);
+
+        RuleFor(x => x.Width)
+            .GreaterThan(0).WithMessage("Width must be a positive number.")
+            .When(x => x.Width.HasValue);
+
+        RuleFor(x => x.Height)
+            .GreaterThan(0).WithMessage("Height must be a positive number.")
+            .When(x => x.Height.HasValue);
+
+        RuleFor(x => x.DimensionUnit)
+            .Must(u => u is "cm" or "in" or "m")
+            .WithMessage("Dimension unit must be one of: cm, in, m.")
+            .When(x => x.DimensionUnit is not null);
     }
 }
