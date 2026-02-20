@@ -58,6 +58,11 @@ bld/
 **/bin/Release/
 **/obj/Debug/
 **/obj/Release/
+# Cross-platform artifacts with literal backslash in directory names
+**/bin\\Debug/
+**/bin\\Release/
+**/obj\\Debug/
+**/obj\\Release/
 
 # Log directories
 [Ll]og/
@@ -298,11 +303,13 @@ nul
 *.rej
 *~
 
-# Test artifacts (prevent accidental commits)
+# Test artifacts and screenshots (prevent accidental commits)
 test-*.png
 test-*.jpg
 test-*.jpeg
 screenshot-*.png
+/*.png
+/*.jpg
 
 # Editor temporary files
 *~
