@@ -278,7 +278,7 @@ export const EnhancedProductCard = ({
         <motion.div
           className="absolute inset-0 rounded-xl border-2 border-primary/0 pointer-events-none"
           animate={{
-            borderColor: isHovered ? 'hsl(var(--primary) / 0.3)' : 'hsl(var(--primary) / 0)',
+            borderColor: isHovered ? 'color-mix(in oklch, var(--primary) 30%, transparent)' : 'transparent',
           }}
           transition={{ duration: 0.3 }}
         />

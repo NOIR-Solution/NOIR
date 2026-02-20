@@ -151,7 +151,7 @@ export const Combobox = ({
             onScroll={handleScroll}
             onWheel={handleWheel}
             className="max-h-[280px] overflow-y-auto overscroll-contain"
-            style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(var(--border)) transparent' }}
+            style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--border) transparent' }}
           >
             {filteredOptions.length === 0 ? (
               <div className="py-6 text-center text-sm text-muted-foreground">

@@ -108,7 +108,7 @@ export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded
             className="max-h-[200px] overflow-y-auto space-y-2 pr-1 overscroll-contain"
             style={{
               scrollbarWidth: 'thin',
-              scrollbarColor: 'hsl(var(--muted-foreground) / 0.3) transparent',
+              scrollbarColor: 'color-mix(in oklch, var(--muted-foreground) 30%, transparent) transparent',
             }}
             onWheel={handleWheel}
           >

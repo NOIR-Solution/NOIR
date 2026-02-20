@@ -301,29 +301,29 @@ export const DashboardPage = () => {
                       <AreaChart data={revenueChartData} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
                         <defs>
                           <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.02} />
+                            <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.3} />
+                            <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.02} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                         <XAxis
                           dataKey="date"
-                          tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                          tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
                           tickLine={false}
                           axisLine={false}
                           interval="preserveStartEnd"
                         />
                         <YAxis
-                          tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                          tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
                           tickLine={false}
                           axisLine={false}
                           tickFormatter={(v: number) => formatVndAbbreviated(v)}
                         />
-                        <Tooltip content={<RevenueTooltip />} />
+                        <Tooltip content={<RevenueTooltip />} cursor={{ stroke: 'var(--muted-foreground)', strokeDasharray: '3 3' }} />
                         <Area
                           type="monotone"
                           dataKey="revenue"
-                          stroke="hsl(var(--primary))"
+                          stroke="var(--primary)"
                           strokeWidth={2}
                           fill="url(#revenueGradient)"
                         />
@@ -347,10 +347,10 @@ export const DashboardPage = () => {
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={orderStatusBarData} layout="vertical" margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
                         <XAxis
                           type="number"
-                          tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                          tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
                           tickLine={false}
                           axisLine={false}
                           allowDecimals={false}
@@ -358,12 +358,12 @@ export const DashboardPage = () => {
                         <YAxis
                           type="category"
                           dataKey="name"
-                          tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                          tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
                           tickLine={false}
                           axisLine={false}
                           width={80}
                         />
-                        <Tooltip content={<OrderBarTooltip />} />
+                        <Tooltip content={<OrderBarTooltip />} cursor={{ fill: 'var(--muted)', opacity: 0.3 }} />
                         <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={24} />
                       </BarChart>
                     </ResponsiveContainer>

@@ -5,6 +5,26 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NOIR</title>
+    <!-- Critical theme styles: visible BEFORE main CSS bundle loads, prevents white flash -->
+    <style>
+      .dark { background-color: oklch(0.145 0.014 260); color: oklch(0.93 0.005 260); color-scheme: dark; }
+      .high-contrast { background-color: #000; color: #fff; color-scheme: light; }
+    </style>
+    <!-- Blocking theme script: applies class + color-scheme before first paint -->
+    <script>
+      (function() {
+        var t = localStorage.getItem('noir-theme');
+        var r = t;
+        if (!t || t === 'system') {
+          if (window.matchMedia('(prefers-contrast: more)').matches) r = 'high-contrast';
+          else if (window.matchMedia('(prefers-color-scheme: dark)').matches) r = 'dark';
+          else r = 'light';
+        }
+        var d = document.documentElement;
+        if (r === 'dark') { d.classList.add('dark'); d.style.colorScheme = 'dark'; }
+        else if (r === 'high-contrast') { d.classList.add('high-contrast'); }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
