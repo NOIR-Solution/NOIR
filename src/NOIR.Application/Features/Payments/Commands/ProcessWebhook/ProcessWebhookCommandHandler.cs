@@ -145,7 +145,16 @@ public class ProcessWebhookCommandHandler
 
         webhookLog.MarkAsProcessed(payment?.Id);
         await _webhookLogRepository.AddAsync(webhookLog, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result.Failure<WebhookLogDto>(
+                Error.Conflict("The payment was modified by another process. Please retry the webhook.", ErrorCodes.Payment.ConcurrencyConflict));
+        }
 
         return Result.Success(MapToDto(webhookLog));
     }

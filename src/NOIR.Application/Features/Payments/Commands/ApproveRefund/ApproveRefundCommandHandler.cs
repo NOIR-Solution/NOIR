@@ -8,15 +8,18 @@ public class ApproveRefundCommandHandler
     private readonly IRepository<Refund, Guid> _refundRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPaymentHubContext _paymentHubContext;
+    private readonly IPaymentService _paymentService;
 
     public ApproveRefundCommandHandler(
         IRepository<Refund, Guid> refundRepository,
         IUnitOfWork unitOfWork,
-        IPaymentHubContext paymentHubContext)
+        IPaymentHubContext paymentHubContext,
+        IPaymentService paymentService)
     {
         _refundRepository = refundRepository;
         _unitOfWork = unitOfWork;
         _paymentHubContext = paymentHubContext;
+        _paymentService = paymentService;
     }
 
     public async Task<Result<RefundDto>> Handle(
@@ -46,7 +49,16 @@ public class ApproveRefundCommandHandler
         }
 
         refund.Approve(command.UserId);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result.Failure<RefundDto>(
+                Error.Conflict("This refund was modified by another user. Please refresh and try again.", ErrorCodes.Payment.ConcurrencyConflict));
+        }
 
         // Send real-time notification for refund status change
         await _paymentHubContext.SendRefundStatusUpdateAsync(
@@ -58,7 +70,19 @@ public class ApproveRefundCommandHandler
             "Refund approved",
             cancellationToken);
 
-        return Result.Success(MapToDto(refund));
+        // Process the refund through the payment gateway
+        var refundResult = await _paymentService.ProcessRefundAsync(refund.Id, cancellationToken);
+
+        // Re-fetch the refund to get the updated status after processing
+        var updatedRefund = await _refundRepository.FirstOrDefaultAsync(
+            new RefundByIdSpec(refund.Id), cancellationToken);
+
+        var dto = MapToDto(updatedRefund ?? refund);
+
+        // Return success with the updated DTO - the refund status (Completed/Failed)
+        // reflects the gateway result. The approval itself succeeded; gateway failure
+        // is visible through the refund's Failed status for operational follow-up.
+        return Result.Success(dto);
     }
 
     private static RefundDto MapToDto(Refund refund)

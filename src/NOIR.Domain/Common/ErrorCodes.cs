@@ -252,6 +252,15 @@ public static class ErrorCodes
 
         /// <summary>Refund processing failed</summary>
         public const string RefundFailed = "NOIR-PAY-016";
+
+        /// <summary>Payment has no gateway transaction ID for status refresh</summary>
+        public const string NoGatewayTransaction = "NOIR-PAY-017";
+
+        /// <summary>Order status does not allow payment</summary>
+        public const string OrderNotPayable = "NOIR-PAY-018";
+
+        /// <summary>Payment or refund was modified concurrently by another user</summary>
+        public const string ConcurrencyConflict = "NOIR-PAY-019";
     }
 
     /// <summary>
@@ -340,7 +349,8 @@ public static class ErrorCodes
         /// <summary>Invalid return transition</summary>
         public const string InvalidReturnTransition = "NOIR-ORDER-008";
 
-        // NOIR-ORDER-009 reserved / not allocated
+        /// <summary>Insufficient stock for order item</summary>
+        public const string InsufficientStock = "NOIR-ORDER-009";
 
         /// <summary>Order note not found</summary>
         public const string NoteNotFound = "NOIR-ORDER-010";

@@ -367,6 +367,113 @@ public sealed class ProductWithVariantByIdSpec : Specification<Product>
 }
 
 /// <summary>
+/// Specification to load products that contain specific variant IDs.
+/// Used for manual order creation to resolve product data from variant selections.
+/// </summary>
+public sealed class ProductsByVariantIdsSpec : Specification<Product>
+{
+    public ProductsByVariantIdsSpec(List<Guid> variantIds)
+    {
+        Query.Where(p => p.Variants.Any(v => variantIds.Contains(v.Id)))
+            .Include(p => p.Variants)
+            .Include(p => p.Images)
+            .AsSplitQuery()
+            .TagWith("GetProductsByVariantIds");
+    }
+}
+
+/// <summary>
+/// Specification to load products by variant IDs with tracking for stock modification.
+/// </summary>
+public sealed class ProductsByVariantIdsForUpdateSpec : Specification<Product>
+{
+    public ProductsByVariantIdsForUpdateSpec(List<Guid> variantIds)
+    {
+        Query.Where(p => p.Variants.Any(v => variantIds.Contains(v.Id)))
+            .Include(p => p.Variants)
+            .Include(p => p.Images)
+            .AsSplitQuery()
+            .AsTracking()
+            .TagWith("GetProductsByVariantIdsForUpdate");
+    }
+}
+
+/// <summary>
+/// Specification to search active products with variants for lookup (manual order creation).
+/// Returns products with their variants and images for flattening into variant DTOs.
+/// </summary>
+public sealed class SearchProductsWithVariantsSpec : Specification<Product>
+{
+    public SearchProductsWithVariantsSpec(
+        string? search = null,
+        Guid? categoryId = null,
+        int? skip = null,
+        int? take = null)
+    {
+        // Only active products
+        Query.Where(p => p.Status == ProductStatus.Active);
+
+        // Search filter (match product name, variant name, or variant SKU)
+        if (!string.IsNullOrEmpty(search))
+        {
+            Query.Where(p =>
+                p.Name.Contains(search) ||
+                p.Variants.Any(v =>
+                    v.Name.Contains(search) ||
+                    (v.Sku != null && v.Sku.Contains(search))));
+        }
+
+        // Category filter
+        if (categoryId.HasValue)
+        {
+            Query.Where(p => p.CategoryId == categoryId.Value);
+        }
+
+        Query.Include(p => p.Variants)
+            .Include(p => p.Images)
+            .AsSplitQuery()
+            .OrderBy(p => p.Name);
+
+        if (skip.HasValue)
+            Query.Skip(skip.Value);
+
+        if (take.HasValue)
+            Query.Take(take.Value);
+
+        Query.TagWith("SearchProductsWithVariants");
+    }
+}
+
+/// <summary>
+/// Specification to count active products matching search criteria for variant lookup.
+/// </summary>
+public sealed class SearchProductsWithVariantsCountSpec : Specification<Product>
+{
+    public SearchProductsWithVariantsCountSpec(
+        string? search = null,
+        Guid? categoryId = null)
+    {
+        Query.Where(p => p.Status == ProductStatus.Active);
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            Query.Where(p =>
+                p.Name.Contains(search) ||
+                p.Variants.Any(v =>
+                    v.Name.Contains(search) ||
+                    (v.Sku != null && v.Sku.Contains(search))));
+        }
+
+        if (categoryId.HasValue)
+        {
+            Query.Where(p => p.CategoryId == categoryId.Value);
+        }
+
+        Query.TagWith("CountSearchProductsWithVariants");
+    }
+}
+
+/// <summary>
 /// Specification to get a product variant by ID with tracking for update.
 /// </summary>
 public sealed class ProductVariantByIdForUpdateSpec : Specification<ProductVariant>

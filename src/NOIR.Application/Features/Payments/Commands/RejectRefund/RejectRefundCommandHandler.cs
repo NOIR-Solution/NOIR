@@ -47,7 +47,16 @@ public class RejectRefundCommandHandler
 
         var rejectionReason = command.RejectionReason ?? "Rejected";
         refund.Reject(rejectionReason);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result.Failure<RefundDto>(
+                Error.Conflict("This refund was modified by another user. Please refresh and try again.", ErrorCodes.Payment.ConcurrencyConflict));
+        }
 
         // Send real-time notification for refund rejection
         await _paymentHubContext.SendRefundStatusUpdateAsync(

@@ -38,6 +38,9 @@ public class RequestRefundCommandHandlerTests
         // Default setup
         _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
         _paymentServiceMock.Setup(x => x.GenerateRefundNumber()).Returns(TestRefundNumber);
+        _paymentServiceMock
+            .Setup(x => x.ProcessRefundAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RefundResult(true, null, null));
         _paymentSettingsMock.Setup(x => x.Value).Returns(new PaymentSettings
         {
             MaxRefundDays = 30,
@@ -180,6 +183,11 @@ public class RequestRefundCommandHandlerTests
             .Setup(x => x.AddAsync(It.IsAny<Refund>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Refund entity, CancellationToken _) => entity);
 
+        // Re-fetch after processing uses RefundByIdSpec (read-only) - returns null so handler uses in-memory refund
+        _refundRepositoryMock
+            .Setup(x => x.FirstOrDefaultAsync(It.IsAny<RefundByIdSpec>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Refund?)null);
+
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
@@ -191,6 +199,7 @@ public class RequestRefundCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Status.Should().Be(RefundStatus.Approved);
         result.Value.ApprovedBy.Should().Be(TestUserId);
+        _paymentServiceMock.Verify(x => x.ProcessRefundAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     #endregion

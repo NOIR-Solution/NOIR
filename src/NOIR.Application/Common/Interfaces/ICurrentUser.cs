@@ -16,6 +16,12 @@ public interface ICurrentUser
     string? Email { get; }
 
     /// <summary>
+    /// The user's display name (friendly name for UI display).
+    /// Falls back to Email if not set.
+    /// </summary>
+    string? DisplayName { get; }
+
+    /// <summary>
     /// The current active tenant ID (from JWT claim).
     /// Null if user is not in a tenant context.
     /// </summary>

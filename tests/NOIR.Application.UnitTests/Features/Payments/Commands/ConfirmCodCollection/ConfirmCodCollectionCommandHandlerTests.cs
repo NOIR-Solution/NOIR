@@ -13,6 +13,7 @@ public class ConfirmCodCollectionCommandHandlerTests
     #region Test Setup
 
     private readonly Mock<IRepository<PaymentTransaction, Guid>> _paymentRepositoryMock;
+    private readonly Mock<IRepository<Order, Guid>> _orderRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IPaymentHubContext> _paymentHubContextMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
@@ -21,18 +22,21 @@ public class ConfirmCodCollectionCommandHandlerTests
     private const string TestTenantId = "test-tenant";
     private const string TestTransactionNumber = "PAY-20260131-001";
     private const string TestUserId = "collector-user-123";
+    private const string TestDisplayName = "Collector User";
     private static readonly Guid TestPaymentId = Guid.NewGuid();
     private static readonly Guid TestGatewayId = Guid.NewGuid();
 
     public ConfirmCodCollectionCommandHandlerTests()
     {
         _paymentRepositoryMock = new Mock<IRepository<PaymentTransaction, Guid>>();
+        _orderRepositoryMock = new Mock<IRepository<Order, Guid>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _paymentHubContextMock = new Mock<IPaymentHubContext>();
         _currentUserMock = new Mock<ICurrentUser>();
 
         // Default setup
         _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
+        _currentUserMock.Setup(x => x.DisplayName).Returns(TestDisplayName);
         _paymentHubContextMock
             .Setup(x => x.SendCodCollectionUpdateAsync(
                 It.IsAny<string>(),
@@ -46,6 +50,7 @@ public class ConfirmCodCollectionCommandHandlerTests
 
         _handler = new ConfirmCodCollectionCommandHandler(
             _paymentRepositoryMock.Object,
+            _orderRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _paymentHubContextMock.Object,
             _currentUserMock.Object);
@@ -121,7 +126,7 @@ public class ConfirmCodCollectionCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Status.Should().Be(PaymentStatus.CodCollected);
-        result.Value.CodCollectorName.Should().Be(TestUserId);
+        result.Value.CodCollectorName.Should().Be(TestDisplayName);
         result.Value.CodCollectedAt.Should().NotBeNull();
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -129,19 +134,21 @@ public class ConfirmCodCollectionCommandHandlerTests
             TestTenantId,
             TestPaymentId,
             TestTransactionNumber,
-            TestUserId,
+            TestDisplayName,
             500000m,
             "VND",
             It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WithValidCollector_ShouldRecordCollectorName()
+    public async Task Handle_WithValidCollector_ShouldRecordCollectorDisplayName()
     {
         // Arrange
-        var collectorName = "John Doe";
-        var command = CreateTestCommand(userId: collectorName);
+        var command = CreateTestCommand();
         var codPayment = CreateTestCodPayment(PaymentStatus.CodPending);
+
+        // Set a specific display name for this test
+        _currentUserMock.Setup(x => x.DisplayName).Returns("John Doe");
 
         _paymentRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<PaymentTransactionByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
@@ -156,7 +163,36 @@ public class ConfirmCodCollectionCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.CodCollectorName.Should().Be(collectorName);
+        // Collector name should use the display name from ICurrentUser, not the raw UserId
+        result.Value.CodCollectorName.Should().Be("John Doe");
+    }
+
+    [Fact]
+    public async Task Handle_WithNoDisplayName_ShouldFallbackToEmail()
+    {
+        // Arrange
+        var command = CreateTestCommand();
+        var codPayment = CreateTestCodPayment(PaymentStatus.CodPending);
+
+        // Clear display name, set email as fallback
+        _currentUserMock.Setup(x => x.DisplayName).Returns((string?)null);
+        _currentUserMock.Setup(x => x.Email).Returns("collector@test.com");
+
+        _paymentRepositoryMock
+            .Setup(x => x.FirstOrDefaultAsync(It.IsAny<PaymentTransactionByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(codPayment);
+
+        _unitOfWorkMock
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        // Should fall back to email when display name is null
+        result.Value.CodCollectorName.Should().Be("collector@test.com");
     }
 
     #endregion

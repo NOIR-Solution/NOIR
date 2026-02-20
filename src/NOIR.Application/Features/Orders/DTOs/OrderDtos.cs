@@ -149,3 +149,13 @@ public sealed record CreateAddressDto(
     string Province,
     string Country = "Vietnam",
     string? PostalCode = null);
+
+/// <summary>
+/// Request DTO for a manual order item (admin creates order, provides variant ID + quantity).
+/// Price is resolved from variant unless overridden.
+/// </summary>
+public sealed record ManualOrderItemDto(
+    Guid ProductVariantId,
+    int Quantity,
+    decimal? UnitPrice = null,
+    decimal DiscountAmount = 0);

@@ -194,6 +194,10 @@ export const Permissions = {
   AttributesCreate: 'attributes:create',
   AttributesUpdate: 'attributes:update',
   AttributesDelete: 'attributes:delete',
+  // Payments
+  PaymentsRead: 'payments:read',
+  PaymentsCreate: 'payments:create',
+  PaymentsManage: 'payments:manage',
   // Orders
   OrdersRead: 'orders:read',
   OrdersWrite: 'orders:write',

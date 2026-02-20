@@ -15,6 +15,7 @@ public class ApproveRefundCommandHandlerTests
     private readonly Mock<IRepository<Refund, Guid>> _refundRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IPaymentHubContext> _paymentHubContextMock;
+    private readonly Mock<IPaymentService> _paymentServiceMock;
     private readonly ApproveRefundCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -28,6 +29,7 @@ public class ApproveRefundCommandHandlerTests
         _refundRepositoryMock = new Mock<IRepository<Refund, Guid>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _paymentHubContextMock = new Mock<IPaymentHubContext>();
+        _paymentServiceMock = new Mock<IPaymentService>();
 
         // Default setup
         _paymentHubContextMock
@@ -41,10 +43,15 @@ public class ApproveRefundCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
+        _paymentServiceMock
+            .Setup(x => x.ProcessRefundAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RefundResult(true, null, null));
+
         _handler = new ApproveRefundCommandHandler(
             _refundRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _paymentHubContextMock.Object);
+            _paymentHubContextMock.Object,
+            _paymentServiceMock.Object);
     }
 
     private static ApproveRefundCommand CreateTestCommand(
@@ -106,6 +113,11 @@ public class ApproveRefundCommandHandlerTests
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<RefundByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(pendingRefund);
 
+        // Re-fetch after processing returns the same refund (now approved)
+        _refundRepositoryMock
+            .Setup(x => x.FirstOrDefaultAsync(It.IsAny<RefundByIdSpec>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(pendingRefund);
+
         _unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
@@ -129,6 +141,7 @@ public class ApproveRefundCommandHandlerTests
             It.IsAny<decimal>(),
             "Refund approved",
             It.IsAny<CancellationToken>()), Times.Once);
+        _paymentServiceMock.Verify(x => x.ProcessRefundAsync(TestRefundId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -140,6 +153,11 @@ public class ApproveRefundCommandHandlerTests
 
         _refundRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<RefundByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(refund);
+
+        // Re-fetch after processing returns the same refund
+        _refundRepositoryMock
+            .Setup(x => x.FirstOrDefaultAsync(It.IsAny<RefundByIdSpec>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(refund);
 
         _unitOfWorkMock

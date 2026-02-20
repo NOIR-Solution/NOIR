@@ -451,3 +451,16 @@ public sealed record BulkOperationErrorDto(
     Guid ProductId,
     string? ProductName,
     string Message);
+
+/// <summary>
+/// Lightweight DTO for product variant search/lookup (used in manual order creation).
+/// </summary>
+public sealed record ProductVariantLookupDto(
+    Guid Id,
+    Guid ProductId,
+    string ProductName,
+    string VariantName,
+    string? Sku,
+    decimal Price,
+    int StockQuantity,
+    string? ImageUrl);

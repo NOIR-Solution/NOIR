@@ -38,6 +38,7 @@ import {
   Award,
   Tags,
   ShoppingCart,
+  CreditCard,
   Truck,
   Warehouse,
   Percent,
@@ -125,6 +126,7 @@ const navSections: NavSection[] = [
     labelKey: 'nav.orders',
     items: [
       { titleKey: 'ecommerce.orders', icon: ShoppingCart, path: '/portal/ecommerce/orders', permission: Permissions.OrdersRead },
+      { titleKey: 'ecommerce.payments', icon: CreditCard, path: '/portal/ecommerce/payments', permission: Permissions.PaymentsRead },
       { titleKey: 'ecommerce.shipmentTracking', icon: Truck, path: '/portal/ecommerce/orders/tracking', permission: Permissions.OrdersRead },
       { titleKey: 'ecommerce.inventory', icon: Warehouse, path: '/portal/ecommerce/inventory', permission: Permissions.InventoryRead },
     ],

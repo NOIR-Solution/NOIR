@@ -43,6 +43,17 @@ public class CurrentUserService : ICurrentUser, IScopedService
         GetCachedUserData()?.Email
         ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
 
+    public string? DisplayName
+    {
+        get
+        {
+            var userData = GetCachedUserData();
+            return userData?.DisplayName
+                ?? (string.IsNullOrWhiteSpace(userData?.FullName) ? null : userData.FullName)
+                ?? Email;
+        }
+    }
+
     public string? TenantId =>
         _tenantContextAccessor.MultiTenantContext?.TenantInfo?.Id;
 

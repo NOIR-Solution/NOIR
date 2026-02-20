@@ -1,7 +1,6 @@
 using NOIR.Application.Features.Checkout.Commands.CompleteCheckout;
 using NOIR.Application.Features.Checkout.DTOs;
 using NOIR.Application.Features.Checkout.Specifications;
-using NOIR.Application.Features.Orders.Specifications;
 
 namespace NOIR.Application.UnitTests.Features.Checkout.Commands.CompleteCheckout;
 
@@ -16,6 +15,7 @@ public class CompleteCheckoutCommandHandlerTests
     private readonly Mock<IRepository<CheckoutSession, Guid>> _checkoutRepositoryMock;
     private readonly Mock<IRepository<Domain.Entities.Cart.Cart, Guid>> _cartRepositoryMock;
     private readonly Mock<IRepository<Order, Guid>> _orderRepositoryMock;
+    private readonly Mock<IOrderNumberGenerator> _orderNumberGeneratorMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly CompleteCheckoutCommandHandler _handler;
@@ -28,15 +28,22 @@ public class CompleteCheckoutCommandHandlerTests
         _checkoutRepositoryMock = new Mock<IRepository<CheckoutSession, Guid>>();
         _cartRepositoryMock = new Mock<IRepository<Domain.Entities.Cart.Cart, Guid>>();
         _orderRepositoryMock = new Mock<IRepository<Order, Guid>>();
+        _orderNumberGeneratorMock = new Mock<IOrderNumberGenerator>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _currentUserMock = new Mock<ICurrentUser>();
 
         _currentUserMock.Setup(x => x.TenantId).Returns(TestTenantId);
 
+        // Default order number generator setup
+        _orderNumberGeneratorMock
+            .Setup(x => x.GenerateNextAsync(It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync($"ORD-{DateTime.UtcNow:yyyyMMdd}-0001");
+
         _handler = new CompleteCheckoutCommandHandler(
             _checkoutRepositoryMock.Object,
             _cartRepositoryMock.Object,
             _orderRepositoryMock.Object,
+            _orderNumberGeneratorMock.Object,
             _unitOfWorkMock.Object,
             _currentUserMock.Object);
     }
@@ -172,12 +179,6 @@ public class CompleteCheckoutCommandHandlerTests
             .ReturnsAsync(cart);
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(
                 It.IsAny<Order>(),
                 It.IsAny<CancellationToken>()))
@@ -230,12 +231,6 @@ public class CompleteCheckoutCommandHandlerTests
             .ReturnsAsync(cart);
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Order order, CancellationToken ct) => order);
 
@@ -273,12 +268,6 @@ public class CompleteCheckoutCommandHandlerTests
                 It.IsAny<CartByIdWithItemsForUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(cart);
-
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null); // No existing orders today
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
@@ -321,12 +310,6 @@ public class CompleteCheckoutCommandHandlerTests
             .ReturnsAsync(cart);
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Order order, CancellationToken ct) => order);
 
@@ -364,12 +347,6 @@ public class CompleteCheckoutCommandHandlerTests
                 It.IsAny<CartByIdWithItemsForUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(cart);
-
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
@@ -579,12 +556,6 @@ public class CompleteCheckoutCommandHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(cart);
 
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
         var command = new CompleteCheckoutCommand(sessionId);
 
         // Act
@@ -619,12 +590,6 @@ public class CompleteCheckoutCommandHandlerTests
                 It.IsAny<CartByIdWithItemsForUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(cart);
-
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
@@ -663,12 +628,6 @@ public class CompleteCheckoutCommandHandlerTests
                 It.IsAny<CartByIdWithItemsForUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(cart);
-
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))

@@ -101,6 +101,19 @@ public class RequestRefundCommandHandler
         await _refundRepository.AddAsync(refund, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        // If auto-approved, process the refund through the gateway
+        if (refund.Status == RefundStatus.Approved)
+        {
+            // ProcessRefundAsync updates the refund status internally (Completed/Failed)
+            await _paymentService.ProcessRefundAsync(refund.Id, cancellationToken);
+
+            // Re-fetch to return the updated status after gateway processing
+            var updatedRefund = await _refundRepository.FirstOrDefaultAsync(
+                new RefundByIdSpec(refund.Id), cancellationToken);
+
+            return Result.Success(MapToDto(updatedRefund ?? refund));
+        }
+
         return Result.Success(MapToDto(refund));
     }
 

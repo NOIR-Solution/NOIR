@@ -244,4 +244,104 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     #endregion
+
+    #region RecordManualPayment Tests
+
+    [Fact]
+    public async Task RecordManualPayment_Unauthenticated_ShouldReturnUnauthorized()
+    {
+        // Arrange
+        var command = new
+        {
+            OrderId = Guid.NewGuid(),
+            Amount = 500000m,
+            Currency = "VND",
+            PaymentMethod = "BankTransfer",
+            ReferenceNumber = "REF-001",
+            Notes = "Manual payment"
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/payments/manual", command);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task RecordManualPayment_WithInvalidOrderId_ShouldReturnNotFoundOrBadRequest()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var command = new
+        {
+            OrderId = Guid.NewGuid(),
+            Amount = 500000m,
+            Currency = "VND",
+            PaymentMethod = "BankTransfer",
+            ReferenceNumber = "REF-001"
+        };
+
+        // Act
+        var response = await adminClient.PostAsJsonAsync("/api/payments/manual", command);
+
+        // Assert
+        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+    }
+
+    #endregion
+
+    #region GetPaymentDetails Tests
+
+    [Fact]
+    public async Task GetPaymentDetails_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var invalidId = Guid.NewGuid();
+
+        // Act
+        var response = await adminClient.GetAsync($"/api/payments/{invalidId}/details");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    #endregion
+
+    #region GetPaymentTimeline Tests
+
+    [Fact]
+    public async Task GetPaymentTimeline_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var invalidId = Guid.NewGuid();
+
+        // Act
+        var response = await adminClient.GetAsync($"/api/payments/{invalidId}/timeline");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    #endregion
+
+    #region RefreshPaymentStatus Tests
+
+    [Fact]
+    public async Task RefreshPayment_WithInvalidId_ShouldReturnNotFoundOrBadRequest()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var invalidId = Guid.NewGuid();
+
+        // Act
+        var response = await adminClient.PostAsJsonAsync($"/api/payments/{invalidId}/refresh", new { });
+
+        // Assert
+        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+    }
+
+    #endregion
 }

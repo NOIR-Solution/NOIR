@@ -42,9 +42,13 @@ const ProductFormPage = lazy(() => import('@/portal-app/products/features/produc
 const ProductCategoriesPage = lazy(() => import('@/portal-app/products/features/product-category-list/ProductCategoriesPage'))
 const BrandsPage = lazy(() => import('@/portal-app/brands/features/brand-list/BrandsPage'))
 const ProductAttributesPage = lazy(() => import('@/portal-app/products/features/product-attribute-list/ProductAttributesPage'))
+// Payments
+const PaymentsPage = lazy(() => import('@/portal-app/payments/features/payment-list/PaymentsPage'))
+const PaymentDetailPage = lazy(() => import('@/portal-app/payments/features/payment-detail/PaymentDetailPage'))
 // Orders, Inventory & Shipping
 const OrdersPage = lazy(() => import('@/portal-app/orders/features/order-list/OrdersPage'))
 const OrderDetailPage = lazy(() => import('@/portal-app/orders/features/order-detail/OrderDetailPage'))
+const ManualCreateOrderPage = lazy(() => import('@/portal-app/orders/features/manual-create/ManualCreateOrderPage'))
 const InventoryReceiptsPage = lazy(() => import('@/portal-app/inventory/features/inventory-receipts/InventoryReceiptsPage'))
 const ShipmentTrackingPage = lazy(() => import('@/portal-app/orders/features/shipment-tracking/ShipmentTrackingPage'))
 // Customers
@@ -156,7 +160,10 @@ export const App = () => {
                         <Route path="ecommerce/categories" element={<Suspense fallback={<LazyFallback />}><ProductCategoriesPage /></Suspense>} />
                         <Route path="ecommerce/brands" element={<Suspense fallback={<LazyFallback />}><BrandsPage /></Suspense>} />
                         <Route path="ecommerce/attributes" element={<Suspense fallback={<LazyFallback />}><ProductAttributesPage /></Suspense>} />
+                        <Route path="ecommerce/payments" element={<Suspense fallback={<LazyFallback />}><PaymentsPage /></Suspense>} />
+                        <Route path="ecommerce/payments/:id" element={<Suspense fallback={<LazyFallback />}><PaymentDetailPage /></Suspense>} />
                         <Route path="ecommerce/orders" element={<Suspense fallback={<LazyFallback />}><OrdersPage /></Suspense>} />
+                        <Route path="ecommerce/orders/create" element={<Suspense fallback={<LazyFallback />}><ManualCreateOrderPage /></Suspense>} />
                         <Route path="ecommerce/orders/:id" element={<Suspense fallback={<LazyFallback />}><OrderDetailPage /></Suspense>} />
                         <Route path="ecommerce/inventory" element={<Suspense fallback={<LazyFallback />}><InventoryReceiptsPage /></Suspense>} />
                         <Route path="ecommerce/orders/tracking" element={<Suspense fallback={<LazyFallback />}><ShipmentTrackingPage /></Suspense>} />

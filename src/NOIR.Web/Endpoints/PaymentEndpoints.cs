@@ -4,6 +4,8 @@ using NOIR.Application.Features.Payments.Commands.ConfigureGateway;
 using NOIR.Application.Features.Payments.Commands.ConfirmCodCollection;
 using NOIR.Application.Features.Payments.Commands.CreatePayment;
 using NOIR.Application.Features.Payments.Commands.ProcessWebhook;
+using NOIR.Application.Features.Payments.Commands.RecordManualPayment;
+using NOIR.Application.Features.Payments.Commands.RefreshPaymentStatus;
 using NOIR.Application.Features.Payments.Commands.RejectRefund;
 using NOIR.Application.Features.Payments.Commands.RequestRefund;
 using NOIR.Application.Features.Payments.Commands.TestGatewayConnection;
@@ -12,10 +14,12 @@ using NOIR.Application.Features.Payments.DTOs;
 using NOIR.Application.Features.Payments.Queries.GetActiveGateways;
 using NOIR.Application.Features.Payments.Queries.GetGatewaySchemas;
 using NOIR.Application.Features.Payments.Queries.GetOrderPayments;
+using NOIR.Application.Features.Payments.Queries.GetPaymentDetails;
 using NOIR.Application.Features.Payments.Queries.GetPaymentGateway;
 using NOIR.Application.Features.Payments.Queries.GetPaymentGateways;
 using NOIR.Application.Features.Payments.Queries.GetPaymentTransaction;
 using NOIR.Application.Features.Payments.Queries.GetPaymentTransactions;
+using NOIR.Application.Features.Payments.Queries.GetPaymentTimeline;
 using NOIR.Application.Features.Payments.Queries.GetPendingCodPayments;
 using NOIR.Application.Features.Payments.Queries.GetRefunds;
 using NOIR.Application.Features.Payments.Queries.GetOperationLogs;
@@ -184,6 +188,82 @@ public static class PaymentEndpoints
         .WithDescription("Marks a COD payment as collected after receiving cash.")
         .Produces<PaymentTransactionDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Refresh payment status from gateway
+        group.MapPost("/{id:guid}/refresh", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new RefreshPaymentStatusCommand(id) { UserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<PaymentTransactionDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PaymentsManage)
+        .WithName("RefreshPaymentStatus")
+        .WithSummary("Refresh payment status from gateway")
+        .WithDescription("Queries the payment gateway for the current status of a payment and updates accordingly.")
+        .Produces<PaymentTransactionDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Record manual/offline payment
+        group.MapPost("/manual", async (
+            RecordManualPaymentRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new RecordManualPaymentCommand(
+                request.OrderId,
+                request.Amount,
+                request.Currency,
+                request.PaymentMethod,
+                request.ReferenceNumber,
+                request.Notes,
+                request.PaidAt)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<PaymentTransactionDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PaymentsManage)
+        .WithName("RecordManualPayment")
+        .WithSummary("Record a manual/offline payment")
+        .WithDescription("Records a manual payment (bank transfer, cash, etc.) for an order.")
+        .Produces<PaymentTransactionDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Get comprehensive payment details with logs
+        group.MapGet("/{id:guid}/details", async (
+            Guid id,
+            IMessageBus bus) =>
+        {
+            var result = await bus.InvokeAsync<Result<PaymentDetailsDto>>(new GetPaymentDetailsQuery(id));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PaymentsRead)
+        .WithName("GetPaymentDetails")
+        .WithSummary("Get comprehensive payment details with logs")
+        .WithDescription("Returns payment transaction with operation logs, webhook logs, and refunds.")
+        .Produces<PaymentDetailsDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Get payment event timeline
+        group.MapGet("/{id:guid}/timeline", async (
+            Guid id,
+            IMessageBus bus) =>
+        {
+            var result = await bus.InvokeAsync<Result<IReadOnlyList<PaymentTimelineEventDto>>>(new GetPaymentTimelineQuery(id));
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PaymentsRead)
+        .WithName("GetPaymentTimeline")
+        .WithSummary("Get payment event timeline")
+        .WithDescription("Returns a chronological timeline of all events related to a payment.")
+        .Produces<IReadOnlyList<PaymentTimelineEventDto>>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 
@@ -558,3 +638,12 @@ public sealed record ApproveRefundRequest(
     string? Notes = null);
 
 public sealed record RejectRefundRequest(string Reason);
+
+public sealed record RecordManualPaymentRequest(
+    Guid OrderId,
+    decimal Amount,
+    string Currency,
+    PaymentMethod PaymentMethod,
+    string? ReferenceNumber = null,
+    string? Notes = null,
+    DateTimeOffset? PaidAt = null);

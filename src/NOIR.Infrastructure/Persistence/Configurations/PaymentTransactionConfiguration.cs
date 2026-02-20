@@ -100,6 +100,10 @@ public class PaymentTransactionConfiguration : IEntityTypeConfiguration<PaymentT
         builder.HasIndex(e => new { e.Status, e.ExpiresAt })
             .HasDatabaseName("IX_PaymentTransactions_Status_Expires");
 
+        // Concurrency token for optimistic concurrency control
+        builder.Property(e => e.RowVersion)
+            .IsRowVersion();
+
         // Tenant ID
         builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);
         builder.HasIndex(e => e.TenantId);

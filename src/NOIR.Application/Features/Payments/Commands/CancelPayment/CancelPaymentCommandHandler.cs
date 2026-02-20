@@ -41,7 +41,16 @@ public class CancelPaymentCommandHandler
 
         var oldStatus = payment.Status.ToString();
         payment.MarkAsCancelled();
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result.Failure<PaymentTransactionDto>(
+                Error.Conflict("This payment was modified by another user. Please refresh and try again.", ErrorCodes.Payment.ConcurrencyConflict));
+        }
 
         // Send real-time notification for payment status change
         await _paymentHubContext.SendPaymentStatusUpdateAsync(

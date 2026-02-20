@@ -6,17 +6,20 @@ namespace NOIR.Application.Features.Payments.Commands.ConfirmCodCollection;
 public class ConfirmCodCollectionCommandHandler
 {
     private readonly IRepository<PaymentTransaction, Guid> _paymentRepository;
+    private readonly IRepository<Order, Guid> _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPaymentHubContext _paymentHubContext;
     private readonly ICurrentUser _currentUser;
 
     public ConfirmCodCollectionCommandHandler(
         IRepository<PaymentTransaction, Guid> paymentRepository,
+        IRepository<Order, Guid> orderRepository,
         IUnitOfWork unitOfWork,
         IPaymentHubContext paymentHubContext,
         ICurrentUser currentUser)
     {
         _paymentRepository = paymentRepository;
+        _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
         _paymentHubContext = paymentHubContext;
         _currentUser = currentUser;
@@ -56,8 +59,38 @@ public class ConfirmCodCollectionCommandHandler
                 Error.Validation("UserId", "Invalid collector ID.", ErrorCodes.Payment.InvalidRequesterId));
         }
 
-        payment.ConfirmCodCollection(command.UserId);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        // Use display name or email instead of raw UserId (GUID) for collector name
+        // collectorName cannot be null: command.UserId guard above ensures at least UserId is non-null
+        var collectorName = _currentUser.DisplayName ?? _currentUser.Email ?? command.UserId!;
+        payment.ConfirmCodCollection(collectorName);
+
+        // Persist collection notes in metadata if provided
+        if (!string.IsNullOrWhiteSpace(command.Notes))
+        {
+            payment.SetMetadataJson(System.Text.Json.JsonSerializer.Serialize(new { CollectionNotes = command.Notes }));
+        }
+
+        // Confirm the order if it's still Pending
+        if (payment.OrderId.HasValue)
+        {
+            var orderSpec = new OrderByIdForUpdateSpec(payment.OrderId.Value);
+            var order = await _orderRepository.FirstOrDefaultAsync(orderSpec, cancellationToken);
+
+            if (order != null && order.Status == OrderStatus.Pending)
+            {
+                order.Confirm();
+            }
+        }
+
+        try
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result.Failure<PaymentTransactionDto>(
+                Error.Conflict("This payment was modified by another user. Please refresh and try again.", ErrorCodes.Payment.ConcurrencyConflict));
+        }
 
         // Send real-time notification for COD collection
         if (!string.IsNullOrEmpty(_currentUser.TenantId))

@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import {
   Calendar,
   Eye,
+  Plus,
   Search,
   ShoppingCart,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
   Button,
@@ -44,6 +46,8 @@ export const OrdersPage = () => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { formatDateTime } = useRegionalSettings()
+  const { hasPermission } = usePermissions()
+  const canManageOrders = hasPermission(Permissions.OrdersManage)
   usePageContext('Orders')
 
   const [searchInput, setSearchInput] = useState('')
@@ -100,6 +104,17 @@ export const OrdersPage = () => {
         title={t('orders.title', 'Orders')}
         description={t('orders.description', 'Manage customer orders and track fulfillment')}
         responsive
+        action={
+          canManageOrders ? (
+            <Button
+              className="cursor-pointer"
+              onClick={() => navigate('/portal/ecommerce/orders/create')}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {t('orders.createNew', 'Create Order')}
+            </Button>
+          ) : undefined
+        }
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">

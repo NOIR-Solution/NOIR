@@ -94,3 +94,81 @@ export const addOrderNote = async (orderId: string, content: string): Promise<Or
 export const deleteOrderNote = async (orderId: string, noteId: string): Promise<OrderNoteDto> => {
   return apiClient<OrderNoteDto>(`/orders/${orderId}/notes/${noteId}`, { method: 'DELETE' })
 }
+
+// --- Manual Create Order ---
+
+export interface ManualOrderItemRequest {
+  productVariantId: string
+  quantity: number
+  unitPrice?: number
+  discountAmount?: number
+}
+
+export interface ManualCreateOrderRequest {
+  customerEmail: string
+  customerName?: string
+  customerPhone?: string
+  customerId?: string
+  items: ManualOrderItemRequest[]
+  shippingAddress?: ManualCreateAddressRequest
+  billingAddress?: ManualCreateAddressRequest
+  shippingMethod?: string
+  shippingAmount?: number
+  couponCode?: string
+  discountAmount?: number
+  taxAmount?: number
+  customerNotes?: string
+  internalNotes?: string
+  paymentMethod?: string
+  initialPaymentStatus?: string
+  currency?: string
+}
+
+export interface ManualCreateAddressRequest {
+  fullName: string
+  phone: string
+  addressLine1: string
+  addressLine2?: string
+  ward: string
+  district: string
+  province: string
+  country?: string
+  postalCode?: string
+}
+
+export const manualCreateOrder = async (request: ManualCreateOrderRequest): Promise<OrderDto> => {
+  return apiClient<OrderDto>('/orders/manual', {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+// --- Product Variant Search (for manual order creation) ---
+
+export interface ProductVariantLookupDto {
+  id: string
+  productId: string
+  productName: string
+  variantName: string
+  sku?: string
+  price: number
+  stockQuantity: number
+  imageUrl?: string
+}
+
+export interface ProductVariantSearchResult {
+  items: ProductVariantLookupDto[]
+  totalCount: number
+  pageIndex: number
+  pageSize: number
+}
+
+export const searchProductVariants = async (params: { search?: string; categoryId?: string; page?: number; pageSize?: number }): Promise<ProductVariantSearchResult> => {
+  const queryParams = new URLSearchParams()
+  if (params.search) queryParams.append('search', params.search)
+  if (params.categoryId) queryParams.append('categoryId', params.categoryId)
+  if (params.page) queryParams.append('page', params.page.toString())
+  if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString())
+  const query = queryParams.toString()
+  return apiClient<ProductVariantSearchResult>(`/products/variants/search${query ? `?${query}` : ''}`)
+}

@@ -39,3 +39,22 @@ public record PaymentTransactionListDto(
     PaymentMethod PaymentMethod,
     DateTimeOffset? PaidAt,
     DateTimeOffset CreatedAt);
+
+/// <summary>
+/// Comprehensive payment details aggregating transaction, logs, webhooks, and refunds.
+/// </summary>
+public sealed record PaymentDetailsDto(
+    PaymentTransactionDto Transaction,
+    IReadOnlyList<PaymentOperationLogDto> OperationLogs,
+    IReadOnlyList<WebhookLogDto> WebhookLogs,
+    IReadOnlyList<RefundDto> Refunds);
+
+/// <summary>
+/// A single event in the payment timeline.
+/// </summary>
+public sealed record PaymentTimelineEventDto(
+    DateTimeOffset Timestamp,
+    string EventType,
+    string Summary,
+    string? Details,
+    string? Actor);

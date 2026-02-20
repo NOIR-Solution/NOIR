@@ -69,6 +69,13 @@ public class Refund : TenantAggregateRoot<Guid>
     /// </summary>
     public string? GatewayResponseJson { get; private set; }
 
+    // Concurrency
+    /// <summary>
+    /// Row version for optimistic concurrency control.
+    /// Prevents silent overwrites when two admins modify the same refund simultaneously.
+    /// </summary>
+    public byte[] RowVersion { get; private set; } = [];
+
     // Navigation
     public virtual PaymentTransaction? PaymentTransaction { get; private set; }
 

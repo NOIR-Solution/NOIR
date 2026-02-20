@@ -172,4 +172,80 @@ public class OrderEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     #endregion
+
+    #region ManualCreateOrder Tests
+
+    [Fact]
+    public async Task ManualCreateOrder_Unauthenticated_ShouldReturnUnauthorized()
+    {
+        // Arrange
+        var command = new
+        {
+            CustomerEmail = "test@example.com",
+            Items = new[] { new { ProductVariantId = Guid.NewGuid(), Quantity = 1 } }
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/orders/manual", command);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task ManualCreateOrder_WithEmptyItems_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var command = new
+        {
+            CustomerEmail = "test@example.com",
+            Items = Array.Empty<object>()
+        };
+
+        // Act
+        var response = await adminClient.PostAsJsonAsync("/api/orders/manual", command);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task ManualCreateOrder_WithInvalidVariantId_ShouldReturnNotFoundOrBadRequest()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var command = new
+        {
+            CustomerEmail = "test@example.com",
+            CustomerName = "Test Customer",
+            Items = new[] { new { ProductVariantId = Guid.NewGuid(), Quantity = 1 } }
+        };
+
+        // Act
+        var response = await adminClient.PostAsJsonAsync("/api/orders/manual", command);
+
+        // Assert
+        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task ManualCreateOrder_WithInvalidEmail_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var command = new
+        {
+            CustomerEmail = "not-an-email",
+            Items = new[] { new { ProductVariantId = Guid.NewGuid(), Quantity = 1 } }
+        };
+
+        // Act
+        var response = await adminClient.PostAsJsonAsync("/api/orders/manual", command);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    #endregion
 }

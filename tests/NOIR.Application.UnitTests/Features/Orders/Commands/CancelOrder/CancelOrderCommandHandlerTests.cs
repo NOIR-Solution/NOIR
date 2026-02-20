@@ -13,6 +13,8 @@ public class CancelOrderCommandHandlerTests
     #region Test Setup
 
     private readonly Mock<IRepository<Order, Guid>> _orderRepositoryMock;
+    private readonly Mock<IRepository<Product, Guid>> _productRepositoryMock;
+    private readonly Mock<IInventoryMovementLogger> _movementLoggerMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly CancelOrderCommandHandler _handler;
 
@@ -21,10 +23,14 @@ public class CancelOrderCommandHandlerTests
     public CancelOrderCommandHandlerTests()
     {
         _orderRepositoryMock = new Mock<IRepository<Order, Guid>>();
+        _productRepositoryMock = new Mock<IRepository<Product, Guid>>();
+        _movementLoggerMock = new Mock<IInventoryMovementLogger>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
 
         _handler = new CancelOrderCommandHandler(
             _orderRepositoryMock.Object,
+            _productRepositoryMock.Object,
+            _movementLoggerMock.Object,
             _unitOfWorkMock.Object);
     }
 

@@ -63,5 +63,15 @@ public enum PaymentOperationType
     /// <summary>
     /// Capturing an authorized payment.
     /// </summary>
-    CapturePayment
+    CapturePayment,
+
+    /// <summary>
+    /// Manual refresh of payment status by admin.
+    /// </summary>
+    ManualRefresh,
+
+    /// <summary>
+    /// Manual payment recording by admin.
+    /// </summary>
+    ManualPayment
 }

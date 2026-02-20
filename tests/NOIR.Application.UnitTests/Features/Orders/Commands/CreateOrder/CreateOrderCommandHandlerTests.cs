@@ -1,6 +1,5 @@
 using NOIR.Application.Features.Orders.Commands.CreateOrder;
 using NOIR.Application.Features.Orders.DTOs;
-using NOIR.Application.Features.Orders.Specifications;
 
 namespace NOIR.Application.UnitTests.Features.Orders.Commands.CreateOrder;
 
@@ -13,6 +12,7 @@ public class CreateOrderCommandHandlerTests
     #region Test Setup
 
     private readonly Mock<IRepository<Order, Guid>> _orderRepositoryMock;
+    private readonly Mock<IOrderNumberGenerator> _orderNumberGeneratorMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly CreateOrderCommandHandler _handler;
@@ -23,6 +23,7 @@ public class CreateOrderCommandHandlerTests
     public CreateOrderCommandHandlerTests()
     {
         _orderRepositoryMock = new Mock<IRepository<Order, Guid>>();
+        _orderNumberGeneratorMock = new Mock<IOrderNumberGenerator>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _currentUserMock = new Mock<ICurrentUser>();
 
@@ -31,8 +32,14 @@ public class CreateOrderCommandHandlerTests
         _currentUserMock.Setup(x => x.IsAuthenticated).Returns(true);
         _currentUserMock.Setup(x => x.UserId).Returns(TestUserId);
 
+        // Default order number generator setup
+        _orderNumberGeneratorMock
+            .Setup(x => x.GenerateNextAsync(It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync($"ORD-{DateTime.UtcNow:yyyyMMdd}-0001");
+
         _handler = new CreateOrderCommandHandler(
             _orderRepositoryMock.Object,
+            _orderNumberGeneratorMock.Object,
             _unitOfWorkMock.Object,
             _currentUserMock.Object);
     }
@@ -128,12 +135,6 @@ public class CreateOrderCommandHandlerTests
         var command = CreateTestCommand();
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Order o, CancellationToken _) => o);
 
@@ -174,12 +175,6 @@ public class CreateOrderCommandHandlerTests
         Order? capturedOrder = null;
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .Callback<Order, CancellationToken>((order, _) => capturedOrder = order)
             .ReturnsAsync((Order o, CancellationToken _) => o);
@@ -212,12 +207,6 @@ public class CreateOrderCommandHandlerTests
         var command = CreateTestCommand(shippingAddress: shippingAddress);
 
         Order? capturedOrder = null;
-
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
@@ -253,12 +242,6 @@ public class CreateOrderCommandHandlerTests
         Order? capturedOrder = null;
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .Callback<Order, CancellationToken>((order, _) => capturedOrder = order)
             .ReturnsAsync((Order o, CancellationToken _) => o);
@@ -285,12 +268,6 @@ public class CreateOrderCommandHandlerTests
         var command = CreateTestCommand(shippingAddress: shippingAddress, billingAddress: null);
 
         Order? capturedOrder = null;
-
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
@@ -322,12 +299,6 @@ public class CreateOrderCommandHandlerTests
         Order? capturedOrder = null;
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .Callback<Order, CancellationToken>((order, _) => capturedOrder = order)
             .ReturnsAsync((Order o, CancellationToken _) => o);
@@ -356,12 +327,6 @@ public class CreateOrderCommandHandlerTests
         Order? capturedOrder = null;
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .Callback<Order, CancellationToken>((order, _) => capturedOrder = order)
             .ReturnsAsync((Order o, CancellationToken _) => o);
@@ -388,12 +353,6 @@ public class CreateOrderCommandHandlerTests
         Order? capturedOrder = null;
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .Callback<Order, CancellationToken>((order, _) => capturedOrder = order)
             .ReturnsAsync((Order o, CancellationToken _) => o);
@@ -415,21 +374,12 @@ public class CreateOrderCommandHandlerTests
     public async Task Handle_ShouldGenerateSequentialOrderNumber()
     {
         // Arrange
-        var existingOrder = Order.Create(
-            $"ORD-{DateTime.UtcNow:yyyyMMdd}-0005",
-            "existing@example.com",
-            100m,
-            110m,
-            "VND",
-            TestTenantId);
-
         var command = CreateTestCommand();
 
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(existingOrder);
+        // Setup order number generator to return a specific sequence
+        _orderNumberGeneratorMock
+            .Setup(x => x.GenerateNextAsync(TestTenantId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync($"ORD-{DateTime.UtcNow:yyyyMMdd}-0006");
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
@@ -445,6 +395,8 @@ public class CreateOrderCommandHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.OrderNumber.Should().EndWith("0006");
+        _orderNumberGeneratorMock.Verify(
+            x => x.GenerateNextAsync(TestTenantId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     #endregion
@@ -517,12 +469,6 @@ public class CreateOrderCommandHandlerTests
         var token = cts.Token;
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Order o, CancellationToken _) => o);
 
@@ -534,8 +480,8 @@ public class CreateOrderCommandHandlerTests
         await _handler.Handle(command, token);
 
         // Assert
-        _orderRepositoryMock.Verify(
-            x => x.FirstOrDefaultAsync(It.IsAny<LatestOrderNumberTodaySpec>(), token),
+        _orderNumberGeneratorMock.Verify(
+            x => x.GenerateNextAsync(TestTenantId, token),
             Times.Once);
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), token),
@@ -555,12 +501,6 @@ public class CreateOrderCommandHandlerTests
             CreateTestOrderItemDto(unitPrice: 50m, quantity: 3)   // 150
         };
         var command = CreateTestCommand(items: items, shippingAmount: 10m, discountAmount: 0m);
-
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
@@ -593,12 +533,6 @@ public class CreateOrderCommandHandlerTests
             discountAmount: 30m);
 
         _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
-
-        _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Order o, CancellationToken _) => o);
 
@@ -624,12 +558,6 @@ public class CreateOrderCommandHandlerTests
         var command = CreateTestCommand();
 
         Order? capturedOrder = null;
-
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
@@ -658,12 +586,6 @@ public class CreateOrderCommandHandlerTests
         var command = CreateTestCommand();
 
         Order? capturedOrder = null;
-
-        _orderRepositoryMock
-            .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<LatestOrderNumberTodaySpec>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Order?)null);
 
         _orderRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))

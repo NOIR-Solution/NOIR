@@ -488,7 +488,8 @@ public class LayerDependencyTests
     {
         // Join entities (many-to-many relationships) don't need Entity<> base
         // Tenant inherits from TenantInfo (Finbuckle requirement for EFCoreStore)
-        var excludedNames = new HashSet<string> { "RolePermission", "Tenant" };
+        // SequenceCounter is a raw-SQL utility entity (atomic increment), not a domain entity
+        var excludedNames = new HashSet<string> { "RolePermission", "Tenant", "SequenceCounter" };
 
         // Act
         var entityTypes = Types

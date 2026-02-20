@@ -151,6 +151,13 @@ public class PaymentTransaction : TenantAggregateRoot<Guid>
     /// </summary>
     public string IdempotencyKey { get; private set; } = string.Empty;
 
+    // Concurrency
+    /// <summary>
+    /// Row version for optimistic concurrency control.
+    /// Prevents silent overwrites when two admins modify the same payment simultaneously.
+    /// </summary>
+    public byte[] RowVersion { get; private set; } = [];
+
     // Navigation
     public virtual PaymentGateway? Gateway { get; private set; }
     public virtual ICollection<Refund> Refunds { get; private set; } = new List<Refund>();

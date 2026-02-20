@@ -10,6 +10,8 @@ import {
   returnOrder,
   addOrderNote,
   deleteOrderNote,
+  manualCreateOrder,
+  type ManualCreateOrderRequest,
 } from '@/services/orders'
 import { orderKeys } from './queryKeys'
 
@@ -93,6 +95,16 @@ export const useAddOrderNoteMutation = () => {
         orderKeys.notes(variables.orderId),
         (old) => [newNote, ...(old ?? [])],
       )
+    },
+  })
+}
+
+export const useManualCreateOrderMutation = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (request: ManualCreateOrderRequest) => manualCreateOrder(request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: orderKeys.lists() })
     },
   })
 }

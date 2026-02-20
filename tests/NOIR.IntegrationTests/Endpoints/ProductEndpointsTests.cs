@@ -249,4 +249,71 @@ public class ProductEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     #endregion
+
+    #region SearchProductVariants Tests
+
+    [Fact]
+    public async Task SearchProductVariants_AsAdmin_ShouldReturnPaginatedList()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+
+        // Act
+        var response = await adminClient.GetAsync("/api/products/variants/search");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task SearchProductVariants_Unauthenticated_ShouldReturnUnauthorized()
+    {
+        // Act
+        var response = await _client.GetAsync("/api/products/variants/search");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task SearchProductVariants_WithSearchFilter_ShouldReturn200()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+
+        // Act
+        var response = await adminClient.GetAsync("/api/products/variants/search?search=laptop");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task SearchProductVariants_WithPagination_ShouldRespectParameters()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+
+        // Act
+        var response = await adminClient.GetAsync("/api/products/variants/search?page=1&pageSize=5");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task SearchProductVariants_WithCategoryFilter_ShouldReturn200()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var categoryId = Guid.NewGuid();
+
+        // Act
+        var response = await adminClient.GetAsync($"/api/products/variants/search?categoryId={categoryId}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    #endregion
 }

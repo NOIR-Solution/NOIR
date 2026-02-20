@@ -4,6 +4,7 @@ using NOIR.Application.Features.ProductAttributes.DTOs;
 using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeAssignments;
 using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeFormSchema;
 using NOIR.Application.Features.Products.Commands.AddProductImage;
+using NOIR.Application.Features.Products.Queries.SearchProductVariants;
 using NOIR.Application.Features.Products.Specifications;
 using NOIR.Domain.Entities.Product;
 using NOIR.Application.Features.Products.Commands.AddProductOption;
@@ -114,6 +115,28 @@ public static class ProductEndpoints
         .WithSummary("Get product statistics")
         .WithDescription("Returns global product counts by status for dashboard display.")
         .Produces<ProductStatsDto>(StatusCodes.Status200OK);
+
+        // Search product variants (for manual order creation)
+        group.MapGet("/variants/search", async (
+            [FromQuery] string? search,
+            [FromQuery] Guid? categoryId,
+            [FromQuery] int? page,
+            [FromQuery] int? pageSize,
+            IMessageBus bus) =>
+        {
+            var query = new SearchProductVariantsQuery(
+                search,
+                categoryId,
+                page ?? 1,
+                pageSize ?? 20);
+            var result = await bus.InvokeAsync<Result<Application.Features.Products.Queries.GetProducts.PagedResult<ProductVariantLookupDto>>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.ProductsRead)
+        .WithName("SearchProductVariants")
+        .WithSummary("Search product variants for selection")
+        .WithDescription("Search active product variants by name or SKU. Used for manual order creation.")
+        .Produces<Application.Features.Products.Queries.GetProducts.PagedResult<ProductVariantLookupDto>>(StatusCodes.Status200OK);
 
         // Get product by ID
         group.MapGet("/{id:guid}", async (Guid id, IMessageBus bus) =>

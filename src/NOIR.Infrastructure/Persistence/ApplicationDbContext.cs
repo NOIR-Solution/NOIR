@@ -116,6 +116,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     // Analytics entities (Phase 7)
     public DbSet<FilterAnalyticsEvent> FilterAnalyticsEvents => Set<FilterAnalyticsEvent>();
 
+    // Sequence counter for atomic number generation
+    public DbSet<Domain.Entities.Common.SequenceCounter> SequenceCounters => Set<Domain.Entities.Common.SequenceCounter>();
+
     // Promotion entities
     public DbSet<Domain.Entities.Promotion.Promotion> Promotions => Set<Domain.Entities.Promotion.Promotion>();
     public DbSet<Domain.Entities.Promotion.PromotionProduct> PromotionProducts => Set<Domain.Entities.Promotion.PromotionProduct>();

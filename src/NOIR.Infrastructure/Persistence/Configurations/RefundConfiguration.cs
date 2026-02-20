@@ -66,6 +66,10 @@ public class RefundConfiguration : IEntityTypeConfiguration<Refund>
         builder.HasIndex(e => new { e.Status, e.TenantId, e.CreatedAt })
             .HasDatabaseName("IX_Refunds_Status_Tenant_Created");
 
+        // Concurrency token for optimistic concurrency control
+        builder.Property(e => e.RowVersion)
+            .IsRowVersion();
+
         // Tenant ID
         builder.Property(e => e.TenantId).HasMaxLength(DatabaseConstants.TenantIdMaxLength);
         builder.HasIndex(e => e.TenantId);

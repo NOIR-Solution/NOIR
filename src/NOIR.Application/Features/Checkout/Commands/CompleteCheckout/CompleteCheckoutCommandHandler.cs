@@ -9,6 +9,7 @@ public class CompleteCheckoutCommandHandler
     private readonly IRepository<CheckoutSession, Guid> _checkoutRepository;
     private readonly IRepository<Domain.Entities.Cart.Cart, Guid> _cartRepository;
     private readonly IRepository<Domain.Entities.Order.Order, Guid> _orderRepository;
+    private readonly IOrderNumberGenerator _orderNumberGenerator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
 
@@ -16,12 +17,14 @@ public class CompleteCheckoutCommandHandler
         IRepository<CheckoutSession, Guid> checkoutRepository,
         IRepository<Domain.Entities.Cart.Cart, Guid> cartRepository,
         IRepository<Domain.Entities.Order.Order, Guid> orderRepository,
+        IOrderNumberGenerator orderNumberGenerator,
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser)
     {
         _checkoutRepository = checkoutRepository;
         _cartRepository = cartRepository;
         _orderRepository = orderRepository;
+        _orderNumberGenerator = orderNumberGenerator;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
     }
@@ -91,8 +94,8 @@ public class CompleteCheckoutCommandHandler
                 session.MarkAsPaymentProcessing();
             }
 
-            // Generate order number using sequence
-            var orderNumber = await GenerateOrderNumberAsync(_currentUser.TenantId, cancellationToken);
+            // Generate order number atomically via database sequence
+            var orderNumber = await _orderNumberGenerator.GenerateNextAsync(_currentUser.TenantId, cancellationToken);
 
             // Create order
             var order = Domain.Entities.Order.Order.Create(
@@ -186,27 +189,4 @@ public class CompleteCheckoutCommandHandler
         }
     }
 
-    private async Task<string> GenerateOrderNumberAsync(string? tenantId, CancellationToken cancellationToken)
-    {
-        // Format: ORD-YYYYMMDD-XXXX where XXXX is a daily sequence number
-        var today = DateTime.UtcNow;
-        var datePrefix = $"ORD-{today:yyyyMMdd}-";
-
-        // Get latest order number for today
-        var spec = new LatestOrderNumberTodaySpec(datePrefix, tenantId);
-        var latestOrder = await _orderRepository.FirstOrDefaultAsync(spec, cancellationToken);
-
-        int sequence = 1;
-        if (latestOrder is not null)
-        {
-            // Extract sequence number from latest order
-            var lastSequence = latestOrder.OrderNumber.Split('-').Last();
-            if (int.TryParse(lastSequence, out var lastNum))
-            {
-                sequence = lastNum + 1;
-            }
-        }
-
-        return $"{datePrefix}{sequence:D4}";
-    }
 }
