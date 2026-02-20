@@ -862,7 +862,7 @@ export const ProductsPage = () => {
                         <TableCell>
                           <Badge
                             className={`${status.color} border transition-all duration-200 hover:scale-105`}
-                            variant="secondary"
+                            variant="outline"
                           >
                             <StatusIcon className="h-3 w-3 mr-1.5" />
                             {status.label}

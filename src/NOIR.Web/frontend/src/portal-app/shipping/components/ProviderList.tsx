@@ -157,8 +157,8 @@ export const ProviderList = () => {
                   </Button>
                 )}
               </div>
-              <Button onClick={handleCreate} className="cursor-pointer">
-                <Plus className="h-4 w-4 mr-2" />
+              <Button onClick={handleCreate} className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+                <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
                 {t('shipping.addProvider', 'Add Provider')}
               </Button>
             </div>
@@ -244,7 +244,7 @@ export const ProviderList = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="cursor-pointer h-8 w-8 p-0"
+                            className="cursor-pointer h-9 w-9 p-0"
                             onClick={() => handleEdit(provider)}
                             aria-label={t('shipping.editProvider', { name: provider.displayName, defaultValue: `Edit ${provider.displayName}` })}
                           >
@@ -253,7 +253,7 @@ export const ProviderList = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="cursor-pointer h-8 w-8 p-0"
+                            className="cursor-pointer h-9 w-9 p-0"
                             onClick={() => setToggleProvider(provider)}
                             aria-label={provider.isActive
                               ? t('shipping.deactivate', { name: provider.displayName, defaultValue: `Deactivate ${provider.displayName}` })

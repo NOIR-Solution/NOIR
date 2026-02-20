@@ -161,6 +161,71 @@ export const WithValidationErrors: Story = {
   render: () => <ValidationFormExample />,
 }
 
+function SubmittingFormExample() {
+  const form = useForm<SimpleFormValues>({
+    resolver: zodResolver(simpleSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      username: 'johndoe',
+      email: 'john@example.com',
+    },
+  })
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(() => {})} style={{ width: 400 }} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input disabled placeholder="Enter username" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input disabled type="email" placeholder="Enter email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button disabled type="submit">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="animate-spin"
+          >
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+          </svg>
+          Submitting...
+        </Button>
+      </form>
+    </Form>
+  )
+}
+
+export const SubmittingState: Story = {
+  render: () => <SubmittingFormExample />,
+}
+
 function PrefilledFormExample() {
   const form = useForm<SimpleFormValues>({
     resolver: zodResolver(simpleSchema),

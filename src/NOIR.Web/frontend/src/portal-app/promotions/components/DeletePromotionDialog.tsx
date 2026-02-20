@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Trash2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,7 +39,7 @@ export const DeletePromotionDialog = ({ promotion, onOpenChange, onSuccess }: De
 
   return (
     <AlertDialog open={!!promotion} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="border-destructive/30">
         <AlertDialogHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
@@ -57,12 +57,14 @@ export const DeletePromotionDialog = ({ promotion, onOpenChange, onSuccess }: De
           </div>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
+          <AlertDialogCancel disabled={deleteMutation.isPending} className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
+            disabled={deleteMutation.isPending}
             className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
           >
-            {t('labels.delete', 'Delete')}
+            {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {deleteMutation.isPending ? t('labels.deleting', 'Deleting...') : t('labels.delete', 'Delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

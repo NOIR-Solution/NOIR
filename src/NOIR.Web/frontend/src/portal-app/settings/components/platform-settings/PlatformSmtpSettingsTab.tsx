@@ -38,6 +38,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Skeleton,
   Switch,
 } from '@uikit'
 
@@ -71,7 +72,11 @@ const createTestEmailSchema = (t: (key: string, options?: Record<string, unknown
 
 type TestEmailFormData = z.infer<ReturnType<typeof createTestEmailSchema>>
 
-export const PlatformSmtpSettingsTab = () => {
+export interface PlatformSmtpSettingsTabProps {
+  canEdit: boolean
+}
+
+export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProps) => {
   const { t } = useTranslation('common')
 
   const [loading, setLoading] = useState(true)
@@ -149,7 +154,10 @@ export const PlatformSmtpSettingsTab = () => {
 
       setIsConfigured(result.isConfigured)
       setHasPassword(result.hasPassword)
-      form.setValue('password', '')
+      form.reset({
+        ...data,
+        password: '',
+      })
 
       toast.success(t('platformSettings.smtp.saveSuccess'))
     } catch (err) {
@@ -177,9 +185,17 @@ export const PlatformSmtpSettingsTab = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-4 w-72" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-3/4" />
+        </CardContent>
+      </Card>
     )
   }
 
@@ -225,7 +241,7 @@ export const PlatformSmtpSettingsTab = () => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="host"
@@ -233,7 +249,7 @@ export const PlatformSmtpSettingsTab = () => {
                     <FormItem>
                       <FormLabel>{t('platformSettings.smtp.host')}</FormLabel>
                       <FormControl>
-                        <Input placeholder={t('platformSettings.smtp.hostPlaceholder')} {...field} />
+                        <Input placeholder={t('platformSettings.smtp.hostPlaceholder')} {...field} disabled={!canEdit} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -246,7 +262,7 @@ export const PlatformSmtpSettingsTab = () => {
                     <FormItem>
                       <FormLabel>{t('platformSettings.smtp.port')}</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="587" {...field} />
+                        <Input type="number" placeholder="587" {...field} disabled={!canEdit} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -254,7 +270,7 @@ export const PlatformSmtpSettingsTab = () => {
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="username"
@@ -266,6 +282,7 @@ export const PlatformSmtpSettingsTab = () => {
                           placeholder={t('platformSettings.smtp.usernamePlaceholder')}
                           {...field}
                           value={field.value ?? ''}
+                          disabled={!canEdit}
                         />
                       </FormControl>
                       <FormMessage />
@@ -288,6 +305,7 @@ export const PlatformSmtpSettingsTab = () => {
                           }
                           {...field}
                           value={field.value ?? ''}
+                          disabled={!canEdit}
                         />
                       </FormControl>
                       {hasPassword && !field.value && (
@@ -301,7 +319,7 @@ export const PlatformSmtpSettingsTab = () => {
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="fromEmail"
@@ -313,6 +331,7 @@ export const PlatformSmtpSettingsTab = () => {
                           type="email"
                           placeholder={t('platformSettings.smtp.fromEmailPlaceholder')}
                           {...field}
+                          disabled={!canEdit}
                         />
                       </FormControl>
                       <FormMessage />
@@ -329,6 +348,7 @@ export const PlatformSmtpSettingsTab = () => {
                         <Input
                           placeholder={t('platformSettings.smtp.fromNamePlaceholder')}
                           {...field}
+                          disabled={!canEdit}
                         />
                       </FormControl>
                       <FormMessage />
@@ -347,33 +367,35 @@ export const PlatformSmtpSettingsTab = () => {
                       <FormDescription>{t('platformSettings.smtp.useSslHint')}</FormDescription>
                     </div>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <Switch checked={field.value} onCheckedChange={field.onChange} disabled={!canEdit} className="cursor-pointer" />
                     </FormControl>
                   </FormItem>
                 )}
               />
 
-              <div className="flex items-center justify-between pt-4 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setTestDialogOpen(true)}
-                  disabled={!isConfigured || saving}
-                >
-                  <Send className="h-4 w-4 mr-2" />
-                  {t('platformSettings.smtp.testConnection')}
-                </Button>
-                <Button type="submit" disabled={saving}>
-                  {saving ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {t('buttons.saving')}
-                    </>
-                  ) : (
-                    t('buttons.save')
-                  )}
-                </Button>
-              </div>
+              {canEdit && (
+                <div className="flex items-center justify-between pt-4 border-t">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setTestDialogOpen(true)}
+                    disabled={!isConfigured || saving}
+                  >
+                    <Send className="h-4 w-4 mr-2" />
+                    {t('platformSettings.smtp.testConnection')}
+                  </Button>
+                  <Button type="submit" disabled={saving || !form.formState.isDirty}>
+                    {saving ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t('buttons.saving')}
+                      </>
+                    ) : (
+                      t('buttons.save')
+                    )}
+                  </Button>
+                </div>
+              )}
             </form>
           </Form>
         </CardContent>
@@ -406,10 +428,10 @@ export const PlatformSmtpSettingsTab = () => {
                 )}
               />
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setTestDialogOpen(false)} disabled={testing}>
+                <Button type="button" variant="outline" onClick={() => setTestDialogOpen(false)} disabled={testing} className="cursor-pointer">
                   {t('buttons.cancel')}
                 </Button>
-                <Button type="submit" disabled={testing}>
+                <Button type="submit" disabled={testing} className="cursor-pointer">
                   {testing ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />

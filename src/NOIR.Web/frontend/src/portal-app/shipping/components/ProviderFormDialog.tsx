@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Loader2, Truck } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -25,8 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
+  Button,
 } from '@uikit'
-import { Button } from '@uikit'
 import type {
   ShippingProviderDto,
   ShippingProviderCode,
@@ -177,18 +178,25 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing
-              ? t('shipping.editProvider', 'Edit Provider')
-              : t('shipping.addProvider', 'Add Provider')}
-          </DialogTitle>
-          <DialogDescription>
-            {isEditing
-              ? t('shipping.editProviderDescription', 'Update shipping provider configuration.')
-              : t('shipping.addProviderDescription', 'Configure a new shipping provider for your store.')}
-          </DialogDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Truck className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <DialogTitle>
+                {isEditing
+                  ? t('shipping.editProvider', 'Edit Provider')
+                  : t('shipping.addProvider', 'Add Provider')}
+              </DialogTitle>
+              <DialogDescription>
+                {isEditing
+                  ? t('shipping.editProviderDescription', 'Update shipping provider configuration.')
+                  : t('shipping.addProviderDescription', 'Configure a new shipping provider for your store.')}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <Form {...form}>
@@ -376,6 +384,7 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
                 {t('buttons.cancel', 'Cancel')}
               </Button>
               <Button type="submit" disabled={isPending} className="cursor-pointer">
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isPending
                   ? t('buttons.saving', 'Saving...')
                   : isEditing

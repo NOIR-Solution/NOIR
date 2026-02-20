@@ -14,6 +14,7 @@ import {
 import { Badge, Button, Card, CardContent, CardHeader, Switch } from '@uikit'
 
 import { cn } from '@/lib/utils'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import type { PaymentGateway, GatewaySchema, GatewayHealthStatus } from '@/types'
 import { formatLastHealthCheck } from '@/services/paymentGateways'
 
@@ -72,7 +73,7 @@ export const GatewayCard = ({
     }
     if (isActive) {
       return (
-        <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+        <Badge variant="outline" className={getStatusBadgeClasses('green')}>
           {t('paymentGateways.status.active', 'Active')}
         </Badge>
       )

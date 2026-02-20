@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   getShippingProviders,
   getShippingProviderById,
+  getShippingProviderSchemas,
   getShippingOrderByTracking,
   getShippingOrderByOrderId,
   getShippingTracking,
@@ -12,6 +13,12 @@ export const useShippingProvidersQuery = () =>
   useQuery({
     queryKey: shippingKeys.providers(),
     queryFn: () => getShippingProviders(),
+  })
+
+export const useShippingProviderSchemasQuery = () =>
+  useQuery({
+    queryKey: shippingKeys.schemas(),
+    queryFn: () => getShippingProviderSchemas(),
   })
 
 export const useShippingProviderQuery = (id: string | undefined) =>

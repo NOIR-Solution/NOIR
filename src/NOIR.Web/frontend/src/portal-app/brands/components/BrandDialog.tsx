@@ -28,7 +28,7 @@ import { useCreateBrandMutation, useUpdateBrandMutation } from '@/portal-app/bra
 import { uploadMedia } from '@/services/media'
 import type { BrandListItem } from '@/types/brand'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Tag } from 'lucide-react'
 
 const createBrandSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -152,14 +152,21 @@ export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? t('brands.editBrand', 'Edit Brand') : t('brands.createBrand', 'Create Brand')}
-          </DialogTitle>
-          <DialogDescription>
-            {isEditing
-              ? t('brands.editBrandDescription', 'Update the brand details below.')
-              : t('brands.createBrandDescription', 'Fill in the details to create a new brand.')}
-          </DialogDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Tag className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <DialogTitle>
+                {isEditing ? t('brands.editBrand', 'Edit Brand') : t('brands.createBrand', 'Create Brand')}
+              </DialogTitle>
+              <DialogDescription>
+                {isEditing
+                  ? t('brands.editBrandDescription', 'Update the brand details below.')
+                  : t('brands.createBrandDescription', 'Fill in the details to create a new brand.')}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <Form {...form}>

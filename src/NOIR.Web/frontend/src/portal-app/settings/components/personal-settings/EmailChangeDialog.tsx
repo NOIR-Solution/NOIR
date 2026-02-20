@@ -2,8 +2,8 @@
  * Email Change Dialog Component
  *
  * Multi-step dialog for changing email address with OTP verification:
- * 1. Enter new email address
- * 2. Enter OTP sent to new email
+ * 1. Enter new email address (shadcn Form with react-hook-form + Zod)
+ * 2. Enter OTP sent to new email (direct state management - avoids infinite loops with OtpInput)
  * 3. Success message
  *
  * OTP step uses direct state management (matching Password Reset flow)
@@ -20,6 +20,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
   Input,
   Label,
 } from '@uikit'
@@ -211,99 +217,107 @@ export const EmailChangeDialog = ({
           )}
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30">
-              <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Mail className="h-5 w-5 text-primary" />
             </div>
-            <DialogTitle className="text-lg">{t('profile.email.changeTitle')}</DialogTitle>
+            <div>
+              <DialogTitle>{t('profile.email.changeTitle')}</DialogTitle>
+              <DialogDescription>
+                {step === 'email' && t('profile.email.changeDescription')}
+                {step === 'otp' && t('profile.email.otpDescription', { email: maskedEmail })}
+                {step === 'success' && t('profile.email.successDescription')}
+              </DialogDescription>
+            </div>
           </div>
-          <DialogDescription className="pl-[52px]">
-            {step === 'email' && t('profile.email.changeDescription')}
-            {step === 'otp' && t('profile.email.otpDescription', { email: maskedEmail })}
-            {step === 'success' && t('profile.email.successDescription')}
-          </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4">
-          {/* Step 1: Enter new email */}
+          {/* Step 1: Enter new email - shadcn Form with react-hook-form + Zod */}
           {step === 'email' && (
-            <form
-              onSubmit={(e) => {
-                e.stopPropagation() // Prevent any bubbling to parent forms
-                emailForm.handleSubmit(e)
-              }}
-              className="space-y-5"
-            >
-              <div className="space-y-2">
-                <Label htmlFor="currentEmail" className="text-sm font-medium">
-                  {t('profile.email.current')}
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="currentEmail"
-                    type="email"
-                    value={currentEmail}
-                    disabled
-                    className="pl-10 bg-muted/50 text-muted-foreground"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="newEmail" className="text-sm font-medium">
-                  {t('profile.email.new')}
-                </Label>
-                <div className="relative group">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                  <Input
-                    id="newEmail"
-                    type="email"
-                    {...emailForm.form.register('newEmail')}
-                    placeholder={t('profile.email.newPlaceholder')}
-                    className="pl-10"
-                    disabled={emailForm.isSubmitting}
-                    autoFocus
-                    aria-invalid={!!emailForm.form.formState.errors.newEmail}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.stopPropagation() // Prevent Enter from escaping to parent forms
-                      }
-                    }}
-                  />
-                </div>
-                {emailForm.form.formState.errors.newEmail && (
-                  <p className="text-sm font-medium text-destructive">{translateError(emailForm.form.formState.errors.newEmail.message)}</p>
-                )}
-              </div>
-
-              {emailForm.serverError && (
-                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm font-medium text-destructive">{emailForm.serverError}</p>
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                disabled={emailForm.isSubmitting}
-                className="w-full"
-                onClick={(e) => e.stopPropagation()}
+            <Form {...emailForm.form}>
+              <form
+                onSubmit={(e) => {
+                  e.stopPropagation() // Prevent any bubbling to parent forms
+                  emailForm.handleSubmit(e)
+                }}
+                className="space-y-5"
               >
-                {emailForm.isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('profile.email.sending')}
-                  </>
-                ) : (
-                  t('profile.email.sendCode')
+                <div className="space-y-2">
+                  <Label htmlFor="currentEmail" className="text-sm font-medium">
+                    {t('profile.email.current')}
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="currentEmail"
+                      type="email"
+                      value={currentEmail}
+                      disabled
+                      className="pl-10 bg-muted/50 text-muted-foreground"
+                    />
+                  </div>
+                </div>
+
+                <FormField
+                  control={emailForm.form.control}
+                  name="newEmail"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        {t('profile.email.new')}
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative group">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                          <Input
+                            type="email"
+                            placeholder={t('profile.email.newPlaceholder')}
+                            className="pl-10"
+                            disabled={emailForm.isSubmitting}
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.stopPropagation() // Prevent Enter from escaping to parent forms
+                              }
+                            }}
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage>{translateError(emailForm.form.formState.errors.newEmail?.message)}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+
+                {emailForm.serverError && (
+                  <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                    <p className="text-sm font-medium text-destructive">{emailForm.serverError}</p>
+                  </div>
                 )}
-              </Button>
-            </form>
+
+                <Button
+                  type="submit"
+                  disabled={emailForm.isSubmitting}
+                  className="w-full cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {emailForm.isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('profile.email.sending')}
+                    </>
+                  ) : (
+                    t('profile.email.sendCode')
+                  )}
+                </Button>
+              </form>
+            </Form>
           )}
 
-          {/* Step 2: Enter OTP */}
+          {/* Step 2: Enter OTP - direct state management (avoids infinite loops with OtpInput) */}
           {step === 'otp' && (
             <div className="space-y-5">
               <Button

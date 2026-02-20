@@ -25,7 +25,7 @@ export const NotificationEmpty = ({ className }: NotificationEmptyProps) => {
           transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 30 }}
           className="bg-background size-12 grid place-items-center rounded-xl relative left-2.5 top-1.5 -rotate-6 shadow-lg ring-1 ring-border"
         >
-          <Mail className="size-6 text-muted-foreground" />
+          <Mail className="h-6 w-6 text-muted-foreground" />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -33,7 +33,7 @@ export const NotificationEmpty = ({ className }: NotificationEmptyProps) => {
           transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 30 }}
           className="bg-background size-12 grid place-items-center rounded-xl relative z-10 shadow-lg ring-1 ring-border"
         >
-          <BellOff className="size-6 text-muted-foreground" />
+          <BellOff className="h-6 w-6 text-muted-foreground" />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -41,7 +41,7 @@ export const NotificationEmpty = ({ className }: NotificationEmptyProps) => {
           transition={{ delay: 0.3, type: 'spring', stiffness: 300, damping: 30 }}
           className="bg-background size-12 grid place-items-center rounded-xl relative right-2.5 top-1.5 rotate-6 shadow-lg ring-1 ring-border"
         >
-          <MessageSquare className="size-6 text-muted-foreground" />
+          <MessageSquare className="h-6 w-6 text-muted-foreground" />
         </motion.div>
       </div>
 

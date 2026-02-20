@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Tag, Pencil } from 'lucide-react'
+import { Loader2, Tag, Pencil } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -218,10 +218,11 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
                 {t('buttons.cancel')}
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading} className="cursor-pointer">
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading
                   ? t('buttons.saving')
                   : (isEdit ? t('buttons.update') : t('buttons.create'))}

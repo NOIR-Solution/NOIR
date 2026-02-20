@@ -1,8 +1,6 @@
 import { useState, useDeferredValue, useMemo, useEffect, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  ChevronLeft,
-  ChevronRight,
   Filter,
   MoreHorizontal,
   Pencil,
@@ -32,6 +30,7 @@ import {
   EmptyState,
   Input,
   PageHeader,
+  Pagination,
   Select,
   SelectContent,
   SelectItem,
@@ -45,6 +44,7 @@ import {
   TableHeader,
   TableRow,
 } from '@uikit'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { usePromotionsQuery, useActivatePromotionMutation, useDeactivatePromotionMutation } from '@/portal-app/promotions/queries'
 import type { GetPromotionsParams } from '@/services/promotions'
 import type { PromotionDto, PromotionStatus, PromotionType } from '@/types/promotion'
@@ -60,37 +60,12 @@ import { toast } from 'sonner'
 const PROMOTION_STATUSES: PromotionStatus[] = ['Draft', 'Active', 'Scheduled', 'Expired', 'Cancelled']
 const PROMOTION_TYPES: PromotionType[] = ['VoucherCode', 'FlashSale', 'BundleDeal', 'FreeShipping']
 
-const getStatusBadgeVariant = (status: PromotionStatus): 'default' | 'secondary' | 'destructive' | 'outline' => {
-  switch (status) {
-    case 'Active':
-      return 'default'
-    case 'Draft':
-    case 'Scheduled':
-      return 'secondary'
-    case 'Expired':
-      return 'outline'
-    case 'Cancelled':
-      return 'destructive'
-    default:
-      return 'secondary'
-  }
-}
-
-const getStatusColor = (status: PromotionStatus): string => {
-  switch (status) {
-    case 'Active':
-      return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-    case 'Draft':
-      return 'bg-gray-500/10 text-gray-600 border-gray-500/20'
-    case 'Scheduled':
-      return 'bg-blue-500/10 text-blue-600 border-blue-500/20'
-    case 'Expired':
-      return 'bg-orange-500/10 text-orange-600 border-orange-500/20'
-    case 'Cancelled':
-      return 'bg-red-500/10 text-red-600 border-red-500/20'
-    default:
-      return ''
-  }
+const statusBadgeColors: Record<PromotionStatus, 'green' | 'gray' | 'blue' | 'orange' | 'red'> = {
+  Active: 'green',
+  Draft: 'gray',
+  Scheduled: 'blue',
+  Expired: 'orange',
+  Cancelled: 'red',
 }
 
 const formatDiscountValue = (dto: PromotionDto): string => {
@@ -370,7 +345,7 @@ export const PromotionsPage = () => {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getStatusBadgeVariant(promotion.status)} className={getStatusColor(promotion.status)}>
+                        <Badge variant="outline" className={getStatusBadgeClasses(statusBadgeColors[promotion.status])}>
                           {t(`promotions.status.${promotion.status.toLowerCase()}`, promotion.status)}
                         </Badge>
                       </TableCell>
@@ -454,33 +429,15 @@ export const PromotionsPage = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-muted-foreground">
-                {t('labels.pageOf', { current: currentPage, total: totalPages, defaultValue: `Page ${currentPage} of ${totalPages}` })}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="cursor-pointer"
-                  disabled={currentPage <= 1}
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  aria-label={t('labels.previousPage', 'Previous page')}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="cursor-pointer"
-                  disabled={currentPage >= totalPages}
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  aria-label={t('labels.nextPage', 'Next page')}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalCount}
+              pageSize={params.pageSize || 20}
+              onPageChange={handlePageChange}
+              showPageSizeSelector={false}
+              className="mt-4"
+            />
           )}
         </CardContent>
       </Card>

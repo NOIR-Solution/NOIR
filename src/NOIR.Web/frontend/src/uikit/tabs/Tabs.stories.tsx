@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from 'storybook'
+import { User, CreditCard, Bell, Shield } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs'
 
 const meta = {
@@ -110,6 +111,129 @@ export const DisabledTab: Story = {
           <p className="text-sm text-muted-foreground">
             Draft items waiting for review.
           </p>
+        </div>
+      </TabsContent>
+    </Tabs>
+  ),
+}
+
+export const ManyTabs: Story = {
+  render: () => (
+    <Tabs defaultValue="general" className="w-[600px]">
+      <TabsList>
+        <TabsTrigger value="general">General</TabsTrigger>
+        <TabsTrigger value="security">Security</TabsTrigger>
+        <TabsTrigger value="billing">Billing</TabsTrigger>
+        <TabsTrigger value="notifications">Notifications</TabsTrigger>
+        <TabsTrigger value="integrations">Integrations</TabsTrigger>
+        <TabsTrigger value="advanced">Advanced</TabsTrigger>
+      </TabsList>
+      <TabsContent value="general">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">General account settings and preferences.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="security">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Password, two-factor auth, and session management.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="billing">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Subscription plans and payment methods.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="notifications">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Email and push notification preferences.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="integrations">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Connected apps and third-party services.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="advanced">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Advanced configuration and developer options.</p>
+        </div>
+      </TabsContent>
+    </Tabs>
+  ),
+}
+
+export const WithIcons: Story = {
+  render: () => (
+    <Tabs defaultValue="profile" className="w-[500px]">
+      <TabsList>
+        <TabsTrigger value="profile" className="gap-1.5">
+          <User className="h-4 w-4" />
+          Profile
+        </TabsTrigger>
+        <TabsTrigger value="billing" className="gap-1.5">
+          <CreditCard className="h-4 w-4" />
+          Billing
+        </TabsTrigger>
+        <TabsTrigger value="notifications" className="gap-1.5">
+          <Bell className="h-4 w-4" />
+          Notifications
+        </TabsTrigger>
+        <TabsTrigger value="security" className="gap-1.5">
+          <Shield className="h-4 w-4" />
+          Security
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="profile">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Manage your profile information and avatar.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="billing">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">View invoices and manage payment methods.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="notifications">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Configure notification channels and frequency.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="security">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Two-factor authentication and login history.</p>
+        </div>
+      </TabsContent>
+    </Tabs>
+  ),
+}
+
+export const FullWidth: Story = {
+  render: () => (
+    <Tabs defaultValue="all" className="w-full">
+      <TabsList className="w-full">
+        <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
+        <TabsTrigger value="active" className="flex-1">Active</TabsTrigger>
+        <TabsTrigger value="completed" className="flex-1">Completed</TabsTrigger>
+        <TabsTrigger value="archived" className="flex-1">Archived</TabsTrigger>
+      </TabsList>
+      <TabsContent value="all">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Showing all items regardless of status.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="active">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Only active items are displayed.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="completed">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Items that have been completed.</p>
+        </div>
+      </TabsContent>
+      <TabsContent value="archived">
+        <div className="p-4 border rounded-md mt-2">
+          <p className="text-sm text-muted-foreground">Archived items stored for reference.</p>
         </div>
       </TabsContent>
     </Tabs>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MessageSquare } from 'lucide-react'
+import { Loader2, MessageSquare } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
@@ -56,20 +56,24 @@ export const AdminResponseDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <div className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-blue-600" />
-            <DialogTitle>
-              {review?.adminResponse
-                ? t('reviews.editResponse', 'Edit Response')
-                : t('reviews.addResponse', 'Add Response')}
-            </DialogTitle>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <MessageSquare className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <DialogTitle>
+                {review?.adminResponse
+                  ? t('reviews.editResponse', 'Edit Response')
+                  : t('reviews.addResponse', 'Add Response')}
+              </DialogTitle>
+              <DialogDescription>
+                {t(
+                  'reviews.adminResponseDescription',
+                  'Write a public response to this review. This will be visible to all customers.',
+                )}
+              </DialogDescription>
+            </div>
           </div>
-          <DialogDescription>
-            {t(
-              'reviews.adminResponseDescription',
-              'Write a public response to this review. This will be visible to all customers.',
-            )}
-          </DialogDescription>
         </DialogHeader>
 
         <div className="py-2">
@@ -95,6 +99,7 @@ export const AdminResponseDialog = ({
             onClick={handleSubmit}
             disabled={!response.trim() || addResponseMutation.isPending}
           >
+            {addResponseMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {addResponseMutation.isPending
               ? t('reviews.submitting', 'Submitting...')
               : t('reviews.submitResponse', 'Submit Response')}

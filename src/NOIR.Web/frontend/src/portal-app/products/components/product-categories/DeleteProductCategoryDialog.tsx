@@ -59,24 +59,26 @@ export const DeleteProductCategoryDialog = ({
             <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <AlertDialogTitle>{t('productCategories.deleteCategory')}</AlertDialogTitle>
+            <div>
+              <AlertDialogTitle>{t('productCategories.deleteCategory')}</AlertDialogTitle>
+              <AlertDialogDescription className="pt-2 space-y-2">
+                <span>
+                  Are you sure you want to delete{' '}
+                  <span className="font-semibold text-foreground">"{category?.name}"</span>?
+                </span>
+                {hasProducts && (
+                  <span className="block p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-sm">
+                    <strong>{t('productCategories.warning')}:</strong> {t('productCategories.hasProducts', { count: category?.productCount })}
+                  </span>
+                )}
+                {hasChildren && (
+                  <span className="block p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm">
+                    <strong>{t('productCategories.blocked')}:</strong> {t('productCategories.hasChildren', { count: category?.childCount })}
+                  </span>
+                )}
+              </AlertDialogDescription>
+            </div>
           </div>
-          <AlertDialogDescription className="pt-2 space-y-2">
-            <span>
-              Are you sure you want to delete{' '}
-              <span className="font-semibold text-foreground">"{category?.name}"</span>?
-            </span>
-            {hasProducts && (
-              <span className="block p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-sm">
-                <strong>{t('productCategories.warning')}:</strong> {t('productCategories.hasProducts', { count: category?.productCount })}
-              </span>
-            )}
-            {hasChildren && (
-              <span className="block p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm">
-                <strong>{t('productCategories.blocked')}:</strong> {t('productCategories.hasChildren', { count: category?.childCount })}
-              </span>
-            )}
-          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting} className="cursor-pointer">

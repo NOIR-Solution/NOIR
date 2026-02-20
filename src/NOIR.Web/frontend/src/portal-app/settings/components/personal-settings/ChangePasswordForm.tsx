@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Lock, Eye, EyeOff, Shield } from 'lucide-react'
+import { Lock, Eye, EyeOff, Shield, Loader2 } from 'lucide-react'
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '@uikit'
 
 import { changePassword, ApiError } from '@/services/settings'
@@ -197,8 +197,9 @@ export const ChangePasswordForm = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg"
+            className="w-full bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg cursor-pointer"
           >
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSubmitting ? t('changePassword.submitting') : t('changePassword.submit')}
           </Button>
         </form>

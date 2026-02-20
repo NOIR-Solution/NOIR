@@ -31,7 +31,7 @@ import {
 import { useCreateProductAttributeMutation, useUpdateProductAttributeMutation } from '@/portal-app/products/queries'
 import type { ProductAttributeListItem, AttributeType } from '@/types/productAttribute'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Layers, Loader2 } from 'lucide-react'
 
 const ATTRIBUTE_TYPES: AttributeType[] = [
   'Select',
@@ -249,16 +249,23 @@ export const ProductAttributeDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing
-              ? t('productAttributes.editAttribute', 'Edit Product Attribute')
-              : t('productAttributes.createAttribute', 'Create Product Attribute')}
-          </DialogTitle>
-          <DialogDescription>
-            {isEditing
-              ? t('productAttributes.editAttributeDescription', 'Update the product attribute details below.')
-              : t('productAttributes.createAttributeDescription', 'Fill in the details to create a new product attribute.')}
-          </DialogDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Layers className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <DialogTitle>
+                {isEditing
+                  ? t('productAttributes.editAttribute', 'Edit Product Attribute')
+                  : t('productAttributes.createAttribute', 'Create Product Attribute')}
+              </DialogTitle>
+              <DialogDescription>
+                {isEditing
+                  ? t('productAttributes.editAttributeDescription', 'Update the product attribute details below.')
+                  : t('productAttributes.createAttributeDescription', 'Fill in the details to create a new product attribute.')}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <Form {...form}>

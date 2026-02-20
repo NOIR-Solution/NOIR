@@ -20,6 +20,7 @@ import {
 } from '@uikit'
 
 import type { UserListItem } from '@/types'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 interface UserTableProps {
   users: UserListItem[]
@@ -148,7 +149,7 @@ export const UserTable = ({
                     {t('users.locked', 'Locked')}
                   </Badge>
                 ) : (
-                  <Badge variant="default" className="gap-1 bg-green-600">
+                  <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('green')}`}>
                     <LockOpen className="h-3 w-3" />
                     {t('labels.active', 'Active')}
                   </Badge>

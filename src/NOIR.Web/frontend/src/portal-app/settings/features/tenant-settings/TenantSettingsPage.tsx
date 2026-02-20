@@ -10,6 +10,7 @@ import {
   FileText,
   Scale,
   CreditCard,
+  Truck,
 } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
@@ -23,6 +24,7 @@ import {
   EmailTemplatesTab,
   LegalPagesTab,
   PaymentGatewaysTab,
+  ShippingProvidersTab,
 } from '../../components/tenant-settings'
 
 /**
@@ -76,6 +78,10 @@ export const TenantSettingsPage = () => {
             <CreditCard className="h-4 w-4 mr-2" />
             {t('tenantSettings.tabs.paymentGateways')}
           </TabsTrigger>
+          <TabsTrigger value="shippingProviders" className="cursor-pointer">
+            <Truck className="h-4 w-4 mr-2" />
+            {t('tenantSettings.tabs.shippingProviders')}
+          </TabsTrigger>
           {/* Communication Stack (SMTP before Templates - dependency order) */}
           <TabsTrigger value="smtp" className="cursor-pointer">
             <Mail className="h-4 w-4 mr-2" />
@@ -105,6 +111,9 @@ export const TenantSettingsPage = () => {
         {/* Business Operations */}
         <TabsContent value="paymentGateways">
           <PaymentGatewaysTab />
+        </TabsContent>
+        <TabsContent value="shippingProviders">
+          <ShippingProvidersTab />
         </TabsContent>
         {/* Communication Stack */}
         <TabsContent value="smtp">

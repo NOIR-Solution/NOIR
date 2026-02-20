@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AlertTriangle, FolderTree } from 'lucide-react'
+import { AlertTriangle, FolderTree, Loader2 } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -96,6 +96,7 @@ export const DeleteBlogCategoryDialog = ({ category, open, onOpenChange, onConfi
             disabled={loading || !canDelete}
             className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
           >
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {loading ? t('buttons.deleting') : t('buttons.delete')}
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -106,7 +106,7 @@ export const NotificationItem = ({
     >
       {/* Icon */}
       <div className={cn('shrink-0 rounded-full p-2', config.bg)}>
-        <Icon className={cn('size-4', config.color)} />
+        <Icon className={cn('h-4 w-4', config.color)} />
       </div>
 
       {/* Content */}
@@ -147,7 +147,7 @@ export const NotificationItem = ({
               >
                 {action.label}
                 {action.url && !action.url.startsWith('/') && (
-                  <ExternalLink className="ml-1 size-3" />
+                  <ExternalLink className="ml-1 h-3 w-3" />
                 )}
               </Button>
             ))}
@@ -163,7 +163,7 @@ export const NotificationItem = ({
           className="opacity-0 group-hover:opacity-100 shrink-0 size-8"
           onClick={handleDelete}
         >
-          <Trash2 className="size-4" />
+          <Trash2 className="h-4 w-4" />
           <span className="sr-only">{t('notifications.deleteNotification')}</span>
         </Button>
       )}

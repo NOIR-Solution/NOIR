@@ -35,6 +35,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Skeleton,
   Switch,
 } from '@uikit'
 
@@ -129,7 +130,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
           useSsl: settings.useSsl,
         })
       } catch (err) {
-        const message = err instanceof ApiError ? err.message : 'Failed to load settings'
+        const message = err instanceof ApiError ? err.message : t('platformSettings.smtp.failedToLoadSettings')
         toast.error(message)
       } finally {
         setLoading(false)
@@ -155,11 +156,14 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
       setIsConfigured(result.isConfigured)
       setIsInherited(result.isInherited)
       setHasPassword(result.hasPassword)
-      form.setValue('password', '')
+      form.reset({
+        ...data,
+        password: '',
+      })
 
       toast.success(t('tenantSettings.saved'))
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to save settings'
+      const message = err instanceof ApiError ? err.message : t('platformSettings.smtp.failedToSaveSettings')
       toast.error(message)
     } finally {
       setSaving(false)
@@ -186,7 +190,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
 
       toast.success(t('tenantSettings.saved'))
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to revert settings'
+      const message = err instanceof ApiError ? err.message : t('platformSettings.smtp.failedToSaveSettings')
       toast.error(message)
     } finally {
       setReverting(false)
@@ -210,9 +214,17 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-4 w-72" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-3/4" />
+        </CardContent>
+      </Card>
     )
   }
 
@@ -274,7 +286,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="host"
@@ -307,7 +319,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="username"
@@ -338,7 +350,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
                           placeholder={
                             hasPassword
                               ? t('platformSettings.smtp.passwordPlaceholder')
-                              : 'Enter password'
+                              : t('platformSettings.smtp.enterPassword')
                           }
                           {...field}
                           value={field.value ?? ''}
@@ -356,7 +368,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="fromEmail"
@@ -404,7 +416,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
                       <FormDescription>{t('platformSettings.smtp.useSslHint')}</FormDescription>
                     </div>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} disabled={!canEdit} />
+                      <Switch checked={field.value} onCheckedChange={field.onChange} disabled={!canEdit} className="cursor-pointer" />
                     </FormControl>
                   </FormItem>
                 )}
@@ -421,7 +433,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
                     <Send className="h-4 w-4 mr-2" />
                     {t('platformSettings.smtp.testConnection')}
                   </Button>
-                  <Button type="submit" disabled={saving}>
+                  <Button type="submit" disabled={saving || !form.formState.isDirty}>
                     {saving ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -465,19 +477,19 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
                 )}
               />
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setTestDialogOpen(false)} disabled={testing}>
+                <Button type="button" variant="outline" onClick={() => setTestDialogOpen(false)} disabled={testing} className="cursor-pointer">
                   {t('buttons.cancel')}
                 </Button>
-                <Button type="submit" disabled={testing}>
+                <Button type="submit" disabled={testing} className="cursor-pointer">
                   {testing ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Sending...
+                      {t('platformSettings.smtp.sendingTest')}
                     </>
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Send Test
+                      {t('platformSettings.smtp.sendTestButton')}
                     </>
                   )}
                 </Button>

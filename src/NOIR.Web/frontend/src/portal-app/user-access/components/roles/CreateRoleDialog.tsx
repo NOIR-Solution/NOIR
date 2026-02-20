@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, Shield } from 'lucide-react'
+import { Loader2, Plus, Shield } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -212,10 +212,11 @@ export const CreateRoleDialog = ({ onSuccess }: CreateRoleDialogProps) => {
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => setOpen(false)} className="cursor-pointer">
                 {t('buttons.cancel', 'Cancel')}
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading} className="cursor-pointer">
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? t('labels.creating', 'Creating...') : t('buttons.create', 'Create')}
               </Button>
             </DialogFooter>

@@ -17,6 +17,7 @@ import {
   EmptyState,
   Input,
   PageHeader,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -142,7 +143,7 @@ export const BlogCategoriesPage = () => {
                   placeholder={t('blogCategories.searchPlaceholder', 'Search categories...')}
                   value={searchInput}
                   onChange={handleSearchChange}
-                  className="pl-10 w-full sm:w-64"
+                  className="pl-10 w-full sm:w-48"
                   aria-label={t('blogCategories.searchCategories', 'Search categories')}
                 />
               </div>
@@ -188,11 +189,17 @@ export const BlogCategoriesPage = () => {
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      {t('labels.loading', 'Loading...')}
-                    </TableCell>
-                  </TableRow>
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i} className="animate-pulse">
+                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-8 rounded-full" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-8 rounded-full" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
+                    </TableRow>
+                  ))
                 ) : data.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="p-0">
@@ -210,10 +217,10 @@ export const BlogCategoriesPage = () => {
                   </TableRow>
                 ) : (
                   data.map((category) => (
-                    <TableRow key={category.id}>
+                    <TableRow key={category.id} className="group transition-colors hover:bg-muted/50">
                       <TableCell className="font-medium">{category.name}</TableCell>
                       <TableCell>
-                        <code className="text-sm text-muted-foreground">{category.slug}</code>
+                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{category.slug}</code>
                       </TableCell>
                       <TableCell>{category.parentName || '-'}</TableCell>
                       <TableCell>

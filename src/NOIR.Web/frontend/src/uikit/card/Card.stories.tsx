@@ -8,6 +8,7 @@ import {
   CardFooter,
   CardAction,
 } from './Card'
+import { Skeleton } from '../skeleton/Skeleton'
 
 const meta = {
   title: 'UIKit/Card',
@@ -176,6 +177,54 @@ export const ContentOnly: Story = {
     <Card style={{ maxWidth: 400 }}>
       <CardContent>
         <p>Card with no header or footer, just content.</p>
+      </CardContent>
+    </Card>
+  ),
+}
+
+export const HoverShadow: Story = {
+  render: () => (
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300" style={{ maxWidth: 400 }}>
+      <CardHeader>
+        <CardTitle className="text-lg">NOIR Standard Card</CardTitle>
+        <CardDescription>Uses the standard shadow-sm hover:shadow-lg transition pattern</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>Hover over this card to see the shadow elevation effect.</p>
+      </CardContent>
+    </Card>
+  ),
+}
+
+export const Clickable: Story = {
+  render: () => (
+    <Card
+      className="shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
+      style={{ maxWidth: 400 }}
+      onClick={() => alert('Card clicked!')}
+    >
+      <CardHeader>
+        <CardTitle className="text-lg">Clickable Card</CardTitle>
+        <CardDescription>This card acts as a clickable element</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>Click anywhere on this card to trigger an action.</p>
+      </CardContent>
+    </Card>
+  ),
+}
+
+export const Loading: Story = {
+  render: () => (
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300" style={{ maxWidth: 400 }}>
+      <CardHeader>
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-4 w-64" />
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-4 w-1/2" />
       </CardContent>
     </Card>
   ),

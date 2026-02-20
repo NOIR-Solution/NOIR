@@ -2,8 +2,6 @@ import { useState, useEffect, useDeferredValue, useMemo, useTransition } from 'r
 import { useTranslation } from 'react-i18next'
 import {
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
   Eye,
   MessageSquare,
   Search,
@@ -26,6 +24,7 @@ import {
   EmptyState,
   Input,
   PageHeader,
+  Pagination,
   Select,
   SelectContent,
   SelectItem,
@@ -477,37 +476,15 @@ export const ReviewsPage = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-muted-foreground">
-                {t('labels.pageOf', {
-                  current: currentPage,
-                  total: totalPages,
-                  defaultValue: `Page ${currentPage} of ${totalPages}`,
-                })}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="cursor-pointer"
-                  disabled={currentPage <= 1}
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  aria-label={t('labels.previousPage', 'Previous page')}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="cursor-pointer"
-                  disabled={currentPage >= totalPages}
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  aria-label={t('labels.nextPage', 'Next page')}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalCount}
+              pageSize={params.pageSize || 20}
+              onPageChange={handlePageChange}
+              showPageSizeSelector={false}
+              className="mt-4"
+            />
           )}
         </CardContent>
       </Card>
@@ -625,7 +602,7 @@ const ReviewTableRow = ({
         <Button
           variant="ghost"
           size="sm"
-          className="cursor-pointer h-8 w-8 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
           onClick={() => onViewDetail(review.id)}
           aria-label={t('reviews.viewReview', {
             title: review.title || review.id,
@@ -639,7 +616,7 @@ const ReviewTableRow = ({
             <Button
               variant="ghost"
               size="sm"
-              className="cursor-pointer h-8 w-8 p-0 transition-all duration-200 text-green-600 hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950/30"
+              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 text-green-600 hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950/30"
               onClick={() => onApprove(review.id)}
               aria-label={t('reviews.approveReview', {
                 title: review.title || review.id,
@@ -651,7 +628,7 @@ const ReviewTableRow = ({
             <Button
               variant="ghost"
               size="sm"
-              className="cursor-pointer h-8 w-8 p-0 transition-all duration-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30"
+              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30"
               onClick={() => onReject(review.id)}
               aria-label={t('reviews.rejectReview', {
                 title: review.title || review.id,
@@ -665,7 +642,7 @@ const ReviewTableRow = ({
         <Button
           variant="ghost"
           size="sm"
-          className="cursor-pointer h-8 w-8 p-0 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
+          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
           onClick={() => onRespond(review.id)}
           aria-label={t('reviews.respondToReview', {
             title: review.title || review.id,

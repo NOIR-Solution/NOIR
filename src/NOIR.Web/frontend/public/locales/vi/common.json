@@ -54,6 +54,7 @@
     "orders": "Đơn hàng",
     "inventory": "Kho hàng",
     "shipping": "Vận chuyển",
+    "shipmentTracking": "Tra cứu vận đơn",
     "reviews": "Đánh giá",
     "customers": "Khách hàng",
     "customerGroups": "Nhóm khách hàng",
@@ -1190,6 +1191,10 @@
       "sandbox": "Thử nghiệm",
       "production": "Sản xuất"
     },
+    "environment": {
+      "sandbox": "Sandbox (Thử nghiệm)",
+      "production": "Production (Trực tiếp)"
+    },
     "healthStatus": {
       "unknown": "Chưa xác định",
       "healthy": "Tốt",
@@ -1344,6 +1349,13 @@
       "immediate": "Ngay lập tức",
       "daily": "Tóm tắt hàng ngày",
       "weekly": "Tóm tắt hàng tuần"
+    },
+    "showingOf": "Hiển thị {{filtered}} trong {{total}} thông báo",
+    "loadMore": "Tải thêm",
+    "filter": {
+      "all": "Tất cả",
+      "unread": "Chưa đọc",
+      "read": "Đã đọc"
     }
   },
   "emailTemplates": {
@@ -1398,7 +1410,11 @@
     "valueForVariable": "Giá trị cho {{variable}}...",
     "sampleDataFor": "Dữ liệu mẫu cho {{variable}}",
     "sending": "Đang gửi...",
-    "sendTest": "Gửi thử"
+    "sendTest": "Gửi thử",
+    "failedToLoad": "Không thể tải mẫu email",
+    "failedToLoadPreview": "Không thể tải bản xem trước",
+    "noTemplatesFound": "Không tìm thấy mẫu email nào.",
+    "noPlatformTemplatesFound": "Không tìm thấy mẫu email nền tảng nào."
   },
   "legalPages": {
     "title": "Trang Pháp lý",
@@ -1451,7 +1467,10 @@
     "versionLabel": "Phiên bản:",
     "lastModifiedLabel": "Sửa đổi lần cuối:",
     "customizedVersion": "Tùy chỉnh (v{{version}})",
-    "characters": "{{count}}/{{max}} ký tự"
+    "characters": "{{count}}/{{max}} ký tự",
+    "failedToLoad": "Không thể tải trang pháp lý",
+    "noPagesFound": "Không tìm thấy trang pháp lý nào.",
+    "noPlatformPagesFound": "Không tìm thấy trang pháp lý nền tảng nào."
   },
   "profile": {
     "email": "Email",
@@ -1627,7 +1646,10 @@
     "allBrands": "Tất cả thương hiệu",
     "brand": "Thương hiệu",
     "delete": "Xóa",
-    "selectAll": "Chọn tất cả"
+    "selectAll": "Chọn tất cả",
+    "selectField": "Chọn {{field}}",
+    "searchField": "Tìm kiếm {{field}}...",
+    "noFieldFound": "Không tìm thấy {{field}}."
   },
   "permissions": {
     "categories": {
@@ -1933,7 +1955,8 @@
       "smtp": "SMTP",
       "emailTemplates": "Mẫu Email",
       "legalPages": "Trang Pháp lý",
-      "paymentGateways": "Cổng thanh toán"
+      "paymentGateways": "Cổng thanh toán",
+      "shippingProviders": "Vận chuyển"
     },
     "branding": {
       "title": "Thương hiệu",
@@ -2026,6 +2049,49 @@
     "configureTitle": "Cấu hình {{name}}",
     "editDescription": "Cập nhật thông tin xác thực của bạn",
     "configureDescription": "Nhập thông tin xác thực để kích hoạt thanh toán",
+    "status": {
+      "notConfigured": "Chưa cấu hình",
+      "active": "Đang hoạt động",
+      "configured": "Đã cấu hình"
+    },
+    "fields": {
+      "displayName": "Tên hiển thị",
+      "displayNameHelp": "Hiển thị cho khách hàng khi thanh toán",
+      "environment": "Môi trường"
+    }
+  },
+  "shippingProviders": {
+    "title": "Nhà vận chuyển",
+    "description": "Cấu hình tích hợp nhà vận chuyển cho cửa hàng của bạn.",
+    "refreshed": "Đã làm mới danh sách nhà vận chuyển",
+    "viewDocs": "Xem tài liệu",
+    "editTitle": "Sửa {{name}}",
+    "configureTitle": "Cấu hình {{name}}",
+    "editDescription": "Cập nhật thông tin xác thực nhà vận chuyển",
+    "configureDescription": "Nhập thông tin xác thực để kích hoạt vận chuyển",
+    "configureSuccess": "Cấu hình nhà vận chuyển thành công",
+    "updateSuccess": "Cập nhật nhà vận chuyển thành công",
+    "enabled": "Đã bật",
+    "disabled": "Đã tắt",
+    "enabledSuccess": "Đã bật nhà vận chuyển",
+    "disabledSuccess": "Đã tắt nhà vận chuyển",
+    "configureFirst": "Vui lòng cấu hình nhà vận chuyển trước khi bật",
+    "lastCheck": "Lần kiểm tra cuối",
+    "credentials": "Thông tin xác thực",
+    "encryptedNote": "Thông tin xác thực được mã hóa khi lưu trữ",
+    "options": "Tùy chọn",
+    "cod": "COD",
+    "codLabel": "Thanh toán khi nhận hàng",
+    "codHint": "Cho phép thanh toán COD cho nhà vận chuyển này",
+    "insurance": "Bảo hiểm",
+    "insuranceLabel": "Bảo hiểm",
+    "insuranceHint": "Cung cấp tùy chọn bảo hiểm gói hàng",
+    "trackingUrlTemplate": "Mẫu URL theo dõi",
+    "trackingUrlHint": "Sử dụng {trackingNumber} làm placeholder",
+    "productionWarning": "Các đơn vận chuyển thực sẽ được tạo",
+    "productionWarningTitle": "Chuyển sang Chế độ Production",
+    "productionWarningMessage": "Bạn sắp chuyển sang chế độ production. Các đơn vận chuyển thực sẽ được tạo. Hãy đảm bảo thông tin xác thực của bạn là cho môi trường production.",
+    "confirmSwitch": "Xác nhận Chuyển đổi",
     "status": {
       "notConfigured": "Chưa cấu hình",
       "active": "Đang hoạt động",
@@ -2362,5 +2428,15 @@
     "warningHasProducts": "Danh mục này có {{count}} sản phẩm sẽ bị mất phân loại.",
     "blockedLabel": "Bị chặn:",
     "blockedHasChildren": "Danh mục này có {{count}} danh mục con cần được chuyển hoặc xóa trước."
+  },
+  "welcome": {
+    "pageNotFound": "Không tìm thấy trang",
+    "backToHome": "Về Trang chủ",
+    "privacy": {
+      "loadError": "Không thể tải Chính sách Bảo mật."
+    },
+    "terms": {
+      "loadError": "Không thể tải Điều khoản Dịch vụ."
+    }
   }
 }

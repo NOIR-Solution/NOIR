@@ -104,15 +104,19 @@ export const AssignRolesDialog = ({ user, open, onOpenChange, onSuccess }: Assig
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            {t('users.assignRolesTitle', 'Assign Roles')}
-          </DialogTitle>
-          <DialogDescription>
-            {t('users.assignRolesDescription', 'Select roles to assign to "{{email}}"', {
-              email: user?.email || '',
-            })}
-          </DialogDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Shield className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <DialogTitle>{t('users.assignRolesTitle', 'Assign Roles')}</DialogTitle>
+              <DialogDescription>
+                {t('users.assignRolesDescription', 'Select roles to assign to "{{email}}"', {
+                  email: user?.email || '',
+                })}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         {isLoading ? (
@@ -132,6 +136,7 @@ export const AssignRolesDialog = ({ user, open, onOpenChange, onSuccess }: Assig
                   variant="outline"
                   size="sm"
                   onClick={handleSelectAll}
+                  className="cursor-pointer"
                 >
                   {t('roles.selectAll', 'Select All')}
                 </Button>
@@ -139,6 +144,7 @@ export const AssignRolesDialog = ({ user, open, onOpenChange, onSuccess }: Assig
                   variant="outline"
                   size="sm"
                   onClick={handleClearAll}
+                  className="cursor-pointer"
                 >
                   {t('roles.clearAll', 'Clear All')}
                 </Button>
@@ -208,10 +214,11 @@ export const AssignRolesDialog = ({ user, open, onOpenChange, onSuccess }: Assig
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={loading}
+            className="cursor-pointer"
           >
             {t('buttons.cancel', 'Cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={loading || isLoading}>
+          <Button onClick={handleSubmit} disabled={loading || isLoading} className="cursor-pointer">
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {t('buttons.save', 'Save')}
           </Button>

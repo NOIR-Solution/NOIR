@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Loader2, Pencil, Eye, GitFork } from 'lucide-react'
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@uikit'
+import { Pencil, Eye, GitFork } from 'lucide-react'
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@uikit'
 
 import { ApiError } from '@/services/apiClient'
 import {
@@ -35,7 +35,7 @@ export const EmailTemplatesTab = ({ onEdit }: EmailTemplatesTabProps) => {
         const data = await getEmailTemplates()
         setTemplates(data)
       } catch (err) {
-        const message = err instanceof ApiError ? err.message : 'Failed to load templates'
+        const message = err instanceof ApiError ? err.message : t('emailTemplates.failedToLoad')
         toast.error(message)
       } finally {
         setLoading(false)
@@ -54,7 +54,7 @@ export const EmailTemplatesTab = ({ onEdit }: EmailTemplatesTabProps) => {
       const preview = await previewEmailTemplate(template.id, { sampleData })
       setPreviewData(preview)
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to load preview'
+      const message = err instanceof ApiError ? err.message : t('emailTemplates.failedToLoadPreview')
       toast.error(message)
       setPreviewOpen(false)
     } finally {
@@ -64,9 +64,19 @@ export const EmailTemplatesTab = ({ onEdit }: EmailTemplatesTabProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader>
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {[1, 2, 3, 4].map(i => (
+              <Skeleton key={i} className="h-48 rounded-lg" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -78,7 +88,7 @@ export const EmailTemplatesTab = ({ onEdit }: EmailTemplatesTabProps) => {
           <CardDescription>{t('emailTemplates.description')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2">
             {templates.map((template) => (
               <Card key={template.id} className="overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
                 <CardContent className="p-4">
@@ -120,7 +130,7 @@ export const EmailTemplatesTab = ({ onEdit }: EmailTemplatesTabProps) => {
           </div>
           {templates.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
-              No email templates found.
+              {t('emailTemplates.noTemplatesFound')}
             </div>
           )}
         </CardContent>

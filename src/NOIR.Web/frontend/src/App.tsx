@@ -46,7 +46,7 @@ const ProductAttributesPage = lazy(() => import('@/portal-app/products/features/
 const OrdersPage = lazy(() => import('@/portal-app/orders/features/order-list/OrdersPage'))
 const OrderDetailPage = lazy(() => import('@/portal-app/orders/features/order-detail/OrderDetailPage'))
 const InventoryReceiptsPage = lazy(() => import('@/portal-app/inventory/features/inventory-receipts/InventoryReceiptsPage'))
-const ShippingPage = lazy(() => import('@/portal-app/shipping/features/shipping-page/ShippingPage'))
+const ShipmentTrackingPage = lazy(() => import('@/portal-app/orders/features/shipment-tracking/ShipmentTrackingPage'))
 // Customers
 const CustomersPage = lazy(() => import('@/portal-app/customers/features/customer-list/CustomersPage'))
 const CustomerDetailPage = lazy(() => import('@/portal-app/customers/features/customer-detail/CustomerDetailPage'))
@@ -159,7 +159,9 @@ export const App = () => {
                         <Route path="ecommerce/orders" element={<Suspense fallback={<LazyFallback />}><OrdersPage /></Suspense>} />
                         <Route path="ecommerce/orders/:id" element={<Suspense fallback={<LazyFallback />}><OrderDetailPage /></Suspense>} />
                         <Route path="ecommerce/inventory" element={<Suspense fallback={<LazyFallback />}><InventoryReceiptsPage /></Suspense>} />
-                        <Route path="ecommerce/shipping" element={<Suspense fallback={<LazyFallback />}><ShippingPage /></Suspense>} />
+                        <Route path="ecommerce/orders/tracking" element={<Suspense fallback={<LazyFallback />}><ShipmentTrackingPage /></Suspense>} />
+                        {/* Redirect old shipping URL to tenant settings */}
+                        <Route path="ecommerce/shipping" element={<Navigate to="/portal/admin/tenant-settings?tab=shippingProviders" replace />} />
                         {/* Customers */}
                         <Route path="ecommerce/customers" element={<Suspense fallback={<LazyFallback />}><CustomersPage /></Suspense>} />
                         <Route path="ecommerce/customers/:id" element={<Suspense fallback={<LazyFallback />}><CustomerDetailPage /></Suspense>} />

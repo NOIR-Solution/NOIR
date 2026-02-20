@@ -101,7 +101,7 @@ export const BlogTagsPage = () => {
                 placeholder={t('blogTags.searchPlaceholder', 'Search tags...')}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-10 w-full sm:w-64"
+                className="pl-10 w-full sm:w-48"
                 aria-label={t('blogTags.searchTags', 'Search tags')}
               />
             </div>
@@ -168,7 +168,7 @@ export const BlogTagsPage = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <code className="text-sm text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{tag.slug}</code>
+                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{tag.slug}</code>
                       </TableCell>
                       <TableCell className="text-center">
                         <Badge variant="secondary">{tag.postCount}</Badge>

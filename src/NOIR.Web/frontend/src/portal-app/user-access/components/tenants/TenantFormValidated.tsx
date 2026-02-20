@@ -19,7 +19,7 @@ import { useValidatedForm } from "@/hooks/useValidatedForm"
 import { updateTenantSchema } from "@/validation/schemas.generated"
 import type { Tenant } from "@/types"
 import { z } from "zod"
-import { UserPlus } from "lucide-react"
+import { UserPlus, Loader2 } from "lucide-react"
 
 // Schema factory for provisioning a new tenant (create mode)
 // Admin user is REQUIRED for all new tenants
@@ -238,9 +238,10 @@ export const TenantFormValidated = ({ tenant, onSubmit, onCancel }: TenantFormVa
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           {t("buttons.cancel")}
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting} className="cursor-pointer">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isSubmitting
-            ? t("labels.loading")
+            ? (isEditing ? t("labels.saving") : t("labels.creating"))
             : isEditing
               ? t("buttons.update")
               : t("buttons.create")}

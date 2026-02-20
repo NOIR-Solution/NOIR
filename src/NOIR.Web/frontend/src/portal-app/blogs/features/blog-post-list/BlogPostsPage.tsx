@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, FileText, Plus, Eye, Pencil, Trash2, Send } from 'lucide-react'
+import { Search, FileText, Plus, Eye, Pencil, Trash2, Send, MoreHorizontal } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -41,12 +41,13 @@ import type { PostListItem, PostStatus } from '@/types'
 import { formatDistanceToNow } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
-const statusColors: Record<PostStatus, string> = {
-  Draft: 'bg-gray-100 text-gray-800',
-  Published: 'bg-green-100 text-green-800',
-  Scheduled: 'bg-blue-100 text-blue-800',
-  Archived: 'bg-yellow-100 text-yellow-800',
+const statusColors: Record<PostStatus, 'gray' | 'green' | 'blue' | 'yellow'> = {
+  Draft: 'gray',
+  Published: 'green',
+  Scheduled: 'blue',
+  Archived: 'yellow',
 }
 
 export const BlogPostsPage = () => {
@@ -214,7 +215,7 @@ export const BlogPostsPage = () => {
                   </TableRow>
                 ) : (
                   data?.items.map((post) => (
-                    <TableRow key={post.id}>
+                    <TableRow key={post.id} className="group transition-colors hover:bg-muted/50">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {/* Featured Image Thumbnail - Click to view full image */}
@@ -240,7 +241,7 @@ export const BlogPostsPage = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={statusColors[post.status]} variant="secondary">
+                        <Badge variant="outline" className={getStatusBadgeClasses(statusColors[post.status])}>
                           {t(`blog.status.${post.status.toLowerCase()}`)}
                         </Badge>
                       </TableCell>
@@ -252,8 +253,8 @@ export const BlogPostsPage = () => {
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="cursor-pointer">
-                              •••
+                            <Button variant="ghost" size="sm" className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary">
+                              <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Settings, Mail, FileText, Scale } from 'lucide-react'
 import { PageHeader, Tabs, TabsContent, TabsList, TabsTrigger } from '@uikit'
 
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
 import {
   PlatformSmtpSettingsTab,
@@ -18,6 +19,8 @@ import {
 export const PlatformSettingsPage = () => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
+  const { hasPermission } = usePermissions()
+  const canEdit = hasPermission(Permissions.PlatformSettingsManage)
   usePageContext('PlatformSettings')
 
   // Active tab state
@@ -56,7 +59,7 @@ export const PlatformSettingsPage = () => {
         </TabsList>
 
         <TabsContent value="smtp">
-          <PlatformSmtpSettingsTab />
+          <PlatformSmtpSettingsTab canEdit={canEdit} />
         </TabsContent>
 
         <TabsContent value="emailTemplates">

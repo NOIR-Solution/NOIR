@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { ShieldCheck, ArrowLeft } from 'lucide-react'
 import { Button } from '@uikit'
@@ -9,6 +10,7 @@ import { getPublicLegalPage, type PublicLegalPageDto } from '@/services/legalPag
  * Fetches the legal page content from the API and renders it.
  */
 export const PrivacyPage = () => {
+  const { t } = useTranslation('common')
   const [page, setPage] = useState<PublicLegalPageDto | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -19,7 +21,7 @@ export const PrivacyPage = () => {
         const data = await getPublicLegalPage('privacy-policy')
         setPage(data)
       } catch {
-        setError('Unable to load Privacy Policy.')
+        setError(t('welcome.privacy.loadError'))
       } finally {
         setLoading(false)
       }
@@ -46,11 +48,11 @@ export const PrivacyPage = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-muted-foreground mb-4">{error || 'Page not found'}</p>
+          <p className="text-muted-foreground mb-4">{error || t('welcome.pageNotFound')}</p>
           <Button variant="outline" asChild>
             <ViewTransitionLink to="/">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              {t('welcome.backToHome')}
             </ViewTransitionLink>
           </Button>
         </div>

@@ -238,7 +238,7 @@ export const ConfigureGatewayDialog = ({
         )
         onOpenChange(false)
       } else {
-        toast.error(result.error ?? 'Operation failed')
+        toast.error(result.error ?? t('errors.operationFailed'))
       }
     } finally {
       setLoading(false)
@@ -320,10 +320,10 @@ export const ConfigureGatewayDialog = ({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="Sandbox" className="cursor-pointer">
-                          Sandbox (Testing)
+                          {t('shipping.environment.sandbox')}
                         </SelectItem>
                         <SelectItem value="Production" className="cursor-pointer">
-                          Production (Live)
+                          {t('shipping.environment.production')}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -369,9 +369,9 @@ export const ConfigureGatewayDialog = ({
                               options={credField.options}
                               value={(formField.value as string) ?? ''}
                               onValueChange={formField.onChange}
-                              placeholder={credField.placeholder ?? `Select ${credField.label.toLowerCase()}`}
-                              searchPlaceholder={`Search ${credField.label.toLowerCase()}...`}
-                              emptyText={`No ${credField.label.toLowerCase()} found.`}
+                              placeholder={credField.placeholder ?? t('labels.selectField', { field: credField.label.toLowerCase() })}
+                              searchPlaceholder={t('labels.searchField', { field: credField.label.toLowerCase() })}
+                              emptyText={t('labels.noFieldFound', { field: credField.label.toLowerCase() })}
                               countLabel={credField.label.toLowerCase() === 'bank' ? 'banks' : 'options'}
                             />
                           ) : (

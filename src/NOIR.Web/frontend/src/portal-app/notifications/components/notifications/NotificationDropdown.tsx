@@ -10,7 +10,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, Bell } from 'lucide-react'
+import { Check, Bell, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@uikit'
 import { NotificationItem } from './NotificationItem'
@@ -110,16 +110,17 @@ export const NotificationDropdown = ({ className }: NotificationDropdownProps) =
   return (
     <div className={cn('relative', className)} ref={dropdownRef}>
       {/* Bell Button */}
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => setOpen(!open)}
         className={cn(
-          'relative p-2.5 rounded-lg transition-all duration-200',
-          'hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+          'relative',
           open && 'bg-muted'
         )}
         aria-label={`${t('notifications.title')}${unreadCount > 0 ? ` (${t('notifications.unreadCount', { count: unreadCount })})` : ''}`}
       >
-        <Bell className="size-5 text-foreground" />
+        <Bell className="h-5 w-5" />
 
         {/* Unread count badge */}
         {unreadCount > 0 && (
@@ -134,11 +135,11 @@ export const NotificationDropdown = ({ className }: NotificationDropdownProps) =
 
         {/* Connection state indicator */}
         {connectionState === 'connecting' || connectionState === 'reconnecting' ? (
-          <span className="absolute bottom-0.5 right-0.5 size-2 rounded-full bg-amber-500 animate-pulse" />
+          <span className="absolute bottom-0 right-0 size-2 rounded-full bg-amber-500 animate-pulse" />
         ) : connectionState === 'disconnected' ? (
-          <span className="absolute bottom-0.5 right-0.5 size-2 rounded-full bg-red-500" />
+          <span className="absolute bottom-0 right-0 size-2 rounded-full bg-red-500" />
         ) : null}
-      </button>
+      </Button>
 
       {/* Dropdown Panel */}
       <AnimatePresence>
@@ -171,7 +172,7 @@ export const NotificationDropdown = ({ className }: NotificationDropdownProps) =
                   className="h-8 text-xs"
                   onClick={handleMarkAllAsRead}
                 >
-                  <Check className="size-3.5 mr-1" />
+                  <Check className="h-3.5 w-3.5 mr-1" />
                   {t('notifications.markAllRead')}
                 </Button>
               )}
@@ -181,7 +182,7 @@ export const NotificationDropdown = ({ className }: NotificationDropdownProps) =
             <div className="max-h-[420px] overflow-y-auto">
               {isLoading && notifications.length === 0 ? (
                 <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 </div>
               ) : recentNotifications.length === 0 ? (
                 <NotificationEmpty />

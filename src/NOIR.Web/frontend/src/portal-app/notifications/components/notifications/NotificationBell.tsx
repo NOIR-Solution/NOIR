@@ -28,7 +28,7 @@ export const NotificationBell = ({ onClick, className }: NotificationBellProps) 
       className={cn('relative', className)}
       aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
     >
-      <Bell className="size-5" />
+      <Bell className="h-5 w-5" />
 
       {/* Unread count badge */}
       {unreadCount > 0 && (

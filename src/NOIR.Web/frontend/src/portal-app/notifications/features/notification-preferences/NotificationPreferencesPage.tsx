@@ -17,6 +17,7 @@ import {
   CardTitle,
   Label,
   Skeleton,
+  Switch,
 } from '@uikit'
 
 import { toast } from 'sonner'
@@ -161,7 +162,7 @@ export const NotificationPreferencesPage = () => {
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
               <ViewTransitionLink to="/portal/notifications">
-                <ArrowLeft className="size-4" />
+                <ArrowLeft className="h-4 w-4" />
               </ViewTransitionLink>
             </Button>
             <h1 className="text-2xl font-bold text-foreground">{t('notifications.preferencesTitle')}</h1>
@@ -172,9 +173,9 @@ export const NotificationPreferencesPage = () => {
         </div>
         <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
           {isSaving ? (
-            <Loader2 className="size-4 mr-2 animate-spin" />
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
           ) : (
-            <Save className="size-4 mr-2" />
+            <Save className="h-4 w-4 mr-2" />
           )}
           {isSaving ? t('buttons.saving') : t('notifications.saveChanges')}
         </Button>
@@ -191,7 +192,7 @@ export const NotificationPreferencesPage = () => {
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
-                    <Icon className="size-5 text-primary" />
+                    <Icon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-base">{t(`notifications.categories.${pref.category}`)}</CardTitle>
@@ -203,35 +204,24 @@ export const NotificationPreferencesPage = () => {
                 {/* In-app notifications toggle */}
                 <div className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-3">
-                    <Bell className="size-4 text-muted-foreground" />
+                    <Bell className="h-4 w-4 text-muted-foreground" />
                     <Label htmlFor={`inapp-${pref.category}`} className="cursor-pointer font-normal">
                       {t('notifications.inAppNotifications')}
                     </Label>
                   </div>
-                  <button
+                  <Switch
                     id={`inapp-${pref.category}`}
-                    type="button"
-                    role="switch"
-                    aria-checked={pref.inAppEnabled}
-                    onClick={() => handleInAppToggle(pref.category)}
-                    className={cn(
-                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                      pref.inAppEnabled ? 'bg-primary' : 'bg-input'
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow ring-0 transition duration-200 ease-in-out',
-                        pref.inAppEnabled ? 'translate-x-5' : 'translate-x-0'
-                      )}
-                    />
-                  </button>
+                    checked={pref.inAppEnabled}
+                    onCheckedChange={() => handleInAppToggle(pref.category)}
+                    className="cursor-pointer"
+                    aria-label={t('notifications.inAppNotifications')}
+                  />
                 </div>
 
                 {/* Email frequency */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <Mail className="size-4 text-muted-foreground" />
+                    <Mail className="h-4 w-4 text-muted-foreground" />
                     <Label className="font-normal">{t('notifications.emailNotifications')}</Label>
                   </div>
                   <div className="flex flex-wrap gap-2 ml-7">

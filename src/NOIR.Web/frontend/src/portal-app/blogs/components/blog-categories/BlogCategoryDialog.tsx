@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FolderTree, Pencil } from 'lucide-react'
+import { FolderTree, Loader2, Pencil } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -270,10 +270,11 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
                 {t('buttons.cancel')}
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading} className="cursor-pointer">
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading
                   ? t('buttons.saving')
                   : (isEdit ? t('buttons.update') : t('buttons.create'))}

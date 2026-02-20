@@ -17,7 +17,7 @@ export const ShippingPage = () => {
   usePageContext('Shipping')
 
   const [activeTab, setActiveTab] = useState('providers')
-  const [, startTabTransition] = useTransition()
+  const [isTabPending, startTabTransition] = useTransition()
 
   const handleTabChange = (value: string) => {
     startTabTransition(() => {
@@ -26,7 +26,7 @@ export const ShippingPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-4xl py-6 space-y-6">
       <PageHeader
         icon={Truck}
         title={t('shipping.title', 'Shipping Management')}
@@ -44,11 +44,11 @@ export const ShippingPage = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="providers" className="mt-6">
+        <TabsContent value="providers" className={isTabPending ? 'mt-6 opacity-70 transition-opacity duration-200' : 'mt-6 transition-opacity duration-200'}>
           <ProviderList />
         </TabsContent>
 
-        <TabsContent value="shipments" className="mt-6">
+        <TabsContent value="shipments" className={isTabPending ? 'mt-6 opacity-70 transition-opacity duration-200' : 'mt-6 transition-opacity duration-200'}>
           <ShipmentLookup />
         </TabsContent>
       </Tabs>

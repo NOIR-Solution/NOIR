@@ -7,6 +7,7 @@
  * - Bulk actions
  */
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Check, RefreshCw, Loader2 } from 'lucide-react'
 import { Button, Skeleton } from '@uikit'
 
@@ -22,6 +23,7 @@ interface NotificationListProps {
 }
 
 export const NotificationList = ({ className }: NotificationListProps) => {
+  const { t } = useTranslation('common')
   const [filter, setFilter] = useState<FilterType>('all')
   const {
     notifications,
@@ -70,10 +72,10 @@ export const NotificationList = ({ className }: NotificationListProps) => {
               key={f}
               variant={filter === f ? 'secondary' : 'ghost'}
               size="sm"
-              className={cn('capitalize', filter === f && 'bg-background shadow-sm')}
+              className={cn(filter === f && 'bg-background shadow-sm')}
               onClick={() => setFilter(f)}
             >
-              {f}
+              {t(`notifications.filter.${f}`)}
               {f === 'unread' && unreadCount > 0 && (
                 <span className="ml-1.5 text-xs bg-primary text-primary-foreground rounded-full px-1.5">
                   {unreadCount}
@@ -91,8 +93,8 @@ export const NotificationList = ({ className }: NotificationListProps) => {
             onClick={handleRefresh}
             disabled={isLoading}
           >
-            <RefreshCw className={cn('size-4 mr-1', isLoading && 'animate-spin')} />
-            Refresh
+            <RefreshCw className={cn('h-4 w-4 mr-1', isLoading && 'animate-spin')} />
+            {t('buttons.refresh')}
           </Button>
           {unreadCount > 0 && (
             <Button
@@ -100,8 +102,8 @@ export const NotificationList = ({ className }: NotificationListProps) => {
               size="sm"
               onClick={handleMarkAllAsRead}
             >
-              <Check className="size-4 mr-1" />
-              Mark all read
+              <Check className="h-4 w-4 mr-1" />
+              {t('notifications.markAllRead')}
             </Button>
           )}
         </div>
@@ -109,7 +111,7 @@ export const NotificationList = ({ className }: NotificationListProps) => {
 
       {/* Stats */}
       <p className="text-sm text-muted-foreground">
-        Showing {filteredNotifications.length} of {totalCount} notifications
+        {t('notifications.showingOf', { filtered: filteredNotifications.length, total: totalCount })}
       </p>
 
       {/* List */}
@@ -154,11 +156,11 @@ export const NotificationList = ({ className }: NotificationListProps) => {
           >
             {isLoading ? (
               <>
-                <Loader2 className="size-4 mr-2 animate-spin" />
-                Loading...
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                {t('labels.loading')}
               </>
             ) : (
-              'Load more'
+              t('notifications.loadMore')
             )}
           </Button>
         </div>

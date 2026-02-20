@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
-import { Loader2, Pencil, Eye, GitFork } from 'lucide-react'
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@uikit'
+import { Pencil, Eye, GitFork } from 'lucide-react'
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@uikit'
 
 import { ApiError } from '@/services/apiClient'
 import { getLegalPages, type LegalPageListDto } from '@/services/legalPages'
@@ -25,7 +25,7 @@ export const PlatformLegalPagesTab = ({ onEdit }: PlatformLegalPagesTabProps) =>
         // Filter to only platform pages (isInherited = true means it's a platform default)
         setPages(data.filter(p => p.isInherited))
       } catch (err) {
-        const message = err instanceof ApiError ? err.message : 'Failed to load legal pages'
+        const message = err instanceof ApiError ? err.message : t('legalPages.failedToLoad')
         toast.error(message)
       } finally {
         setLoading(false)
@@ -36,9 +36,19 @@ export const PlatformLegalPagesTab = ({ onEdit }: PlatformLegalPagesTabProps) =>
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader>
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {[1, 2, 3, 4].map(i => (
+              <Skeleton key={i} className="h-48 rounded-lg" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -49,7 +59,7 @@ export const PlatformLegalPagesTab = ({ onEdit }: PlatformLegalPagesTabProps) =>
         <CardDescription>{t('legalPages.description')}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2">
           {pages.map((page) => (
             <Card key={page.id} className="overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
               <CardContent className="p-4">
@@ -60,11 +70,11 @@ export const PlatformLegalPagesTab = ({ onEdit }: PlatformLegalPagesTabProps) =>
                     <div className="flex items-center gap-2 pt-2">
                       <Badge variant="outline" className="text-purple-600 border-purple-600/30 text-xs">
                         <GitFork className="h-3 w-3 mr-1" />
-                        Platform Default
+                        {t('legalPages.platformDefault')}
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground pt-1">
-                      Last modified: {formatDate(page.lastModified)}
+                      {t('legalPages.lastModified')}: {formatDate(page.lastModified)}
                     </p>
                   </div>
                   <div className="flex flex-col gap-1">
@@ -88,7 +98,7 @@ export const PlatformLegalPagesTab = ({ onEdit }: PlatformLegalPagesTabProps) =>
         </div>
         {pages.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
-            No platform legal pages found.
+            {t('legalPages.noPlatformPagesFound')}
           </div>
         )}
       </CardContent>

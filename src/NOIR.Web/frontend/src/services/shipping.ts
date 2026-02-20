@@ -6,6 +6,7 @@
 import { apiClient } from './apiClient'
 import type {
   ShippingProviderDto,
+  ShippingProviderSchemas,
   ShippingOrderDto,
   TrackingInfoDto,
   ConfigureShippingProviderRequest,
@@ -16,6 +17,10 @@ import type {
 
 export const getShippingProviders = async (): Promise<ShippingProviderDto[]> => {
   return apiClient<ShippingProviderDto[]>('/shipping-providers')
+}
+
+export const getShippingProviderSchemas = async (): Promise<ShippingProviderSchemas> => {
+  return apiClient<ShippingProviderSchemas>('/shipping-providers/schemas')
 }
 
 export const getShippingProviderById = async (id: string): Promise<ShippingProviderDto> => {

@@ -30,7 +30,7 @@ export const NotificationsPage = () => {
         action={
           <Button variant="outline" asChild className="cursor-pointer">
             <ViewTransitionLink to="/portal/settings/notifications">
-              <Settings className="size-4 mr-2" />
+              <Settings className="h-4 w-4 mr-2" />
               {t('notifications.preferences')}
             </ViewTransitionLink>
           </Button>

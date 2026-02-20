@@ -3,6 +3,7 @@ using NOIR.Application.Features.Shipping.Commands.UpdateShippingProvider;
 using NOIR.Application.Features.Shipping.Queries.GetActiveShippingProviders;
 using NOIR.Application.Features.Shipping.Queries.GetShippingProviderById;
 using NOIR.Application.Features.Shipping.Queries.GetShippingProviders;
+using NOIR.Application.Features.Shipping.Queries.GetShippingProviderSchemas;
 
 namespace NOIR.Web.Endpoints;
 
@@ -42,6 +43,19 @@ public static class ShippingProviderEndpoints
         .WithSummary("Get active shipping providers for checkout")
         .WithDescription("Returns active providers available for shipping selection during checkout.")
         .Produces<List<CheckoutShippingProviderDto>>(StatusCodes.Status200OK);
+
+        // Get shipping provider credential schemas
+        group.MapGet("/schemas", async (IMessageBus bus) =>
+        {
+            var query = new GetShippingProviderSchemasQuery();
+            var result = await bus.InvokeAsync<Result<ShippingProviderSchemasDto>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.OrdersManage)
+        .WithName("GetShippingProviderSchemas")
+        .WithSummary("Get shipping provider credential schemas")
+        .WithDescription("Returns credential field definitions for all supported shipping providers.")
+        .Produces<ShippingProviderSchemasDto>(StatusCodes.Status200OK);
 
         // Get provider by ID
         group.MapGet("/{id:guid}", async (Guid id, IMessageBus bus) =>

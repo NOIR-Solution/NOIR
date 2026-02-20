@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { KeyRound, Eye, EyeOff } from 'lucide-react'
+import { KeyRound, Eye, EyeOff, Loader2 } from 'lucide-react'
 import {
   Button,
   Dialog,
@@ -190,10 +190,12 @@ export const ResetAdminPasswordDialog = ({
               variant="outline"
               onClick={() => handleOpenChange(false)}
               disabled={loading}
+              className="cursor-pointer"
             >
               {t('buttons.cancel')}
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="cursor-pointer">
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? t('labels.loading') : t('buttons.resetPassword')}
             </Button>
           </DialogFooter>

@@ -34,6 +34,7 @@ import {
 import { useProductCategoriesQuery } from '@/portal-app/products/queries'
 import type { ProductCategoryListItem } from '@/types/product'
 import { toast } from 'sonner'
+import { FolderTree, Loader2 } from 'lucide-react'
 import { ApiError } from '@/services/apiClient'
 import { generateSlug } from '@/lib/utils/slug'
 
@@ -174,10 +175,17 @@ export const ProductCategoryDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? t('categories.editCategory', 'Edit Category') : t('categories.newCategory', 'New Category')}</DialogTitle>
-          <DialogDescription>
-            {isEditing ? t('categories.editDescription', 'Update category details') : t('categories.createDescription', 'Create a new product category')}
-          </DialogDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <FolderTree className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <DialogTitle>{isEditing ? t('categories.editCategory', 'Edit Category') : t('categories.newCategory', 'New Category')}</DialogTitle>
+              <DialogDescription>
+                {isEditing ? t('categories.editDescription', 'Update category details') : t('categories.createDescription', 'Create a new product category')}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -285,7 +293,8 @@ export const ProductCategoryDialog = ({
                 {t('labels.cancel', 'Cancel')}
               </Button>
               <Button type="submit" disabled={isSaving} className="cursor-pointer">
-                {isSaving ? t('labels.saving', 'Saving...') : isEditing ? t('labels.update', 'Update') : t('labels.create', 'Create')}
+                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isEditing ? t('labels.update', 'Update') : t('labels.create', 'Create')}
               </Button>
             </DialogFooter>
           </form>

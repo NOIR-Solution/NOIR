@@ -54,6 +54,7 @@
     "orders": "Orders",
     "inventory": "Inventory",
     "shipping": "Shipping",
+    "shipmentTracking": "Shipment Tracking",
     "reviews": "Reviews",
     "customers": "Customers",
     "customerGroups": "Customer Groups",
@@ -1190,6 +1191,10 @@
       "sandbox": "Sandbox",
       "production": "Production"
     },
+    "environment": {
+      "sandbox": "Sandbox (Testing)",
+      "production": "Production (Live)"
+    },
     "healthStatus": {
       "unknown": "Unknown",
       "healthy": "Healthy",
@@ -1344,6 +1349,13 @@
       "immediate": "Immediate",
       "daily": "Daily digest",
       "weekly": "Weekly digest"
+    },
+    "showingOf": "Showing {{filtered}} of {{total}} notifications",
+    "loadMore": "Load more",
+    "filter": {
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read"
     }
   },
   "emailTemplates": {
@@ -1398,7 +1410,11 @@
     "valueForVariable": "Value for {{variable}}...",
     "sampleDataFor": "Sample data for {{variable}}",
     "sending": "Sending...",
-    "sendTest": "Send Test"
+    "sendTest": "Send Test",
+    "failedToLoad": "Failed to load templates",
+    "failedToLoadPreview": "Failed to load preview",
+    "noTemplatesFound": "No email templates found.",
+    "noPlatformTemplatesFound": "No platform email templates found."
   },
   "legalPages": {
     "title": "Legal Pages",
@@ -1451,7 +1467,10 @@
     "versionLabel": "Version:",
     "lastModifiedLabel": "Last Modified:",
     "customizedVersion": "Customized (v{{version}})",
-    "characters": "{{count}}/{{max}} characters"
+    "characters": "{{count}}/{{max}} characters",
+    "failedToLoad": "Failed to load legal pages",
+    "noPagesFound": "No legal pages found.",
+    "noPlatformPagesFound": "No platform legal pages found."
   },
   "profile": {
     "email": "Email",
@@ -1627,7 +1646,10 @@
     "allBrands": "All Brands",
     "brand": "Brand",
     "delete": "Delete",
-    "selectAll": "Select all"
+    "selectAll": "Select all",
+    "selectField": "Select {{field}}",
+    "searchField": "Search {{field}}...",
+    "noFieldFound": "No {{field}} found."
   },
   "permissions": {
     "categories": {
@@ -1933,7 +1955,8 @@
       "smtp": "SMTP",
       "emailTemplates": "Email Templates",
       "legalPages": "Legal Pages",
-      "paymentGateways": "Payment Gateways"
+      "paymentGateways": "Payment Gateways",
+      "shippingProviders": "Shipping"
     },
     "branding": {
       "title": "Branding",
@@ -2034,6 +2057,49 @@
     "fields": {
       "displayName": "Display Name",
       "displayNameHelp": "Shown to customers at checkout",
+      "environment": "Environment"
+    }
+  },
+  "shippingProviders": {
+    "title": "Shipping Providers",
+    "description": "Configure shipping provider integrations for your store.",
+    "refreshed": "Provider list refreshed",
+    "viewDocs": "View documentation",
+    "editTitle": "Edit {{name}}",
+    "configureTitle": "Configure {{name}}",
+    "editDescription": "Update your provider credentials",
+    "configureDescription": "Enter credentials to enable shipping",
+    "configureSuccess": "Provider configured successfully",
+    "updateSuccess": "Provider updated successfully",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "enabledSuccess": "Provider enabled",
+    "disabledSuccess": "Provider disabled",
+    "configureFirst": "Configure this provider before enabling it",
+    "lastCheck": "Last check",
+    "credentials": "Credentials",
+    "encryptedNote": "Credentials are encrypted at rest",
+    "options": "Options",
+    "cod": "COD",
+    "codLabel": "Cash on Delivery",
+    "codHint": "Allow COD payments for this provider",
+    "insurance": "Insurance",
+    "insuranceLabel": "Insurance",
+    "insuranceHint": "Offer package insurance option",
+    "trackingUrlTemplate": "Tracking URL Template",
+    "trackingUrlHint": "Use {trackingNumber} as placeholder",
+    "productionWarning": "Real shipments will be processed",
+    "productionWarningTitle": "Switch to Production Mode",
+    "productionWarningMessage": "You are about to switch to production mode. Real shipments will be created. Make sure your credentials are for the production environment.",
+    "confirmSwitch": "Confirm Switch",
+    "status": {
+      "notConfigured": "Not Configured",
+      "active": "Active",
+      "configured": "Configured"
+    },
+    "fields": {
+      "displayName": "Display Name",
+      "displayNameHelp": "Shown to customers during checkout",
       "environment": "Environment"
     }
   },
@@ -2362,5 +2428,15 @@
     "warningHasProducts": "This category has {{count}} products that will be uncategorized.",
     "blockedLabel": "Blocked:",
     "blockedHasChildren": "This category has {{count}} child categories that must be moved or deleted first."
+  },
+  "welcome": {
+    "pageNotFound": "Page not found",
+    "backToHome": "Back to Home",
+    "privacy": {
+      "loadError": "Unable to load Privacy Policy."
+    },
+    "terms": {
+      "loadError": "Unable to load Terms of Service."
+    }
   }
 }

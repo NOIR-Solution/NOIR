@@ -6,28 +6,29 @@
 import type { ProductStatus } from '@/types/product'
 import { CheckCircle2, XCircle, AlertCircle, Archive, Package, FileText } from 'lucide-react'
 import type { FC } from 'react'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 export const PRODUCT_STATUS_CONFIG: Record<
   ProductStatus,
   { color: string; icon: FC<{ className?: string }>; label: string }
 > = {
   Draft: {
-    color: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-900/50 dark:text-slate-300 dark:border-slate-700',
+    color: getStatusBadgeClasses('gray'),
     icon: AlertCircle,
     label: 'Draft'
   },
   Active: {
-    color: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-700',
+    color: getStatusBadgeClasses('green'),
     icon: CheckCircle2,
     label: 'Active'
   },
   Archived: {
-    color: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-700',
+    color: getStatusBadgeClasses('yellow'),
     icon: Archive,
     label: 'Archived'
   },
   OutOfStock: {
-    color: 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-900/50 dark:text-rose-300 dark:border-rose-700',
+    color: getStatusBadgeClasses('red'),
     icon: XCircle,
     label: 'Out of Stock'
   },

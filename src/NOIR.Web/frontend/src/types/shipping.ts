@@ -186,3 +186,23 @@ export interface UpdateShippingProviderRequest {
   minCodAmount?: number | null
   maxCodAmount?: number | null
 }
+
+// Schema types (reuse CredentialField, EnvironmentDefaults from payment types)
+import type { CredentialField, EnvironmentDefaults } from '@/types/payment'
+
+export interface ShippingProviderSchema {
+  providerCode: ShippingProviderCode
+  displayName: string
+  description: string
+  iconUrl: string | null
+  fields: CredentialField[]
+  environments: EnvironmentDefaults
+  supportsCod: boolean
+  supportsInsurance: boolean
+  defaultTrackingUrlTemplate: string | null
+  documentationUrl: string | null
+}
+
+export interface ShippingProviderSchemas {
+  schemas: Record<string, ShippingProviderSchema>
+}

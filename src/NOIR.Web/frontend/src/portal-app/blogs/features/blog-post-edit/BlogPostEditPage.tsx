@@ -51,6 +51,7 @@ import {
   FormMessage,
   Input,
   Label,
+  PageLoader,
   RadioGroup,
   RadioGroupItem,
   Select,
@@ -321,11 +322,7 @@ export const BlogPostEditPage = () => {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">{t('labels.loading')}</p>
-      </div>
-    )
+    return <PageLoader className="h-64" text={t('labels.loading')} />
   }
 
   return (

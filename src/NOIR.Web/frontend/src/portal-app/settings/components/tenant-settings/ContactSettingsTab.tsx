@@ -100,7 +100,7 @@ export const ContactSettingsTab = ({ canEdit }: ContactSettingsTabProps) => {
   return (
     <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
       <CardHeader>
-        <CardTitle>{t('tenantSettings.contact.title')}</CardTitle>
+        <CardTitle className="text-lg">{t('tenantSettings.contact.title')}</CardTitle>
         <CardDescription>{t('tenantSettings.contact.description')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

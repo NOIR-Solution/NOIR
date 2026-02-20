@@ -9,6 +9,7 @@ import {
   TableCell,
   TableCaption,
 } from './Table'
+import { Skeleton } from '../skeleton/Skeleton'
 
 const meta = {
   title: 'UIKit/Table',
@@ -140,6 +141,57 @@ export const Empty: Story = {
             No results found.
           </TableCell>
         </TableRow>
+      </TableBody>
+    </Table>
+  ),
+}
+
+export const WithRowHover: Story = {
+  render: () => (
+    <Table>
+      <TableCaption>Rows highlight on hover using the NOIR standard pattern.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Invoice</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Method</TableHead>
+          <TableHead className="text-right">Amount</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {invoices.map((invoice) => (
+          <TableRow key={invoice.invoice} className="hover:bg-muted/50 transition-colors cursor-pointer">
+            <TableCell className="font-medium">{invoice.invoice}</TableCell>
+            <TableCell>{invoice.status}</TableCell>
+            <TableCell>{invoice.method}</TableCell>
+            <TableCell className="text-right">{invoice.amount}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+}
+
+export const LoadingState: Story = {
+  render: () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Invoice</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Method</TableHead>
+          <TableHead className="text-right">Amount</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {Array.from({ length: 5 }, (_, i) => (
+          <TableRow key={i}>
+            <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+            <TableCell className="text-right"><Skeleton className="h-4 w-16 ml-auto" /></TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   ),

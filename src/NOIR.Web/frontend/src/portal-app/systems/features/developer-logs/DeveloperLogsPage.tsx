@@ -21,6 +21,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { Badge, PageHeader, Tabs, TabsContent, TabsList, TabsTrigger } from '@uikit'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 import { isPlatformAdmin } from '@/lib/roles'
 import { useAuthContext } from '@/contexts/AuthContext'
@@ -42,7 +43,7 @@ import {
 } from '../../components/developer-logs'
 
 export const DeveloperLogsPage = () => {
-  useTranslation('common')
+  const { t } = useTranslation('common')
   usePageContext('Developer Logs')
 
   const { user } = useAuthContext()
@@ -205,22 +206,22 @@ export const DeveloperLogsPage = () => {
     <div className="flex flex-col h-[calc(100vh-48px)] overflow-hidden animate-in fade-in-0 duration-300">
       <PageHeader
         icon={Terminal}
-        title="Developer Logs"
-        description="Real-time server log streaming and analysis"
+        title={t('developerLogs.title')}
+        description={t('developerLogs.description')}
         action={
           <div className="flex items-center gap-2">
           {isConnected ? (
-            <Badge variant="outline" className="gap-1 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+            <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('green')}`}>
               <Wifi className="h-3 w-3" />
               Connected
             </Badge>
           ) : connectionState === 'connecting' || connectionState === 'reconnecting' ? (
-            <Badge variant="outline" className="gap-1 bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+            <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('yellow')}`}>
               <RefreshCw className="h-3 w-3 animate-spin" />
               {connectionState === 'connecting' ? 'Connecting' : 'Reconnecting'}
             </Badge>
           ) : (
-            <Badge variant="outline" className="gap-1 bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+            <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('red')}`}>
               <WifiOff className="h-3 w-3" />
               Disconnected
             </Badge>

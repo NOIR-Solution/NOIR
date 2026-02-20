@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft,
-  ChevronLeft,
-  ChevronRight,
   Crown,
   Eye,
   Gift,
@@ -33,6 +31,7 @@ import {
   CardTitle,
   EmptyState,
   PageHeader,
+  Pagination,
   Select,
   SelectContent,
   SelectItem,
@@ -333,33 +332,15 @@ export const CustomerDetailPage = () => {
                   </div>
 
                   {ordersTotalPages > 1 && (
-                    <div className="flex items-center justify-between mt-4">
-                      <p className="text-sm text-muted-foreground">
-                        {t('labels.pageOf', { current: ordersCurrentPage, total: ordersTotalPages, defaultValue: `Page ${ordersCurrentPage} of ${ordersTotalPages}` })}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="cursor-pointer"
-                          disabled={ordersCurrentPage <= 1}
-                          onClick={() => handleOrderPageChange(ordersCurrentPage - 1)}
-                          aria-label={t('labels.previousPage', 'Previous page')}
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="cursor-pointer"
-                          disabled={ordersCurrentPage >= ordersTotalPages}
-                          onClick={() => handleOrderPageChange(ordersCurrentPage + 1)}
-                          aria-label={t('labels.nextPage', 'Next page')}
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
+                    <Pagination
+                      currentPage={ordersCurrentPage}
+                      totalPages={ordersTotalPages}
+                      totalItems={ordersResponse?.totalCount ?? 0}
+                      pageSize={orderParams.pageSize || 10}
+                      onPageChange={handleOrderPageChange}
+                      showPageSizeSelector={false}
+                      className="mt-4"
+                    />
                   )}
                 </CardContent>
               </Card>

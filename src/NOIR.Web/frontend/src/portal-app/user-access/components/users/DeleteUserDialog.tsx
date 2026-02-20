@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import {
   AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  Button,
 } from '@uikit'
 
 import { toast } from 'sonner'
@@ -51,38 +52,40 @@ export const DeleteUserDialog = ({ user, open, onOpenChange, onConfirm }: Delete
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="border-destructive/30">
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
-            {user.isLocked
-              ? t('users.unlockTitle', 'Unlock User')
-              : t('users.lockTitle', 'Lock User')}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            {user.isLocked
-              ? t('users.unlockDescription', 'Are you sure you want to unlock "{{email}}"? They will be able to sign in again.', { email: user.email })
-              : t('users.lockDescription', 'Are you sure you want to lock "{{email}}"? They will not be able to sign in until unlocked.', { email: user.email })}
-          </AlertDialogDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+            </div>
+            <div>
+              <AlertDialogTitle>
+                {user.isLocked
+                  ? t('users.unlockTitle', 'Unlock User')
+                  : t('users.lockTitle', 'Lock User')}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {user.isLocked
+                  ? t('users.unlockDescription', 'Are you sure you want to unlock "{{email}}"? They will be able to sign in again.', { email: user.email })
+                  : t('users.lockDescription', 'Are you sure you want to lock "{{email}}"? They will not be able to sign in until unlocked.', { email: user.email })}
+              </AlertDialogDescription>
+            </div>
+          </div>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
+          <AlertDialogCancel disabled={loading} className="cursor-pointer">
             {t('buttons.cancel', 'Cancel')}
-          </Button>
-          <Button
-            variant={user.isLocked ? 'default' : 'destructive'}
+          </AlertDialogCancel>
+          <AlertDialogAction
             onClick={handleConfirm}
             disabled={loading}
+            className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {user.isLocked
               ? t('users.unlock', 'Unlock')
               : t('users.lock', 'Lock')}
-          </Button>
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Key, ChevronDown, ChevronRight, Search, Sparkles, Shield, Check } from 'lucide-react'
+import { Key, ChevronDown, ChevronRight, Loader2, Search, Sparkles, Shield, Check } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -353,7 +353,8 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('buttons.cancel', 'Cancel')}
           </Button>
-          <Button onClick={handleSave} disabled={loading}>
+          <Button onClick={handleSave} disabled={loading} className="cursor-pointer">
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {loading ? t('labels.saving', 'Saving...') : t('buttons.save', 'Save Permissions')}
           </Button>
         </DialogFooter>

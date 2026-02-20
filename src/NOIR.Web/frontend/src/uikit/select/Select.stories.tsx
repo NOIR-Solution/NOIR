@@ -98,6 +98,44 @@ export const Disabled: Story = {
   ),
 }
 
+export const Loading: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <span style={{ fontSize: '14px', fontWeight: 500 }}>Category</span>
+        <Select disabled>
+          <SelectTrigger className="w-[200px]">
+            <div className="flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="animate-spin text-muted-foreground"
+              >
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+              <span className="text-muted-foreground">Loading...</span>
+            </div>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="placeholder">Loading...</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <span style={{ fontSize: '14px', fontWeight: 500 }}>Skeleton variant</span>
+        <div className="h-10 w-[200px] animate-pulse rounded-md bg-muted" />
+      </div>
+    </div>
+  ),
+}
+
 export const WithDisabledItems: Story = {
   render: () => (
     <Select>

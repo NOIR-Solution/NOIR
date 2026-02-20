@@ -11,6 +11,7 @@ import {
   Archive,
 } from 'lucide-react'
 import { Badge, Button, Card } from '@uikit'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 import type { ProductListItem, ProductAttributeDisplay } from '@/types/product'
 import { formatCurrency } from '@/lib/utils/currency'
@@ -103,7 +104,7 @@ export const EnhancedProductCard = ({
           {/* Status Badge */}
           <Badge
             className={`absolute top-3 left-3 ${status.color} border transition-all duration-200 shadow-lg gap-1`}
-            variant="secondary"
+            variant="outline"
           >
             <StatusIcon className="h-3 w-3" />
             {status.label}
@@ -111,7 +112,7 @@ export const EnhancedProductCard = ({
 
           {/* Low Stock Warning */}
           {isLowStock && (
-            <Badge className="absolute top-3 right-3 bg-orange-500/90 text-white border-0 shadow-lg gap-1 backdrop-blur-sm">
+            <Badge variant="outline" className={`absolute top-3 right-3 ${getStatusBadgeClasses('orange')} shadow-lg gap-1 backdrop-blur-sm`}>
               <AlertTriangle className="h-3 w-3" />
               {t('products.lowStock', 'Low Stock')}
             </Badge>

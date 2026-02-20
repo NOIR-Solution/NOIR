@@ -120,7 +120,7 @@ export const PaymentGatewaysTab = () => {
           <Skeleton className="h-4 w-64" />
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2">
             {[1, 2, 3, 4].map(i => (
               <Skeleton key={i} className="h-48 rounded-lg" />
             ))}
@@ -134,7 +134,7 @@ export const PaymentGatewaysTab = () => {
     return (
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader>
-          <CardTitle>{t('paymentGateways.title', 'Payment Gateways')}</CardTitle>
+          <CardTitle className="text-lg">{t('paymentGateways.title', 'Payment Gateways')}</CardTitle>
           <CardDescription>
             {t('paymentGateways.description', 'Configure payment methods for your store')}
           </CardDescription>
@@ -163,7 +163,7 @@ export const PaymentGatewaysTab = () => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{t('paymentGateways.title', 'Payment Gateways')}</CardTitle>
+            <CardTitle className="text-lg">{t('paymentGateways.title', 'Payment Gateways')}</CardTitle>
             <CardDescription>
               {t('paymentGateways.description', 'Configure payment methods for your store')}
             </CardDescription>
@@ -186,7 +186,7 @@ export const PaymentGatewaysTab = () => {
       </CardHeader>
       <CardContent>
         {/* Gateway Cards Grid */}
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2">
           {availableProviders.map(provider => {
             const schema = schemas?.schemas[provider]
             const gateway = getGatewayByProvider(provider)

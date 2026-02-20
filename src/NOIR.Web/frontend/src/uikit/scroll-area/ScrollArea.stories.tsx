@@ -80,3 +80,81 @@ export const LongTextContent: Story = {
     </ScrollArea>
   ),
 }
+
+export const SmallContainer: Story = {
+  render: () => (
+    <ScrollArea className="h-32 w-32 rounded-md border">
+      <div className="p-2">
+        {Array.from({ length: 20 }, (_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-2 py-1 text-xs border-b last:border-b-0"
+          >
+            <span className="font-mono text-muted-foreground">{String(i + 1).padStart(2, '0')}</span>
+            <span>Row {i + 1}</span>
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
+  ),
+}
+
+export const WithStickyHeader: Story = {
+  render: () => (
+    <ScrollArea className="h-[250px] w-[300px] rounded-md border">
+      <div className="sticky top-0 z-10 bg-background border-b px-4 py-2">
+        <h4 className="text-sm font-medium">Team Members</h4>
+      </div>
+      <div className="p-4">
+        {Array.from({ length: 25 }, (_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-3 py-2 border-b last:border-b-0"
+          >
+            <div className="h-8 w-8 rounded-full bg-muted shrink-0" />
+            <div>
+              <p className="text-sm font-medium">User {i + 1}</p>
+              <p className="text-xs text-muted-foreground">user{i + 1}@example.com</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
+  ),
+}
+
+export const BothDirections: Story = {
+  render: () => (
+    <ScrollArea className="h-[200px] w-[300px] rounded-md border">
+      <div className="w-[600px] p-4">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              {['ID', 'Name', 'Email', 'Role', 'Status', 'Created'].map((header) => (
+                <th
+                  key={header}
+                  className="border-b px-4 py-2 text-left text-xs font-medium text-muted-foreground whitespace-nowrap"
+                >
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: 20 }, (_, i) => (
+              <tr key={i}>
+                <td className="border-b px-4 py-2 text-sm whitespace-nowrap">{i + 1}</td>
+                <td className="border-b px-4 py-2 text-sm whitespace-nowrap">User {i + 1}</td>
+                <td className="border-b px-4 py-2 text-sm whitespace-nowrap">user{i + 1}@mail.com</td>
+                <td className="border-b px-4 py-2 text-sm whitespace-nowrap">Member</td>
+                <td className="border-b px-4 py-2 text-sm whitespace-nowrap">Active</td>
+                <td className="border-b px-4 py-2 text-sm whitespace-nowrap">2026-01-{String(i + 1).padStart(2, '0')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <ScrollBar orientation="horizontal" />
+    </ScrollArea>
+  ),
+}
