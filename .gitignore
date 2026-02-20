@@ -310,6 +310,8 @@ test-*.jpeg
 screenshot-*.png
 /*.png
 /*.jpg
+e2e-screenshots/
+screenshots/
 
 # Editor temporary files
 *~
