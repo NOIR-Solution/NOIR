@@ -119,7 +119,7 @@ export const BlogPostsPage = () => {
                 {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-3 flex-wrap">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -131,7 +131,7 @@ export const BlogPostsPage = () => {
                 />
               </div>
               <Select onValueChange={handleStatusChange} defaultValue="all">
-                <SelectTrigger className="w-32 cursor-pointer" aria-label={t('blog.filterByStatus')}>
+                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('blog.filterByStatus')}>
                   <SelectValue placeholder={t('labels.status')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -143,7 +143,7 @@ export const BlogPostsPage = () => {
                 </SelectContent>
               </Select>
               <Select onValueChange={handleCategoryChange} defaultValue="all">
-                <SelectTrigger className="w-36 cursor-pointer" aria-label={t('blog.filterByCategory')}>
+                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('blog.filterByCategory')}>
                   <SelectValue placeholder={t('labels.category')} />
                 </SelectTrigger>
                 <SelectContent>

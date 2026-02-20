@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import {
   Calendar,
   Eye,
-  Filter,
   Search,
   ShoppingCart,
   X,
@@ -116,8 +115,7 @@ export const OrdersPage = () => {
             <div className="flex items-center gap-3">
               {/* Status Filter */}
               <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-[150px] cursor-pointer">
-                  <Filter className="h-4 w-4 mr-2" />
+                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('orders.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder={t('orders.filterByStatus', 'Filter status')} />
                 </SelectTrigger>
                 <SelectContent>

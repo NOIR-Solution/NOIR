@@ -19,15 +19,9 @@ import {
   DollarSign,
   ShoppingCart,
   TrendingUp,
-  Package,
-  AlertTriangle,
   ArrowUpRight,
   ArrowDownRight,
   Eye,
-  ExternalLink,
-  BookOpen,
-  Cpu,
-  User,
 } from 'lucide-react'
 import { useDashboardMetricsQuery } from '@/portal-app/dashboard/queries'
 
@@ -385,258 +379,70 @@ export const DashboardPage = () => {
         )}
       </div>
 
-      {/* ── Row 3: Recent Orders (60%) + Quick Links / Activity (40%) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Recent Orders */}
-        <Card className="lg:col-span-3 shadow-sm hover:shadow-lg transition-all duration-300 border-border/50">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg">{t('dashboard.recentOrders', 'Recent Orders')}</CardTitle>
-                <CardDescription>{t('dashboard.latestOrderActivity', 'Latest order activity')}</CardDescription>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="cursor-pointer text-sm text-primary hover:underline flex items-center gap-1 h-auto p-0"
-                onClick={() => navigate('/portal/ecommerce/orders')}
-              >
-                {t('dashboard.viewAll', 'View all')}
-                <Eye className="h-3 w-3" />
-              </Button>
+      {/* ── Row 3: Recent Orders (full width) ── */}
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300 border-border/50">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg">{t('dashboard.recentOrders', 'Recent Orders')}</CardTitle>
+              <CardDescription>{t('dashboard.latestOrderActivity', 'Latest order activity')}</CardDescription>
             </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-14 w-full rounded-lg" />
-                ))}
-              </div>
-            ) : metrics?.recentOrders.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                {t('dashboard.noRecentOrders', 'No recent orders')}
-              </p>
-            ) : (
-              <div className="rounded-lg border border-border/50 overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b bg-muted/40">
-                      <th className="text-left font-medium text-muted-foreground px-4 py-2.5">{t('orders.orderNumber', 'Order #')}</th>
-                      <th className="text-left font-medium text-muted-foreground px-4 py-2.5">{t('orders.customer', 'Customer')}</th>
-                      <th className="text-right font-medium text-muted-foreground px-4 py-2.5">{t('orders.total', 'Total')}</th>
-                      <th className="text-center font-medium text-muted-foreground px-4 py-2.5">{t('labels.status', 'Status')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {metrics?.recentOrders.map((order) => (
-                      <tr
-                        key={order.orderId}
-                        className="border-b last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/portal/ecommerce/orders/${order.orderId}`)}
-                      >
-                        <td className="px-4 py-3 font-mono text-sm font-medium">{order.orderNumber}</td>
-                        <td className="px-4 py-3 text-muted-foreground truncate max-w-[180px]">{order.customerEmail}</td>
-                        <td className="px-4 py-3 text-right font-mono font-medium tabular-nums">{formatCurrency(order.grandTotal)}</td>
-                        <td className="px-4 py-3 text-center">
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                            {t(`orders.status.${order.status.toLowerCase()}`, order.status)}
-                          </Badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Quick Links */}
-        <Card className="lg:col-span-2 shadow-sm hover:shadow-lg transition-all duration-300 border-border/50">
-          <CardHeader>
-            <CardTitle className="text-lg">{t('dashboard.quickLinks', 'Quick Links')}</CardTitle>
-            <CardDescription>{t('dashboard.quickLinksDescription', 'Useful tools and resources')}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <a
-              href="/api/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-between rounded-lg border border-border p-3 hover:bg-accent hover:border-blue-600/30 transition-colors cursor-pointer"
+            <Button
+              variant="ghost"
+              size="sm"
+              className="cursor-pointer text-sm text-primary hover:underline flex items-center gap-1 h-auto p-0"
+              onClick={() => navigate('/portal/ecommerce/orders')}
             >
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600/10">
-                  <BookOpen className="h-4 w-4 text-blue-600" />
-                </div>
-                <span className="text-sm font-medium text-foreground group-hover:text-blue-600 transition-colors">{t('dashboard.apiDocs', 'API Documentation')}</span>
-              </div>
-              <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
-            </a>
-            <a
-              href="/hangfire"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-between rounded-lg border border-border p-3 hover:bg-accent hover:border-cyan-600/30 transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-600/10">
-                  <Cpu className="h-4 w-4 text-cyan-600" />
-                </div>
-                <span className="text-sm font-medium text-foreground group-hover:text-cyan-600 transition-colors">{t('dashboard.hangfire', 'Background Jobs')}</span>
-              </div>
-              <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-cyan-600 transition-colors" />
-            </a>
-            <div className="rounded-lg border border-border p-3">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-600/10">
-                  <User className="h-4 w-4 text-teal-600" />
-                </div>
-                <p className="text-sm font-medium text-foreground">{t('dashboard.yourProfile', 'Your Profile')}</p>
-              </div>
-              <div className="space-y-1 text-sm pl-11">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('profile.email', 'Email')}:</span>
-                  <span className="font-medium text-foreground">{user?.email}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('profile.tenant', 'Tenant')}:</span>
-                  <span className="font-medium text-foreground">{user?.tenantId ?? t('profile.platform', 'Platform')}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t('profile.roles', 'Roles')}:</span>
-                  <span className="font-medium text-foreground">{user?.roles?.join(', ') || 'None'}</span>
-                </div>
-              </div>
+              {t('dashboard.viewAll', 'View all')}
+              <Eye className="h-3 w-3" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-14 w-full rounded-lg" />
+              ))}
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* ── Row 4: Top Products (50%) + Low Stock Alerts (50%) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Top Selling Products */}
-        <Card className="shadow-sm hover:shadow-lg transition-all duration-300 border-border/50">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg">{t('dashboard.topProducts', 'Top Products')}</CardTitle>
-                <CardDescription>{t('dashboard.bestSellingItems', 'Best selling items')}</CardDescription>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="cursor-pointer text-sm text-primary hover:underline flex items-center gap-1 h-auto p-0"
-                onClick={() => navigate('/portal/ecommerce/products')}
-              >
-                {t('dashboard.viewAll', 'View all')}
-                <Eye className="h-3 w-3" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-12 w-full rounded-lg" />
-                ))}
-              </div>
-            ) : metrics?.topSellingProducts.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                {t('dashboard.noTopProducts', 'No sales data yet')}
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {metrics?.topSellingProducts.map((product, index) => (
-                  <div
-                    key={product.productId}
-                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center justify-center w-7 h-7 rounded-full bg-muted text-xs font-bold text-muted-foreground">
-                      {index + 1}
-                    </div>
-                    {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.productName} className="h-8 w-8 rounded-md object-cover" />
-                    ) : (
-                      <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
-                        <Package className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                    )}
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <span className="text-sm font-medium truncate">{product.productName}</span>
-                      <span className="text-xs text-muted-foreground">{product.totalQuantitySold} {t('dashboard.sold', 'sold')}</span>
-                    </div>
-                    <span className="text-sm font-medium font-mono tabular-nums">{formatVndAbbreviated(product.totalRevenue)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Low Stock Products */}
-        <Card className="shadow-sm hover:shadow-lg transition-all duration-300 border-border/50">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-amber-500" />
-                  {t('dashboard.lowStock', 'Low Stock')}
-                </CardTitle>
-                <CardDescription>{t('dashboard.lowStockDescription', 'Products needing replenishment')}</CardDescription>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="cursor-pointer text-sm text-primary hover:underline flex items-center gap-1 h-auto p-0"
-                onClick={() => navigate('/portal/ecommerce/inventory')}
-              >
-                {t('dashboard.viewAll', 'View all')}
-                <Eye className="h-3 w-3" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-12 w-full rounded-lg" />
-                ))}
-              </div>
-            ) : metrics?.lowStockProducts.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                {t('dashboard.noLowStock', 'All products are well stocked')}
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {metrics?.lowStockProducts.map((product) => (
-                  <div
-                    key={`${product.productId}-${product.variantId}`}
-                    className="flex items-center justify-between p-2.5 rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex flex-col min-w-0 flex-1 mr-3">
-                      <span className="text-sm font-medium truncate">{product.productName}</span>
-                      <span className="text-xs text-muted-foreground truncate">
-                        {product.variantName}
-                        {product.sku && ` (${product.sku})`}
-                      </span>
-                    </div>
-                    <Badge
-                      variant={product.stockQuantity === 0 ? 'destructive' : 'secondary'}
-                      className={product.stockQuantity === 0
-                        ? ''
-                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
-                      }
+          ) : metrics?.recentOrders.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">
+              {t('dashboard.noRecentOrders', 'No recent orders')}
+            </p>
+          ) : (
+            <div className="rounded-lg border border-border/50 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/40">
+                    <th className="text-left font-medium text-muted-foreground px-4 py-2.5">{t('orders.orderNumber', 'Order #')}</th>
+                    <th className="text-left font-medium text-muted-foreground px-4 py-2.5">{t('orders.customer', 'Customer')}</th>
+                    <th className="text-right font-medium text-muted-foreground px-4 py-2.5">{t('orders.total', 'Total')}</th>
+                    <th className="text-center font-medium text-muted-foreground px-4 py-2.5">{t('labels.status', 'Status')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {metrics?.recentOrders.map((order) => (
+                    <tr
+                      key={order.orderId}
+                      className="border-b last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/portal/ecommerce/orders/${order.orderId}`)}
                     >
-                      {product.stockQuantity} {t('dashboard.left', 'left')}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                      <td className="px-4 py-3 font-mono text-sm font-medium">{order.orderNumber}</td>
+                      <td className="px-4 py-3 text-muted-foreground truncate max-w-[180px]">{order.customerEmail}</td>
+                      <td className="px-4 py-3 text-right font-mono font-medium tabular-nums">{formatCurrency(order.grandTotal)}</td>
+                      <td className="px-4 py-3 text-center">
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                          {t(`orders.status.${order.status.toLowerCase()}`, order.status)}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -1,7 +1,6 @@
 import { useState, useDeferredValue, useMemo, useEffect, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  Filter,
   MoreHorizontal,
   Pencil,
   Percent,
@@ -213,8 +212,7 @@ export const PromotionsPage = () => {
             <div className="flex items-center gap-3 flex-wrap">
               {/* Status Filter */}
               <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-[150px] cursor-pointer">
-                  <Filter className="h-4 w-4 mr-2" />
+                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('promotions.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder={t('promotions.filterByStatus', 'Filter status')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -228,8 +226,7 @@ export const PromotionsPage = () => {
               </Select>
               {/* Type Filter */}
               <Select value={typeFilter} onValueChange={handleTypeFilter}>
-                <SelectTrigger className="w-[160px] cursor-pointer">
-                  <Filter className="h-4 w-4 mr-2" />
+                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('promotions.filterByType', 'Filter by type')}>
                   <SelectValue placeholder={t('promotions.filterByType', 'Filter type')} />
                 </SelectTrigger>
                 <SelectContent>

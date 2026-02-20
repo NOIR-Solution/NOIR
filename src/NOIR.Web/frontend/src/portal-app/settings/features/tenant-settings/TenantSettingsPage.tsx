@@ -50,7 +50,7 @@ export const TenantSettingsPage = () => {
   }
 
   return (
-    <div className="container max-w-4xl py-6 space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       <PageHeader
         icon={Settings}
         title={t('tenantSettings.title')}

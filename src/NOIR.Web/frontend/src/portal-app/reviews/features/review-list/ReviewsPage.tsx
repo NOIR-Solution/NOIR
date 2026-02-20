@@ -289,8 +289,7 @@ export const ReviewsPage = () => {
               <div className="flex items-center gap-3">
                 {/* Rating Filter */}
                 <Select value={ratingFilter} onValueChange={handleRatingFilter}>
-                  <SelectTrigger className="w-[140px] cursor-pointer">
-                    <Star className="h-4 w-4 mr-2" />
+                  <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('reviews.filterByRating', 'Filter rating')}>
                     <SelectValue placeholder={t('reviews.filterByRating', 'Filter rating')} />
                   </SelectTrigger>
                   <SelectContent>

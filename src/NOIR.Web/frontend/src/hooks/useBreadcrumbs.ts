@@ -32,10 +32,74 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
         { label: 'E-commerce' },
         { label: 'Categories' },
       ],
+      '/portal/ecommerce/brands': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Brands' },
+      ],
+      '/portal/ecommerce/attributes': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Attributes' },
+      ],
+      '/portal/ecommerce/orders': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Orders' },
+      ],
+      '/portal/ecommerce/inventory': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Inventory' },
+      ],
+      '/portal/ecommerce/orders/tracking': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Orders', href: '/portal/ecommerce/orders' },
+        { label: 'Shipment Tracking' },
+      ],
+      '/portal/ecommerce/customers': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Customers' },
+      ],
+      '/portal/ecommerce/customer-groups': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Customer Groups' },
+      ],
+      '/portal/ecommerce/reviews': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Reviews' },
+      ],
+      '/portal/ecommerce/wishlists': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Wishlists' },
+      ],
+      '/portal/ecommerce/wishlists/manage': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Wishlists', href: '/portal/ecommerce/wishlists' },
+        { label: 'Manage' },
+      ],
       '/portal/ecommerce/shipping': [
         { label: 'Portal', href: '/portal' },
         { label: 'E-commerce' },
         { label: 'Shipping' },
+      ],
+
+      // Marketing
+      '/portal/marketing/promotions': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'Marketing' },
+        { label: 'Promotions' },
+      ],
+      '/portal/marketing/reports': [
+        { label: 'Portal', href: '/portal' },
+        { label: 'Marketing' },
+        { label: 'Reports' },
       ],
 
       // Blog
@@ -139,6 +203,26 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
         { label: 'E-commerce' },
         { label: 'Products', href: '/portal/ecommerce/products' },
         { label: 'Edit Product' },
+      ]
+    }
+
+    // Order detail
+    if (path.match(/^\/portal\/ecommerce\/orders\/[^/]+$/)) {
+      return [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Orders', href: '/portal/ecommerce/orders' },
+        { label: 'Order Details' },
+      ]
+    }
+
+    // Customer detail
+    if (path.match(/^\/portal\/ecommerce\/customers\/[^/]+$/)) {
+      return [
+        { label: 'Portal', href: '/portal' },
+        { label: 'E-commerce' },
+        { label: 'Customers', href: '/portal/ecommerce/customers' },
+        { label: 'Customer Details' },
       ]
     }
 

@@ -9,6 +9,7 @@ import {
   CardAction,
 } from './Card'
 import { Skeleton } from '../skeleton/Skeleton'
+import { Users, TrendingUp, UserCheck, Crown } from 'lucide-react'
 
 const meta = {
   title: 'UIKit/Card',
@@ -228,4 +229,42 @@ export const Loading: Story = {
       </CardContent>
     </Card>
   ),
+}
+
+/**
+ * Stat cards — the standard pattern used across Dashboard, Products, and Customers pages.
+ * Each card has a colored icon container, title, and bold value.
+ */
+export const StatCards: Story = {
+  render: () => {
+    const stats = [
+      { title: 'Total Customers', value: '1,234', icon: Users, iconBg: 'bg-primary/10 border-primary/20', iconColor: 'text-primary' },
+      { title: 'Active Customers', value: '892', icon: UserCheck, iconBg: 'bg-green-500/10 border-green-500/20', iconColor: 'text-green-500' },
+      { title: 'VIP Customers', value: '56', icon: Crown, iconBg: 'bg-purple-500/10 border-purple-500/20', iconColor: 'text-purple-500' },
+      { title: 'Growth', value: '+12%', icon: TrendingUp, iconBg: 'bg-amber-500/10 border-amber-500/20', iconColor: 'text-amber-500' },
+    ]
+
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', maxWidth: 900 }}>
+        {stats.map((stat) => {
+          const Icon = stat.icon
+          return (
+            <Card key={stat.title} className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-4">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div className={`p-2 rounded-xl border ${stat.iconBg}`}>
+                    <Icon className={`h-5 w-5 ${stat.iconColor}`} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">{stat.title}</p>
+                    <p className="text-2xl font-bold">{stat.value}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </div>
+    )
+  },
 }

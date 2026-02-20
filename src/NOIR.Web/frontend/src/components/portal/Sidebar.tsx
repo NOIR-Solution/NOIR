@@ -95,12 +95,16 @@ interface NavSection {
   items: NavItem[]
 }
 
-// Task-based navigation structure following standard admin dashboard patterns:
-// 1. Dashboard - Overview (always visible, no section label)
-// 2. Content - Business content creation (Blog)
-// 3. Users & Access - Who does what (Users, Roles, Tenants)
-// 4. Settings - System configuration (Platform Settings has SMTP/Email/Legal tabs, Tenant Settings has Branding/Contact/Regional/SMTP/Email/Legal tabs)
-// 5. System - Monitoring and admin tools
+// Navigation ordered by user workflow priority:
+// 1. Dashboard - Overview (always first)
+// 2. Marketing - Promotions and analytics (high visibility)
+// 3. Orders - Daily order processing & fulfillment
+// 4. Customers - Customer management & engagement
+// 5. Catalog - Product management (periodic setup)
+// 6. Content - Blog & content creation (periodic)
+// 7. Users & Access - Who does what (admin)
+// 8. Settings - System configuration (admin)
+// 9. System - Monitoring and admin tools (admin)
 const navSections: NavSection[] = [
   {
     // Primary - Dashboard (no section label)
@@ -109,16 +113,26 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    // E-commerce - Product management
-    labelKey: 'nav.ecommerce',
+    // Marketing - Promotions and analytics
+    labelKey: 'nav.marketing',
     items: [
-      { titleKey: 'ecommerce.products', icon: Package, path: '/portal/ecommerce/products', permission: Permissions.ProductsRead },
-      { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead },
-      { titleKey: 'ecommerce.brands', icon: Award, path: '/portal/ecommerce/brands', permission: Permissions.BrandsRead },
-      { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead },
+      { titleKey: 'ecommerce.reports', icon: BarChart3, path: '/portal/marketing/reports', permission: Permissions.ReportsRead },
+      { titleKey: 'ecommerce.promotions', icon: Percent, path: '/portal/marketing/promotions', permission: Permissions.PromotionsRead },
+    ],
+  },
+  {
+    // Orders - Daily order processing & fulfillment
+    labelKey: 'nav.orders',
+    items: [
       { titleKey: 'ecommerce.orders', icon: ShoppingCart, path: '/portal/ecommerce/orders', permission: Permissions.OrdersRead },
       { titleKey: 'ecommerce.shipmentTracking', icon: Truck, path: '/portal/ecommerce/orders/tracking', permission: Permissions.OrdersRead },
       { titleKey: 'ecommerce.inventory', icon: Warehouse, path: '/portal/ecommerce/inventory', permission: Permissions.InventoryRead },
+    ],
+  },
+  {
+    // Customers - Customer management & engagement
+    labelKey: 'nav.customers',
+    items: [
       { titleKey: 'ecommerce.customers', icon: UserCheck, path: '/portal/ecommerce/customers', permission: Permissions.CustomersRead },
       { titleKey: 'ecommerce.customerGroups', icon: UsersRound, path: '/portal/ecommerce/customer-groups', permission: Permissions.CustomerGroupsRead },
       { titleKey: 'ecommerce.reviews', icon: Star, path: '/portal/ecommerce/reviews', permission: Permissions.ReviewsRead },
@@ -126,15 +140,17 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    // Marketing - Promotions and campaigns
-    labelKey: 'nav.marketing',
+    // Catalog - Product management
+    labelKey: 'nav.catalog',
     items: [
-      { titleKey: 'ecommerce.promotions', icon: Percent, path: '/portal/marketing/promotions', permission: Permissions.PromotionsRead },
-      { titleKey: 'ecommerce.reports', icon: BarChart3, path: '/portal/marketing/reports', permission: Permissions.ReportsRead },
+      { titleKey: 'ecommerce.products', icon: Package, path: '/portal/ecommerce/products', permission: Permissions.ProductsRead },
+      { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead },
+      { titleKey: 'ecommerce.brands', icon: Award, path: '/portal/ecommerce/brands', permission: Permissions.BrandsRead },
+      { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead },
     ],
   },
   {
-    // Content - Business content creation
+    // Content - Blog & content creation
     labelKey: 'nav.content',
     items: [
       { titleKey: 'blog.posts', icon: FileText, path: '/portal/blog/posts', permission: Permissions.BlogPostsRead },
@@ -169,14 +185,26 @@ const navSections: NavSection[] = [
   },
 ]
 
+// Collect all nav item paths for longest-match logic
+const allNavPaths = navSections.flatMap(section => section.items.map(item => item.path))
+
 /**
- * Utility to check if a path is active
+ * Utility to check if a path is active using longest-match logic.
+ * Prevents parent routes (e.g. /orders) from showing as active
+ * when a more specific child route (e.g. /orders/tracking) matches.
  */
 const isActivePath = (currentPathname: string, itemPath: string): boolean => {
   if (itemPath === '/portal') {
     return currentPathname === '/portal'
   }
-  return currentPathname.startsWith(itemPath)
+  if (!currentPathname.startsWith(itemPath)) return false
+  // If a more specific nav path also matches, this one is not active
+  const hasMoreSpecificMatch = allNavPaths.some(
+    otherPath => otherPath !== itemPath &&
+    otherPath.length > itemPath.length &&
+    currentPathname.startsWith(otherPath)
+  )
+  return !hasMoreSpecificMatch
 }
 
 // User data type
@@ -503,8 +531,8 @@ const NotificationSidebarItem = ({ isExpanded, t, onItemClick }: { isExpanded: b
       className={cn(
         'w-full justify-start relative overflow-hidden transition-all duration-200',
         isExpanded ? 'px-3' : 'px-0 justify-center',
-        isActive && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
-        !isActive && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+        isActive && 'bg-sidebar-primary/10 text-sidebar-primary font-medium',
+        !isActive && 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
       )}
     >
       {isActive && (
@@ -730,8 +758,8 @@ const SidebarContent = ({
         className={cn(
           'w-full justify-start relative overflow-hidden transition-all duration-200',
           isExpanded ? 'px-3' : 'px-0 justify-center',
-          active && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
-          !active && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+          active && 'bg-sidebar-primary/10 text-sidebar-primary font-medium',
+          !active && 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
         )}
       >
         <ViewTransitionLink to={item.path} onClick={() => onItemClick?.(item.path)}>
@@ -961,8 +989,8 @@ export const MobileSidebarTrigger = ({
         data-active={active}
         className={cn(
           'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
-          active && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
-          !active && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+          active && 'bg-sidebar-primary/10 text-sidebar-primary font-medium',
+          !active && 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
         )}
       >
         <ViewTransitionLink to={item.path} onClick={() => onOpenChange(false)}>
@@ -1040,8 +1068,8 @@ export const MobileSidebarTrigger = ({
                   asChild
                   className={cn(
                     'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
-                    notificationActive && 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary hover:from-sidebar-primary/30 hover:to-sidebar-primary/20',
-                    !notificationActive && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                    notificationActive && 'bg-sidebar-primary/10 text-sidebar-primary font-medium',
+                    !notificationActive && 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                   )}
                 >
                   <ViewTransitionLink to="/portal/notifications" onClick={() => onOpenChange(false)}>

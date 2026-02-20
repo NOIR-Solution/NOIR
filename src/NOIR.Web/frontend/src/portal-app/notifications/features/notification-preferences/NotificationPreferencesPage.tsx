@@ -25,7 +25,7 @@ import { getPreferences, updatePreferences } from '@/services/notifications'
 import type { NotificationPreference, NotificationCategory, EmailFrequency } from '@/types'
 import { cn } from '@/lib/utils'
 
-const categoryConfig: Record<NotificationCategory, { icon: typeof Bell }> = {
+const categoryConfig: Record<string, { icon: typeof Bell }> = {
   system: { icon: Settings2 },
   userAction: { icon: Users },
   workflow: { icon: Workflow },
@@ -39,6 +39,9 @@ const emailFrequencyOptions: { value: EmailFrequency }[] = [
   { value: 'daily' },
   { value: 'weekly' },
 ]
+
+/** Normalize PascalCase API enum to camelCase locale key (e.g. "UserAction" → "userAction") */
+const toCamelCase = (s: string) => s.charAt(0).toLowerCase() + s.slice(1)
 
 export const NotificationPreferencesPage = () => {
   const { t } = useTranslation('common')
@@ -184,7 +187,8 @@ export const NotificationPreferencesPage = () => {
       {/* Preferences Grid */}
       <div className="space-y-4">
         {preferences.map((pref) => {
-          const config = categoryConfig[pref.category] || categoryConfig.system
+          const categoryKey = toCamelCase(pref.category)
+          const config = categoryConfig[categoryKey] || categoryConfig.system
           const Icon = config.icon
 
           return (
@@ -195,8 +199,8 @@ export const NotificationPreferencesPage = () => {
                     <Icon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">{t(`notifications.categories.${pref.category}`)}</CardTitle>
-                    <CardDescription className="text-sm">{t(`notifications.categories.${pref.category}Description`)}</CardDescription>
+                    <CardTitle className="text-base">{t(`notifications.categories.${categoryKey}`)}</CardTitle>
+                    <CardDescription className="text-sm">{t(`notifications.categories.${categoryKey}Description`)}</CardDescription>
                   </div>
                 </div>
               </CardHeader>

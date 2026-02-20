@@ -727,7 +727,7 @@ export const BlogPostEditPage = () => {
                   <div className="space-y-3">
                     {uploadingImage ? (
                       <div className="border-2 border-dashed border-primary/50 rounded-lg p-8 text-center bg-primary/5">
-                        <Loader2 className="h-10 w-10 mx-auto text-primary mb-3 animate-spin" />
+                        <Loader2 className="h-8 w-8 mx-auto text-primary mb-2 animate-spin" />
                         <p className="text-sm font-medium text-primary">{t('blog.uploadingImage')}</p>
                         <p className="text-xs text-muted-foreground mt-1">{t('blog.processingImage')}</p>
                       </div>
@@ -756,11 +756,11 @@ export const BlogPostEditPage = () => {
                       </div>
                     ) : (
                       <div
-                        className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                        className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/70 transition-colors bg-muted/50"
                         onClick={() => fileInputRef.current?.click()}
                       >
-                        <ImageIcon className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                        <p className="text-sm font-medium">{t('blog.clickToUpload')}</p>
+                        <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                        <p className="text-sm font-medium text-muted-foreground">{t('blog.clickToUpload')}</p>
                         <p className="text-xs text-muted-foreground mt-1">{t('blog.imageFormats')}</p>
                       </div>
                     )}

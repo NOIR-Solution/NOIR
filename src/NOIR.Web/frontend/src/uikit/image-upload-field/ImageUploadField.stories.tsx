@@ -5,6 +5,7 @@ import { ImageUploadField } from './ImageUploadField'
 function ImageUploadFieldDemo(props: {
   initialValue?: string
   placeholder?: string
+  hint?: string
   disabled?: boolean
   aspectClass?: string
   label?: string
@@ -17,6 +18,7 @@ function ImageUploadFieldDemo(props: {
         value={value}
         onChange={setValue}
         placeholder={props.placeholder}
+        hint={props.hint}
         disabled={props.disabled}
         aspectClass={props.aspectClass}
         label={props.label}
@@ -78,5 +80,15 @@ export const DisabledWithImage: Story = {
 export const SquareAspect: Story = {
   render: () => (
     <ImageUploadFieldDemo label="Avatar" aspectClass="aspect-square" placeholder="Upload avatar" />
+  ),
+}
+
+export const WithHint: Story = {
+  render: () => (
+    <ImageUploadFieldDemo
+      label="Featured Image"
+      placeholder="Click to upload"
+      hint="JPG, PNG, GIF, WebP up to 10MB"
+    />
   ),
 }

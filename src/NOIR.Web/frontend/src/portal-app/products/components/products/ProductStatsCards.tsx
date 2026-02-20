@@ -1,173 +1,9 @@
-import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card } from '@uikit'
-import { TrendingUp, TrendingDown, Info, Check } from 'lucide-react'
-import { PRODUCT_STAT_CARDS_CONFIG, ANIMATION_DURATIONS } from '@/lib/constants/product'
+import { Card, CardContent } from '@uikit'
+import { Check, Info } from 'lucide-react'
+import { PRODUCT_STAT_CARDS_CONFIG } from '@/lib/constants/product'
 import type { ProductStatus } from '@/types/product'
 import { cn } from '@/lib/utils'
-
-interface StatCardProps {
-  title: string
-  value: number
-  trend?: number
-  trendDirection?: 'up' | 'down'
-  icon: React.ReactNode
-  gradientFrom: string
-  gradientTo: string
-  delay?: number
-  isActive?: boolean
-  onClick?: () => void
-}
-
-const AnimatedCounter: React.FC<{ value: number; duration?: number }> = ({
-  value,
-  duration = ANIMATION_DURATIONS.counterAnimation
-}) => {
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    let startTime: number | null = null
-    let animationId: number | null = null
-    const startValue = 0
-    const endValue = value
-
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime
-      const progress = Math.min((currentTime - startTime) / duration, 1)
-
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4)
-      const currentCount = Math.floor(startValue + (endValue - startValue) * easeOutQuart)
-
-      setCount(currentCount)
-
-      if (progress < 1) {
-        animationId = requestAnimationFrame(animate)
-      } else {
-        setCount(endValue)
-      }
-    }
-
-    animationId = requestAnimationFrame(animate)
-
-    // Cleanup: cancel animation on unmount to prevent memory leaks
-    return () => {
-      if (animationId !== null) {
-        cancelAnimationFrame(animationId)
-      }
-    }
-  }, [value, duration])
-
-  return <span>{count.toLocaleString()}</span>
-}
-
-const StatCard: React.FC<StatCardProps> = ({
-  title,
-  value,
-  trend,
-  trendDirection,
-  icon,
-  gradientFrom,
-  gradientTo,
-  delay = 0,
-  isActive = false,
-  onClick,
-}) => {
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), delay)
-    return () => clearTimeout(timer)
-  }, [delay])
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-      e.preventDefault()
-      onClick()
-    }
-  }
-
-  return (
-    <Card
-      className={cn(
-        `relative overflow-hidden border-border/40 backdrop-blur-xl bg-background/40 shadow-sm transition-all duration-300`,
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4',
-        onClick && 'cursor-pointer hover:shadow-lg hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-        isActive && 'ring-2 ring-primary ring-offset-2 ring-offset-background'
-      )}
-      style={{
-        background: `linear-gradient(135deg, ${gradientFrom}15 0%, ${gradientTo}10 100%)`,
-      }}
-      onClick={onClick}
-      onKeyDown={handleKeyDown}
-      tabIndex={onClick ? 0 : undefined}
-      role={onClick ? 'button' : undefined}
-      aria-pressed={onClick ? isActive : undefined}
-      aria-label={onClick ? `Filter by ${title}` : undefined}
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
-      <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-20"
-        style={{ background: gradientFrom }} />
-
-      {/* Active indicator */}
-      {isActive && (
-        <div className="absolute top-2 right-2 p-1 rounded-full bg-primary text-primary-foreground">
-          <Check className="h-3 w-3" />
-        </div>
-      )}
-
-      <div className="relative p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div
-              className="p-3 rounded-xl backdrop-blur-sm shadow-lg"
-              style={{
-                background: `linear-gradient(135deg, ${gradientFrom}20, ${gradientTo}20)`,
-              }}
-            >
-              <div style={{ color: gradientFrom }}>
-                {icon}
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            </div>
-          </div>
-          {trend !== undefined && trendDirection && (
-            <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
-              trendDirection === 'up'
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                : 'bg-red-500/10 text-red-600 dark:text-red-400'
-            }`}>
-              {trendDirection === 'up' ? (
-                <TrendingUp className="w-3 h-3" />
-              ) : (
-                <TrendingDown className="w-3 h-3" />
-              )}
-              <span>{Math.abs(trend)}%</span>
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <div className="text-4xl font-bold text-foreground">
-            <AnimatedCounter value={value} />
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-1 flex-1 bg-muted rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-1000 ease-out"
-                style={{
-                  width: isVisible ? '100%' : '0%',
-                  background: `linear-gradient(90deg, ${gradientFrom}, ${gradientTo})`,
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Card>
-  )
-}
 
 interface ProductStats {
   total: number
@@ -207,12 +43,14 @@ export const ProductStatsCards = ({
     const filterStatus = statKeyToStatus[statKey]
 
     return {
-      ...config,
-      icon: <Icon className="w-5 h-5" />,
+      key: config.key,
+      title: config.title,
+      iconBg: config.iconBg,
+      iconColor: config.iconColor,
+      icon: <Icon className="h-5 w-5" />,
       value: stats[statKey],
       isActive: activeFilter === filterStatus && filterStatus !== null,
       onClick: onFilterChange ? () => {
-        // Toggle filter: if already active, clear it; otherwise set it
         if (activeFilter === filterStatus) {
           onFilterChange(null)
         } else {
@@ -222,11 +60,50 @@ export const ProductStatsCards = ({
     }
   })
 
+  const handleKeyDown = (e: React.KeyboardEvent, onClick?: () => void) => {
+    if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault()
+      onClick()
+    }
+  }
+
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {cards.map(({ key, ...cardProps }) => (
-          <StatCard key={key} {...cardProps} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {cards.map((card) => (
+          <Card
+            key={card.key}
+            className={cn(
+              'shadow-sm hover:shadow-lg transition-all duration-300 relative',
+              card.onClick && 'cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+              card.isActive && 'ring-2 ring-primary ring-offset-2 ring-offset-background'
+            )}
+            onClick={card.onClick}
+            onKeyDown={(e) => handleKeyDown(e, card.onClick)}
+            tabIndex={card.onClick ? 0 : undefined}
+            role={card.onClick ? 'button' : undefined}
+            aria-pressed={card.onClick ? card.isActive : undefined}
+            aria-label={card.onClick ? `Filter by ${card.title}` : undefined}
+          >
+            {card.isActive && (
+              <div className="absolute top-2 right-2 p-1 rounded-full bg-primary text-primary-foreground">
+                <Check className="h-3 w-3" />
+              </div>
+            )}
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={cn('p-2 rounded-xl border', card.iconBg)}>
+                  <div className={card.iconColor}>
+                    {card.icon}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">{card.title}</p>
+                  <p className="text-2xl font-bold">{card.value.toLocaleString()}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
       {onFilterChange && (

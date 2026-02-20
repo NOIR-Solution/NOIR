@@ -21,6 +21,8 @@ interface ImageUploadFieldProps {
   folder?: MediaFolder
   /** Placeholder text when no image is set */
   placeholder?: string
+  /** Hint text below placeholder (e.g. file type / size info) */
+  hint?: string
   /** Whether the field is disabled */
   disabled?: boolean
   /** Preview aspect ratio class (default: aspect-video for logos) */
@@ -38,6 +40,7 @@ export const ImageUploadField = ({
   onChange,
   folder = 'branding',
   placeholder = 'Click to upload',
+  hint,
   disabled = false,
   aspectClass = 'aspect-video',
   accept = 'image/jpeg,image/png,image/gif,image/webp,image/x-icon,image/svg+xml',
@@ -142,7 +145,8 @@ export const ImageUploadField = ({
         ) : (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <ImageIcon className="h-8 w-8" />
-            <span className="text-xs">{placeholder}</span>
+            <span className="text-sm font-medium">{placeholder}</span>
+            {hint && <span className="text-xs">{hint}</span>}
           </div>
         )}
       </div>

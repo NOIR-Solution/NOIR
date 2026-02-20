@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
   Eye,
-  Filter,
   MoreHorizontal,
   Pencil,
   Plus,
@@ -12,7 +11,6 @@ import {
   Users,
   X,
   Crown,
-  Star,
   TrendingUp,
   UserCheck,
 } from 'lucide-react'
@@ -254,8 +252,7 @@ export const CustomersPage = () => {
             <div className="flex items-center gap-3 flex-wrap">
               {/* Segment Filter */}
               <Select value={segmentFilter} onValueChange={handleSegmentFilter}>
-                <SelectTrigger className="w-[140px] cursor-pointer">
-                  <Filter className="h-4 w-4 mr-2" />
+                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('customers.filterBySegment', 'Filter by segment')}>
                   <SelectValue placeholder={t('customers.filterBySegment', 'Segment')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -269,8 +266,7 @@ export const CustomersPage = () => {
               </Select>
               {/* Tier Filter */}
               <Select value={tierFilter} onValueChange={handleTierFilter}>
-                <SelectTrigger className="w-[140px] cursor-pointer">
-                  <Star className="h-4 w-4 mr-2" />
+                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('customers.filterByTier', 'Filter by tier')}>
                   <SelectValue placeholder={t('customers.filterByTier', 'Tier')} />
                 </SelectTrigger>
                 <SelectContent>

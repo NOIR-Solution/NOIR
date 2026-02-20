@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Users, Filter, Plus } from 'lucide-react'
+import { Search, Users, Plus } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
 import {
@@ -128,14 +128,13 @@ export const UsersPage = () => {
                 {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <div className="flex items-center gap-3 flex-wrap">
               {/* Role Filter */}
               <Select
                 value={params.role || 'all'}
                 onValueChange={(value) => setRoleFilter(value === 'all' ? '' : value)}
               >
                 <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('users.filterByRole', 'Filter by role')}>
-                  <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder={t('users.filterByRole', 'Filter by role')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -157,7 +156,7 @@ export const UsersPage = () => {
                   else setLockedFilter(false)
                 }}
               >
-                <SelectTrigger className="w-[120px] cursor-pointer" aria-label={t('users.filterByStatus', 'Filter by status')}>
+                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('users.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder={t('users.filterByStatus', 'Status')} />
                 </SelectTrigger>
                 <SelectContent>
