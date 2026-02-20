@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-02-18
+**Last Updated:** 2026-02-21
 
 ---
 
@@ -86,6 +86,9 @@
 | [ui-ux-enhancements.md](frontend/ui-ux-enhancements.md) | 11 UI/UX features |
 | [ecommerce-ui.md](frontend/ecommerce-ui.md) | E-commerce components |
 | [vibe-kanban-integration.md](frontend/vibe-kanban-integration.md) | Task management |
+| [audit-storybook-coverage.md](frontend/audit-storybook-coverage.md) | Storybook coverage audit |
+| [audit-ui-patterns.md](frontend/audit-ui-patterns.md) | UI patterns audit |
+| [design-standards.md](frontend/design-standards.md) | Design standards and guidelines |
 
 ### Patterns (`frontend/patterns/`)
 
@@ -109,9 +112,9 @@
 |----------|---------|
 | [README.md](testing/README.md) | Testing overview, conventions, and running tests |
 
-### Test Coverage Summary (2026-02-18)
+### Test Coverage Summary (2026-02-21)
 
-**Backend Tests:** 6,750+ tests across 4 test projects
+**Backend Tests:** 10,595+ tests across 4 test projects
 - 842 Domain unit tests
 - 5,231 Application unit tests
 - 654 Integration tests
@@ -171,18 +174,18 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 50 |
+| **Total Docs** | 56 |
 | **Backend Patterns** | 11 |
 | **Backend Architecture** | 2 |
 | **Backend Research** | 7 |
-| **Frontend Guides** | 10 |
+| **Frontend Guides** | 13 |
 | **Testing Docs** | 1 |
 | **ADRs** | 3 |
 | **Plans** | 2 |
 | **Research (General)** | 3 |
 | **Designs** | 1 |
-| **Backend Tests** | 6,750+ |
+| **Backend Tests** | 10,595+ |
 
 ---
 
-**Version:** 3.3 (Updated 2026-02-18 - Documentation audit: fixed testing docs count, updated coverage date, verified all links)
+**Version:** 3.4 (Updated 2026-02-21 - Updated backend test count to 10,595+, Storybook stories to 72, docs total to 53)

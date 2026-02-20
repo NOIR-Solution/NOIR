@@ -297,22 +297,17 @@ public enum AuditOperationType
 ### 3. Services
 
 ```
-src/NOIR.Application/Common/Interfaces/
-├── IDiffService.cs           # JSON diff creation
-└── IBeforeStateProvider.cs   # Fetch DTO before state
-
-src/NOIR.Infrastructure/Services/
-├── JsonDiffService.cs
-└── BeforeStateProvider.cs
+src/NOIR.Infrastructure/Audit/
+├── HandlerAuditMiddleware.cs          # Defines IBeforeStateProvider interface
+└── WolverineBeforeStateProvider.cs   # Wolverine-based implementation
 ```
 
 ### 4. Middleware/Interceptors
 
 ```
 src/NOIR.Infrastructure/
-├── Middleware/
-│   └── HttpRequestAuditMiddleware.cs   # HTTP level
-├── Behaviors/
+├── Audit/
+│   ├── HttpRequestAuditMiddleware.cs   # HTTP level
 │   └── HandlerAuditMiddleware.cs       # Handler level (Wolverine)
 └── Persistence/Interceptors/
     └── EntityAuditLogInterceptor.cs    # Entity level (EF Core)
@@ -350,7 +345,7 @@ public class UpdateCustomerCommand : IRequest<CustomerDto>, IAuditableCommand<Cu
 
 ### Before State Provider
 
-Fetches the DTO before the handler runs:
+Fetches the DTO before the handler runs. The interface is defined in `HandlerAuditMiddleware.cs` and the implementation is `WolverineBeforeStateProvider` — both located in `src/NOIR.Infrastructure/Audit/`:
 
 ```csharp
 public interface IBeforeStateProvider
@@ -359,21 +354,11 @@ public interface IBeforeStateProvider
 }
 ```
 
-Registration:
+Registration (via extension methods on `WolverineBeforeStateProvider`):
 ```csharp
-services.AddSingleton<IBeforeStateProvider>(sp =>
-{
-    var provider = new BeforeStateProvider(sp);
-
-    // Register resolver for each auditable DTO type
-    provider.Register<CustomerDto>(async (id, ct) =>
-    {
-        var bus = sp.GetRequiredService<IMessageBus>();
-        return await bus.InvokeAsync<CustomerDto>(new GetCustomerQuery((Guid)id), ct);
-    });
-
-    return provider;
-});
+// In src/NOIR.Infrastructure/DependencyInjection.cs
+services.AddBeforeStateResolver<CustomerDto, GetCustomerByIdQuery>(
+    targetId => new GetCustomerByIdQuery(Guid.Parse(targetId.ToString()!)));
 ```
 
 ---
@@ -389,7 +374,7 @@ services.AddSingleton<IBeforeStateProvider>(sp =>
 2. Handler invoked (e.g., UpdateCustomerCommand)
    └─> HandlerAuditMiddleware.Before()
        ├─> Check: command implements IAuditableCommand<TDto>?
-       ├─> If Update/Delete: beforeState = BeforeStateProvider.GetBeforeStateAsync()
+       ├─> If Update/Delete: beforeState = WolverineBeforeStateProvider.GetBeforeStateAsync()
        ├─> Creates HandlerAuditLog (Id = handlerLogId, links to httpLogId)
        └─> Sets AuditContext.Current.HandlerAuditLogId = handlerLogId
 

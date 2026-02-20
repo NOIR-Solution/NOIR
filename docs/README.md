@@ -94,7 +94,7 @@ docs/
     └── README.md
 ```
 
-**Total: 50 documentation files**
+**Total: 53 documentation files**
 
 ## Quick Links
 

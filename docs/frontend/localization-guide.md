@@ -35,13 +35,11 @@ Backend translations are located in:
 ```
 src/NOIR.Web/Resources/Localization/
 ├── en/
-│   ├── common.json
 │   ├── auth.json
-│   └── errors.json
+│   └── validation.json
 └── vi/
-    ├── common.json
     ├── auth.json
-    └── errors.json
+    └── validation.json
 ```
 
 ## How to Edit Translations
@@ -49,10 +47,14 @@ src/NOIR.Web/Resources/Localization/
 ### Step 1: Locate the Translation File
 
 1. Identify which namespace contains your text:
-   - `common.json` - Buttons, labels, common messages
-   - `auth.json` - Login, registration, password screens
-   - `errors.json` - Error and validation messages
-   - `nav.json` - Navigation and menu items
+   - **Frontend** (`public/locales/{lang}/`):
+     - `common.json` - Buttons, labels, common messages
+     - `auth.json` - Login, registration, password screens
+     - `errors.json` - Error and validation messages
+     - `nav.json` - Navigation and menu items
+   - **Backend** (`Resources/Localization/{lang}/`):
+     - `auth.json` - Backend authentication messages
+     - `validation.json` - Backend validation error messages
 
 2. Open the file for your target language (e.g., `locales/vi/common.json`)
 

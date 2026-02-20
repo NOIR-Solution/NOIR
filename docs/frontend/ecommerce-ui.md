@@ -83,7 +83,7 @@ import { ProductStatsCards } from './components/ProductStatsCards'
 
 ```json
 {
-  "framer-motion": "^11.x",
+  "framer-motion": "^12.26.2",
   "lucide-react": "^0.x"
 }
 ```

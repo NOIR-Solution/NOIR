@@ -56,7 +56,7 @@ Every UI component used in the website MUST have a Storybook story.
 
 **ui-auditor:** Navigate EVERY page via Playwright MCP, screenshot at 1920x1080. Produce **UI Pattern Matrix** (rows=pages, columns=pattern categories, cells=which variant). Highlight inconsistencies and recommend standards.
 
-**storybook-auditor:** Cross-reference `src/components/ui/` vs `src/uikit/` vs app imports. Produce **Storybook Coverage Report** with specific file paths.
+**storybook-auditor:** Cross-reference `src/uikit/` vs app imports. Produce **Storybook Coverage Report** with specific file paths.
 
 **You (Team Lead):** Combine into unified action plan, present to user.
 

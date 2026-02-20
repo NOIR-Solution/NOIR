@@ -33,21 +33,40 @@ frontend/
 │   │   │   └── states/      #   useBlogPosts.ts, useBlogCategories.ts, useBlogTags.ts
 │   │   ├── brands/          # Brand management
 │   │   │   └── features/    #   brand-list/BrandsPage.tsx
+│   │   ├── customer-groups/ # Customer group management
+│   │   │   ├── features/    #   customer-group-list/CustomerGroupsPage.tsx
+│   │   │   └── queries/     #   useCustomerGroupQueries.ts, useCustomerGroupMutations.ts
+│   │   ├── customers/       # Customer management
+│   │   │   ├── features/    #   customer-list, customer-detail
+│   │   │   └── queries/     #   useCustomerQueries.ts, useCustomerMutations.ts
 │   │   ├── dashboard/       # Dashboard
 │   │   │   └── features/    #   dashboard/DashboardPage.tsx
+│   │   ├── inventory/       # Inventory receipt management
+│   │   │   ├── features/    #   inventory-receipts/InventoryReceiptsPage.tsx
+│   │   │   └── queries/     #   useInventoryQueries.ts, useInventoryMutations.ts
 │   │   ├── notifications/   # Notifications
 │   │   │   ├── features/    #   notification-list, notification-preferences
 │   │   │   └── components/  #   notifications/ (Bell, Dropdown, Item, List, Empty)
+│   │   ├── orders/          # Order management
+│   │   │   ├── features/    #   order-list, order-detail, manual-create, shipment-tracking
+│   │   │   └── queries/     #   useOrderQueries.ts, useOrderMutations.ts
+│   │   ├── payments/        # Payment management
+│   │   │   ├── features/    #   payment-detail/PaymentDetailPage.tsx
+│   │   │   └── components/  #   RecordManualPaymentDialog.tsx
 │   │   ├── products/        # Product catalog
 │   │   │   ├── features/    #   product-list, product-edit, product-category-list, product-attribute-list
 │   │   │   ├── components/  #   products/, product-categories/, product-attributes/
 │   │   │   └── states/      #   useProducts.ts, useProductCategories.ts
+│   │   ├── promotions/      # Promotions & discounts
+│   │   ├── reports/         # Reporting & analytics
+│   │   ├── reviews/         # Product reviews
 │   │   ├── settings/        # All settings (personal, tenant, platform)
 │   │   │   ├── features/    #   personal-settings, tenant-settings, platform-settings,
 │   │   │   │                #   email-template-edit, legal-page-edit
 │   │   │   ├── components/  #   tenant-settings/, platform-settings/, payment-gateways/,
 │   │   │   │                #   personal-settings/
 │   │   │   └── states/      #   usePaymentGateways.ts
+│   │   ├── shipping/        # Shipping management
 │   │   ├── systems/         # System monitoring
 │   │   │   ├── features/    #   activity-timeline, developer-logs
 │   │   │   └── components/  #   activity-timeline/, developer-logs/
@@ -55,8 +74,9 @@ frontend/
 │   │   │   ├── features/    #   role-list, user-list, tenant-list, tenant-detail
 │   │   │   ├── components/  #   roles/, users/, tenants/
 │   │   │   └── states/      #   useRoles.ts, useUsers.ts, useTenants.ts
-│   │   └── welcome/         # Public pages
-│   │       └── features/    #   welcome/WelcomePage, terms/TermsPage, privacy/PrivacyPage
+│   │   ├── welcome/         # Public pages
+│   │   │   └── features/    #   welcome/WelcomePage, terms/TermsPage, privacy/PrivacyPage
+│   │   └── wishlists/       # Customer wishlists
 │   │
 │   ├── layouts/             # Layout components
 │   │   ├── auth/            # Auth pages (each in own folder)
@@ -67,7 +87,7 @@ frontend/
 │   │   │   └── auth-success/AuthSuccessPage.tsx
 │   │   └── PortalLayout.tsx
 │   │
-│   ├── uikit/               # UI component library (58 components + stories)
+│   ├── uikit/               # UI component library (72 components + stories)
 │   │   ├── button/          #   Button.tsx, Button.stories.tsx, index.ts
 │   │   ├── dialog/          #   Dialog.tsx, Dialog.stories.tsx, index.ts
 │   │   ├── ...              #   Per-component folders (kebab-case)
@@ -147,7 +167,7 @@ portal-app/{domain}/
 
 ### `/uikit` (UI Component Library)
 
-**Purpose:** 56 shadcn/ui-based primitives with per-component folders and a single barrel export.
+**Purpose:** 72 shadcn/ui-based primitives with per-component folders and a single barrel export.
 
 **Guidelines:**
 - Import via `@uikit` barrel alias: `import { Button, Dialog } from '@uikit'`

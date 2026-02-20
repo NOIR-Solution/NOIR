@@ -54,10 +54,12 @@ dotnet watch --project src/NOIR.Web
 # Run tests
 dotnet test src/NOIR.sln
 
-# Create migration
+# Create migration (always specify --context and --output-dir)
 dotnet ef migrations add MigrationName \
   --project src/NOIR.Infrastructure \
-  --startup-project src/NOIR.Web
+  --startup-project src/NOIR.Web \
+  --context ApplicationDbContext \
+  --output-dir Migrations/App
 ```
 
 ## Code Patterns

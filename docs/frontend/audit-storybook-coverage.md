@@ -9,10 +9,10 @@
 
 ## Executive Summary
 
-| Metric | Previous (2026-02-19) | Current (2026-02-20) | Delta |
+| Metric | Previous (2026-02-19) | Current (2026-02-21) | Delta |
 |--------|-----------------------|----------------------|-------|
-| Total uikit directories | 60 (59 visual + 1 utility) | 67 (66 component + 1 utility) | +7 |
-| Story files | 59 | **66** | +7 |
+| Total uikit directories | 60 (59 visual + 1 utility) | 73 (72 component + 1 utility) | +13 |
+| Story files | 59 | **72** | +13 |
 | Coverage | 100% | **100%** | = |
 | Stories using visual replicas | 0 | 3 | +3 |
 | Stories importing non-uikit components | 0 | 4 | +4 |
@@ -22,7 +22,7 @@
 
 **7 previously minimal stories** were significantly expanded since the last audit: `button`, `card`, `collapsible`, `dialog`, `drawer`, `form`, `scroll-area`, `select`, `table`, `tabs`, `input`, `page-header`, `alert-dialog`.
 
-The uikit library maintains **100% Storybook coverage** across all 66 component directories.
+The uikit library maintains **100% Storybook coverage** across all 72 component directories.
 
 ---
 
@@ -32,9 +32,9 @@ The NOIR frontend uses a **unified `src/uikit/` directory** for all reusable UI 
 
 ```
 src/uikit/{component-name}/
-├── ComponentName.tsx         ← Component implementation (in 59 directories)
-├── ComponentName.stories.tsx ← Storybook stories (in all 66 directories)
-└── index.ts                  ← Barrel export (in 59 directories)
+├── ComponentName.tsx         ← Component implementation (in 65 directories)
+├── ComponentName.stories.tsx ← Storybook stories (in all 72 directories)
+└── index.ts                  ← Barrel export (in 65 directories)
 ```
 
 **Story Types:**
@@ -54,7 +54,7 @@ These are app-specific components that live in `src/components/` and are documen
 
 ## Full Coverage Matrix
 
-### Self-Contained Components (59 — implementation + story in uikit)
+### Self-Contained Components (65 — implementation + story in uikit)
 
 | Component | Story Path | Stories | Default | Variants | Sizes | Disabled | Loading | Notes |
 |-----------|------------|---------|---------|----------|-------|----------|---------|-------|
@@ -135,7 +135,7 @@ These are app-specific components that live in `src/components/` and are documen
 ## Missing Stories
 
 ### uikit Components Missing Stories
-**None.** All 66 component directories have story files.
+**None.** All 72 component directories have story files.
 
 ### Portal-App Shared Components Missing Stories
 
@@ -143,22 +143,22 @@ These live in `src/components/` and have NO Storybook coverage despite being imp
 
 #### High Priority (Complex, High Reuse)
 
-| Component | Path | Used In | Complexity |
-|-----------|------|---------|------------|
-| SortableImageGallery | `components/products/SortableImageGallery.tsx` | Product edit page | High (drag-and-drop) |
-| EditableVariantsTable | `components/products/EditableVariantsTable.tsx` | Product edit page | High |
-| ProductAttributesSection | `components/products/ProductAttributesSection.tsx` | Product forms | High |
-| BulkVariantEditor | `components/products/BulkVariantEditor.tsx` | Variant generation | High |
-| OnboardingChecklist | `components/onboarding/OnboardingChecklist.tsx` | App onboarding | Medium |
+| Component | Path | Used In | Complexity | Status |
+|-----------|------|---------|------------|--------|
+| ~~SortableImageGallery~~ | `components/products/SortableImageGallery.tsx` | Product edit page | High (drag-and-drop) | ✅ RESOLVED — story in src/uikit/ |
+| ~~EditableVariantsTable~~ | `components/products/EditableVariantsTable.tsx` | Product edit page | High | ✅ RESOLVED — story in src/uikit/ |
+| ProductAttributesSection | `components/products/ProductAttributesSection.tsx` | Product forms | High | Pending |
+| ~~BulkVariantEditor~~ | `components/products/BulkVariantEditor.tsx` | Variant generation | High | ✅ RESOLVED — story in src/uikit/ |
+| ~~OnboardingChecklist~~ | `components/onboarding/OnboardingChecklist.tsx` | App onboarding | Medium | ✅ RESOLVED — story in src/uikit/ |
 
 #### Medium Priority
 
-| Component | Path | Notes |
-|-----------|------|-------|
-| SkipLink | `components/accessibility/SkipLink.tsx` | Accessibility component, easy to story |
-| WelcomeModal | `components/onboarding/WelcomeModal.tsx` | First-run experience |
-| OrganizationSelection | `components/onboarding/OrganizationSelection.tsx` | Tenant selection flow |
-| AnimatedOutlet | `components/layout/AnimatedOutlet.tsx` | Layout transitions |
+| Component | Path | Notes | Status |
+|-----------|------|-------|--------|
+| SkipLink | `components/accessibility/SkipLink.tsx` | Accessibility component, easy to story | Pending |
+| ~~WelcomeModal~~ | `components/onboarding/WelcomeModal.tsx` | First-run experience | ✅ RESOLVED — story in src/uikit/ |
+| OrganizationSelection | `components/onboarding/OrganizationSelection.tsx` | Tenant selection flow | Pending |
+| AnimatedOutlet | `components/layout/AnimatedOutlet.tsx` | Layout transitions | Pending |
 
 #### Low Priority (SEO/Meta, rarely visible)
 
@@ -191,7 +191,7 @@ These live in `src/components/` and have NO Storybook coverage despite being imp
 
 | State | Components Covered | Percentage | Notes |
 |-------|-------------------|------------|-------|
-| Default state | 66 | **100%** | All stories have a default |
+| Default state | 72 | **100%** | All stories have a default |
 | Variants | 32 | 48% | Only applicable to ~45 components |
 | Sizes | 14 | 21% | Only applicable to ~20 components |
 | Disabled state | 23 | 35% | Only applicable to ~35 components |
@@ -351,7 +351,7 @@ pnpm build-storybook
 
 ## Summary
 
-The NOIR UIKit Storybook has **100% coverage across all 66 component directories**. Story quality is consistently high with most critical components having comprehensive multi-state coverage.
+The NOIR UIKit Storybook has **100% coverage across all 72 component directories**. Story quality is consistently high with most critical components having comprehensive multi-state coverage.
 
 **Strengths:**
 - Complete directory-level coverage maintained as new components are added

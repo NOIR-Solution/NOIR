@@ -66,9 +66,9 @@ Recommended Steps:
 Impact: Developers may not understand why type assertion is needed
 
 Files:
-- pages/portal/blog/tags/components/TagDialog.tsx:55
-- pages/portal/blog/posts/PostEditorPage.tsx:114
-- pages/portal/blog/categories/components/CategoryDialog.tsx:66
+- portal-app/blogs/components/blog-tags/BlogTagDialog.tsx:55
+- portal-app/blogs/features/blog-post-edit/BlogPostEditPage.tsx:114
+- portal-app/blogs/components/blog-categories/BlogCategoryDialog.tsx:66
 
 Solution: Add consistent explanatory comment
 

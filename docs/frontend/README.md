@@ -25,15 +25,25 @@ src/NOIR.Web/frontend/
 │   ├── portal-app/     # Domain-driven feature modules
 │   │   ├── blogs/          # Blog CMS (features, components, states)
 │   │   ├── brands/         # Brand management
+│   │   ├── customer-groups/# Customer group management
+│   │   ├── customers/      # Customer management
 │   │   ├── dashboard/      # Dashboard
+│   │   ├── inventory/      # Inventory receipt management
 │   │   ├── notifications/  # Notifications
+│   │   ├── orders/         # Order management
+│   │   ├── payments/       # Payment management
 │   │   ├── products/       # Product catalog
+│   │   ├── promotions/     # Promotions & discounts
+│   │   ├── reports/        # Reporting & analytics
+│   │   ├── reviews/        # Product reviews
 │   │   ├── settings/       # Personal, Tenant, Platform settings
+│   │   ├── shipping/       # Shipping management
 │   │   ├── systems/        # Activity timeline, Developer logs
 │   │   ├── user-access/    # Users, Roles, Tenants
-│   │   └── welcome/        # Landing, Terms, Privacy
+│   │   ├── welcome/        # Landing, Terms, Privacy
+│   │   └── wishlists/      # Customer wishlists
 │   ├── layouts/        # Layout components + auth pages
-│   ├── uikit/          # UI component library + stories (58 components, @uikit alias)
+│   ├── uikit/          # UI component library + stories (72 components, @uikit alias)
 │   ├── components/     # Shared app-level components
 │   ├── contexts/       # React Context providers
 │   ├── hooks/          # Shared custom hooks
@@ -95,7 +105,7 @@ pnpm run lint
 
 ## Storybook & UIKit
 
-The project includes a **Storybook** setup for interactive component documentation with 58 component stories.
+The project includes a **Storybook** setup for interactive component documentation with 72 component stories.
 
 ```bash
 # Run Storybook (component catalog)
@@ -116,7 +126,7 @@ src/uikit/
 ├── card/Card.stories.tsx
 ├── dialog/Dialog.stories.tsx
 ├── table/Table.stories.tsx
-├── ... (56 total)
+├── ... (72 total)
 ```
 
 **Path alias:** `@uikit` maps to `src/uikit/` (`tsconfig.app.json`)

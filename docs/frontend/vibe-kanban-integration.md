@@ -34,22 +34,16 @@ This ensures the companion is:
 
 #### Windows (Recommended Method)
 
-Use the provided batch file in Vibe Kanban's "Edit Dev Script" dialog:
+Use the direct command in Vibe Kanban's "Edit Dev Script" dialog:
 
 ```batch
-src\NOIR.Web\frontend\start-dev.bat
+cd src\NOIR.Web\frontend && pnpm run dev:full
 ```
 
-**Or use absolute path:**
+**Or use an absolute path:**
 ```batch
-D:\TOP\GIT\NOIR\src\NOIR.Web\frontend\start-dev.bat
+cd D:\GIT\TOP\NOIR\src\NOIR.Web\frontend && pnpm run dev:full
 ```
-
-**Why use the batch file?**
-- Handles directory navigation automatically
-- Works reliably with Vibe Kanban's command launcher
-- Avoids Windows PowerShell execution policy issues
-- Provides clear error messages
 
 #### macOS/Linux
 
@@ -70,7 +64,7 @@ This uses the configuration in `.vscode/tasks.json`.
 
 ## Dev Server Startup Process
 
-When you start the dev server (via `start-dev.bat` or `pnpm run dev:full`), it:
+When you start the dev server (via `pnpm run dev:full`), it:
 
 1. **Checks dependencies** - Installs `node_modules` if missing
 2. **Detects running backend** - Reuses existing backend if available
@@ -97,9 +91,9 @@ When you start the dev server (via `start-dev.bat` or `pnpm run dev:full`), it:
 
 **Problem:** Vibe Kanban can't execute the dev command.
 
-**Solution:** Use the batch file instead of a multi-line command:
+**Solution:** Use the direct command with the full absolute path:
 ```batch
-src\NOIR.Web\frontend\start-dev.bat
+cd D:\GIT\TOP\NOIR\src\NOIR.Web\frontend && pnpm run dev:full
 ```
 
 ### "Port 3000 is already in use"
@@ -120,7 +114,7 @@ Then restart the dev server.
 
 **Solution 1 (Easiest):** Use Command Prompt instead of PowerShell
 
-**Solution 2:** Use the batch file (already configured to work around this)
+**Solution 2:** Use Command Prompt with the `cd` + `pnpm run dev:full` command directly
 
 **Solution 3:** Temporarily bypass in PowerShell:
 ```powershell
@@ -144,7 +138,6 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 
 ```
 src/NOIR.Web/frontend/
-├── start-dev.bat              # Dev server launcher for Vibe Kanban (Windows)
 ├── scripts/
 │   └── dev.mjs                # Full-stack orchestration script
 ├── src/

@@ -13,7 +13,7 @@
 |----------|--------|-----------|
 | **Gateway Credentials** | Per-tenant | SaaS model - each tenant configures their own merchant accounts |
 | **COD Support** | Phase 6 (essential) | 20-30% of Vietnam e-commerce still uses COD |
-| **UI Framework** | 21st.dev (MANDATORY) | All frontend components built with 21st.dev Magic MCP |
+| **UI Framework** | shadcn/ui | All frontend components built with shadcn/ui (Radix UI + Tailwind CSS) |
 | **Best Practices** | Research-driven | Each phase requires business + implementation + UI/UX research |
 | **Testing Strategy** | TDD / Comprehensive | Unit tests + integration tests for every feature; TDD encouraged |
 | **Enum Location** | Flat `Domain/Enums/` | Consistent with existing project structure |
@@ -27,16 +27,15 @@
 
 ## Development Standards (MANDATORY for ALL Phases)
 
-### 1. UI Framework: 21st.dev
+### 1. UI Framework: shadcn/ui
 
-All frontend UI components and pages MUST use **21st.dev** (Magic MCP component builder):
+All frontend UI components and pages MUST use **shadcn/ui** (Radix UI + Tailwind CSS):
 
 - Payment method selectors, checkout flows, admin dashboards
 - Product catalog, cart, order management pages
 - Analytics dashboards, customer management UI
-- Use `proxy_mcp__magic__21st_magic_component_builder` for consistent, production-quality components
+- Follow existing NOIR patterns using shadcn/ui components in `src/NOIR.Web/frontend/src/components/ui/`
 - Ensure WCAG accessibility, responsive layouts, micro-interactions
-- Reference existing NOIR patterns: shadcn/ui base + 21st.dev enhancements
 
 ### 2. Research-Driven Implementation
 
@@ -1453,14 +1452,14 @@ public class VnPaySignatureHelperTests
 - Send reminders for overdue collections
 - Generate COD reconciliation report
 
-### 6.9 Frontend Components (21st.dev MANDATORY)
+### 6.9 Frontend Components
 
-**IMPORTANT:** All UI components MUST be built using 21st.dev Magic MCP. Research best payment UX patterns (Stripe Checkout, Shopify) before implementation.
+**IMPORTANT:** All UI components MUST follow shadcn/ui patterns. Research best payment UX patterns (Stripe Checkout, Shopify) before implementation.
 
 **Payment Method Selection:**
 ```tsx
 // src/NOIR.Web/frontend/src/portal-app/checkout/components/PaymentMethodSelector.tsx
-// Built with 21st.dev: glassmorphism cards, smooth animations, mobile-first
+// Built with shadcn/ui: glassmorphism cards, smooth animations, mobile-first
 interface PaymentMethodOption {
   provider: string;
   displayName: string;
@@ -1470,7 +1469,7 @@ interface PaymentMethodOption {
 }
 ```
 
-**21st.dev Component Requirements:**
+**Component Requirements:**
 - `PaymentMethodCard` - Selectable payment option with provider logo, hover states
 - `PaymentProcessingOverlay` - Loading state with skeleton, QR code display for MoMo/ZaloPay
 - `PaymentResultCard` - Success/failure state with clear CTA
@@ -1484,7 +1483,7 @@ interface PaymentMethodOption {
 - `/checkout/success` - Success confirmation (PaymentResultCard + order summary)
 - `/checkout/failed` - Failure message (PaymentResultCard + retry options)
 
-**Admin Pages (21st.dev):**
+**Admin Pages:**
 - `/admin/payment-gateways` - Gateway configuration list + CRUD
 - `/admin/webhook-logs` - Webhook log viewer with filtering
 - `/admin/cod-pending` - COD collection management dashboard
@@ -3001,12 +3000,12 @@ Phase 5 (Foundation) ─┬─> Phase 6 (Vietnam + COD)
 1. Research Phase
    ├── Business best practices research (use /sc:research)
    ├── Implementation patterns research (Context7 docs)
-   └── UI/UX best practices research (21st.dev patterns)
+   └── UI/UX best practices research (shadcn/ui patterns)
 
 2. Design Phase
    ├── Domain entities + specifications
    ├── CQRS commands/queries
-   └── 21st.dev component specifications
+   └── shadcn/ui component specifications
 
 3. TDD Implementation
    ├── Write failing unit tests (Handlers, Validators, Domain)
@@ -3015,7 +3014,7 @@ Phase 5 (Foundation) ─┬─> Phase 6 (Vietnam + COD)
    └── Verify 80%+ coverage
 
 4. UI Implementation
-   ├── Build components with 21st.dev Magic MCP
+   ├── Build components with shadcn/ui
    ├── Ensure WCAG accessibility
    └── Mobile-responsive verification
 

@@ -2193,7 +2193,7 @@ new Error(ErrorCodes.Auth.DuplicateEmail, "This email address is already in use.
 | `NOIR.Application.UnitTests` | 5,231 | Handler, specification, validator tests |
 | `NOIR.ArchitectureTests` | 25 | Dependency constraints |
 | `NOIR.IntegrationTests` | 654 | API integration tests |
-| **Total** | **6,750+** | |
+| **Total** | **10,595+** | |
 
 ### Test Patterns
 
@@ -2353,4 +2353,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-02-18 | Total Tests: 6,750+ | Features: 26 | Endpoints: 200+ | Entities: 50+*
+*Updated: 2026-02-21 | Total Tests: 10,595+ | Features: 26 | Endpoints: 200+ | Entities: 50+*

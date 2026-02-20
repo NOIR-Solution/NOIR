@@ -6,7 +6,7 @@
 
 ## Testing at a Glance
 
-### Backend Testing (6,750+ tests)
+### Backend Testing (10,595+ tests)
 
 ```bash
 # Run all backend tests
@@ -79,8 +79,8 @@ public class CreateProductCommandHandlerTests
     public async Task Handle_ValidCommand_ReturnsSuccess()
     {
         // Arrange
-        var repository = Substitute.For<IRepository<Product, Guid>>();
-        var handler = new CreateProductCommandHandler(repository);
+        var repository = new Mock<IRepository<Product, Guid>>();
+        var handler = new CreateProductCommandHandler(repository.Object);
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -196,7 +196,7 @@ Tests run automatically on every push to `main` branch via GitHub Actions.
 
 **Backend Tests Workflow:**
 - Builds solution
-- Runs all 6,750+ tests
+- Runs all 10,595+ tests
 - Fails build if any test fails
 - Execution time: ~3 minutes
 
@@ -238,11 +238,11 @@ Tests run automatically on every push to `main` branch via GitHub Actions.
 
 - [xUnit Documentation](https://xunit.net/)
 - [FluentAssertions Documentation](https://fluentassertions.com/)
-- [NSubstitute Documentation](https://nsubstitute.github.io/)
+- [Moq Documentation](https://github.com/devlooped/moq)
 - [NetArchTest Documentation](https://github.com/BenMorris/NetArchTest)
 
 ---
 
 **Last Updated:** 2026-02-18
-**Test Count:** 6,750+ tests
+**Test Count:** 10,595+ tests
 **Focus:** Backend unit, integration, and architecture testing

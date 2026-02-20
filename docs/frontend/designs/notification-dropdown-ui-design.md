@@ -95,7 +95,7 @@ Icon 3 (MessageSquare): delay 0.3s, rotate 6deg, offset right
 
 ```tsx
 // Standalone dropdown (for headers)
-import { NotificationDropdown } from '@/components/notifications'
+import { NotificationDropdown } from '@/portal-app/notifications/components/notifications'
 <NotificationDropdown className="ml-auto" />
 
 // Sidebar integration is built into Sidebar.tsx

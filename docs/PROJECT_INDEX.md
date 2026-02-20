@@ -2,7 +2,7 @@
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
 
-**Last Updated:** 2026-02-18 | **Index Version:** 3.7
+**Last Updated:** 2026-02-21 | **Index Version:** 3.8
 
 ---
 
@@ -20,7 +20,7 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 6,752+ backend tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 10,595+ backend tests.
 
 ### Key Statistics
 
@@ -39,12 +39,12 @@
 | **Repositories** | 28 | Infrastructure repositories |
 | **EF Core Configurations** | 49 | Entity type configurations |
 | **UI Components** | 103 | shadcn/ui + custom components (57 in ui/) |
-| **Storybook Stories** | 57 | Interactive component catalog in `uikit/` |
+| **Storybook Stories** | 72 | Interactive component catalog in `uikit/` |
 | **Custom Hooks** | 27 | React hooks in `hooks/` |
 | **API Services** | 23 | Frontend API clients |
 | **Frontend Pages** | 95+ | React page components |
-| **Documentation Files** | 48 | Markdown docs in `docs/` |
-| **Backend Tests** | 6,750+ | Unit (842 + 5,231) + Integration (654) + Architecture (25) |
+| **Documentation Files** | 53 | Markdown docs in `docs/` |
+| **Backend Tests** | 10,595+ | Unit (842 + 5,231) + Integration (654) + Architecture (25) |
 | **Database Indexes** | 233+ | Including 14 filtered indexes |
 | **Enums** | 24 | Domain enumerations |
 | **Service Interfaces** | 44 | Application-layer abstractions |
@@ -62,12 +62,12 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 6,750+ backend tests across 4 test projects
+├── tests/                        # ✅ 10,595+ backend tests across 4 test projects
 │   ├── NOIR.Domain.UnitTests/    # Domain logic tests
 │   ├── NOIR.Application.UnitTests/ # Handler/service/validator tests
 │   ├── NOIR.IntegrationTests/    # API integration tests (requires DB)
 │   └── NOIR.ArchitectureTests/   # Architectural rule tests
-└── docs/                         # 📚 50 documentation files
+└── docs/                         # 📚 53 documentation files
 
 ```
 
@@ -458,7 +458,7 @@ NOIR.Web/
     │   ├── layouts/                     # Layout components
     │   │   ├── auth/                    # Auth pages (login, forgot-password, etc.)
     │   │   └── PortalLayout.tsx
-    │   ├── uikit/                       # 58 UI components + stories (@uikit barrel)
+    │   ├── uikit/                       # 72 UI components + stories (@uikit barrel)
     │   ├── components/                  # Shared app-level components
     │   ├── contexts/                    # React contexts (Auth, Theme, Notification, etc.)
     │   ├── hooks/                       # Shared custom React hooks (27)
@@ -1105,8 +1105,8 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** 2026-02-13
-**Version:** 3.6
+**Last Updated:** 2026-02-21
+**Version:** 3.8
 **Maintainer:** NOIR Team
 **Machine-Readable Index:** [PROJECT_INDEX.json](../PROJECT_INDEX.json)
 
@@ -1116,7 +1116,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ### Version 3.6 (2026-02-13) - Storybook, UIKit & pnpm Migration
 
-- **Storybook 10.2** - Added interactive component catalog with 57 stories in `src/uikit/`
+- **Storybook 10.2** - Added interactive component catalog with 72 stories in `src/uikit/`
 - **UIKit** - Component stories organized by `{component}/{Component}.stories.tsx` pattern
 - **pnpm** - Migrated from npm for disk-optimized dependency management
 - **Statistics Refresh** - Test files: 453 (was 438), Pages: 95+ (was 88), Hooks: 27 (was 28)

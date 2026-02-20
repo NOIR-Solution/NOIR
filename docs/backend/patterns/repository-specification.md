@@ -31,8 +31,7 @@ Application Layer (Implementation)
 
 Infrastructure Layer
 ├── SpecificationEvaluator      # Converts spec to IQueryable
-├── RepositoryBase<T, TId>      # Base repository implementation
-└── SoftDeleteRepositoryBase    # Soft delete repository
+└── Repository<T, TId>          # Abstract base repository implementation
 ```
 
 ---
@@ -328,7 +327,7 @@ src/
     └── Persistence/
         ├── SpecificationEvaluator.cs  # Query builder
         └── Repositories/
-            └── RepositoryBase.cs      # Implementation
+            └── Repository.cs          # Abstract base implementation
 ```
 
 ---

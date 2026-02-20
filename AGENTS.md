@@ -57,7 +57,7 @@ pnpm run generate:api    # Sync types from backend
 
 ## File Boundaries
 
-- **Read/Modify:** `src/`, `tests/`, `docs/`
+- **Read/Modify:** `src/`, `tests/`, `docs/`, `.claude/`
 - **Avoid:** `*.Designer.cs`, `Migrations/` (auto-generated)
 
 ## Admin Credentials

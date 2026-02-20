@@ -110,11 +110,36 @@ services.AddBeforeStateResolver<FooDto, GetFooByIdQuery>(...)
 
 ## Currently Registered Resolvers
 
-| DTO Type | Query | Location |
-|----------|-------|----------|
-| `UserProfileDto` | `GetUserByIdQuery` | DependencyInjection.cs:253 |
-| `TenantDto` | `GetTenantByIdQuery` | DependencyInjection.cs:256 |
-| `PostDto` | `GetPostQuery` | DependencyInjection.cs:259 |
+> **Authoritative list**: Search for `AddBeforeStateResolver` in `src/NOIR.Infrastructure/DependencyInjection.cs`. The table below reflects the current registrations but may fall out of date as new resolvers are added.
+
+| DTO Type | Query |
+|----------|-------|
+| `UserProfileDto` | `GetUserByIdQuery` |
+| `TenantDto` | `GetTenantByIdQuery` |
+| `PostDto` | `GetPostQuery` |
+| `PostCategoryDto` | `GetCategoryByIdQuery` |
+| `PostTagDto` | `GetTagByIdQuery` |
+| `EmailTemplateDto` | `GetEmailTemplateQuery` |
+| `LegalPageDto` | `GetLegalPageQuery` |
+| `ProductDto` | `GetProductByIdQuery` |
+| `ProductCategoryDto` | `GetProductCategoryByIdQuery` |
+| `BrandDto` | `GetBrandByIdQuery` |
+| `OrderDto` | `GetOrderByIdQuery` |
+| `CustomerDto` | `GetCustomerByIdQuery` |
+| `CustomerGroupDto` | `GetCustomerGroupByIdQuery` |
+| `ProductOptionDto` | `GetProductOptionByIdQuery` |
+| `ProductOptionValueDto` | `GetProductOptionValueByIdQuery` |
+| `ShippingProviderDto` | `GetShippingProviderByIdQuery` |
+| `PaymentTransactionDto` | `GetPaymentTransactionQuery` |
+| `ProductAttributeDto` | `GetProductAttributeByIdQuery` |
+| `PaymentGatewayDto` | `GetPaymentGatewayQuery` |
+| `CheckoutSessionDto` | `GetCheckoutSessionQuery` |
+| `CartDto` | `GetCartByIdQuery` |
+| `ProductAttributeValueDto` | `GetProductAttributeValueByIdQuery` |
+| `InventoryReceiptDto` | `GetInventoryReceiptByIdQuery` |
+| `PromotionDto` | `GetPromotionByIdQuery` |
+| `WishlistDetailDto` | `GetWishlistByIdQuery` |
+| `ReviewDetailDto` | `GetReviewByIdQuery` |
 
 ## Adding New Resolvers
 
