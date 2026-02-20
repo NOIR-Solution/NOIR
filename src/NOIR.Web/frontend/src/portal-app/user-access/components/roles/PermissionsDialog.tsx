@@ -26,6 +26,7 @@ import { usePermissionsQuery, usePermissionTemplatesQuery } from '@/portal-app/u
 import { assignPermissions, getRoleById } from '@/services/roles'
 import { ApiError } from '@/services/apiClient'
 import type { RoleListItem, Permission } from '@/types'
+import { translatePermissionCategory, translatePermissionDisplayName, translatePermissionDescription } from '@/portal-app/user-access/utils/permissionTranslation'
 
 interface PermissionsDialogProps {
   role: RoleListItem | null
@@ -300,7 +301,7 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
                           ) : (
                             <ChevronRight className="h-4 w-4 mr-2" />
                           )}
-                          <span className="font-medium">{category}</span>
+                          <span className="font-medium">{translatePermissionCategory(t, category)}</span>
                           <Badge variant="secondary" className="ml-2">
                             {stats.selected}/{stats.total}
                           </Badge>
@@ -310,36 +311,39 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
 
                     <CollapsibleContent>
                       <div className="ml-6 space-y-1">
-                        {categoryPermissions.map((permission) => (
-                          <div
-                            key={permission.id}
-                            className="flex items-start gap-3 p-2 hover:bg-muted/50 rounded-md cursor-pointer"
-                            onClick={() => togglePermission(permission.name)}
-                          >
-                            <Checkbox
-                              checked={selectedPermissions.has(permission.name)}
-                              onCheckedChange={() => togglePermission(permission.name)}
-                              onClick={(e) => e.stopPropagation()}
-                              className="mt-0.5"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-sm">{permission.displayName}</span>
-                                {selectedPermissions.has(permission.name) && (
-                                  <Check className="h-3 w-3 text-primary" />
+                        {categoryPermissions.map((permission) => {
+                          const description = translatePermissionDescription(t, permission.name, permission.description)
+                          return (
+                            <div
+                              key={permission.id}
+                              className="flex items-start gap-3 p-2 hover:bg-muted/50 rounded-md cursor-pointer"
+                              onClick={() => togglePermission(permission.name)}
+                            >
+                              <Checkbox
+                                checked={selectedPermissions.has(permission.name)}
+                                onCheckedChange={() => togglePermission(permission.name)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="mt-0.5"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-sm">{translatePermissionDisplayName(t, permission.name, permission.displayName)}</span>
+                                  {selectedPermissions.has(permission.name) && (
+                                    <Check className="h-3 w-3 text-primary" />
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {permission.name}
+                                </p>
+                                {description && (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {description}
+                                  </p>
                                 )}
                               </div>
-                              <p className="text-xs text-muted-foreground truncate">
-                                {permission.name}
-                              </p>
-                              {permission.description && (
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {permission.description}
-                                </p>
-                              )}
                             </div>
-                          </div>
-                        ))}
+                          )
+                        })}
                       </div>
                     </CollapsibleContent>
                   </Collapsible>

@@ -1722,7 +1722,211 @@
       "emailtemplates": "Mẫu Email",
       "legalpages": "Trang Pháp lý",
       "platform": "Nền tảng",
-      "payments": "Thanh toán"
+      "payments": "Thanh toán",
+      "configurationmanagement": "Quản lý Cấu hình"
+    },
+    "displayNames": {
+      "users": {
+        "read": "Xem Người dùng",
+        "create": "Tạo Người dùng",
+        "update": "Cập nhật Người dùng",
+        "delete": "Xóa Người dùng",
+        "manage-roles": "Quản lý Vai trò Người dùng"
+      },
+      "roles": {
+        "read": "Xem Vai trò",
+        "create": "Tạo Vai trò",
+        "update": "Cập nhật Vai trò",
+        "delete": "Xóa Vai trò",
+        "manage-permissions": "Quản lý Quyền hạn Vai trò"
+      },
+      "tenants": {
+        "read": "Xem Tenant",
+        "create": "Tạo Tenant",
+        "update": "Cập nhật Tenant",
+        "delete": "Xóa Tenant"
+      },
+      "system": {
+        "admin": "Quản trị Hệ thống",
+        "audit-logs": "Xem Nhật ký Kiểm toán",
+        "settings": "Quản lý Cài đặt Hệ thống",
+        "hangfire": "Bảng điều khiển Hangfire",
+        "config:view": "Xem Cấu hình",
+        "config:edit": "Sửa Cấu hình",
+        "app:restart": "Khởi động lại Ứng dụng"
+      },
+      "audit": {
+        "read": "Xem Dữ liệu Kiểm toán",
+        "export": "Xuất Dữ liệu Kiểm toán",
+        "entity-history": "Xem Lịch sử Thực thể",
+        "policy-read": "Xem Chính sách Kiểm toán",
+        "policy-write": "Sửa Chính sách Kiểm toán",
+        "policy-delete": "Xóa Chính sách Kiểm toán",
+        "stream": "Theo dõi Sự kiện Kiểm toán"
+      },
+      "email-templates": {
+        "read": "Xem Mẫu Email",
+        "update": "Cập nhật Mẫu Email"
+      },
+      "blog-posts": {
+        "read": "Xem Bài viết",
+        "create": "Tạo Bài viết",
+        "update": "Cập nhật Bài viết",
+        "delete": "Xóa Bài viết",
+        "publish": "Xuất bản Bài viết"
+      },
+      "blog-categories": {
+        "read": "Xem Danh mục Blog",
+        "create": "Tạo Danh mục Blog",
+        "update": "Cập nhật Danh mục Blog",
+        "delete": "Xóa Danh mục Blog"
+      },
+      "blog-tags": {
+        "read": "Xem Thẻ Blog",
+        "create": "Tạo Thẻ Blog",
+        "update": "Cập nhật Thẻ Blog",
+        "delete": "Xóa Thẻ Blog"
+      },
+      "products": {
+        "read": "Xem Sản phẩm",
+        "create": "Tạo Sản phẩm",
+        "update": "Cập nhật Sản phẩm",
+        "delete": "Xóa Sản phẩm",
+        "publish": "Xuất bản Sản phẩm"
+      },
+      "product-categories": {
+        "read": "Xem Danh mục Sản phẩm",
+        "create": "Tạo Danh mục Sản phẩm",
+        "update": "Cập nhật Danh mục Sản phẩm",
+        "delete": "Xóa Danh mục Sản phẩm"
+      },
+      "brands": {
+        "read": "Xem Thương hiệu",
+        "create": "Tạo Thương hiệu",
+        "update": "Cập nhật Thương hiệu",
+        "delete": "Xóa Thương hiệu"
+      },
+      "attributes": {
+        "read": "Xem Thuộc tính",
+        "create": "Tạo Thuộc tính",
+        "update": "Cập nhật Thuộc tính",
+        "delete": "Xóa Thuộc tính"
+      },
+      "reviews": {
+        "read": "Xem Đánh giá",
+        "write": "Viết Đánh giá",
+        "manage": "Quản lý Đánh giá"
+      },
+      "customer-groups": {
+        "read": "Xem Nhóm Khách hàng",
+        "create": "Tạo Nhóm Khách hàng",
+        "update": "Cập nhật Nhóm Khách hàng",
+        "delete": "Xóa Nhóm Khách hàng",
+        "manage-members": "Quản lý Thành viên Nhóm"
+      },
+      "customers": {
+        "read": "Xem Khách hàng",
+        "create": "Tạo Khách hàng",
+        "update": "Cập nhật Khách hàng",
+        "delete": "Xóa Khách hàng",
+        "manage": "Quản lý Khách hàng"
+      },
+      "orders": {
+        "read": "Xem Đơn hàng",
+        "write": "Tạo/Sửa Đơn hàng",
+        "manage": "Quản lý Đơn hàng"
+      },
+      "promotions": {
+        "read": "Xem Khuyến mãi",
+        "write": "Tạo/Sửa Khuyến mãi",
+        "delete": "Xóa Khuyến mãi",
+        "manage": "Quản lý Khuyến mãi"
+      },
+      "inventory": {
+        "read": "Xem Kho hàng",
+        "write": "Điều chỉnh Kho hàng",
+        "manage": "Quản lý Kho hàng"
+      },
+      "wishlists": {
+        "read": "Xem Danh sách Yêu thích",
+        "write": "Sửa Danh sách Yêu thích",
+        "manage": "Quản lý Danh sách Yêu thích"
+      },
+      "reports": {
+        "read": "Xem Báo cáo"
+      },
+      "legal-pages": {
+        "read": "Xem Trang Pháp lý",
+        "update": "Cập nhật Trang Pháp lý"
+      },
+      "tenant-settings": {
+        "read": "Xem Cài đặt Tenant",
+        "update": "Cập nhật Cài đặt Tenant"
+      },
+      "platform-settings": {
+        "read": "Xem Cài đặt Nền tảng",
+        "manage": "Quản lý Cài đặt Nền tảng"
+      },
+      "payments": {
+        "read": "Xem Thanh toán",
+        "create": "Tạo Thanh toán",
+        "manage": "Quản lý Thanh toán"
+      },
+      "payment-gateways": {
+        "read": "Xem Cổng Thanh toán",
+        "manage": "Quản lý Cổng Thanh toán"
+      },
+      "payment-refunds": {
+        "read": "Xem Hoàn tiền",
+        "manage": "Quản lý Hoàn tiền"
+      },
+      "payment-webhooks": {
+        "read": "Xem Webhook Thanh toán"
+      }
+    },
+    "descriptions": {
+      "users": {
+        "read": "Xem hồ sơ và danh sách người dùng",
+        "create": "Tạo tài khoản người dùng mới",
+        "update": "Sửa hồ sơ và cài đặt người dùng",
+        "delete": "Xóa tài khoản người dùng",
+        "manage-roles": "Gán và xóa vai trò của người dùng"
+      },
+      "roles": {
+        "read": "Xem vai trò và quyền hạn",
+        "create": "Tạo vai trò mới",
+        "update": "Sửa chi tiết vai trò",
+        "delete": "Xóa vai trò",
+        "manage-permissions": "Gán và xóa quyền hạn của vai trò"
+      },
+      "tenants": {
+        "read": "Xem thông tin tenant",
+        "create": "Tạo tenant mới",
+        "update": "Sửa cài đặt tenant",
+        "delete": "Xóa tenant"
+      },
+      "system": {
+        "admin": "Quyền quản trị hệ thống đầy đủ",
+        "audit-logs": "Truy cập nhật ký kiểm toán hệ thống",
+        "settings": "Cấu hình cài đặt hệ thống",
+        "hangfire": "Truy cập bảng điều khiển tác vụ nền Hangfire",
+        "config:view": "Xem cài đặt cấu hình nền tảng",
+        "config:edit": "Sửa cài đặt cấu hình nền tảng",
+        "app:restart": "Khởi động lại ứng dụng"
+      },
+      "audit": {
+        "read": "Xem bản ghi kiểm toán",
+        "export": "Xuất nhật ký kiểm toán ra tệp",
+        "entity-history": "Xem lịch sử thay đổi thực thể",
+        "policy-read": "Xem cấu hình chính sách kiểm toán",
+        "policy-write": "Tạo và sửa chính sách kiểm toán",
+        "policy-delete": "Xóa chính sách kiểm toán",
+        "stream": "Theo dõi sự kiện kiểm toán thời gian thực"
+      },
+      "email-templates": {
+        "read": "Xem mẫu email",
+        "update": "Sửa nội dung mẫu email"
+      }
     }
   },
   "theme": {

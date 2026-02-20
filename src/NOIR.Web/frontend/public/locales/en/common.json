@@ -1722,7 +1722,211 @@
       "emailtemplates": "Email Templates",
       "legalpages": "Legal Pages",
       "platform": "Platform",
-      "payments": "Payments"
+      "payments": "Payments",
+      "configurationmanagement": "Configuration Management"
+    },
+    "displayNames": {
+      "users": {
+        "read": "View Users",
+        "create": "Create Users",
+        "update": "Update Users",
+        "delete": "Delete Users",
+        "manage-roles": "Manage User Roles"
+      },
+      "roles": {
+        "read": "View Roles",
+        "create": "Create Roles",
+        "update": "Update Roles",
+        "delete": "Delete Roles",
+        "manage-permissions": "Manage Role Permissions"
+      },
+      "tenants": {
+        "read": "View Tenants",
+        "create": "Create Tenants",
+        "update": "Update Tenants",
+        "delete": "Delete Tenants"
+      },
+      "system": {
+        "admin": "System Admin",
+        "audit-logs": "View Audit Logs",
+        "settings": "Manage System Settings",
+        "hangfire": "Hangfire Dashboard",
+        "config:view": "View Configuration",
+        "config:edit": "Edit Configuration",
+        "app:restart": "Restart Application"
+      },
+      "audit": {
+        "read": "View Audit Data",
+        "export": "Export Audit Data",
+        "entity-history": "View Entity History",
+        "policy-read": "Read Audit Policies",
+        "policy-write": "Write Audit Policies",
+        "policy-delete": "Delete Audit Policies",
+        "stream": "Stream Audit Events"
+      },
+      "email-templates": {
+        "read": "View Email Templates",
+        "update": "Update Email Templates"
+      },
+      "blog-posts": {
+        "read": "View Blog Posts",
+        "create": "Create Blog Posts",
+        "update": "Update Blog Posts",
+        "delete": "Delete Blog Posts",
+        "publish": "Publish Blog Posts"
+      },
+      "blog-categories": {
+        "read": "View Blog Categories",
+        "create": "Create Blog Categories",
+        "update": "Update Blog Categories",
+        "delete": "Delete Blog Categories"
+      },
+      "blog-tags": {
+        "read": "View Blog Tags",
+        "create": "Create Blog Tags",
+        "update": "Update Blog Tags",
+        "delete": "Delete Blog Tags"
+      },
+      "products": {
+        "read": "View Products",
+        "create": "Create Products",
+        "update": "Update Products",
+        "delete": "Delete Products",
+        "publish": "Publish Products"
+      },
+      "product-categories": {
+        "read": "View Product Categories",
+        "create": "Create Product Categories",
+        "update": "Update Product Categories",
+        "delete": "Delete Product Categories"
+      },
+      "brands": {
+        "read": "View Brands",
+        "create": "Create Brands",
+        "update": "Update Brands",
+        "delete": "Delete Brands"
+      },
+      "attributes": {
+        "read": "View Attributes",
+        "create": "Create Attributes",
+        "update": "Update Attributes",
+        "delete": "Delete Attributes"
+      },
+      "reviews": {
+        "read": "View Reviews",
+        "write": "Write Reviews",
+        "manage": "Manage Reviews"
+      },
+      "customer-groups": {
+        "read": "View Customer Groups",
+        "create": "Create Customer Groups",
+        "update": "Update Customer Groups",
+        "delete": "Delete Customer Groups",
+        "manage-members": "Manage Group Members"
+      },
+      "customers": {
+        "read": "View Customers",
+        "create": "Create Customers",
+        "update": "Update Customers",
+        "delete": "Delete Customers",
+        "manage": "Manage Customers"
+      },
+      "orders": {
+        "read": "View Orders",
+        "write": "Create/Edit Orders",
+        "manage": "Manage Orders"
+      },
+      "promotions": {
+        "read": "View Promotions",
+        "write": "Create/Edit Promotions",
+        "delete": "Delete Promotions",
+        "manage": "Manage Promotions"
+      },
+      "inventory": {
+        "read": "View Inventory",
+        "write": "Adjust Inventory",
+        "manage": "Manage Inventory"
+      },
+      "wishlists": {
+        "read": "View Wishlists",
+        "write": "Edit Wishlists",
+        "manage": "Manage Wishlists"
+      },
+      "reports": {
+        "read": "View Reports"
+      },
+      "legal-pages": {
+        "read": "View Legal Pages",
+        "update": "Update Legal Pages"
+      },
+      "tenant-settings": {
+        "read": "View Tenant Settings",
+        "update": "Update Tenant Settings"
+      },
+      "platform-settings": {
+        "read": "View Platform Settings",
+        "manage": "Manage Platform Settings"
+      },
+      "payments": {
+        "read": "View Payments",
+        "create": "Create Payments",
+        "manage": "Manage Payments"
+      },
+      "payment-gateways": {
+        "read": "View Payment Gateways",
+        "manage": "Manage Payment Gateways"
+      },
+      "payment-refunds": {
+        "read": "View Refunds",
+        "manage": "Manage Refunds"
+      },
+      "payment-webhooks": {
+        "read": "View Payment Webhooks"
+      }
+    },
+    "descriptions": {
+      "users": {
+        "read": "View user profiles and list users",
+        "create": "Create new user accounts",
+        "update": "Edit user profiles and settings",
+        "delete": "Delete user accounts",
+        "manage-roles": "Assign and remove roles from users"
+      },
+      "roles": {
+        "read": "View roles and their permissions",
+        "create": "Create new roles",
+        "update": "Edit role details",
+        "delete": "Delete roles",
+        "manage-permissions": "Assign and remove permissions from roles"
+      },
+      "tenants": {
+        "read": "View tenant information",
+        "create": "Create new tenants",
+        "update": "Edit tenant settings",
+        "delete": "Delete tenants"
+      },
+      "system": {
+        "admin": "Full system administration access",
+        "audit-logs": "Access system audit logs",
+        "settings": "Configure system settings",
+        "hangfire": "Access Hangfire background job dashboard",
+        "config:view": "View platform configuration settings",
+        "config:edit": "Edit platform configuration settings",
+        "app:restart": "Restart the application"
+      },
+      "audit": {
+        "read": "View audit records",
+        "export": "Export audit logs to files",
+        "entity-history": "View change history for entities",
+        "policy-read": "View audit policy configurations",
+        "policy-write": "Create and edit audit policies",
+        "policy-delete": "Delete audit policies",
+        "stream": "Access real-time audit event stream"
+      },
+      "email-templates": {
+        "read": "View email templates",
+        "update": "Edit email template content"
+      }
     }
   },
   "theme": {

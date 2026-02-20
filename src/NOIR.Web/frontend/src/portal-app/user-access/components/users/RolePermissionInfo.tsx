@@ -4,6 +4,7 @@ import { Info, Loader2 } from 'lucide-react'
 import { TippyTooltip } from '@uikit'
 import { getEffectivePermissions, getAllPermissions } from '@/services/roles'
 import type { Permission, RoleListItem } from '@/types'
+import { translatePermissionCategory, translatePermissionDisplayName } from '@/portal-app/user-access/utils/permissionTranslation'
 
 // Shared ref for permission details across instances (avoids module-level mutable state)
 const sharedPermissionDetails = { current: null as Permission[] | null }
@@ -69,12 +70,6 @@ export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded
     }
   }, [role.id, permissionsCache, onPermissionsLoaded, permissions])
 
-  // Translate category name
-  const translateCategory = (category: string): string => {
-    const categoryKey = category.toLowerCase().replace(/\s+/g, '')
-    return t(`permissions.categories.${categoryKey}`, category)
-  }
-
   // Group permissions by category for display
   const groupedPermissions = permissions?.reduce((groups, permName) => {
     const permDetail = allPermissions.find((p) => p.name === permName)
@@ -84,7 +79,7 @@ export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded
     }
     groups[category].push({
       name: permName,
-      displayName: permDetail?.displayName || permName,
+      displayName: translatePermissionDisplayName(t, permName, permDetail?.displayName || permName),
     })
     return groups
   }, {} as Record<string, { name: string; displayName: string }[]>)
@@ -121,7 +116,7 @@ export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded
               Object.entries(groupedPermissions).map(([category, perms]) => (
                 <div key={category}>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                    {translateCategory(category)} ({perms.length})
+                    {translatePermissionCategory(t, category)} ({perms.length})
                   </div>
                   <ul className="space-y-0.5">
                     {perms.slice(0, 5).map((perm) => (

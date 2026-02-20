@@ -429,7 +429,7 @@ npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill u
 - "Build a product card component" → React/TypeScript implementation
 - "Review my navbar for accessibility" → Comprehensive UX audit
 
-> Auto-routing rules are defined in `.claude/rules/superclaude-routing.md`
+> Skill routing hints are in `CLAUDE.md` under SuperClaude Framework.
 
 ---
 
