@@ -183,7 +183,13 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Arrange
         var adminClient = await GetAdminClientAsync();
 
-        // First create a non-default wishlist
+        // Ensure a default wishlist exists first (first wishlist auto-becomes default)
+        var defaultName = $"Default Wishlist {Guid.NewGuid():N}";
+        var defaultRequest = new CreateWishlistCommand(defaultName);
+        var defaultResponse = await adminClient.PostAsJsonAsync("/api/wishlists", defaultRequest);
+        defaultResponse.EnsureSuccessStatusCode();
+
+        // Now create a second (non-default) wishlist that can be deleted
         var uniqueName = $"Deletable Wishlist {Guid.NewGuid():N}";
         var createRequest = new CreateWishlistCommand(uniqueName);
         var createResponse = await adminClient.PostAsJsonAsync("/api/wishlists", createRequest);

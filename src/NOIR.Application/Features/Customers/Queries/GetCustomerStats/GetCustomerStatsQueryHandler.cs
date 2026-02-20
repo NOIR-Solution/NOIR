@@ -16,15 +16,10 @@ public class GetCustomerStatsQueryHandler
         GetCustomerStatsQuery query,
         CancellationToken cancellationToken)
     {
-        // Get total and active counts in parallel
-        var totalCountTask = _customerRepository.CountAsync(cancellationToken);
+        // DbContext is not thread-safe - run queries sequentially
+        var totalCount = await _customerRepository.CountAsync(cancellationToken);
         var activeCountSpec = new CustomersCountSpec(isActive: true);
-        var activeCountTask = _customerRepository.CountAsync(activeCountSpec, cancellationToken);
-
-        await Task.WhenAll(totalCountTask, activeCountTask);
-
-        var totalCount = totalCountTask.Result;
-        var activeCount = activeCountTask.Result;
+        var activeCount = await _customerRepository.CountAsync(activeCountSpec, cancellationToken);
 
         // Get segment distribution
         var segmentDistribution = new List<SegmentDistributionDto>();

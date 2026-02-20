@@ -10,6 +10,12 @@ namespace NOIR.Infrastructure.Services;
 /// </summary>
 public class DashboardQueryService : IDashboardQueryService, IScopedService
 {
+    private static readonly OrderStatus[] ValidRevenueStatuses =
+    [
+        OrderStatus.Confirmed, OrderStatus.Processing, OrderStatus.Shipped,
+        OrderStatus.Delivered, OrderStatus.Completed
+    ];
+
     private readonly ApplicationDbContext _context;
 
     public DashboardQueryService(ApplicationDbContext context)
@@ -32,7 +38,6 @@ public class DashboardQueryService : IDashboardQueryService, IScopedService
 
         // Use Set<T>() to access entities not exposed on IApplicationDbContext
         var orders = _context.Set<Domain.Entities.Order.Order>();
-        var orderItems = _context.Set<OrderItem>();
         var products = _context.Products;
         var productVariants = _context.ProductVariants;
 
@@ -40,8 +45,8 @@ public class DashboardQueryService : IDashboardQueryService, IScopedService
         // and does not support multiple concurrent operations on the same instance.
         var revenue = await GetRevenueMetricsAsync(orders, startOfMonth, startOfLastMonth, startOfToday, cancellationToken);
         var orderCounts = await GetOrderStatusCountsAsync(orders, cancellationToken);
-        var topSelling = await GetTopSellingProductsAsync(orderItems, orders, topProductsCount, cancellationToken);
-        var lowStock = await GetLowStockProductsAsync(products, productVariants, lowStockThreshold, cancellationToken);
+        var topSelling = await GetTopSellingProductsAsync(orders, topProductsCount, cancellationToken);
+        var lowStock = await GetLowStockProductsAsync(productVariants, lowStockThreshold, cancellationToken);
         var recentOrders = await GetRecentOrdersAsync(orders, recentOrdersCount, cancellationToken);
         var salesOverTime = await GetSalesOverTimeAsync(orders, salesStartDate, cancellationToken);
         var productDistribution = await GetProductStatusDistributionAsync(products, cancellationToken);
@@ -63,14 +68,7 @@ public class DashboardQueryService : IDashboardQueryService, IScopedService
         DateTimeOffset startOfToday,
         CancellationToken ct)
     {
-        // Exclude cancelled and refunded orders from revenue
-        var validStatuses = new[]
-        {
-            OrderStatus.Confirmed, OrderStatus.Processing, OrderStatus.Shipped,
-            OrderStatus.Delivered, OrderStatus.Completed
-        };
-
-        var validOrders = orders.Where(o => validStatuses.Contains(o.Status));
+        var validOrders = orders.Where(o => ValidRevenueStatuses.Contains(o.Status));
 
         var totalRevenue = await validOrders
             .TagWith("Dashboard_TotalRevenue")
@@ -137,21 +135,18 @@ public class DashboardQueryService : IDashboardQueryService, IScopedService
     }
 
     private static async Task<IReadOnlyList<TopSellingProductDto>> GetTopSellingProductsAsync(
-        DbSet<OrderItem> orderItems,
         DbSet<Domain.Entities.Order.Order> orders,
         int count,
         CancellationToken ct)
     {
-        // Only count items from non-cancelled/refunded orders
-        var validStatuses = new[]
-        {
-            OrderStatus.Confirmed, OrderStatus.Processing, OrderStatus.Shipped,
-            OrderStatus.Delivered, OrderStatus.Completed
-        };
-
-        var topProducts = await orderItems
+        // Start from Order side to avoid OrderItem → Order navigation + global query filter issues
+        var itemData = await orders
             .TagWith("Dashboard_TopSellingProducts")
-            .Where(oi => validStatuses.Contains(oi.Order!.Status))
+            .Where(o => ValidRevenueStatuses.Contains(o.Status))
+            .SelectMany(o => o.Items, (o, oi) => new { oi.ProductId, oi.ProductName, oi.ImageUrl, oi.Quantity, oi.UnitPrice })
+            .ToListAsync(ct);
+
+        return itemData
             .GroupBy(oi => new { oi.ProductId, oi.ProductName, oi.ImageUrl })
             .Select(g => new TopSellingProductDto(
                 g.Key.ProductId,
@@ -161,33 +156,29 @@ public class DashboardQueryService : IDashboardQueryService, IScopedService
                 g.Sum(oi => oi.UnitPrice * oi.Quantity)))
             .OrderByDescending(x => x.TotalQuantitySold)
             .Take(count)
-            .ToListAsync(ct);
-
-        return topProducts;
+            .ToList();
     }
 
     private static async Task<IReadOnlyList<LowStockProductDto>> GetLowStockProductsAsync(
-        DbSet<Product> products,
         DbSet<ProductVariant> productVariants,
         int threshold,
         CancellationToken ct)
     {
+        // OrderBy before Select to avoid DTO constructor in SQL translation
+        // Use navigation property instead of explicit Join to work with global query filters
         var lowStock = await productVariants
             .TagWith("Dashboard_LowStockProducts")
             .Where(pv => pv.StockQuantity <= threshold && pv.StockQuantity >= 0)
-            .Join(products,
-                pv => pv.ProductId,
-                p => p.Id,
-                (pv, p) => new LowStockProductDto(
-                    p.Id,
-                    pv.Id,
-                    p.Name,
-                    pv.Name,
-                    pv.Sku,
-                    pv.StockQuantity,
-                    threshold))
-            .OrderBy(x => x.StockQuantity)
+            .OrderBy(pv => pv.StockQuantity)
             .Take(20)
+            .Select(pv => new LowStockProductDto(
+                pv.Product.Id,
+                pv.Id,
+                pv.Product.Name,
+                pv.Name,
+                pv.Sku,
+                pv.StockQuantity,
+                threshold))
             .ToListAsync(ct);
 
         return lowStock;
@@ -219,27 +210,17 @@ public class DashboardQueryService : IDashboardQueryService, IScopedService
         DateTimeOffset salesStartDate,
         CancellationToken ct)
     {
-        var validStatuses = new[]
-        {
-            OrderStatus.Confirmed, OrderStatus.Processing, OrderStatus.Shipped,
-            OrderStatus.Delivered, OrderStatus.Completed
-        };
-
-        var salesData = await orders
+        // Materialize first, then group in memory to avoid GroupBy(o.CreatedAt.Date) translation issues
+        var rawData = await orders
             .TagWith("Dashboard_SalesOverTime")
-            .Where(o => o.CreatedAt >= salesStartDate && validStatuses.Contains(o.Status))
-            .GroupBy(o => o.CreatedAt.Date)
-            .Select(g => new
-            {
-                Date = g.Key,
-                Revenue = g.Sum(o => o.GrandTotal),
-                OrderCount = g.Count()
-            })
-            .OrderBy(x => x.Date)
+            .Where(o => o.CreatedAt >= salesStartDate && ValidRevenueStatuses.Contains(o.Status))
+            .Select(o => new { o.CreatedAt, o.GrandTotal })
             .ToListAsync(ct);
 
-        return salesData.Select(x =>
-            new SalesOverTimeDto(DateOnly.FromDateTime(x.Date), x.Revenue, x.OrderCount))
+        return rawData
+            .GroupBy(o => DateOnly.FromDateTime(o.CreatedAt.Date))
+            .Select(g => new SalesOverTimeDto(g.Key, g.Sum(o => o.GrandTotal), g.Count()))
+            .OrderBy(x => x.Date)
             .ToList();
     }
 

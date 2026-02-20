@@ -4,6 +4,10 @@ namespace NOIR.Infrastructure.Services;
 /// Infrastructure implementation of report query service.
 /// Uses direct DbContext access for efficient aggregation queries.
 /// Follows the same pattern as DashboardQueryService.
+///
+/// NOTE: Queries avoid explicit .Join() and navigation-based .Where() on OrderItem → Order
+/// because EF Core cannot translate these with global query filters (IsDeleted, TenantId).
+/// Instead, we pre-filter valid Order IDs and use .Contains() or start from the Order side.
 /// </summary>
 public class ReportQueryService : IReportQueryService, IScopedService
 {
@@ -31,9 +35,7 @@ public class ReportQueryService : IReportQueryService, IScopedService
         CancellationToken cancellationToken = default)
     {
         var orders = _context.Set<Domain.Entities.Order.Order>();
-        var orderItems = _context.Set<OrderItem>();
         var payments = _context.PaymentTransactions;
-        var categories = _context.ProductCategories;
 
         var validOrders = orders
             .Where(o => ValidRevenueStatuses.Contains(o.Status))
@@ -50,14 +52,14 @@ public class ReportQueryService : IReportQueryService, IScopedService
 
         var avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-        // Revenue by day
+        // Revenue by day - query Order directly (no navigation issues)
         var revenueByDay = await GetRevenueByDayAsync(validOrders, cancellationToken);
 
-        // Revenue by category
+        // Revenue by category - use Order.Items SelectMany pattern
         var revenueByCategory = await GetRevenueByCategoryAsync(
-            orderItems, categories, startDate, endDate, cancellationToken);
+            validOrders, cancellationToken);
 
-        // Revenue by payment method
+        // Revenue by payment method - simple GroupBy on PaymentTransaction
         var revenueByPaymentMethod = await GetRevenueByPaymentMethodAsync(
             payments, startDate, endDate, cancellationToken);
 
@@ -105,50 +107,59 @@ public class ReportQueryService : IReportQueryService, IScopedService
         IQueryable<Domain.Entities.Order.Order> validOrders,
         CancellationToken ct)
     {
+        // Materialize daily data first, then project to DTO in memory
+        // This avoids EF Core translation issues with DateTimeOffset.Date in GroupBy
         var dailyData = await validOrders
             .TagWith("Report_Revenue_ByDay")
-            .GroupBy(o => o.CreatedAt.Date)
-            .Select(g => new
-            {
-                Date = g.Key,
-                Revenue = g.Sum(o => o.GrandTotal),
-                OrderCount = g.Count()
-            })
-            .OrderBy(x => x.Date)
+            .Select(o => new { o.CreatedAt, o.GrandTotal })
             .ToListAsync(ct);
 
         return dailyData
-            .Select(x => new DailyRevenueDto(
-                DateOnly.FromDateTime(x.Date), x.Revenue, x.OrderCount))
+            .GroupBy(o => DateOnly.FromDateTime(o.CreatedAt.Date))
+            .Select(g => new DailyRevenueDto(g.Key, g.Sum(o => o.GrandTotal), g.Count()))
+            .OrderBy(x => x.Date)
             .ToList();
     }
 
-    private static async Task<IReadOnlyList<CategoryRevenueDto>> GetRevenueByCategoryAsync(
-        DbSet<OrderItem> orderItems,
-        DbSet<ProductCategory> categories,
-        DateTimeOffset startDate,
-        DateTimeOffset endDate,
+    private async Task<IReadOnlyList<CategoryRevenueDto>> GetRevenueByCategoryAsync(
+        IQueryable<Domain.Entities.Order.Order> validOrders,
         CancellationToken ct)
     {
-        var categoryRevenue = await orderItems
+        // Start from valid orders and SelectMany to Items, then join to Product for CategoryId.
+        // This avoids the OrderItem → Order navigation translation issue.
+        var products = _context.Products;
+        var categories = _context.ProductCategories;
+
+        // Materialize order items from valid orders
+        var orderItemData = await validOrders
             .TagWith("Report_Revenue_ByCategory")
-            .Where(oi => ValidRevenueStatuses.Contains(oi.Order!.Status))
-            .Where(oi => oi.Order!.CreatedAt >= startDate && oi.Order!.CreatedAt <= endDate)
-            .Join(
-                categories.SelectMany(c => c.Products, (c, p) => new { c.Id, CategoryName = c.Name, p }),
-                oi => oi.ProductId,
-                cp => cp.p.Id,
-                (oi, cp) => new { cp.Id, cp.CategoryName, Revenue = oi.UnitPrice * oi.Quantity, oi.OrderId })
-            .GroupBy(x => new { CategoryId = x.Id, x.CategoryName })
-            .Select(g => new CategoryRevenueDto(
-                g.Key.CategoryId,
-                g.Key.CategoryName,
-                g.Sum(x => x.Revenue),
-                g.Select(x => x.OrderId).Distinct().Count()))
-            .OrderByDescending(x => x.Revenue)
+            .SelectMany(o => o.Items, (o, oi) => new { oi.ProductId, oi.UnitPrice, oi.Quantity, oi.OrderId })
             .ToListAsync(ct);
 
-        return categoryRevenue;
+        // Get product-to-category mapping
+        var productCategories = await products
+            .Where(p => p.CategoryId != null)
+            .Select(p => new { p.Id, p.CategoryId })
+            .ToListAsync(ct);
+
+        var categoryNames = await categories
+            .Select(c => new { c.Id, c.Name })
+            .ToListAsync(ct);
+
+        // Aggregate in memory
+        var productCategoryMap = productCategories.ToDictionary(p => p.Id, p => p.CategoryId!.Value);
+        var categoryNameMap = categoryNames.ToDictionary(c => c.Id, c => c.Name);
+
+        return orderItemData
+            .Where(oi => productCategoryMap.ContainsKey(oi.ProductId))
+            .GroupBy(oi => productCategoryMap[oi.ProductId])
+            .Select(g => new CategoryRevenueDto(
+                g.Key,
+                categoryNameMap.GetValueOrDefault(g.Key, "Unknown"),
+                g.Sum(x => x.UnitPrice * x.Quantity),
+                g.Select(x => x.OrderId).Distinct().Count()))
+            .OrderByDescending(x => x.Revenue)
+            .ToList();
     }
 
     private async Task<IReadOnlyList<PaymentMethodRevenueDto>> GetRevenueByPaymentMethodAsync(
@@ -159,23 +170,19 @@ public class ReportQueryService : IReportQueryService, IScopedService
     {
         var paidStatuses = new[] { PaymentStatus.Paid, PaymentStatus.CodCollected };
 
+        // Materialize then group in memory to avoid enum GroupBy translation issues
         var paymentData = await payments
             .TagWith("Report_Revenue_ByPaymentMethod")
             .Where(p => paidStatuses.Contains(p.Status))
             .Where(p => p.CreatedAt >= startDate && p.CreatedAt <= endDate)
-            .GroupBy(p => p.PaymentMethod)
-            .Select(g => new
-            {
-                Method = g.Key,
-                Revenue = g.Sum(p => p.Amount),
-                Count = g.Count()
-            })
-            .OrderByDescending(x => x.Revenue)
+            .Select(p => new { p.PaymentMethod, p.Amount })
             .ToListAsync(ct);
 
         return paymentData
-            .Select(x => new PaymentMethodRevenueDto(
-                x.Method.ToString(), x.Revenue, x.Count))
+            .GroupBy(p => p.PaymentMethod)
+            .Select(g => new PaymentMethodRevenueDto(
+                g.Key.ToString(), g.Sum(p => p.Amount), g.Count()))
+            .OrderByDescending(x => x.Revenue)
             .ToList();
     }
 
@@ -187,12 +194,17 @@ public class ReportQueryService : IReportQueryService, IScopedService
         int topN,
         CancellationToken cancellationToken = default)
     {
-        var orderItems = _context.Set<OrderItem>();
+        var orders = _context.Set<Domain.Entities.Order.Order>();
 
-        var bestSellers = await orderItems
+        // Start from Order side to avoid OrderItem → Order navigation issues
+        var itemData = await orders
             .TagWith("Report_BestSellers")
-            .Where(oi => ValidRevenueStatuses.Contains(oi.Order!.Status))
-            .Where(oi => oi.Order!.CreatedAt >= startDate && oi.Order!.CreatedAt <= endDate)
+            .Where(o => ValidRevenueStatuses.Contains(o.Status))
+            .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
+            .SelectMany(o => o.Items, (o, oi) => new { oi.ProductId, oi.ProductName, oi.ImageUrl, oi.Quantity, oi.UnitPrice })
+            .ToListAsync(cancellationToken);
+
+        var bestSellers = itemData
             .GroupBy(oi => new { oi.ProductId, oi.ProductName, oi.ImageUrl })
             .Select(g => new BestSellerDto(
                 g.Key.ProductId,
@@ -202,7 +214,7 @@ public class ReportQueryService : IReportQueryService, IScopedService
                 g.Sum(oi => oi.UnitPrice * oi.Quantity)))
             .OrderByDescending(x => x.UnitsSold)
             .Take(topN)
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         return new BestSellersReportDto(
             bestSellers,
@@ -219,23 +231,20 @@ public class ReportQueryService : IReportQueryService, IScopedService
     {
         var products = _context.Products;
         var productVariants = _context.ProductVariants;
-        var orderItems = _context.Set<OrderItem>();
+        var orders = _context.Set<Domain.Entities.Order.Order>();
 
-        // Low stock products
+        // Low stock products - OrderBy before Select to avoid DTO constructor in translation
         var lowStock = await productVariants
             .TagWith("Report_Inventory_LowStock")
             .Where(pv => pv.StockQuantity <= lowStockThreshold && pv.StockQuantity >= 0)
-            .Join(products,
-                pv => pv.ProductId,
-                p => p.Id,
-                (pv, p) => new LowStockDto(
-                    p.Id,
-                    p.Name,
-                    pv.Sku,
-                    pv.StockQuantity,
-                    lowStockThreshold))
-            .OrderBy(x => x.CurrentStock)
+            .OrderBy(pv => pv.StockQuantity)
             .Take(50)
+            .Select(pv => new LowStockDto(
+                pv.Product.Id,
+                pv.Product.Name,
+                pv.Sku,
+                pv.StockQuantity,
+                lowStockThreshold))
             .ToListAsync(cancellationToken);
 
         // Total counts
@@ -253,11 +262,13 @@ public class ReportQueryService : IReportQueryService, IScopedService
             .SumAsync(pv => (decimal?)pv.Price * pv.StockQuantity ?? 0, cancellationToken);
 
         // Turnover rate = units sold in last 30 days / average inventory
+        // Start from Order side to avoid OrderItem → Order navigation issues
         var thirtyDaysAgo = DateTimeOffset.UtcNow.AddDays(-30);
-        var unitsSold = await orderItems
+        var unitsSold = await orders
             .TagWith("Report_Inventory_UnitsSold30Days")
-            .Where(oi => ValidRevenueStatuses.Contains(oi.Order!.Status))
-            .Where(oi => oi.Order!.CreatedAt >= thirtyDaysAgo)
+            .Where(o => ValidRevenueStatuses.Contains(o.Status))
+            .Where(o => o.CreatedAt >= thirtyDaysAgo)
+            .SelectMany(o => o.Items)
             .SumAsync(oi => (int?)oi.Quantity ?? 0, cancellationToken);
 
         var totalCurrentStock = await productVariants
@@ -285,96 +296,86 @@ public class ReportQueryService : IReportQueryService, IScopedService
     {
         var orders = _context.Set<Domain.Entities.Order.Order>();
 
-        // New customers: unique CustomerId with first order in this period
-        var allCustomerFirstOrders = orders
-            .TagWith("Report_Customer_FirstOrders")
-            .Where(o => o.CustomerId != null)
-            .GroupBy(o => o.CustomerId)
-            .Select(g => new { CustomerId = g.Key, FirstOrder = g.Min(o => o.CreatedAt) });
+        // Materialize order data for customer analysis to avoid complex GroupBy translation
+        // Only load from previous period start onward to avoid full table scan
+        var periodDuration = endDate - startDate;
+        var dataFloor = startDate - periodDuration;
 
-        var newCustomers = await allCustomerFirstOrders
-            .Where(x => x.FirstOrder >= startDate && x.FirstOrder <= endDate)
-            .CountAsync(cancellationToken);
+        var orderData = await orders
+            .TagWith("Report_Customer_OrderData")
+            .Where(o => o.CustomerId != null)
+            .Where(o => o.CreatedAt >= dataFloor)
+            .Select(o => new { o.CustomerId, o.CustomerName, o.CreatedAt, o.Status, o.GrandTotal })
+            .ToListAsync(cancellationToken);
+
+        // New customers: unique CustomerId with first order in this period
+        var firstOrderByCustomer = orderData
+            .GroupBy(o => o.CustomerId)
+            .Select(g => new { CustomerId = g.Key, FirstOrder = g.Min(o => o.CreatedAt) })
+            .ToList();
+
+        var newCustomers = firstOrderByCustomer
+            .Count(x => x.FirstOrder >= startDate && x.FirstOrder <= endDate);
 
         // Returning customers: ordered before the period AND during the period
-        var customersInPeriod = orders
-            .Where(o => o.CustomerId != null)
+        var customersInPeriod = orderData
             .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
             .Select(o => o.CustomerId)
-            .Distinct();
+            .Distinct()
+            .ToHashSet();
 
-        var customersBeforePeriod = orders
-            .Where(o => o.CustomerId != null)
+        var customersBeforePeriod = orderData
             .Where(o => o.CreatedAt < startDate)
             .Select(o => o.CustomerId)
-            .Distinct();
+            .Distinct()
+            .ToHashSet();
 
-        var returningCustomers = await customersInPeriod
-            .TagWith("Report_Customer_Returning")
-            .Where(c => customersBeforePeriod.Contains(c))
-            .CountAsync(cancellationToken);
+        var returningCustomers = customersInPeriod.Count(c => customersBeforePeriod.Contains(c));
 
         // Churn rate: customers who ordered in previous period but not in current period
-        var periodDuration = endDate - startDate;
         var previousStart = startDate - periodDuration;
         var previousEnd = startDate;
 
-        var previousPeriodCustomers = orders
-            .Where(o => o.CustomerId != null)
+        var previousPeriodCustomers = orderData
             .Where(o => o.CreatedAt >= previousStart && o.CreatedAt < previousEnd)
             .Select(o => o.CustomerId)
-            .Distinct();
+            .Distinct()
+            .ToHashSet();
 
-        var previousPeriodCount = await previousPeriodCustomers
-            .TagWith("Report_Customer_PreviousPeriodCount")
-            .CountAsync(cancellationToken);
+        var churnedCount = previousPeriodCustomers.Count(c => !customersInPeriod.Contains(c));
 
-        var churnedCount = await previousPeriodCustomers
-            .TagWith("Report_Customer_Churned")
-            .Where(c => !customersInPeriod.Contains(c))
-            .CountAsync(cancellationToken);
-
-        var churnRate = previousPeriodCount > 0
-            ? Math.Round((decimal)churnedCount / previousPeriodCount * 100, 2)
+        var churnRate = previousPeriodCustomers.Count > 0
+            ? Math.Round((decimal)churnedCount / previousPeriodCustomers.Count * 100, 2)
             : 0m;
 
         // Monthly acquisition
-        var acquisitionByMonth = await allCustomerFirstOrders
-            .TagWith("Report_Customer_MonthlyAcquisition")
+        var newCustomersByMonth = firstOrderByCustomer
             .Where(x => x.FirstOrder >= startDate && x.FirstOrder <= endDate)
             .GroupBy(x => new { x.FirstOrder.Year, x.FirstOrder.Month })
-            .Select(g => new
+            .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
+            .ToList();
+
+        var validOrderData = orderData
+            .Where(o => ValidRevenueStatuses.Contains(o.Status))
+            .ToList();
+
+        var monthlyAcquisition = newCustomersByMonth
+            .Select(g =>
             {
-                Year = g.Key.Year,
-                Month = g.Key.Month,
-                Count = g.Count()
+                var monthLabel = $"{g.Key.Year}-{g.Key.Month:D2}";
+                var monthStart = new DateTimeOffset(g.Key.Year, g.Key.Month, 1, 0, 0, 0, TimeSpan.Zero);
+                var monthEnd = monthStart.AddMonths(1);
+
+                var monthRevenue = validOrderData
+                    .Where(o => o.CreatedAt >= monthStart && o.CreatedAt < monthEnd)
+                    .Sum(o => o.GrandTotal);
+
+                return new MonthlyAcquisitionDto(monthLabel, g.Count(), monthRevenue);
             })
-            .OrderBy(x => x.Year).ThenBy(x => x.Month)
-            .ToListAsync(cancellationToken);
-
-        // Get revenue for each month's new customers
-        var monthlyAcquisition = new List<MonthlyAcquisitionDto>();
-        foreach (var m in acquisitionByMonth)
-        {
-            var monthLabel = $"{m.Year}-{m.Month:D2}";
-            var monthStart = new DateTimeOffset(m.Year, m.Month, 1, 0, 0, 0, TimeSpan.Zero);
-            var monthEnd = monthStart.AddMonths(1);
-
-            var monthRevenue = await orders
-                .TagWith("Report_Customer_MonthlyRevenue")
-                .Where(o => ValidRevenueStatuses.Contains(o.Status))
-                .Where(o => o.CreatedAt >= monthStart && o.CreatedAt < monthEnd)
-                .SumAsync(o => (decimal?)o.GrandTotal ?? 0, cancellationToken);
-
-            monthlyAcquisition.Add(new MonthlyAcquisitionDto(
-                monthLabel, m.Count, monthRevenue));
-        }
+            .ToList();
 
         // Top customers by spending
-        var topCustomers = await orders
-            .TagWith("Report_Customer_TopSpenders")
-            .Where(o => ValidRevenueStatuses.Contains(o.Status))
-            .Where(o => o.CustomerId != null)
+        var topCustomers = validOrderData
             .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
             .GroupBy(o => new { o.CustomerId, o.CustomerName })
             .Select(g => new TopCustomerDto(
@@ -384,7 +385,7 @@ public class ReportQueryService : IReportQueryService, IScopedService
                 g.Count()))
             .OrderByDescending(x => x.TotalSpent)
             .Take(10)
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         return new CustomerReportDto(
             newCustomers,
