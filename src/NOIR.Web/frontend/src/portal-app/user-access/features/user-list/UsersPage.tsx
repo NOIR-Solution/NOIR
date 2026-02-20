@@ -120,21 +120,32 @@ export const UsersPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
+        <CardHeader className="pb-4">
+          <div className="space-y-3">
+            <div>
               <CardTitle>{t('users.listTitle', 'All Users')}</CardTitle>
               <CardDescription>
                 {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Search */}
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('users.searchPlaceholder', 'Search users...')}
+                  value={searchInput}
+                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
+                  className="pl-9 h-9"
+                  aria-label={t('users.searchUsers', 'Search users')}
+                />
+              </div>
               {/* Role Filter */}
               <Select
                 value={params.role || 'all'}
                 onValueChange={(value) => setRoleFilter(value === 'all' ? '' : value)}
               >
-                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('users.filterByRole', 'Filter by role')}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('users.filterByRole', 'Filter by role')}>
                   <SelectValue placeholder={t('users.filterByRole', 'Filter by role')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -146,7 +157,6 @@ export const UsersPage = () => {
                   ))}
                 </SelectContent>
               </Select>
-
               {/* Status Filter */}
               <Select
                 value={params.isLocked === undefined ? 'all' : params.isLocked ? 'locked' : 'active'}
@@ -156,7 +166,7 @@ export const UsersPage = () => {
                   else setLockedFilter(false)
                 }}
               >
-                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('users.filterByStatus', 'Filter by status')}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('users.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder={t('users.filterByStatus', 'Status')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -165,18 +175,6 @@ export const UsersPage = () => {
                   <SelectItem value="locked" className="cursor-pointer">{t('users.locked', 'Locked')}</SelectItem>
                 </SelectContent>
               </Select>
-
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('users.searchPlaceholder', 'Search users...')}
-                  value={searchInput}
-                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
-                  className="pl-10 w-full sm:w-64"
-                  aria-label={t('users.searchUsers', 'Search users')}
-                />
-              </div>
             </div>
           </div>
         </CardHeader>

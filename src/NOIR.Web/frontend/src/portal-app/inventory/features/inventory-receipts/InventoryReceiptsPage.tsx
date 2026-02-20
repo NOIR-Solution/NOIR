@@ -175,18 +175,18 @@ export const InventoryReceiptsPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
+        <CardHeader className="pb-4">
+          <div className="space-y-3">
+            <div>
               <CardTitle>{t('inventory.allReceipts', 'All Receipts')}</CardTitle>
               <CardDescription>
                 {t('inventory.totalCount', { count: totalCount, defaultValue: `${totalCount} receipts total` })}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center justify-end gap-2">
               {/* Type Filter */}
               <Select value={typeFilter} onValueChange={handleTypeFilter}>
-                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('inventory.filterByType', 'Filter by type')}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('inventory.filterByType', 'Filter by type')}>
                   <SelectValue placeholder={t('inventory.type', 'Type')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -195,10 +195,9 @@ export const InventoryReceiptsPage = () => {
                   <SelectItem value="StockOut" className="cursor-pointer">{t('inventory.type.stockOut', 'Stock Out')}</SelectItem>
                 </SelectContent>
               </Select>
-
               {/* Status Filter */}
               <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('inventory.filterByStatus', 'Filter by status')}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('inventory.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder={t('labels.status', 'Status')} />
                 </SelectTrigger>
                 <SelectContent>

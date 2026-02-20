@@ -113,23 +113,22 @@ export const CustomerGroupsPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
+        <CardHeader className="pb-4">
+          <div className="space-y-3">
+            <div>
               <CardTitle>{t('customerGroups.allGroups', 'All Groups')}</CardTitle>
               <CardDescription>
                 {t('customerGroups.totalCount', { count: totalCount, defaultValue: `${totalCount} groups total` })}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-3">
-              {/* Search */}
-              <div className="relative">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder={t('customerGroups.searchPlaceholder', 'Search groups...')}
                   value={searchInput}
                   onChange={handleSearchChange}
-                  className="pl-10 w-full sm:w-48"
+                  className="pl-9 h-9"
                   aria-label={t('customerGroups.searchGroups', 'Search customer groups')}
                 />
               </div>

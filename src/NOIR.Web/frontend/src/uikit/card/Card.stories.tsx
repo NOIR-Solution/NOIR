@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Meta, StoryObj } from 'storybook'
 import {
   Card,
@@ -9,7 +10,10 @@ import {
   CardAction,
 } from './Card'
 import { Skeleton } from '../skeleton/Skeleton'
-import { Users, TrendingUp, UserCheck, Crown } from 'lucide-react'
+import { Input } from '../input/Input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../select/Select'
+import { ViewModeToggle, type ViewModeOption } from '../view-mode-toggle/ViewModeToggle'
+import { Users, TrendingUp, UserCheck, Crown, Search, List, LayoutGrid } from 'lucide-react'
 
 const meta = {
   title: 'UIKit/Card',
@@ -229,6 +233,148 @@ export const Loading: Story = {
       </CardContent>
     </Card>
   ),
+}
+
+/**
+ * Shared shell for list page header stories.
+ * Extracts the common Card + CardHeader + CardContent structure to avoid duplication.
+ */
+const ListPageCardShell = ({ children }: { children: React.ReactNode }) => (
+  <Card className="shadow-sm hover:shadow-lg transition-all duration-300" style={{ maxWidth: 800 }}>
+    <CardHeader className="pb-4">
+      <div className="space-y-3">
+        {children}
+      </div>
+    </CardHeader>
+    <CardContent>
+      <div className="rounded-xl border border-border/50 p-8 text-center text-muted-foreground">
+        Table / Tree content goes here
+      </div>
+    </CardContent>
+  </Card>
+)
+
+/**
+ * ListPageHeader — the standardized Card header layout used across all list pages.
+ *
+ * Structure:
+ * - `space-y-3` stacked layout inside CardHeader
+ * - Title row: `flex items-center justify-between` with CardTitle/CardDescription on the left
+ *   and an optional ViewModeToggle on the right
+ * - Filter bar: `flex flex-wrap items-center gap-2` with search input first (`flex-1 min-w-[200px]`),
+ *   followed by Select filter dropdowns (`w-36 h-9 cursor-pointer`)
+ *
+ * Card class variants:
+ * - Standard: `shadow-sm hover:shadow-lg transition-all duration-300`
+ * - Enhanced (ProductsPage): adds `border-border/50 backdrop-blur-sm bg-card/95`
+ *
+ * Reference: Activity Timeline page layout (gold standard)
+ * Used by: Products, Product Categories, Blog Categories, Product Attributes, Reviews, Inventory Receipts, etc.
+ */
+export const ListPageHeader: Story = {
+  render: () => {
+    const [status, setStatus] = useState('all')
+    const [category, setCategory] = useState('all')
+    const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
+    const viewModeOptions: ViewModeOption<'table' | 'grid'>[] = [
+      { value: 'table', label: 'List', icon: List, ariaLabel: 'Table view' },
+      { value: 'grid', label: 'Grid', icon: LayoutGrid, ariaLabel: 'Grid view' },
+    ]
+
+    return (
+      <ListPageCardShell>
+        {/* Title row: title + optional ViewModeToggle */}
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>All Products</CardTitle>
+            <CardDescription>24 products total</CardDescription>
+          </div>
+          <ViewModeToggle options={viewModeOptions} value={viewMode} onChange={setViewMode} />
+        </div>
+        {/* Filter bar: search first, then Select dropdowns */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <Input
+              placeholder="Search products..."
+              className="pl-9 h-9"
+              aria-label="Search products"
+            />
+          </div>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-36 h-9 cursor-pointer" aria-label="Filter by status">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="w-40 h-9 cursor-pointer" aria-label="Filter by category">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="clothing">Clothing</SelectItem>
+              <SelectItem value="electronics">Electronics</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </ListPageCardShell>
+    )
+  },
+}
+
+/**
+ * ListPageHeaderDropdownOnly — variant for pages with only dropdown filters and no view-mode toggle.
+ *
+ * When to use this variant vs ListPageHeader:
+ * - Use ListPageHeader when the page has a search input and/or a ViewModeToggle (table/grid, table/tree)
+ * - Use this variant when the page has only dropdown filters and no mode switching
+ * - The filter bar uses `justify-end` since there is no flex-1 search input to push content right
+ *
+ * Used by: Inventory Receipts and similar pages.
+ */
+export const ListPageHeaderDropdownOnly: Story = {
+  render: () => {
+    const [type, setType] = useState('all')
+    const [status, setStatus] = useState('all')
+
+    return (
+      <ListPageCardShell>
+        <div>
+          <CardTitle>Inventory Receipts</CardTitle>
+          <CardDescription>12 receipts total</CardDescription>
+        </div>
+        {/* Filter bar: dropdown-only, right-aligned */}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Select value={type} onValueChange={setType}>
+            <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label="Filter by type">
+              <SelectValue placeholder="Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="stockIn">Stock In</SelectItem>
+              <SelectItem value="stockOut">Stock Out</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label="Filter by status">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </ListPageCardShell>
+    )
+  },
 }
 
 /**

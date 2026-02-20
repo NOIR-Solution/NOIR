@@ -111,27 +111,28 @@ export const BlogPostsPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
+        <CardHeader className="pb-4">
+          <div className="space-y-3">
+            <div>
               <CardTitle>{t('blog.allPosts', 'All Posts')}</CardTitle>
               <CardDescription>
                 {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="relative">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Search */}
+              <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder={t('blog.searchPlaceholder')}
                   value={searchInput}
                   onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
-                  className="pl-10 w-full sm:w-48"
+                  className="pl-9 h-9"
                   aria-label={t('labels.searchPosts')}
                 />
               </div>
               <Select onValueChange={handleStatusChange} defaultValue="all">
-                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('blog.filterByStatus')}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('blog.filterByStatus')}>
                   <SelectValue placeholder={t('labels.status')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -143,7 +144,7 @@ export const BlogPostsPage = () => {
                 </SelectContent>
               </Select>
               <Select onValueChange={handleCategoryChange} defaultValue="all">
-                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('blog.filterByCategory')}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('blog.filterByCategory')}>
                   <SelectValue placeholder={t('labels.category')} />
                 </SelectTrigger>
                 <SelectContent>

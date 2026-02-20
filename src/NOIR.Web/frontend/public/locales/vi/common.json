@@ -614,8 +614,8 @@
   },
   "blog": {
     "posts": "Bài viết Blog",
-    "categories": "Danh mục",
-    "tags": "Thẻ",
+    "categories": "Danh mục Blog",
+    "tags": "Thẻ Blog",
     "newPost": "Bài viết mới",
     "newCategory": "Danh mục mới",
     "newTag": "Thẻ mới",

@@ -9,7 +9,6 @@ import {
   Search,
   Trash2,
   Users,
-  X,
   Crown,
   TrendingUp,
   UserCheck,
@@ -241,18 +240,29 @@ export const CustomersPage = () => {
 
       {/* Customer List */}
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
+        <CardHeader className="pb-4">
+          <div className="space-y-3">
+            <div>
               <CardTitle>{t('customers.allCustomers', 'All Customers')}</CardTitle>
               <CardDescription>
                 {t('customers.totalCount', { count: totalCount, defaultValue: `${totalCount} customers total` })}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Search */}
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('customers.searchPlaceholder', 'Search customers...')}
+                  value={searchInput}
+                  onChange={handleSearchChange}
+                  className="pl-9 h-9"
+                  aria-label={t('customers.searchCustomers', 'Search customers')}
+                />
+              </div>
               {/* Segment Filter */}
               <Select value={segmentFilter} onValueChange={handleSegmentFilter}>
-                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('customers.filterBySegment', 'Filter by segment')}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('customers.filterBySegment', 'Filter by segment')}>
                   <SelectValue placeholder={t('customers.filterBySegment', 'Segment')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -266,7 +276,7 @@ export const CustomersPage = () => {
               </Select>
               {/* Tier Filter */}
               <Select value={tierFilter} onValueChange={handleTierFilter}>
-                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('customers.filterByTier', 'Filter by tier')}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('customers.filterByTier', 'Filter by tier')}>
                   <SelectValue placeholder={t('customers.filterByTier', 'Tier')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -278,28 +288,6 @@ export const CustomersPage = () => {
                   ))}
                 </SelectContent>
               </Select>
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('customers.searchPlaceholder', 'Search customers...')}
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  className="pl-10 w-full sm:w-48"
-                  aria-label={t('customers.searchCustomers', 'Search customers')}
-                />
-                {searchInput && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 cursor-pointer"
-                    onClick={() => setSearchInput('')}
-                    aria-label={t('labels.clearSearch', 'Clear search')}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
         </CardHeader>

@@ -7,7 +7,6 @@ import {
   Search,
   ShieldCheck,
   Star,
-  X,
   XCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -260,7 +259,7 @@ export const ReviewsPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader>
+        <CardHeader className="pb-4">
           <div className="flex flex-col gap-4">
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={handleTabChange}>
@@ -276,8 +275,8 @@ export const ReviewsPage = () => {
               </TabsList>
             </Tabs>
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-1">
+            <div className="space-y-3">
+              <div>
                 <CardTitle>{t('reviews.allReviews', 'All Reviews')}</CardTitle>
                 <CardDescription>
                   {t('reviews.totalCount', {
@@ -286,10 +285,21 @@ export const ReviewsPage = () => {
                   })}
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Search */}
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder={t('reviews.searchPlaceholder', 'Search reviews...')}
+                    value={searchInput}
+                    onChange={handleSearchChange}
+                    className="pl-9 h-9"
+                    aria-label={t('reviews.searchReviews', 'Search reviews')}
+                  />
+                </div>
                 {/* Rating Filter */}
                 <Select value={ratingFilter} onValueChange={handleRatingFilter}>
-                  <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('reviews.filterByRating', 'Filter rating')}>
+                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('reviews.filterByRating', 'Filter rating')}>
                     <SelectValue placeholder={t('reviews.filterByRating', 'Filter rating')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -309,28 +319,6 @@ export const ReviewsPage = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder={t('reviews.searchPlaceholder', 'Search reviews...')}
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    className="pl-10 w-full sm:w-48"
-                    aria-label={t('reviews.searchReviews', 'Search reviews')}
-                  />
-                  {searchInput && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 cursor-pointer"
-                      onClick={() => setSearchInput('')}
-                      aria-label={t('labels.clearSearch', 'Clear search')}
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-                </div>
               </div>
             </div>
 

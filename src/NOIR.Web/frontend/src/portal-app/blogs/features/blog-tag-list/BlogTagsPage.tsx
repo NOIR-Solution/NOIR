@@ -87,23 +87,25 @@ export const BlogTagsPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
+        <CardHeader className="pb-4">
+          <div className="space-y-3">
+            <div>
               <CardTitle>{t('blogTags.allTags', 'All Tags')}</CardTitle>
               <CardDescription>
                 {data ? t('blogTags.totalCount', { count: data.length, defaultValue: `${data.length} tags` }) : ''}
               </CardDescription>
             </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={t('blogTags.searchPlaceholder', 'Search tags...')}
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-10 w-full sm:w-48"
-                aria-label={t('blogTags.searchTags', 'Search tags')}
-              />
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('blogTags.searchPlaceholder', 'Search tags...')}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="pl-9 h-9"
+                  aria-label={t('blogTags.searchTags', 'Search tags')}
+                />
+              </div>
             </div>
           </div>
         </CardHeader>

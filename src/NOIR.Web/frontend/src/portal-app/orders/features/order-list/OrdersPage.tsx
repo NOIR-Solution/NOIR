@@ -6,7 +6,6 @@ import {
   Eye,
   Search,
   ShoppingCart,
-  X,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import {
@@ -104,18 +103,29 @@ export const OrdersPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
+        <CardHeader className="pb-4">
+          <div className="space-y-3">
+            <div>
               <CardTitle>{t('orders.allOrders', 'All Orders')}</CardTitle>
               <CardDescription>
                 {t('orders.totalCount', { count: totalCount, defaultValue: `${totalCount} orders total` })}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Search */}
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('orders.searchPlaceholder', 'Search by email...')}
+                  value={searchInput}
+                  onChange={handleSearchChange}
+                  className="pl-9 h-9"
+                  aria-label={t('orders.searchOrders', 'Search orders')}
+                />
+              </div>
               {/* Status Filter */}
               <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-[140px] cursor-pointer" aria-label={t('orders.filterByStatus', 'Filter by status')}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('orders.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder={t('orders.filterByStatus', 'Filter status')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -127,28 +137,6 @@ export const OrdersPage = () => {
                   ))}
                 </SelectContent>
               </Select>
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('orders.searchPlaceholder', 'Search by email...')}
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  className="pl-10 w-full sm:w-48"
-                  aria-label={t('orders.searchOrders', 'Search orders')}
-                />
-                {searchInput && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6"
-                    onClick={() => setSearchInput('')}
-                    aria-label={t('labels.clearSearch', 'Clear search')}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
         </CardHeader>

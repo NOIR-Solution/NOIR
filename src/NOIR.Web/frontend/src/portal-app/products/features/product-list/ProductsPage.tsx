@@ -164,7 +164,6 @@ export const ProductsPage = () => {
   const [selectedAttributeValues, setSelectedAttributeValues] = useState<Set<string>>(new Set())
 
   const [productToDelete, setProductToDelete] = useState<ProductListItem | null>(null)
-  const [showFilters, setShowFilters] = useState(false)
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
   const viewModeOptions: ViewModeOption<'table' | 'grid'>[] = useMemo(() => [
     { value: 'table', label: t('labels.list', 'List'), icon: ListIcon, ariaLabel: t('labels.tableView', 'Table view') },
@@ -446,46 +445,34 @@ export const ProductsPage = () => {
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/95">
-        <CardHeader className="pb-4 space-y-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
-              <CardTitle className="text-xl">{t('products.allProducts', 'All Products')}</CardTitle>
-              <CardDescription className="text-sm">
-                {data ? t('labels.showingOfItems', { from: paginationRange.from, to: paginationRange.to, total: data.totalCount }) : t('labels.loading', 'Loading...')}
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              {/* View Toggle */}
-              <ViewModeToggle options={viewModeOptions} value={viewMode} onChange={setViewMode} />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-                className="sm:hidden cursor-pointer"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
-            </div>
-          </div>
-
-          {/* Filters - Responsive Design */}
-          <div className={`flex flex-col gap-3 ${showFilters ? 'block' : 'hidden sm:flex'} sm:flex-row sm:items-center sm:flex-wrap`}>
-            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                <Input
-                  placeholder={t('products.searchPlaceholder', 'Search products...')}
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                  aria-label={t('products.searchProducts', 'Search products')}
-                />
+        <CardHeader className="pb-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl">{t('products.allProducts', 'All Products')}</CardTitle>
+                <CardDescription className="text-sm">
+                  {data ? t('labels.showingOfItems', { from: paginationRange.from, to: paginationRange.to, total: data.totalCount }) : t('labels.loading', 'Loading...')}
+                </CardDescription>
               </div>
+              <ViewModeToggle options={viewModeOptions} value={viewMode} onChange={setViewMode} />
+            </div>
+
+            {/* Filter Bar */}
+            <div className="flex flex-wrap items-center gap-2">
+            {/* Search */}
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <Input
+                placeholder={t('products.searchPlaceholder', 'Search products...')}
+                value={searchInput}
+                onChange={handleSearchChange}
+                className="pl-9 h-9"
+                aria-label={t('products.searchProducts', 'Search products')}
+              />
             </div>
 
             <Select onValueChange={handleStatusChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByStatus', 'Filter by status')}>
+              <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByStatus', 'Filter by status')}>
                 <SelectValue placeholder={t('labels.status', 'Status')} />
               </SelectTrigger>
               <SelectContent>
@@ -498,7 +485,7 @@ export const ProductsPage = () => {
             </Select>
 
             <Select onValueChange={handleCategoryChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-40 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByCategory', 'Filter by category')}>
+              <SelectTrigger className="w-full sm:w-40 h-9 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByCategory', 'Filter by category')}>
                 <SelectValue placeholder={t('labels.category', 'Category')} />
               </SelectTrigger>
               <SelectContent>
@@ -512,7 +499,7 @@ export const ProductsPage = () => {
             </Select>
 
             <Select onValueChange={handleBrandChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByBrand', 'Filter by brand')}>
+              <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByBrand', 'Filter by brand')}>
                 <SelectValue placeholder={t('labels.brand', 'Brand')} />
               </SelectTrigger>
               <SelectContent>
@@ -526,7 +513,7 @@ export const ProductsPage = () => {
             </Select>
 
             <Select onValueChange={handleStockFilterChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-36 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByStock', 'Filter by stock')}>
+              <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByStock', 'Filter by stock')}>
                 <SelectValue placeholder={t('labels.stock', 'Stock')} />
               </SelectTrigger>
               <SelectContent>
@@ -627,6 +614,8 @@ export const ProductsPage = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
+
+            </div>
           </div>
         </CardHeader>
 

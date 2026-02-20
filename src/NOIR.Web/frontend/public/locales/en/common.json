@@ -614,8 +614,8 @@
   },
   "blog": {
     "posts": "Blog Posts",
-    "categories": "Categories",
-    "tags": "Tags",
+    "categories": "Blog Categories",
+    "tags": "Blog Tags",
     "newPost": "New Post",
     "newCategory": "New Category",
     "newTag": "New Tag",
