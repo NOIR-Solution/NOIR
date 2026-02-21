@@ -4,13 +4,13 @@
 
 **Enterprise-ready .NET 10 + React 19 SaaS Foundation**
 
-*Multi-tenancy • E-commerce • Clean Architecture • 10,595+ Tests*
+*Multi-tenancy • E-commerce • Clean Architecture • 10,889+ Tests*
 
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-10595+-green.svg?style=flat-square)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-10889+-green.svg?style=flat-square)](tests/)
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Tech Stack](#-tech-stack) • [Contributing](#-contributing)
 
@@ -36,7 +36,7 @@ NOIR is a **production-ready foundation** for building modern SaaS applications.
 ### Prerequisites
 
 - **Runtime:** .NET 10 SDK ([Download](https://dotnet.microsoft.com/download/dotnet/10.0))
-- **Frontend:** Node.js 20+ ([Download](https://nodejs.org/))
+- **Frontend:** Node.js 20+ ([Download](https://nodejs.org/)), pnpm 10+ ([Install](https://pnpm.io/installation))
 - **Database:** SQL Server 2022 (LocalDB on Windows, [Docker](https://hub.docker.com/_/microsoft-mssql-server) on macOS/Linux)
 
 ### 🚀 One-Command Start
@@ -169,7 +169,7 @@ dotnet run --project src/NOIR.Web -c Release
 - **Hot Reload** - Backend and frontend live reloading
 - **Type Generation** - Swagger → TypeScript types
 - **Storybook** - 72 interactive component stories with UIKit catalog
-- **10,595+ Tests** - Unit, Integration, Architecture
+- **10,889+ Tests** - Unit, Integration, Architecture
 - **Architecture Tests** - Enforce layer boundaries
 - **Comprehensive Docs** - 15,000+ lines of documentation
 - **AI-Assisted** - SuperClaude Framework integration
@@ -282,7 +282,7 @@ NOIR/
 │       └── frontend/          # ⚛️  React application (pnpm)
 │           ├── .storybook/    # 📖 Storybook configuration
 │           └── src/uikit/     # 📚 72 component stories
-├── ✅ tests/                  # 10,595+ tests (Unit, Integration, Architecture)
+├── ✅ tests/                  # 10,889+ tests (Unit, Integration, Architecture)
 ├── 📚 docs/                   # 15,000+ lines of documentation
 └── ⚙️  .github/               # CI/CD workflows and templates
 ```
@@ -295,11 +295,11 @@ NOIR/
 
 | Test Type | Project | Count | Coverage |
 |-----------|---------|-------|----------|
-| **Unit Tests** | Domain.UnitTests | 2,568 | Domain logic, business rules |
-| **Unit Tests** | Application.UnitTests | 7,348 | CQRS handlers, validators |
-| **Integration** | IntegrationTests | 654 | API endpoints with database |
-| **Architecture** | ArchitectureTests | 25 | Layer dependency rules |
-| **Total** | **All Projects** | **10,595+** | **Comprehensive coverage** |
+| **Unit Tests** | Domain.UnitTests | 2,586 | Domain logic, business rules |
+| **Unit Tests** | Application.UnitTests | 7,483 | CQRS handlers, validators |
+| **Integration** | IntegrationTests | 788 | API endpoints with database |
+| **Architecture** | ArchitectureTests | 32 | Layer dependency rules |
+| **Total** | **All Projects** | **10,889+** | **Comprehensive coverage** |
 
 ### Running Tests
 
@@ -471,7 +471,7 @@ NOIR builds on the shoulders of giants:
 
 | Aspect | NOIR Advantage |
 |--------|----------------|
-| **Production-Ready** | Battle-tested patterns, 10,595+ tests, security built-in |
+| **Production-Ready** | Battle-tested patterns, 10,889+ tests, security built-in |
 | **E-commerce Ready** | Products, cart, checkout, orders, payments - all included |
 | **Developer-Friendly** | Hot reload, type generation, extensive docs, AI-assisted development |
 | **Performance** | Source generators, compiled queries, hybrid caching, optimized builds |

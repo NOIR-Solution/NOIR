@@ -98,7 +98,7 @@ dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 dotnet watch --project src/NOIR.Web        # hot reload
 
-# Tests (10,595+)
+# Tests (10,889+)
 dotnet test src/NOIR.sln
 dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
 
@@ -166,7 +166,9 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
         ├── src/uikit/           # UI components + stories (@uikit)
         ├── src/components/      # Shared app components
         ├── src/hooks/           # Custom hooks
-        └── src/services/        # API services
+        ├── src/services/        # API services
+        ├── src/lib/             # Utility functions
+        └── src/layouts/         # Page layouts
 ```
 
 ---
@@ -243,8 +245,12 @@ cd src/NOIR.Web/frontend && pnpm build-storybook  # Build check
 | **Attributes** | `Features/ProductAttributes/` | 13 types. ProductFilterIndex for faceted search. FilterAnalyticsEvent for tracking. | Complete |
 | **Cart** | `Features/Cart/` | Guest (SessionId) + Auth user. MergeCartCommand on login. Status: Active → Converted/Abandoned | Complete |
 | **Checkout** | `Features/Checkout/` | Accordion: Address → Shipping → Payment → Complete. 30min session expiry. | Complete |
-| **Orders** | `Features/Orders/` | Pending → Confirmed → Processing → Shipped → Delivered → Completed. Cancel/Return with inventory. 7 lifecycle commands. | Complete |
+| **Orders** | `Features/Orders/` | Pending → Confirmed → Processing → Shipped → Delivered → Completed. Cancel/Return with inventory. 10 lifecycle commands. | Complete |
+| **Payments** | `Features/Payments/` | PaymentTransaction tracking, status timeline, order payments query. Embedded in Order Detail. | Complete |
+| **Shipping** | `Features/Shipping/` | Provider integrations, tracking timeline, carrier management. Embedded in Order Detail. | Complete |
 | **Inventory** | `Features/Inventory/` | Receipt system (phieu nhap/xuat). Draft → Confirmed/Cancelled. Types: StockIn (RCV-), StockOut (SHP-). | Complete |
+| **Reviews** | `Features/Reviews/` | Product reviews with moderation. Approve/Reject workflow. | Complete |
+| **Wishlists** | `Features/Wishlists/` | User wishlists with analytics tracking. | Complete |
 | **Dashboard** | `Features/Dashboard/` | 7 metrics via Task.WhenAll(). Revenue excludes Cancelled/Refunded. | Complete |
 
 ---

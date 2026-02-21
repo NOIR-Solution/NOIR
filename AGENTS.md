@@ -23,7 +23,7 @@ src/
 dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 
-# Tests (10,595+)
+# Tests (10,889+)
 dotnet test src/NOIR.sln
 
 # Database Migrations (CRITICAL: always specify --context)

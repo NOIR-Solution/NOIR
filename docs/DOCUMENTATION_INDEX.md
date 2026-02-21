@@ -64,9 +64,13 @@
 |----------|-------|
 | [cache-busting-best-practices.md](backend/research/cache-busting-best-practices.md) | Cache invalidation |
 | [ecommerce-ux-patterns-2026.md](backend/research/ecommerce-ux-patterns-2026.md) | E-commerce UX |
+| [feature-management-design.md](backend/research/feature-management-design.md) | Feature management architecture |
+| [feature-management-requirements.md](backend/research/feature-management-requirements.md) | Feature toggle requirements |
+| [feature-management-workflow.md](backend/research/feature-management-workflow.md) | Implementation workflow |
 | [hierarchical-audit-logging-comparison-2025.md](backend/research/hierarchical-audit-logging-comparison-2025.md) | Audit design |
 | [role-permission-system-research.md](backend/research/role-permission-system-research.md) | RBAC/ReBAC patterns (Consolidated) |
 | [seo-meta-and-hint-text-best-practices.md](backend/research/seo-meta-and-hint-text-best-practices.md) | SEO best practices |
+| [module-feature-management-systems.md](backend/research/module-feature-management-systems.md) | Comparative feature systems analysis |
 | [validation-unification-plan.md](backend/research/validation-unification-plan.md) | Validation strategy |
 | [vietnam-shipping-integration-2026.md](backend/research/vietnam-shipping-integration-2026.md) | Vietnam shipping providers |
 
@@ -174,7 +178,7 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 56 |
+| **Total Docs** | 60 |
 | **Backend Patterns** | 11 |
 | **Backend Architecture** | 2 |
 | **Backend Research** | 7 |
