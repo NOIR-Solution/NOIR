@@ -135,6 +135,9 @@ const computeReorderItems = <T extends TreeCategory>(
   return items
 }
 
+// Delay (ms) before auto-expanding a collapsed folder on drag hover
+const OPEN_ON_DROP_DELAY = 600
+
 export const CategoryTreeView = <T extends TreeCategory>({
   categories,
   loading = false,
@@ -203,6 +206,8 @@ export const CategoryTreeView = <T extends TreeCategory>({
     indent: 24,
     canReorder: canDrag,
     canDrag: () => canDrag,
+    seperateDragHandle: canDrag,
+    openOnDropDelay: OPEN_ON_DROP_DELAY,
     dataLoader: {
       getItem: (id) => dataMapRef.current[id],
       getChildren: (id) => dataMapRef.current[id]?.children ?? [],
@@ -211,6 +216,14 @@ export const CategoryTreeView = <T extends TreeCategory>({
     features,
   })
   treeRef.current = tree
+
+  // Track dragged item IDs for ghost styling
+  const dndState = tree.getState().dnd
+  const draggedIds = useMemo(() => {
+    if (!dndState?.draggedItems) return new Set<string>()
+    return new Set(dndState.draggedItems.map(i => i.getId()))
+  }, [dndState?.draggedItems])
+  const isDragging = draggedIds.size > 0
 
   // Rebuild tree when categories change from server.
   // Skip rebuilds within 2s of a drop to prevent the server refetch from overwriting
@@ -296,7 +309,7 @@ export const CategoryTreeView = <T extends TreeCategory>({
       {/* Tree */}
       <div
         {...tree.getContainerProps('Category Tree')}
-        className="space-y-1 relative"
+        className="space-y-0.5 relative"
       >
         {treeItems.map((item) => {
           const data = item.getItemData()
@@ -306,17 +319,29 @@ export const CategoryTreeView = <T extends TreeCategory>({
           const meta = item.getItemMeta()
           const hasChildren = data.children.length > 0
           const isExpanded = item.isExpanded()
-          const isDragOver = item.isDraggingOver()
+          const isBeingDragged = draggedIds.has(item.getId())
+          const isDropTarget = item.isDragTarget()
+          const isDirectDropTarget = item.isUnorderedDragTarget()
 
           return (
             <div
               {...item.getProps()}
               key={item.getId()}
               className={cn(
-                'group flex items-center gap-2 py-2 px-3 rounded-lg transition-colors',
+                'group flex items-center gap-2 py-2 px-3 rounded-lg',
+                'transition-all duration-200 ease-out',
                 'hover:bg-muted/50',
-                isDragOver && 'bg-accent/50 ring-2 ring-primary/30',
-                item.isFocused() && 'bg-muted/30',
+                // Ghost state: the item being dragged
+                isBeingDragged && 'opacity-40 scale-[0.98]',
+                // Drop target: this item will become the new parent
+                isDirectDropTarget && !isBeingDragged && [
+                  'bg-primary/5 ring-2 ring-primary/40 ring-offset-1 ring-offset-background',
+                  'shadow-[0_0_12px_-3px] shadow-primary/20',
+                ],
+                // Broader drop target (between children of this item)
+                isDropTarget && !isDirectDropTarget && !isBeingDragged && 'bg-accent/30',
+                // Focused state (keyboard nav)
+                !isBeingDragged && !isDropTarget && item.isFocused() && 'bg-muted/30',
               )}
               style={{ paddingLeft: `${meta.level * 24 + 12}px` }}
             >
@@ -325,7 +350,9 @@ export const CategoryTreeView = <T extends TreeCategory>({
                 variant="ghost"
                 size="icon"
                 className={cn(
-                  'h-6 w-6 p-0 cursor-pointer transition-transform shrink-0',
+                  'h-6 w-6 p-0 cursor-pointer shrink-0',
+                  'transition-transform duration-200',
+                  isExpanded && 'text-foreground',
                   !hasChildren && 'invisible'
                 )}
                 onClick={(e) => {
@@ -347,13 +374,27 @@ export const CategoryTreeView = <T extends TreeCategory>({
 
               {/* Drag Handle */}
               {canDrag ? (
-                <GripVertical className="h-4 w-4 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab shrink-0" />
+                <div
+                  {...item.getDragHandleProps()}
+                  className="flex items-center shrink-0"
+                >
+                  <GripVertical className={cn(
+                    'h-4 w-4 text-muted-foreground/40 shrink-0',
+                    'transition-all duration-150',
+                    'opacity-0 group-hover:opacity-100',
+                    'hover:text-muted-foreground cursor-grab active:cursor-grabbing',
+                    isDragging && 'opacity-50',
+                  )} />
+                </div>
               ) : (
-                <GripVertical className="h-4 w-4 text-muted-foreground/50 opacity-0 shrink-0" />
+                <div className="w-4 shrink-0" />
               )}
 
               {/* Icon */}
-              <FolderTree className="h-4 w-4 text-muted-foreground shrink-0" />
+              <FolderTree className={cn(
+                'h-4 w-4 text-muted-foreground shrink-0 transition-colors duration-200',
+                isDirectDropTarget && !isBeingDragged && 'text-primary',
+              )} />
 
               {/* Name & Description */}
               <div className="flex-1 min-w-0">
@@ -377,9 +418,9 @@ export const CategoryTreeView = <T extends TreeCategory>({
                     {category.itemCount} {itemCountLabel}
                   </Badge>
                 )}
-                {category.childCount > 0 && (
+                {hasChildren && (
                   <Badge variant="outline" className="text-xs">
-                    {category.childCount} {t('labels.children', 'children')}
+                    {data.children.length} {t('labels.children', 'children')}
                   </Badge>
                 )}
               </div>
@@ -421,12 +462,35 @@ export const CategoryTreeView = <T extends TreeCategory>({
             </div>
           )
         })}
-        {/* Drag indicator line */}
+
+        {/* Drag indicator line with dot marker */}
         {canDrag && (
-          <div
-            style={tree.getDragLineStyle()}
-            className="absolute h-0.5 bg-primary rounded-full pointer-events-none"
-          />
+          <>
+            <div
+              style={tree.getDragLineStyle()}
+              className={cn(
+                'absolute h-[2px] bg-primary rounded-full pointer-events-none',
+                'transition-[top,left,width] duration-150 ease-out',
+                isDragging ? 'opacity-100' : 'opacity-0',
+              )}
+            />
+            {/* Dot at the start of the drag line */}
+            {isDragging && tree.getDragLineData() && (() => {
+              const lineStyle = tree.getDragLineStyle()
+              return lineStyle.top ? (
+                <div
+                  className="absolute pointer-events-none"
+                  style={{
+                    top: lineStyle.top,
+                    left: lineStyle.left,
+                    transform: 'translate(-3px, -3px)',
+                  }}
+                >
+                  <div className="h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
+                </div>
+              ) : null
+            })()}
+          </>
         )}
       </div>
     </div>

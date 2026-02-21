@@ -379,6 +379,7 @@ export const ReviewsPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead className="w-12">
                     <Checkbox
                       checked={reviews.length > 0 && selectedIds.size === reviews.length}
@@ -393,13 +394,15 @@ export const ReviewsPage = () => {
                   <TableHead>{t('reviews.reviewTitle', 'Title')}</TableHead>
                   <TableHead>{t('labels.status', 'Status')}</TableHead>
                   <TableHead>{t('labels.date', 'Date')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background">
+                        <Skeleton className="h-8 w-24" />
+                      </TableCell>
                       <TableCell>
                         <Skeleton className="h-4 w-4" />
                       </TableCell>
@@ -420,9 +423,6 @@ export const ReviewsPage = () => {
                       </TableCell>
                       <TableCell>
                         <Skeleton className="h-4 w-28" />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Skeleton className="h-8 w-24 ml-auto" />
                       </TableCell>
                     </TableRow>
                   ))
@@ -540,51 +540,8 @@ const ReviewTableRow = ({
   t,
 }: ReviewTableRowProps) => (
   <TableRow className="group transition-colors hover:bg-muted/50">
-    <TableCell>
-      <Checkbox
-        checked={isSelected}
-        onCheckedChange={() => onToggleSelect(review.id)}
-        aria-label={t('reviews.selectReview', {
-          title: review.title || review.id,
-          defaultValue: `Select review ${review.title || review.id}`,
-        })}
-        className="cursor-pointer"
-      />
-    </TableCell>
-    <TableCell>
-      <div className="flex flex-col">
-        <span className="font-medium text-sm truncate max-w-[180px]">
-          {review.productName || '-'}
-        </span>
-      </div>
-    </TableCell>
-    <TableCell>
-      <div className="flex items-center gap-1.5">
-        <span className="text-sm">{review.userName || '-'}</span>
-        {review.isVerifiedPurchase && (
-          <ShieldCheck
-            className="h-3.5 w-3.5 text-blue-500"
-            aria-label={t('reviews.verifiedPurchase', 'Verified purchase')}
-          />
-        )}
-      </div>
-    </TableCell>
-    <TableCell>
-      <StarRating rating={review.rating} />
-    </TableCell>
-    <TableCell>
-      <span className="text-sm truncate max-w-[200px] block">{review.title || '-'}</span>
-    </TableCell>
-    <TableCell>
-      <Badge variant="outline" className={getStatusColor(review.status)}>
-        {t(`reviews.status.${review.status.toLowerCase()}`, review.status)}
-      </Badge>
-    </TableCell>
-    <TableCell>
-      <span className="text-sm text-muted-foreground">{formatDateTime(review.createdAt)}</span>
-    </TableCell>
-    <TableCell className="text-right">
-      <div className="flex items-center justify-end gap-1">
+    <TableCell className="sticky left-0 z-10 bg-background">
+      <div className="flex items-center gap-1">
         <Button
           variant="ghost"
           size="sm"
@@ -638,6 +595,49 @@ const ReviewTableRow = ({
           <MessageSquare className="h-4 w-4" />
         </Button>
       </div>
+    </TableCell>
+    <TableCell>
+      <Checkbox
+        checked={isSelected}
+        onCheckedChange={() => onToggleSelect(review.id)}
+        aria-label={t('reviews.selectReview', {
+          title: review.title || review.id,
+          defaultValue: `Select review ${review.title || review.id}`,
+        })}
+        className="cursor-pointer"
+      />
+    </TableCell>
+    <TableCell>
+      <div className="flex flex-col">
+        <span className="font-medium text-sm truncate max-w-[180px]">
+          {review.productName || '-'}
+        </span>
+      </div>
+    </TableCell>
+    <TableCell>
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm">{review.userName || '-'}</span>
+        {review.isVerifiedPurchase && (
+          <ShieldCheck
+            className="h-3.5 w-3.5 text-blue-500"
+            aria-label={t('reviews.verifiedPurchase', 'Verified purchase')}
+          />
+        )}
+      </div>
+    </TableCell>
+    <TableCell>
+      <StarRating rating={review.rating} />
+    </TableCell>
+    <TableCell>
+      <span className="text-sm truncate max-w-[200px] block">{review.title || '-'}</span>
+    </TableCell>
+    <TableCell>
+      <Badge variant="outline" className={getStatusColor(review.status)}>
+        {t(`reviews.status.${review.status.toLowerCase()}`, review.status)}
+      </Badge>
+    </TableCell>
+    <TableCell>
+      <span className="text-sm text-muted-foreground">{formatDateTime(review.createdAt)}</span>
     </TableCell>
   </TableRow>
 )

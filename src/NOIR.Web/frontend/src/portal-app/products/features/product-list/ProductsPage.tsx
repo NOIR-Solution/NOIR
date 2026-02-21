@@ -12,7 +12,7 @@ import {
   Trash2,
   Send,
   Archive,
-  MoreHorizontal,
+  EllipsisVertical,
   Filter,
   LayoutGrid,
   List as ListIcon,
@@ -751,6 +751,7 @@ export const ProductsPage = () => {
                       className="cursor-pointer"
                     />
                   </TableHead>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead className="w-[35%] font-semibold">{t('products.product', 'Product')}</TableHead>
                   <TableHead className="font-semibold">{t('labels.status', 'Status')}</TableHead>
                   <TableHead className="font-semibold">{t('labels.category', 'Category')}</TableHead>
@@ -758,7 +759,6 @@ export const ProductsPage = () => {
                   <TableHead className="text-right font-semibold">{t('products.price', 'Price')}</TableHead>
                   <TableHead className="text-right font-semibold">{t('labels.stock', 'Stock')}</TableHead>
                   <TableHead className="font-semibold">{t('labels.created', 'Created')}</TableHead>
-                  <TableHead className="text-right font-semibold">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -769,6 +769,7 @@ export const ProductsPage = () => {
                       <TableCell>
                         <Skeleton className="h-4 w-4 rounded" />
                       </TableCell>
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-9 w-9 rounded-lg" /></TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Skeleton className="h-14 w-14 rounded-xl" />
@@ -784,7 +785,6 @@ export const ProductsPage = () => {
                       <TableCell className="text-right"><Skeleton className="h-4 w-20 ml-auto" /></TableCell>
                       <TableCell className="text-right"><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-9 w-9 rounded-lg ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : data?.items.length === 0 ? (
@@ -820,68 +820,7 @@ export const ProductsPage = () => {
                             className="cursor-pointer"
                           />
                         </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            {/* Enhanced product image with animation */}
-                            <div className="relative h-14 w-14 rounded-xl border-2 border-border/50 bg-muted overflow-hidden flex-shrink-0 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-lg group-hover:shadow-primary/10">
-                              {product.primaryImageUrl ? (
-                                <img
-                                  src={product.primaryImageUrl}
-                                  alt={product.name}
-                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                />
-                              ) : (
-                                <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
-                                  <Package className="h-6 w-6 text-muted-foreground/50" />
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex flex-col min-w-0">
-                              <span className="font-medium truncate group-hover:text-primary transition-colors duration-200">
-                                {product.name}
-                              </span>
-                              {product.sku && (
-                                <span className="text-xs text-muted-foreground font-mono">
-                                  SKU: {product.sku}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={`${status.color} border transition-all duration-200 hover:scale-105`}
-                            variant="outline"
-                          >
-                            <StatusIcon className="h-3 w-3 mr-1.5" />
-                            {status.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm">{product.categoryName || '—'}</span>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm">{product.brandName || product.brand || '—'}</span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span className="font-semibold text-foreground">
-                            {formatCurrency(product.basePrice, product.currency)}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Badge
-                            variant={product.inStock ? 'default' : 'destructive'}
-                            className="transition-all duration-200 hover:scale-105"
-                          >
-                            {product.totalStock}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(product.createdAt), { addSuffix: true })}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="sticky left-0 z-10 bg-background">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -890,10 +829,10 @@ export const ProductsPage = () => {
                                 className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
                                 aria-label={`Actions for ${product.name}`}
                               >
-                                <MoreHorizontal className="h-4 w-4" />
+                                <EllipsisVertical className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuContent align="start" className="w-48">
                               <DropdownMenuItem className="cursor-pointer" asChild>
                                 <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
                                   <Eye className="h-4 w-4 mr-2" />
@@ -950,6 +889,67 @@ export const ProductsPage = () => {
                               )}
                             </DropdownMenuContent>
                           </DropdownMenu>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            {/* Enhanced product image with animation */}
+                            <div className="relative h-14 w-14 rounded-xl border-2 border-border/50 bg-muted overflow-hidden flex-shrink-0 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-lg group-hover:shadow-primary/10">
+                              {product.primaryImageUrl ? (
+                                <img
+                                  src={product.primaryImageUrl}
+                                  alt={product.name}
+                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
+                                  <Package className="h-6 w-6 text-muted-foreground/50" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-medium truncate group-hover:text-primary transition-colors duration-200">
+                                {product.name}
+                              </span>
+                              {product.sku && (
+                                <span className="text-xs text-muted-foreground font-mono">
+                                  SKU: {product.sku}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`${status.color} border transition-all duration-200 hover:scale-105`}
+                            variant="outline"
+                          >
+                            <StatusIcon className="h-3 w-3" />
+                            {status.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">{product.categoryName || '—'}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">{product.brandName || product.brand || '—'}</span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <span className="font-semibold text-foreground">
+                            {formatCurrency(product.basePrice, product.currency)}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Badge
+                            variant={product.inStock ? 'default' : 'destructive'}
+                            className="transition-all duration-200 hover:scale-105"
+                          >
+                            {product.totalStock}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-muted-foreground">
+                            {formatDistanceToNow(new Date(product.createdAt), { addSuffix: true })}
+                          </span>
                         </TableCell>
                       </TableRow>
                     )

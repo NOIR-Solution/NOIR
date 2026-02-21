@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Award, Plus, Pencil, Trash2, MoreHorizontal, Globe, ExternalLink } from 'lucide-react'
+import { Search, Award, Plus, Pencil, Trash2, EllipsisVertical, Globe, ExternalLink } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -146,13 +146,13 @@ export const BrandsPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background" />
                   <TableHead className="w-[80px]">{t('labels.logo', 'Logo')}</TableHead>
                   <TableHead className="w-[25%]">{t('labels.name', 'Name')}</TableHead>
                   <TableHead>{t('labels.slug', 'Slug')}</TableHead>
                   <TableHead>{t('labels.status', 'Status')}</TableHead>
                   <TableHead className="text-center">{t('brands.products', 'Products')}</TableHead>
                   <TableHead>{t('labels.website', 'Website')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -160,6 +160,7 @@ export const BrandsPage = () => {
                   // Skeleton loading
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell>
                         <Skeleton className="h-10 w-10 rounded-lg" />
                       </TableCell>
@@ -170,7 +171,6 @@ export const BrandsPage = () => {
                       <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
                       <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : brands.length === 0 ? (
@@ -191,6 +191,40 @@ export const BrandsPage = () => {
                 ) : (
                   brands.map((brand) => (
                     <TableRow key={brand.id} className="group transition-colors hover:bg-muted/50">
+                      <TableCell className="sticky left-0 z-10 bg-background">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                              aria-label={t('labels.actionsFor', { name: brand.name, defaultValue: `Actions for ${brand.name}` })}
+                            >
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            {canUpdateBrands && (
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setBrandToEdit(brand)}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                {t('labels.edit', 'Edit')}
+                              </DropdownMenuItem>
+                            )}
+                            {canDeleteBrands && (
+                              <DropdownMenuItem
+                                className="text-destructive cursor-pointer"
+                                onClick={() => setBrandToDelete(brand)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {t('labels.delete', 'Delete')}
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                       <TableCell>
                         {brand.logoUrl ? (
                           <img
@@ -240,40 +274,6 @@ export const BrandsPage = () => {
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: brand.name, defaultValue: `Actions for ${brand.name}` })}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {canUpdateBrands && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setBrandToEdit(brand)}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                            )}
-                            {canDeleteBrands && (
-                              <DropdownMenuItem
-                                className="text-destructive cursor-pointer"
-                                onClick={() => setBrandToDelete(brand)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('labels.delete', 'Delete')}
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))

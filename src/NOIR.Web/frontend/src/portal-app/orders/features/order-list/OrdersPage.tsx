@@ -166,6 +166,7 @@ export const OrdersPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead>{t('orders.orderNumber', 'Order #')}</TableHead>
                   <TableHead>{t('labels.customer', 'Customer')}</TableHead>
                   <TableHead>{t('labels.status', 'Status')}</TableHead>
@@ -175,20 +176,19 @@ export const OrdersPage = () => {
                     <Calendar className="h-4 w-4 inline mr-1" />
                     {t('labels.date', 'Date')}
                   </TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
                       <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
                       <TableCell className="text-right"><Skeleton className="h-4 w-24 ml-auto" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : orders.length === 0 ? (
@@ -209,6 +209,20 @@ export const OrdersPage = () => {
                       className="group transition-colors hover:bg-muted/50 cursor-pointer"
                       onClick={() => handleViewOrder(order)}
                     >
+                      <TableCell className="sticky left-0 z-10 bg-background">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                          aria-label={t('orders.viewOrder', { orderNumber: order.orderNumber, defaultValue: `View order ${order.orderNumber}` })}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleViewOrder(order)
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
                       <TableCell>
                         <span className="font-mono font-medium text-sm">{order.orderNumber}</span>
                       </TableCell>
@@ -235,20 +249,6 @@ export const OrdersPage = () => {
                         <span className="text-sm text-muted-foreground">
                           {formatDateTime(order.createdAt)}
                         </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                          aria-label={t('orders.viewOrder', { orderNumber: order.orderNumber, defaultValue: `View order ${order.orderNumber}` })}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleViewOrder(order)
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
                       </TableCell>
                     </TableRow>
                   ))

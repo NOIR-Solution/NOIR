@@ -209,6 +209,8 @@ global using NOIR.Infrastructure.Storage;
 global using NOIR.Infrastructure.Localization;
 global using NOIR.Infrastructure.Caching;
 global using NOIR.Infrastructure.Media;
+global using NOIR.Infrastructure.Persistence.SeedData;
+global using NOIR.Infrastructure.Persistence.SeedData.Data;
 
 // NOIR Domain Entities
 global using NOIR.Domain.Entities;

@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, MoreHorizontal, List, GitBranch, Tags } from 'lucide-react'
+import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, EllipsisVertical, List, GitBranch, Tags } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -175,12 +175,12 @@ export const ProductCategoriesPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead className="w-[40%]">{t('labels.name', 'Name')}</TableHead>
                   <TableHead>{t('labels.slug', 'Slug')}</TableHead>
                   <TableHead>{t('categories.parent', 'Parent')}</TableHead>
                   <TableHead className="text-center">{t('categories.products', 'Products')}</TableHead>
                   <TableHead className="text-center">{t('categories.children', 'Children')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -188,6 +188,7 @@ export const ProductCategoriesPage = () => {
                   // Skeleton loading - 21st.dev pattern
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Skeleton className="h-4 w-4" />
@@ -198,7 +199,6 @@ export const ProductCategoriesPage = () => {
                       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
                       <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : categories.length === 0 ? (
@@ -219,6 +219,49 @@ export const ProductCategoriesPage = () => {
                 ) : (
                   categories.map((category) => (
                     <TableRow key={category.id} className="group transition-colors hover:bg-muted/50">
+                      <TableCell className="sticky left-0 z-10 bg-background">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                              aria-label={t('labels.actionsFor', { name: category.name, defaultValue: `Actions for ${category.name}` })}
+                            >
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            {canUpdateCategories && (
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setCategoryToEdit(category)}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                {t('labels.edit', 'Edit')}
+                              </DropdownMenuItem>
+                            )}
+                            {canUpdateCategories && (
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setCategoryToManageAttributes(category)}
+                              >
+                                <Tags className="h-4 w-4 mr-2" />
+                                {t('categoryAttributes.manageAttributes', 'Manage Attributes')}
+                              </DropdownMenuItem>
+                            )}
+                            {canDeleteCategories && (
+                              <DropdownMenuItem
+                                className="text-destructive cursor-pointer"
+                                onClick={() => setCategoryToDelete(category)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {t('labels.delete', 'Delete')}
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <FolderTree className="h-4 w-4 text-muted-foreground" />
@@ -254,49 +297,6 @@ export const ProductCategoriesPage = () => {
                         ) : (
                           <span className="text-muted-foreground">—</span>
                         )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: category.name, defaultValue: `Actions for ${category.name}` })}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {canUpdateCategories && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setCategoryToEdit(category)}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                            )}
-                            {canUpdateCategories && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setCategoryToManageAttributes(category)}
-                              >
-                                <Tags className="h-4 w-4 mr-2" />
-                                {t('categoryAttributes.manageAttributes', 'Manage Attributes')}
-                              </DropdownMenuItem>
-                            )}
-                            {canDeleteCategories && (
-                              <DropdownMenuItem
-                                className="text-destructive cursor-pointer"
-                                onClick={() => setCategoryToDelete(category)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('labels.delete', 'Delete')}
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))

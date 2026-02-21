@@ -144,7 +144,7 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody>
+            <CredenzaBody className="space-y-5">
               <FormField
                 control={form.control}
                 name="name"
@@ -204,7 +204,13 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
                         <SelectItem value="__none__">{t('roles.fields.noParent', 'No parent role')}</SelectItem>
                         {existingRoles.map((r) => (
                           <SelectItem key={r.id} value={r.id}>
-                            {r.name}
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-4 h-4 rounded-full shrink-0"
+                                style={{ backgroundColor: r.color || '#6b7280' }}
+                              />
+                              {r.name}
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>

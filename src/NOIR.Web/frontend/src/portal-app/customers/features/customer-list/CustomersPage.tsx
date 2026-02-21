@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
   Eye,
-  MoreHorizontal,
+  EllipsisVertical,
   Pencil,
   Plus,
   Search,
@@ -302,6 +302,7 @@ export const CustomersPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead>{t('labels.name', 'Name')}</TableHead>
                   <TableHead>{t('labels.email', 'Email')}</TableHead>
                   <TableHead>{t('labels.phone', 'Phone')}</TableHead>
@@ -310,13 +311,13 @@ export const CustomersPage = () => {
                   <TableHead className="text-center">{t('customers.ordersLabel', 'Orders')}</TableHead>
                   <TableHead className="text-right">{t('customers.totalSpent', 'Total Spent')}</TableHead>
                   <TableHead className="text-center">{t('customers.loyaltyPoints', 'Points')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-40" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
@@ -325,7 +326,6 @@ export const CustomersPage = () => {
                       <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
                       <TableCell className="text-right"><Skeleton className="h-4 w-24 ml-auto" /></TableCell>
                       <TableCell className="text-center"><Skeleton className="h-5 w-12 mx-auto rounded-full" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : customers.length === 0 ? (
@@ -350,37 +350,7 @@ export const CustomersPage = () => {
                       className="group transition-colors hover:bg-muted/50 cursor-pointer"
                       onClick={() => handleViewCustomer(customer)}
                     >
-                      <TableCell>
-                        <span className="font-medium text-sm">
-                          {customer.firstName} {customer.lastName}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">{customer.email}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">{customer.phone || '-'}</span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={getSegmentBadgeClass(customer.segment)}>
-                          {t(`customers.segment.${customer.segment.toLowerCase()}`, customer.segment)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={getTierBadgeClass(customer.tier)}>
-                          {t(`customers.tier.${customer.tier.toLowerCase()}`, customer.tier)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{customer.totalOrders}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <span className="font-medium text-sm">{formatCurrency(customer.totalSpent, 'VND')}</span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{customer.loyaltyPoints.toLocaleString()}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="sticky left-0 z-10 bg-background">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -390,10 +360,10 @@ export const CustomersPage = () => {
                               aria-label={t('labels.actionsFor', { name: `${customer.firstName} ${customer.lastName}`, defaultValue: `Actions for ${customer.firstName} ${customer.lastName}` })}
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <MoreHorizontal className="h-4 w-4" />
+                              <EllipsisVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="start">
                             <DropdownMenuItem
                               className="cursor-pointer"
                               onClick={(e) => {
@@ -430,6 +400,36 @@ export const CustomersPage = () => {
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-medium text-sm">
+                          {customer.firstName} {customer.lastName}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">{customer.email}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">{customer.phone || '-'}</span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={getSegmentBadgeClass(customer.segment)}>
+                          {t(`customers.segment.${customer.segment.toLowerCase()}`, customer.segment)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={getTierBadgeClass(customer.tier)}>
+                          {t(`customers.tier.${customer.tier.toLowerCase()}`, customer.tier)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant="secondary">{customer.totalOrders}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span className="font-medium text-sm">{formatCurrency(customer.totalSpent, 'VND')}</span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant="secondary">{customer.loyaltyPoints.toLocaleString()}</Badge>
                       </TableCell>
                     </TableRow>
                   ))

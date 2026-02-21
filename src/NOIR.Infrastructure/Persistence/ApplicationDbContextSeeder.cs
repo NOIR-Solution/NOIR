@@ -164,6 +164,9 @@ public static class ApplicationDbContextSeeder
 
         // === PHASE 8: Permission Templates ===
         await permissionTemplateSeeder.SeedAsync(seederContext);
+
+        // === PHASE 9: Demo Seed Data (Development/Staging Only) ===
+        await SeedDataOrchestrator.ExecuteAsync(seederContext, services);
     }
 
     /// <summary>

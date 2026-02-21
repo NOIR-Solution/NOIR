@@ -7,7 +7,7 @@ import {
   FileText,
   ArrowDownToLine,
   ArrowUpFromLine,
-  MoreHorizontal,
+  EllipsisVertical,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
@@ -187,7 +187,7 @@ export const InventoryReceiptsPage = () => {
               {/* Type Filter */}
               <Select value={typeFilter} onValueChange={handleTypeFilter}>
                 <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('inventory.filterByType', 'Filter by type')}>
-                  <SelectValue placeholder={t('inventory.type', 'Type')} />
+                  <SelectValue placeholder={t('labels.type', 'Type')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
@@ -221,20 +221,21 @@ export const InventoryReceiptsPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead>{t('inventory.receiptNumber', 'Receipt #')}</TableHead>
-                  <TableHead>{t('inventory.type', 'Type')}</TableHead>
+                  <TableHead>{t('labels.type', 'Type')}</TableHead>
                   <TableHead>{t('labels.status', 'Status')}</TableHead>
                   <TableHead className="text-center">{t('inventory.items', 'Items')}</TableHead>
                   <TableHead className="text-right">{t('inventory.totalQuantity', 'Total Qty')}</TableHead>
                   <TableHead className="text-right">{t('inventory.totalCost', 'Total Cost')}</TableHead>
                   <TableHead>{t('labels.date', 'Date')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
@@ -242,7 +243,6 @@ export const InventoryReceiptsPage = () => {
                       <TableCell className="text-right"><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
                       <TableCell className="text-right"><Skeleton className="h-4 w-24 ml-auto" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : receipts.length === 0 ? (
@@ -266,6 +266,45 @@ export const InventoryReceiptsPage = () => {
 
                     return (
                       <TableRow key={receipt.id} className="group transition-colors hover:bg-muted/50">
+                        <TableCell className="sticky left-0 z-10 bg-background">
+                          {isDraft && (canWriteInventory || canManageInventory) ? (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                                  aria-label={t('labels.actionsFor', { name: receipt.receiptNumber, defaultValue: `Actions for ${receipt.receiptNumber}` })}
+                                >
+                                  <EllipsisVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="start">
+                                {canWriteInventory && (
+                                  <DropdownMenuItem
+                                    className="cursor-pointer text-green-600 dark:text-green-400"
+                                    onClick={() => handleConfirm(receipt)}
+                                  >
+                                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                                    {t('inventory.confirm', 'Confirm')}
+                                  </DropdownMenuItem>
+                                )}
+                                {(canWriteInventory || canManageInventory) && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                      className="cursor-pointer text-destructive focus:text-destructive"
+                                      onClick={() => setReceiptToCancel(receipt)}
+                                    >
+                                      <XCircle className="h-4 w-4 mr-2" />
+                                      {t('inventory.cancel', 'Cancel')}
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          ) : null}
+                        </TableCell>
                         <TableCell>
                           <span className="font-mono font-medium text-sm">{receipt.receiptNumber}</span>
                         </TableCell>
@@ -294,47 +333,6 @@ export const InventoryReceiptsPage = () => {
                           <span className="text-sm text-muted-foreground">
                             {formatDateTime(receipt.createdAt)}
                           </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {isDraft && (canWriteInventory || canManageInventory) ? (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                                  aria-label={t('labels.actionsFor', { name: receipt.receiptNumber, defaultValue: `Actions for ${receipt.receiptNumber}` })}
-                                >
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                {canWriteInventory && (
-                                  <DropdownMenuItem
-                                    className="cursor-pointer text-green-600 dark:text-green-400"
-                                    onClick={() => handleConfirm(receipt)}
-                                  >
-                                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                                    {t('inventory.confirm', 'Confirm')}
-                                  </DropdownMenuItem>
-                                )}
-                                {(canWriteInventory || canManageInventory) && (
-                                  <>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                      className="cursor-pointer text-destructive focus:text-destructive"
-                                      onClick={() => setReceiptToCancel(receipt)}
-                                    >
-                                      <XCircle className="h-4 w-4 mr-2" />
-                                      {t('inventory.cancel', 'Cancel')}
-                                    </DropdownMenuItem>
-                                  </>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          ) : (
-                            <span className="text-muted-foreground text-xs">-</span>
-                          )}
                         </TableCell>
                       </TableRow>
                     )

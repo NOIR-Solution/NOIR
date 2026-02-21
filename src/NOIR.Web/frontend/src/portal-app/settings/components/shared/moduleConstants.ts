@@ -195,3 +195,11 @@ export const buildSidebarGroups = (modules: ModuleDto[]): ResolvedGroup[] => {
     }))
     .filter(group => group.items.length > 0)
 }
+
+/** Compute checkbox tri-state from a list of booleans */
+export const computeCheckState = (states: boolean[]): boolean | 'indeterminate' => {
+  if (states.length === 0) return true
+  if (states.every(Boolean)) return true
+  if (states.every((s) => !s)) return false
+  return 'indeterminate'
+}

@@ -26,7 +26,7 @@ public static class FileEndpoints
             CancellationToken cancellationToken) =>
         {
             // Security: Only allow specific folders to be served publicly
-            var allowedPrefixes = new[] { "avatars/", "blog/", "branding/", "content/", "images/" };
+            var allowedPrefixes = new[] { "avatars/", "blog/", "branding/", "content/", "images/", "products/" };
             if (!allowedPrefixes.Any(p => path.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
             {
                 return Results.NotFound();

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { MoreHorizontal, Edit, Trash2, Key, Shield, Users } from 'lucide-react'
+import { EllipsisVertical, Edit, Trash2, Key, Shield, Users } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -62,16 +62,52 @@ export const RoleTable = ({ roles, onEdit, onDelete, onPermissions, loading }: R
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-10 sticky left-0 z-10 bg-background" />
             <TableHead>{t('roles.columns.name', 'Name')}</TableHead>
             <TableHead>{t('roles.columns.description', 'Description')}</TableHead>
             <TableHead className="text-center">{t('roles.columns.users', 'Users')}</TableHead>
             <TableHead className="text-center">{t('roles.columns.type', 'Type')}</TableHead>
-            <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {roles.map((role) => (
             <TableRow key={role.id}>
+              <TableCell className="sticky left-0 z-10 bg-background">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="cursor-pointer"
+                      aria-label={t('labels.actionsFor', { name: role.name, defaultValue: `Actions for ${role.name}` })}
+                    >
+                      <EllipsisVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    <DropdownMenuItem onClick={() => onPermissions(role)}>
+                      <Key className="mr-2 h-4 w-4" />
+                      {t('roles.managePermissions', 'Manage Permissions')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onEdit(role)}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      {t('buttons.edit', 'Edit')}
+                    </DropdownMenuItem>
+                    {!role.isSystemRole && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => onDelete(role)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          {t('buttons.delete', 'Delete')}
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
                   <div
@@ -107,42 +143,6 @@ export const RoleTable = ({ roles, onEdit, onDelete, onPermissions, loading }: R
                 ) : (
                   <Badge variant="outline">{t('roles.custom', 'Custom')}</Badge>
                 )}
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="cursor-pointer"
-                      aria-label={t('labels.actionsFor', { name: role.name, defaultValue: `Actions for ${role.name}` })}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onPermissions(role)}>
-                      <Key className="mr-2 h-4 w-4" />
-                      {t('roles.managePermissions', 'Manage Permissions')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEdit(role)}>
-                      <Edit className="mr-2 h-4 w-4" />
-                      {t('buttons.edit', 'Edit')}
-                    </DropdownMenuItem>
-                    {!role.isSystemRole && (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => onDelete(role)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          {t('buttons.delete', 'Delete')}
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </TableCell>
             </TableRow>
           ))}

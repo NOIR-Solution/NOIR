@@ -23,16 +23,8 @@ import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { useAllTenantFeatureStates, useSetModuleAvailability } from '@/hooks/useFeatures'
 import { useTenantsQuery } from '@/portal-app/user-access/queries'
 import { EditTenantDialog } from '@/portal-app/user-access/components/tenants/EditTenantDialog'
-import { buildSidebarGroups, iconMap, getItemModuleNames } from '@/portal-app/settings/components/shared'
+import { buildSidebarGroups, iconMap, getItemModuleNames, computeCheckState } from '@/portal-app/settings/components/shared'
 import type { ModuleDto, TenantListItem } from '@/types'
-
-/** Compute checkbox tri-state from a list of booleans */
-const computeCheckState = (states: boolean[]): boolean | 'indeterminate' => {
-  if (states.length === 0) return true
-  if (states.every(Boolean)) return true
-  if (states.every((s) => !s)) return false
-  return 'indeterminate'
-}
 
 /**
  * Platform-level module availability matrix.

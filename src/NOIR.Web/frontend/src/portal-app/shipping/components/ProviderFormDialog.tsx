@@ -250,7 +250,7 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
                   name="environment"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('shipping.environment', 'Environment')}</FormLabel>
+                      <FormLabel>{t('labels.environment', 'Environment')}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="cursor-pointer">

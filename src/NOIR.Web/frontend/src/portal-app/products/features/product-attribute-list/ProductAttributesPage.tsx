@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, Filter, List, Minus, MoreHorizontal, Pencil, Plus, Search, Tags, Trash2 } from 'lucide-react'
+import { Check, EllipsisVertical, Filter, List, Minus, Pencil, Plus, Search, Tags, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -137,6 +137,7 @@ export const ProductAttributesPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead className="w-[20%]">{t('labels.name', 'Name')}</TableHead>
                   <TableHead>{t('labels.code', 'Code')}</TableHead>
                   <TableHead>{t('labels.type', 'Type')}</TableHead>
@@ -150,7 +151,6 @@ export const ProductAttributesPage = () => {
                     {t('productAttributes.variant', 'Variant')}
                   </TableHead>
                   <TableHead>{t('labels.status', 'Status')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -158,6 +158,7 @@ export const ProductAttributesPage = () => {
                   // Skeleton loading
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
@@ -165,7 +166,6 @@ export const ProductAttributesPage = () => {
                       <TableCell className="text-center"><Skeleton className="h-5 w-12 mx-auto rounded-full" /></TableCell>
                       <TableCell className="text-center"><Skeleton className="h-5 w-12 mx-auto rounded-full" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : attributes.length === 0 ? (
@@ -186,6 +186,40 @@ export const ProductAttributesPage = () => {
                 ) : (
                   attributes.map((attribute) => (
                     <TableRow key={attribute.id} className="group transition-colors hover:bg-muted/50">
+                      <TableCell className="sticky left-0 z-10 bg-background">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                              aria-label={t('labels.actionsFor', { name: attribute.name, defaultValue: `Actions for ${attribute.name}` })}
+                            >
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            {canUpdateAttributes && (
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setAttributeToEdit(attribute)}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                {t('labels.edit', 'Edit')}
+                              </DropdownMenuItem>
+                            )}
+                            {canDeleteAttributes && (
+                              <DropdownMenuItem
+                                className="text-destructive cursor-pointer"
+                                onClick={() => setAttributeToDelete(attribute)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {t('labels.delete', 'Delete')}
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                       <TableCell>
                         <span className="font-medium">{attribute.name}</span>
                       </TableCell>
@@ -226,40 +260,6 @@ export const ProductAttributesPage = () => {
                         <Badge variant={attribute.isActive ? 'default' : 'secondary'}>
                           {attribute.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: attribute.name, defaultValue: `Actions for ${attribute.name}` })}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {canUpdateAttributes && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setAttributeToEdit(attribute)}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                            )}
-                            {canDeleteAttributes && (
-                              <DropdownMenuItem
-                                className="text-destructive cursor-pointer"
-                                onClick={() => setAttributeToDelete(attribute)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('labels.delete', 'Delete')}
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))

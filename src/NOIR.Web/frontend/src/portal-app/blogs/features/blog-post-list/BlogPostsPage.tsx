@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, FileText, Plus, Eye, Pencil, Trash2, Send, MoreHorizontal } from 'lucide-react'
+import { Search, FileText, Plus, Eye, Pencil, Trash2, Send, EllipsisVertical } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -170,12 +170,12 @@ export const BlogPostsPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background" />
                   <TableHead className="w-[40%]">{t('blog.titleColumn', 'Title')}</TableHead>
                   <TableHead>{t('labels.status')}</TableHead>
                   <TableHead>{t('labels.category')}</TableHead>
                   <TableHead>{t('blog.views', 'Views')}</TableHead>
                   <TableHead>{t('labels.created')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -183,6 +183,7 @@ export const BlogPostsPage = () => {
                   // Skeleton loading
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Skeleton className="h-12 w-12 rounded-lg flex-shrink-0" />
@@ -196,7 +197,6 @@ export const BlogPostsPage = () => {
                       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-12" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : data?.items.length === 0 ? (
@@ -217,6 +217,42 @@ export const BlogPostsPage = () => {
                 ) : (
                   data?.items.map((post) => (
                     <TableRow key={post.id} className="group transition-colors hover:bg-muted/50">
+                      <TableCell className="sticky left-0 z-10 bg-background">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary">
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            <DropdownMenuItem className="cursor-pointer" asChild>
+                              <ViewTransitionLink to={`/portal/blog/posts/${post.id}`}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                {t('blog.viewPost', 'View')}
+                              </ViewTransitionLink>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer" asChild>
+                              <ViewTransitionLink to={`/portal/blog/posts/${post.id}/edit`}>
+                                <Pencil className="h-4 w-4 mr-2" />
+                                {t('buttons.edit')}
+                              </ViewTransitionLink>
+                            </DropdownMenuItem>
+                            {post.status === 'Draft' && (
+                              <DropdownMenuItem className="cursor-pointer">
+                                <Send className="h-4 w-4 mr-2" />
+                                {t('buttons.publish')}
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
+                              className="text-destructive cursor-pointer"
+                              onClick={() => setPostToDelete(post)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              {t('buttons.delete')}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {/* Featured Image Thumbnail - Click to view full image */}
@@ -250,42 +286,6 @@ export const BlogPostsPage = () => {
                       <TableCell>{post.viewCount.toLocaleString()}</TableCell>
                       <TableCell>
                         {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="cursor-pointer" asChild>
-                              <ViewTransitionLink to={`/portal/blog/posts/${post.id}`}>
-                                <Eye className="h-4 w-4 mr-2" />
-                                {t('blog.viewPost', 'View')}
-                              </ViewTransitionLink>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer" asChild>
-                              <ViewTransitionLink to={`/portal/blog/posts/${post.id}/edit`}>
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('buttons.edit')}
-                              </ViewTransitionLink>
-                            </DropdownMenuItem>
-                            {post.status === 'Draft' && (
-                              <DropdownMenuItem className="cursor-pointer">
-                                <Send className="h-4 w-4 mr-2" />
-                                {t('buttons.publish')}
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem
-                              className="text-destructive cursor-pointer"
-                              onClick={() => setPostToDelete(post)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              {t('buttons.delete')}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))

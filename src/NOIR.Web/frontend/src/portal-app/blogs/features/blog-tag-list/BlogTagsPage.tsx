@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Tag, Plus, Pencil, Trash2, MoreHorizontal } from 'lucide-react'
+import { Search, Tag, Plus, Pencil, Trash2, EllipsisVertical } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import {
   Badge,
@@ -120,16 +120,17 @@ export const BlogTagsPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background" />
                   <TableHead className="w-[35%]">{t('labels.name', 'Name')}</TableHead>
                   <TableHead>{t('labels.slug', 'Slug')}</TableHead>
                   <TableHead className="text-center">{t('blogTags.posts', 'Posts')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Skeleton className="h-4 w-4 rounded-full" />
@@ -138,7 +139,6 @@ export const BlogTagsPage = () => {
                       </TableCell>
                       <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
                       <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : data.length === 0 ? (
@@ -159,23 +159,7 @@ export const BlogTagsPage = () => {
                 ) : (
                   data.map((tag) => (
                     <TableRow key={tag.id} className="group transition-colors hover:bg-muted/50">
-                      <TableCell>
-                        <div className="flex items-center gap-2.5">
-                          {tag.color ? (
-                            <ColorPopover color={tag.color} />
-                          ) : (
-                            <div className="w-4 h-4 rounded-full bg-muted border border-border shrink-0" />
-                          )}
-                          <span className="font-medium">{tag.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{tag.slug}</code>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{tag.postCount}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="sticky left-0 z-10 bg-background">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -184,10 +168,10 @@ export const BlogTagsPage = () => {
                               className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
                               aria-label={t('labels.actionsFor', { name: tag.name, defaultValue: `Actions for ${tag.name}` })}
                             >
-                              <MoreHorizontal className="h-4 w-4" />
+                              <EllipsisVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="start">
                             <DropdownMenuItem
                               className="cursor-pointer"
                               onClick={() => handleEditClick(tag)}
@@ -204,6 +188,22 @@ export const BlogTagsPage = () => {
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2.5">
+                          {tag.color ? (
+                            <ColorPopover color={tag.color} />
+                          ) : (
+                            <div className="w-4 h-4 rounded-full bg-muted border border-border shrink-0" />
+                          )}
+                          <span className="font-medium">{tag.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{tag.slug}</code>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant="secondary">{tag.postCount}</Badge>
                       </TableCell>
                     </TableRow>
                   ))

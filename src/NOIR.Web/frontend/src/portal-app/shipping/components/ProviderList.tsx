@@ -169,26 +169,26 @@ export const ProviderList = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead>{t('shipping.providerName', 'Provider')}</TableHead>
                   <TableHead>{t('shipping.code', 'Code')}</TableHead>
-                  <TableHead>{t('shipping.environment', 'Environment')}</TableHead>
+                  <TableHead>{t('labels.environment', 'Environment')}</TableHead>
                   <TableHead>{t('labels.status', 'Status')}</TableHead>
                   <TableHead>{t('shipping.health', 'Health')}</TableHead>
                   <TableHead>{t('shipping.features', 'Features')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   [...Array(4)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-20" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-20 ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : filteredProviders.length === 0 ? (
@@ -205,6 +205,35 @@ export const ProviderList = () => {
                 ) : (
                   filteredProviders.map((provider) => (
                     <TableRow key={provider.id} className="group transition-colors hover:bg-muted/50">
+                      <TableCell className="sticky left-0 z-10 bg-background">
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="cursor-pointer h-9 w-9 p-0"
+                            onClick={() => handleEdit(provider)}
+                            aria-label={t('shipping.editProvider', { name: provider.displayName, defaultValue: `Edit ${provider.displayName}` })}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="cursor-pointer h-9 w-9 p-0"
+                            onClick={() => setToggleProvider(provider)}
+                            aria-label={provider.isActive
+                              ? t('shipping.deactivate', { name: provider.displayName, defaultValue: `Deactivate ${provider.displayName}` })
+                              : t('shipping.activate', { name: provider.displayName, defaultValue: `Activate ${provider.displayName}` })
+                            }
+                          >
+                            {provider.isActive ? (
+                              <XCircle className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Check className="h-4 w-4 text-emerald-600" />
+                            )}
+                          </Button>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
                           <span className="font-medium text-sm">{provider.displayName}</span>
@@ -237,35 +266,6 @@ export const ProviderList = () => {
                           {provider.supportsInsurance && (
                             <Badge variant="outline" className="text-xs">{t('shipping.insurance', 'Insurance')}</Badge>
                           )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="cursor-pointer h-9 w-9 p-0"
-                            onClick={() => handleEdit(provider)}
-                            aria-label={t('shipping.editProvider', { name: provider.displayName, defaultValue: `Edit ${provider.displayName}` })}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="cursor-pointer h-9 w-9 p-0"
-                            onClick={() => setToggleProvider(provider)}
-                            aria-label={provider.isActive
-                              ? t('shipping.deactivate', { name: provider.displayName, defaultValue: `Deactivate ${provider.displayName}` })
-                              : t('shipping.activate', { name: provider.displayName, defaultValue: `Activate ${provider.displayName}` })
-                            }
-                          >
-                            {provider.isActive ? (
-                              <XCircle className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                              <Check className="h-4 w-4 text-emerald-600" />
-                            )}
-                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>

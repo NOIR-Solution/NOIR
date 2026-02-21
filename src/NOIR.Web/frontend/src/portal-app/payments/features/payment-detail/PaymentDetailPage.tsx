@@ -716,18 +716,43 @@ export const PaymentDetailPage = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                         <TableHead>{t('payments.detail.refundNumber', 'Refund #')}</TableHead>
                         <TableHead className="text-right">{t('payments.amount')}</TableHead>
                         <TableHead>{t('payments.status')}</TableHead>
                         <TableHead>{t('payments.detail.reason', 'Reason')}</TableHead>
                         <TableHead>{t('payments.detail.requestedBy', 'Requested By')}</TableHead>
                         <TableHead>{t('payments.createdAt')}</TableHead>
-                        <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {refunds.map((refund) => (
                         <TableRow key={refund.id}>
+                          <TableCell className="sticky left-0 z-10 bg-background">
+                            {refund.status === 'Pending' && (
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleApproveRefund(refund.id)}
+                                  disabled={approveRefundMutation.isPending}
+                                  className="cursor-pointer h-8 px-2 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
+                                  aria-label={t('payments.refund.approve')}
+                                >
+                                  <ThumbsUp className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => { setRejectRefundId(refund.id); setRejectRefundOpen(true) }}
+                                  className="cursor-pointer h-8 px-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                  aria-label={t('payments.refund.reject')}
+                                >
+                                  <ThumbsDown className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            )}
+                          </TableCell>
                           <TableCell>
                             <span className="font-mono font-medium text-sm">{refund.refundNumber}</span>
                           </TableCell>
@@ -758,31 +783,6 @@ export const PaymentDetailPage = () => {
                             <span className="text-xs text-muted-foreground">
                               {formatDateTime(refund.createdAt)}
                             </span>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {refund.status === 'Pending' && (
-                              <div className="flex items-center justify-end gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleApproveRefund(refund.id)}
-                                  disabled={approveRefundMutation.isPending}
-                                  className="cursor-pointer h-8 px-2 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
-                                  aria-label={t('payments.refund.approve')}
-                                >
-                                  <ThumbsUp className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => { setRejectRefundId(refund.id); setRejectRefundOpen(true) }}
-                                  className="cursor-pointer h-8 px-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                  aria-label={t('payments.refund.reject')}
-                                >
-                                  <ThumbsDown className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            )}
                           </TableCell>
                         </TableRow>
                       ))}

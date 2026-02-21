@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { MoreHorizontal, Edit, Trash2, Shield, Users, Lock, LockOpen, ShieldCheck, Activity } from 'lucide-react'
+import { EllipsisVertical, Edit, Trash2, Shield, Users, Lock, LockOpen, ShieldCheck, Activity } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -89,18 +89,69 @@ export const UserTable = ({
       <Table>
         <TableHeader>
           <TableRow>
+            {(canEdit || canDelete || canAssignRoles) && (
+              <TableHead className="w-10 sticky left-0 z-10 bg-background" />
+            )}
             <TableHead>{t('users.columns.user', 'User')}</TableHead>
             <TableHead>{t('users.columns.email', 'Email')}</TableHead>
             <TableHead>{t('users.columns.roles', 'Roles')}</TableHead>
             <TableHead className="text-center">{t('users.columns.status', 'Status')}</TableHead>
-            {(canEdit || canDelete || canAssignRoles) && (
-              <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
-            )}
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id}>
+              {(canEdit || canDelete || canAssignRoles) && (
+                <TableCell className="sticky left-0 z-10 bg-background">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="cursor-pointer"
+                        aria-label={t('labels.actionsFor', { name: user.displayName || user.email, defaultValue: `Actions for ${user.displayName || user.email}` })}
+                      >
+                        <EllipsisVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      {canAssignRoles && (
+                        <DropdownMenuItem onClick={() => onAssignRoles(user)}>
+                          <Shield className="mr-2 h-4 w-4" />
+                          {t('users.assignRoles', 'Assign Roles')}
+                        </DropdownMenuItem>
+                      )}
+                      {canEdit && (
+                        <DropdownMenuItem onClick={() => onEdit(user)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          {t('buttons.edit', 'Edit')}
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem onClick={() => handleViewActivity(user)}>
+                        <Activity className="mr-2 h-4 w-4" />
+                        {t('users.viewActivity', 'View Activity')}
+                      </DropdownMenuItem>
+                      {canDelete && (canAssignRoles || canEdit) && <DropdownMenuSeparator />}
+                      {canDelete && (
+                        user.isSystemUser ? (
+                          <DropdownMenuItem disabled className="text-muted-foreground">
+                            <ShieldCheck className="mr-2 h-4 w-4" />
+                            {t('users.protectedSystemUser', 'Protected (System User)')}
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => onDelete(user)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            {user.isLocked ? t('users.unlock', 'Unlock') : t('users.lock', 'Lock')}
+                          </DropdownMenuItem>
+                        )
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              )}
               <TableCell>
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
@@ -155,57 +206,6 @@ export const UserTable = ({
                   </Badge>
                 )}
               </TableCell>
-              {(canEdit || canDelete || canAssignRoles) && (
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="cursor-pointer"
-                        aria-label={t('labels.actionsFor', { name: user.displayName || user.email, defaultValue: `Actions for ${user.displayName || user.email}` })}
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {canAssignRoles && (
-                        <DropdownMenuItem onClick={() => onAssignRoles(user)}>
-                          <Shield className="mr-2 h-4 w-4" />
-                          {t('users.assignRoles', 'Assign Roles')}
-                        </DropdownMenuItem>
-                      )}
-                      {canEdit && (
-                        <DropdownMenuItem onClick={() => onEdit(user)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          {t('buttons.edit', 'Edit')}
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem onClick={() => handleViewActivity(user)}>
-                        <Activity className="mr-2 h-4 w-4" />
-                        {t('users.viewActivity', 'View Activity')}
-                      </DropdownMenuItem>
-                      {canDelete && (canAssignRoles || canEdit) && <DropdownMenuSeparator />}
-                      {canDelete && (
-                        user.isSystemUser ? (
-                          <DropdownMenuItem disabled className="text-muted-foreground">
-                            <ShieldCheck className="mr-2 h-4 w-4" />
-                            {t('users.protectedSystemUser', 'Protected (System User)')}
-                          </DropdownMenuItem>
-                        ) : (
-                          <DropdownMenuItem
-                            onClick={() => onDelete(user)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            {user.isLocked ? t('users.unlock', 'Unlock') : t('users.lock', 'Lock')}
-                          </DropdownMenuItem>
-                        )
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              )}
             </TableRow>
           ))}
         </TableBody>

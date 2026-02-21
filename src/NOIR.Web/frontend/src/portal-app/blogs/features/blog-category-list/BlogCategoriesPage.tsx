@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, FolderTree, Plus, Pencil, Trash2, List, GitBranch, MoreHorizontal } from 'lucide-react'
+import { Search, FolderTree, Plus, Pencil, Trash2, List, GitBranch, EllipsisVertical } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -178,26 +178,26 @@ export const BlogCategoriesPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background" />
                   <TableHead className="w-[30%]">{t('labels.name', 'Name')}</TableHead>
                   <TableHead>{t('labels.slug', 'Slug')}</TableHead>
                   <TableHead>{t('blogCategories.parent', 'Parent')}</TableHead>
                   <TableHead>{t('blogCategories.posts', 'Posts')}</TableHead>
                   <TableHead>{t('blogCategories.children', 'Children')}</TableHead>
                   <TableHead>{t('labels.sortOrder', 'Sort Order')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-8 rounded-full" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-8 rounded-full" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : data.length === 0 ? (
@@ -218,21 +218,7 @@ export const BlogCategoriesPage = () => {
                 ) : (
                   data.map((category) => (
                     <TableRow key={category.id} className="group transition-colors hover:bg-muted/50">
-                      <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell>
-                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{category.slug}</code>
-                      </TableCell>
-                      <TableCell>{category.parentName || '-'}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{category.postCount}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {category.childCount > 0 && (
-                          <Badge variant="outline">{category.childCount}</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>{category.sortOrder}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="sticky left-0 z-10 bg-background">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -241,10 +227,10 @@ export const BlogCategoriesPage = () => {
                               className="cursor-pointer h-9 w-9 p-0"
                               aria-label={t('labels.actionsFor', { name: category.name, defaultValue: `Actions for ${category.name}` })}
                             >
-                              <MoreHorizontal className="h-4 w-4" />
+                              <EllipsisVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="start">
                             <DropdownMenuItem
                               className="cursor-pointer"
                               onClick={() => handleEditClick(category)}
@@ -262,6 +248,20 @@ export const BlogCategoriesPage = () => {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
+                      <TableCell className="font-medium">{category.name}</TableCell>
+                      <TableCell>
+                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{category.slug}</code>
+                      </TableCell>
+                      <TableCell>{category.parentName || '-'}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{category.postCount}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        {category.childCount > 0 && (
+                          <Badge variant="outline">{category.childCount}</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>{category.sortOrder}</TableCell>
                     </TableRow>
                   ))
                 )}

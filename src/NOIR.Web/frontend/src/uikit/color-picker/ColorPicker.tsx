@@ -15,7 +15,7 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ color, isSelected, onClick })
     <button
       type="button"
       className={cn(
-        'relative w-8 h-8 rounded-md transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+        'relative w-8 h-8 rounded-md cursor-pointer transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
         isSelected && 'ring-2 ring-foreground ring-offset-2'
       )}
       style={{ backgroundColor: color }}
@@ -93,7 +93,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             type="button"
             onClick={handleColorInputClick}
             className={cn(
-              'relative w-8 h-8 rounded-md transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 flex items-center justify-center border-2 border-dashed border-muted-foreground/50',
+              'relative w-8 h-8 rounded-md cursor-pointer transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 flex items-center justify-center border-2 border-dashed border-muted-foreground/50',
               isCustomColor && 'ring-2 ring-foreground ring-offset-2 border-solid border-transparent'
             )}
             style={isCustomColor ? { backgroundColor: value } : undefined}

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
-import { Edit, Trash2, Building, KeyRound, Blocks, MoreHorizontal } from 'lucide-react'
+import { Edit, Trash2, Building, KeyRound, Blocks, EllipsisVertical } from 'lucide-react'
 import {
   Button,
   DropdownMenu,
@@ -65,40 +65,17 @@ export const TenantTable = ({ tenants, onEdit, onEditModules, onDelete, onResetP
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-10 sticky left-0 z-10 bg-background" />
             <TableHead className="hidden sm:table-cell">{t('tenants.table.identifier')}</TableHead>
             <TableHead>{t('tenants.table.name')}</TableHead>
             <TableHead>{t('labels.status')}</TableHead>
             <TableHead className="hidden md:table-cell">{t('labels.createdAt')}</TableHead>
-            <TableHead className="text-right">{t('labels.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {tenants.map((tenant) => (
             <TableRow key={tenant.id}>
-              <TableCell className="hidden sm:table-cell font-mono text-sm">
-                <button
-                  className="hover:underline text-primary cursor-pointer bg-transparent border-none p-0"
-                  onClick={() => onEdit(tenant)}
-                >
-                  {tenant.identifier}
-                </button>
-              </TableCell>
-              <TableCell>
-                <button
-                  className="hover:underline text-left cursor-pointer bg-transparent border-none p-0 sm:cursor-default sm:no-underline"
-                  onClick={() => onEdit(tenant)}
-                >
-                  <span className="font-medium">{tenant.name || tenant.identifier}</span>
-                  <span className="block text-xs text-muted-foreground sm:hidden">{tenant.identifier}</span>
-                </button>
-              </TableCell>
-              <TableCell>
-                <TenantStatusBadge isActive={tenant.isActive} />
-              </TableCell>
-              <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                {formatDate(tenant.createdAt)}
-              </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="sticky left-0 z-10 bg-background">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -107,10 +84,10 @@ export const TenantTable = ({ tenants, onEdit, onEditModules, onDelete, onResetP
                       className="cursor-pointer"
                       aria-label={t('labels.actionsFor', { name: tenant.name || tenant.identifier, defaultValue: `Actions for ${tenant.name || tenant.identifier}` })}
                     >
-                      <MoreHorizontal className="h-4 w-4" />
+                      <EllipsisVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent align="start">
                     <DropdownMenuItem onClick={() => onEdit(tenant)} className="cursor-pointer">
                       <Edit className="mr-2 h-4 w-4" />
                       {t('buttons.edit')}
@@ -133,6 +110,29 @@ export const TenantTable = ({ tenants, onEdit, onEditModules, onDelete, onResetP
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+              </TableCell>
+              <TableCell className="hidden sm:table-cell font-mono text-sm">
+                <button
+                  className="hover:underline text-primary cursor-pointer bg-transparent border-none p-0"
+                  onClick={() => onEdit(tenant)}
+                >
+                  {tenant.identifier}
+                </button>
+              </TableCell>
+              <TableCell>
+                <button
+                  className="hover:underline text-left cursor-pointer bg-transparent border-none p-0 sm:cursor-default sm:no-underline"
+                  onClick={() => onEdit(tenant)}
+                >
+                  <span className="font-medium">{tenant.name || tenant.identifier}</span>
+                  <span className="block text-xs text-muted-foreground sm:hidden">{tenant.identifier}</span>
+                </button>
+              </TableCell>
+              <TableCell>
+                <TenantStatusBadge isActive={tenant.isActive} />
+              </TableCell>
+              <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                {formatDate(tenant.createdAt)}
               </TableCell>
             </TableRow>
           ))}

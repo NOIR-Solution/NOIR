@@ -8,7 +8,7 @@ import {
   ExternalLink,
   Heart,
   Loader2,
-  MoreHorizontal,
+  EllipsisVertical,
   Package,
   Plus,
   Share2,
@@ -288,7 +288,7 @@ export const WishlistPage = () => {
                             className="cursor-pointer h-8 w-8"
                             aria-label={t('labels.actionsFor', { name: wishlist.name, defaultValue: `Actions for ${wishlist.name}` })}
                           >
-                            <MoreHorizontal className="h-4 w-4" />
+                            <EllipsisVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">

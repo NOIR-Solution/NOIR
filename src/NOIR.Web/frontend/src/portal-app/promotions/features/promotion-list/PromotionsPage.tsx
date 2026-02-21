@@ -1,7 +1,7 @@
 import { useState, useDeferredValue, useMemo, useEffect, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  MoreHorizontal,
+  EllipsisVertical,
   Pencil,
   Percent,
   Play,
@@ -262,6 +262,7 @@ export const PromotionsPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead className="w-[20%]">{t('labels.name', 'Name')}</TableHead>
                   <TableHead>{t('promotions.code', 'Code')}</TableHead>
                   <TableHead>{t('promotions.type.label', 'Type')}</TableHead>
@@ -270,13 +271,13 @@ export const PromotionsPage = () => {
                   <TableHead>{t('promotions.startDate', 'Start Date')}</TableHead>
                   <TableHead>{t('promotions.endDate', 'End Date')}</TableHead>
                   <TableHead className="text-center">{t('promotions.usage', 'Usage')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
@@ -285,7 +286,6 @@ export const PromotionsPage = () => {
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                       <TableCell className="text-center"><Skeleton className="h-5 w-12 mx-auto rounded-full" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : promotions.length === 0 ? (
@@ -306,6 +306,61 @@ export const PromotionsPage = () => {
                 ) : (
                   promotions.map((promotion) => (
                     <TableRow key={promotion.id} className="group transition-colors hover:bg-muted/50">
+                      <TableCell className="sticky left-0 z-10 bg-background">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                              aria-label={t('labels.actionsFor', { name: promotion.name, defaultValue: `Actions for ${promotion.name}` })}
+                            >
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            {canWrite && (
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setPromotionToEdit(promotion)}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                {t('labels.edit', 'Edit')}
+                              </DropdownMenuItem>
+                            )}
+                            {canWrite && promotion.status !== 'Active' && promotion.status !== 'Expired' && promotion.status !== 'Cancelled' && (
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => handleActivate(promotion)}
+                              >
+                                <Play className="h-4 w-4 mr-2" />
+                                {t('promotions.activate', 'Activate')}
+                              </DropdownMenuItem>
+                            )}
+                            {canWrite && promotion.status === 'Active' && (
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => handleDeactivate(promotion)}
+                              >
+                                <Pause className="h-4 w-4 mr-2" />
+                                {t('promotions.deactivate', 'Deactivate')}
+                              </DropdownMenuItem>
+                            )}
+                            {canDelete && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  className="text-destructive cursor-pointer"
+                                  onClick={() => setPromotionToDelete(promotion)}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  {t('labels.delete', 'Delete')}
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                       <TableCell>
                         <span className="font-medium">{promotion.name}</span>
                         {promotion.description && (
@@ -349,61 +404,6 @@ export const PromotionsPage = () => {
                           {promotion.currentUsageCount}
                           {promotion.usageLimitTotal != null ? `/${promotion.usageLimitTotal}` : ''}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: promotion.name, defaultValue: `Actions for ${promotion.name}` })}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {canWrite && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setPromotionToEdit(promotion)}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                            )}
-                            {canWrite && promotion.status !== 'Active' && promotion.status !== 'Expired' && promotion.status !== 'Cancelled' && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => handleActivate(promotion)}
-                              >
-                                <Play className="h-4 w-4 mr-2" />
-                                {t('promotions.activate', 'Activate')}
-                              </DropdownMenuItem>
-                            )}
-                            {canWrite && promotion.status === 'Active' && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => handleDeactivate(promotion)}
-                              >
-                                <Pause className="h-4 w-4 mr-2" />
-                                {t('promotions.deactivate', 'Deactivate')}
-                              </DropdownMenuItem>
-                            )}
-                            {canDelete && (
-                              <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="text-destructive cursor-pointer"
-                                  onClick={() => setPromotionToDelete(promotion)}
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  {t('labels.delete', 'Delete')}
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))

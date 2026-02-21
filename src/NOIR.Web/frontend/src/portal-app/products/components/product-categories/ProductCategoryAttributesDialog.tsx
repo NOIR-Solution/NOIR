@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Tags, Plus, Trash2, GripVertical, Check } from 'lucide-react'
+import { Tags, Plus, Trash2, GripVertical } from 'lucide-react'
 import {
   useCategoryAttributesQuery,
   useActiveProductAttributesQuery,
@@ -151,68 +151,70 @@ export const ProductCategoryAttributesDialog = ({
             <div className="space-y-4">
               {/* Add Attribute Section */}
               {showAddAttribute ? (
-                <div className="flex items-end gap-2 p-4 bg-muted/50 rounded-lg">
-                  <div className="flex-1 space-y-2">
-                    <label className="text-sm font-medium">
-                      {t('categoryAttributes.selectAttribute', 'Select Attribute')}
-                    </label>
-                    <Select
-                      value={selectedAttributeId}
-                      onValueChange={setSelectedAttributeId}
-                      disabled={loadingAttributes}
-                    >
-                      <SelectTrigger className="cursor-pointer" aria-label={t('categoryAttributes.selectAttribute', 'Select Attribute')}>
-                        <SelectValue placeholder={t('categoryAttributes.selectPlaceholder', 'Choose an attribute...')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableAttributes.map((attr) => (
-                          <SelectItem key={attr.id} value={attr.id} className="cursor-pointer">
-                            <div className="flex items-center gap-2">
-                              <span>{attr.name}</span>
-                              <Badge variant="outline" className="text-xs">{attr.type}</Badge>
-                            </div>
-                          </SelectItem>
-                        ))}
-                        {availableAttributes.length === 0 && (
-                          <SelectItem value="none" disabled>
-                            {t('categoryAttributes.noAvailableAttributes', 'No available attributes')}
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex items-center gap-2 pb-0.5">
-                    <Checkbox
-                      id="isRequired"
-                      checked={selectedIsRequired}
-                      onCheckedChange={(checked) => setSelectedIsRequired(checked === true)}
+                <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
+                  <label className="text-sm font-medium">
+                    {t('categoryAttributes.selectAttribute', 'Select Attribute')}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1">
+                      <Select
+                        value={selectedAttributeId}
+                        onValueChange={setSelectedAttributeId}
+                        disabled={loadingAttributes}
+                      >
+                        <SelectTrigger className="cursor-pointer" aria-label={t('categoryAttributes.selectAttribute', 'Select Attribute')}>
+                          <SelectValue placeholder={t('categoryAttributes.selectPlaceholder', 'Choose an attribute...')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableAttributes.map((attr) => (
+                            <SelectItem key={attr.id} value={attr.id} className="cursor-pointer">
+                              <div className="flex items-center gap-2">
+                                <span>{attr.name}</span>
+                                <Badge variant="outline" className="text-xs">{attr.type}</Badge>
+                              </div>
+                            </SelectItem>
+                          ))}
+                          {availableAttributes.length === 0 && (
+                            <SelectItem value="none" disabled>
+                              {t('categoryAttributes.noAvailableAttributes', 'No available attributes')}
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="isRequired"
+                        checked={selectedIsRequired}
+                        onCheckedChange={(checked) => setSelectedIsRequired(checked === true)}
+                        className="cursor-pointer"
+                      />
+                      <label htmlFor="isRequired" className="text-sm cursor-pointer">
+                        {t('labels.required', 'Required')}
+                      </label>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={handleAddAttribute}
+                      disabled={!selectedAttributeId || isSubmitting}
                       className="cursor-pointer"
-                    />
-                    <label htmlFor="isRequired" className="text-sm cursor-pointer">
-                      {t('labels.required', 'Required')}
-                    </label>
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      {t('labels.add', 'Add')}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setShowAddAttribute(false)
+                        setSelectedAttributeId('')
+                        setSelectedIsRequired(false)
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {t('labels.cancel', 'Cancel')}
+                    </Button>
                   </div>
-                  <Button
-                    size="sm"
-                    onClick={handleAddAttribute}
-                    disabled={!selectedAttributeId || isSubmitting}
-                    className="cursor-pointer"
-                  >
-                    <Check className="h-4 w-4 mr-1" />
-                    {t('labels.add', 'Add')}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      setShowAddAttribute(false)
-                      setSelectedAttributeId('')
-                      setSelectedIsRequired(false)
-                    }}
-                    className="cursor-pointer"
-                  >
-                    {t('labels.cancel', 'Cancel')}
-                  </Button>
                 </div>
               ) : (
                 <Button
@@ -232,22 +234,22 @@ export const ProductCategoryAttributesDialog = ({
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                       <TableHead className="w-8"></TableHead>
                       <TableHead>{t('labels.name', 'Name')}</TableHead>
                       <TableHead>{t('labels.code', 'Code')}</TableHead>
                       <TableHead className="text-center">{t('labels.required', 'Required')}</TableHead>
-                      <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
                       [...Array(3)].map((_, i) => (
                         <TableRow key={i}>
+                          <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                           <TableCell><Skeleton className="h-4 w-4" /></TableCell>
                           <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                           <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                           <TableCell className="text-center"><Skeleton className="h-4 w-4 mx-auto" /></TableCell>
-                          <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
                         </TableRow>
                       ))
                     ) : categoryAttributes.length === 0 ? (
@@ -264,6 +266,17 @@ export const ProductCategoryAttributesDialog = ({
                     ) : (
                       categoryAttributes.map((ca) => (
                         <TableRow key={ca.id} className="group">
+                          <TableCell className="sticky left-0 z-10 bg-background">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => setAttributeToRemove(ca)}
+                              aria-label={t('categoryAttributes.removeAttribute', 'Remove {name}', { name: ca.attributeName })}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
                           <TableCell>
                             <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
                           </TableCell>
@@ -282,17 +295,6 @@ export const ProductCategoryAttributesDialog = ({
                               className="cursor-pointer"
                               aria-label={t('categoryAttributes.toggleRequired', 'Toggle required for {name}', { name: ca.attributeName })}
                             />
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => setAttributeToRemove(ca)}
-                              aria-label={t('categoryAttributes.removeAttribute', 'Remove {name}', { name: ca.attributeName })}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
                           </TableCell>
                         </TableRow>
                       ))

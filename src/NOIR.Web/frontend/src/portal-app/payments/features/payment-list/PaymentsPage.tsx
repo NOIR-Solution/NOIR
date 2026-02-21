@@ -195,6 +195,7 @@ export const PaymentsPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead>{t('payments.transactionNumber')}</TableHead>
                   <TableHead>{t('payments.amount')}</TableHead>
                   <TableHead>{t('payments.status')}</TableHead>
@@ -202,13 +203,13 @@ export const PaymentsPage = () => {
                   <TableHead>{t('payments.method')}</TableHead>
                   <TableHead>{t('payments.createdAt')}</TableHead>
                   <TableHead>{t('payments.paidAt')}</TableHead>
-                  <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-28" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
@@ -216,7 +217,6 @@ export const PaymentsPage = () => {
                       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-28" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded ml-auto" /></TableCell>
                     </TableRow>
                   ))
                 ) : payments.length === 0 ? (
@@ -237,6 +237,20 @@ export const PaymentsPage = () => {
                       className="group transition-colors hover:bg-muted/50 cursor-pointer"
                       onClick={() => handleViewPayment(payment)}
                     >
+                      <TableCell className="sticky left-0 z-10 bg-background">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                          aria-label={t('payments.viewPayment', { transactionNumber: payment.transactionNumber, defaultValue: `View payment ${payment.transactionNumber}` })}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleViewPayment(payment)
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
                       <TableCell>
                         <span className="font-mono font-medium text-sm">{payment.transactionNumber}</span>
                       </TableCell>
@@ -267,20 +281,6 @@ export const PaymentsPage = () => {
                         <span className="text-sm text-muted-foreground">
                           {payment.paidAt ? formatDateTime(payment.paidAt) : '—'}
                         </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                          aria-label={t('payments.viewPayment', { transactionNumber: payment.transactionNumber, defaultValue: `View payment ${payment.transactionNumber}` })}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleViewPayment(payment)
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
                       </TableCell>
                     </TableRow>
                   ))
