@@ -1,4 +1,9 @@
 import type { TFunction } from 'i18next'
+import {
+  BarChart3, ShoppingCart, UserCheck, Package, FileText,
+  Users, Building2, Settings as SettingsIcon, Activity,
+  SlidersHorizontal, type LucideIcon,
+} from 'lucide-react'
 
 /** Category display order matching sidebar navigation sections. */
 const CATEGORY_SORT_ORDER: Record<string, number> = {
@@ -12,6 +17,20 @@ const CATEGORY_SORT_ORDER: Record<string, number> = {
   'Settings': 8,
   'System': 9,
   'Platform': 10,
+}
+
+/** Category icons matching sidebar navigation. */
+export const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  'Marketing': BarChart3,
+  'Orders': ShoppingCart,
+  'Customers': UserCheck,
+  'Catalog': Package,
+  'Content': FileText,
+  'Users & Access': Users,
+  'Tenant Management': Building2,
+  'Settings': SettingsIcon,
+  'System': Activity,
+  'Platform': SlidersHorizontal,
 }
 
 /** Sort comparator for permission categories matching sidebar menu order. */

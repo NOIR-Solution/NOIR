@@ -1,10 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Key, ChevronDown, ChevronRight, Loader2, Search, Sparkles, Shield, Check,
-  BarChart3, ShoppingCart, UserCheck, Package, FileText, Users, Building2,
-  Settings as SettingsIcon, Activity, SlidersHorizontal, type LucideIcon,
-} from 'lucide-react'
+import { Key, ChevronDown, ChevronRight, Loader2, Search, Sparkles, Shield, Check } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -31,23 +27,9 @@ import { usePermissionsQuery, usePermissionTemplatesQuery } from '@/portal-app/u
 import { assignPermissions, getRoleById } from '@/services/roles'
 import { ApiError } from '@/services/apiClient'
 import type { RoleListItem, Permission } from '@/types'
-import { translatePermissionCategory, translatePermissionDisplayName, translatePermissionDescription, comparePermissionCategories } from '@/portal-app/user-access/utils/permissionTranslation'
+import { translatePermissionCategory, translatePermissionDisplayName, translatePermissionDescription, comparePermissionCategories, CATEGORY_ICONS } from '@/portal-app/user-access/utils/permissionTranslation'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { isPlatformAdmin } from '@/lib/roles'
-
-// Category icons matching sidebar navigation
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  'Marketing': BarChart3,
-  'Orders': ShoppingCart,
-  'Customers': UserCheck,
-  'Catalog': Package,
-  'Content': FileText,
-  'Users & Access': Users,
-  'Tenant Management': Building2,
-  'Settings': SettingsIcon,
-  'System': Activity,
-  'Platform': SlidersHorizontal,
-}
 
 interface PermissionsDialogProps {
   role: RoleListItem | null

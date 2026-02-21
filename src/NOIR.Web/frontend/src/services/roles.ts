@@ -134,20 +134,6 @@ export const getAllPermissions = async (): Promise<Permission[]> => {
   return apiClient<Permission[]>('/permissions')
 }
 
-/**
- * Get permissions grouped by category
- */
-export const getPermissionsByCategory = async (): Promise<Record<string, Permission[]>> => {
-  const permissions = await getAllPermissions()
-  return permissions.reduce((groups, permission) => {
-    const category = permission.category || 'Uncategorized'
-    if (!groups[category]) {
-      groups[category] = []
-    }
-    groups[category].push(permission)
-    return groups
-  }, {} as Record<string, Permission[]>)
-}
 
 // ============================================================================
 // Permission Templates

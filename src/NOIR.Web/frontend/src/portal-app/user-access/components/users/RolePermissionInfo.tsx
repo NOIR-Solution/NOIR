@@ -78,7 +78,7 @@ export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded
   const groupedPermissions = permissions?.reduce((groups, permName) => {
     const permDetail = allPermissions.find((p) => p.name === permName)
     if (!showPlatformPermissions && (!permDetail || !permDetail.isTenantAllowed)) return groups
-    const category = permDetail?.category || t('permissions.categories.other', 'Other')
+    const category = permDetail?.category || 'Other'
     if (!groups[category]) {
       groups[category] = []
     }
