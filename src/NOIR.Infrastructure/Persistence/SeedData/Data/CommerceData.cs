@@ -52,7 +52,34 @@ public record ReceiptItemDef(
     decimal UnitCost);
 
 /// <summary>
-/// Vietnamese commerce seed data: customers, orders, and inventory receipts.
+/// Payment gateway definition for seed data.
+/// </summary>
+public record PaymentGatewayDef(
+    string Provider,
+    string DisplayName,
+    GatewayEnvironment Environment,
+    bool IsActive,
+    int SortOrder,
+    string SupportedCurrencies,
+    decimal? MinAmount,
+    decimal? MaxAmount);
+
+/// <summary>
+/// Payment transaction definition for seed data.
+/// OrderNumber references CommerceData.GetOrders().
+/// TargetStatus is the final payment status after lifecycle transitions.
+/// Amount is derived from the referenced order's GrandTotal at seed time.
+/// </summary>
+public record PaymentTransactionDef(
+    string TransactionNumber,
+    string OrderNumber,
+    string GatewayProvider,
+    PaymentMethod PaymentMethod,
+    PaymentStatus TargetStatus,
+    string? CodCollectorName);
+
+/// <summary>
+/// Vietnamese commerce seed data: customers, orders, inventory receipts, payment gateways, and payment transactions.
 /// Product slugs reference products seeded by CatalogSeedModule.
 /// Prices in VND.
 /// </summary>
@@ -146,7 +173,7 @@ public static class CommerceData
     ];
 
     /// <summary>
-    /// 3 inventory receipts: 2 StockIn (Confirmed), 1 StockOut (Draft).
+    /// 7 inventory receipts covering various statuses and edge cases.
     /// Product slugs and variant names MUST match CatalogData.GetProducts() exactly.
     /// </summary>
     public static ReceiptDef[] GetReceipts() =>
@@ -180,6 +207,93 @@ public static class CommerceData
             new("ao-thun-tron-co-tron", "L - Đen", 3, 95_000m),
             new("quan-jogger-day-thun", "M - Xám", 1, 170_000m),
             new("ao-polo-classic", "L - Trắng", 2, 210_000m)
+        ]),
+
+        // Receipt 4: Large quantity stock-in for Tết season
+        new("RCV-20260115-0003", InventoryReceiptType.StockIn, InventoryReceiptStatus.Confirmed,
+            "Nhập kho lô lớn - hàng mùa Tết", -80,
+        [
+            new("ao-so-mi-oxford", "L - Trắng", 200, 280_000m),
+            new("ao-so-mi-oxford", "M - Xanh nhạt", 150, 280_000m),
+            new("ao-kieu-tay-phong", "S - Trắng", 100, 230_000m),
+            new("ao-thun-nu-crop-top", "M - Đen", 180, 85_000m),
+            new("quan-jogger-day-thun", "M - Xám", 120, 170_000m),
+        ]),
+
+        // Receipt 5: Cancelled receipt (cancelled before confirmation)
+        new("RCV-20260205-0004", InventoryReceiptType.StockIn, InventoryReceiptStatus.Cancelled,
+            "Nhập hàng bị hủy - nhà cung cấp giao sai hàng", -20,
+        [
+            new("ao-tank-top-the-thao", "M - Đen", 50, 90_000m),
+            new("ao-tank-top-the-thao", "L - Xám", 50, 90_000m),
+        ]),
+
+        // Receipt 6: Stock-out confirmed (creates low/zero stock scenarios)
+        new("SHP-20260220-0002", InventoryReceiptType.StockOut, InventoryReceiptStatus.Confirmed,
+            "Xuất kho đơn hàng lớn - đại lý Đà Nẵng", -3,
+        [
+            new("ao-so-mi-nu-oversize", "Free size - Trắng", 30, 190_000m),
+            new("ao-so-mi-nu-oversize", "Free size - Xanh nhạt", 25, 190_000m),
+            new("dong-ho-nam-thoi-trang", "Dây da nâu", 8, 900_000m),
+        ]),
+
+        // Receipt 7: Another stock-out draft
+        new("SHP-20260221-0003", InventoryReceiptType.StockOut, InventoryReceiptStatus.Draft,
+            "Xuất kho hàng khuyến mãi", -1,
+        [
+            new("mu-luoi-trai-unisex", "Đen", 5, 95_000m),
+            new("mu-luoi-trai-unisex", "Trắng", 5, 95_000m),
+            new("mu-luoi-trai-unisex", "Xanh navy", 5, 95_000m),
         ])
+    ];
+
+    /// <summary>
+    /// 2 payment gateways: COD (active) and VNPay (inactive sandbox).
+    /// </summary>
+    public static PaymentGatewayDef[] GetPaymentGateways() =>
+    [
+        new("cod", "Thanh toán khi nhận hàng (COD)", GatewayEnvironment.Production,
+            true, 1, "[\"VND\"]", 0m, 20_000_000m),
+        new("vnpay", "VNPay", GatewayEnvironment.Sandbox,
+            false, 2, "[\"VND\"]", 10_000m, 100_000_000m)
+    ];
+
+    /// <summary>
+    /// 9 payment transactions - one per order.
+    /// Payment status matches order lifecycle:
+    /// Completed orders → CodCollected, Cancelled → Cancelled,
+    /// Confirmed/Processing/Shipped → CodPending, Pending → Pending.
+    /// </summary>
+    public static PaymentTransactionDef[] GetPaymentTransactions() =>
+    [
+        // Completed orders → COD collected
+        new("PAY-20260101-0001", "ORD-20260101-0001", "cod",
+            PaymentMethod.COD, PaymentStatus.CodCollected, "Nguyễn Văn Tài (GHTK)"),
+        new("PAY-20260115-0002", "ORD-20260115-0002", "cod",
+            PaymentMethod.COD, PaymentStatus.CodCollected, "Trần Minh Đức (GHN)"),
+        new("PAY-20260201-0003", "ORD-20260201-0003", "cod",
+            PaymentMethod.COD, PaymentStatus.CodCollected, "Lê Thị Hồng (GHTK)"),
+
+        // Cancelled order → payment cancelled
+        new("PAY-20260210-0004", "ORD-20260210-0004", "cod",
+            PaymentMethod.COD, PaymentStatus.Cancelled, null),
+
+        // Confirmed orders → COD pending (awaiting shipment)
+        new("PAY-20260218-0005", "ORD-20260218-0005", "cod",
+            PaymentMethod.COD, PaymentStatus.CodPending, null),
+        new("PAY-20260220-0006", "ORD-20260220-0006", "cod",
+            PaymentMethod.COD, PaymentStatus.CodPending, null),
+
+        // Processing order → COD pending
+        new("PAY-20260222-0007", "ORD-20260222-0007", "cod",
+            PaymentMethod.COD, PaymentStatus.CodPending, null),
+
+        // Shipped order → COD pending (waiting for courier collection)
+        new("PAY-20260223-0008", "ORD-20260223-0008", "cod",
+            PaymentMethod.COD, PaymentStatus.CodPending, null),
+
+        // Pending order → payment pending
+        new("PAY-20260224-0009", "ORD-20260224-0009", "cod",
+            PaymentMethod.COD, PaymentStatus.Pending, null)
     ];
 }

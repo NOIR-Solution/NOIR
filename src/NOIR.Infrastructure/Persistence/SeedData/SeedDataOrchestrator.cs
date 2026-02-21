@@ -237,6 +237,7 @@ public static class SeedDataOrchestrator
         if (settings.Modules.Catalog) modules.Add(new CatalogSeedModule());
         if (settings.Modules.Blog) modules.Add(new BlogSeedModule());
         if (settings.Modules.Commerce) modules.Add(new CommerceSeedModule());
+        if (settings.Modules.Community) modules.Add(new CommunitySeedModule());
         if (settings.Modules.Engagement) modules.Add(new EngagementSeedModule());
 
         return modules.OrderBy(m => m.Order).ToList();

@@ -2,14 +2,14 @@ namespace NOIR.Infrastructure.Persistence.SeedData;
 
 /// <summary>
 /// Interface for seed data modules that populate demo/development data.
-/// Each module handles a specific domain (Catalog, Blog, Commerce, Engagement).
+/// Each module handles a specific domain (Catalog, Blog, Commerce, Community, Engagement).
 /// Modules are executed in Order sequence per tenant.
 /// </summary>
 public interface ISeedDataModule
 {
     /// <summary>
     /// Execution order. Lower values run first.
-    /// Convention: 100=Catalog, 200=Blog, 300=Commerce, 400=Engagement.
+    /// Convention: 100=Catalog, 200=Blog, 300=Commerce, 350=Community, 400=Engagement.
     /// </summary>
     int Order { get; }
 

@@ -1,7 +1,8 @@
 namespace NOIR.Infrastructure.Persistence.SeedData;
 
 /// <summary>
-/// Seeds commerce data: customers, orders (with lifecycle transitions), and inventory receipts.
+/// Seeds commerce data: customers, orders (with lifecycle transitions),
+/// inventory receipts, payment gateways, and payment transactions.
 /// Order: 300 (depends on CatalogSeedModule at 100 for product/variant lookups).
 /// </summary>
 public class CommerceSeedModule : ISeedDataModule
@@ -29,6 +30,8 @@ public class CommerceSeedModule : ISeedDataModule
         var customerDefs = CommerceData.GetCustomers();
         var orderDefs = CommerceData.GetOrders();
         var receiptDefs = CommerceData.GetReceipts();
+        var gatewayDefs = CommerceData.GetPaymentGateways();
+        var paymentDefs = CommerceData.GetPaymentTransactions();
 
         // 1. Seed Customers + Addresses
         var customerEntities = SeedCustomers(context, customerDefs, addresses, tenantId);
@@ -38,16 +41,21 @@ public class CommerceSeedModule : ISeedDataModule
         var productLookup = await BuildProductLookupAsync(context, tenantId, ct);
 
         // 3. Seed Orders with lifecycle transitions
-        SeedOrders(context, orderDefs, customerEntities, addresses, productLookup, tenantId);
+        var orderLookup = SeedOrders(context, orderDefs, customerEntities, addresses, productLookup, tenantId);
         await context.DbContext.SaveChangesAsync(ct);
 
         // 4. Seed Inventory Receipts
         SeedInventoryReceipts(context, receiptDefs, productLookup, tenantId);
         await context.DbContext.SaveChangesAsync(ct);
 
+        // 5. Seed Payment Gateways + Transactions
+        var gatewayLookup = SeedPaymentGateways(context, gatewayDefs, tenantId);
+        SeedPaymentTransactions(context, paymentDefs, gatewayLookup, orderLookup, tenantId);
+        await context.DbContext.SaveChangesAsync(ct);
+
         context.Logger.LogInformation(
-            "[SeedData] Commerce: {Customers} customers, {Orders} orders, {Receipts} receipts",
-            customerDefs.Length, orderDefs.Length, receiptDefs.Length);
+            "[SeedData] Commerce: {Customers} customers, {Orders} orders, {Receipts} receipts, {Gateways} gateways, {Payments} payments",
+            customerDefs.Length, orderDefs.Length, receiptDefs.Length, gatewayDefs.Length, paymentDefs.Length);
     }
 
     private static List<(Guid Id, string Email, string FullName, string? Phone)> SeedCustomers(
@@ -114,7 +122,7 @@ public class CommerceSeedModule : ISeedDataModule
             StringComparer.OrdinalIgnoreCase);
     }
 
-    private static void SeedOrders(
+    private static Dictionary<string, (Guid OrderId, Guid CustomerId, decimal GrandTotal)> SeedOrders(
         SeedDataContext context,
         OrderDef[] orderDefs,
         List<(Guid Id, string Email, string FullName, string? Phone)> customers,
@@ -122,6 +130,8 @@ public class CommerceSeedModule : ISeedDataModule
         Dictionary<string, (Product Product, List<ProductVariant> Variants)> productLookup,
         string tenantId)
     {
+        var orderLookup = new Dictionary<string, (Guid OrderId, Guid CustomerId, decimal GrandTotal)>();
+
         foreach (var def in orderDefs)
         {
             var customer = customers[def.CustomerIndex % customers.Count];
@@ -195,7 +205,10 @@ public class CommerceSeedModule : ISeedDataModule
             ApplyOrderLifecycle(order, def);
 
             context.DbContext.Set<NOIR.Domain.Entities.Order.Order>().Add(order);
+            orderLookup[def.OrderNumber] = (order.Id, customer.Id, subTotal);
         }
+
+        return orderLookup;
     }
 
     /// <summary>
@@ -243,6 +256,10 @@ public class CommerceSeedModule : ISeedDataModule
             case OrderStatus.Cancelled:
                 order.Cancel(def.CancellationReason);
                 break;
+
+            default:
+                throw new InvalidOperationException(
+                    $"[SeedData] Unhandled OrderStatus '{def.TargetStatus}' in ApplyOrderLifecycle.");
         }
     }
 
@@ -298,8 +315,125 @@ public class CommerceSeedModule : ISeedDataModule
             {
                 receipt.Confirm(context.TenantAdminUserId);
             }
+            else if (def.TargetStatus == InventoryReceiptStatus.Cancelled)
+            {
+                receipt.Cancel(context.TenantAdminUserId, def.Notes);
+            }
 
             context.DbContext.Set<InventoryReceipt>().Add(receipt);
+        }
+    }
+
+    private static Dictionary<string, Guid> SeedPaymentGateways(
+        SeedDataContext context,
+        PaymentGatewayDef[] gatewayDefs,
+        string tenantId)
+    {
+        var lookup = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var def in gatewayDefs)
+        {
+            var gatewayId = SeedDataConstants.TenantGuid(tenantId, $"gateway:{def.Provider}");
+            var gateway = PaymentGateway.Create(
+                provider: def.Provider,
+                displayName: def.DisplayName,
+                environment: def.Environment,
+                tenantId: tenantId);
+            SeedDataConstants.SetEntityId(gateway, gatewayId);
+
+            gateway.SetSortOrder(def.SortOrder);
+            gateway.SetSupportedCurrencies(def.SupportedCurrencies);
+            gateway.SetAmountLimits(def.MinAmount, def.MaxAmount);
+
+            if (def.IsActive)
+            {
+                gateway.Activate();
+                gateway.UpdateHealthStatus(GatewayHealthStatus.Healthy);
+            }
+
+            context.DbContext.Set<PaymentGateway>().Add(gateway);
+            lookup[def.Provider] = gateway.Id;
+        }
+
+        return lookup;
+    }
+
+    private static void SeedPaymentTransactions(
+        SeedDataContext context,
+        PaymentTransactionDef[] paymentDefs,
+        Dictionary<string, Guid> gatewayLookup,
+        Dictionary<string, (Guid OrderId, Guid CustomerId, decimal GrandTotal)> orderLookup,
+        string tenantId)
+    {
+        foreach (var def in paymentDefs)
+        {
+            if (!gatewayLookup.TryGetValue(def.GatewayProvider, out var gatewayId))
+            {
+                context.Logger.LogWarning(
+                    "[SeedData] Gateway '{Provider}' not found for payment {TxNumber}. Skipping.",
+                    def.GatewayProvider, def.TransactionNumber);
+                continue;
+            }
+
+            if (!orderLookup.TryGetValue(def.OrderNumber, out var orderInfo))
+            {
+                context.Logger.LogWarning(
+                    "[SeedData] Order '{OrderNumber}' not found for payment {TxNumber}. Skipping.",
+                    def.OrderNumber, def.TransactionNumber);
+                continue;
+            }
+
+            var txId = SeedDataConstants.TenantGuid(tenantId, $"payment:{def.TransactionNumber}");
+            var tx = PaymentTransaction.Create(
+                transactionNumber: def.TransactionNumber,
+                paymentGatewayId: gatewayId,
+                provider: def.GatewayProvider,
+                amount: orderInfo.GrandTotal,
+                currency: "VND",
+                paymentMethod: def.PaymentMethod,
+                idempotencyKey: $"seed-{def.TransactionNumber}",
+                tenantId: tenantId);
+            SeedDataConstants.SetEntityId(tx, txId);
+
+            tx.SetOrderId(orderInfo.OrderId);
+            tx.SetCustomerId(orderInfo.CustomerId);
+
+            // Apply payment lifecycle transitions
+            ApplyPaymentLifecycle(tx, def);
+
+            context.DbContext.Set<PaymentTransaction>().Add(tx);
+        }
+    }
+
+    private static void ApplyPaymentLifecycle(PaymentTransaction tx, PaymentTransactionDef def)
+    {
+        switch (def.TargetStatus)
+        {
+            case PaymentStatus.Pending:
+                // Default status, no action needed
+                break;
+
+            case PaymentStatus.CodPending:
+                tx.MarkAsCodPending();
+                break;
+
+            case PaymentStatus.CodCollected:
+                tx.MarkAsCodPending();
+                tx.ConfirmCodCollection(def.CodCollectorName!);
+                break;
+
+            case PaymentStatus.Cancelled:
+                tx.MarkAsCancelled();
+                break;
+
+            case PaymentStatus.Paid:
+                tx.MarkAsProcessing();
+                tx.MarkAsPaid($"GW-{def.TransactionNumber}");
+                break;
+
+            default:
+                throw new InvalidOperationException(
+                    $"[SeedData] Unhandled PaymentStatus '{def.TargetStatus}' in ApplyPaymentLifecycle.");
         }
     }
 }

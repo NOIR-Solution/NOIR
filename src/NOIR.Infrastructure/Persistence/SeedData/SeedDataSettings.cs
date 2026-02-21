@@ -33,6 +33,7 @@ public class SeedDataModuleSettings
     public bool Catalog { get; set; } = true;
     public bool Blog { get; set; } = true;
     public bool Commerce { get; set; } = true;
+    public bool Community { get; set; } = true;
     public bool Engagement { get; set; } = true;
 }
 
