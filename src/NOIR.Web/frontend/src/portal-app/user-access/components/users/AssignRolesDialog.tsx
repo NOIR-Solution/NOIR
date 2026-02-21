@@ -5,12 +5,13 @@ import {
   Badge,
   Button,
   Checkbox,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   Label,
   ScrollArea,
 } from '@uikit'
@@ -101,115 +102,117 @@ export const AssignRolesDialog = ({ user, open, onOpenChange, onSuccess }: Assig
   const isLoading = loadingRoles || loadingUserRoles
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Shield className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{t('users.assignRolesTitle', 'Assign Roles')}</DialogTitle>
-              <DialogDescription>
+              <CredenzaTitle>{t('users.assignRolesTitle', 'Assign Roles')}</CredenzaTitle>
+              <CredenzaDescription>
                 {t('users.assignRolesDescription', 'Select roles to assign to "{{email}}"', {
                   email: user?.email || '',
                 })}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : (
-          <>
-            <div className="flex items-center justify-between py-2">
-              <div className="text-sm text-muted-foreground">
-                {t('users.rolesSelected', '{{count}} roles selected', {
-                  count: selectedRoles.size,
-                })}
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSelectAll}
-                  className="cursor-pointer"
-                >
-                  {t('roles.selectAll', 'Select All')}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleClearAll}
-                  className="cursor-pointer"
-                >
-                  {t('roles.clearAll', 'Clear All')}
-                </Button>
-              </div>
+        <CredenzaBody>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between py-2">
+                <div className="text-sm text-muted-foreground">
+                  {t('users.rolesSelected', '{{count}} roles selected', {
+                    count: selectedRoles.size,
+                  })}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSelectAll}
+                    className="cursor-pointer"
+                  >
+                    {t('roles.selectAll', 'Select All')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearAll}
+                    className="cursor-pointer"
+                  >
+                    {t('roles.clearAll', 'Clear All')}
+                  </Button>
+                </div>
+              </div>
 
-            <ScrollArea className="h-[300px] rounded-md border p-4">
-              <div className="space-y-3">
-                {availableRoles.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    {t('users.noRolesAvailable', 'No roles available')}
-                  </div>
-                ) : (
-                  availableRoles.map((role) => (
-                    <div
-                      key={role.id}
-                      className="flex items-start space-x-3 rounded-lg border p-3 hover:bg-accent/50 transition-colors cursor-pointer"
-                      onClick={() => handleToggleRole(role.name)}
-                    >
-                      <Checkbox
-                        id={`role-${role.id}`}
-                        checked={selectedRoles.has(role.name)}
-                        onCheckedChange={() => handleToggleRole(role.name)}
-                        className="mt-0.5"
-                      />
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Label
-                            htmlFor={`role-${role.id}`}
-                            className="font-medium cursor-pointer"
-                          >
-                            {role.name}
-                          </Label>
-                          {role.isSystemRole && (
-                            <Badge variant="secondary" className="text-xs">
-                              {t('roles.system', 'System')}
-                            </Badge>
-                          )}
-                          <RolePermissionInfo
-                            role={role}
-                            permissionsCache={permissionsCache}
-                            onPermissionsLoaded={handlePermissionsLoaded}
-                          />
-                          {selectedRoles.has(role.name) && (
-                            <Check className="h-4 w-4 text-green-600 ml-auto" />
-                          )}
-                        </div>
-                        {role.description && (
-                          <p className="text-xs text-muted-foreground">
-                            {role.description}
-                          </p>
-                        )}
-                        <p className="text-xs text-muted-foreground">
-                          {t('roles.userCount', '{{count}} users', { count: role.userCount })}
-                        </p>
-                      </div>
+              <ScrollArea className="h-[300px] rounded-md border p-4">
+                <div className="space-y-3">
+                  {availableRoles.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      {t('users.noRolesAvailable', 'No roles available')}
                     </div>
-                  ))
-                )}
-              </div>
-            </ScrollArea>
-          </>
-        )}
+                  ) : (
+                    availableRoles.map((role) => (
+                      <div
+                        key={role.id}
+                        className="flex items-start space-x-3 rounded-lg border p-3 hover:bg-accent/50 transition-colors cursor-pointer"
+                        onClick={() => handleToggleRole(role.name)}
+                      >
+                        <Checkbox
+                          id={`role-${role.id}`}
+                          checked={selectedRoles.has(role.name)}
+                          onCheckedChange={() => handleToggleRole(role.name)}
+                          className="mt-0.5"
+                        />
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Label
+                              htmlFor={`role-${role.id}`}
+                              className="font-medium cursor-pointer"
+                            >
+                              {role.name}
+                            </Label>
+                            {role.isSystemRole && (
+                              <Badge variant="secondary" className="text-xs">
+                                {t('roles.system', 'System')}
+                              </Badge>
+                            )}
+                            <RolePermissionInfo
+                              role={role}
+                              permissionsCache={permissionsCache}
+                              onPermissionsLoaded={handlePermissionsLoaded}
+                            />
+                            {selectedRoles.has(role.name) && (
+                              <Check className="h-4 w-4 text-green-600 ml-auto" />
+                            )}
+                          </div>
+                          {role.description && (
+                            <p className="text-xs text-muted-foreground">
+                              {role.description}
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            {t('roles.userCount', '{{count}} users', { count: role.userCount })}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </ScrollArea>
+            </>
+          )}
+        </CredenzaBody>
 
-        <DialogFooter>
+        <CredenzaFooter>
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
@@ -222,8 +225,8 @@ export const AssignRolesDialog = ({ user, open, onOpenChange, onSuccess }: Assig
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {t('buttons.save', 'Save')}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   )
 }

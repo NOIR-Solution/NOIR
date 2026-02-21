@@ -4,12 +4,13 @@ import { Loader2, MessageSquare } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Textarea,
 } from '@uikit'
 import { useReviewQuery, useAddAdminResponse } from '@/portal-app/reviews/queries'
@@ -53,40 +54,42 @@ export const AdminResponseDialog = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <MessageSquare className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>
+              <CredenzaTitle>
                 {review?.adminResponse
                   ? t('reviews.editResponse', 'Edit Response')
                   : t('reviews.addResponse', 'Add Response')}
-              </DialogTitle>
-              <DialogDescription>
+              </CredenzaTitle>
+              <CredenzaDescription>
                 {t(
                   'reviews.adminResponseDescription',
                   'Write a public response to this review. This will be visible to all customers.',
                 )}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
-        <div className="py-2">
-          <Textarea
-            placeholder={t('reviews.responsePlaceholder', 'Write your response...')}
-            value={response}
-            onChange={(e) => setResponse(e.target.value)}
-            rows={5}
-            className="resize-none"
-          />
-        </div>
+        <CredenzaBody>
+          <div className="py-2">
+            <Textarea
+              placeholder={t('reviews.responsePlaceholder', 'Write your response...')}
+              value={response}
+              onChange={(e) => setResponse(e.target.value)}
+              rows={5}
+              className="resize-none"
+            />
+          </div>
+        </CredenzaBody>
 
-        <DialogFooter>
+        <CredenzaFooter>
           <Button
             variant="outline"
             className="cursor-pointer"
@@ -104,8 +107,8 @@ export const AdminResponseDialog = ({
               ? t('reviews.submitting', 'Submitting...')
               : t('reviews.submitResponse', 'Submit Response')}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   )
 }

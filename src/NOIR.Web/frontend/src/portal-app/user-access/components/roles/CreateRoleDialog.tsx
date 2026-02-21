@@ -7,13 +7,14 @@ import * as z from 'zod'
 import {
   Button,
   ColorPicker,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+  CredenzaBody,
   Form,
   FormControl,
   FormDescription,
@@ -107,111 +108,113 @@ export const CreateRoleDialog = ({ onSuccess }: CreateRoleDialogProps) => {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <Credenza open={open} onOpenChange={setOpen}>
+      <CredenzaTrigger asChild>
         <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
           <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
           {t('roles.create', 'Create Role')}
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      </CredenzaTrigger>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Shield className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{t('roles.createTitle', 'Create New Role')}</DialogTitle>
-              <DialogDescription>
+              <CredenzaTitle>{t('roles.createTitle', 'Create New Role')}</CredenzaTitle>
+              <CredenzaDescription>
                 {t('roles.createDescription', 'Add a new role with custom permissions.')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('roles.fields.name', 'Role Name')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('roles.fields.namePlaceholder', 'e.g., Editor, Viewer')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('roles.fields.description', 'Description')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t('roles.fields.descriptionPlaceholder', 'Describe what this role can do...')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="parentRoleId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('roles.fields.parentRole', 'Parent Role')}</FormLabel>
-                  <Select
-                    onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
-                    value={field.value || '__none__'}
-                  >
+            <CredenzaBody>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('roles.fields.name', 'Role Name')}</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('roles.fields.parentRolePlaceholder', 'Select parent role (optional)')} />
-                      </SelectTrigger>
+                      <Input placeholder={t('roles.fields.namePlaceholder', 'e.g., Editor, Viewer')} {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="__none__">{t('roles.fields.noParent', 'No parent role')}</SelectItem>
-                      {existingRoles.map((role) => (
-                        <SelectItem key={role.id} value={role.id}>
-                          {role.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    {t('roles.fields.parentRoleDescription', 'Child roles inherit permissions from their parent.')}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('roles.fields.color', 'Color')}</FormLabel>
-                  <FormControl>
-                    <ColorPicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('roles.fields.description', 'Description')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t('roles.fields.descriptionPlaceholder', 'Describe what this role can do...')}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <DialogFooter>
+              <FormField
+                control={form.control}
+                name="parentRoleId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('roles.fields.parentRole', 'Parent Role')}</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
+                      value={field.value || '__none__'}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('roles.fields.parentRolePlaceholder', 'Select parent role (optional)')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="__none__">{t('roles.fields.noParent', 'No parent role')}</SelectItem>
+                        {existingRoles.map((role) => (
+                          <SelectItem key={role.id} value={role.id}>
+                            {role.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      {t('roles.fields.parentRoleDescription', 'Child roles inherit permissions from their parent.')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('roles.fields.color', 'Color')}</FormLabel>
+                    <FormControl>
+                      <ColorPicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CredenzaBody>
+
+            <CredenzaFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)} className="cursor-pointer">
                 {t('buttons.cancel', 'Cancel')}
               </Button>
@@ -219,10 +222,10 @@ export const CreateRoleDialog = ({ onSuccess }: CreateRoleDialogProps) => {
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? t('labels.creating', 'Creating...') : t('buttons.create', 'Create')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

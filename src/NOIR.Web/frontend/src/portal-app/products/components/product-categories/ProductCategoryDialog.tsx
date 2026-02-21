@@ -5,12 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormDescription,
@@ -172,123 +173,125 @@ export const ProductCategoryDialog = ({
   const parentOptions = categories.filter((c) => c.id !== category?.id)
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <FolderTree className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{isEditing ? t('categories.editCategory', 'Edit Category') : t('categories.newCategory', 'New Category')}</DialogTitle>
-              <DialogDescription>
+              <CredenzaTitle>{isEditing ? t('categories.editCategory', 'Edit Category') : t('categories.newCategory', 'New Category')}</CredenzaTitle>
+              <CredenzaDescription>
                 {isEditing ? t('categories.editDescription', 'Update category details') : t('categories.createDescription', 'Create a new product category')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.name', 'Name')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      onChange={(e) => handleNameChange(e.target.value)}
-                      placeholder={t('categories.namePlaceholder', 'Category name')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.slug', 'Slug')}</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder={t('categories.slugPlaceholder', 'category-slug')} />
-                  </FormControl>
-                  <FormDescription>{t('categories.slugDescription', 'URL-friendly identifier')}</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.description', 'Description')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value || ''}
-                      placeholder={t('categories.descriptionPlaceholder', 'Category description')}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="parentId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('categories.parentCategory', 'Parent Category')}</FormLabel>
-                  <Select
-                    onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
-                    value={field.value || 'none'}
-                    disabled={categoriesLoading}
-                  >
+            <CredenzaBody>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.name', 'Name')}</FormLabel>
                     <FormControl>
-                      <SelectTrigger className="cursor-pointer" aria-label={t('categories.parentCategory', 'Parent Category')}>
-                        <SelectValue placeholder={categoriesLoading ? t('labels.loading', 'Loading...') : t('categories.selectParent', 'Select parent category')} />
-                      </SelectTrigger>
+                      <Input
+                        {...field}
+                        onChange={(e) => handleNameChange(e.target.value)}
+                        placeholder={t('categories.namePlaceholder', 'Category name')}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="none" className="cursor-pointer">
-                        {t('categories.noParent', 'No parent (top level)')}
-                      </SelectItem>
-                      {parentOptions.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
-                          {cat.name}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.slug', 'Slug')}</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder={t('categories.slugPlaceholder', 'category-slug')} />
+                    </FormControl>
+                    <FormDescription>{t('categories.slugDescription', 'URL-friendly identifier')}</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.description', 'Description')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        value={field.value || ''}
+                        placeholder={t('categories.descriptionPlaceholder', 'Category description')}
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="parentId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('categories.parentCategory', 'Parent Category')}</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
+                      value={field.value || 'none'}
+                      disabled={categoriesLoading}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="cursor-pointer" aria-label={t('categories.parentCategory', 'Parent Category')}>
+                          <SelectValue placeholder={categoriesLoading ? t('labels.loading', 'Loading...') : t('categories.selectParent', 'Select parent category')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none" className="cursor-pointer">
+                          {t('categories.noParent', 'No parent (top level)')}
                         </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                        {parentOptions.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="sortOrder"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.sortOrder', 'Sort Order')}</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="number" min="0" />
-                  </FormControl>
-                  <FormDescription>{t('categories.sortOrderDescription', 'Lower numbers appear first')}</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="sortOrder"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.sortOrder', 'Sort Order')}</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="number" min="0" />
+                    </FormControl>
+                    <FormDescription>{t('categories.sortOrderDescription', 'Lower numbers appear first')}</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CredenzaBody>
 
-            <DialogFooter>
+            <CredenzaFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
                 {t('labels.cancel', 'Cancel')}
               </Button>
@@ -296,10 +299,10 @@ export const ProductCategoryDialog = ({
                 {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? t('labels.update', 'Update') : t('labels.create', 'Create')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

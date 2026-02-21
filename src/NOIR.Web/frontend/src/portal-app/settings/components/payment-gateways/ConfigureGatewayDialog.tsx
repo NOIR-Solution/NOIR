@@ -14,22 +14,15 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
   Combobox,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormDescription,
@@ -247,252 +240,255 @@ export const ConfigureGatewayDialog = ({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[550px]">
-          <DialogHeader>
+      <Credenza open={open} onOpenChange={onOpenChange}>
+        <CredenzaContent className="sm:max-w-[550px]">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
                 <CreditCard className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <DialogTitle>
+                <CredenzaTitle>
                   {isEditing
                     ? t('paymentGateways.editTitle', 'Edit {{name}}', { name: schema.displayName })
                     : t('paymentGateways.configureTitle', 'Configure {{name}}', { name: schema.displayName })}
-                </DialogTitle>
-                <DialogDescription>
+                </CredenzaTitle>
+                <CredenzaDescription>
                   {isEditing
                     ? t('paymentGateways.editDescription', 'Update your merchant credentials')
                     : t('paymentGateways.configureDescription', 'Enter your merchant credentials to enable payments')}
-                </DialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </DialogHeader>
+          </CredenzaHeader>
 
-          {/* Documentation Link */}
-          {schema.documentationUrl && (
-            <a
-              href={schema.documentationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <ExternalLink className="h-4 w-4" />
-              {t('paymentGateways.viewDocs', 'View documentation')}
-            </a>
-          )}
+          <CredenzaBody>
+            {/* Documentation Link */}
+            {schema.documentationUrl && (
+              <a
+                href={schema.documentationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-4"
+              >
+                <ExternalLink className="h-4 w-4" />
+                {t('paymentGateways.viewDocs', 'View documentation')}
+              </a>
+            )}
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {/* Display Name */}
-              <FormField
-                control={form.control}
-                name="displayName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('paymentGateways.fields.displayName', 'Display Name')}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={schema.displayName} {...field} value={field.value ?? ''} />
-                    </FormControl>
-                    <FormDescription>
-                      {t('paymentGateways.fields.displayNameHelp', 'Shown to customers during checkout')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Environment */}
-              <FormField
-                control={form.control}
-                name="environment"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('paymentGateways.fields.environment', 'Environment')}</FormLabel>
-                    <Select
-                      onValueChange={handleEnvironmentChange}
-                      value={field.value as string}
-                    >
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {/* Display Name */}
+                <FormField
+                  control={form.control}
+                  name="displayName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('paymentGateways.fields.displayName', 'Display Name')}</FormLabel>
                       <FormControl>
-                        <SelectTrigger className="cursor-pointer" aria-label={t('paymentGateways.fields.environment', 'Environment')}>
-                          <SelectValue />
-                        </SelectTrigger>
+                        <Input placeholder={schema.displayName} {...field} value={field.value ?? ''} />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Sandbox" className="cursor-pointer">
-                          {t('shipping.environment.sandbox')}
-                        </SelectItem>
-                        <SelectItem value="Production" className="cursor-pointer">
-                          {t('shipping.environment.production')}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {environment === 'Production' && (
-                      <p className="text-sm text-yellow-600 flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3" />
-                        {t('paymentGateways.productionWarning', 'Real transactions will be processed')}
-                      </p>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormDescription>
+                        {t('paymentGateways.fields.displayNameHelp', 'Shown to customers during checkout')}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              {/* Credentials/Settings Section */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Separator className="flex-1" />
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                    {schema.supportsCod
-                      ? t('paymentGateways.settings', 'Settings')
-                      : t('paymentGateways.credentials', 'Credentials')}
-                  </span>
-                  <Separator className="flex-1" />
+                {/* Environment */}
+                <FormField
+                  control={form.control}
+                  name="environment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('paymentGateways.fields.environment', 'Environment')}</FormLabel>
+                      <Select
+                        onValueChange={handleEnvironmentChange}
+                        value={field.value as string}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer" aria-label={t('paymentGateways.fields.environment', 'Environment')}>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Sandbox" className="cursor-pointer">
+                            {t('shipping.environment.sandbox')}
+                          </SelectItem>
+                          <SelectItem value="Production" className="cursor-pointer">
+                            {t('shipping.environment.production')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {environment === 'Production' && (
+                        <p className="text-sm text-yellow-600 flex items-center gap-1">
+                          <AlertTriangle className="h-3 w-3" />
+                          {t('paymentGateways.productionWarning', 'Real transactions will be processed')}
+                        </p>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Credentials/Settings Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Separator className="flex-1" />
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                      {schema.supportsCod
+                        ? t('paymentGateways.settings', 'Settings')
+                        : t('paymentGateways.credentials', 'Credentials')}
+                    </span>
+                    <Separator className="flex-1" />
+                  </div>
+
+                  {schema.fields.map(credField => (
+                    <FormField
+                      key={credField.key}
+                      control={form.control}
+                      name={`credential_${credField.key}`}
+                      render={({ field: formField }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {credField.label}
+                            {credField.required && !isEditing && (
+                              <span className="text-destructive ml-1">*</span>
+                            )}
+                          </FormLabel>
+                          <FormControl>
+                            {credField.type === 'select' && credField.options && credField.options.length > 0 ? (
+                              <Combobox
+                                options={credField.options}
+                                value={(formField.value as string) ?? ''}
+                                onValueChange={formField.onChange}
+                                placeholder={credField.placeholder ?? t('labels.selectField', { field: credField.label.toLowerCase() })}
+                                searchPlaceholder={t('labels.searchField', { field: credField.label.toLowerCase() })}
+                                emptyText={t('labels.noFieldFound', { field: credField.label.toLowerCase() })}
+                                countLabel={credField.label.toLowerCase() === 'bank' ? 'banks' : 'options'}
+                              />
+                            ) : (
+                              <Input
+                                type={credField.type === 'password' ? 'password' : 'text'}
+                                placeholder={
+                                  isEditing && credField.type === 'password'
+                                    ? '••••••••••••'
+                                    : credField.placeholder
+                                }
+                                {...formField}
+                                value={(formField.value as string) ?? ''}
+                              />
+                            )}
+                          </FormControl>
+                          {credField.helpText && (
+                            <FormDescription>{credField.helpText}</FormDescription>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ))}
+
+                  {/* Security Note */}
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Lock className="h-3 w-3" />
+                    {t('paymentGateways.encryptedNote', 'Credentials are encrypted at rest')}
+                  </p>
                 </div>
 
-                {schema.fields.map(credField => (
-                  <FormField
-                    key={credField.key}
-                    control={form.control}
-                    name={`credential_${credField.key}`}
-                    render={({ field: formField }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {credField.label}
-                          {credField.required && !isEditing && (
-                            <span className="text-destructive ml-1">*</span>
-                          )}
-                        </FormLabel>
-                        <FormControl>
-                          {credField.type === 'select' && credField.options && credField.options.length > 0 ? (
-                            <Combobox
-                              options={credField.options}
-                              value={(formField.value as string) ?? ''}
-                              onValueChange={formField.onChange}
-                              placeholder={credField.placeholder ?? t('labels.selectField', { field: credField.label.toLowerCase() })}
-                              searchPlaceholder={t('labels.searchField', { field: credField.label.toLowerCase() })}
-                              emptyText={t('labels.noFieldFound', { field: credField.label.toLowerCase() })}
-                              countLabel={credField.label.toLowerCase() === 'bank' ? 'banks' : 'options'}
-                            />
-                          ) : (
-                            <Input
-                              type={credField.type === 'password' ? 'password' : 'text'}
-                              placeholder={
-                                isEditing && credField.type === 'password'
-                                  ? '••••••••••••'
-                                  : credField.placeholder
-                              }
-                              {...formField}
-                              value={(formField.value as string) ?? ''}
-                            />
-                          )}
-                        </FormControl>
-                        {credField.helpText && (
-                          <FormDescription>{credField.helpText}</FormDescription>
+                {/* Test Connection */}
+                {isEditing && (
+                  <div className="space-y-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full cursor-pointer"
+                      onClick={handleTestConnection}
+                      disabled={isTesting}
+                    >
+                      {isTesting ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Plug className="h-4 w-4 mr-2" />
+                      )}
+                      {t('paymentGateways.testConnection', 'Test Connection')}
+                    </Button>
+
+                    {testResult && (
+                      <div
+                        className={`text-sm flex items-center gap-2 p-2 rounded ${
+                          testResult.success
+                            ? 'text-green-600 bg-green-50'
+                            : 'text-red-600 bg-red-50'
+                        }`}
+                      >
+                        {testResult.success ? (
+                          <CheckCircle2 className="h-4 w-4" />
+                        ) : (
+                          <XCircle className="h-4 w-4" />
                         )}
-                        <FormMessage />
-                      </FormItem>
+                        {testResult.message}
+                        {testResult.responseTimeMs && (
+                          <span className="text-xs text-muted-foreground ml-auto">
+                            {testResult.responseTimeMs}ms
+                          </span>
+                        )}
+                      </div>
                     )}
-                  />
-                ))}
+                  </div>
+                )}
 
-                {/* Security Note */}
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Lock className="h-3 w-3" />
-                  {t('paymentGateways.encryptedNote', 'Credentials are encrypted at rest')}
-                </p>
-              </div>
-
-              {/* Test Connection */}
-              {isEditing && (
-                <div className="space-y-2">
+                <CredenzaFooter>
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full cursor-pointer"
-                    onClick={handleTestConnection}
-                    disabled={isTesting}
+                    onClick={() => onOpenChange(false)}
+                    className="cursor-pointer"
                   >
-                    {isTesting ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Plug className="h-4 w-4 mr-2" />
-                    )}
-                    {t('paymentGateways.testConnection', 'Test Connection')}
+                    {t('buttons.cancel', 'Cancel')}
                   </Button>
-
-                  {testResult && (
-                    <div
-                      className={`text-sm flex items-center gap-2 p-2 rounded ${
-                        testResult.success
-                          ? 'text-green-600 bg-green-50'
-                          : 'text-red-600 bg-red-50'
-                      }`}
-                    >
-                      {testResult.success ? (
-                        <CheckCircle2 className="h-4 w-4" />
-                      ) : (
-                        <XCircle className="h-4 w-4" />
-                      )}
-                      {testResult.message}
-                      {testResult.responseTimeMs && (
-                        <span className="text-xs text-muted-foreground ml-auto">
-                          {testResult.responseTimeMs}ms
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  className="cursor-pointer"
-                >
-                  {t('buttons.cancel', 'Cancel')}
-                </Button>
-                <Button type="submit" disabled={loading} className="cursor-pointer">
-                  {loading ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : null}
-                  {isEditing
-                    ? t('buttons.save', 'Save')
-                    : t('buttons.configure', 'Configure')}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+                  <Button type="submit" disabled={loading} className="cursor-pointer">
+                    {loading ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : null}
+                    {isEditing
+                      ? t('buttons.save', 'Save')
+                      : t('buttons.configure', 'Configure')}
+                  </Button>
+                </CredenzaFooter>
+              </form>
+            </Form>
+          </CredenzaBody>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Production Warning Dialog */}
-      <AlertDialog open={showProductionWarning} onOpenChange={setShowProductionWarning}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
+      <Credenza open={showProductionWarning} onOpenChange={setShowProductionWarning}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-yellow-500" />
               {t('paymentGateways.productionWarningTitle', 'Switch to Production Mode')}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
+            </CredenzaTitle>
+            <CredenzaDescription>
               {t(
                 'paymentGateways.productionWarningMessage',
                 'You are about to switch to production mode. Real transactions will be processed. Make sure your credentials are for the production environment.'
               )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setShowProductionWarning(false)} className="cursor-pointer">
               {t('buttons.cancel', 'Cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmProductionSwitch} className="cursor-pointer">
+            </Button>
+            <Button onClick={confirmProductionSwitch} className="cursor-pointer">
               {t('paymentGateways.confirmSwitch', 'Confirm Switch')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </>
   )
 }

@@ -51,9 +51,19 @@ const Credenza = ({ children, ...props }: CredenzaProps) => {
 
   const Comp = isMobile ? Drawer : Dialog
 
+  // Freeze children when closing (open transitions to false) to prevent content
+  // flash during the Drawer slide-down animation. Parent state clears (e.g. entity
+  // becomes null) before the animation finishes, causing a visible content change.
+  // Only effective for controlled Credenza (explicit open prop). Uncontrolled instances
+  // (using CredenzaTrigger, open=undefined) always update since open !== false.
+  const stableChildrenRef = React.useRef(children)
+  if (props.open !== false) {
+    stableChildrenRef.current = children
+  }
+
   return (
     <CredenzaContext.Provider value={contextValue}>
-      <Comp {...props}>{children}</Comp>
+      <Comp {...props}>{stableChildrenRef.current}</Comp>
     </CredenzaContext.Provider>
   )
 }
@@ -131,7 +141,17 @@ const CredenzaDescription = ({
 }
 
 const CredenzaBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  return <div className={cn('px-4 md:px-0', className)} {...props} />
+  const { isMobile } = useCredenzaContext()
+  return (
+    <div
+      className={cn(
+        'px-4 md:px-0',
+        isMobile && 'overflow-y-auto max-h-[60vh]',
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
 const CredenzaFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
@@ -142,7 +162,7 @@ const CredenzaFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEle
   if (isMobile) {
     return (
       <DrawerFooter
-        className={cn('flex flex-col-reverse gap-2', className)}
+        className={cn('flex flex-col-reverse gap-2 pb-6', className)}
         {...props}
       />
     )

@@ -6,12 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormField,
@@ -153,9 +154,9 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               {isEdit ? (
@@ -165,74 +166,29 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
               )}
             </div>
             <div>
-              <DialogTitle>
+              <CredenzaTitle>
                 {isEdit ? t('blog.editCategory') : t('blog.createNewCategory')}
-              </DialogTitle>
-              <DialogDescription>
+              </CredenzaTitle>
+              <CredenzaDescription>
                 {isEdit
                   ? t('blog.editCategoryDescription')
                   : t('blog.createCategoryDescription')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('blog.categoryName')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('blog.categoryNamePlaceholder')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.slug')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('blog.categorySlugPlaceholder')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('blog.descriptionOptional')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t('blog.categoryDescription')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
+            <CredenzaBody>
               <FormField
                 control={form.control}
-                name="sortOrder"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('labels.sortOrder')}</FormLabel>
+                    <FormLabel>{t('blog.categoryName')}</FormLabel>
                     <FormControl>
-                      <Input type="number" min="0" {...field} />
+                      <Input placeholder={t('blog.categoryNamePlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -241,35 +197,82 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
 
               <FormField
                 control={form.control}
-                name="parentId"
+                name="slug"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('blog.parentCategory')}</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
-                      value={field.value || '__none__'}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="cursor-pointer" aria-label={t('blog.selectParentCategoryOptional', 'Select parent category (optional)')}>
-                          <SelectValue placeholder={t('blog.selectParentOptional')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="__none__" className="cursor-pointer">{t('blog.noParent')}</SelectItem>
-                        {existingCategories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormLabel>{t('labels.slug')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('blog.categorySlugPlaceholder')} {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <DialogFooter>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('blog.descriptionOptional')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t('blog.categoryDescription')}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="sortOrder"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('labels.sortOrder')}</FormLabel>
+                      <FormControl>
+                        <Input type="number" min="0" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="parentId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('blog.parentCategory')}</FormLabel>
+                      <Select
+                        onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
+                        value={field.value || '__none__'}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer" aria-label={t('blog.selectParentCategoryOptional', 'Select parent category (optional)')}>
+                            <SelectValue placeholder={t('blog.selectParentOptional')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="__none__" className="cursor-pointer">{t('blog.noParent')}</SelectItem>
+                          {existingCategories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </CredenzaBody>
+
+            <CredenzaFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
                 {t('buttons.cancel')}
               </Button>
@@ -279,10 +282,10 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
                   ? t('buttons.saving')
                   : (isEdit ? t('buttons.update') : t('buttons.create'))}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

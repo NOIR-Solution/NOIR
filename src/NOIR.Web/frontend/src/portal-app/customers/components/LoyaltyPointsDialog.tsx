@@ -7,12 +7,13 @@ import { Loader2, Minus, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormDescription,
@@ -105,9 +106,9 @@ export const LoyaltyPointsDialog = ({ open, onOpenChange, customerId, customerNa
   const isAdd = mode === 'add'
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[420px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[420px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-xl ${isAdd ? 'bg-primary/10 border border-primary/20' : 'bg-orange-500/10 border border-orange-500/20'}`}>
               {isAdd
@@ -116,70 +117,72 @@ export const LoyaltyPointsDialog = ({ open, onOpenChange, customerId, customerNa
               }
             </div>
             <div>
-              <DialogTitle>
+              <CredenzaTitle>
                 {isAdd
                   ? t('customers.addLoyaltyPoints', 'Add Loyalty Points')
                   : t('customers.redeemLoyaltyPoints', 'Redeem Loyalty Points')
                 }
-              </DialogTitle>
-              <DialogDescription>
+              </CredenzaTitle>
+              <CredenzaDescription>
                 {isAdd
                   ? t('customers.addPointsDescription', { name: customerName, defaultValue: `Add points to ${customerName}'s account` })
                   : t('customers.redeemPointsDescription', { name: customerName, available: currentPoints, defaultValue: `Redeem points from ${customerName}'s account (${currentPoints} available)` })
                 }
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="points"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('customers.pointsAmount', 'Points')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                      min={1}
-                      max={mode === 'redeem' ? currentPoints : undefined}
-                      placeholder={t('customers.pointsPlaceholder', 'Enter points amount')}
-                    />
-                  </FormControl>
-                  {mode === 'redeem' && (
-                    <FormDescription className="text-xs">
-                      {t('customers.availablePoints', { count: currentPoints, defaultValue: `${currentPoints} points available` })}
-                    </FormDescription>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <CredenzaBody>
+              <FormField
+                control={form.control}
+                name="points"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('customers.pointsAmount', 'Points')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        min={1}
+                        max={mode === 'redeem' ? currentPoints : undefined}
+                        placeholder={t('customers.pointsPlaceholder', 'Enter points amount')}
+                      />
+                    </FormControl>
+                    {mode === 'redeem' && (
+                      <FormDescription className="text-xs">
+                        {t('customers.availablePoints', { count: currentPoints, defaultValue: `${currentPoints} points available` })}
+                      </FormDescription>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="reason"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('customers.pointsReason', 'Reason (optional)')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder={t('customers.pointsReasonPlaceholder', 'Enter reason for this adjustment...')}
-                      rows={2}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="reason"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('customers.pointsReason', 'Reason (optional)')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        value={field.value ?? ''}
+                        placeholder={t('customers.pointsReasonPlaceholder', 'Enter reason for this adjustment...')}
+                        rows={2}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CredenzaBody>
 
-            <DialogFooter>
+            <CredenzaFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -195,10 +198,10 @@ export const LoyaltyPointsDialog = ({ open, onOpenChange, customerId, customerNa
                   : <><Minus className="h-4 w-4 mr-1" />{t('customers.redeemPoints', 'Redeem Points')}</>
                 }
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

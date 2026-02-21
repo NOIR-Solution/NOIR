@@ -7,12 +7,13 @@ import * as z from 'zod'
 import {
   Button,
   ColorPicker,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormField,
@@ -129,9 +130,9 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               {isEdit ? (
@@ -141,83 +142,85 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
               )}
             </div>
             <div>
-              <DialogTitle>
+              <CredenzaTitle>
                 {isEdit ? t('blog.editTag') : t('blog.createNewTag')}
-              </DialogTitle>
-              <DialogDescription>
+              </CredenzaTitle>
+              <CredenzaDescription>
                 {isEdit
                   ? t('blog.editTagDescription')
                   : t('blog.createTagDescription')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('blog.tagName')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('blog.tagNamePlaceholder')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <CredenzaBody>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('blog.tagName')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('blog.tagNamePlaceholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.slug')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('blog.tagSlugPlaceholder')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.slug')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('blog.tagSlugPlaceholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('blog.descriptionOptional')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t('blog.tagDescription')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('blog.descriptionOptional')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t('blog.tagDescription')}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('blog.color')}</FormLabel>
-                  <FormControl>
-                    <ColorPicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('blog.color')}</FormLabel>
+                    <FormControl>
+                      <ColorPicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CredenzaBody>
 
-            <DialogFooter>
+            <CredenzaFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
                 {t('buttons.cancel')}
               </Button>
@@ -227,10 +230,10 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
                   ? t('buttons.saving')
                   : (isEdit ? t('buttons.update') : t('buttons.create'))}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

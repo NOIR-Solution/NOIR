@@ -7,12 +7,13 @@ import * as z from 'zod'
 import {
   Button,
   ColorPicker,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   Form,
   FormControl,
   FormDescription,
@@ -125,114 +126,116 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Shield className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{t('roles.editTitle', 'Edit Role')}</DialogTitle>
-              <DialogDescription>
+              <CredenzaTitle>{t('roles.editTitle', 'Edit Role')}</CredenzaTitle>
+              <CredenzaDescription>
                 {t('roles.editDescription', 'Update role details and configuration.')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('roles.fields.name', 'Role Name')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('roles.fields.namePlaceholder', 'e.g., Editor, Viewer')}
-                      disabled={role?.isSystemRole}
-                      {...field}
-                    />
-                  </FormControl>
-                  {role?.isSystemRole && (
-                    <FormDescription>
-                      {t('roles.systemRoleWarning', 'System role names cannot be changed.')}
-                    </FormDescription>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('roles.fields.description', 'Description')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t('roles.fields.descriptionPlaceholder', 'Describe what this role can do...')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="parentRoleId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('roles.fields.parentRole', 'Parent Role')}</FormLabel>
-                  <Select
-                    onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
-                    value={field.value || '__none__'}
-                  >
+            <CredenzaBody>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('roles.fields.name', 'Role Name')}</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('roles.fields.parentRolePlaceholder', 'Select parent role (optional)')} />
-                      </SelectTrigger>
+                      <Input
+                        placeholder={t('roles.fields.namePlaceholder', 'e.g., Editor, Viewer')}
+                        disabled={role?.isSystemRole}
+                        {...field}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="__none__">{t('roles.fields.noParent', 'No parent role')}</SelectItem>
-                      {existingRoles.map((r) => (
-                        <SelectItem key={r.id} value={r.id}>
-                          {r.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    {t('roles.fields.parentRoleDescription', 'Child roles inherit permissions from their parent.')}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    {role?.isSystemRole && (
+                      <FormDescription>
+                        {t('roles.systemRoleWarning', 'System role names cannot be changed.')}
+                      </FormDescription>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('roles.fields.color', 'Color')}</FormLabel>
-                  <FormControl>
-                    <ColorPicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('roles.fields.description', 'Description')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t('roles.fields.descriptionPlaceholder', 'Describe what this role can do...')}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <DialogFooter>
+              <FormField
+                control={form.control}
+                name="parentRoleId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('roles.fields.parentRole', 'Parent Role')}</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
+                      value={field.value || '__none__'}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('roles.fields.parentRolePlaceholder', 'Select parent role (optional)')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="__none__">{t('roles.fields.noParent', 'No parent role')}</SelectItem>
+                        {existingRoles.map((r) => (
+                          <SelectItem key={r.id} value={r.id}>
+                            {r.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      {t('roles.fields.parentRoleDescription', 'Child roles inherit permissions from their parent.')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('roles.fields.color', 'Color')}</FormLabel>
+                    <FormControl>
+                      <ColorPicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CredenzaBody>
+
+            <CredenzaFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
                 {t('buttons.cancel', 'Cancel')}
               </Button>
@@ -240,10 +243,10 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? t('labels.saving', 'Saving...') : t('buttons.save', 'Save')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

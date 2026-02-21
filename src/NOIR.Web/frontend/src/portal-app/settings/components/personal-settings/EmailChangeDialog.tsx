@@ -14,12 +14,13 @@ import { useTranslation } from 'react-i18next'
 import { Mail, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
   Form,
   FormControl,
   FormField,
@@ -206,215 +207,217 @@ export const EmailChangeDialog = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Credenza open={open} onOpenChange={handleOpenChange}>
       {/* Only render trigger when not in controlled mode */}
       {!isControlled && (
-        <DialogTrigger asChild>
+        <CredenzaTrigger asChild>
           {trigger || (
             <Button type="button" variant="outline" size="sm">
               {t('profile.email.change')}
             </Button>
           )}
-        </DialogTrigger>
+        </CredenzaTrigger>
       )}
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Mail className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{t('profile.email.changeTitle')}</DialogTitle>
-              <DialogDescription>
+              <CredenzaTitle>{t('profile.email.changeTitle')}</CredenzaTitle>
+              <CredenzaDescription>
                 {step === 'email' && t('profile.email.changeDescription')}
                 {step === 'otp' && t('profile.email.otpDescription', { email: maskedEmail })}
                 {step === 'success' && t('profile.email.successDescription')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
-        <div className="mt-4">
-          {/* Step 1: Enter new email - shadcn Form with react-hook-form + Zod */}
-          {step === 'email' && (
-            <Form {...emailForm.form}>
-              <form
-                onSubmit={(e) => {
-                  e.stopPropagation() // Prevent any bubbling to parent forms
-                  emailForm.handleSubmit(e)
-                }}
-                className="space-y-5"
-              >
-                <div className="space-y-2">
-                  <Label htmlFor="currentEmail" className="text-sm font-medium">
-                    {t('profile.email.current')}
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="currentEmail"
-                      type="email"
-                      value={currentEmail}
-                      disabled
-                      className="pl-10 bg-muted/50 text-muted-foreground"
-                    />
+        <CredenzaBody>
+          <div className="mt-4">
+            {/* Step 1: Enter new email - shadcn Form with react-hook-form + Zod */}
+            {step === 'email' && (
+              <Form {...emailForm.form}>
+                <form
+                  onSubmit={(e) => {
+                    e.stopPropagation() // Prevent any bubbling to parent forms
+                    emailForm.handleSubmit(e)
+                  }}
+                  className="space-y-5"
+                >
+                  <div className="space-y-2">
+                    <Label htmlFor="currentEmail" className="text-sm font-medium">
+                      {t('profile.email.current')}
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="currentEmail"
+                        type="email"
+                        value={currentEmail}
+                        disabled
+                        className="pl-10 bg-muted/50 text-muted-foreground"
+                      />
+                    </div>
                   </div>
+
+                  <FormField
+                    control={emailForm.form.control}
+                    name="newEmail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium">
+                          {t('profile.email.new')}
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative group">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                            <Input
+                              type="email"
+                              placeholder={t('profile.email.newPlaceholder')}
+                              className="pl-10"
+                              disabled={emailForm.isSubmitting}
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.stopPropagation() // Prevent Enter from escaping to parent forms
+                                }
+                              }}
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage>{translateError(emailForm.form.formState.errors.newEmail?.message)}</FormMessage>
+                      </FormItem>
+                    )}
+                  />
+
+                  {emailForm.serverError && (
+                    <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                      <p className="text-sm font-medium text-destructive">{emailForm.serverError}</p>
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={emailForm.isSubmitting}
+                    className="w-full cursor-pointer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {emailForm.isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t('profile.email.sending')}
+                      </>
+                    ) : (
+                      t('profile.email.sendCode')
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            )}
+
+            {/* Step 2: Enter OTP - direct state management (avoids infinite loops with OtpInput) */}
+            {step === 'otp' && (
+              <div className="space-y-5">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleBack}
+                  className="-ml-2 -mt-2"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  {t('common.back')}
+                </Button>
+
+                <div className="text-center space-y-2">
+                  <div className="w-14 h-14 mx-auto rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
+                    <Mail className="h-7 w-7 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {t('profile.email.enterCode')}
+                  </p>
+                  <p className="text-sm font-medium text-foreground">{maskedEmail}</p>
                 </div>
 
-                <FormField
-                  control={emailForm.form.control}
-                  name="newEmail"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">
-                        {t('profile.email.new')}
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative group">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                          <Input
-                            type="email"
-                            placeholder={t('profile.email.newPlaceholder')}
-                            className="pl-10"
-                            disabled={emailForm.isSubmitting}
-                            autoFocus
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.stopPropagation() // Prevent Enter from escaping to parent forms
-                              }
-                            }}
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage>{translateError(emailForm.form.formState.errors.newEmail?.message)}</FormMessage>
-                    </FormItem>
-                  )}
+                <OtpInput
+                  value={otp}
+                  onChange={handleOtpChange}
+                  onComplete={handleOtpComplete}
+                  disabled={isVerifying}
+                  error={!!otpError}
                 />
 
-                {emailForm.serverError && (
+                {otpError && (
                   <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                    <p className="text-sm font-medium text-destructive">{emailForm.serverError}</p>
+                    <p className="text-sm text-destructive text-center">
+                      {otpError}
+                    </p>
                   </div>
                 )}
 
-                <Button
-                  type="submit"
-                  disabled={emailForm.isSubmitting}
-                  className="w-full cursor-pointer"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {emailForm.isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t('profile.email.sending')}
-                    </>
-                  ) : (
-                    t('profile.email.sendCode')
+                {/* Loading State */}
+                {isVerifying && (
+                  <div className="flex justify-center">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>{t('profile.email.verifying')}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="text-center space-y-2">
+                  {expiresAt && !canResend && (
+                    <CountdownTimer
+                      targetTime={expiresAt}
+                      onComplete={handleTimerComplete}
+                    />
                   )}
-                </Button>
-              </form>
-            </Form>
-          )}
 
-          {/* Step 2: Enter OTP - direct state management (avoids infinite loops with OtpInput) */}
-          {step === 'otp' && (
-            <div className="space-y-5">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={handleBack}
-                className="-ml-2 -mt-2"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                {t('common.back')}
-              </Button>
+                  {canResend && remainingResends > 0 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleResendOtp}
+                      disabled={isResending}
+                    >
+                      {isResending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : null}
+                      {t('profile.email.resend')} ({remainingResends})
+                    </Button>
+                  )}
 
-              <div className="text-center space-y-2">
-                <div className="w-14 h-14 mx-auto rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
-                  <Mail className="h-7 w-7 text-blue-600 dark:text-blue-400" />
+                  {remainingResends <= 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      {t('profile.email.noMoreResends')}
+                    </p>
+                  )}
                 </div>
+              </div>
+            )}
+
+            {/* Step 3: Success */}
+            {step === 'success' && (
+              <div className="text-center py-6">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                  <CheckCircle2 className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  {t('profile.email.successTitle')}
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  {t('profile.email.enterCode')}
+                  {t('profile.email.successMessage')}
                 </p>
-                <p className="text-sm font-medium text-foreground">{maskedEmail}</p>
               </div>
-
-              <OtpInput
-                value={otp}
-                onChange={handleOtpChange}
-                onComplete={handleOtpComplete}
-                disabled={isVerifying}
-                error={!!otpError}
-              />
-
-              {otpError && (
-                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm text-destructive text-center">
-                    {otpError}
-                  </p>
-                </div>
-              )}
-
-              {/* Loading State */}
-              {isVerifying && (
-                <div className="flex justify-center">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>{t('profile.email.verifying')}</span>
-                  </div>
-                </div>
-              )}
-
-              <div className="text-center space-y-2">
-                {expiresAt && !canResend && (
-                  <CountdownTimer
-                    targetTime={expiresAt}
-                    onComplete={handleTimerComplete}
-                  />
-                )}
-
-                {canResend && remainingResends > 0 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleResendOtp}
-                    disabled={isResending}
-                  >
-                    {isResending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
-                    {t('profile.email.resend')} ({remainingResends})
-                  </Button>
-                )}
-
-                {remainingResends <= 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    {t('profile.email.noMoreResends')}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Success */}
-          {step === 'success' && (
-            <div className="text-center py-6">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                <CheckCircle2 className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">
-                {t('profile.email.successTitle')}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {t('profile.email.successMessage')}
-              </p>
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+            )}
+          </div>
+        </CredenzaBody>
+      </CredenzaContent>
+    </Credenza>
   )
 }

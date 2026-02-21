@@ -7,12 +7,13 @@ import { Loader2, UserCog } from 'lucide-react'
 import {
   Button,
   Checkbox,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   Form,
   FormControl,
   FormDescription,
@@ -110,121 +111,125 @@ export const EditUserDialog = ({ user, open, onOpenChange, onSuccess }: EditUser
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <UserCog className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{t('users.editTitle', 'Edit User')}</DialogTitle>
-              <DialogDescription>
+              <CredenzaTitle>{t('users.editTitle', 'Edit User')}</CredenzaTitle>
+              <CredenzaDescription>
                 {t('users.editDescription', 'Update user details and account status')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         {loadingProfile ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
+          <CredenzaBody>
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          </CredenzaBody>
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">{t('labels.email', 'Email')}</Label>
-                  <Input
-                    id="email"
-                    value={profile?.email || user?.email || ''}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
+              <CredenzaBody>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">{t('labels.email', 'Email')}</Label>
+                    <Input
+                      id="email"
+                      value={profile?.email || user?.email || ''}
+                      disabled
+                      className="bg-muted"
+                    />
+                  </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('users.form.firstName', 'First Name')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t('users.form.firstNamePlaceholder', 'John')}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('users.form.lastName', 'Last Name')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t('users.form.lastNamePlaceholder', 'Doe')}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                   <FormField
                     control={form.control}
-                    name="firstName"
+                    name="displayName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('users.form.firstName', 'First Name')}</FormLabel>
+                        <FormLabel>{t('users.form.displayName', 'Display Name')}</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder={t('users.form.firstNamePlaceholder', 'John')}
+                            placeholder={t('users.form.displayNamePlaceholder', 'John Doe')}
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('users.form.lastName', 'Last Name')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={t('users.form.lastNamePlaceholder', 'Doe')}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="displayName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('users.form.displayName', 'Display Name')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t('users.form.displayNamePlaceholder', 'John Doe')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t('users.form.displayNameHint', 'Optional. Overrides first/last name display.')}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="lockoutEnabled"
-                  render={({ field }) => (
-                    <FormItem className="flex items-start space-x-3 rounded-lg border p-3">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="mt-0.5"
-                        />
-                      </FormControl>
-                      <div className="space-y-0.5">
-                        <FormLabel className="cursor-pointer">
-                          {t('users.form.lockAccount', 'Lock Account')}
-                        </FormLabel>
                         <FormDescription>
-                          {t('users.form.lockAccountHint', 'Prevent user from signing in')}
+                          {t('users.form.displayNameHint', 'Optional. Overrides first/last name display.')}
                         </FormDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-              </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <DialogFooter>
+                  <FormField
+                    control={form.control}
+                    name="lockoutEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex items-start space-x-3 rounded-lg border p-3">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="mt-0.5"
+                          />
+                        </FormControl>
+                        <div className="space-y-0.5">
+                          <FormLabel className="cursor-pointer">
+                            {t('users.form.lockAccount', 'Lock Account')}
+                          </FormLabel>
+                          <FormDescription>
+                            {t('users.form.lockAccountHint', 'Prevent user from signing in')}
+                          </FormDescription>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CredenzaBody>
+
+              <CredenzaFooter>
                 <Button
                   type="button"
                   variant="outline"
@@ -238,11 +243,11 @@ export const EditUserDialog = ({ user, open, onOpenChange, onSuccess }: EditUser
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t('buttons.save', 'Save')}
                 </Button>
-              </DialogFooter>
+              </CredenzaFooter>
             </form>
           </Form>
         )}
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

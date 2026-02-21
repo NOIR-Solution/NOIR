@@ -7,12 +7,13 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormField,
@@ -155,179 +156,181 @@ export const AddressFormDialog = ({ open, onOpenChange, customerId, address, onS
   const isSubmitting = addMutation.isPending || updateMutation.isPending
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px]">
-        <DialogHeader>
-          <DialogTitle>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[550px]">
+        <CredenzaHeader>
+          <CredenzaTitle>
             {isEditing ? t('customers.editAddress', 'Edit Address') : t('customers.addAddress', 'Add Address')}
-          </DialogTitle>
-          <DialogDescription>
+          </CredenzaTitle>
+          <CredenzaDescription>
             {isEditing
               ? t('customers.editAddressDescription', 'Update the address details below.')
               : t('customers.addAddressDescription', 'Fill in the address details.')}
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="addressType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('customers.addressTypeLabel', 'Address Type')}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="cursor-pointer">
-                        <SelectValue placeholder={t('customers.selectAddressType', 'Select type')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {ADDRESS_TYPES.map((type) => (
-                        <SelectItem key={type} value={type} className="cursor-pointer">
-                          {t(`customers.addressType.${type.toLowerCase()}`, type)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
+            <CredenzaBody>
               <FormField
                 control={form.control}
-                name="fullName"
+                name="addressType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('customers.recipientName', 'Recipient Name')}</FormLabel>
+                    <FormLabel>{t('customers.addressTypeLabel', 'Address Type')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="cursor-pointer">
+                          <SelectValue placeholder={t('customers.selectAddressType', 'Select type')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {ADDRESS_TYPES.map((type) => (
+                          <SelectItem key={type} value={type} className="cursor-pointer">
+                            {t(`customers.addressType.${type.toLowerCase()}`, type)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('customers.recipientName', 'Recipient Name')}</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder={t('customers.recipientNamePlaceholder', 'Full name')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('labels.phone', 'Phone')}</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder={t('customers.phonePlaceholder', '+84 xxx xxx xxx')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="addressLine1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('customers.addressLine1', 'Address Line 1')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder={t('customers.recipientNamePlaceholder', 'Full name')} />
+                      <Input {...field} placeholder={t('customers.addressLine1Placeholder', 'Street address')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="phone"
+                name="addressLine2"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('labels.phone', 'Phone')}</FormLabel>
+                    <FormLabel>{t('customers.addressLine2', 'Address Line 2')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder={t('customers.phonePlaceholder', '+84 xxx xxx xxx')} />
+                      <Input {...field} value={field.value ?? ''} placeholder={t('customers.addressLine2Placeholder', 'Apartment, suite, etc.')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <FormField
-              control={form.control}
-              name="addressLine1"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('customers.addressLine1', 'Address Line 1')}</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder={t('customers.addressLine1Placeholder', 'Street address')} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <div className="grid grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="ward"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('customers.ward', 'Ward')}</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value ?? ''} placeholder={t('customers.wardPlaceholder', 'Ward')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="district"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('customers.district', 'District')}</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value ?? ''} placeholder={t('customers.districtPlaceholder', 'District')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="province"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('customers.province', 'Province')}</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder={t('customers.provincePlaceholder', 'Province/City')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <FormField
-              control={form.control}
-              name="addressLine2"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('customers.addressLine2', 'Address Line 2')}</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value ?? ''} placeholder={t('customers.addressLine2Placeholder', 'Apartment, suite, etc.')} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
-                name="ward"
+                name="postalCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('customers.ward', 'Ward')}</FormLabel>
+                    <FormLabel>{t('customers.postalCode', 'Postal Code')}</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value ?? ''} placeholder={t('customers.wardPlaceholder', 'Ward')} />
+                      <Input {...field} value={field.value ?? ''} placeholder={t('customers.postalCodePlaceholder', 'Postal code')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="district"
+                name="isDefault"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('customers.district', 'District')}</FormLabel>
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>{t('customers.defaultAddress', 'Default Address')}</FormLabel>
+                    </div>
                     <FormControl>
-                      <Input {...field} value={field.value ?? ''} placeholder={t('customers.districtPlaceholder', 'District')} />
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="cursor-pointer"
+                      />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="province"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('customers.province', 'Province')}</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder={t('customers.provincePlaceholder', 'Province/City')} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            </CredenzaBody>
 
-            <FormField
-              control={form.control}
-              name="postalCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('customers.postalCode', 'Postal Code')}</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value ?? ''} placeholder={t('customers.postalCodePlaceholder', 'Postal code')} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="isDefault"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>{t('customers.defaultAddress', 'Default Address')}</FormLabel>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="cursor-pointer"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
+            <CredenzaFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -340,10 +343,10 @@ export const AddressFormDialog = ({ open, onOpenChange, customerId, address, onS
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? t('labels.save', 'Save') : t('customers.addAddress', 'Add Address')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

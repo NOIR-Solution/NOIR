@@ -5,12 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormDescription,
@@ -113,82 +114,84 @@ export const CustomerGroupDialog = ({ open, onOpenChange, group, onSuccess }: Cu
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
+          <CredenzaTitle>
             {isEditing ? t('customerGroups.editGroup', 'Edit Customer Group') : t('customerGroups.createGroup', 'Create Customer Group')}
-          </DialogTitle>
-          <DialogDescription>
+          </CredenzaTitle>
+          <CredenzaDescription>
             {isEditing
               ? t('customerGroups.editGroupDescription', 'Update the customer group details below.')
               : t('customerGroups.createGroupDescription', 'Fill in the details to create a new customer group.')}
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.name', 'Name')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t('customerGroups.namePlaceholder', 'Enter group name')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.description', 'Description')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder={t('customerGroups.descriptionPlaceholder', 'Brief description of the customer group')}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {isEditing && (
+            <CredenzaBody>
               <FormField
                 control={form.control}
-                name="isActive"
+                name="name"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>{t('labels.active', 'Active')}</FormLabel>
-                      <FormDescription className="text-xs">
-                        {t('customerGroups.activeDescription', 'Active groups can be used for customer segmentation')}
-                      </FormDescription>
-                    </div>
+                  <FormItem>
+                    <FormLabel>{t('labels.name', 'Name')}</FormLabel>
                     <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="cursor-pointer"
+                      <Input
+                        {...field}
+                        placeholder={t('customerGroups.namePlaceholder', 'Enter group name')}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-            <DialogFooter>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.description', 'Description')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        value={field.value ?? ''}
+                        placeholder={t('customerGroups.descriptionPlaceholder', 'Brief description of the customer group')}
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {isEditing && (
+                <FormField
+                  control={form.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>{t('labels.active', 'Active')}</FormLabel>
+                        <FormDescription className="text-xs">
+                          {t('customerGroups.activeDescription', 'Active groups can be used for customer segmentation')}
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="cursor-pointer"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
+            </CredenzaBody>
+
+            <CredenzaFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -201,10 +204,10 @@ export const CustomerGroupDialog = ({ open, onOpenChange, group, onSuccess }: Cu
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? t('labels.save', 'Save') : t('labels.create', 'Create')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

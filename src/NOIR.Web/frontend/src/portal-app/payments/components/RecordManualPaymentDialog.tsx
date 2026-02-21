@@ -7,12 +7,13 @@ import { toast } from 'sonner'
 import { CreditCard, Loader2 } from 'lucide-react'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   Form,
   FormControl,
   FormDescription,
@@ -106,141 +107,143 @@ export const RecordManualPaymentDialog = ({ open, onOpenChange, onSuccess }: Rec
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <CreditCard className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{t('payments.recordPayment.title')}</DialogTitle>
-              <DialogDescription>{t('payments.recordPayment.description')}</DialogDescription>
+              <CredenzaTitle>{t('payments.recordPayment.title')}</CredenzaTitle>
+              <CredenzaDescription>{t('payments.recordPayment.description')}</CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="orderId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('payments.recordPayment.orderId')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t('payments.recordPayment.orderIdPlaceholder')}
-                      className="font-mono text-sm"
-                    />
-                  </FormControl>
-                  <FormDescription>{t('payments.recordPayment.orderIdHint')}</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
+            <CredenzaBody>
               <FormField
                 control={form.control}
-                name="amount"
+                name="orderId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('payments.recordPayment.amount')}</FormLabel>
+                    <FormLabel>{t('payments.recordPayment.orderId')}</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
                         {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                        placeholder={t('payments.recordPayment.amountPlaceholder')}
-                        min={0}
-                        step="any"
+                        placeholder={t('payments.recordPayment.orderIdPlaceholder')}
+                        className="font-mono text-sm"
+                      />
+                    </FormControl>
+                    <FormDescription>{t('payments.recordPayment.orderIdHint')}</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('payments.recordPayment.amount')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          value={field.value ?? ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                          placeholder={t('payments.recordPayment.amountPlaceholder')}
+                          min={0}
+                          step="any"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="currency"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('payments.recordPayment.currency')}</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="VND" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="paymentMethod"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('payments.recordPayment.paymentMethod')}</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="cursor-pointer">
+                          <SelectValue placeholder={t('payments.recordPayment.selectPaymentMethod')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {PAYMENT_METHODS.map((method) => (
+                          <SelectItem key={method} value={method} className="cursor-pointer">
+                            {t(`payments.methods.${method}`, method)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="referenceNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('payments.recordPayment.referenceNumber')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t('payments.recordPayment.referenceNumberPlaceholder')}
+                      />
+                    </FormControl>
+                    <FormDescription>{t('payments.recordPayment.referenceNumberHint')}</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('payments.recordPayment.notes')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder={t('payments.recordPayment.notesPlaceholder')}
+                        rows={3}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+            </CredenzaBody>
 
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('payments.recordPayment.currency')}</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="VND" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="paymentMethod"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('payments.recordPayment.paymentMethod')}</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="cursor-pointer">
-                        <SelectValue placeholder={t('payments.recordPayment.selectPaymentMethod')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {PAYMENT_METHODS.map((method) => (
-                        <SelectItem key={method} value={method} className="cursor-pointer">
-                          {t(`payments.methods.${method}`, method)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="referenceNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('payments.recordPayment.referenceNumber')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t('payments.recordPayment.referenceNumberPlaceholder')}
-                    />
-                  </FormControl>
-                  <FormDescription>{t('payments.recordPayment.referenceNumberHint')}</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('payments.recordPayment.notes')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={t('payments.recordPayment.notesPlaceholder')}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
+            <CredenzaFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -253,10 +256,10 @@ export const RecordManualPaymentDialog = ({ open, onOpenChange, onSuccess }: Rec
                 {recordMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('payments.recordPayment.submit')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

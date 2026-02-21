@@ -222,7 +222,8 @@ const LogTableContent = ({
   )
 }
 
-// Fullscreen Log Viewer Dialog
+// Fullscreen Log Viewer Dialog — intentionally uses raw Dialog (not Credenza)
+// because it needs near-fullscreen dimensions (95vw x 95vh), not a bottom drawer on mobile.
 const FullscreenLogDialog = ({
   entries,
   title,

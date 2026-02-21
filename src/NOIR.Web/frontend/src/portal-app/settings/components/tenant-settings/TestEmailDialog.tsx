@@ -4,12 +4,13 @@ import { toast } from 'sonner'
 import { Send, Mail, Loader2 } from 'lucide-react'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Input,
   Label,
 } from '@uikit'
@@ -90,72 +91,74 @@ export const TestEmailDialog = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="max-w-md">
         <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+          <CredenzaHeader>
+            <CredenzaTitle className="flex items-center gap-2">
               <Send className="h-5 w-5 text-blue-600" />
               {t('emailTemplates.sendTestEmail')}
-            </DialogTitle>
-            <DialogDescription>
+            </CredenzaTitle>
+            <CredenzaDescription>
               {t('emailTemplates.testEmailDescription')}
-            </DialogDescription>
-          </DialogHeader>
+            </CredenzaDescription>
+          </CredenzaHeader>
 
-          <div className="space-y-4 py-4">
-            {/* Recipient Email */}
-            <div className="space-y-2">
-              <Label htmlFor="recipient-email" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                {t('emailTemplates.recipientEmail')}
-              </Label>
-              <Input
-                id="recipient-email"
-                type="email"
-                {...form.register('recipientEmail')}
-                placeholder={t('emailTemplates.enterEmailPlaceholder')}
-                aria-label={t('emailTemplates.recipientEmail', 'Recipient email address')}
-                aria-invalid={!!form.formState.errors.recipientEmail}
-              />
-              {form.formState.errors.recipientEmail && (
-                <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.recipientEmail.message)}</p>
+          <CredenzaBody>
+            <div className="space-y-4 py-4">
+              {/* Recipient Email */}
+              <div className="space-y-2">
+                <Label htmlFor="recipient-email" className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  {t('emailTemplates.recipientEmail')}
+                </Label>
+                <Input
+                  id="recipient-email"
+                  type="email"
+                  {...form.register('recipientEmail')}
+                  placeholder={t('emailTemplates.enterEmailPlaceholder')}
+                  aria-label={t('emailTemplates.recipientEmail', 'Recipient email address')}
+                  aria-invalid={!!form.formState.errors.recipientEmail}
+                />
+                {form.formState.errors.recipientEmail && (
+                  <p className="text-sm font-medium text-destructive">{translateError(form.formState.errors.recipientEmail.message)}</p>
+                )}
+              </div>
+
+              {/* Sample Data */}
+              {availableVariables.length > 0 && (
+                <div className="space-y-3">
+                  <Label>{t('emailTemplates.sampleData')}</Label>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {availableVariables.map((variable) => (
+                      <div key={variable} className="space-y-1">
+                        <Label htmlFor={`sample-${variable}`} className="text-xs font-mono">
+                          {`{{${variable}}}`}
+                        </Label>
+                        <Input
+                          id={`sample-${variable}`}
+                          value={sampleData[variable] || ''}
+                          onChange={(e) => updateSampleData(variable, e.target.value)}
+                          placeholder={t('emailTemplates.valueForVariable', { variable })}
+                          aria-label={t('emailTemplates.sampleDataFor', { variable })}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Server Error */}
+              {serverError && (
+                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <p className="text-sm font-medium text-destructive">{serverError}</p>
+                </div>
               )}
             </div>
+          </CredenzaBody>
 
-            {/* Sample Data */}
-            {availableVariables.length > 0 && (
-              <div className="space-y-3">
-                <Label>{t('emailTemplates.sampleData')}</Label>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {availableVariables.map((variable) => (
-                    <div key={variable} className="space-y-1">
-                      <Label htmlFor={`sample-${variable}`} className="text-xs font-mono">
-                        {`{{${variable}}}`}
-                      </Label>
-                      <Input
-                        id={`sample-${variable}`}
-                        value={sampleData[variable] || ''}
-                        onChange={(e) => updateSampleData(variable, e.target.value)}
-                        placeholder={t('emailTemplates.valueForVariable', { variable })}
-                        aria-label={t('emailTemplates.sampleDataFor', { variable })}
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Server Error */}
-            {serverError && (
-              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                <p className="text-sm font-medium text-destructive">{serverError}</p>
-              </div>
-            )}
-          </div>
-
-          <DialogFooter>
+          <CredenzaFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
               {t('buttons.cancel')}
             </Button>
@@ -172,9 +175,9 @@ export const TestEmailDialog = ({
                 </>
               )}
             </Button>
-          </DialogFooter>
+          </CredenzaFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

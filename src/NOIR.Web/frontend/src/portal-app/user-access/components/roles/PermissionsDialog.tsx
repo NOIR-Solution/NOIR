@@ -8,12 +8,13 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -176,18 +177,18 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] flex flex-col overflow-hidden">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[800px] max-h-[90vh] flex flex-col overflow-hidden">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Key className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">
-              <DialogTitle>{t('roles.permissionsTitle', 'Manage Permissions')}</DialogTitle>
-              <DialogDescription>
+              <CredenzaTitle>{t('roles.permissionsTitle', 'Manage Permissions')}</CredenzaTitle>
+              <CredenzaDescription>
                 {t('roles.permissionsDescription', 'Configure permissions for {{role}}.', { role: role?.name })}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
             {role && (
               <div
@@ -198,162 +199,164 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
               </div>
             )}
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
-        <div className="flex items-center gap-2 py-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder={t('roles.searchPermissions', 'Search permissions...')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+        <CredenzaBody>
+          <div className="flex items-center gap-2 py-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={t('roles.searchPermissions', 'Search permissions...')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="cursor-pointer" disabled={templatesLoading}>
-                <Sparkles className="mr-2 h-4 w-4" />
-                {t('roles.applyTemplate', 'Apply Template')}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {templates.map((template) => (
-                <DropdownMenuItem
-                  key={template.id}
-                  onClick={() => applyTemplate(template.id)}
-                >
-                  <div className="flex flex-col">
-                    <span>{template.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {template.permissions.length} {t('labels.permissions', 'permissions')}
-                    </span>
-                  </div>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <div className="flex items-center justify-between text-sm text-muted-foreground pb-2">
-          <span>
-            {t('roles.selectedCount', '{{count}} permissions selected', { count: selectedPermissions.size })}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSelectedPermissions(new Set(permissions.map(p => p.name)))}
-            >
-              {t('buttons.selectAll', 'Select All')}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSelectedPermissions(new Set())}
-            >
-              {t('buttons.clearAll', 'Clear All')}
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex-1 min-h-0 max-h-[55vh] border rounded-md overflow-y-auto">
-          <div className="p-2 space-y-1">
-            {permissionsLoading || loadingPermissions ? (
-              <div className="p-8 text-center text-muted-foreground">
-                {t('labels.loading', 'Loading...')}
-              </div>
-            ) : Object.keys(filteredPermissionsByCategory).length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                {searchQuery
-                  ? t('roles.noMatchingPermissions', 'No permissions match your search.')
-                  : t('roles.noPermissions', 'No permissions available.')}
-              </div>
-            ) : (
-              Object.entries(filteredPermissionsByCategory).map(([category, categoryPermissions]) => {
-                const stats = getCategoryStats(category)
-                const isExpanded = expandedCategories.has(category)
-                const allSelected = stats.selected === stats.total && stats.total > 0
-                const someSelected = stats.selected > 0 && stats.selected < stats.total
-
-                return (
-                  <Collapsible
-                    key={category}
-                    open={isExpanded}
-                    onOpenChange={() => toggleCategoryExpand(category)}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="cursor-pointer" disabled={templatesLoading}>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {t('roles.applyTemplate', 'Apply Template')}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {templates.map((template) => (
+                  <DropdownMenuItem
+                    key={template.id}
+                    onClick={() => applyTemplate(template.id)}
                   >
-                    <div className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
-                      <Checkbox
-                        checked={allSelected}
-                        ref={(el) => {
-                          if (el) {
-                            (el as HTMLButtonElement & { indeterminate?: boolean }).indeterminate = someSelected
-                          }
-                        }}
-                        onCheckedChange={() => toggleCategory(category)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      <CollapsibleTrigger asChild>
-                        <Button variant="ghost" className="flex-1 justify-start p-0 h-auto hover:bg-transparent">
-                          {isExpanded ? (
-                            <ChevronDown className="h-4 w-4 mr-2" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4 mr-2" />
-                          )}
-                          <span className="font-medium">{translatePermissionCategory(t, category)}</span>
-                          <Badge variant="secondary" className="ml-2">
-                            {stats.selected}/{stats.total}
-                          </Badge>
-                        </Button>
-                      </CollapsibleTrigger>
+                    <div className="flex flex-col">
+                      <span>{template.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {template.permissions.length} {t('labels.permissions', 'permissions')}
+                      </span>
                     </div>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
-                    <CollapsibleContent>
-                      <div className="ml-6 space-y-1">
-                        {categoryPermissions.map((permission) => {
-                          const description = translatePermissionDescription(t, permission.name, permission.description)
-                          return (
-                            <div
-                              key={permission.id}
-                              className="flex items-start gap-3 p-2 hover:bg-muted/50 rounded-md cursor-pointer"
-                              onClick={() => togglePermission(permission.name)}
-                            >
-                              <Checkbox
-                                checked={selectedPermissions.has(permission.name)}
-                                onCheckedChange={() => togglePermission(permission.name)}
-                                onClick={(e) => e.stopPropagation()}
-                                className="mt-0.5"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium text-sm">{translatePermissionDisplayName(t, permission.name, permission.displayName)}</span>
-                                  {selectedPermissions.has(permission.name) && (
-                                    <Check className="h-3 w-3 text-primary" />
+          <div className="flex items-center justify-between text-sm text-muted-foreground pb-2">
+            <span>
+              {t('roles.selectedCount', '{{count}} permissions selected', { count: selectedPermissions.size })}
+            </span>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedPermissions(new Set(permissions.map(p => p.name)))}
+              >
+                {t('buttons.selectAll', 'Select All')}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedPermissions(new Set())}
+              >
+                {t('buttons.clearAll', 'Clear All')}
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex-1 min-h-0 md:max-h-[55vh] border rounded-md md:overflow-y-auto">
+            <div className="p-2 space-y-1">
+              {permissionsLoading || loadingPermissions ? (
+                <div className="p-8 text-center text-muted-foreground">
+                  {t('labels.loading', 'Loading...')}
+                </div>
+              ) : Object.keys(filteredPermissionsByCategory).length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">
+                  {searchQuery
+                    ? t('roles.noMatchingPermissions', 'No permissions match your search.')
+                    : t('roles.noPermissions', 'No permissions available.')}
+                </div>
+              ) : (
+                Object.entries(filteredPermissionsByCategory).map(([category, categoryPermissions]) => {
+                  const stats = getCategoryStats(category)
+                  const isExpanded = expandedCategories.has(category)
+                  const allSelected = stats.selected === stats.total && stats.total > 0
+                  const someSelected = stats.selected > 0 && stats.selected < stats.total
+
+                  return (
+                    <Collapsible
+                      key={category}
+                      open={isExpanded}
+                      onOpenChange={() => toggleCategoryExpand(category)}
+                    >
+                      <div className="flex items-center gap-2 p-2 hover:bg-muted rounded-md">
+                        <Checkbox
+                          checked={allSelected}
+                          ref={(el) => {
+                            if (el) {
+                              (el as HTMLButtonElement & { indeterminate?: boolean }).indeterminate = someSelected
+                            }
+                          }}
+                          onCheckedChange={() => toggleCategory(category)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <CollapsibleTrigger asChild>
+                          <Button variant="ghost" className="flex-1 justify-start p-0 h-auto hover:bg-transparent">
+                            {isExpanded ? (
+                              <ChevronDown className="h-4 w-4 mr-2" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 mr-2" />
+                            )}
+                            <span className="font-medium">{translatePermissionCategory(t, category)}</span>
+                            <Badge variant="secondary" className="ml-2">
+                              {stats.selected}/{stats.total}
+                            </Badge>
+                          </Button>
+                        </CollapsibleTrigger>
+                      </div>
+
+                      <CollapsibleContent>
+                        <div className="ml-6 space-y-1">
+                          {categoryPermissions.map((permission) => {
+                            const description = translatePermissionDescription(t, permission.name, permission.description)
+                            return (
+                              <div
+                                key={permission.id}
+                                className="flex items-start gap-3 p-2 hover:bg-muted/50 rounded-md cursor-pointer"
+                                onClick={() => togglePermission(permission.name)}
+                              >
+                                <Checkbox
+                                  checked={selectedPermissions.has(permission.name)}
+                                  onCheckedChange={() => togglePermission(permission.name)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="mt-0.5"
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-sm">{translatePermissionDisplayName(t, permission.name, permission.displayName)}</span>
+                                    {selectedPermissions.has(permission.name) && (
+                                      <Check className="h-3 w-3 text-primary" />
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground truncate">
+                                    {permission.name}
+                                  </p>
+                                  {description && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      {description}
+                                    </p>
                                   )}
                                 </div>
-                                <p className="text-xs text-muted-foreground truncate">
-                                  {permission.name}
-                                </p>
-                                {description && (
-                                  <p className="text-xs text-muted-foreground mt-1">
-                                    {description}
-                                  </p>
-                                )}
                               </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                )
-              })
-            )}
+                            )
+                          })}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )
+                })
+              )}
+            </div>
           </div>
-        </div>
+        </CredenzaBody>
 
-        <DialogFooter className="pt-4">
+        <CredenzaFooter className="pt-4">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('buttons.cancel', 'Cancel')}
           </Button>
@@ -361,8 +364,8 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {loading ? t('labels.saving', 'Saving...') : t('buttons.save', 'Save Permissions')}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   )
 }

@@ -5,12 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   Form,
   FormControl,
   FormDescription,
@@ -149,170 +150,172 @@ export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialo
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Tag className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>
+              <CredenzaTitle>
                 {isEditing ? t('brands.editBrand', 'Edit Brand') : t('brands.createBrand', 'Create Brand')}
-              </DialogTitle>
-              <DialogDescription>
+              </CredenzaTitle>
+              <CredenzaDescription>
                 {isEditing
                   ? t('brands.editBrandDescription', 'Update the brand details below.')
                   : t('brands.createBrandDescription', 'Fill in the details to create a new brand.')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.name', 'Name')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      onChange={handleNameChange}
-                      placeholder={t('brands.namePlaceholder', 'Enter brand name')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <CredenzaBody>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.name', 'Name')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        onChange={handleNameChange}
+                        placeholder={t('brands.namePlaceholder', 'Enter brand name')}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.slug', 'Slug')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t('brands.slugPlaceholder', 'brand-slug')}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t('brands.slugDescription', 'URL-friendly identifier (auto-generated from name)')}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.description', 'Description')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder={t('brands.descriptionPlaceholder', 'Brief description of the brand')}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="logoUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.logo', 'Logo')}</FormLabel>
-                  <FormControl>
-                    <LogoUploadField
-                      value={field.value}
-                      onChange={field.onChange}
-                      onUpload={async (file) => {
-                        const result = await uploadMedia(file, 'branding')
-                        return result.defaultUrl || ''
-                      }}
-                      placeholder={t('brands.uploadLogo', 'Upload brand logo')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="websiteUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.websiteUrl', 'Website URL')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder={t('brands.websiteUrlPlaceholder', 'https://brand-website.com')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="sortOrder"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.sortOrder', 'Sort Order')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                      min={0}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t('brands.sortOrderDescription', 'Lower numbers appear first')}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>{t('labels.active', 'Active')}</FormLabel>
-                    <FormDescription className="text-xs">
-                      {t('brands.activeDescription', 'Show this brand on the storefront')}
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.slug', 'Slug')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t('brands.slugPlaceholder', 'brand-slug')}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('brands.slugDescription', 'URL-friendly identifier (auto-generated from name)')}
                     </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="cursor-pointer"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <DialogFooter>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.description', 'Description')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        value={field.value ?? ''}
+                        placeholder={t('brands.descriptionPlaceholder', 'Brief description of the brand')}
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="logoUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.logo', 'Logo')}</FormLabel>
+                    <FormControl>
+                      <LogoUploadField
+                        value={field.value}
+                        onChange={field.onChange}
+                        onUpload={async (file) => {
+                          const result = await uploadMedia(file, 'branding')
+                          return result.defaultUrl || ''
+                        }}
+                        placeholder={t('brands.uploadLogo', 'Upload brand logo')}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="websiteUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.websiteUrl', 'Website URL')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value ?? ''}
+                        placeholder={t('brands.websiteUrlPlaceholder', 'https://brand-website.com')}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="sortOrder"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.sortOrder', 'Sort Order')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        min={0}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('brands.sortOrderDescription', 'Lower numbers appear first')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>{t('labels.active', 'Active')}</FormLabel>
+                      <FormDescription className="text-xs">
+                        {t('brands.activeDescription', 'Show this brand on the storefront')}
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="cursor-pointer"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CredenzaBody>
+
+            <CredenzaFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -325,10 +328,10 @@ export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialo
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? t('labels.save', 'Save') : t('labels.create', 'Create')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

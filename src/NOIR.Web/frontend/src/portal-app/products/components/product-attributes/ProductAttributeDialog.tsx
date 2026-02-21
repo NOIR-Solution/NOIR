@@ -6,12 +6,13 @@ import { z } from 'zod'
 import {
   Button,
   Combobox,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormDescription,
@@ -246,401 +247,72 @@ export const ProductAttributeDialog = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[600px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Layers className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>
+              <CredenzaTitle>
                 {isEditing
                   ? t('productAttributes.editAttribute', 'Edit Product Attribute')
                   : t('productAttributes.createAttribute', 'Create Product Attribute')}
-              </DialogTitle>
-              <DialogDescription>
+              </CredenzaTitle>
+              <CredenzaDescription>
                 {isEditing
                   ? t('productAttributes.editAttributeDescription', 'Update the product attribute details below.')
                   : t('productAttributes.createAttributeDescription', 'Fill in the details to create a new product attribute.')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="basic" className="cursor-pointer">{t('productAttributes.tabs.basic', 'Basic')}</TabsTrigger>
-                <TabsTrigger value="display" className="cursor-pointer">{t('productAttributes.tabs.display', 'Display')}</TabsTrigger>
-                <TabsTrigger value="validation" className="cursor-pointer">{t('productAttributes.tabs.validation', 'Validation')}</TabsTrigger>
-              </TabsList>
+            <CredenzaBody>
+              <Tabs defaultValue="basic" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="basic" className="cursor-pointer">{t('productAttributes.tabs.basic', 'Basic')}</TabsTrigger>
+                  <TabsTrigger value="display" className="cursor-pointer">{t('productAttributes.tabs.display', 'Display')}</TabsTrigger>
+                  <TabsTrigger value="validation" className="cursor-pointer">{t('productAttributes.tabs.validation', 'Validation')}</TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="basic" className="space-y-4 mt-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('labels.name', 'Name')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          onChange={handleNameChange}
-                          placeholder={t('productAttributes.namePlaceholder', 'Enter attribute name')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="code"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('labels.code', 'Code')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder={t('productAttributes.codePlaceholder', 'attribute_code')}
-                          disabled={isEditing}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t('productAttributes.codeDescription', 'Unique identifier (auto-generated from name)')}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('labels.type', 'Type')}</FormLabel>
-                      <FormControl>
-                        <Combobox
-                          options={ATTRIBUTE_TYPES.map((type) => ({
-                            value: type,
-                            label: getTypeLabel(type),
-                          }))}
-                          value={field.value}
-                          onValueChange={field.onChange}
-                          placeholder={t('productAttributes.selectType', 'Select type')}
-                          searchPlaceholder={t('labels.searchType', 'Search type...')}
-                          emptyText={t('labels.noTypeFound', 'No type found')}
-                          disabled={isEditing}
-                          countLabel={t('labels.types', 'types')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="unit"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('productAttributes.unit', 'Unit')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          value={field.value ?? ''}
-                          placeholder={t('productAttributes.unitPlaceholder', 'e.g., kg, cm, ml')}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t('productAttributes.unitDescription', 'Unit of measurement (optional)')}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="sortOrder"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('labels.sortOrder', 'Sort Order')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                          min={0}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="isActive"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                      <div className="space-y-0.5">
-                        <FormLabel>{t('labels.active', 'Active')}</FormLabel>
-                        <FormDescription className="text-xs">
-                          {t('productAttributes.activeDescription', 'Show this attribute in product forms')}
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="cursor-pointer"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </TabsContent>
-
-              <TabsContent value="display" className="space-y-4 mt-4">
-                <div className="grid grid-cols-2 gap-4">
+                <TabsContent value="basic" className="space-y-4 mt-4">
                   <FormField
                     control={form.control}
-                    name="isFilterable"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('productAttributes.filterable', 'Filterable')}</FormLabel>
-                          <FormDescription className="text-xs">
-                            {t('productAttributes.filterableDescription', 'Show in product filters')}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="cursor-pointer"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="isSearchable"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('productAttributes.searchable', 'Searchable')}</FormLabel>
-                          <FormDescription className="text-xs">
-                            {t('productAttributes.searchableDescription', 'Include in search index')}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="cursor-pointer"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="isRequired"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('productAttributes.required', 'Required')}</FormLabel>
-                          <FormDescription className="text-xs">
-                            {t('productAttributes.requiredDescription', 'Must be filled for products')}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="cursor-pointer"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="isVariantAttribute"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('productAttributes.variantAttribute', 'Variant Attribute')}</FormLabel>
-                          <FormDescription className="text-xs">
-                            {t('productAttributes.variantAttributeDescription', 'Used for product variants')}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="cursor-pointer"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="showInProductCard"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('productAttributes.showInCard', 'Show in Card')}</FormLabel>
-                          <FormDescription className="text-xs">
-                            {t('productAttributes.showInCardDescription', 'Display on product card')}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="cursor-pointer"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="showInSpecifications"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('productAttributes.showInSpecs', 'Show in Specs')}</FormLabel>
-                          <FormDescription className="text-xs">
-                            {t('productAttributes.showInSpecsDescription', 'Display in specifications')}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="cursor-pointer"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="isGlobal"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('productAttributes.global', 'Global')}</FormLabel>
-                          <FormDescription className="text-xs">
-                            {t('productAttributes.globalDescription', 'Available for all categories')}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="cursor-pointer"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="placeholder"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('productAttributes.placeholder', 'Placeholder')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          value={field.value ?? ''}
-                          placeholder={t('productAttributes.placeholderPlaceholder', 'Enter placeholder text')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="helpText"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('productAttributes.helpText', 'Help Text')}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          value={field.value ?? ''}
-                          placeholder={t('productAttributes.helpTextPlaceholder', 'Help text shown to users')}
-                          rows={2}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </TabsContent>
-
-              <TabsContent value="validation" className="space-y-4 mt-4">
-                <FormField
-                  control={form.control}
-                  name="validationRegex"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('productAttributes.validationRegex', 'Validation Pattern')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          value={field.value ?? ''}
-                          placeholder={t('productAttributes.validationRegexPlaceholder', '^[A-Za-z0-9]+$')}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t('productAttributes.validationRegexDescription', 'Regular expression for validation (optional)')}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="minValue"
+                    name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('productAttributes.minValue', 'Min Value')}</FormLabel>
+                        <FormLabel>{t('labels.name', 'Name')}</FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
-                            step="any"
                             {...field}
-                            value={field.value ?? ''}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                            onChange={handleNameChange}
+                            placeholder={t('productAttributes.namePlaceholder', 'Enter attribute name')}
                           />
                         </FormControl>
-                        <FormDescription className="text-xs">
-                          {t('productAttributes.minValueDescription', 'For Number/Decimal types')}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="code"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('labels.code', 'Code')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder={t('productAttributes.codePlaceholder', 'attribute_code')}
+                            disabled={isEditing}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t('productAttributes.codeDescription', 'Unique identifier (auto-generated from name)')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -649,72 +321,403 @@ export const ProductAttributeDialog = ({
 
                   <FormField
                     control={form.control}
-                    name="maxValue"
+                    name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('productAttributes.maxValue', 'Max Value')}</FormLabel>
+                        <FormLabel>{t('labels.type', 'Type')}</FormLabel>
                         <FormControl>
-                          <Input
-                            type="number"
-                            step="any"
-                            {...field}
-                            value={field.value ?? ''}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                          <Combobox
+                            options={ATTRIBUTE_TYPES.map((type) => ({
+                              value: type,
+                              label: getTypeLabel(type),
+                            }))}
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            placeholder={t('productAttributes.selectType', 'Select type')}
+                            searchPlaceholder={t('labels.searchType', 'Search type...')}
+                            emptyText={t('labels.noTypeFound', 'No type found')}
+                            disabled={isEditing}
+                            countLabel={t('labels.types', 'types')}
                           />
                         </FormControl>
-                        <FormDescription className="text-xs">
-                          {t('productAttributes.maxValueDescription', 'For Number/Decimal types')}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="unit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('productAttributes.unit', 'Unit')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            value={field.value ?? ''}
+                            placeholder={t('productAttributes.unitPlaceholder', 'e.g., kg, cm, ml')}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t('productAttributes.unitDescription', 'Unit of measurement (optional)')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <FormField
-                  control={form.control}
-                  name="maxLength"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('productAttributes.maxLength', 'Max Length')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          value={field.value ?? ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
-                          min={1}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {t('productAttributes.maxLengthDescription', 'Maximum character length for text types')}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  <FormField
+                    control={form.control}
+                    name="sortOrder"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('labels.sortOrder', 'Sort Order')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            min={0}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="defaultValue"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('productAttributes.defaultValue', 'Default Value')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          value={field.value ?? ''}
-                          placeholder={t('productAttributes.defaultValuePlaceholder', 'Default value for new products')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </TabsContent>
-            </Tabs>
+                  <FormField
+                    control={form.control}
+                    name="isActive"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>{t('labels.active', 'Active')}</FormLabel>
+                          <FormDescription className="text-xs">
+                            {t('productAttributes.activeDescription', 'Show this attribute in product forms')}
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="cursor-pointer"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </TabsContent>
 
-            <DialogFooter className="pt-4">
+                <TabsContent value="display" className="space-y-4 mt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="isFilterable"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('productAttributes.filterable', 'Filterable')}</FormLabel>
+                            <FormDescription className="text-xs">
+                              {t('productAttributes.filterableDescription', 'Show in product filters')}
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="cursor-pointer"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="isSearchable"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('productAttributes.searchable', 'Searchable')}</FormLabel>
+                            <FormDescription className="text-xs">
+                              {t('productAttributes.searchableDescription', 'Include in search index')}
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="cursor-pointer"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="isRequired"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('productAttributes.required', 'Required')}</FormLabel>
+                            <FormDescription className="text-xs">
+                              {t('productAttributes.requiredDescription', 'Must be filled for products')}
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="cursor-pointer"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="isVariantAttribute"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('productAttributes.variantAttribute', 'Variant Attribute')}</FormLabel>
+                            <FormDescription className="text-xs">
+                              {t('productAttributes.variantAttributeDescription', 'Used for product variants')}
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="cursor-pointer"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="showInProductCard"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('productAttributes.showInCard', 'Show in Card')}</FormLabel>
+                            <FormDescription className="text-xs">
+                              {t('productAttributes.showInCardDescription', 'Display on product card')}
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="cursor-pointer"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="showInSpecifications"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('productAttributes.showInSpecs', 'Show in Specs')}</FormLabel>
+                            <FormDescription className="text-xs">
+                              {t('productAttributes.showInSpecsDescription', 'Display in specifications')}
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="cursor-pointer"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="isGlobal"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('productAttributes.global', 'Global')}</FormLabel>
+                            <FormDescription className="text-xs">
+                              {t('productAttributes.globalDescription', 'Available for all categories')}
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="cursor-pointer"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="placeholder"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('productAttributes.placeholder', 'Placeholder')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            value={field.value ?? ''}
+                            placeholder={t('productAttributes.placeholderPlaceholder', 'Enter placeholder text')}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="helpText"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('productAttributes.helpText', 'Help Text')}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            value={field.value ?? ''}
+                            placeholder={t('productAttributes.helpTextPlaceholder', 'Help text shown to users')}
+                            rows={2}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TabsContent>
+
+                <TabsContent value="validation" className="space-y-4 mt-4">
+                  <FormField
+                    control={form.control}
+                    name="validationRegex"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('productAttributes.validationRegex', 'Validation Pattern')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            value={field.value ?? ''}
+                            placeholder={t('productAttributes.validationRegexPlaceholder', '^[A-Za-z0-9]+$')}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t('productAttributes.validationRegexDescription', 'Regular expression for validation (optional)')}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="minValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('productAttributes.minValue', 'Min Value')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="any"
+                              {...field}
+                              value={field.value ?? ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                            />
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            {t('productAttributes.minValueDescription', 'For Number/Decimal types')}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="maxValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('productAttributes.maxValue', 'Max Value')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="any"
+                              {...field}
+                              value={field.value ?? ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                            />
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            {t('productAttributes.maxValueDescription', 'For Number/Decimal types')}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="maxLength"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('productAttributes.maxLength', 'Max Length')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            value={field.value ?? ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                            min={1}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t('productAttributes.maxLengthDescription', 'Maximum character length for text types')}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="defaultValue"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('productAttributes.defaultValue', 'Default Value')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            value={field.value ?? ''}
+                            placeholder={t('productAttributes.defaultValuePlaceholder', 'Default value for new products')}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TabsContent>
+              </Tabs>
+            </CredenzaBody>
+
+            <CredenzaFooter className="pt-4">
               <Button
                 type="button"
                 variant="outline"
@@ -727,10 +730,10 @@ export const ProductAttributeDialog = ({
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? t('labels.save', 'Save') : t('labels.create', 'Create')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

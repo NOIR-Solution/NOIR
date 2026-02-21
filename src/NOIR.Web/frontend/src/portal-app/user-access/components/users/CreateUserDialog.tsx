@@ -6,12 +6,13 @@ import {
   Badge,
   Button,
   Checkbox,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   Input,
   Label,
 } from '@uikit'
@@ -252,23 +253,24 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[550px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-xl shadow-sm">
               <UserPlus className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{t('users.createTitle', 'Create User')}</DialogTitle>
-              <DialogDescription>
+              <CredenzaTitle>{t('users.createTitle', 'Create User')}</CredenzaTitle>
+              <CredenzaDescription>
                 {t('users.createDescription', 'Add a new user to the system')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <CredenzaBody>
             <div className="grid gap-4">
               {/* Email */}
               <div className="grid gap-2">
@@ -455,8 +457,9 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
                 </p>
               </div>
             </div>
+          </CredenzaBody>
 
-          <DialogFooter>
+          <CredenzaFooter>
             <Button
               type="button"
               variant="outline"
@@ -470,9 +473,9 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('buttons.create', 'Create')}
             </Button>
-          </DialogFooter>
+          </CredenzaFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

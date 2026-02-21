@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  Button,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
 } from '@uikit'
 import type { ProductListItem } from '@/types/product'
 import { toast } from 'sonner'
@@ -49,36 +49,38 @@ export const DeleteProductDialog = ({
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="border-destructive/30">
-        <AlertDialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="border-destructive/30">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <AlertDialogTitle>{t('products.deleteProduct', 'Delete Product')}</AlertDialogTitle>
+            <CredenzaTitle>{t('products.deleteProduct', 'Delete Product')}</CredenzaTitle>
           </div>
-          <AlertDialogDescription className="pt-2">
+          <CredenzaDescription className="pt-2">
             {t('products.deleteConfirmation', {
               name: product?.name,
               defaultValue: `Are you sure you want to delete "${product?.name}"? This action cannot be undone.`
             })}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting} className="cursor-pointer">
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaBody />
+        <CredenzaFooter>
+          <Button variant="outline" disabled={isDeleting} onClick={() => onOpenChange(false)} className="cursor-pointer">
             {t('labels.cancel', 'Cancel')}
-          </AlertDialogCancel>
-          <AlertDialogAction
+          </Button>
+          <Button
+            variant="destructive"
             onClick={handleConfirm}
             disabled={isDeleting}
             className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
           >
             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isDeleting ? t('labels.deleting', 'Deleting...') : t('labels.delete', 'Delete')}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </Button>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   )
 }

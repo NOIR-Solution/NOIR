@@ -67,9 +67,9 @@ export const CreateTenantDialog = ({ onSuccess }: CreateTenantDialogProps) => {
   return (
     <Credenza open={open} onOpenChange={setOpen}>
       <CredenzaTrigger asChild>
-        <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" aria-label={t('tenants.createNew')}>
-          <Plus className="h-4 w-4 transition-transform group-hover:rotate-90 duration-300 md:mr-2" />
-          <span className="hidden md:inline">{t('tenants.createNew')}</span>
+        <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
+          <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
+          {t('tenants.createNew')}
         </Button>
       </CredenzaTrigger>
       <CredenzaContent className="sm:max-w-[550px]">

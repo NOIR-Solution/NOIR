@@ -9,22 +9,16 @@ import {
   useRemoveCategoryAttributeMutation,
 } from '@/portal-app/products/queries'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Checkbox,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   EmptyState,
   Select,
   SelectContent,
@@ -135,207 +129,211 @@ export const ProductCategoryAttributesDialog = ({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
+      <Credenza open={open} onOpenChange={onOpenChange}>
+        <CredenzaContent className="sm:max-w-[600px]">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
                 <Tags className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <DialogTitle>
+                <CredenzaTitle>
                   {t('categoryAttributes.title', 'Category Attributes')}
-                </DialogTitle>
-                <DialogDescription>
+                </CredenzaTitle>
+                <CredenzaDescription>
                   {t('categoryAttributes.description', 'Manage which attributes are available for products in "{name}"', { name: category.name })}
-                </DialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </DialogHeader>
+          </CredenzaHeader>
 
-          <div className="space-y-4">
-            {/* Add Attribute Section */}
-            {showAddAttribute ? (
-              <div className="flex items-end gap-2 p-4 bg-muted/50 rounded-lg">
-                <div className="flex-1 space-y-2">
-                  <label className="text-sm font-medium">
-                    {t('categoryAttributes.selectAttribute', 'Select Attribute')}
-                  </label>
-                  <Select
-                    value={selectedAttributeId}
-                    onValueChange={setSelectedAttributeId}
-                    disabled={loadingAttributes}
-                  >
-                    <SelectTrigger className="cursor-pointer" aria-label={t('categoryAttributes.selectAttribute', 'Select Attribute')}>
-                      <SelectValue placeholder={t('categoryAttributes.selectPlaceholder', 'Choose an attribute...')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableAttributes.map((attr) => (
-                        <SelectItem key={attr.id} value={attr.id} className="cursor-pointer">
-                          <div className="flex items-center gap-2">
-                            <span>{attr.name}</span>
-                            <Badge variant="outline" className="text-xs">{attr.type}</Badge>
-                          </div>
-                        </SelectItem>
-                      ))}
-                      {availableAttributes.length === 0 && (
-                        <SelectItem value="none" disabled>
-                          {t('categoryAttributes.noAvailableAttributes', 'No available attributes')}
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center gap-2 pb-0.5">
-                  <Checkbox
-                    id="isRequired"
-                    checked={selectedIsRequired}
-                    onCheckedChange={(checked) => setSelectedIsRequired(checked === true)}
+          <CredenzaBody>
+            <div className="space-y-4">
+              {/* Add Attribute Section */}
+              {showAddAttribute ? (
+                <div className="flex items-end gap-2 p-4 bg-muted/50 rounded-lg">
+                  <div className="flex-1 space-y-2">
+                    <label className="text-sm font-medium">
+                      {t('categoryAttributes.selectAttribute', 'Select Attribute')}
+                    </label>
+                    <Select
+                      value={selectedAttributeId}
+                      onValueChange={setSelectedAttributeId}
+                      disabled={loadingAttributes}
+                    >
+                      <SelectTrigger className="cursor-pointer" aria-label={t('categoryAttributes.selectAttribute', 'Select Attribute')}>
+                        <SelectValue placeholder={t('categoryAttributes.selectPlaceholder', 'Choose an attribute...')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableAttributes.map((attr) => (
+                          <SelectItem key={attr.id} value={attr.id} className="cursor-pointer">
+                            <div className="flex items-center gap-2">
+                              <span>{attr.name}</span>
+                              <Badge variant="outline" className="text-xs">{attr.type}</Badge>
+                            </div>
+                          </SelectItem>
+                        ))}
+                        {availableAttributes.length === 0 && (
+                          <SelectItem value="none" disabled>
+                            {t('categoryAttributes.noAvailableAttributes', 'No available attributes')}
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center gap-2 pb-0.5">
+                    <Checkbox
+                      id="isRequired"
+                      checked={selectedIsRequired}
+                      onCheckedChange={(checked) => setSelectedIsRequired(checked === true)}
+                      className="cursor-pointer"
+                    />
+                    <label htmlFor="isRequired" className="text-sm cursor-pointer">
+                      {t('labels.required', 'Required')}
+                    </label>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={handleAddAttribute}
+                    disabled={!selectedAttributeId || isSubmitting}
                     className="cursor-pointer"
-                  />
-                  <label htmlFor="isRequired" className="text-sm cursor-pointer">
-                    {t('labels.required', 'Required')}
-                  </label>
+                  >
+                    <Check className="h-4 w-4 mr-1" />
+                    {t('labels.add', 'Add')}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setShowAddAttribute(false)
+                      setSelectedAttributeId('')
+                      setSelectedIsRequired(false)
+                    }}
+                    className="cursor-pointer"
+                  >
+                    {t('labels.cancel', 'Cancel')}
+                  </Button>
                 </div>
+              ) : (
                 <Button
+                  variant="outline"
                   size="sm"
-                  onClick={handleAddAttribute}
-                  disabled={!selectedAttributeId || isSubmitting}
+                  onClick={() => setShowAddAttribute(true)}
+                  disabled={availableAttributes.length === 0}
                   className="cursor-pointer"
                 >
-                  <Check className="h-4 w-4 mr-1" />
-                  {t('labels.add', 'Add')}
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t('categoryAttributes.addAttribute', 'Add Attribute')}
                 </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setShowAddAttribute(false)
-                    setSelectedAttributeId('')
-                    setSelectedIsRequired(false)
-                  }}
-                  className="cursor-pointer"
-                >
-                  {t('labels.cancel', 'Cancel')}
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowAddAttribute(true)}
-                disabled={availableAttributes.length === 0}
-                className="cursor-pointer"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                {t('categoryAttributes.addAttribute', 'Add Attribute')}
-              </Button>
-            )}
+              )}
 
-            {/* Attributes List */}
-            <div className="rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-8"></TableHead>
-                    <TableHead>{t('labels.name', 'Name')}</TableHead>
-                    <TableHead>{t('labels.code', 'Code')}</TableHead>
-                    <TableHead className="text-center">{t('labels.required', 'Required')}</TableHead>
-                    <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    [...Array(3)].map((_, i) => (
-                      <TableRow key={i}>
-                        <TableCell><Skeleton className="h-4 w-4" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                        <TableCell className="text-center"><Skeleton className="h-4 w-4 mx-auto" /></TableCell>
-                        <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
-                      </TableRow>
-                    ))
-                  ) : categoryAttributes.length === 0 ? (
+              {/* Attributes List */}
+              <div className="rounded-lg border">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={5} className="p-0">
-                        <EmptyState
-                          icon={Tags}
-                          title={t('categoryAttributes.noAttributes', 'No attributes assigned')}
-                          description={t('categoryAttributes.noAttributesDescription', 'Add attributes to define what information products in this category should have.')}
-                          className="border-0 rounded-none py-8"
-                        />
-                      </TableCell>
+                      <TableHead className="w-8"></TableHead>
+                      <TableHead>{t('labels.name', 'Name')}</TableHead>
+                      <TableHead>{t('labels.code', 'Code')}</TableHead>
+                      <TableHead className="text-center">{t('labels.required', 'Required')}</TableHead>
+                      <TableHead className="text-right">{t('labels.actions', 'Actions')}</TableHead>
                     </TableRow>
-                  ) : (
-                    categoryAttributes.map((ca) => (
-                      <TableRow key={ca.id} className="group">
-                        <TableCell>
-                          <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
-                        </TableCell>
-                        <TableCell>
-                          <span className="font-medium">{ca.attributeName}</span>
-                        </TableCell>
-                        <TableCell>
-                          <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
-                            {ca.attributeCode}
-                          </code>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Checkbox
-                            checked={ca.isRequired}
-                            onCheckedChange={() => handleToggleRequired(ca)}
-                            className="cursor-pointer"
-                            aria-label={t('categoryAttributes.toggleRequired', 'Toggle required for {name}', { name: ca.attributeName })}
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      [...Array(3)].map((_, i) => (
+                        <TableRow key={i}>
+                          <TableCell><Skeleton className="h-4 w-4" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                          <TableCell className="text-center"><Skeleton className="h-4 w-4 mx-auto" /></TableCell>
+                          <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
+                        </TableRow>
+                      ))
+                    ) : categoryAttributes.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="p-0">
+                          <EmptyState
+                            icon={Tags}
+                            title={t('categoryAttributes.noAttributes', 'No attributes assigned')}
+                            description={t('categoryAttributes.noAttributesDescription', 'Add attributes to define what information products in this category should have.')}
+                            className="border-0 rounded-none py-8"
                           />
                         </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="cursor-pointer h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                            onClick={() => setAttributeToRemove(ca)}
-                            aria-label={t('categoryAttributes.removeAttribute', 'Remove {name}', { name: ca.attributeName })}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                    ) : (
+                      categoryAttributes.map((ca) => (
+                        <TableRow key={ca.id} className="group">
+                          <TableCell>
+                            <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-medium">{ca.attributeName}</span>
+                          </TableCell>
+                          <TableCell>
+                            <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
+                              {ca.attributeCode}
+                            </code>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Checkbox
+                              checked={ca.isRequired}
+                              onCheckedChange={() => handleToggleRequired(ca)}
+                              className="cursor-pointer"
+                              aria-label={t('categoryAttributes.toggleRequired', 'Toggle required for {name}', { name: ca.attributeName })}
+                            />
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => setAttributeToRemove(ca)}
+                              aria-label={t('categoryAttributes.removeAttribute', 'Remove {name}', { name: ca.attributeName })}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </CredenzaBody>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Remove Confirmation Dialog */}
-      <AlertDialog open={!!attributeToRemove} onOpenChange={(open) => !open && setAttributeToRemove(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={!!attributeToRemove} onOpenChange={(open) => !open && setAttributeToRemove(null)}>
+        <CredenzaContent>
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <Trash2 className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('categoryAttributes.removeTitle', 'Remove Attribute')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('categoryAttributes.removeTitle', 'Remove Attribute')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('categoryAttributes.removeDescription', 'Are you sure you want to remove "{name}" from this category?', { name: attributeToRemove?.attributeName })}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setAttributeToRemove(null)} className="cursor-pointer">{t('labels.cancel', 'Cancel')}</Button>
+            <Button
+              variant="destructive"
               onClick={confirmRemoveAttribute}
               className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {t('labels.remove', 'Remove')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </>
   )
 }

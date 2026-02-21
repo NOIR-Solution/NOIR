@@ -7,12 +7,13 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   Form,
   FormControl,
   FormDescription,
@@ -110,63 +111,65 @@ export const WishlistFormDialog = ({
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[425px]">
+        <CredenzaHeader>
+          <CredenzaTitle>
             {isEditing
               ? t('wishlists.editWishlist', 'Edit Wishlist')
               : t('wishlists.createWishlist', 'Create Wishlist')}
-          </DialogTitle>
-          <DialogDescription>
+          </CredenzaTitle>
+          <CredenzaDescription>
             {isEditing
               ? t('wishlists.editWishlistDescription', 'Update the wishlist details below.')
               : t('wishlists.createWishlistDescription', 'Fill in the details to create a new wishlist.')}
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.name', 'Name')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t('wishlists.namePlaceholder', 'e.g., Holiday Gift Ideas')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <CredenzaBody>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.name', 'Name')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t('wishlists.namePlaceholder', 'e.g., Holiday Gift Ideas')}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="isPublic"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>{t('wishlists.public', 'Public')}</FormLabel>
-                    <FormDescription className="text-xs">
-                      {t('wishlists.publicDescription', 'Allow others to view this wishlist via a shared link')}
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="cursor-pointer"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="isPublic"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>{t('wishlists.public', 'Public')}</FormLabel>
+                      <FormDescription className="text-xs">
+                        {t('wishlists.publicDescription', 'Allow others to view this wishlist via a shared link')}
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="cursor-pointer"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CredenzaBody>
 
-            <DialogFooter>
+            <CredenzaFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -179,10 +182,10 @@ export const WishlistFormDialog = ({
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? t('buttons.save', 'Save') : t('buttons.create', 'Create')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

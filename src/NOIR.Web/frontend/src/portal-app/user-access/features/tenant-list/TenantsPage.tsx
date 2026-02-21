@@ -105,7 +105,6 @@ export const TenantsPage = () => {
         title={t('tenants.title')}
         description={t('tenants.description')}
         action={<CreateTenantDialog onSuccess={refresh} />}
-        responsive
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">

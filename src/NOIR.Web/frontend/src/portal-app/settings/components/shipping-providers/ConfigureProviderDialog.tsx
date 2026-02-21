@@ -11,22 +11,15 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
   Combobox,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormDescription,
@@ -229,240 +222,242 @@ export const ConfigureProviderDialog = ({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[550px]">
-          <DialogHeader>
+      <Credenza open={open} onOpenChange={onOpenChange}>
+        <CredenzaContent className="sm:max-w-[550px]">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
                 <Truck className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <DialogTitle>
+                <CredenzaTitle>
                   {isEditing
                     ? t('shippingProviders.editTitle', 'Edit {{name}}', { name: schema.displayName })
                     : t('shippingProviders.configureTitle', 'Configure {{name}}', { name: schema.displayName })}
-                </DialogTitle>
-                <DialogDescription>
+                </CredenzaTitle>
+                <CredenzaDescription>
                   {isEditing
                     ? t('shippingProviders.editDescription', 'Update your provider credentials')
                     : t('shippingProviders.configureDescription', 'Enter credentials to enable shipping')}
-                </DialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </DialogHeader>
-
-          {/* Documentation Link */}
-          {schema.documentationUrl && (
-            <a
-              href={schema.documentationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <ExternalLink className="h-4 w-4" />
-              {t('shippingProviders.viewDocs', 'View documentation')}
-            </a>
-          )}
+          </CredenzaHeader>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {/* Display Name */}
-              <FormField
-                control={form.control}
-                name="displayName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('shippingProviders.fields.displayName', 'Display Name')}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={schema.displayName} {...field} value={field.value ?? ''} />
-                    </FormControl>
-                    <FormDescription>
-                      {t('shippingProviders.fields.displayNameHelp', 'Shown to customers during checkout')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
+              <CredenzaBody>
+                {/* Documentation Link */}
+                {schema.documentationUrl && (
+                  <a
+                    href={schema.documentationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    {t('shippingProviders.viewDocs', 'View documentation')}
+                  </a>
                 )}
-              />
 
-              {/* Environment */}
-              <FormField
-                control={form.control}
-                name="environment"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('shippingProviders.fields.environment', 'Environment')}</FormLabel>
-                    <Select
-                      onValueChange={handleEnvironmentChange}
-                      value={field.value as string}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="cursor-pointer" aria-label={t('shippingProviders.fields.environment', 'Environment')}>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Sandbox" className="cursor-pointer">
-                          {t('shipping.environment.sandbox')}
-                        </SelectItem>
-                        <SelectItem value="Production" className="cursor-pointer">
-                          {t('shipping.environment.production')}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {environment === 'Production' && (
-                      <p className="text-sm text-yellow-600 flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3" />
-                        {t('shippingProviders.productionWarning', 'Real shipments will be processed')}
-                      </p>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Credentials Section */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Separator className="flex-1" />
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                    {t('shippingProviders.credentials', 'Credentials')}
-                  </span>
-                  <Separator className="flex-1" />
-                </div>
-
-                {schema.fields.map(credField => (
-                  <FormField
-                    key={credField.key}
-                    control={form.control}
-                    name={`credential_${credField.key}`}
-                    render={({ field: formField }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {credField.label}
-                          {credField.required && !isEditing && (
-                            <span className="text-destructive ml-1">*</span>
-                          )}
-                        </FormLabel>
-                        <FormControl>
-                          {credField.type === 'select' && credField.options && credField.options.length > 0 ? (
-                            <Combobox
-                              options={credField.options}
-                              value={(formField.value as string) ?? ''}
-                              onValueChange={formField.onChange}
-                              placeholder={credField.placeholder ?? t('labels.selectField', { field: credField.label.toLowerCase() })}
-                              searchPlaceholder={t('labels.searchField', { field: credField.label.toLowerCase() })}
-                              emptyText={t('labels.noFieldFound', { field: credField.label.toLowerCase() })}
-                              countLabel={credField.label.toLowerCase()}
-                            />
-                          ) : (
-                            <Input
-                              type={credField.type === 'password' ? 'password' : 'text'}
-                              placeholder={
-                                isEditing && credField.type === 'password'
-                                  ? '••••••••••••'
-                                  : credField.placeholder
-                              }
-                              {...formField}
-                              value={(formField.value as string) ?? ''}
-                            />
-                          )}
-                        </FormControl>
-                        {credField.helpText && (
-                          <FormDescription>{credField.helpText}</FormDescription>
-                        )}
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-
-                {/* Security Note */}
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Lock className="h-3 w-3" />
-                  {t('shippingProviders.encryptedNote', 'Credentials are encrypted at rest')}
-                </p>
-              </div>
-
-              {/* Shipping Options Section */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Separator className="flex-1" />
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                    {t('shippingProviders.options', 'Options')}
-                  </span>
-                  <Separator className="flex-1" />
-                </div>
-
-                {/* COD Toggle */}
+                {/* Display Name */}
                 <FormField
                   control={form.control}
-                  name="supportsCod"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                      <div className="space-y-0.5">
-                        <FormLabel>{t('shippingProviders.codLabel', 'Cash on Delivery')}</FormLabel>
-                        <FormDescription>
-                          {t('shippingProviders.codHint', 'Allow COD payments for this provider')}
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value as boolean}
-                          onCheckedChange={field.onChange}
-                          className="cursor-pointer"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Insurance Toggle */}
-                <FormField
-                  control={form.control}
-                  name="supportsInsurance"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                      <div className="space-y-0.5">
-                        <FormLabel>{t('shippingProviders.insuranceLabel', 'Insurance')}</FormLabel>
-                        <FormDescription>
-                          {t('shippingProviders.insuranceHint', 'Offer package insurance option')}
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value as boolean}
-                          onCheckedChange={field.onChange}
-                          className="cursor-pointer"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Tracking URL Template */}
-                <FormField
-                  control={form.control}
-                  name="trackingUrlTemplate"
+                  name="displayName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('shippingProviders.trackingUrlTemplate', 'Tracking URL Template')}</FormLabel>
+                      <FormLabel>{t('shippingProviders.fields.displayName', 'Display Name')}</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="https://tracking.example.com/{trackingNumber}"
-                          {...field}
-                          value={field.value ?? ''}
-                        />
+                        <Input placeholder={schema.displayName} {...field} value={field.value ?? ''} />
                       </FormControl>
                       <FormDescription>
-                        {t('shippingProviders.trackingUrlHint', 'Use {trackingNumber} as placeholder')}
+                        {t('shippingProviders.fields.displayNameHelp', 'Shown to customers during checkout')}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
 
-              <DialogFooter>
+                {/* Environment */}
+                <FormField
+                  control={form.control}
+                  name="environment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('shippingProviders.fields.environment', 'Environment')}</FormLabel>
+                      <Select
+                        onValueChange={handleEnvironmentChange}
+                        value={field.value as string}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer" aria-label={t('shippingProviders.fields.environment', 'Environment')}>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Sandbox" className="cursor-pointer">
+                            {t('shipping.environment.sandbox')}
+                          </SelectItem>
+                          <SelectItem value="Production" className="cursor-pointer">
+                            {t('shipping.environment.production')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {environment === 'Production' && (
+                        <p className="text-sm text-yellow-600 flex items-center gap-1">
+                          <AlertTriangle className="h-3 w-3" />
+                          {t('shippingProviders.productionWarning', 'Real shipments will be processed')}
+                        </p>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Credentials Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Separator className="flex-1" />
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                      {t('shippingProviders.credentials', 'Credentials')}
+                    </span>
+                    <Separator className="flex-1" />
+                  </div>
+
+                  {schema.fields.map(credField => (
+                    <FormField
+                      key={credField.key}
+                      control={form.control}
+                      name={`credential_${credField.key}`}
+                      render={({ field: formField }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {credField.label}
+                            {credField.required && !isEditing && (
+                              <span className="text-destructive ml-1">*</span>
+                            )}
+                          </FormLabel>
+                          <FormControl>
+                            {credField.type === 'select' && credField.options && credField.options.length > 0 ? (
+                              <Combobox
+                                options={credField.options}
+                                value={(formField.value as string) ?? ''}
+                                onValueChange={formField.onChange}
+                                placeholder={credField.placeholder ?? t('labels.selectField', { field: credField.label.toLowerCase() })}
+                                searchPlaceholder={t('labels.searchField', { field: credField.label.toLowerCase() })}
+                                emptyText={t('labels.noFieldFound', { field: credField.label.toLowerCase() })}
+                                countLabel={credField.label.toLowerCase()}
+                              />
+                            ) : (
+                              <Input
+                                type={credField.type === 'password' ? 'password' : 'text'}
+                                placeholder={
+                                  isEditing && credField.type === 'password'
+                                    ? '••••••••••••'
+                                    : credField.placeholder
+                                }
+                                {...formField}
+                                value={(formField.value as string) ?? ''}
+                              />
+                            )}
+                          </FormControl>
+                          {credField.helpText && (
+                            <FormDescription>{credField.helpText}</FormDescription>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ))}
+
+                  {/* Security Note */}
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Lock className="h-3 w-3" />
+                    {t('shippingProviders.encryptedNote', 'Credentials are encrypted at rest')}
+                  </p>
+                </div>
+
+                {/* Shipping Options Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Separator className="flex-1" />
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                      {t('shippingProviders.options', 'Options')}
+                    </span>
+                    <Separator className="flex-1" />
+                  </div>
+
+                  {/* COD Toggle */}
+                  <FormField
+                    control={form.control}
+                    name="supportsCod"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>{t('shippingProviders.codLabel', 'Cash on Delivery')}</FormLabel>
+                          <FormDescription>
+                            {t('shippingProviders.codHint', 'Allow COD payments for this provider')}
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value as boolean}
+                            onCheckedChange={field.onChange}
+                            className="cursor-pointer"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Insurance Toggle */}
+                  <FormField
+                    control={form.control}
+                    name="supportsInsurance"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>{t('shippingProviders.insuranceLabel', 'Insurance')}</FormLabel>
+                          <FormDescription>
+                            {t('shippingProviders.insuranceHint', 'Offer package insurance option')}
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value as boolean}
+                            onCheckedChange={field.onChange}
+                            className="cursor-pointer"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Tracking URL Template */}
+                  <FormField
+                    control={form.control}
+                    name="trackingUrlTemplate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('shippingProviders.trackingUrlTemplate', 'Tracking URL Template')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://tracking.example.com/{trackingNumber}"
+                            {...field}
+                            value={field.value ?? ''}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t('shippingProviders.trackingUrlHint', 'Use {trackingNumber} as placeholder')}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CredenzaBody>
+
+              <CredenzaFooter>
                 <Button
                   type="button"
                   variant="outline"
@@ -479,37 +474,38 @@ export const ConfigureProviderDialog = ({
                     ? t('buttons.save', 'Save')
                     : t('buttons.configure', 'Configure')}
                 </Button>
-              </DialogFooter>
+              </CredenzaFooter>
             </form>
           </Form>
-        </DialogContent>
-      </Dialog>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Production Warning Dialog */}
-      <AlertDialog open={showProductionWarning} onOpenChange={setShowProductionWarning}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
+      <Credenza open={showProductionWarning} onOpenChange={setShowProductionWarning}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-yellow-500" />
               {t('shippingProviders.productionWarningTitle', 'Switch to Production Mode')}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
+            </CredenzaTitle>
+            <CredenzaDescription>
               {t(
                 'shippingProviders.productionWarningMessage',
                 'You are about to switch to production mode. Real shipments will be created. Make sure your credentials are for the production environment.'
               )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setShowProductionWarning(false)} className="cursor-pointer">
               {t('buttons.cancel', 'Cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmProductionSwitch} className="cursor-pointer">
+            </Button>
+            <Button onClick={confirmProductionSwitch} className="cursor-pointer">
               {t('shippingProviders.confirmSwitch', 'Confirm Switch')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </>
   )
 }

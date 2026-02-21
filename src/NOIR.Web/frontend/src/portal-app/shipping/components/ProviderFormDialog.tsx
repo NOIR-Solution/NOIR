@@ -6,12 +6,13 @@ import { z } from 'zod'
 import { Loader2, Truck } from 'lucide-react'
 import { toast } from 'sonner'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   Form,
   FormControl,
   FormDescription,
@@ -177,204 +178,206 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
   const isPending = configureMutation.isPending || updateMutation.isPending
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Truck className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>
+              <CredenzaTitle>
                 {isEditing
                   ? t('shipping.editProvider', 'Edit Provider')
                   : t('shipping.addProvider', 'Add Provider')}
-              </DialogTitle>
-              <DialogDescription>
+              </CredenzaTitle>
+              <CredenzaDescription>
                 {isEditing
                   ? t('shipping.editProviderDescription', 'Update shipping provider configuration.')
                   : t('shipping.addProviderDescription', 'Configure a new shipping provider for your store.')}
-              </DialogDescription>
+              </CredenzaDescription>
             </div>
           </div>
-        </DialogHeader>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {!isEditing && (
+            <CredenzaBody>
+              {!isEditing && (
+                <FormField
+                  control={form.control}
+                  name="providerCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('shipping.providerCodeLabel', 'Provider')}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue placeholder={t('shipping.selectProvider', 'Select a provider')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {PROVIDER_CODES.map((code) => (
+                            <SelectItem key={code} value={code} className="cursor-pointer">
+                              {PROVIDER_NAMES[code]} ({code})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               <FormField
                 control={form.control}
-                name="providerCode"
+                name="displayName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('shipping.providerCodeLabel', 'Provider')}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="cursor-pointer">
-                          <SelectValue placeholder={t('shipping.selectProvider', 'Select a provider')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {PROVIDER_CODES.map((code) => (
-                          <SelectItem key={code} value={code} className="cursor-pointer">
-                            {PROVIDER_NAMES[code]} ({code})
+                    <FormLabel>{t('shipping.displayName', 'Display Name')}</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder={t('shipping.displayNamePlaceholder', 'e.g., GHN Express')} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="environment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('shipping.environment', 'Environment')}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Sandbox" className="cursor-pointer">
+                            {t('shipping.env.sandbox', 'Sandbox')}
                           </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+                          <SelectItem value="Production" className="cursor-pointer">
+                            {t('shipping.env.production', 'Production')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="displayName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('shipping.displayName', 'Display Name')}</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder={t('shipping.displayNamePlaceholder', 'e.g., GHN Express')} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="environment"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('shipping.environment', 'Environment')}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                <FormField
+                  control={form.control}
+                  name="sortOrder"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('shipping.sortOrder', 'Sort Order')}</FormLabel>
                       <FormControl>
-                        <SelectTrigger className="cursor-pointer">
-                          <SelectValue />
-                        </SelectTrigger>
+                        <Input type="number" min={0} {...field} />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Sandbox" className="cursor-pointer">
-                          {t('shipping.env.sandbox', 'Sandbox')}
-                        </SelectItem>
-                        <SelectItem value="Production" className="cursor-pointer">
-                          {t('shipping.env.production', 'Production')}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
-                name="sortOrder"
+                name="apiBaseUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('shipping.sortOrder', 'Sort Order')}</FormLabel>
+                    <FormLabel>{t('shipping.apiBaseUrl', 'API Base URL')}</FormLabel>
                     <FormControl>
-                      <Input type="number" min={0} {...field} />
+                      <Input {...field} placeholder="https://..." />
                     </FormControl>
+                    <FormDescription>
+                      {t('shipping.apiBaseUrlHint', 'Override the default API URL for this provider.')}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <FormField
-              control={form.control}
-              name="apiBaseUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('shipping.apiBaseUrl', 'API Base URL')}</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="https://..." />
-                  </FormControl>
-                  <FormDescription>
-                    {t('shipping.apiBaseUrlHint', 'Override the default API URL for this provider.')}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="trackingUrlTemplate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('shipping.trackingUrlTemplate', 'Tracking URL Template')}</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="https://tracking.example.com/{trackingNumber}" />
-                  </FormControl>
-                  <FormDescription>
-                    {t('shipping.trackingUrlHint', 'Use {trackingNumber} as placeholder.')}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-3 rounded-lg border p-4">
               <FormField
                 control={form.control}
-                name="isActive"
+                name="trackingUrlTemplate"
                 render={({ field }) => (
-                  <FormItem className="flex items-center justify-between">
-                    <div>
-                      <FormLabel className="mb-0">{t('labels.active', 'Active')}</FormLabel>
-                      <FormDescription className="mt-0.5">
-                        {t('shipping.activeHint', 'Available for checkout when active.')}
-                      </FormDescription>
-                    </div>
+                  <FormItem>
+                    <FormLabel>{t('shipping.trackingUrlTemplate', 'Tracking URL Template')}</FormLabel>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} className="cursor-pointer" />
+                      <Input {...field} placeholder="https://tracking.example.com/{trackingNumber}" />
                     </FormControl>
+                    <FormDescription>
+                      {t('shipping.trackingUrlHint', 'Use {trackingNumber} as placeholder.')}
+                    </FormDescription>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="supportsCod"
-                render={({ field }) => (
-                  <FormItem className="flex items-center justify-between">
-                    <div>
-                      <FormLabel className="mb-0">{t('shipping.cod', 'Cash on Delivery')}</FormLabel>
-                      <FormDescription className="mt-0.5">
-                        {t('shipping.codHint', 'Allow COD payments for this provider.')}
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} className="cursor-pointer" />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-3 rounded-lg border p-4">
+                <FormField
+                  control={form.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel className="mb-0">{t('labels.active', 'Active')}</FormLabel>
+                        <FormDescription className="mt-0.5">
+                          {t('shipping.activeHint', 'Available for checkout when active.')}
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} className="cursor-pointer" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="supportsInsurance"
-                render={({ field }) => (
-                  <FormItem className="flex items-center justify-between">
-                    <div>
-                      <FormLabel className="mb-0">{t('shipping.insuranceLabel', 'Insurance')}</FormLabel>
-                      <FormDescription className="mt-0.5">
-                        {t('shipping.insuranceHint', 'Offer package insurance option.')}
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} className="cursor-pointer" />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
+                <FormField
+                  control={form.control}
+                  name="supportsCod"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel className="mb-0">{t('shipping.cod', 'Cash on Delivery')}</FormLabel>
+                        <FormDescription className="mt-0.5">
+                          {t('shipping.codHint', 'Allow COD payments for this provider.')}
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} className="cursor-pointer" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-            <DialogFooter>
+                <FormField
+                  control={form.control}
+                  name="supportsInsurance"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel className="mb-0">{t('shipping.insuranceLabel', 'Insurance')}</FormLabel>
+                        <FormDescription className="mt-0.5">
+                          {t('shipping.insuranceHint', 'Offer package insurance option.')}
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} className="cursor-pointer" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </CredenzaBody>
+
+            <CredenzaFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -391,10 +394,10 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
                     ? t('buttons.save', 'Save')
                     : t('buttons.create', 'Create')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

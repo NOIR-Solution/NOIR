@@ -8,12 +8,12 @@ interface PageHeaderProps {
   description?: string
   action?: React.ReactNode
   className?: string
-  /** Enable responsive stacking on mobile (default: false) */
+  /** Enable responsive stacking on mobile (default: true) */
   responsive?: boolean
 }
 
 const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
-  ({ icon: Icon, title, description, action, className, responsive = false }, ref) => {
+  ({ icon: Icon, title, description, action, className, responsive = true }, ref) => {
     return (
       <div
         ref={ref}

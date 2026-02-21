@@ -7,12 +7,13 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormField,
@@ -127,130 +128,132 @@ export const CustomerFormDialog = ({ open, onOpenChange, customer, onSuccess }: 
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[500px]">
+        <CredenzaHeader>
+          <CredenzaTitle>
             {isEditing ? t('customers.editCustomer', 'Edit Customer') : t('customers.createCustomer', 'Create Customer')}
-          </DialogTitle>
-          <DialogDescription>
+          </CredenzaTitle>
+          <CredenzaDescription>
             {isEditing
               ? t('customers.editCustomerDescription', 'Update the customer details below.')
               : t('customers.createCustomerDescription', 'Fill in the details to create a new customer.')}
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <CredenzaBody>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('customers.firstName', 'First Name')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t('customers.firstNamePlaceholder', 'Enter first name')}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('customers.lastName', 'Last Name')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t('customers.lastNamePlaceholder', 'Enter last name')}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
-                name="firstName"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('customers.firstName', 'First Name')}</FormLabel>
+                    <FormLabel>{t('labels.email', 'Email')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('customers.firstNamePlaceholder', 'Enter first name')}
+                        type="email"
+                        placeholder={t('customers.emailPlaceholder', 'customer@example.com')}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="lastName"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('customers.lastName', 'Last Name')}</FormLabel>
+                    <FormLabel>{t('labels.phone', 'Phone')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('customers.lastNamePlaceholder', 'Enter last name')}
+                        value={field.value ?? ''}
+                        placeholder={t('customers.phonePlaceholder', '+84 xxx xxx xxx')}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.email', 'Email')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder={t('customers.emailPlaceholder', 'customer@example.com')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="tags"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.tags', 'Tags')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value ?? ''}
+                        placeholder={t('customers.tagsPlaceholder', 'tag1, tag2, tag3')}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.phone', 'Phone')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder={t('customers.phonePlaceholder', '+84 xxx xxx xxx')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.notes', 'Notes')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        value={field.value ?? ''}
+                        placeholder={t('customers.notesPlaceholder', 'Internal notes about this customer...')}
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CredenzaBody>
 
-            <FormField
-              control={form.control}
-              name="tags"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.tags', 'Tags')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder={t('customers.tagsPlaceholder', 'tag1, tag2, tag3')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.notes', 'Notes')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder={t('customers.notesPlaceholder', 'Internal notes about this customer...')}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
+            <CredenzaFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -263,10 +266,10 @@ export const CustomerFormDialog = ({ open, onOpenChange, customer, onSuccess }: 
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? t('labels.save', 'Save') : t('labels.create', 'Create')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

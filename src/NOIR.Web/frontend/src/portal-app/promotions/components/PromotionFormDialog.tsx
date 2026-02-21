@@ -6,13 +6,14 @@ import { z } from 'zod'
 import { Loader2, Shuffle } from 'lucide-react'
 import {
   Button,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   DatePicker,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   Form,
   FormControl,
   FormDescription,
@@ -226,166 +227,33 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[600px]">
+        <CredenzaHeader>
+          <CredenzaTitle>
             {isEditing ? t('promotions.editPromotion', 'Edit Promotion') : t('promotions.createPromotion', 'Create Promotion')}
-          </DialogTitle>
-          <DialogDescription>
+          </CredenzaTitle>
+          <CredenzaDescription>
             {isEditing
               ? t('promotions.editPromotionDescription', 'Update the promotion details below.')
               : t('promotions.createPromotionDescription', 'Fill in the details to create a new promotion.')}
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.name', 'Name')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t('promotions.namePlaceholder', 'Enter promotion name')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Code with auto-generate */}
-            <FormField
-              control={form.control}
-              name="code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('promotions.code', 'Code')}</FormLabel>
-                  <div className="flex gap-2">
+            <CredenzaBody>
+              {/* Name */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.name', 'Name')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('promotions.codePlaceholder', 'PROMO-CODE')}
-                        className="font-mono uppercase"
-                      />
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={generateCode}
-                      className="cursor-pointer shrink-0"
-                      aria-label={t('promotions.generateCode', 'Generate code')}
-                    >
-                      <Shuffle className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <FormDescription>
-                    {t('promotions.codeDescription', 'Unique code customers enter at checkout. Uppercase letters, numbers, hyphens only.')}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('labels.description', 'Description')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ''}
-                      placeholder={t('promotions.descriptionPlaceholder', 'Brief description of the promotion')}
-                      rows={2}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Promotion Type and Discount Type in a row */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="promotionType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('promotions.type.label', 'Promotion Type')}</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger className="cursor-pointer">
-                          <SelectValue placeholder={t('promotions.selectType', 'Select type')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {PROMOTION_TYPES.map(({ value, labelKey, fallback }) => (
-                          <SelectItem key={value} value={value} className="cursor-pointer">
-                            {t(labelKey, fallback)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="discountType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('promotions.discountType.label', 'Discount Type')}</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger className="cursor-pointer">
-                          <SelectValue placeholder={t('promotions.selectDiscountType', 'Select discount type')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {DISCOUNT_TYPES.map(({ value, labelKey, fallback }) => (
-                          <SelectItem key={value} value={value} className="cursor-pointer">
-                            {t(labelKey, fallback)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Discount Value and Max Discount */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="discountValue"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {watchDiscountType === 'Percentage'
-                        ? t('promotions.discountPercentage', 'Discount (%)')
-                        : t('promotions.discountAmount', 'Discount Amount')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                        min={0}
-                        max={watchDiscountType === 'Percentage' ? 100 : undefined}
-                        step={watchDiscountType === 'Percentage' ? 1 : 0.01}
+                        placeholder={t('promotions.namePlaceholder', 'Enter promotion name')}
                       />
                     </FormControl>
                     <FormMessage />
@@ -393,13 +261,175 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
                 )}
               />
 
-              {watchDiscountType === 'Percentage' && (
+              {/* Code with auto-generate */}
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('promotions.code', 'Code')}</FormLabel>
+                    <div className="flex gap-2">
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t('promotions.codePlaceholder', 'PROMO-CODE')}
+                          className="font-mono uppercase"
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={generateCode}
+                        className="cursor-pointer shrink-0"
+                        aria-label={t('promotions.generateCode', 'Generate code')}
+                      >
+                        <Shuffle className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <FormDescription>
+                      {t('promotions.codeDescription', 'Unique code customers enter at checkout. Uppercase letters, numbers, hyphens only.')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Description */}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('labels.description', 'Description')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        value={field.value ?? ''}
+                        placeholder={t('promotions.descriptionPlaceholder', 'Brief description of the promotion')}
+                        rows={2}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Promotion Type and Discount Type in a row */}
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="maxDiscountAmount"
+                  name="promotionType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('promotions.maxDiscount', 'Max Discount Amount')}</FormLabel>
+                      <FormLabel>{t('promotions.type.label', 'Promotion Type')}</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue placeholder={t('promotions.selectType', 'Select type')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {PROMOTION_TYPES.map(({ value, labelKey, fallback }) => (
+                            <SelectItem key={value} value={value} className="cursor-pointer">
+                              {t(labelKey, fallback)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="discountType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('promotions.discountType.label', 'Discount Type')}</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue placeholder={t('promotions.selectDiscountType', 'Select discount type')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {DISCOUNT_TYPES.map(({ value, labelKey, fallback }) => (
+                            <SelectItem key={value} value={value} className="cursor-pointer">
+                              {t(labelKey, fallback)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Discount Value and Max Discount */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="discountValue"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {watchDiscountType === 'Percentage'
+                          ? t('promotions.discountPercentage', 'Discount (%)')
+                          : t('promotions.discountAmount', 'Discount Amount')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          min={0}
+                          max={watchDiscountType === 'Percentage' ? 100 : undefined}
+                          step={watchDiscountType === 'Percentage' ? 1 : 0.01}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {watchDiscountType === 'Percentage' && (
+                  <FormField
+                    control={form.control}
+                    name="maxDiscountAmount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('promotions.maxDiscount', 'Max Discount Amount')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            value={field.value ?? ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                            min={0}
+                            step={0.01}
+                            placeholder={t('promotions.maxDiscountPlaceholder', 'No limit')}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t('promotions.maxDiscountDescription', 'Maximum discount cap for percentage discounts')}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </div>
+
+              {/* Min Order Value and Apply Level */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="minOrderValue"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('promotions.minOrderValue', 'Min Order Value')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -407,76 +437,132 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
                           onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
                           min={0}
                           step={0.01}
-                          placeholder={t('promotions.maxDiscountPlaceholder', 'No limit')}
+                          placeholder={t('promotions.minOrderValuePlaceholder', 'No minimum')}
                         />
                       </FormControl>
-                      <FormDescription>
-                        {t('promotions.maxDiscountDescription', 'Maximum discount cap for percentage discounts')}
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              )}
-            </div>
 
-            {/* Min Order Value and Apply Level */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="minOrderValue"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('promotions.minOrderValue', 'Min Order Value')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
-                        min={0}
-                        step={0.01}
-                        placeholder={t('promotions.minOrderValuePlaceholder', 'No minimum')}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="applyLevel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('promotions.applyLevel.label', 'Apply Level')}</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {APPLY_LEVELS.map(({ value, labelKey, fallback }) => (
+                            <SelectItem key={value} value={value} className="cursor-pointer">
+                              {t(labelKey, fallback)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-              <FormField
-                control={form.control}
-                name="applyLevel"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('promotions.applyLevel.label', 'Apply Level')}</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
+              {/* Usage Limits */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="usageLimitTotal"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('promotions.usageLimitTotal', 'Total Usage Limit')}</FormLabel>
                       <FormControl>
-                        <SelectTrigger className="cursor-pointer">
-                          <SelectValue />
-                        </SelectTrigger>
+                        <Input
+                          type="number"
+                          value={field.value ?? ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                          min={0}
+                          step={1}
+                          placeholder={t('promotions.usageLimitPlaceholder', 'Unlimited')}
+                        />
                       </FormControl>
-                      <SelectContent>
-                        {APPLY_LEVELS.map(({ value, labelKey, fallback }) => (
-                          <SelectItem key={value} value={value} className="cursor-pointer">
-                            {t(labelKey, fallback)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            {/* Usage Limits */}
-            <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="usageLimitPerUser"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('promotions.usageLimitPerUser', 'Per User Limit')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          value={field.value ?? ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                          min={0}
+                          step={1}
+                          placeholder={t('promotions.usageLimitPlaceholder', 'Unlimited')}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Date Range */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('promotions.startDate', 'Start Date')}</FormLabel>
+                      <FormControl>
+                        <DatePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder={t('promotions.selectStartDate', 'Select start date')}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('promotions.endDate', 'End Date')}</FormLabel>
+                      <FormControl>
+                        <DatePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder={t('promotions.selectEndDate', 'Select end date')}
+                          minDate={form.getValues('startDate')}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Min Item Quantity */}
               <FormField
                 control={form.control}
-                name="usageLimitTotal"
+                name="minItemQuantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('promotions.usageLimitTotal', 'Total Usage Limit')}</FormLabel>
+                    <FormLabel>{t('promotions.minItemQuantity', 'Min Item Quantity')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -484,102 +570,19 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
                         onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
                         min={0}
                         step={1}
-                        placeholder={t('promotions.usageLimitPlaceholder', 'Unlimited')}
+                        placeholder={t('promotions.minItemQuantityPlaceholder', 'No minimum')}
                       />
                     </FormControl>
+                    <FormDescription>
+                      {t('promotions.minItemQuantityDescription', 'Minimum number of items required in the cart')}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+            </CredenzaBody>
 
-              <FormField
-                control={form.control}
-                name="usageLimitPerUser"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('promotions.usageLimitPerUser', 'Per User Limit')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
-                        min={0}
-                        step={1}
-                        placeholder={t('promotions.usageLimitPlaceholder', 'Unlimited')}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Date Range */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="startDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('promotions.startDate', 'Start Date')}</FormLabel>
-                    <FormControl>
-                      <DatePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder={t('promotions.selectStartDate', 'Select start date')}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="endDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('promotions.endDate', 'End Date')}</FormLabel>
-                    <FormControl>
-                      <DatePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder={t('promotions.selectEndDate', 'Select end date')}
-                        minDate={form.getValues('startDate')}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Min Item Quantity */}
-            <FormField
-              control={form.control}
-              name="minItemQuantity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('promotions.minItemQuantity', 'Min Item Quantity')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
-                      min={0}
-                      step={1}
-                      placeholder={t('promotions.minItemQuantityPlaceholder', 'No minimum')}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t('promotions.minItemQuantityDescription', 'Minimum number of items required in the cart')}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
+            <CredenzaFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -592,10 +595,10 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? t('labels.save', 'Save') : t('labels.create', 'Create')}
               </Button>
-            </DialogFooter>
+            </CredenzaFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

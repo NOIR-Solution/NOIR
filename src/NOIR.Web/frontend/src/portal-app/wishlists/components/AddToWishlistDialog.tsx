@@ -4,12 +4,13 @@ import { Heart, Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   Label,
   Select,
   SelectContent,
@@ -69,59 +70,61 @@ export const AddToWishlistDialog = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <Credenza open={open} onOpenChange={onOpenChange}>
+      <CredenzaContent className="sm:max-w-[425px]">
+        <CredenzaHeader>
+          <CredenzaTitle className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-rose-500" />
             {t('wishlists.addToWishlist', 'Add to Wishlist')}
-          </DialogTitle>
-          <DialogDescription>
+          </CredenzaTitle>
+          <CredenzaDescription>
             {productName
               ? t('wishlists.addToWishlistDescription', 'Save "{{name}}" to one of your wishlists.', { name: productName })
               : t('wishlists.addToWishlistGeneric', 'Choose a wishlist to save this product.')}
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
-        <div className="space-y-4 py-2">
-          {/* Wishlist Selector */}
-          <div className="space-y-2">
-            <Label>{t('wishlists.selectWishlist', 'Wishlist')}</Label>
-            <Select
-              value={selectedWishlistId}
-              onValueChange={setSelectedWishlistId}
-              disabled={loadingWishlists}
-            >
-              <SelectTrigger className="cursor-pointer">
-                <SelectValue placeholder={t('wishlists.selectWishlistPlaceholder', 'Choose a wishlist...')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default" className="cursor-pointer">
-                  {t('wishlists.defaultWishlist', 'Default Wishlist')}
-                </SelectItem>
-                {wishlists?.filter((w) => !w.isDefault).map((wishlist) => (
-                  <SelectItem key={wishlist.id} value={wishlist.id} className="cursor-pointer">
-                    {wishlist.name} ({wishlist.itemCount})
+        <CredenzaBody>
+          <div className="space-y-4 py-2">
+            {/* Wishlist Selector */}
+            <div className="space-y-2">
+              <Label>{t('wishlists.selectWishlist', 'Wishlist')}</Label>
+              <Select
+                value={selectedWishlistId}
+                onValueChange={setSelectedWishlistId}
+                disabled={loadingWishlists}
+              >
+                <SelectTrigger className="cursor-pointer">
+                  <SelectValue placeholder={t('wishlists.selectWishlistPlaceholder', 'Choose a wishlist...')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default" className="cursor-pointer">
+                    {t('wishlists.defaultWishlist', 'Default Wishlist')}
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                  {wishlists?.filter((w) => !w.isDefault).map((wishlist) => (
+                    <SelectItem key={wishlist.id} value={wishlist.id} className="cursor-pointer">
+                      {wishlist.name} ({wishlist.itemCount})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Optional Note */}
-          <div className="space-y-2">
-            <Label>{t('wishlists.note', 'Note')} <span className="text-muted-foreground text-xs">({t('labels.optional', 'Optional')})</span></Label>
-            <Textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder={t('wishlists.notePlaceholder', 'Add a note about this item...')}
-              rows={3}
-              maxLength={500}
-            />
+            {/* Optional Note */}
+            <div className="space-y-2">
+              <Label>{t('wishlists.note', 'Note')} <span className="text-muted-foreground text-xs">({t('labels.optional', 'Optional')})</span></Label>
+              <Textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder={t('wishlists.notePlaceholder', 'Add a note about this item...')}
+                rows={3}
+                maxLength={500}
+              />
+            </div>
           </div>
-        </div>
+        </CredenzaBody>
 
-        <DialogFooter>
+        <CredenzaFooter>
           <Button
             type="button"
             variant="outline"
@@ -142,8 +145,8 @@ export const AddToWishlistDialog = ({
             )}
             {t('wishlists.addItem', 'Add to Wishlist')}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   )
 }
