@@ -71,7 +71,7 @@ frontend/
 │   │   │   ├── features/    #   activity-timeline, developer-logs
 │   │   │   └── components/  #   activity-timeline/, developer-logs/
 │   │   ├── user-access/     # User & access management
-│   │   │   ├── features/    #   role-list, user-list, tenant-list, tenant-detail
+│   │   │   ├── features/    #   role-list, user-list, tenant-list
 │   │   │   ├── components/  #   roles/, users/, tenants/
 │   │   │   └── states/      #   useRoles.ts, useUsers.ts, useTenants.ts
 │   │   ├── welcome/         # Public pages

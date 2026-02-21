@@ -23,15 +23,19 @@ public class SetModuleAvailabilityCommandHandler
         SetModuleAvailabilityCommand command,
         CancellationToken ct)
     {
+        // IgnoreQueryFilters: platform admin has no Finbuckle tenant context;
+        // we filter explicitly by command.TenantId instead.
         var state = await _dbContext.TenantModuleStates
+            .IgnoreQueryFilters()
             .TagWith("SetModuleAvailability")
             .FirstOrDefaultAsync(
-                x => x.TenantId == command.TenantId && x.FeatureName == command.FeatureName,
+                x => x.TenantId == command.TenantId && x.FeatureName == command.FeatureName && !x.IsDeleted,
                 ct);
 
         if (state is null)
         {
-            state = TenantModuleState.Create(command.FeatureName);
+            // Pass tenantId explicitly since platform admin has no tenant context
+            state = TenantModuleState.Create(command.FeatureName, command.TenantId);
             state.SetAvailability(command.IsAvailable);
             await _dbContext.TenantModuleStates.AddAsync(state, ct);
         }
@@ -44,6 +48,6 @@ public class SetModuleAvailabilityCommandHandler
         await _cacheInvalidator.InvalidateAsync(command.TenantId, ct);
 
         return Result.Success(new TenantFeatureStateDto(
-            command.FeatureName, state.IsAvailable, state.IsEnabled));
+            command.FeatureName, state.IsAvailable, state.IsEnabled, state.IsAvailable && state.IsEnabled));
     }
 }

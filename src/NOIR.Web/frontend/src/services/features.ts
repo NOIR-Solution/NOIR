@@ -17,9 +17,9 @@ export const getModuleCatalog = async (): Promise<ModuleCatalogDto> => {
   return apiClient<ModuleCatalogDto>('/features/catalog')
 }
 
-/** Get feature states for a specific tenant (platform admin) */
-export const getTenantFeatureStates = async (tenantId: string): Promise<TenantFeatureStateDto[]> => {
-  return apiClient<TenantFeatureStateDto[]>(`/features/tenant/${tenantId}`)
+/** Get module catalog with tenant-specific states (platform admin) */
+export const getTenantFeatureStates = async (tenantId: string): Promise<ModuleCatalogDto> => {
+  return apiClient<ModuleCatalogDto>(`/features/tenant/${tenantId}`)
 }
 
 /** Set module availability for a tenant (platform admin) */

@@ -1,4 +1,5 @@
-import { useState, useCallback, useTransition } from 'react'
+import { useState, useCallback } from 'react'
+import { useUrlTab } from '@/hooks/useUrlTab'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
@@ -81,14 +82,13 @@ export const WishlistPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Wishlists')
 
-  const [activeWishlistId, setActiveWishlistId] = useState<string | undefined>(undefined)
-  const [isTabPending, startTabTransition] = useTransition()
+  const { activeTab: activeWishlistId, handleTabChange: setActiveWishlistId, isPending: isTabPending } = useUrlTab({ defaultTab: '', paramName: 'wishlist' })
   const [formDialogOpen, setFormDialogOpen] = useState(false)
   const [editingWishlist, setEditingWishlist] = useState<WishlistDto | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<WishlistDto | null>(null)
 
   const { data: wishlists, isLoading: loadingWishlists } = useWishlistsQuery()
-  const selectedId = activeWishlistId ?? wishlists?.[0]?.id
+  const selectedId = activeWishlistId || wishlists?.[0]?.id
   const { data: wishlistDetail, isLoading: loadingDetail } = useWishlistDetailQuery(selectedId)
 
   const removeItemMutation = useRemoveFromWishlist()
@@ -96,10 +96,6 @@ export const WishlistPage = () => {
   const shareWishlistMutation = useShareWishlist()
   const deleteWishlistMutation = useDeleteWishlist()
   const updatePriorityMutation = useUpdateWishlistItemPriority()
-
-  const handleTabChange = useCallback((value: string) => {
-    startTabTransition(() => setActiveWishlistId(value))
-  }, [])
 
   const handleCreateNew = useCallback(() => {
     setEditingWishlist(null)
@@ -119,7 +115,7 @@ export const WishlistPage = () => {
       setDeleteTarget(null)
       // Reset active tab if the deleted one was selected
       if (activeWishlistId === deleteTarget.id) {
-        setActiveWishlistId(undefined)
+        setActiveWishlistId('')
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : t('wishlists.deleteFailed', 'Failed to delete wishlist')
@@ -214,7 +210,7 @@ export const WishlistPage = () => {
           </CardContent>
         </Card>
       ) : (
-        <Tabs value={selectedId} onValueChange={handleTabChange}>
+        <Tabs value={selectedId} onValueChange={setActiveWishlistId}>
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <TabsList className="flex-wrap h-auto gap-1">
               {wishlists.map((wishlist) => (

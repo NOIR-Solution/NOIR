@@ -1,5 +1,6 @@
-import { useState, useDeferredValue, useMemo, useTransition } from 'react'
+import { useState, useDeferredValue, useMemo, useEffect, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 import { Search, Building } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import {
@@ -39,7 +40,51 @@ export const TenantsPage = () => {
   const setPage = (page: number) => startPaginationTransition(() =>
     setParams((prev) => ({ ...prev, page }))
   )
-  const [tenantToEdit, setTenantToEdit] = useState<TenantListItem | null>(null)
+  // URL-synced dialog state: ?edit=tenantId&tab=modules
+  const [searchParams, setSearchParams] = useSearchParams()
+  const editTenantId = searchParams.get('edit')
+  const dialogTab = (searchParams.get('tab') as 'details' | 'modules') || 'details'
+  const [editTenantItem, setEditTenantItem] = useState<TenantListItem | null>(null)
+
+  // When data loads and we have an edit param, find the tenant
+  useEffect(() => {
+    if (editTenantId && !editTenantItem && data?.items) {
+      const found = data.items.find(t => t.id === editTenantId)
+      if (found) setEditTenantItem(found)
+    }
+    if (!editTenantId) setEditTenantItem(null)
+  }, [editTenantId, data?.items, editTenantItem])
+
+  const handleEdit = (tenant: TenantListItem, tab: 'details' | 'modules' = 'details') => {
+    setEditTenantItem(tenant)
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.set('edit', tenant.id)
+      if (tab !== 'details') next.set('tab', tab)
+      else next.delete('tab')
+      return next
+    }, { replace: true })
+  }
+
+  const handleDialogClose = () => {
+    setEditTenantItem(null)
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.delete('edit')
+      next.delete('tab')
+      return next
+    }, { replace: true })
+  }
+
+  const handleDialogTabChange = (tab: 'details' | 'modules') => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (tab !== 'details') next.set('tab', tab)
+      else next.delete('tab')
+      return next
+    }, { replace: true })
+  }
+
   const [tenantToDelete, setTenantToDelete] = useState<TenantListItem | null>(null)
   const [tenantToResetPassword, setTenantToResetPassword] = useState<TenantListItem | null>(null)
 
@@ -51,18 +96,6 @@ export const TenantsPage = () => {
       const message = err instanceof Error ? err.message : 'Failed to delete tenant'
       return { success: false, error: message }
     }
-  }
-
-  const handleEditClick = (tenant: TenantListItem) => {
-    setTenantToEdit(tenant)
-  }
-
-  const handleDeleteClick = (tenant: TenantListItem) => {
-    setTenantToDelete(tenant)
-  }
-
-  const handleResetPasswordClick = (tenant: TenantListItem) => {
-    setTenantToResetPassword(tenant)
   }
 
   return (
@@ -106,9 +139,10 @@ export const TenantsPage = () => {
 
           <TenantTable
             tenants={data?.items || []}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-            onResetPassword={handleResetPasswordClick}
+            onEdit={(t) => handleEdit(t, 'details')}
+            onEditModules={(t) => handleEdit(t, 'modules')}
+            onDelete={setTenantToDelete}
+            onResetPassword={setTenantToResetPassword}
             loading={loading}
           />
 
@@ -128,10 +162,12 @@ export const TenantsPage = () => {
       </Card>
 
       <EditTenantDialog
-        tenant={tenantToEdit}
-        open={!!tenantToEdit}
-        onOpenChange={(open) => !open && setTenantToEdit(null)}
+        tenant={editTenantItem}
+        open={!!editTenantId && !!editTenantItem}
+        onOpenChange={(open) => !open && handleDialogClose()}
         onSuccess={refresh}
+        activeTab={dialogTab}
+        onTabChange={handleDialogTabChange}
       />
 
       <DeleteTenantDialog

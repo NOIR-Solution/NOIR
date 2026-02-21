@@ -797,6 +797,7 @@
     "resetAdminPasswordDescription": "Đặt mật khẩu mới cho quản trị viên của \"{{name}}\".",
     "resetPasswordSuccess": "Đã đặt lại mật khẩu thành công cho {{email}}",
     "searchPlaceholder": "Tìm kiếm tổ chức...",
+    "searchTenants": "Tìm kiếm tổ chức",
     "table": {
       "identifier": "Mã định danh",
       "name": "Tên"
@@ -836,7 +837,14 @@
       "branding": "Thương hiệu",
       "brandingDescription": "Tùy chỉnh và cài đặt giao diện",
       "timestamps": "Thời gian"
-    }
+    },
+    "tabs": {
+      "details": "Chi tiết",
+      "modules": "Module"
+    },
+    "noTenantsFound": "Không tìm thấy tenant",
+    "noTenantsFoundDescription": "Không có tenant nào phù hợp với tiêu chí tìm kiếm.",
+    "showingFirst100": "Hiển thị 100 tổ chức đầu tiên. Dùng tìm kiếm để tìm các tổ chức khác."
   },
   "roles": {
     "title": "Vai trò",
@@ -1590,6 +1598,7 @@
     "yes": "Có",
     "no": "Không",
     "ok": "Đồng ý",
+    "view": "Xem",
     "resetPassword": "Đặt lại mật khẩu",
     "selectAll": "Chọn tất cả",
     "selectNone": "Bỏ chọn",
@@ -2185,7 +2194,13 @@
     "autoScrollLabel": "Tự cuộn",
     "pausedLabel": "Tạm dừng",
     "expandLabel": "Mở rộng",
-    "noLogEntries": "Không có mục nhật ký"
+    "noLogEntries": "Không có mục nhật ký",
+    "tabs": {
+      "live": "Nhật ký trực tiếp",
+      "history": "Tệp lịch sử",
+      "stats": "Thống kê",
+      "errors": "Nhóm lỗi"
+    }
   },
   "featureManagement": {
     "title": "Quản lý Module",
@@ -2196,14 +2211,37 @@
     "toggleSuccess": "Cập nhật module thành công",
     "toggleError": "Cập nhật module thất bại",
     "toggleModule": "Bật/tắt {{module}}",
+    "platformTitle": "Quản Lý Module Cho Tenant",
+    "platformDescription": "Kiểm soát module nào khả dụng cho tenant này.",
+    "available": "Khả dụng",
+    "availabilityToggle": "Bật/tắt khả dụng cho {{module}}",
+    "availabilitySuccess": "Cập nhật khả dụng module thành công",
+    "availabilityError": "Cập nhật khả dụng module thất bại",
+    "tenantEnabled": "Tenant đã bật",
+    "tenantDisabled": "Tenant đã tắt",
+    "modulesOverview": "Tổng Quan Module",
+    "matrixDescription": "Bật/tắt khả dụng module theo tenant. Các dòng được đánh dấu cho thấy sự khác biệt giữa các tenant.",
+    "matrixModuleColumn": "Module",
+    "matrixCellLabel": "Bật/tắt {{module}} cho {{tenant}}",
+    "showDifferencesOnly": "Chỉ hiện khác biệt ({{count}})",
+    "diffTooltip": "Khả dụng khác nhau giữa các tenant",
+    "clickToConfigureTenant": "Nhấn để cấu hình tenant này",
+    "bulkToggle": "Bật/tắt tất cả",
+    "bulkSuccess": "Cập nhật hàng loạt hoàn tất",
+    "bulkToggleTenantLabel": "Bật/tắt tất cả module cho {{tenant}}",
+    "bulkToggleModuleLabel": "Bật/tắt {{module}} cho tất cả tenant",
+    "bulkPartialError": "{{count}} module cập nhật thất bại",
+    "tenantTruncationWarning": "Đang hiển thị {{shown}} trong {{total}} tenant. Sử dụng trang Tenants để quản lý phần còn lại.",
     "categories": {
       "marketing": "Tiếp Thị",
       "orders": "Đơn Hàng",
       "customers": "Khách Hàng",
       "catalog": "Danh Mục Sản Phẩm",
       "content": "Nội Dung",
-      "settings": "Cài Đặt"
-    }
+      "tenantSettings": "Cài Đặt Tenant"
+    },
+    "tenantSettingsModule": "Cài Đặt Tenant",
+    "tenantSettingsModuleDesc": "Mẫu email, trang pháp lý và cấu hình tenant"
   },
   "modules": {
     "core": {
@@ -2283,7 +2321,8 @@
     "tabs": {
       "smtp": "SMTP",
       "emailTemplates": "Mẫu Email",
-      "legalPages": "Trang Pháp lý"
+      "legalPages": "Trang Pháp lý",
+      "modules": "Module"
     },
     "smtp": {
       "title": "Cấu hình SMTP",

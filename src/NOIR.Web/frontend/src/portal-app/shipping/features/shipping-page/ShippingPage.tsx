@@ -1,5 +1,5 @@
-import { useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useUrlTab } from '@/hooks/useUrlTab'
 import { Truck } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import {
@@ -16,14 +16,7 @@ export const ShippingPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Shipping')
 
-  const [activeTab, setActiveTab] = useState('providers')
-  const [isTabPending, startTabTransition] = useTransition()
-
-  const handleTabChange = (value: string) => {
-    startTabTransition(() => {
-      setActiveTab(value)
-    })
-  }
+  const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'providers' })
 
   return (
     <div className="container max-w-4xl py-6 space-y-6">
@@ -34,7 +27,7 @@ export const ShippingPage = () => {
         responsive
       />
 
-      <Tabs value={activeTab} onValueChange={handleTabChange}>
+      <Tabs value={activeTab} onValueChange={handleTabChange} className={isTabPending ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
         <TabsList>
           <TabsTrigger value="providers" className="cursor-pointer">
             {t('shipping.providers', 'Providers')}
@@ -44,11 +37,11 @@ export const ShippingPage = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="providers" className={isTabPending ? 'mt-6 opacity-70 transition-opacity duration-200' : 'mt-6 transition-opacity duration-200'}>
+        <TabsContent value="providers" className="mt-6">
           <ProviderList />
         </TabsContent>
 
-        <TabsContent value="shipments" className={isTabPending ? 'mt-6 opacity-70 transition-opacity duration-200' : 'mt-6 transition-opacity duration-200'}>
+        <TabsContent value="shipments" className="mt-6">
           <ShipmentLookup />
         </TabsContent>
       </Tabs>

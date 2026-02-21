@@ -1,6 +1,6 @@
-import { useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useUrlTab } from '@/hooks/useUrlTab'
 import {
   Settings,
   Palette,
@@ -39,17 +39,7 @@ export const TenantSettingsPage = () => {
   const navigate = useNavigate()
   const { hasPermission } = usePermissions()
   const canEdit = hasPermission(Permissions.TenantSettingsUpdate)
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'branding')
-  const [isTabPending, startTabTransition] = useTransition()
-
-  const handleTabChange = (tab: string) => {
-    setSearchParams({ tab }, { replace: true })
-    startTabTransition(() => {
-      setActiveTab(tab)
-    })
-  }
+  const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'branding' })
 
   return (
     <div className="container max-w-6xl py-6 space-y-6">

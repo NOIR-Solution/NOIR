@@ -61,7 +61,9 @@ public class ToggleModuleCommandHandler
         await _unitOfWork.SaveChangesAsync(ct);
         await _cacheInvalidator.InvalidateAsync(tenantId, ct);
 
+        // Use featureState.IsAvailable (authoritative, from IFeatureChecker) rather than
+        // state.IsAvailable which may be a default value on a freshly created entity row.
         return Result.Success(new TenantFeatureStateDto(
-            command.FeatureName, state.IsAvailable, state.IsEnabled));
+            command.FeatureName, featureState.IsAvailable, state.IsEnabled, featureState.IsAvailable && state.IsEnabled));
     }
 }

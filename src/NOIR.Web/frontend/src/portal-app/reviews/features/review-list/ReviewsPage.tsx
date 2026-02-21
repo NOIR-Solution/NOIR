@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlTab } from '@/hooks/useUrlTab'
 import {
   Badge,
   Button,
@@ -97,7 +98,7 @@ export const ReviewsPage = () => {
   const isSearchStale = searchInput !== deferredSearch
 
   // Filter state
-  const [activeTab, setActiveTab] = useState<string>('all')
+  const { activeTab, handleTabChange: setUrlTab, isPending: isTabPending } = useUrlTab({ defaultTab: 'all' })
   const [ratingFilter, setRatingFilter] = useState<string>('all')
   const [isFilterPending, startFilterTransition] = useTransition()
   const [params, setParams] = useState<GetReviewsParams>({ page: 1, pageSize: 20 })
@@ -149,11 +150,9 @@ export const ReviewsPage = () => {
   }
 
   const handleTabChange = (value: string) => {
-    startFilterTransition(() => {
-      setActiveTab(value)
-      setParams((prev) => ({ ...prev, page: 1 }))
-      setSelectedIds(new Set())
-    })
+    setUrlTab(value)
+    setParams((prev) => ({ ...prev, page: 1 }))
+    setSelectedIds(new Set())
   }
 
   const handleRatingFilter = (value: string) => {
@@ -367,7 +366,7 @@ export const ReviewsPage = () => {
         </CardHeader>
         <CardContent
           className={
-            isSearchStale || isFilterPending
+            isSearchStale || isFilterPending || isTabPending
               ? 'opacity-70 transition-opacity duration-200'
               : 'transition-opacity duration-200'
           }

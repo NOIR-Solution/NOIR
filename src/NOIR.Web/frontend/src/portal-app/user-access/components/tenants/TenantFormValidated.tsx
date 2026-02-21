@@ -234,8 +234,8 @@ export const TenantFormValidated = ({ tenant, onSubmit, onCancel }: TenantFormVa
         </div>
       )}
 
-      <div className="flex justify-end space-x-2 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+      <div className="flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="cursor-pointer">
           {t("buttons.cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting} className="cursor-pointer">

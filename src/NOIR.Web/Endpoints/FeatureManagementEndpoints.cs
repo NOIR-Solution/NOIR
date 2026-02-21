@@ -51,7 +51,7 @@ public static class FeatureManagementEndpoints
             var result = await bus.InvokeAsync<Result<ModuleCatalogDto>>(query);
             return result.ToHttpResult();
         })
-        .RequireAuthorization(Permissions.TenantsUpdate)
+        .RequireAuthorization(Permissions.FeaturesRead)
         .WithName("GetTenantFeatureStates")
         .WithSummary("Get feature states for a specific tenant")
         .WithDescription("Returns module catalog with tenant-specific availability and enablement states. Platform admin only.")
@@ -72,7 +72,7 @@ public static class FeatureManagementEndpoints
             var result = await bus.InvokeAsync<Result<TenantFeatureStateDto>>(command);
             return result.ToHttpResult();
         })
-        .RequireAuthorization(Permissions.TenantsUpdate)
+        .RequireAuthorization(Permissions.FeaturesUpdate)
         .WithName("SetModuleAvailability")
         .WithSummary("Set module availability for a tenant")
         .WithDescription("Sets whether a module is available to a specific tenant. Platform admin only. Core modules cannot be modified.")

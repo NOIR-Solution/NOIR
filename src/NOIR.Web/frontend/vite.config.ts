@@ -1,11 +1,27 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
+/**
+ * Suppresses the false-positive "Something has shimmed the React DevTools
+ * global hook" warning from react-refresh. Triggered by Playwright CDP or
+ * browser extensions that inject __REACT_DEVTOOLS_GLOBAL_HOOK__ with
+ * isDisabled=true before React loads. Dev-only (react-refresh is not in prod).
+ */
+const suppressDevToolsShimWarning = (): Plugin => ({
+  name: 'suppress-devtools-shim-warning',
+  apply: 'serve',
+  transform(code, id) {
+    if (id === '/@react-refresh' && code.includes('hook.isDisabled')) {
+      return code.replace('if (hook.isDisabled)', 'if (false)')
+    }
+  },
+})
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [suppressDevToolsShimWarning(), react(), tailwindcss()],
   resolve: {
     alias: {
       '@uikit': path.resolve(__dirname, './src/uikit'),

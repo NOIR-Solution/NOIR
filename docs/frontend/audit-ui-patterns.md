@@ -672,7 +672,6 @@ portal-app/shipping/components/ProviderFormDialog.tsx
 portal-app/user-access/features/user-list/UsersPage.tsx
 portal-app/user-access/features/role-list/RolesPage.tsx
 portal-app/user-access/features/tenant-list/TenantsPage.tsx
-portal-app/user-access/features/tenant-detail/TenantDetailPage.tsx
 portal-app/user-access/components/users/UserTable.tsx
 portal-app/user-access/components/roles/RoleTable.tsx
 portal-app/user-access/components/tenants/TenantTable.tsx

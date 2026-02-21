@@ -7,7 +7,8 @@
  * This is the orchestrator component that manages top-level state and
  * delegates rendering to child components in the `components/` directory.
  */
-import { useState, useEffect, useCallback, useMemo, useRef, useDeferredValue, useTransition } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef, useDeferredValue } from 'react'
+import { useUrlTab } from '@/hooks/useUrlTab'
 import { useTranslation } from 'react-i18next'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useLogStream } from '@/hooks/useLogStream'
@@ -82,8 +83,7 @@ export const DeveloperLogsPage = () => {
   const [isChangingLevel, setIsChangingLevel] = useState(false)
   const [autoScroll, setAutoScroll] = useState(true)
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
-  const [mainTab, setMainTab] = useState('live')
-  const [isTabPending, startTabTransition] = useTransition()
+  const { activeTab: mainTab, handleTabChange: setMainTab, isPending: isTabPending } = useUrlTab({ defaultTab: 'live' })
   const deferredSearchTerm = useDeferredValue(searchTerm)
   const isSearchStale = searchTerm !== deferredSearchTerm
   const [detailEntry, setDetailEntry] = useState<import('@/services/developerLogs').LogEntryDto | null>(null)
@@ -213,17 +213,17 @@ export const DeveloperLogsPage = () => {
           {isConnected ? (
             <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('green')}`}>
               <Wifi className="h-3 w-3" />
-              Connected
+              {t('developerLogs.connected')}
             </Badge>
           ) : connectionState === 'connecting' || connectionState === 'reconnecting' ? (
             <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('yellow')}`}>
               <RefreshCw className="h-3 w-3 animate-spin" />
-              {connectionState === 'connecting' ? 'Connecting' : 'Reconnecting'}
+              {connectionState === 'connecting' ? t('developerLogs.connecting') : t('developerLogs.reconnecting')}
             </Badge>
           ) : (
             <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('red')}`}>
               <WifiOff className="h-3 w-3" />
-              Disconnected
+              {t('developerLogs.disconnected')}
             </Badge>
           )}
           </div>
@@ -231,23 +231,23 @@ export const DeveloperLogsPage = () => {
       />
 
       {/* Main tabs */}
-      <Tabs value={mainTab} onValueChange={(tab) => startTabTransition(() => setMainTab(tab))} className={`flex-1 flex flex-col mt-4 overflow-hidden${isTabPending || isSearchStale ? ' opacity-70 transition-opacity duration-200' : ' transition-opacity duration-200'}`}>
+      <Tabs value={mainTab} onValueChange={setMainTab} className={`flex-1 flex flex-col mt-4 overflow-hidden${isTabPending || isSearchStale ? ' opacity-70 transition-opacity duration-200' : ' transition-opacity duration-200'}`}>
         <TabsList>
-          <TabsTrigger value="live" className="gap-2">
+          <TabsTrigger value="live" className="gap-2 cursor-pointer">
             <Terminal className="h-4 w-4" />
-            Live Logs
+            {t('developerLogs.tabs.live')}
           </TabsTrigger>
-          <TabsTrigger value="history" className="gap-2">
+          <TabsTrigger value="history" className="gap-2 cursor-pointer">
             <History className="h-4 w-4" />
-            History Files
+            {t('developerLogs.tabs.history')}
           </TabsTrigger>
-          <TabsTrigger value="stats" className="gap-2">
+          <TabsTrigger value="stats" className="gap-2 cursor-pointer">
             <BarChart3 className="h-4 w-4" />
-            Statistics
+            {t('developerLogs.tabs.stats')}
           </TabsTrigger>
-          <TabsTrigger value="errors" className="gap-2">
+          <TabsTrigger value="errors" className="gap-2 cursor-pointer">
             <AlertCircle className="h-4 w-4" />
-            Error Clusters
+            {t('developerLogs.tabs.errors')}
           </TabsTrigger>
         </TabsList>
 
@@ -283,17 +283,17 @@ export const DeveloperLogsPage = () => {
             searchTerm={searchTerm}
             autoScroll={autoScroll}
             isPaused={isPaused}
-            emptyMessage="No log entries"
+            emptyMessage={t('developerLogs.noLogEntries')}
             emptySubMessage={
               entries.length === 0
-                ? 'Waiting for incoming logs...'
-                : 'No entries match the current filters'
+                ? t('developerLogs.waitingForLogs')
+                : t('developerLogs.noMatchingLogs')
             }
             useScrollArea={true}
             scrollAreaClassName="h-[calc(100vh-330px)] min-h-[400px]"
             isFullscreen={isLiveFullscreen}
             onFullscreenChange={setIsLiveFullscreen}
-            fullscreenTitle="Live Logs"
+            fullscreenTitle={t('developerLogs.tabs.live')}
           />
 
           <LogDetailDialog

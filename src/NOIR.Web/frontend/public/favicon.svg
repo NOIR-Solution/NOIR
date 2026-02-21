@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4338ca"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
+  <!-- ShieldCheck icon (Lucide) scaled to fit -->
+  <g transform="translate(6,5)" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 1.5L2 5v5.5c0 5.25 3.4 10.15 8 11.5 4.6-1.35 8-6.25 8-10.5V5L10 1.5z"/>
+    <path d="M6.5 11.5l2.5 2.5 5-5"/>
+  </g>
+</svg>

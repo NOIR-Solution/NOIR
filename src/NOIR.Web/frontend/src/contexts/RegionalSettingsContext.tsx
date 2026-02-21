@@ -108,8 +108,11 @@ export const RegionalSettingsProvider = ({ children }: RegionalSettingsProviderP
   // Keep refs in sync
   useEffect(() => { changeLanguageRef.current = changeLanguage }, [changeLanguage])
 
+  // Platform Admin has tenantId = null — skip tenant-scoped API calls
+  const tenantId = user?.tenantId
+
   const loadRegional = useCallback(async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !tenantId) {
       setRegional(null)
       appliedTenantLanguageRef.current = false
       return
@@ -142,13 +145,12 @@ export const RegionalSettingsProvider = ({ children }: RegionalSettingsProviderP
     } finally {
       setLoading(false)
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, tenantId])
 
   // Load regional settings when authentication state or tenant changes
-  const tenantId = user?.tenantId
   useEffect(() => {
     loadRegional()
-  }, [loadRegional, tenantId])
+  }, [loadRegional])
 
   const reloadRegional = useCallback(async () => {
     // Reset the ref to allow language re-application on intentional reload (e.g., after admin save)

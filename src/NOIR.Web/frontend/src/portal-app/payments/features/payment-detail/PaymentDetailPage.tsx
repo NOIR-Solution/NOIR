@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlTab } from '@/hooks/useUrlTab'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -155,6 +156,8 @@ export const PaymentDetailPage = () => {
   const requestRefundMutation = useRequestRefundMutation()
   const approveRefundMutation = useApproveRefundMutation()
   const rejectRefundMutation = useRejectRefundMutation()
+
+  const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'overview' })
 
   const payment = details?.transaction
   const operationLogs = details?.operationLogs ?? []
@@ -335,7 +338,7 @@ export const PaymentDetailPage = () => {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className={`w-full${isTabPending ? ' opacity-70 transition-opacity duration-200' : ' transition-opacity duration-200'}`}>
         <TabsList>
           <TabsTrigger value="overview" className="cursor-pointer">
             <CreditCard className="h-4 w-4 mr-2" />

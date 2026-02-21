@@ -17,8 +17,8 @@ public class TenantModuleState : TenantEntity<Guid>
 
     private TenantModuleState() { } // EF Core
 
-    public static TenantModuleState Create(string featureName)
-        => new() { Id = Guid.NewGuid(), FeatureName = featureName };
+    public static TenantModuleState Create(string featureName, string? tenantId = null)
+        => new() { Id = Guid.NewGuid(), FeatureName = featureName, TenantId = tenantId };
 
     public void SetAvailability(bool isAvailable) => IsAvailable = isAvailable;
     public void SetEnabled(bool isEnabled) => IsEnabled = isEnabled;

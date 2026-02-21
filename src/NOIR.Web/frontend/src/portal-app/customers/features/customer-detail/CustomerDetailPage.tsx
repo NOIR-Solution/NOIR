@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlTab } from '@/hooks/useUrlTab'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -102,6 +103,7 @@ export const CustomerDetailPage = () => {
 
   const { data: customer, isLoading, error: queryError } = useCustomerQuery(id)
   const updateSegmentMutation = useUpdateCustomerSegmentMutation()
+  const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'orders' })
 
   // Orders pagination
   const [orderParams, setOrderParams] = useState({ page: 1, pageSize: 10 })
@@ -235,7 +237,7 @@ export const CustomerDetailPage = () => {
           </div>
 
           {/* Tabs */}
-          <Tabs defaultValue="orders" className="w-full">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className={`w-full${isTabPending ? ' opacity-70 transition-opacity duration-200' : ' transition-opacity duration-200'}`}>
             <TabsList>
               <TabsTrigger value="orders" className="cursor-pointer">
                 <ShoppingCart className="h-4 w-4 mr-2" />

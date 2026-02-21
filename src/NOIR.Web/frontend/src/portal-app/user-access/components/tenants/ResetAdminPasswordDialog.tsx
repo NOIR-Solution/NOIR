@@ -4,12 +4,13 @@ import { toast } from 'sonner'
 import { KeyRound, Eye, EyeOff, Loader2 } from 'lucide-react'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Input,
   Label,
 } from '@uikit'
@@ -101,90 +102,92 @@ export const ResetAdminPasswordDialog = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Credenza open={open} onOpenChange={handleOpenChange}>
+      <CredenzaContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+          <CredenzaHeader>
+            <CredenzaTitle className="flex items-center gap-2">
               <KeyRound className="h-5 w-5" />
               {t('tenants.resetAdminPasswordTitle')}
-            </DialogTitle>
-            <DialogDescription>
+            </CredenzaTitle>
+            <CredenzaDescription>
               {t('tenants.resetAdminPasswordDescription', {
                 name: tenant?.name || tenant?.identifier
               })}
-            </DialogDescription>
-          </DialogHeader>
+            </CredenzaDescription>
+          </CredenzaHeader>
 
-          <div className="grid gap-4 py-4">
-            {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
-                {error}
+          <CredenzaBody>
+            <div className="grid gap-4 py-4">
+              {error && (
+                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+                  {error}
+                </div>
+              )}
+
+              <div className="grid gap-2">
+                <Label htmlFor="newPassword">{t('auth.newPassword')}</Label>
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    type={showPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder={t('auth.enterNewPassword')}
+                    disabled={loading}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                    aria-label={showPassword ? t('buttons.hidePassword') : t('buttons.showPassword')}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
               </div>
-            )}
 
-            <div className="grid gap-2">
-              <Label htmlFor="newPassword">{t('auth.newPassword')}</Label>
-              <div className="relative">
-                <Input
-                  id="newPassword"
-                  type={showPassword ? 'text' : 'password'}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder={t('auth.enterNewPassword')}
-                  disabled={loading}
-                  className="pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
-                  aria-label={showPassword ? t('buttons.hidePassword') : t('buttons.showPassword')}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
+              <div className="grid gap-2">
+                <Label htmlFor="confirmPassword">{t('auth.confirmPassword')}</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder={t('auth.confirmNewPassword')}
+                    disabled={loading}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    tabIndex={-1}
+                    aria-label={showConfirmPassword ? t('buttons.hidePassword') : t('buttons.showPassword')}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
+          </CredenzaBody>
 
-            <div className="grid gap-2">
-              <Label htmlFor="confirmPassword">{t('auth.confirmPassword')}</Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder={t('auth.confirmNewPassword')}
-                  disabled={loading}
-                  className="pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  tabIndex={-1}
-                  aria-label={showConfirmPassword ? t('buttons.hidePassword') : t('buttons.showPassword')}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
+          <CredenzaFooter>
             <Button
               type="button"
               variant="outline"
@@ -198,9 +201,9 @@ export const ResetAdminPasswordDialog = ({
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? t('labels.loading') : t('buttons.resetPassword')}
             </Button>
-          </DialogFooter>
+          </CredenzaFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </CredenzaContent>
+    </Credenza>
   )
 }

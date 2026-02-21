@@ -797,6 +797,7 @@
     "resetAdminPasswordDescription": "Set a new password for the administrator of \"{{name}}\".",
     "resetPasswordSuccess": "Password reset successfully for {{email}}",
     "searchPlaceholder": "Search tenants...",
+    "searchTenants": "Search tenants",
     "table": {
       "identifier": "Identifier",
       "name": "Name"
@@ -836,7 +837,14 @@
       "branding": "Branding",
       "brandingDescription": "Customization and visual settings",
       "timestamps": "Timestamps"
-    }
+    },
+    "tabs": {
+      "details": "Details",
+      "modules": "Modules"
+    },
+    "noTenantsFound": "No tenants found",
+    "noTenantsFoundDescription": "No tenants match your search criteria.",
+    "showingFirst100": "Showing first 100 tenants. Use search to find others."
   },
   "roles": {
     "title": "Roles",
@@ -1590,6 +1598,7 @@
     "yes": "Yes",
     "no": "No",
     "ok": "OK",
+    "view": "View",
     "resetPassword": "Reset Password",
     "selectAll": "Select All",
     "selectNone": "Select None",
@@ -2185,7 +2194,13 @@
     "autoScrollLabel": "Auto-scroll",
     "pausedLabel": "Paused",
     "expandLabel": "Expand",
-    "noLogEntries": "No log entries"
+    "noLogEntries": "No log entries",
+    "tabs": {
+      "live": "Live Logs",
+      "history": "History Files",
+      "stats": "Statistics",
+      "errors": "Error Clusters"
+    }
   },
   "featureManagement": {
     "title": "Module Management",
@@ -2196,14 +2211,37 @@
     "toggleSuccess": "Module updated successfully",
     "toggleError": "Failed to update module",
     "toggleModule": "Toggle {{module}}",
+    "platformTitle": "Tenant Module Availability",
+    "platformDescription": "Control which modules are available to this tenant.",
+    "available": "Available",
+    "availabilityToggle": "Toggle availability for {{module}}",
+    "availabilitySuccess": "Module availability updated",
+    "availabilityError": "Failed to update module availability",
+    "tenantEnabled": "Tenant enabled",
+    "tenantDisabled": "Tenant disabled",
+    "modulesOverview": "Modules Overview",
+    "matrixDescription": "Toggle module availability per tenant. Highlighted rows indicate differences across tenants.",
+    "matrixModuleColumn": "Module",
+    "matrixCellLabel": "Toggle {{module}} for {{tenant}}",
+    "showDifferencesOnly": "Show differences only ({{count}})",
+    "diffTooltip": "Availability differs across tenants",
+    "clickToConfigureTenant": "Click to configure this tenant",
+    "bulkToggle": "Toggle all",
+    "bulkSuccess": "Bulk update completed",
+    "bulkToggleTenantLabel": "Toggle all modules for {{tenant}}",
+    "bulkToggleModuleLabel": "Toggle {{module}} for all tenants",
+    "bulkPartialError": "{{count}} module(s) failed to update",
+    "tenantTruncationWarning": "Showing {{shown}} of {{total}} tenants. Use the Tenants page to manage the rest.",
     "categories": {
       "marketing": "Marketing",
       "orders": "Orders",
       "customers": "Customers",
       "catalog": "Catalog",
       "content": "Content",
-      "settings": "Settings"
-    }
+      "tenantSettings": "Tenant Settings"
+    },
+    "tenantSettingsModule": "Tenant Settings",
+    "tenantSettingsModuleDesc": "Email templates, legal pages, and tenant configuration"
   },
   "modules": {
     "core": {
@@ -2283,7 +2321,8 @@
     "tabs": {
       "smtp": "SMTP",
       "emailTemplates": "Email Templates",
-      "legalPages": "Legal Pages"
+      "legalPages": "Legal Pages",
+      "modules": "Modules"
     },
     "smtp": {
       "title": "SMTP Configuration",

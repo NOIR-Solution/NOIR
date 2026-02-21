@@ -1,7 +1,7 @@
-import { useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Settings, Mail, FileText, Scale } from 'lucide-react'
+import { useUrlTab } from '@/hooks/useUrlTab'
+import { Settings, Mail, FileText, Scale, Blocks } from 'lucide-react'
 import { PageHeader, Tabs, TabsContent, TabsList, TabsTrigger } from '@uikit'
 
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -10,6 +10,7 @@ import {
   PlatformSmtpSettingsTab,
   PlatformEmailTemplatesTab,
   PlatformLegalPagesTab,
+  PlatformModulesOverviewTab,
 } from '../../components/platform-settings'
 
 /**
@@ -23,18 +24,10 @@ export const PlatformSettingsPage = () => {
   const canEdit = hasPermission(Permissions.PlatformSettingsManage)
   usePageContext('PlatformSettings')
 
-  // Active tab state
-  const [activeTab, setActiveTab] = useState('smtp')
-  const [isTabPending, startTabTransition] = useTransition()
-
-  const handleTabChange = (tab: string) => {
-    startTabTransition(() => {
-      setActiveTab(tab)
-    })
-  }
+  const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'smtp' })
 
   return (
-    <div className="container max-w-4xl py-6 space-y-6">
+    <div className={`container py-6 space-y-6 ${activeTab === 'modules' ? 'max-w-full' : 'max-w-4xl'}`}>
       <PageHeader
         icon={Settings}
         title={t('platformSettings.title')}
@@ -56,6 +49,10 @@ export const PlatformSettingsPage = () => {
             <Scale className="h-4 w-4 mr-2" />
             {t('platformSettings.tabs.legalPages')}
           </TabsTrigger>
+          <TabsTrigger value="modules" className="cursor-pointer">
+            <Blocks className="h-4 w-4 mr-2" />
+            {t('platformSettings.tabs.modules')}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="smtp">
@@ -68,6 +65,10 @@ export const PlatformSettingsPage = () => {
 
         <TabsContent value="legalPages">
           <PlatformLegalPagesTab onEdit={(id) => navigate(`/portal/legal-pages/${id}?from=platform`)} />
+        </TabsContent>
+
+        <TabsContent value="modules">
+          <PlatformModulesOverviewTab />
         </TabsContent>
       </Tabs>
     </div>

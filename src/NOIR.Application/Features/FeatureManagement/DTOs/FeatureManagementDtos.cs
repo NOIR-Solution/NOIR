@@ -31,5 +31,7 @@ public sealed record FeatureDto(
 public sealed record TenantFeatureStateDto(
     string FeatureName,
     bool IsAvailable,
-    bool IsEnabled
+    bool IsEnabled,
+    bool IsEffective,
+    bool IsCore = false
 );

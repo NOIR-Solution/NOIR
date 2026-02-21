@@ -12,6 +12,9 @@ export interface FeatureDto {
   displayNameKey: string
   descriptionKey: string
   defaultEnabled: boolean
+  isAvailable?: boolean
+  isEnabled?: boolean
+  isEffective?: boolean
 }
 
 /** A module definition from the catalog */
@@ -24,6 +27,9 @@ export interface ModuleDto {
   isCore: boolean
   defaultEnabled: boolean
   features: FeatureDto[]
+  isAvailable?: boolean
+  isEnabled?: boolean
+  isEffective?: boolean
 }
 
 /** Full module catalog response */

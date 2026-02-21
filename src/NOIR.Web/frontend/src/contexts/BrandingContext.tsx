@@ -15,6 +15,11 @@ import { useAuthContext } from './AuthContext'
 import { useTheme } from './ThemeContext'
 import { getBrandingSettings, type BrandingSettingsDto } from '@/services/tenantSettings'
 
+// Fallback defaults when no tenant branding is configured
+const DEFAULT_FAVICON = '/favicon.svg'
+const DEFAULT_PRIMARY_COLOR = '#4338ca'
+const DEFAULT_SECONDARY_COLOR = '#6366f1'
+
 interface BrandingContextType {
   /** Current branding settings */
   branding: BrandingSettingsDto | null
@@ -22,6 +27,10 @@ interface BrandingContextType {
   loading: boolean
   /** Tenant's dark mode default preference */
   tenantDarkModeDefault: boolean
+  /** Effective primary color (tenant override or default) */
+  primaryColor: string
+  /** Effective secondary color (tenant override or default) */
+  secondaryColor: string
   /** Reload branding settings (call after save) */
   reloadBranding: () => Promise<void>
 }
@@ -98,7 +107,7 @@ const updateFavicon = (faviconUrl: string | null) => {
     }
   } else if (existingLink) {
     // Reset to default favicon
-    existingLink.href = '/favicon.ico'
+    existingLink.href = DEFAULT_FAVICON
   }
 }
 
@@ -121,10 +130,13 @@ export const BrandingProvider = ({ children }: BrandingProviderProps) => {
   useEffect(() => { setThemeRef.current = setTheme }, [setTheme])
   useEffect(() => { hasUserPreferenceRef.current = hasUserPreference }, [hasUserPreference])
 
+  // Platform Admin has tenantId = null — skip tenant-scoped API calls
+  const tenantId = user?.tenantId
+
   const loadBranding = useCallback(async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !tenantId) {
       setBranding(null)
-      // Clear branding overrides when not authenticated
+      // Clear branding overrides when not authenticated or no tenant (Platform Admin)
       applyBrandingColors(null, null)
       updateFavicon(null)
       appliedTenantDefaultRef.current = false
@@ -150,19 +162,20 @@ export const BrandingProvider = ({ children }: BrandingProviderProps) => {
     } finally {
       setLoading(false)
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, tenantId])
 
   // Load branding when authentication state or tenant changes
-  const tenantId = user?.tenantId
   useEffect(() => {
     loadBranding()
-  }, [loadBranding, tenantId])
+  }, [loadBranding])
 
   const reloadBranding = useCallback(async () => {
     await loadBranding()
   }, [loadBranding])
 
   const tenantDarkModeDefault = branding?.darkModeDefault ?? false
+  const primaryColor = branding?.primaryColor ?? DEFAULT_PRIMARY_COLOR
+  const secondaryColor = branding?.secondaryColor ?? DEFAULT_SECONDARY_COLOR
 
   return (
     <BrandingContext.Provider
@@ -170,6 +183,8 @@ export const BrandingProvider = ({ children }: BrandingProviderProps) => {
         branding,
         loading,
         tenantDarkModeDefault,
+        primaryColor,
+        secondaryColor,
         reloadBranding,
       }}
     >

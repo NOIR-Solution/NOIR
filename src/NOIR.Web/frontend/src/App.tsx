@@ -27,7 +27,7 @@ const PersonalSettingsPage = lazy(() => import('@/portal-app/settings/features/p
 const NotificationsPage = lazy(() => import('@/portal-app/notifications/features/notification-list/NotificationsPage'))
 const NotificationPreferencesPage = lazy(() => import('@/portal-app/notifications/features/notification-preferences/NotificationPreferencesPage'))
 const TenantsPage = lazy(() => import('@/portal-app/user-access/features/tenant-list/TenantsPage'))
-const TenantDetailPage = lazy(() => import('@/portal-app/user-access/features/tenant-detail/TenantDetailPage'))
+
 const RolesPage = lazy(() => import('@/portal-app/user-access/features/role-list/RolesPage'))
 const UsersPage = lazy(() => import('@/portal-app/user-access/features/user-list/UsersPage'))
 const ActivityTimelinePage = lazy(() => import('@/portal-app/systems/features/activity-timeline/ActivityTimelinePage'))
@@ -142,7 +142,6 @@ export const App = () => {
                         {/* Payment Gateways redirect - now a tab in Tenant Settings */}
                         <Route path="admin/payment-gateways" element={<Navigate to="/portal/admin/tenant-settings?tab=paymentGateways" replace />} />
                         <Route path="admin/tenants" element={<ProtectedRoute permissions={Permissions.TenantsRead}><Suspense fallback={<LazyFallback />}><TenantsPage /></Suspense></ProtectedRoute>} />
-                        <Route path="admin/tenants/:id" element={<ProtectedRoute permissions={Permissions.TenantsRead}><Suspense fallback={<LazyFallback />}><TenantDetailPage /></Suspense></ProtectedRoute>} />
                         <Route path="admin/roles" element={<Suspense fallback={<LazyFallback />}><RolesPage /></Suspense>} />
                         <Route path="admin/users" element={<Suspense fallback={<LazyFallback />}><UsersPage /></Suspense>} />
                         <Route path="activity-timeline" element={<Suspense fallback={<LazyFallback />}><ActivityTimelinePage /></Suspense>} />

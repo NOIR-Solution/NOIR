@@ -4,7 +4,8 @@
  * Dashboard-style page aggregating revenue, best sellers,
  * inventory, and customer reports with date range filtering and export.
  */
-import { useState, useMemo, useTransition } from 'react'
+import { useState, useMemo } from 'react'
+import { useUrlTab } from '@/hooks/useUrlTab'
 import { useTranslation } from 'react-i18next'
 import type { DateRange } from 'react-day-picker'
 import { subDays, startOfDay, endOfDay } from 'date-fns'
@@ -261,8 +262,7 @@ export const ReportsPage = () => {
     from: startOfDay(subDays(new Date(), 30)),
     to: endOfDay(new Date()),
   })
-  const [activeTab, setActiveTab] = useState('revenue')
-  const [isTabPending, startTabTransition] = useTransition()
+  const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'revenue' })
 
   // Derive ISO date strings for API calls
   const dateParams = useMemo(() => ({
@@ -320,12 +320,6 @@ export const ReportsPage = () => {
 
   const revenueChange = revenueData?.comparedToPreviousPeriod?.revenueChange ?? 0
   const revenueTrend: 'up' | 'down' | 'neutral' = revenueChange > 0 ? 'up' : revenueChange < 0 ? 'down' : 'neutral'
-
-  const handleTabChange = (value: string) => {
-    startTabTransition(() => {
-      setActiveTab(value)
-    })
-  }
 
   const getStockStatusBadge = (currentStock: number, reorderLevel: number) => {
     if (currentStock === 0) {
@@ -409,7 +403,7 @@ export const ReportsPage = () => {
       </div>
 
       {/* Tabbed Report Sections */}
-      <Tabs value={activeTab} onValueChange={handleTabChange}>
+      <Tabs value={activeTab} onValueChange={handleTabChange} className={isTabPending ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="revenue" className="cursor-pointer">
             <DollarSign className="h-4 w-4 mr-2 hidden sm:inline-block" />
@@ -428,8 +422,6 @@ export const ReportsPage = () => {
             {t('reports.tabs.customers', 'Customers')}
           </TabsTrigger>
         </TabsList>
-
-        <div className={isTabPending ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
 
           {/* ─── Revenue Tab ──────────────────────────────────────────── */}
           <TabsContent value="revenue" className="space-y-6 mt-6">
@@ -817,7 +809,6 @@ export const ReportsPage = () => {
             </div>
           </TabsContent>
 
-        </div>
       </Tabs>
     </div>
   )

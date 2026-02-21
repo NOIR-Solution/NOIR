@@ -20,8 +20,11 @@ public class GetTenantFeatureStatesQueryHandler
         GetTenantFeatureStatesQuery query,
         CancellationToken ct)
     {
+        // IgnoreQueryFilters: platform admin has no Finbuckle tenant context;
+        // we filter explicitly by query.TenantId instead.
         var dbStates = await _dbContext.TenantModuleStates
-            .Where(x => x.TenantId == query.TenantId)
+            .IgnoreQueryFilters()
+            .Where(x => x.TenantId == query.TenantId && !x.IsDeleted)
             .TagWith("GetTenantFeatureStates")
             .ToListAsync(ct);
 
