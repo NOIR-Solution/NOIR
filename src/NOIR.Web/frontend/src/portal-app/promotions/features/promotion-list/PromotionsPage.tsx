@@ -2,7 +2,7 @@ import { useState, useDeferredValue, useMemo, useEffect, useTransition } from 'r
 import { useTranslation } from 'react-i18next'
 import {
   EllipsisVertical,
-  Pencil,
+  Eye,
   Percent,
   Play,
   Plus,
@@ -11,6 +11,8 @@ import {
   Trash2,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -109,8 +111,7 @@ export const PromotionsPage = () => {
   const [params, setParams] = useState<GetPromotionsParams>({ page: 1, pageSize: 20 })
 
   // Dialog state
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
-  const [promotionToEdit, setPromotionToEdit] = useState<PromotionDto | null>(null)
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-promotion' })
   const [promotionToDelete, setPromotionToDelete] = useState<PromotionDto | null>(null)
 
   // Reset page when search changes
@@ -133,6 +134,7 @@ export const PromotionsPage = () => {
   const error = queryError?.message ?? null
 
   const promotions = promotionsResponse?.items ?? []
+  const { editItem: promotionToEdit, openEdit: openEditPromotion, closeEdit: closeEditPromotion } = useUrlEditDialog<PromotionDto>(promotions)
   const totalCount = promotionsResponse?.totalCount ?? 0
   const totalPages = promotionsResponse?.totalPages ?? 1
   const currentPage = params.page ?? 1
@@ -191,7 +193,7 @@ export const PromotionsPage = () => {
         responsive
         action={
           canWrite && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer" onClick={() => setShowCreateDialog(true)}>
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('promotions.newPromotion', 'New Promotion')}
             </Button>
@@ -297,7 +299,7 @@ export const PromotionsPage = () => {
                         description={t('promotions.noPromotionsDescription', 'Get started by creating your first promotion.')}
                         action={canWrite ? {
                           label: t('promotions.addPromotion', 'Add Promotion'),
-                          onClick: () => setShowCreateDialog(true),
+                          onClick: () => openCreate(),
                         } : undefined}
                         className="border-0 rounded-none px-4 py-12"
                       />
@@ -305,8 +307,12 @@ export const PromotionsPage = () => {
                   </TableRow>
                 ) : (
                   promotions.map((promotion) => (
-                    <TableRow key={promotion.id} className="group transition-colors hover:bg-muted/50">
-                      <TableCell className="sticky left-0 z-10 bg-background">
+                    <TableRow
+                      key={promotion.id}
+                      className="group transition-colors hover:bg-muted/50 cursor-pointer"
+                      onClick={() => openEditPromotion(promotion)}
+                    >
+                      <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -319,15 +325,13 @@ export const PromotionsPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start">
-                            {canWrite && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setPromotionToEdit(promotion)}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                            )}
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={() => openEditPromotion(promotion)}
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              {canWrite ? t('labels.edit', 'Edit') : t('labels.viewDetails', 'View Details')}
+                            </DropdownMenuItem>
                             {canWrite && promotion.status !== 'Active' && promotion.status !== 'Expired' && promotion.status !== 'Cancelled' && (
                               <DropdownMenuItem
                                 className="cursor-pointer"
@@ -429,11 +433,11 @@ export const PromotionsPage = () => {
 
       {/* Create/Edit Promotion Dialog */}
       <PromotionFormDialog
-        open={showCreateDialog || !!promotionToEdit}
+        open={isCreateOpen || !!promotionToEdit}
         onOpenChange={(open) => {
           if (!open) {
-            setShowCreateDialog(false)
-            setPromotionToEdit(null)
+            if (isCreateOpen) onCreateOpenChange(false)
+            if (promotionToEdit) closeEditPromotion()
           }
         }}
         promotion={promotionToEdit}

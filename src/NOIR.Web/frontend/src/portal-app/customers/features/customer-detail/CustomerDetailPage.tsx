@@ -251,8 +251,8 @@ export const CustomerDetailPage = () => {
 
             {/* Orders Tab */}
             <TabsContent value="orders">
-              <Card className="shadow-sm">
-                <CardHeader className="pb-3">
+              <Card className="shadow-sm gap-4 py-5">
+                <CardHeader>
                   <CardTitle className="text-sm flex items-center gap-2">
                     <ShoppingCart className="h-4 w-4" />
                     {t('customers.orderHistory', 'Order History')}
@@ -350,8 +350,8 @@ export const CustomerDetailPage = () => {
 
             {/* Addresses Tab */}
             <TabsContent value="addresses">
-              <Card className="shadow-sm">
-                <CardHeader className="pb-3">
+              <Card className="shadow-sm gap-4 py-5">
+                <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-sm flex items-center gap-2">
@@ -461,8 +461,8 @@ export const CustomerDetailPage = () => {
         {/* Right Column - Customer Info & Actions */}
         <div className="space-y-6">
           {/* Customer Info */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm gap-4 py-5">
+            <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm">{t('customers.customerInfo', 'Customer Information')}</CardTitle>
                 <div className="flex items-center gap-1">
@@ -546,8 +546,8 @@ export const CustomerDetailPage = () => {
 
           {/* Segment Management */}
           {canManage && (
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
+            <Card className="shadow-sm gap-4 py-5">
+              <CardHeader>
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Crown className="h-4 w-4" />
                   {t('customers.segmentManagement', 'Segment Management')}
@@ -578,8 +578,8 @@ export const CustomerDetailPage = () => {
           )}
 
           {/* Loyalty Points */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm gap-4 py-5">
+            <CardHeader>
               <CardTitle className="text-sm flex items-center gap-2">
                 <Gift className="h-4 w-4" />
                 {t('customers.loyalty', 'Loyalty Points')}

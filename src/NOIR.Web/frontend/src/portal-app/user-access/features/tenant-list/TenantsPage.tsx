@@ -1,9 +1,11 @@
 import { useState, useDeferredValue, useMemo, useEffect, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
-import { Search, Building } from 'lucide-react'
+import { Search, Building, Plus } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -37,6 +39,8 @@ export const TenantsPage = () => {
   const deleteMutation = useDeleteTenantMutation()
   const error = queryError?.message ?? null
 
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-tenant' })
+
   const setPage = (page: number) => startPaginationTransition(() =>
     setParams((prev) => ({ ...prev, page }))
   )
@@ -48,12 +52,13 @@ export const TenantsPage = () => {
 
   // When data loads and we have an edit param, find the tenant
   useEffect(() => {
-    if (editTenantId && !editTenantItem && data?.items) {
+    if (editTenantId && data?.items) {
       const found = data.items.find(t => t.id === editTenantId)
-      if (found) setEditTenantItem(found)
+      setEditTenantItem(found ?? null)
+    } else if (!editTenantId) {
+      setEditTenantItem(null)
     }
-    if (!editTenantId) setEditTenantItem(null)
-  }, [editTenantId, data?.items, editTenantItem])
+  }, [editTenantId, data?.items])
 
   const handleEdit = (tenant: TenantListItem, tab: 'details' | 'modules' = 'details') => {
     setEditTenantItem(tenant)
@@ -104,7 +109,12 @@ export const TenantsPage = () => {
         icon={Building}
         title={t('tenants.title')}
         description={t('tenants.description')}
-        action={<CreateTenantDialog onSuccess={refresh} />}
+        action={
+          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+            {t('tenants.createNew')}
+          </Button>
+        }
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
@@ -160,6 +170,12 @@ export const TenantsPage = () => {
           )}
         </CardContent>
       </Card>
+
+      <CreateTenantDialog
+        open={isCreateOpen}
+        onOpenChange={onCreateOpenChange}
+        onSuccess={refresh}
+      />
 
       <EditTenantDialog
         tenant={editTenantItem}

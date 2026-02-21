@@ -171,9 +171,11 @@ export const AttributeFilterDialog = ({
                       {activeValues.map(value => {
                         const isChecked = selected.has(value.displayValue)
                         return (
-                          <button
+                          <div
                             key={value.id}
-                            type="button"
+                            role="checkbox"
+                            aria-checked={isChecked}
+                            tabIndex={0}
                             className={cn(
                               'flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm cursor-pointer transition-all',
                               isChecked
@@ -181,6 +183,7 @@ export const AttributeFilterDialog = ({
                                 : 'bg-background border-border text-foreground hover:bg-accent'
                             )}
                             onClick={() => toggleValue(attr.code, value.displayValue)}
+                            onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleValue(attr.code, value.displayValue) } }}
                           >
                             <Checkbox
                               checked={isChecked}
@@ -189,7 +192,7 @@ export const AttributeFilterDialog = ({
                               aria-hidden
                             />
                             <span>{value.displayValue}</span>
-                          </button>
+                          </div>
                         )
                       })}
                     </div>

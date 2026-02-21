@@ -198,8 +198,8 @@ export const ProductsPage = () => {
     })
   }
 
-  const isAllSelected = data?.items && data.items.length > 0 &&
-    data.items.every(p => selectedIds.has(p.id))
+  const isAllSelected = !!(data?.items && data.items.length > 0 &&
+    data.items.every(p => selectedIds.has(p.id)))
 
   // Bulk action handlers - use bulk API endpoints for better performance
   const onBulkPublish = () => {
@@ -608,6 +608,7 @@ export const ProductsPage = () => {
               <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
+                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead className="w-[40px]">
                     <Checkbox
                       checked={isAllSelected}
@@ -619,7 +620,6 @@ export const ProductsPage = () => {
                       className="cursor-pointer"
                     />
                   </TableHead>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead className="w-[35%] font-semibold">{t('products.product', 'Product')}</TableHead>
                   <TableHead className="font-semibold">{t('labels.status', 'Status')}</TableHead>
                   <TableHead className="font-semibold">{t('labels.category', 'Category')}</TableHead>
@@ -634,10 +634,10 @@ export const ProductsPage = () => {
                   // Enhanced loading skeletons
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-9 w-9 rounded-lg" /></TableCell>
                       <TableCell>
                         <Skeleton className="h-4 w-4 rounded" />
                       </TableCell>
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-9 w-9 rounded-lg" /></TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Skeleton className="h-14 w-14 rounded-xl" />
@@ -678,17 +678,10 @@ export const ProductsPage = () => {
                     return (
                       <TableRow
                         key={product.id}
-                        className={`group transition-all duration-200 hover:bg-muted/30 ${selectedIds.has(product.id) ? 'bg-primary/5' : ''}`}
+                        className={`group transition-all duration-200 hover:bg-muted/30 ${selectedIds.size === 0 ? 'cursor-pointer' : ''} ${selectedIds.has(product.id) ? 'bg-primary/5' : ''}`}
+                        onClick={() => { if (selectedIds.size === 0) navigate(`/portal/ecommerce/products/${product.id}`) }}
                       >
-                        <TableCell>
-                          <Checkbox
-                            checked={selectedIds.has(product.id)}
-                            onCheckedChange={() => handleToggleSelect(product.id)}
-                            aria-label={`Select ${product.name}`}
-                            className="cursor-pointer"
-                          />
-                        </TableCell>
-                        <TableCell className="sticky left-0 z-10 bg-background">
+                        <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -757,6 +750,14 @@ export const ProductsPage = () => {
                               )}
                             </DropdownMenuContent>
                           </DropdownMenu>
+                        </TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={selectedIds.has(product.id)}
+                            onCheckedChange={() => handleToggleSelect(product.id)}
+                            aria-label={`Select ${product.name}`}
+                            className="cursor-pointer"
+                          />
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-3">

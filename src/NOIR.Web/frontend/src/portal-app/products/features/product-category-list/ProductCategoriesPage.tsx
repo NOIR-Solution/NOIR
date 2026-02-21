@@ -2,6 +2,8 @@ import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, EllipsisVertical, List, GitBranch, Tags } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -60,10 +62,9 @@ export const ProductCategoriesPage = () => {
   const [searchInput, setSearchInput] = useState('')
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
-  const [categoryToEdit, setCategoryToEdit] = useState<ProductCategoryListItem | null>(null)
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-product-category' })
   const [categoryToDelete, setCategoryToDelete] = useState<ProductCategoryListItem | null>(null)
   const [categoryToManageAttributes, setCategoryToManageAttributes] = useState<ProductCategoryListItem | null>(null)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
   const viewModeOptions: ViewModeOption<'table' | 'tree'>[] = useMemo(() => [
     { value: 'table', label: t('labels.list', 'List'), icon: List, ariaLabel: t('labels.tableView', 'Table view') },
@@ -72,6 +73,7 @@ export const ProductCategoriesPage = () => {
 
   const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
   const { data: categories = [], isLoading: loading, error: queryError, refetch: refresh } = useProductCategoriesQuery(queryParams)
+  const { editItem: categoryToEdit, openEdit: openEditCategory, closeEdit: closeEditCategory } = useUrlEditDialog<ProductCategoryListItem>(categories)
   const deleteMutation = useDeleteProductCategory()
   const reorderMutation = useReorderProductCategories()
   const error = queryError?.message ?? null
@@ -112,7 +114,7 @@ export const ProductCategoriesPage = () => {
         responsive
         action={
           canCreateCategories && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setShowCreateDialog(true)}>
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('categories.newCategory', 'New Category')}
             </Button>
@@ -159,14 +161,14 @@ export const ProductCategoriesPage = () => {
               <CategoryTreeView
                 categories={treeCategories}
                 loading={loading}
-                onEdit={(cat) => setCategoryToEdit(cat as ProductCategoryListItem)}
+                onEdit={(cat) => openEditCategory(cat as ProductCategoryListItem)}
                 onDelete={(cat) => setCategoryToDelete(cat as ProductCategoryListItem)}
                 canEdit={canUpdateCategories}
                 canDelete={canDeleteCategories}
                 itemCountLabel={t('labels.products', 'products')}
                 emptyMessage={t('categories.noCategoriesFound', 'No categories found')}
                 emptyDescription={t('categories.noCategoriesDescription', 'Get started by creating your first category to organize products.')}
-                onCreateClick={canCreateCategories ? () => setShowCreateDialog(true) : undefined}
+                onCreateClick={canCreateCategories ? () => openCreate() : undefined}
                 onReorder={canUpdateCategories ? handleReorder : undefined}
               />
             </div>
@@ -210,7 +212,7 @@ export const ProductCategoriesPage = () => {
                         description={t('categories.noCategoriesDescription', 'Get started by creating your first category to organize products.')}
                         action={canCreateCategories ? {
                           label: t('categories.addCategory', 'Add Category'),
-                          onClick: () => setShowCreateDialog(true),
+                          onClick: () => openCreate(),
                         } : undefined}
                         className="border-0 rounded-none px-4 py-12"
                       />
@@ -235,7 +237,7 @@ export const ProductCategoriesPage = () => {
                             {canUpdateCategories && (
                               <DropdownMenuItem
                                 className="cursor-pointer"
-                                onClick={() => setCategoryToEdit(category)}
+                                onClick={() => openEditCategory(category)}
                               >
                                 <Pencil className="h-4 w-4 mr-2" />
                                 {t('labels.edit', 'Edit')}
@@ -310,11 +312,11 @@ export const ProductCategoriesPage = () => {
 
       {/* Create/Edit Category Dialog */}
       <ProductCategoryDialog
-        open={showCreateDialog || !!categoryToEdit}
+        open={isCreateOpen || !!categoryToEdit}
         onOpenChange={(open) => {
           if (!open) {
-            setShowCreateDialog(false)
-            setCategoryToEdit(null)
+            if (isCreateOpen) onCreateOpenChange(false)
+            if (categoryToEdit) closeEditCategory()
           }
         }}
         category={categoryToEdit}

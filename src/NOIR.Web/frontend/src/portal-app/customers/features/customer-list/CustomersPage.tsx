@@ -14,6 +14,8 @@ import {
   UserCheck,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -108,8 +110,7 @@ export const CustomersPage = () => {
   const [isFilterPending, startFilterTransition] = useTransition()
   const [params, setParams] = useState<GetCustomersParams>({ page: 1, pageSize: 20 })
 
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
-  const [customerToEdit, setCustomerToEdit] = useState<CustomerSummaryDto | null>(null)
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-customer' })
   const [customerToDelete, setCustomerToDelete] = useState<CustomerSummaryDto | null>(null)
 
   useEffect(() => {
@@ -128,6 +129,7 @@ export const CustomersPage = () => {
   const error = queryError?.message ?? null
 
   const customers = customersResponse?.items ?? []
+  const { editItem: customerToEdit, openEdit: openEditCustomer, closeEdit: closeEditCustomer } = useUrlEditDialog<CustomerSummaryDto>(customers)
   const totalCount = customersResponse?.totalCount ?? 0
   const totalPages = customersResponse?.totalPages ?? 1
   const currentPage = params.page ?? 1
@@ -174,7 +176,7 @@ export const CustomersPage = () => {
         responsive
         action={
           canCreate && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer" onClick={() => setShowCreateDialog(true)}>
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('customers.newCustomer', 'New Customer')}
             </Button>
@@ -337,7 +339,7 @@ export const CustomersPage = () => {
                         description={t('customers.noCustomersDescription', 'Get started by creating your first customer.')}
                         action={canCreate ? {
                           label: t('customers.addCustomer', 'Add Customer'),
-                          onClick: () => setShowCreateDialog(true),
+                          onClick: () => openCreate(),
                         } : undefined}
                         className="border-0 rounded-none px-4 py-12"
                       />
@@ -379,7 +381,7 @@ export const CustomersPage = () => {
                                 className="cursor-pointer"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  setCustomerToEdit(customer)
+                                  openEditCustomer(customer)
                                 }}
                               >
                                 <Pencil className="h-4 w-4 mr-2" />
@@ -455,11 +457,11 @@ export const CustomersPage = () => {
 
       {/* Create/Edit Customer Dialog */}
       <CustomerFormDialog
-        open={showCreateDialog || !!customerToEdit}
+        open={isCreateOpen || !!customerToEdit}
         onOpenChange={(open) => {
           if (!open) {
-            setShowCreateDialog(false)
-            setCustomerToEdit(null)
+            if (isCreateOpen) onCreateOpenChange(false)
+            if (customerToEdit) closeEditCustomer()
           }
         }}
         customer={customerToEdit}

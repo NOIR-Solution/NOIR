@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Loader2, Plus, Shield } from 'lucide-react'
+import { Loader2, Shield } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -13,7 +13,6 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaTrigger,
   CredenzaBody,
   Form,
   FormControl,
@@ -35,7 +34,6 @@ import { toast } from 'sonner'
 import { createRole, getRoles } from '@/services/roles'
 import { ApiError } from '@/services/apiClient'
 import type { RoleListItem } from '@/types'
-import { useEffect } from 'react'
 
 const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -49,12 +47,13 @@ const createFormSchema = (t: (key: string, options?: Record<string, unknown>) =>
 type FormValues = z.infer<ReturnType<typeof createFormSchema>>
 
 interface CreateRoleDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
   onSuccess: () => void
 }
 
-export const CreateRoleDialog = ({ onSuccess }: CreateRoleDialogProps) => {
+export const CreateRoleDialog = ({ open, onOpenChange, onSuccess }: CreateRoleDialogProps) => {
   const { t } = useTranslation('common')
-  const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [existingRoles, setExistingRoles] = useState<RoleListItem[]>([])
 
@@ -95,7 +94,7 @@ export const CreateRoleDialog = ({ onSuccess }: CreateRoleDialogProps) => {
       toast.success(t('roles.createSuccess', 'Role created'))
 
       form.reset()
-      setOpen(false)
+      onOpenChange(false)
       onSuccess()
     } catch (err) {
       const message = err instanceof ApiError
@@ -108,13 +107,7 @@ export const CreateRoleDialog = ({ onSuccess }: CreateRoleDialogProps) => {
   }
 
   return (
-    <Credenza open={open} onOpenChange={setOpen}>
-      <CredenzaTrigger asChild>
-        <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
-          <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
-          {t('roles.create', 'Create Role')}
-        </Button>
-      </CredenzaTrigger>
+    <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[500px]">
         <CredenzaHeader>
           <div className="flex items-center gap-3">
@@ -221,7 +214,7 @@ export const CreateRoleDialog = ({ onSuccess }: CreateRoleDialogProps) => {
             </CredenzaBody>
 
             <CredenzaFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)} className="cursor-pointer">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
                 {t('buttons.cancel', 'Cancel')}
               </Button>
               <Button type="submit" disabled={loading} className="cursor-pointer">

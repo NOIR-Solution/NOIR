@@ -216,11 +216,20 @@ export const BlogPostsPage = () => {
                   </TableRow>
                 ) : (
                   data?.items.map((post) => (
-                    <TableRow key={post.id} className="group transition-colors hover:bg-muted/50">
-                      <TableCell className="sticky left-0 z-10 bg-background">
+                    <TableRow
+                      key={post.id}
+                      className="group transition-colors hover:bg-muted/50 cursor-pointer"
+                      onClick={() => navigate(`/portal/blog/posts/${post.id}/edit`)}
+                    >
+                      <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                              aria-label={t('labels.actionsFor', { name: post.title, defaultValue: `Actions for ${post.title}` })}
+                            >
                               <EllipsisVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -232,7 +241,7 @@ export const BlogPostsPage = () => {
                               </ViewTransitionLink>
                             </DropdownMenuItem>
                             {post.status === 'Draft' && (
-                              <DropdownMenuItem className="cursor-pointer">
+                              <DropdownMenuItem className="cursor-pointer opacity-50" disabled>
                                 <Send className="h-4 w-4 mr-2" />
                                 {t('buttons.publish')}
                               </DropdownMenuItem>

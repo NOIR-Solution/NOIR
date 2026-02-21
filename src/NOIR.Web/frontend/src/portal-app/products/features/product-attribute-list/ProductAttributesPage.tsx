@@ -2,6 +2,8 @@ import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Check, EllipsisVertical, Filter, List, Minus, Pencil, Plus, Search, Tags, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   AlertDialog,
@@ -56,9 +58,8 @@ export const ProductAttributesPage = () => {
   const [searchInput, setSearchInput] = useState('')
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
-  const [attributeToEdit, setAttributeToEdit] = useState<ProductAttributeListItem | null>(null)
   const [attributeToDelete, setAttributeToDelete] = useState<ProductAttributeListItem | null>(null)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-attribute' })
   const [params, setParams] = useState<GetProductAttributesParams>({ page: 1, pageSize: 20 })
 
   const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
@@ -67,6 +68,7 @@ export const ProductAttributesPage = () => {
   const error = queryError?.message ?? null
 
   const attributes = attributesResponse?.items ?? []
+  const { editItem: attributeToEdit, openEdit: openEditAttribute, closeEdit: closeEditAttribute } = useUrlEditDialog<ProductAttributeListItem>(attributes)
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value)
@@ -94,7 +96,7 @@ export const ProductAttributesPage = () => {
         responsive
         action={
           canCreateAttributes && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setShowCreateDialog(true)}>
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('productAttributes.newAttribute', 'New Attribute')}
             </Button>
@@ -177,7 +179,7 @@ export const ProductAttributesPage = () => {
                         description={t('productAttributes.noAttributesDescription', 'Get started by creating your first product attribute.')}
                         action={canCreateAttributes ? {
                           label: t('productAttributes.addAttribute', 'Add Attribute'),
-                          onClick: () => setShowCreateDialog(true),
+                          onClick: () => openCreate(),
                         } : undefined}
                         className="border-0 rounded-none px-4 py-12"
                       />
@@ -202,7 +204,7 @@ export const ProductAttributesPage = () => {
                             {canUpdateAttributes && (
                               <DropdownMenuItem
                                 className="cursor-pointer"
-                                onClick={() => setAttributeToEdit(attribute)}
+                                onClick={() => openEditAttribute(attribute)}
                               >
                                 <Pencil className="h-4 w-4 mr-2" />
                                 {t('labels.edit', 'Edit')}
@@ -272,11 +274,11 @@ export const ProductAttributesPage = () => {
 
       {/* Create/Edit Attribute Dialog */}
       <ProductAttributeDialog
-        open={showCreateDialog || !!attributeToEdit}
+        open={isCreateOpen || !!attributeToEdit}
         onOpenChange={(open) => {
           if (!open) {
-            setShowCreateDialog(false)
-            setAttributeToEdit(null)
+            if (isCreateOpen) onCreateOpenChange(false)
+            if (attributeToEdit) closeEditAttribute()
           }
         }}
         attribute={attributeToEdit}

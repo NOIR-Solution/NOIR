@@ -12,8 +12,8 @@ export const ShipmentTrackingPage = () => {
     <div className="space-y-6">
       <PageHeader
         icon={Truck}
-        title={t('shipping.lookupShipment', 'Look Up Shipment')}
-        description={t('shipping.lookupDescription', 'Search by tracking number or order ID to view shipment details.')}
+        title={t('ecommerce.shipmentTracking', 'Shipment Tracking')}
+        description={t('shipping.trackingDescription', 'Track and manage shipments for your orders')}
         responsive
       />
 

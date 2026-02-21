@@ -2,6 +2,7 @@ import { useState, useEffect, useDeferredValue, useMemo, useTransition } from 'r
 import { useTranslation } from 'react-i18next'
 import {
   CheckCircle2,
+  EllipsisVertical,
   Eye,
   MessageSquare,
   Search,
@@ -21,6 +22,11 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   EmptyState,
   Input,
   PageHeader,
@@ -446,6 +452,7 @@ export const ReviewsPage = () => {
                       key={review.id}
                       review={review}
                       isSelected={selectedIds.has(review.id)}
+                      selectionActive={selectedIds.size > 0}
                       onToggleSelect={handleToggleSelect}
                       onViewDetail={setDetailReviewId}
                       onApprove={handleApprove}
@@ -519,6 +526,7 @@ export const ReviewsPage = () => {
 interface ReviewTableRowProps {
   review: ReviewDto
   isSelected: boolean
+  selectionActive: boolean
   onToggleSelect: (id: string) => void
   onViewDetail: (id: string) => void
   onApprove: (id: string) => void
@@ -531,6 +539,7 @@ interface ReviewTableRowProps {
 const ReviewTableRow = ({
   review,
   isSelected,
+  selectionActive,
   onToggleSelect,
   onViewDetail,
   onApprove,
@@ -539,64 +548,63 @@ const ReviewTableRow = ({
   formatDateTime,
   t,
 }: ReviewTableRowProps) => (
-  <TableRow className="group transition-colors hover:bg-muted/50">
-    <TableCell className="sticky left-0 z-10 bg-background">
-      <div className="flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-          onClick={() => onViewDetail(review.id)}
-          aria-label={t('reviews.viewReview', {
-            title: review.title || review.id,
-            defaultValue: `View review ${review.title || review.id}`,
-          })}
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
-        {review.status === 'Pending' && (
-          <>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 text-green-600 hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950/30"
-              onClick={() => onApprove(review.id)}
-              aria-label={t('reviews.approveReview', {
-                title: review.title || review.id,
-                defaultValue: `Approve review ${review.title || review.id}`,
-              })}
-            >
-              <CheckCircle2 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30"
-              onClick={() => onReject(review.id)}
-              aria-label={t('reviews.rejectReview', {
-                title: review.title || review.id,
-                defaultValue: `Reject review ${review.title || review.id}`,
-              })}
-            >
-              <XCircle className="h-4 w-4" />
-            </Button>
-          </>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
-          onClick={() => onRespond(review.id)}
-          aria-label={t('reviews.respondToReview', {
-            title: review.title || review.id,
-            defaultValue: `Respond to review ${review.title || review.id}`,
-          })}
-        >
-          <MessageSquare className="h-4 w-4" />
-        </Button>
-      </div>
+  <TableRow
+    className={`group transition-colors hover:bg-muted/50 ${!selectionActive ? 'cursor-pointer' : ''}`}
+    onClick={() => { if (!selectionActive) onViewDetail(review.id) }}
+  >
+    <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+            aria-label={t('labels.actionsFor', {
+              name: review.title || review.id,
+              defaultValue: `Actions for ${review.title || review.id}`,
+            })}
+          >
+            <EllipsisVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => onViewDetail(review.id)}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            {t('reviews.viewDetails', 'View Details')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => onRespond(review.id)}
+          >
+            <MessageSquare className="h-4 w-4 mr-2" />
+            {t('reviews.respond', 'Respond')}
+          </DropdownMenuItem>
+          {review.status === 'Pending' && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer text-green-600"
+                onClick={() => onApprove(review.id)}
+              >
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                {t('reviews.approve', 'Approve')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer text-destructive"
+                onClick={() => onReject(review.id)}
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                {t('reviews.reject', 'Reject')}
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </TableCell>
-    <TableCell>
+    <TableCell onClick={(e) => e.stopPropagation()}>
       <Checkbox
         checked={isSelected}
         onCheckedChange={() => onToggleSelect(review.id)}

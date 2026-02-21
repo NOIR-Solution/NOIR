@@ -1,29 +1,26 @@
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
-  Button,
   Credenza,
   CredenzaBody,
   CredenzaContent,
   CredenzaDescription,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaTrigger,
 } from '@uikit'
 
 import { TenantFormValidated, type ProvisionTenantFormData, type UpdateTenantFormData } from './TenantFormValidated'
 import { provisionTenant } from '@/services/tenants'
 import type { ProvisionTenantRequest } from '@/types'
-import { Plus } from 'lucide-react'
 
 interface CreateTenantDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
   onSuccess: () => void
 }
 
-export const CreateTenantDialog = ({ onSuccess }: CreateTenantDialogProps) => {
+export const CreateTenantDialog = ({ open, onOpenChange, onSuccess }: CreateTenantDialogProps) => {
   const { t } = useTranslation('common')
-  const [open, setOpen] = useState(false)
 
   const handleSubmit = async (data: ProvisionTenantFormData | UpdateTenantFormData) => {
     // This is always ProvisionTenantFormData in create mode
@@ -60,18 +57,12 @@ export const CreateTenantDialog = ({ onSuccess }: CreateTenantDialogProps) => {
       toast.success(t('messages.createSuccess'))
     }
 
-    setOpen(false)
+    onOpenChange(false)
     onSuccess()
   }
 
   return (
-    <Credenza open={open} onOpenChange={setOpen}>
-      <CredenzaTrigger asChild>
-        <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
-          <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
-          {t('tenants.createNew')}
-        </Button>
-      </CredenzaTrigger>
+    <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[550px]">
         <CredenzaHeader>
           <CredenzaTitle>{t('tenants.createTitle')}</CredenzaTitle>
@@ -80,7 +71,7 @@ export const CreateTenantDialog = ({ onSuccess }: CreateTenantDialogProps) => {
         <CredenzaBody>
           <TenantFormValidated
             onSubmit={handleSubmit}
-            onCancel={() => setOpen(false)}
+            onCancel={() => onOpenChange(false)}
           />
         </CredenzaBody>
       </CredenzaContent>

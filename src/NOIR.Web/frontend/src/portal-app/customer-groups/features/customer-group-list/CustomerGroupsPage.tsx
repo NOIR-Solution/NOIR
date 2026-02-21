@@ -1,7 +1,9 @@
 import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, UsersRound, Plus, Pencil, Trash2, EllipsisVertical } from 'lucide-react'
+import { Search, UsersRound, Plus, Eye, Trash2, EllipsisVertical } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   AlertDialog,
@@ -57,9 +59,8 @@ export const CustomerGroupsPage = () => {
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
   const [isFilterPending, startFilterTransition] = useTransition()
-  const [groupToEdit, setGroupToEdit] = useState<CustomerGroupListItem | null>(null)
   const [groupToDelete, setGroupToDelete] = useState<CustomerGroupListItem | null>(null)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-group' })
   const [params, setParams] = useState<GetCustomerGroupsParams>({ page: 1, pageSize: 20 })
 
   const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
@@ -68,6 +69,7 @@ export const CustomerGroupsPage = () => {
   const error = queryError?.message ?? null
 
   const groups = groupsResponse?.items ?? []
+  const { editItem: groupToEdit, openEdit: openEditGroup, closeEdit: closeEditGroup } = useUrlEditDialog<CustomerGroupListItem>(groups)
   const totalCount = groupsResponse?.totalCount ?? 0
   const totalPages = groupsResponse?.totalPages ?? 1
   const currentPage = params.page ?? 1
@@ -104,7 +106,7 @@ export const CustomerGroupsPage = () => {
         responsive
         action={
           canCreateGroups && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setShowCreateDialog(true)}>
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('customerGroups.newGroup', 'New Group')}
             </Button>
@@ -176,7 +178,7 @@ export const CustomerGroupsPage = () => {
                         description={t('customerGroups.noGroupsDescription', 'Get started by creating your first customer group.')}
                         action={canCreateGroups ? {
                           label: t('customerGroups.addGroup', 'Add Group'),
-                          onClick: () => setShowCreateDialog(true),
+                          onClick: () => openCreate(),
                         } : undefined}
                         className="border-0 rounded-none px-4 py-12"
                       />
@@ -184,8 +186,12 @@ export const CustomerGroupsPage = () => {
                   </TableRow>
                 ) : (
                   groups.map((group) => (
-                    <TableRow key={group.id} className="group transition-colors hover:bg-muted/50">
-                      <TableCell className="sticky left-0 z-10 bg-background">
+                    <TableRow
+                      key={group.id}
+                      className="group transition-colors hover:bg-muted/50 cursor-pointer"
+                      onClick={() => openEditGroup(group)}
+                    >
+                      <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -198,15 +204,13 @@ export const CustomerGroupsPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start">
-                            {canUpdateGroups && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setGroupToEdit(group)}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                            )}
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={() => openEditGroup(group)}
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              {canUpdateGroups ? t('labels.edit', 'Edit') : t('labels.viewDetails', 'View Details')}
+                            </DropdownMenuItem>
                             {canDeleteGroups && (
                               <DropdownMenuItem
                                 className="text-destructive cursor-pointer"
@@ -264,11 +268,11 @@ export const CustomerGroupsPage = () => {
 
       {/* Create/Edit Customer Group Dialog */}
       <CustomerGroupDialog
-        open={showCreateDialog || !!groupToEdit}
+        open={isCreateOpen || !!groupToEdit}
         onOpenChange={(open) => {
           if (!open) {
-            setShowCreateDialog(false)
-            setGroupToEdit(null)
+            if (isCreateOpen) onCreateOpenChange(false)
+            if (groupToEdit) closeEditGroup()
           }
         }}
         group={groupToEdit}

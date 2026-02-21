@@ -1,7 +1,10 @@
 import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Shield } from 'lucide-react'
+import { Search, Shield, Plus } from 'lucide-react'
+import { Button } from '@uikit'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import {
   Card,
   CardContent,
@@ -30,6 +33,8 @@ export const RolesPage = () => {
   const [isPaginationPending, startPaginationTransition] = useTransition()
   const [params, setParams] = useState<RolesParams>({ page: 1, pageSize: 10 })
 
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-role' })
+
   const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
   const { data, isLoading: loading, error: queryError, refetch: refresh } = useRolesQuery(queryParams)
   const deleteMutation = useDeleteRoleMutation()
@@ -38,7 +43,7 @@ export const RolesPage = () => {
   const setPage = (page: number) => startPaginationTransition(() =>
     setParams((prev) => ({ ...prev, page }))
   )
-  const [roleToEdit, setRoleToEdit] = useState<RoleListItem | null>(null)
+  const { editItem: roleToEdit, openEdit: openEditRole, closeEdit: closeEditRole } = useUrlEditDialog<RoleListItem>(data?.items)
   const [roleToDelete, setRoleToDelete] = useState<RoleListItem | null>(null)
   const [roleForPermissions, setRoleForPermissions] = useState<RoleListItem | null>(null)
 
@@ -53,7 +58,7 @@ export const RolesPage = () => {
   }
 
   const handleEditClick = (role: RoleListItem) => {
-    setRoleToEdit(role)
+    openEditRole(role)
   }
 
   const handleDeleteClick = (role: RoleListItem) => {
@@ -70,7 +75,12 @@ export const RolesPage = () => {
         icon={Shield}
         title={t('roles.title', 'Roles')}
         description={t('roles.description', 'Manage roles and permissions')}
-        action={<CreateRoleDialog onSuccess={refresh} />}
+        action={
+          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+            {t('roles.create', 'Create Role')}
+          </Button>
+        }
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
@@ -126,10 +136,16 @@ export const RolesPage = () => {
         </CardContent>
       </Card>
 
+      <CreateRoleDialog
+        open={isCreateOpen}
+        onOpenChange={onCreateOpenChange}
+        onSuccess={refresh}
+      />
+
       <EditRoleDialog
         role={roleToEdit}
         open={!!roleToEdit}
-        onOpenChange={(open) => !open && setRoleToEdit(null)}
+        onOpenChange={(open) => !open && closeEditRole()}
         onSuccess={refresh}
       />
 

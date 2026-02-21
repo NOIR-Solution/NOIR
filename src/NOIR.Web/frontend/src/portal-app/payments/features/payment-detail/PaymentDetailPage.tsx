@@ -366,8 +366,8 @@ export const PaymentDetailPage = () => {
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Transaction Info */}
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
+            <Card className="shadow-sm gap-4 py-5">
+              <CardHeader>
                 <CardTitle className="text-sm">{t('payments.detail.transactionInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
@@ -408,8 +408,8 @@ export const PaymentDetailPage = () => {
             </Card>
 
             {/* Financial */}
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
+            <Card className="shadow-sm gap-4 py-5">
+              <CardHeader>
                 <CardTitle className="text-sm">{t('payments.detail.financial')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
@@ -436,8 +436,8 @@ export const PaymentDetailPage = () => {
             </Card>
 
             {/* Gateway Info */}
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
+            <Card className="shadow-sm gap-4 py-5">
+              <CardHeader>
                 <CardTitle className="text-sm">{t('payments.detail.gatewayInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
@@ -467,8 +467,8 @@ export const PaymentDetailPage = () => {
             </Card>
 
             {/* Timing */}
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
+            <Card className="shadow-sm gap-4 py-5">
+              <CardHeader>
                 <CardTitle className="text-sm">{t('payments.detail.timing')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
@@ -507,8 +507,8 @@ export const PaymentDetailPage = () => {
 
         {/* Timeline Tab */}
         <TabsContent value="timeline">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm gap-4 py-5">
+            <CardHeader>
               <CardTitle className="text-sm">{t('payments.detail.timeline')}</CardTitle>
               <CardDescription>
                 {t('payments.detail.timelineDescription', 'Chronological record of all payment events')}
@@ -539,8 +539,8 @@ export const PaymentDetailPage = () => {
 
         {/* API Logs Tab */}
         <TabsContent value="apiLogs">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm gap-4 py-5">
+            <CardHeader>
               <CardTitle className="text-sm">{t('payments.detail.apiLogs')}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -623,8 +623,8 @@ export const PaymentDetailPage = () => {
 
         {/* Webhooks Tab */}
         <TabsContent value="webhooks">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm gap-4 py-5">
+            <CardHeader>
               <CardTitle className="text-sm">{t('payments.detail.webhooks')}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -699,8 +699,8 @@ export const PaymentDetailPage = () => {
 
         {/* Refunds Tab */}
         <TabsContent value="refunds">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm gap-4 py-5">
+            <CardHeader>
               <CardTitle className="text-sm">{t('payments.detail.refunds')}</CardTitle>
             </CardHeader>
             <CardContent>

@@ -2,6 +2,8 @@ import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Tag, Plus, Pencil, Trash2, EllipsisVertical } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import {
   Badge,
   Button,
@@ -39,12 +41,12 @@ export const BlogTagsPage = () => {
   const [searchInput, setSearchInput] = useState('')
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
-  const [tagDialogOpen, setTagDialogOpen] = useState(false)
-  const [tagToEdit, setTagToEdit] = useState<PostTagListItem | null>(null)
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-tag' })
   const [tagToDelete, setTagToDelete] = useState<PostTagListItem | null>(null)
 
   const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
   const { data = [], isLoading: loading, error: queryError, refetch: refresh } = useBlogTagsQuery(queryParams)
+  const { editItem: tagToEdit, openEdit: openEditTag, closeEdit: closeEditTag } = useUrlEditDialog<PostTagListItem>(data)
   const deleteMutation = useDeleteBlogTagMutation()
   const error = queryError?.message ?? null
 
@@ -58,16 +60,6 @@ export const BlogTagsPage = () => {
     }
   }
 
-  const handleCreateClick = () => {
-    setTagToEdit(null)
-    setTagDialogOpen(true)
-  }
-
-  const handleEditClick = (tag: PostTagListItem) => {
-    setTagToEdit(tag)
-    setTagDialogOpen(true)
-  }
-
   const handleDialogSuccess = () => {
     refresh()
   }
@@ -79,7 +71,7 @@ export const BlogTagsPage = () => {
         title={t('blogTags.title', 'Tags')}
         description={t('blogTags.description', 'Label and organize your content')}
         action={
-          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={handleCreateClick}>
+          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
             {t('blogTags.newTag', 'New Tag')}
           </Button>
@@ -150,7 +142,7 @@ export const BlogTagsPage = () => {
                         description={t('blogTags.noTagsDescription', 'Get started by creating your first tag to label and organize your content.')}
                         action={{
                           label: t('blogTags.newTag', 'New Tag'),
-                          onClick: handleCreateClick,
+                          onClick: () => openCreate(),
                         }}
                         className="border-0 rounded-none px-4 py-12"
                       />
@@ -174,7 +166,7 @@ export const BlogTagsPage = () => {
                           <DropdownMenuContent align="start">
                             <DropdownMenuItem
                               className="cursor-pointer"
-                              onClick={() => handleEditClick(tag)}
+                              onClick={() => openEditTag(tag)}
                             >
                               <Pencil className="h-4 w-4 mr-2" />
                               {t('labels.edit', 'Edit')}
@@ -216,8 +208,13 @@ export const BlogTagsPage = () => {
 
       {/* Create/Edit Tag Dialog */}
       <BlogTagDialog
-        open={tagDialogOpen}
-        onOpenChange={setTagDialogOpen}
+        open={isCreateOpen || !!tagToEdit}
+        onOpenChange={(open) => {
+          if (!open) {
+            if (isCreateOpen) onCreateOpenChange(false)
+            if (tagToEdit) closeEditTag()
+          }
+        }}
         tag={tagToEdit}
         onSuccess={handleDialogSuccess}
       />

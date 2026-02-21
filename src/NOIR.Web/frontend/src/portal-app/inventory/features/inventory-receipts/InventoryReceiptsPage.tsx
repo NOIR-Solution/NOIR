@@ -3,10 +3,8 @@ import { useTranslation } from 'react-i18next'
 import {
   Warehouse,
   CheckCircle2,
+  Eye,
   XCircle,
-  FileText,
-  ArrowDownToLine,
-  ArrowUpFromLine,
   EllipsisVertical,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -61,32 +59,8 @@ import type { GetInventoryReceiptsParams } from '@/types/inventory'
 import type { InventoryReceiptType, InventoryReceiptStatus, InventoryReceiptSummaryDto } from '@/types/inventory'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { formatCurrency } from '@/lib/utils/currency'
-
-const RECEIPT_TYPE_CONFIG: Record<InventoryReceiptType, { color: string; icon: typeof ArrowDownToLine }> = {
-  StockIn: {
-    color: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
-    icon: ArrowDownToLine,
-  },
-  StockOut: {
-    color: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800',
-    icon: ArrowUpFromLine,
-  },
-}
-
-const RECEIPT_STATUS_CONFIG: Record<InventoryReceiptStatus, { color: string; icon: typeof FileText }> = {
-  Draft: {
-    color: 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/30 dark:text-gray-400 dark:border-gray-800',
-    icon: FileText,
-  },
-  Confirmed: {
-    color: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
-    icon: CheckCircle2,
-  },
-  Cancelled: {
-    color: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
-    icon: XCircle,
-  },
-}
+import { RECEIPT_TYPE_CONFIG, RECEIPT_STATUS_CONFIG } from './inventoryReceiptConfig'
+import { InventoryReceiptDetailDialog } from './InventoryReceiptDetailDialog'
 
 export const InventoryReceiptsPage = () => {
   const { t } = useTranslation('common')
@@ -121,6 +95,9 @@ export const InventoryReceiptsPage = () => {
   // Cancel dialog state
   const [receiptToCancel, setReceiptToCancel] = useState<InventoryReceiptSummaryDto | null>(null)
   const [cancelReason, setCancelReason] = useState('')
+
+  // Detail dialog state
+  const [selectedReceiptId, setSelectedReceiptId] = useState<string | undefined>(undefined)
 
   const handleTypeFilter = (value: string) => {
     startFilterTransition(() => {
@@ -265,22 +242,34 @@ export const InventoryReceiptsPage = () => {
                     const isDraft = receipt.status === 'Draft'
 
                     return (
-                      <TableRow key={receipt.id} className="group transition-colors hover:bg-muted/50">
-                        <TableCell className="sticky left-0 z-10 bg-background">
-                          {isDraft && (canWriteInventory || canManageInventory) ? (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                                  aria-label={t('labels.actionsFor', { name: receipt.receiptNumber, defaultValue: `Actions for ${receipt.receiptNumber}` })}
-                                >
-                                  <EllipsisVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="start">
-                                {canWriteInventory && (
+                      <TableRow
+                        key={receipt.id}
+                        className="group transition-colors hover:bg-muted/50 cursor-pointer"
+                        onClick={() => setSelectedReceiptId(receipt.id)}
+                      >
+                        <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                                aria-label={t('labels.actionsFor', { name: receipt.receiptNumber, defaultValue: `Actions for ${receipt.receiptNumber}` })}
+                              >
+                                <EllipsisVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setSelectedReceiptId(receipt.id)}
+                              >
+                                <Eye className="h-4 w-4 mr-2" />
+                                {t('labels.viewDetails', 'View Details')}
+                              </DropdownMenuItem>
+                              {isDraft && canWriteInventory && (
+                                <>
+                                  <DropdownMenuSeparator />
                                   <DropdownMenuItem
                                     className="cursor-pointer text-green-600 dark:text-green-400"
                                     onClick={() => handleConfirm(receipt)}
@@ -288,22 +277,22 @@ export const InventoryReceiptsPage = () => {
                                     <CheckCircle2 className="h-4 w-4 mr-2" />
                                     {t('inventory.confirm', 'Confirm')}
                                   </DropdownMenuItem>
-                                )}
-                                {(canWriteInventory || canManageInventory) && (
-                                  <>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                      className="cursor-pointer text-destructive focus:text-destructive"
-                                      onClick={() => setReceiptToCancel(receipt)}
-                                    >
-                                      <XCircle className="h-4 w-4 mr-2" />
-                                      {t('inventory.cancel', 'Cancel')}
-                                    </DropdownMenuItem>
-                                  </>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          ) : null}
+                                </>
+                              )}
+                              {isDraft && (canWriteInventory || canManageInventory) && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="cursor-pointer text-destructive focus:text-destructive"
+                                    onClick={() => setReceiptToCancel(receipt)}
+                                  >
+                                    <XCircle className="h-4 w-4 mr-2" />
+                                    {t('inventory.cancel', 'Cancel')}
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                         <TableCell>
                           <span className="font-mono font-medium text-sm">{receipt.receiptNumber}</span>
@@ -311,13 +300,13 @@ export const InventoryReceiptsPage = () => {
                         <TableCell>
                           <Badge variant="outline" className={typeConfig.color}>
                             <TypeIcon className="h-3 w-3 mr-1.5" />
-                            {t(`inventory.type.${receipt.type === 'StockIn' ? 'stockIn' : 'stockOut'}`)}
+                            {t(`inventory.type.${typeConfig.label}`)}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={statusConfig.color}>
                             <StatusIcon className="h-3 w-3 mr-1.5" />
-                            {t(`inventory.status.${receipt.status.toLowerCase()}`)}
+                            {t(`inventory.status.${statusConfig.label}`)}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
@@ -399,6 +388,13 @@ export const InventoryReceiptsPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Receipt Detail Dialog */}
+      <InventoryReceiptDetailDialog
+        receiptId={selectedReceiptId}
+        open={!!selectedReceiptId}
+        onOpenChange={(open) => { if (!open) setSelectedReceiptId(undefined) }}
+      />
     </div>
   )
 }

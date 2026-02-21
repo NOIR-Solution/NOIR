@@ -453,7 +453,8 @@
     "deleteTitle": "Xóa thương hiệu",
     "deleteDescription": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Hành động này không thể hoàn tác.",
     "deleteSuccess": "Xóa thương hiệu thành công",
-    "deleteError": "Xóa thương hiệu thất bại"
+    "deleteError": "Xóa thương hiệu thất bại",
+    "uploadLogo": "Tải lên logo thương hiệu"
   },
   "customerGroups": {
     "title": "Nhóm khách hàng",
@@ -862,6 +863,7 @@
     "deleteTitle": "Xóa Vai trò",
     "deleteDescription": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Hành động này không thể hoàn tác.",
     "searchPlaceholder": "Tìm kiếm vai trò...",
+    "searchRoles": "Tìm kiếm vai trò",
     "permissions": "Quyền hạn",
     "permissionsTitle": "Quản lý Quyền hạn",
     "permissionsDescription": "Quản lý quyền hạn cho vai trò này",
@@ -1135,6 +1137,8 @@
     "approveReview": "Duyệt đánh giá {{title}}",
     "rejectReview": "Từ chối đánh giá {{title}}",
     "respondToReview": "Phản hồi đánh giá {{title}}",
+    "viewDetails": "Xem chi tiết",
+    "respond": "Phản hồi",
     "approve": "Duyệt",
     "reject": "Từ chối",
     "approveSelected": "Duyệt đã chọn",
@@ -1206,7 +1210,22 @@
       "draft": "Nháp",
       "confirmed": "Đã xác nhận",
       "cancelled": "Đã hủy"
-    }
+    },
+    "receiptDetail": "Chi tiết phiếu",
+    "receiptDetailDescription": "Xem chi tiết sản phẩm và trạng thái phiếu.",
+    "receiptItems": "Danh sách sản phẩm",
+    "productName": "Sản phẩm",
+    "variant": "Phân loại",
+    "sku": "SKU",
+    "quantity": "SL",
+    "unitCost": "Đơn giá",
+    "lineTotal": "Thành tiền",
+    "noItems": "Không có sản phẩm",
+    "totalItems": "{{count}} sản phẩm, tổng {{qty}} đơn vị",
+    "confirmedAt": "Đã xác nhận",
+    "cancelledAt": "Đã hủy",
+    "cancellationReason": "Lý do hủy",
+    "receiptNotFound": "Không tìm thấy phiếu"
   },
   "shipping": {
     "title": "Quản lý vận chuyển",
@@ -1256,6 +1275,7 @@
     "activateBtn": "Kích hoạt",
     "deactivate": "Vô hiệu hóa {{name}}",
     "activate": "Kích hoạt {{name}}",
+    "trackingDescription": "Theo dõi và quản lý vận chuyển đơn hàng",
     "lookupShipment": "Tra cứu đơn vận chuyển",
     "lookupDescription": "Tìm kiếm theo mã vận đơn hoặc mã đơn hàng để xem chi tiết.",
     "lookupPlaceholder": "Nhập mã vận đơn hoặc mã đơn hàng...",
@@ -1594,6 +1614,8 @@
     "export": "Xuất",
     "collapse": "Thu gọn",
     "expand": "Mở rộng",
+    "expandAll": "Mở rộng tất cả",
+    "collapseAll": "Thu gọn tất cả",
     "import": "Nhập",
     "download": "Tải xuống",
     "upload": "Tải lên",
@@ -1726,6 +1748,9 @@
     "grid": "Lưới",
     "gridView": "Xem dạng lưới",
     "pending": "Đang chờ",
+    "add": "Thêm",
+    "create": "Tạo mới",
+    "update": "Cập nhật",
     "edit": "Sửa",
     "customer": "Khách hàng",
     "product": "Sản phẩm",
@@ -1743,7 +1768,25 @@
     "selectAll": "Chọn tất cả",
     "selectField": "Chọn {{field}}",
     "searchField": "Tìm kiếm {{field}}...",
-    "noFieldFound": "Không tìm thấy {{field}}."
+    "noFieldFound": "Không tìm thấy {{field}}.",
+    "products": "sản phẩm",
+    "children": "mục con",
+    "website": "Website",
+    "yes": "Có",
+    "no": "Không",
+    "clear": "Xóa",
+    "code": "Mã",
+    "remove": "Gỡ bỏ",
+    "publish": "Xuất bản",
+    "archive": "Lưu trữ",
+    "clickToEdit": "Nhấp để chỉnh sửa",
+    "posts": "bài viết",
+    "clearSelection": "Xóa lựa chọn",
+    "addressLine1": "Địa chỉ dòng 1",
+    "addressLine2": "Địa chỉ dòng 2",
+    "ward": "Phường/Xã",
+    "district": "Quận/Huyện",
+    "province": "Tỉnh/Thành phố"
   },
   "permissions": {
     "categories": {
@@ -1926,6 +1969,10 @@
       },
       "payment-webhooks": {
         "read": "Xem Webhook Thanh toán"
+      },
+      "features": {
+        "read": "Xem Tính năng",
+        "update": "Cập nhật Tính năng"
       }
     },
     "descriptions": {
@@ -1970,6 +2017,75 @@
       "email-templates": {
         "read": "Xem mẫu email",
         "update": "Sửa nội dung mẫu email"
+      },
+      "blog-posts": {
+        "read": "Xem bài viết và bản nháp",
+        "create": "Tạo bài viết mới",
+        "update": "Sửa bài viết hiện có",
+        "delete": "Xóa bài viết",
+        "publish": "Xuất bản hoặc gỡ bài viết"
+      },
+      "blog-categories": {
+        "read": "Xem danh mục blog",
+        "create": "Tạo danh mục blog mới",
+        "update": "Sửa danh mục blog",
+        "delete": "Xóa danh mục blog"
+      },
+      "blog-tags": {
+        "read": "Xem thẻ blog",
+        "create": "Tạo thẻ blog mới",
+        "update": "Sửa thẻ blog",
+        "delete": "Xóa thẻ blog"
+      },
+      "products": {
+        "read": "Xem danh mục sản phẩm",
+        "create": "Tạo sản phẩm mới",
+        "update": "Sửa thông tin sản phẩm",
+        "delete": "Xóa sản phẩm",
+        "publish": "Xuất bản hoặc gỡ sản phẩm"
+      },
+      "product-categories": {
+        "read": "Xem danh mục sản phẩm",
+        "create": "Tạo danh mục sản phẩm mới",
+        "update": "Sửa danh mục sản phẩm",
+        "delete": "Xóa danh mục sản phẩm"
+      },
+      "orders": {
+        "read": "Xem chi tiết đơn hàng",
+        "write": "Tạo đơn hàng mới",
+        "manage": "Toàn quyền quản lý đơn hàng"
+      },
+      "legal-pages": {
+        "read": "Xem tài liệu pháp lý",
+        "update": "Sửa tài liệu pháp lý"
+      },
+      "tenant-settings": {
+        "read": "Xem cài đặt tổ chức",
+        "update": "Thay đổi cài đặt tổ chức"
+      },
+      "platform-settings": {
+        "read": "Xem cấu hình nền tảng",
+        "manage": "Cấu hình cài đặt nền tảng"
+      },
+      "payments": {
+        "read": "Xem giao dịch thanh toán",
+        "create": "Xử lý thanh toán mới",
+        "manage": "Toàn quyền quản lý thanh toán"
+      },
+      "payment-gateways": {
+        "read": "Xem cấu hình cổng thanh toán",
+        "manage": "Cấu hình cổng thanh toán"
+      },
+      "payment-refunds": {
+        "read": "Xem yêu cầu hoàn tiền",
+        "manage": "Xử lý yêu cầu hoàn tiền"
+      },
+      "payment-webhooks": {
+        "read": "Xem nhật ký webhook"
+      },
+      "features": {
+        "read": "Xem cài đặt tính năng",
+        "update": "Bật hoặc tắt các tính năng"
       }
     }
   },
@@ -3019,5 +3135,9 @@
       "COD": "Thanh toán khi nhận hàng",
       "BuyNowPayLater": "Mua trước trả sau"
     }
+  },
+  "network": {
+    "offline": "Bạn đang ngoại tuyến",
+    "backOnline": "Đã kết nối lại"
   }
 }

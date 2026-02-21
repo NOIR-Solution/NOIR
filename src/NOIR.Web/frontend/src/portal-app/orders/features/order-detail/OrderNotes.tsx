@@ -69,8 +69,8 @@ export const OrderNotes = ({ orderId, canWrite }: OrderNotesProps) => {
 
   return (
     <>
-      <Card className="shadow-sm">
-        <CardHeader className="pb-3">
+      <Card className="shadow-sm gap-4 py-5">
+        <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             <MessageSquare className="h-4 w-4" />
             {t('orders.notes.title')}

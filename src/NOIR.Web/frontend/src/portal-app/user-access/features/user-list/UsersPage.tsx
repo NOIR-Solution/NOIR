@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Search, Users, Plus } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import {
   Button,
   Card,
@@ -86,13 +88,13 @@ export const UsersPage = () => {
   const canDeleteUsers = hasPermission(Permissions.UsersDelete)
   const canAssignRoles = hasPermission(Permissions.UsersManageRoles)
 
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const [userToEdit, setUserToEdit] = useState<UserListItem | null>(null)
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-user' })
+  const { editItem: userToEdit, openEdit: openEditUser, closeEdit: closeEditUser } = useUrlEditDialog<UserListItem>(data?.items)
   const [userToDelete, setUserToDelete] = useState<UserListItem | null>(null)
   const [userForRoles, setUserForRoles] = useState<UserListItem | null>(null)
 
   const handleEditClick = (user: UserListItem) => {
-    setUserToEdit(user)
+    openEditUser(user)
   }
 
   const handleDeleteClick = (user: UserListItem) => {
@@ -111,7 +113,7 @@ export const UsersPage = () => {
         description={t('users.description', 'Manage platform users and their roles')}
         action={
           canCreateUsers && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setCreateDialogOpen(true)}>
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('users.createUser', 'Create User')}
             </Button>
@@ -212,15 +214,15 @@ export const UsersPage = () => {
       </Card>
 
       <CreateUserDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
+        open={isCreateOpen}
+        onOpenChange={onCreateOpenChange}
         onSuccess={refresh}
       />
 
       <EditUserDialog
         user={userToEdit}
         open={!!userToEdit}
-        onOpenChange={(open) => !open && setUserToEdit(null)}
+        onOpenChange={(open) => !open && closeEditUser()}
         onSuccess={refresh}
       />
 

@@ -16,20 +16,57 @@ const { activeTab, handleTabChange, isPending } = useUrlTab({ defaultTab: 'overv
 
 **Applies to:** Pages with `<Tabs>`. Does NOT apply to dialog/popup tabs (transient UI).
 
-## Dialogs → `useUrlDialog()`
+## Create Dialogs → `useUrlDialog()`
 
-Create/edit dialogs SHOULD use `useUrlDialog()` hook from `@/hooks/useUrlDialog` for URL-synced open state.
+Create dialogs MUST use `useUrlDialog()` hook from `@/hooks/useUrlDialog` for URL-synced open state.
 
 ```tsx
-const { isOpen, open, onOpenChange } = useUrlDialog({ paramValue: 'create-category' })
+const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-product-category' })
 
-<Button onClick={open}>Create</Button>
-<Credenza open={isOpen} onOpenChange={onOpenChange}>...</Credenza>
+<Button onClick={() => openCreate()}>Create</Button>
+<Credenza open={isCreateOpen} onOpenChange={onCreateOpenChange}>...</Credenza>
 ```
 
-- Enables bookmarking and sharing of "create new X" states
 - Uses `?dialog=paramValue` URL pattern
-- Uses `replace: true` to avoid browser history pollution
-- Preserves existing search params
+- `paramValue` must be unique across all pages (e.g. `create-product-category`, NOT `create-category`)
+- Standard destructuring: `isCreateOpen` / `openCreate` / `onCreateOpenChange`
 
-**Applies to:** Create/Edit dialogs on list pages. Does NOT apply to: delete confirmations, detail views, filter dialogs (transient UI).
+## Edit Dialogs → `useUrlEditDialog()`
+
+Edit dialogs MUST use `useUrlEditDialog()` hook from `@/hooks/useUrlEditDialog` for URL-synced edit state.
+
+```tsx
+const { editItem, openEdit, closeEdit, onEditOpenChange } = useUrlEditDialog<EntityType>(items)
+
+<Button onClick={() => openEdit(entity)}>Edit</Button>
+```
+
+- Uses `?edit=entityId` URL pattern
+- Resolves full entity from items array on page load
+- Uses `replace: true` to avoid browser history pollution
+
+### Combined create+edit dialog (single dialog component)
+
+**CRITICAL**: Use conditional close — calling both `setSearchParams` hooks in the same tick causes the second to overwrite the first.
+
+```tsx
+<ProductCategoryDialog
+  open={isCreateOpen || !!editItem}
+  onOpenChange={(open) => {
+    if (!open) {
+      if (isCreateOpen) onCreateOpenChange(false)
+      if (editItem) closeEdit()
+    }
+  }}
+  category={editItem}
+/>
+```
+
+### Separate create and edit dialogs
+
+```tsx
+<CreateRoleDialog open={isCreateOpen} onOpenChange={onCreateOpenChange} />
+<EditRoleDialog open={!!editItem} onOpenChange={onEditOpenChange} role={editItem} />
+```
+
+**Applies to:** Create/edit dialogs on list pages. Does NOT apply to: delete confirmations, detail views, filter dialogs (transient UI).

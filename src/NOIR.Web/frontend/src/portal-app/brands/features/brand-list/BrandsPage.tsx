@@ -1,7 +1,9 @@
 import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Award, Plus, Pencil, Trash2, EllipsisVertical, Globe, ExternalLink } from 'lucide-react'
+import { Search, Award, Plus, Eye, Trash2, EllipsisVertical, Globe, ExternalLink } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   AlertDialog,
@@ -57,9 +59,8 @@ export const BrandsPage = () => {
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
   const [isFilterPending, startFilterTransition] = useTransition()
-  const [brandToEdit, setBrandToEdit] = useState<BrandListItem | null>(null)
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-brand' })
   const [brandToDelete, setBrandToDelete] = useState<BrandListItem | null>(null)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [params, setParams] = useState<GetBrandsParams>({ page: 1, pageSize: 20 })
 
   const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
@@ -68,6 +69,7 @@ export const BrandsPage = () => {
   const error = queryError?.message ?? null
 
   const brands = brandsResponse?.items ?? []
+  const { editItem: brandToEdit, openEdit: openEditBrand, closeEdit: closeEditBrand } = useUrlEditDialog<BrandListItem>(brands)
   const totalCount = brandsResponse?.totalCount ?? 0
   const totalPages = brandsResponse?.totalPages ?? 1
   const currentPage = params.page ?? 1
@@ -104,7 +106,7 @@ export const BrandsPage = () => {
         responsive
         action={
           canCreateBrands && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setShowCreateDialog(true)}>
+            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('brands.newBrand', 'New Brand')}
             </Button>
@@ -182,7 +184,7 @@ export const BrandsPage = () => {
                         description={t('brands.noBrandsDescription', 'Get started by creating your first brand.')}
                         action={canCreateBrands ? {
                           label: t('brands.addBrand', 'Add Brand'),
-                          onClick: () => setShowCreateDialog(true),
+                          onClick: () => openCreate(),
                         } : undefined}
                         className="border-0 rounded-none px-4 py-12"
                       />
@@ -190,8 +192,12 @@ export const BrandsPage = () => {
                   </TableRow>
                 ) : (
                   brands.map((brand) => (
-                    <TableRow key={brand.id} className="group transition-colors hover:bg-muted/50">
-                      <TableCell className="sticky left-0 z-10 bg-background">
+                    <TableRow
+                      key={brand.id}
+                      className="group transition-colors hover:bg-muted/50 cursor-pointer"
+                      onClick={() => openEditBrand(brand)}
+                    >
+                      <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -204,15 +210,13 @@ export const BrandsPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start">
-                            {canUpdateBrands && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setBrandToEdit(brand)}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                            )}
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={() => openEditBrand(brand)}
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              {canUpdateBrands ? t('labels.edit', 'Edit') : t('labels.viewDetails', 'View Details')}
+                            </DropdownMenuItem>
                             {canDeleteBrands && (
                               <DropdownMenuItem
                                 className="text-destructive cursor-pointer"
@@ -259,7 +263,7 @@ export const BrandsPage = () => {
                       <TableCell className="text-center">
                         <Badge variant="secondary">{brand.productCount}</Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
                         {brand.websiteUrl ? (
                           <a
                             href={brand.websiteUrl}
@@ -299,11 +303,11 @@ export const BrandsPage = () => {
 
       {/* Create/Edit Brand Dialog */}
       <BrandDialog
-        open={showCreateDialog || !!brandToEdit}
+        open={isCreateOpen || !!brandToEdit}
         onOpenChange={(open) => {
           if (!open) {
-            setShowCreateDialog(false)
-            setBrandToEdit(null)
+            if (isCreateOpen) onCreateOpenChange(false)
+            if (brandToEdit) closeEditBrand()
           }
         }}
         brand={brandToEdit}

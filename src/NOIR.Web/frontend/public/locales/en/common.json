@@ -453,7 +453,8 @@
     "deleteTitle": "Delete Brand",
     "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
     "deleteSuccess": "Brand deleted successfully",
-    "deleteError": "Failed to delete brand"
+    "deleteError": "Failed to delete brand",
+    "uploadLogo": "Upload brand logo"
   },
   "customerGroups": {
     "title": "Customer Groups",
@@ -862,6 +863,7 @@
     "deleteTitle": "Delete Role",
     "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
     "searchPlaceholder": "Search roles...",
+    "searchRoles": "Search roles",
     "permissions": "Permissions",
     "permissionsTitle": "Manage Permissions",
     "permissionsDescription": "Manage permissions for this role",
@@ -1135,6 +1137,8 @@
     "approveReview": "Approve review {{title}}",
     "rejectReview": "Reject review {{title}}",
     "respondToReview": "Respond to review {{title}}",
+    "viewDetails": "View Details",
+    "respond": "Respond",
     "approve": "Approve",
     "reject": "Reject",
     "approveSelected": "Approve selected",
@@ -1206,7 +1210,22 @@
       "draft": "Draft",
       "confirmed": "Confirmed",
       "cancelled": "Cancelled"
-    }
+    },
+    "receiptDetail": "Receipt Detail",
+    "receiptDetailDescription": "View receipt items and status details.",
+    "receiptItems": "Receipt Items",
+    "productName": "Product",
+    "variant": "Variant",
+    "sku": "SKU",
+    "quantity": "Qty",
+    "unitCost": "Unit Cost",
+    "lineTotal": "Total",
+    "noItems": "No items",
+    "totalItems": "{{count}} items, {{qty}} total quantity",
+    "confirmedAt": "Confirmed",
+    "cancelledAt": "Cancelled",
+    "cancellationReason": "Cancellation Reason",
+    "receiptNotFound": "Receipt not found"
   },
   "shipping": {
     "title": "Shipping Management",
@@ -1256,6 +1275,7 @@
     "activateBtn": "Activate",
     "deactivate": "Deactivate {{name}}",
     "activate": "Activate {{name}}",
+    "trackingDescription": "Track and manage shipments for your orders",
     "lookupShipment": "Look Up Shipment",
     "lookupDescription": "Search by tracking number or order ID to view shipment details.",
     "lookupPlaceholder": "Enter tracking number or order ID...",
@@ -1594,6 +1614,8 @@
     "export": "Export",
     "collapse": "Collapse",
     "expand": "Expand",
+    "expandAll": "Expand All",
+    "collapseAll": "Collapse All",
     "import": "Import",
     "download": "Download",
     "upload": "Upload",
@@ -1726,6 +1748,9 @@
     "grid": "Grid",
     "gridView": "Grid view",
     "pending": "Pending",
+    "add": "Add",
+    "create": "Create",
+    "update": "Update",
     "edit": "Edit",
     "customer": "Customer",
     "product": "Product",
@@ -1743,7 +1768,25 @@
     "selectAll": "Select all",
     "selectField": "Select {{field}}",
     "searchField": "Search {{field}}...",
-    "noFieldFound": "No {{field}} found."
+    "noFieldFound": "No {{field}} found.",
+    "products": "products",
+    "children": "children",
+    "website": "Website",
+    "yes": "Yes",
+    "no": "No",
+    "clear": "Clear",
+    "code": "Code",
+    "remove": "Remove",
+    "publish": "Publish",
+    "archive": "Archive",
+    "clickToEdit": "Click to edit",
+    "posts": "posts",
+    "clearSelection": "Clear",
+    "addressLine1": "Address Line 1",
+    "addressLine2": "Address Line 2",
+    "ward": "Ward",
+    "district": "District",
+    "province": "Province"
   },
   "permissions": {
     "categories": {
@@ -1926,6 +1969,10 @@
       },
       "payment-webhooks": {
         "read": "View Payment Webhooks"
+      },
+      "features": {
+        "read": "View Features",
+        "update": "Update Features"
       }
     },
     "descriptions": {
@@ -1970,6 +2017,75 @@
       "email-templates": {
         "read": "View email templates",
         "update": "Edit email template content"
+      },
+      "blog-posts": {
+        "read": "View blog posts and drafts",
+        "create": "Create new blog posts",
+        "update": "Edit existing blog posts",
+        "delete": "Delete blog posts",
+        "publish": "Publish or unpublish blog posts"
+      },
+      "blog-categories": {
+        "read": "View blog categories",
+        "create": "Create new blog categories",
+        "update": "Edit blog categories",
+        "delete": "Delete blog categories"
+      },
+      "blog-tags": {
+        "read": "View blog tags",
+        "create": "Create new blog tags",
+        "update": "Edit blog tags",
+        "delete": "Delete blog tags"
+      },
+      "products": {
+        "read": "View product catalog",
+        "create": "Create new products",
+        "update": "Edit product details",
+        "delete": "Delete products",
+        "publish": "Publish or unpublish products"
+      },
+      "product-categories": {
+        "read": "View product categories",
+        "create": "Create new product categories",
+        "update": "Edit product categories",
+        "delete": "Delete product categories"
+      },
+      "orders": {
+        "read": "View order details",
+        "write": "Create new orders",
+        "manage": "Full order management access"
+      },
+      "legal-pages": {
+        "read": "View legal documents",
+        "update": "Edit legal documents"
+      },
+      "tenant-settings": {
+        "read": "View organization settings",
+        "update": "Modify organization settings"
+      },
+      "platform-settings": {
+        "read": "View platform configuration",
+        "manage": "Configure platform settings"
+      },
+      "payments": {
+        "read": "View payment transactions",
+        "create": "Process new payments",
+        "manage": "Full payment management"
+      },
+      "payment-gateways": {
+        "read": "View gateway configurations",
+        "manage": "Configure payment gateways"
+      },
+      "payment-refunds": {
+        "read": "View refund requests",
+        "manage": "Process refund requests"
+      },
+      "payment-webhooks": {
+        "read": "View webhook logs"
+      },
+      "features": {
+        "read": "View feature module settings",
+        "update": "Enable or disable feature modules"
       }
     }
   },
@@ -3019,5 +3135,9 @@
       "COD": "Cash on Delivery",
       "BuyNowPayLater": "Buy Now Pay Later"
     }
+  },
+  "network": {
+    "offline": "You're offline",
+    "backOnline": "Back online"
   }
 }

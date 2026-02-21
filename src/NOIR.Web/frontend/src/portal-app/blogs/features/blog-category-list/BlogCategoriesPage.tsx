@@ -31,6 +31,8 @@ import {
 } from '@uikit'
 
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 
 import { useBlogCategoriesQuery, useDeleteBlogCategoryMutation, useReorderBlogCategoriesMutation } from '@/portal-app/blogs/queries'
 import { BlogCategoryDialog } from '../../components/blog-categories/BlogCategoryDialog'
@@ -53,8 +55,7 @@ export const BlogCategoriesPage = () => {
   const [searchInput, setSearchInput] = useState('')
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
-  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false)
-  const [categoryToEdit, setCategoryToEdit] = useState<PostCategoryListItem | null>(null)
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-blog-category' })
   const [categoryToDelete, setCategoryToDelete] = useState<PostCategoryListItem | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
   const viewModeOptions: ViewModeOption<'table' | 'tree'>[] = useMemo(() => [
@@ -64,6 +65,7 @@ export const BlogCategoriesPage = () => {
 
   const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
   const { data = [], isLoading: loading, error: queryError, refetch: refresh } = useBlogCategoriesQuery(queryParams)
+  const { editItem: categoryToEdit, openEdit: openEditCategory, closeEdit: closeEditCategory } = useUrlEditDialog<PostCategoryListItem>(data)
   const deleteMutation = useDeleteBlogCategoryMutation()
   const reorderMutation = useReorderBlogCategoriesMutation()
   const error = queryError?.message ?? null
@@ -92,16 +94,6 @@ export const BlogCategoriesPage = () => {
     }
   }
 
-  const handleCreateClick = () => {
-    setCategoryToEdit(null)
-    setCategoryDialogOpen(true)
-  }
-
-  const handleEditClick = (category: PostCategoryListItem) => {
-    setCategoryToEdit(category)
-    setCategoryDialogOpen(true)
-  }
-
   const handleDialogSuccess = () => {
     refresh()
   }
@@ -116,7 +108,7 @@ export const BlogCategoriesPage = () => {
         title={t('blogCategories.title', 'Categories')}
         description={t('blogCategories.description', 'Organize your blog posts')}
         action={
-          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={handleCreateClick}>
+          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
             {t('blogCategories.newCategory', 'New Category')}
           </Button>
@@ -162,14 +154,14 @@ export const BlogCategoriesPage = () => {
               <CategoryTreeView
                 categories={treeCategories}
                 loading={loading}
-                onEdit={(cat) => handleEditClick(cat as PostCategoryListItem)}
+                onEdit={(cat) => openEditCategory(cat as PostCategoryListItem)}
                 onDelete={(cat) => setCategoryToDelete(cat as PostCategoryListItem)}
                 canEdit={true}
                 canDelete={true}
                 itemCountLabel={t('labels.posts', 'posts')}
                 emptyMessage={t('blogCategories.noCategoriesFound', 'No categories found')}
                 emptyDescription={t('blogCategories.noCategoriesDescription', 'Get started by creating your first category to organize your blog posts.')}
-                onCreateClick={handleCreateClick}
+                onCreateClick={() => openCreate()}
                 onReorder={handleReorder}
               />
             </div>
@@ -209,7 +201,7 @@ export const BlogCategoriesPage = () => {
                         description={t('blogCategories.noCategoriesDescription', 'Get started by creating your first category to organize your blog posts.')}
                         action={{
                           label: t('blogCategories.newCategory', 'New Category'),
-                          onClick: handleCreateClick,
+                          onClick: () => openCreate(),
                         }}
                         className="border-0 rounded-none px-4 py-12"
                       />
@@ -233,7 +225,7 @@ export const BlogCategoriesPage = () => {
                           <DropdownMenuContent align="start">
                             <DropdownMenuItem
                               className="cursor-pointer"
-                              onClick={() => handleEditClick(category)}
+                              onClick={() => openEditCategory(category)}
                             >
                               <Pencil className="h-4 w-4 mr-2" />
                               {t('labels.edit', 'Edit')}
@@ -274,8 +266,13 @@ export const BlogCategoriesPage = () => {
 
       {/* Create/Edit Category Dialog */}
       <BlogCategoryDialog
-        open={categoryDialogOpen}
-        onOpenChange={setCategoryDialogOpen}
+        open={isCreateOpen || !!categoryToEdit}
+        onOpenChange={(open) => {
+          if (!open) {
+            if (isCreateOpen) onCreateOpenChange(false)
+            if (categoryToEdit) closeEditCategory()
+          }
+        }}
         category={categoryToEdit}
         onSuccess={handleDialogSuccess}
       />

@@ -88,8 +88,8 @@ const AddressCard = ({ title, address, icon: Icon }: { title: string; address: A
 
   if (!address) {
     return (
-      <Card>
-        <CardHeader className="pb-3">
+      <Card className="gap-4 py-5">
+        <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             <Icon className="h-4 w-4" />
             {title}
@@ -103,8 +103,8 @@ const AddressCard = ({ title, address, icon: Icon }: { title: string; address: A
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
+    <Card className="gap-4 py-5">
+      <CardHeader>
         <CardTitle className="text-sm flex items-center gap-2">
           <Icon className="h-4 w-4" />
           {title}
@@ -306,8 +306,8 @@ export const OrderDetailPage = () => {
 
       {/* Status Timeline */}
       {!isTerminalStatus && (
-        <Card className="shadow-sm">
-          <CardHeader className="pb-3">
+        <Card className="shadow-sm gap-4 py-5">
+          <CardHeader>
             <CardTitle className="text-sm">{t('orders.orderTimeline', 'Order Timeline')}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -395,8 +395,8 @@ export const OrderDetailPage = () => {
         {/* Left Column - Items and Actions */}
         <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm gap-4 py-5">
+            <CardHeader>
               <CardTitle className="text-sm flex items-center gap-2">
                 <Package className="h-4 w-4" />
                 {t('orders.orderItems', 'Order Items')}
@@ -498,8 +498,8 @@ export const OrderDetailPage = () => {
 
           {/* Order Actions */}
           {(canConfirm || canShip || canDeliver || canComplete || canCancel || canReturn) && (
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
+            <Card className="shadow-sm gap-4 py-5">
+              <CardHeader>
                 <CardTitle className="text-sm">{t('orders.orderActions', 'Order Actions')}</CardTitle>
               </CardHeader>
               <CardContent>
@@ -578,8 +578,8 @@ export const OrderDetailPage = () => {
         {/* Right Column - Customer & Shipping Info */}
         <div className="space-y-6">
           {/* Customer Info */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm gap-4 py-5">
+            <CardHeader>
               <CardTitle className="text-sm">{t('orders.customerInfo', 'Customer Information')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
@@ -610,8 +610,8 @@ export const OrderDetailPage = () => {
 
           {/* Shipping Info */}
           {order.shippingMethod && (
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
+            <Card className="shadow-sm gap-4 py-5">
+              <CardHeader>
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Truck className="h-4 w-4" />
                   {t('orders.shippingInfo', 'Shipping Information')}
@@ -657,8 +657,8 @@ export const OrderDetailPage = () => {
           />
 
           {/* Order Timestamps */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
+          <Card className="shadow-sm gap-4 py-5">
+            <CardHeader>
               <CardTitle className="text-sm">{t('orders.timeline', 'Timeline')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
