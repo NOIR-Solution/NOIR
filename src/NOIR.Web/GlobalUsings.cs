@@ -57,6 +57,7 @@ global using Wolverine.FluentValidation;
 // NOIR Application
 global using NOIR.Application;
 global using NOIR.Application.Common.Exceptions;
+global using NOIR.Application.Modules;
 global using NOIR.Application.Common.Interfaces;
 global using NOIR.Application.Common.Models;
 global using NOIR.Application.Common.Settings;

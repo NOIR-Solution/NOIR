@@ -37,6 +37,7 @@ public static class BlogEndpoints
     {
         var group = app.MapGroup("/api/blog/posts")
             .WithTags("Blog Posts")
+            .RequireFeature(ModuleNames.Content.Blog)
             .RequireAuthorization();
 
         // Get all posts (paginated)
@@ -234,6 +235,7 @@ public static class BlogEndpoints
     {
         var group = app.MapGroup("/api/blog/categories")
             .WithTags("Blog Categories")
+            .RequireFeature(ModuleNames.Content.Blog)
             .RequireAuthorization();
 
         // Get all categories
@@ -361,6 +363,7 @@ public static class BlogEndpoints
     {
         var group = app.MapGroup("/api/blog/tags")
             .WithTags("Blog Tags")
+            .RequireFeature(ModuleNames.Content.Blog)
             .RequireAuthorization();
 
         // Get all tags

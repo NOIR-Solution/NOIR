@@ -10,6 +10,7 @@ public static class ReportEndpoints
     {
         var group = app.MapGroup("/api/reports")
             .WithTags("Reports")
+            .RequireFeature(ModuleNames.Analytics.Reports)
             .RequireAuthorization();
 
         // Get revenue report

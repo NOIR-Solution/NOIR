@@ -15,6 +15,7 @@ public static class LegalPageEndpoints
     {
         var group = app.MapGroup("/api/legal-pages")
             .WithTags("Legal Pages")
+            .RequireFeature(ModuleNames.Platform.LegalPages)
             .RequireAuthorization();
 
         // Get all legal pages

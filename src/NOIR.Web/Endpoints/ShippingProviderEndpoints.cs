@@ -16,6 +16,7 @@ public static class ShippingProviderEndpoints
     {
         var group = app.MapGroup("/api/shipping-providers")
             .WithTags("Shipping Providers")
+            .RequireFeature(ModuleNames.Ecommerce.Checkout)
             .RequireAuthorization();
 
         // Get all providers (admin)

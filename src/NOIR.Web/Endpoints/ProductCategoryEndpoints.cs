@@ -24,6 +24,7 @@ public static class ProductCategoryEndpoints
     {
         var group = app.MapGroup("/api/products/categories")
             .WithTags("Product Categories")
+            .RequireFeature(ModuleNames.Ecommerce.Categories)
             .RequireAuthorization();
 
         // Get all categories

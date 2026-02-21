@@ -61,6 +61,8 @@ public class ExceptionHandlingMiddleware
                 HandleNotFoundException(notFoundException),
             ForbiddenAccessException forbiddenException =>
                 HandleForbiddenException(forbiddenException),
+            FeatureNotAvailableException featureException =>
+                HandleFeatureNotAvailableException(featureException),
             UnauthorizedAccessException =>
                 HandleUnauthorizedException(),
             OperationCanceledException =>
@@ -219,6 +221,19 @@ public class ExceptionHandlingMiddleware
         {
             Status = StatusCodes.Status403Forbidden,
             Title = "Forbidden",
+            Detail = exception.Message,
+            Type = $"https://api.noir.local/errors/{errorCode}"
+        }, errorCode);
+    }
+
+    private static (int, ProblemDetails, string) HandleFeatureNotAvailableException(
+        FeatureNotAvailableException exception)
+    {
+        var errorCode = ErrorCodes.Feature.NotAvailable;
+        return (StatusCodes.Status403Forbidden, new ProblemDetails
+        {
+            Status = StatusCodes.Status403Forbidden,
+            Title = "Feature Not Available",
             Detail = exception.Message,
             Type = $"https://api.noir.local/errors/{errorCode}"
         }, errorCode);

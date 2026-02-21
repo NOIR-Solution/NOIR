@@ -165,6 +165,16 @@ public static class CacheKeys
 
     #endregion
 
+    #region Feature Management Keys
+
+    /// <summary>
+    /// Cache key for tenant feature states.
+    /// Tags: ["features", "tenant:{tenantId}"]
+    /// </summary>
+    public static string TenantFeatures(string? tenantId) => $"features:tenant:{tenantId ?? "platform"}";
+
+    #endregion
+
     #region Tag Helpers
 
     /// <summary>

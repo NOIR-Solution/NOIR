@@ -11,6 +11,7 @@ import {
   Scale,
   CreditCard,
   Truck,
+  Blocks,
 } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
@@ -25,6 +26,7 @@ import {
   LegalPagesTab,
   PaymentGatewaysTab,
   ShippingProvidersTab,
+  ModulesSettingsTab,
 } from '../../components/tenant-settings'
 
 /**
@@ -96,6 +98,11 @@ export const TenantSettingsPage = () => {
             <Scale className="h-4 w-4 mr-2" />
             {t('tenantSettings.tabs.legalPages')}
           </TabsTrigger>
+          {/* Modules */}
+          <TabsTrigger value="modules" className="cursor-pointer">
+            <Blocks className="h-4 w-4 mr-2" />
+            {t('tenantSettings.tabs.modules')}
+          </TabsTrigger>
         </TabsList>
 
         {/* Core Identity & Business Info */}
@@ -125,6 +132,10 @@ export const TenantSettingsPage = () => {
         {/* Compliance */}
         <TabsContent value="legalPages">
           <LegalPagesTab onEdit={(id) => navigate(`/portal/legal-pages/${id}`)} />
+        </TabsContent>
+        {/* Modules */}
+        <TabsContent value="modules">
+          <ModulesSettingsTab canEdit={canEdit} />
         </TabsContent>
       </Tabs>
     </div>

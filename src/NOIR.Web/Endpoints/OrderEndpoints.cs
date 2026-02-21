@@ -25,6 +25,7 @@ public static class OrderEndpoints
     {
         var group = app.MapGroup("/api/orders")
             .WithTags("Orders")
+            .RequireFeature(ModuleNames.Ecommerce.Orders)
             .RequireAuthorization();
 
         // Get all orders (paginated)

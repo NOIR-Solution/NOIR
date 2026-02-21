@@ -18,6 +18,7 @@ public static class TenantEndpoints
     {
         var group = app.MapGroup("/api/tenants")
             .WithTags("Tenants")
+            .RequireFeature(ModuleNames.Platform.Tenants)
             .RequireAuthorization();
 
         // Get all tenants (paginated)

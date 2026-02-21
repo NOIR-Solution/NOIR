@@ -13,6 +13,7 @@ public static class EmailTemplateEndpoints
     {
         var group = app.MapGroup("/api/email-templates")
             .WithTags("Email Templates")
+            .RequireFeature(ModuleNames.Platform.EmailTemplates)
             .RequireAuthorization();
 
         // Get all email templates

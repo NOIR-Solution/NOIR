@@ -21,6 +21,7 @@ public static class PromotionEndpoints
     {
         var group = app.MapGroup("/api/promotions")
             .WithTags("Promotions")
+            .RequireFeature(ModuleNames.Ecommerce.Promotions)
             .RequireAuthorization();
 
         // Get all promotions (paginated)

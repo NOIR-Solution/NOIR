@@ -50,6 +50,7 @@ public static class ProductEndpoints
     {
         var group = app.MapGroup("/api/products")
             .WithTags("Products")
+            .RequireFeature(ModuleNames.Ecommerce.Products)
             .RequireAuthorization();
 
         // Get all products (paginated)

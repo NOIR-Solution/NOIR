@@ -18,6 +18,7 @@ public static class CheckoutEndpoints
     {
         var group = app.MapGroup("/api/checkout")
             .WithTags("Checkout")
+            .RequireFeature(ModuleNames.Ecommerce.Checkout)
             .RequireAuthorization();
 
         // Get checkout session

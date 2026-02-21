@@ -20,7 +20,8 @@ public static class CartEndpoints
     public static void MapCartEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/cart")
-            .WithTags("Cart");
+            .WithTags("Cart")
+            .RequireFeature(ModuleNames.Ecommerce.Cart);
 
         // Get current cart
         group.MapGet("/", async (

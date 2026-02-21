@@ -20,6 +20,7 @@ public static class InventoryEndpoints
     {
         var group = app.MapGroup("/api/inventory")
             .WithTags("Inventory")
+            .RequireFeature(ModuleNames.Ecommerce.Inventory)
             .RequireAuthorization();
 
         // Get stock history for a variant

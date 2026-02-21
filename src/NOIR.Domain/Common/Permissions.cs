@@ -145,6 +145,10 @@ public static class Permissions
     public const string TenantSettingsRead = "tenant-settings:read";
     public const string TenantSettingsUpdate = "tenant-settings:update";
 
+    // Feature Management
+    public const string FeaturesRead = "features:read";
+    public const string FeaturesUpdate = "features:update";
+
     // Platform Settings
     public const string PlatformSettingsRead = "platform-settings:read";
     public const string PlatformSettingsManage = "platform-settings:manage";
@@ -233,6 +237,9 @@ public static class Permissions
         public static readonly IReadOnlyList<string> TenantSettings =
             [TenantSettingsRead, TenantSettingsUpdate];
 
+        public static readonly IReadOnlyList<string> Features =
+            [FeaturesRead, FeaturesUpdate];
+
         public static readonly IReadOnlyList<string> PlatformSettings =
             [PlatformSettingsRead, PlatformSettingsManage];
 
@@ -292,6 +299,8 @@ public static class Permissions
         LegalPagesRead, LegalPagesUpdate,
         // Tenant Settings
         TenantSettingsRead, TenantSettingsUpdate,
+        // Feature Management
+        FeaturesRead, FeaturesUpdate,
         // Platform Settings
         PlatformSettingsRead, PlatformSettingsManage,
         // Payments
@@ -315,6 +324,8 @@ public static class Permissions
         LegalPagesRead, LegalPagesUpdate,
         // Platform-level audit (all tenants)
         AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream,
+        // Feature management
+        FeaturesRead, FeaturesUpdate,
         // Platform settings
         PlatformSettingsRead, PlatformSettingsManage
     ];
@@ -335,6 +346,8 @@ public static class Permissions
         LegalPagesRead, LegalPagesUpdate,
         // Tenant settings (branding, contact, regional)
         TenantSettingsRead, TenantSettingsUpdate,
+        // Feature management within tenant
+        FeaturesRead, FeaturesUpdate,
         // Audit within tenant
         AuditRead, AuditExport, AuditEntityHistory,
         // Blog within tenant
@@ -427,6 +440,9 @@ public static class Permissions
             // Tenant settings (branding, contact, regional)
             TenantSettingsRead,
             TenantSettingsUpdate,
+            // Feature management within tenant
+            FeaturesRead,
+            FeaturesUpdate,
             // Audit within tenant (read and export only)
             AuditRead,
             AuditExport,

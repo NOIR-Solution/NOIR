@@ -20,6 +20,7 @@ public static class ProductAttributeEndpoints
     {
         var group = app.MapGroup("/api/product-attributes")
             .WithTags("Product Attributes")
+            .RequireFeature(ModuleNames.Ecommerce.Attributes)
             .RequireAuthorization();
 
         // Get all attributes (paged)

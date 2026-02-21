@@ -200,6 +200,9 @@ builder.Host.UseWolverine(opts =>
     // Validators are discovered automatically from registered assemblies
     opts.UseFluentValidation();
 
+    // Add feature check middleware - gates commands/queries by [RequiresFeature] attribute
+    opts.Policies.AddMiddleware<FeatureCheckMiddleware>();
+
     // Add logging middleware globally - logs before/after handler execution
     opts.Policies.AddMiddleware<LoggingMiddleware>();
 
@@ -451,6 +454,7 @@ app.MapLegalPageEndpoints();
 app.MapPublicLegalPageEndpoints();
 app.MapPlatformSettingsEndpoints();
 app.MapTenantSettingsEndpoints();
+app.MapFeatureManagementEndpoints();
 app.MapNotificationEndpoints();
 app.MapAuditEndpoints();
 app.MapDeveloperLogEndpoints();

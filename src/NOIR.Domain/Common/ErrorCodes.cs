@@ -553,4 +553,22 @@ public static class ErrorCodes
         /// <summary>Failed to rollback configuration</summary>
         public const string RollbackFailed = "NOIR-CFG-009";
     }
+
+    /// <summary>
+    /// Feature management errors (FEAT-xxx)
+    /// </summary>
+    public static class Feature
+    {
+        /// <summary>Feature is not available for this tenant</summary>
+        public const string NotAvailable = "NOIR-FEAT-001";
+
+        /// <summary>Core modules cannot be disabled</summary>
+        public const string CoreCannotBeDisabled = "NOIR-FEAT-002";
+
+        /// <summary>Parent module is disabled</summary>
+        public const string ParentModuleDisabled = "NOIR-FEAT-003";
+
+        /// <summary>Feature not found in catalog</summary>
+        public const string NotFound = "NOIR-FEAT-004";
+    }
 }

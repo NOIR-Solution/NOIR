@@ -233,6 +233,9 @@ export const Permissions = {
   WishlistsManage: 'wishlists:manage',
   // Reports
   ReportsRead: 'reports:read',
+  // Features
+  FeaturesRead: 'features:read',
+  FeaturesUpdate: 'features:update',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

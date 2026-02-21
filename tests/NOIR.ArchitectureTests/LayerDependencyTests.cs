@@ -152,6 +152,7 @@ public class LayerDependencyTests
         // - CustomerGroups.Commands.DeleteCustomerGroup: queries CustomerGroupMemberships for HasMembers guard
         // - CustomerGroups.Commands.AssignCustomersToGroup: directly adds CustomerGroupMembership entities
         // - CustomerGroups.Commands.RemoveCustomersFromGroup: directly removes CustomerGroupMembership entities
+        // - FeatureManagement: TenantModuleState is TenantEntity (not AggregateRoot), uses IApplicationDbContext
         var result = Types
             .InAssembly(ApplicationAssembly)
             .That()
@@ -180,6 +181,8 @@ public class LayerDependencyTests
             .DoNotResideInNamespace("NOIR.Application.Features.CustomerGroups.Commands.AssignCustomersToGroup")
             .And()
             .DoNotResideInNamespace("NOIR.Application.Features.CustomerGroups.Commands.RemoveCustomersFromGroup")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.FeatureManagement")
             .ShouldNot()
             .HaveDependencyOn("Microsoft.EntityFrameworkCore")
             .GetResult();

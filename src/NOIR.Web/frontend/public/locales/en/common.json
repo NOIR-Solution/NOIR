@@ -2155,6 +2155,96 @@
     "expandLabel": "Expand",
     "noLogEntries": "No log entries"
   },
+  "featureManagement": {
+    "title": "Module Management",
+    "description": "Enable or disable application modules for your organization.",
+    "moduleNotAvailable": "Module Not Available",
+    "moduleNotAvailableDescription": "This module has been disabled by your organization administrator. Contact your admin to enable it.",
+    "core": "Core",
+    "toggleSuccess": "Module updated successfully",
+    "toggleError": "Failed to update module",
+    "toggleModule": "Toggle {{module}}",
+    "categories": {
+      "marketing": "Marketing",
+      "orders": "Orders",
+      "customers": "Customers",
+      "catalog": "Catalog",
+      "content": "Content",
+      "settings": "Settings"
+    }
+  },
+  "modules": {
+    "core": {
+      "auth": "Authentication",
+      "auth.description": "User login, registration, and session management",
+      "users": "User Management",
+      "users.description": "Create, edit, and manage user accounts",
+      "roles": "Role Management",
+      "roles.description": "Define and manage user roles",
+      "permissions": "Permissions",
+      "permissions.description": "Configure access control and permissions",
+      "dashboard": "Dashboard",
+      "dashboard.description": "Overview and statistics dashboard",
+      "settings": "Settings",
+      "settings.description": "Application configuration and preferences",
+      "audit": "Audit Logging",
+      "audit.description": "Activity tracking and audit trail",
+      "notifications": "Notifications",
+      "notifications.description": "In-app notification system"
+    },
+    "ecommerce": {
+      "products": "Products",
+      "products.description": "Product catalog management",
+      "categories": "Categories",
+      "categories.description": "Product category hierarchy",
+      "brands": "Brands",
+      "brands.description": "Brand management",
+      "attributes": "Product Attributes",
+      "attributes.description": "Custom product attributes and filters",
+      "cart": "Shopping Cart",
+      "cart.description": "Shopping cart functionality",
+      "checkout": "Checkout",
+      "checkout.description": "Order checkout process",
+      "orders": "Orders",
+      "orders.description": "Order management and fulfillment",
+      "payments": "Payments",
+      "payments.description": "Payment processing and gateways",
+      "inventory": "Inventory",
+      "inventory.description": "Stock management and receipts",
+      "promotions": "Promotions",
+      "promotions.description": "Discounts, coupons, and promotions",
+      "reviews": "Reviews",
+      "reviews.description": "Product reviews and ratings",
+      "customers": "Customers",
+      "customers.description": "Customer profile management",
+      "customergroups": "Customer Groups",
+      "customergroups.description": "Customer segmentation and groups",
+      "wishlist": "Wishlists",
+      "wishlist.description": "Customer wishlist functionality"
+    },
+    "content": {
+      "blog": "Blog",
+      "blog.description": "Blog posts and content management",
+      "blogcategories": "Blog Categories",
+      "blogcategories.description": "Blog category organization",
+      "blogtags": "Blog Tags",
+      "blogtags.description": "Blog tag management"
+    },
+    "platform": {
+      "tenants": "Tenants",
+      "tenants.description": "Multi-tenant management",
+      "emailtemplates": "Email Templates",
+      "emailtemplates.description": "Email template configuration",
+      "legalpages": "Legal Pages",
+      "legalpages.description": "Terms of service and legal documents"
+    },
+    "analytics": {
+      "reports": "Reports",
+      "reports.description": "Business reports and analytics",
+      "developerlogs": "Developer Logs",
+      "developerlogs.description": "System logs and debugging"
+    }
+  },
   "platformSettings": {
     "title": "Platform Settings",
     "description": "Configure platform-level settings for SMTP, branding, and more.",
@@ -2210,7 +2300,8 @@
       "emailTemplates": "Email Templates",
       "legalPages": "Legal Pages",
       "paymentGateways": "Payment Gateways",
-      "shippingProviders": "Shipping"
+      "shippingProviders": "Shipping",
+      "modules": "Modules"
     },
     "branding": {
       "title": "Branding",

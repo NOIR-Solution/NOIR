@@ -14,6 +14,7 @@ public static class DeveloperLogEndpoints
     {
         var group = app.MapGroup("/api/admin/developer-logs")
             .WithTags("Developer Logs")
+            .RequireFeature(ModuleNames.Analytics.DeveloperLogs)
             .RequireAuthorization(Permissions.SystemAdmin);
 
         // ========== Log Level Control ==========

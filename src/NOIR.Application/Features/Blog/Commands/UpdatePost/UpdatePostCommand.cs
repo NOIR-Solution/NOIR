@@ -4,6 +4,7 @@ namespace NOIR.Application.Features.Blog.Commands.UpdatePost;
 /// <summary>
 /// Command to update an existing blog post.
 /// </summary>
+[RequiresFeature(ModuleNames.Content.Blog)]
 public sealed record UpdatePostCommand(
     Guid Id,
     string Title,

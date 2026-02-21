@@ -43,6 +43,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     // Multi-tenant platform entities (platform-level, not tenant-scoped)
     public DbSet<TenantSetting> TenantSettings => Set<TenantSetting>();
 
+    // Feature Management
+    public DbSet<TenantModuleState> TenantModuleStates => Set<TenantModuleState>();
+
     // Notification entities
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();

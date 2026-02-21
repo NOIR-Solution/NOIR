@@ -7127,6 +7127,78 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.ToTable("ShippingWebhookLogs", (string)null);
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.TenantModuleState", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FeatureName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<bool>("IsAvailable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_TenantModuleStates_TenantId");
+
+                    b.HasIndex("TenantId", "FeatureName")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TenantModuleStates_TenantId_FeatureName")
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("TenantModuleStates", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.TenantSetting", b =>
                 {
                     b.Property<Guid>("Id")

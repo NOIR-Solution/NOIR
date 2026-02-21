@@ -2,9 +2,11 @@
 
 // System
 global using System;
+global using System.Collections.Concurrent;
 global using System.Collections.Generic;
 global using System.Linq;
 global using System.Linq.Expressions;
+global using System.Reflection;
 global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
@@ -29,6 +31,7 @@ global using System.Security.Claims;
 global using Microsoft.EntityFrameworkCore;
 
 // NOIR Application
+global using NOIR.Application.Common.Exceptions;
 global using NOIR.Application.Common.Interfaces;
 global using NOIR.Application.Common.Models;
 global using NOIR.Application.Common.Settings;
@@ -81,6 +84,9 @@ global using NOIR.Application.Features.Shipping.Specifications;
 global using NOIR.Application.Features.Wishlists.Common;
 global using NOIR.Application.Features.Wishlists.DTOs;
 global using NOIR.Application.Features.Wishlists.Specifications;
+global using NOIR.Application.Features.FeatureManagement.DTOs;
+global using NOIR.Application.Features.FeatureManagement.Specifications;
+global using NOIR.Application.Modules;
 global using NOIR.Application.Specifications;
 global using NOIR.Application.Specifications.Notifications;
 global using NOIR.Application.Specifications.PasswordResetOtps;

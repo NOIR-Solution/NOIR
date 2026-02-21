@@ -2155,6 +2155,96 @@
     "expandLabel": "Mở rộng",
     "noLogEntries": "Không có mục nhật ký"
   },
+  "featureManagement": {
+    "title": "Quản lý Module",
+    "description": "Bật hoặc tắt các module ứng dụng cho tổ chức của bạn.",
+    "moduleNotAvailable": "Module Không Khả Dụng",
+    "moduleNotAvailableDescription": "Module này đã bị tắt bởi quản trị viên tổ chức của bạn. Liên hệ quản trị viên để bật.",
+    "core": "Cốt lõi",
+    "toggleSuccess": "Cập nhật module thành công",
+    "toggleError": "Cập nhật module thất bại",
+    "toggleModule": "Bật/tắt {{module}}",
+    "categories": {
+      "marketing": "Tiếp Thị",
+      "orders": "Đơn Hàng",
+      "customers": "Khách Hàng",
+      "catalog": "Danh Mục Sản Phẩm",
+      "content": "Nội Dung",
+      "settings": "Cài Đặt"
+    }
+  },
+  "modules": {
+    "core": {
+      "auth": "Xác Thực",
+      "auth.description": "Đăng nhập, đăng ký và quản lý phiên",
+      "users": "Quản Lý Người Dùng",
+      "users.description": "Tạo, sửa và quản lý tài khoản người dùng",
+      "roles": "Quản Lý Vai Trò",
+      "roles.description": "Định nghĩa và quản lý vai trò người dùng",
+      "permissions": "Quyền Hạn",
+      "permissions.description": "Cấu hình kiểm soát truy cập và quyền hạn",
+      "dashboard": "Bảng Điều Khiển",
+      "dashboard.description": "Tổng quan và thống kê",
+      "settings": "Cài Đặt",
+      "settings.description": "Cấu hình và tùy chỉnh ứng dụng",
+      "audit": "Nhật Ký Kiểm Toán",
+      "audit.description": "Theo dõi hoạt động và lịch sử kiểm toán",
+      "notifications": "Thông Báo",
+      "notifications.description": "Hệ thống thông báo trong ứng dụng"
+    },
+    "ecommerce": {
+      "products": "Sản Phẩm",
+      "products.description": "Quản lý danh mục sản phẩm",
+      "categories": "Danh Mục",
+      "categories.description": "Phân cấp danh mục sản phẩm",
+      "brands": "Thương Hiệu",
+      "brands.description": "Quản lý thương hiệu",
+      "attributes": "Thuộc Tính Sản Phẩm",
+      "attributes.description": "Thuộc tính và bộ lọc sản phẩm tùy chỉnh",
+      "cart": "Giỏ Hàng",
+      "cart.description": "Chức năng giỏ hàng",
+      "checkout": "Thanh Toán",
+      "checkout.description": "Quy trình thanh toán đơn hàng",
+      "orders": "Đơn Hàng",
+      "orders.description": "Quản lý và xử lý đơn hàng",
+      "payments": "Thanh Toán",
+      "payments.description": "Xử lý thanh toán và cổng thanh toán",
+      "inventory": "Kho Hàng",
+      "inventory.description": "Quản lý tồn kho và phiếu nhập xuất",
+      "promotions": "Khuyến Mãi",
+      "promotions.description": "Giảm giá, mã giảm giá và khuyến mãi",
+      "reviews": "Đánh Giá",
+      "reviews.description": "Đánh giá và xếp hạng sản phẩm",
+      "customers": "Khách Hàng",
+      "customers.description": "Quản lý hồ sơ khách hàng",
+      "customergroups": "Nhóm Khách Hàng",
+      "customergroups.description": "Phân nhóm và phân loại khách hàng",
+      "wishlist": "Danh Sách Yêu Thích",
+      "wishlist.description": "Chức năng danh sách yêu thích"
+    },
+    "content": {
+      "blog": "Blog",
+      "blog.description": "Quản lý bài viết và nội dung blog",
+      "blogcategories": "Danh Mục Blog",
+      "blogcategories.description": "Tổ chức danh mục blog",
+      "blogtags": "Thẻ Blog",
+      "blogtags.description": "Quản lý thẻ blog"
+    },
+    "platform": {
+      "tenants": "Tenant",
+      "tenants.description": "Quản lý đa tenant",
+      "emailtemplates": "Mẫu Email",
+      "emailtemplates.description": "Cấu hình mẫu email",
+      "legalpages": "Trang Pháp Lý",
+      "legalpages.description": "Điều khoản dịch vụ và tài liệu pháp lý"
+    },
+    "analytics": {
+      "reports": "Báo Cáo",
+      "reports.description": "Báo cáo kinh doanh và phân tích",
+      "developerlogs": "Nhật Ký Hệ Thống",
+      "developerlogs.description": "Nhật ký hệ thống và gỡ lỗi"
+    }
+  },
   "platformSettings": {
     "title": "Cài đặt Nền tảng",
     "description": "Cấu hình cài đặt cấp nền tảng cho SMTP, thương hiệu và các tùy chọn khác.",
@@ -2210,7 +2300,8 @@
       "emailTemplates": "Mẫu Email",
       "legalPages": "Trang Pháp lý",
       "paymentGateways": "Cổng thanh toán",
-      "shippingProviders": "Vận chuyển"
+      "shippingProviders": "Vận chuyển",
+      "modules": "Module"
     },
     "branding": {
       "title": "Thương hiệu",

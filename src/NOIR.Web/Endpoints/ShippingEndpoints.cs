@@ -15,6 +15,7 @@ public static class ShippingEndpoints
     {
         var group = app.MapGroup("/api/shipping")
             .WithTags("Shipping")
+            .RequireFeature(ModuleNames.Ecommerce.Checkout)
             .RequireAuthorization();
 
         // ============ Rate Calculation ============

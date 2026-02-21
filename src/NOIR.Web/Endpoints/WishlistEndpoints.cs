@@ -24,6 +24,7 @@ public static class WishlistEndpoints
     {
         var group = app.MapGroup("/api/wishlists")
             .WithTags("Wishlists")
+            .RequireFeature(ModuleNames.Ecommerce.Wishlist)
             .RequireAuthorization();
 
         // Get user's wishlists

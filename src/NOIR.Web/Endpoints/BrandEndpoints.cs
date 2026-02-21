@@ -17,6 +17,7 @@ public static class BrandEndpoints
     {
         var group = app.MapGroup("/api/brands")
             .WithTags("Brands")
+            .RequireFeature(ModuleNames.Ecommerce.Brands)
             .RequireAuthorization();
 
         // Get all brands (paged)

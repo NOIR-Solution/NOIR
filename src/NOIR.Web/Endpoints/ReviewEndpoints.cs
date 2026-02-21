@@ -23,6 +23,7 @@ public static class ReviewEndpoints
     {
         var group = app.MapGroup("/api/reviews")
             .WithTags("Reviews")
+            .RequireFeature(ModuleNames.Ecommerce.Reviews)
             .RequireAuthorization();
 
         var productReviewGroup = app.MapGroup("/api/products/{productId:guid}/reviews")

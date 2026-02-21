@@ -26,6 +26,7 @@ public static class CustomerEndpoints
     {
         var group = app.MapGroup("/api/customers")
             .WithTags("Customers")
+            .RequireFeature(ModuleNames.Ecommerce.Customers)
             .RequireAuthorization();
 
         // Get all customers (paginated)

@@ -14,6 +14,7 @@ public static class ProductFilterEndpoints
     {
         var group = app.MapGroup("/api/products/filter")
             .WithTags("Product Filters")
+            .RequireFeature(ModuleNames.Ecommerce.Attributes)
             .AllowAnonymous(); // Filter endpoints are public for storefront
 
         // Filter products with facets

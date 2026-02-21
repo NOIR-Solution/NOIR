@@ -11,6 +11,7 @@ public class ProductFilterIndexReindexJob : IScopedService
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly AttributeJsonBuilder _attributeJsonBuilder;
+    private readonly ITenantJobRunner _tenantJobRunner;
     private readonly ILogger<ProductFilterIndexReindexJob> _logger;
     private readonly IDateTime _dateTime;
 
@@ -19,22 +20,41 @@ public class ProductFilterIndexReindexJob : IScopedService
     public ProductFilterIndexReindexJob(
         ApplicationDbContext dbContext,
         AttributeJsonBuilder attributeJsonBuilder,
+        ITenantJobRunner tenantJobRunner,
         ILogger<ProductFilterIndexReindexJob> logger,
         IDateTime dateTime)
     {
         _dbContext = dbContext;
         _attributeJsonBuilder = attributeJsonBuilder;
+        _tenantJobRunner = tenantJobRunner;
         _logger = logger;
         _dateTime = dateTime;
     }
 
     /// <summary>
     /// Main job entry point. Rebuilds the entire filter index.
+    /// When tenantId is null, iterates all feature-enabled tenants via ITenantJobRunner.
+    /// When tenantId is provided, runs directly for that tenant.
     /// </summary>
     public async Task ExecuteAsync(string? tenantId = null, CancellationToken ct = default)
     {
-        _logger.LogInformation("Starting ProductFilterIndex reindex job for tenant: {TenantId}",
-            tenantId ?? "ALL");
+        if (string.IsNullOrEmpty(tenantId))
+        {
+            // Full reindex across all feature-enabled tenants
+            await _tenantJobRunner.RunForEnabledTenantsAsync(
+                ModuleNames.Ecommerce.Attributes,
+                async (tid, token) => await ExecuteForTenantAsync(tid, token),
+                ct);
+            return;
+        }
+
+        // Single-tenant reindex (called directly or from maintenance job)
+        await ExecuteForTenantAsync(tenantId, ct);
+    }
+
+    private async Task ExecuteForTenantAsync(string tenantId, CancellationToken ct)
+    {
+        _logger.LogInformation("Starting ProductFilterIndex reindex job for tenant: {TenantId}", tenantId);
         var sw = Stopwatch.StartNew();
 
         try
@@ -45,7 +65,7 @@ public class ProductFilterIndexReindexJob : IScopedService
 
             // Get total count for progress reporting
             var totalProducts = await GetProductCountAsync(tenantId, ct);
-            _logger.LogInformation("Found {Total} products to index", totalProducts);
+            _logger.LogInformation("Found {Total} products to index for tenant {TenantId}", totalProducts, tenantId);
 
             // Process in batches
             var lastProcessedId = Guid.Empty;
@@ -62,20 +82,20 @@ public class ProductFilterIndexReindexJob : IScopedService
                 lastProcessedId = products.Last().Id;
 
                 _logger.LogInformation(
-                    "Processed {Current}/{Total} products ({Percent:F1}%)",
+                    "Processed {Current}/{Total} products ({Percent:F1}%) for tenant {TenantId}",
                     totalProcessed, totalProducts,
-                    (double)totalProcessed / totalProducts * 100);
+                    (double)totalProcessed / totalProducts * 100, tenantId);
             }
 
             sw.Stop();
             _logger.LogInformation(
-                "ProductFilterIndex reindex completed in {ElapsedMs}ms. " +
+                "ProductFilterIndex reindex for tenant {TenantId} completed in {ElapsedMs}ms. " +
                 "Processed: {Processed}, Created: {Created}, Updated: {Updated}",
-                sw.ElapsedMilliseconds, totalProcessed, totalCreated, totalUpdated);
+                tenantId, sw.ElapsedMilliseconds, totalProcessed, totalCreated, totalUpdated);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "ProductFilterIndex reindex job failed");
+            _logger.LogError(ex, "ProductFilterIndex reindex job failed for tenant {TenantId}", tenantId);
             throw;
         }
     }

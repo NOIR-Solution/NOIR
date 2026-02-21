@@ -4,6 +4,7 @@ namespace NOIR.Application.Features.Blog.Commands.CreatePost;
 /// <summary>
 /// Command to create a new blog post.
 /// </summary>
+[RequiresFeature(ModuleNames.Content.Blog)]
 public sealed record CreatePostCommand(
     string Title,
     string Slug,

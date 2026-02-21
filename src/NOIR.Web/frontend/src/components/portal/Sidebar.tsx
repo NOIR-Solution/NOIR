@@ -82,6 +82,7 @@ import { useBranding } from '@/contexts/BrandingContext'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 
 import { isPlatformAdmin } from '@/lib/roles'
+import { useFeatures } from '@/hooks/useFeatures'
 
 interface NavItem {
   titleKey: string
@@ -89,6 +90,8 @@ interface NavItem {
   path: string
   /** Permission required to view this menu item (optional - always shown if not specified) */
   permission?: PermissionKey
+  /** Module feature name - when set, item is hidden if the feature is not effective */
+  feature?: string
 }
 
 interface NavSection {
@@ -117,47 +120,47 @@ const navSections: NavSection[] = [
     // Marketing - Promotions and analytics
     labelKey: 'nav.marketing',
     items: [
-      { titleKey: 'ecommerce.reports', icon: BarChart3, path: '/portal/marketing/reports', permission: Permissions.ReportsRead },
-      { titleKey: 'ecommerce.promotions', icon: Percent, path: '/portal/marketing/promotions', permission: Permissions.PromotionsRead },
+      { titleKey: 'ecommerce.reports', icon: BarChart3, path: '/portal/marketing/reports', permission: Permissions.ReportsRead, feature: 'Analytics.Reports' },
+      { titleKey: 'ecommerce.promotions', icon: Percent, path: '/portal/marketing/promotions', permission: Permissions.PromotionsRead, feature: 'Ecommerce.Promotions' },
     ],
   },
   {
     // Orders - Daily order processing & fulfillment
     labelKey: 'nav.orders',
     items: [
-      { titleKey: 'ecommerce.orders', icon: ShoppingCart, path: '/portal/ecommerce/orders', permission: Permissions.OrdersRead },
-      { titleKey: 'ecommerce.payments', icon: CreditCard, path: '/portal/ecommerce/payments', permission: Permissions.PaymentsRead },
-      { titleKey: 'ecommerce.shipmentTracking', icon: Truck, path: '/portal/ecommerce/orders/tracking', permission: Permissions.OrdersRead },
-      { titleKey: 'ecommerce.inventory', icon: Warehouse, path: '/portal/ecommerce/inventory', permission: Permissions.InventoryRead },
+      { titleKey: 'ecommerce.orders', icon: ShoppingCart, path: '/portal/ecommerce/orders', permission: Permissions.OrdersRead, feature: 'Ecommerce.Orders' },
+      { titleKey: 'ecommerce.payments', icon: CreditCard, path: '/portal/ecommerce/payments', permission: Permissions.PaymentsRead, feature: 'Ecommerce.Payments' },
+      { titleKey: 'ecommerce.shipmentTracking', icon: Truck, path: '/portal/ecommerce/orders/tracking', permission: Permissions.OrdersRead, feature: 'Ecommerce.Orders' },
+      { titleKey: 'ecommerce.inventory', icon: Warehouse, path: '/portal/ecommerce/inventory', permission: Permissions.InventoryRead, feature: 'Ecommerce.Inventory' },
     ],
   },
   {
     // Customers - Customer management & engagement
     labelKey: 'nav.customers',
     items: [
-      { titleKey: 'ecommerce.customers', icon: UserCheck, path: '/portal/ecommerce/customers', permission: Permissions.CustomersRead },
-      { titleKey: 'ecommerce.customerGroups', icon: UsersRound, path: '/portal/ecommerce/customer-groups', permission: Permissions.CustomerGroupsRead },
-      { titleKey: 'ecommerce.reviews', icon: Star, path: '/portal/ecommerce/reviews', permission: Permissions.ReviewsRead },
-      { titleKey: 'ecommerce.wishlists', icon: Heart, path: '/portal/ecommerce/wishlists', permission: Permissions.WishlistsRead },
+      { titleKey: 'ecommerce.customers', icon: UserCheck, path: '/portal/ecommerce/customers', permission: Permissions.CustomersRead, feature: 'Ecommerce.Customers' },
+      { titleKey: 'ecommerce.customerGroups', icon: UsersRound, path: '/portal/ecommerce/customer-groups', permission: Permissions.CustomerGroupsRead, feature: 'Ecommerce.CustomerGroups' },
+      { titleKey: 'ecommerce.reviews', icon: Star, path: '/portal/ecommerce/reviews', permission: Permissions.ReviewsRead, feature: 'Ecommerce.Reviews' },
+      { titleKey: 'ecommerce.wishlists', icon: Heart, path: '/portal/ecommerce/wishlists', permission: Permissions.WishlistsRead, feature: 'Ecommerce.Wishlist' },
     ],
   },
   {
     // Catalog - Product management
     labelKey: 'nav.catalog',
     items: [
-      { titleKey: 'ecommerce.products', icon: Package, path: '/portal/ecommerce/products', permission: Permissions.ProductsRead },
-      { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead },
-      { titleKey: 'ecommerce.brands', icon: Award, path: '/portal/ecommerce/brands', permission: Permissions.BrandsRead },
-      { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead },
+      { titleKey: 'ecommerce.products', icon: Package, path: '/portal/ecommerce/products', permission: Permissions.ProductsRead, feature: 'Ecommerce.Products' },
+      { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead, feature: 'Ecommerce.Categories' },
+      { titleKey: 'ecommerce.brands', icon: Award, path: '/portal/ecommerce/brands', permission: Permissions.BrandsRead, feature: 'Ecommerce.Brands' },
+      { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead, feature: 'Ecommerce.Attributes' },
     ],
   },
   {
     // Content - Blog & content creation
     labelKey: 'nav.content',
     items: [
-      { titleKey: 'blog.posts', icon: FileText, path: '/portal/blog/posts', permission: Permissions.BlogPostsRead },
-      { titleKey: 'blog.categories', icon: FolderTree, path: '/portal/blog/categories', permission: Permissions.BlogCategoriesRead },
-      { titleKey: 'blog.tags', icon: Tag, path: '/portal/blog/tags', permission: Permissions.BlogTagsRead },
+      { titleKey: 'blog.posts', icon: FileText, path: '/portal/blog/posts', permission: Permissions.BlogPostsRead, feature: 'Content.Blog' },
+      { titleKey: 'blog.categories', icon: FolderTree, path: '/portal/blog/categories', permission: Permissions.BlogCategoriesRead, feature: 'Content.Blog' },
+      { titleKey: 'blog.tags', icon: Tag, path: '/portal/blog/tags', permission: Permissions.BlogTagsRead, feature: 'Content.Blog' },
     ],
   },
   {
@@ -182,7 +185,7 @@ const navSections: NavSection[] = [
     labelKey: 'nav.system',
     items: [
       { titleKey: 'activityTimeline.title', icon: Activity, path: '/portal/activity-timeline', permission: Permissions.AuditRead },
-      { titleKey: 'developerLogs.title', icon: Terminal, path: '/portal/developer-logs', permission: Permissions.SystemAdmin },
+      { titleKey: 'developerLogs.title', icon: Terminal, path: '/portal/developer-logs', permission: Permissions.SystemAdmin, feature: 'Analytics.DeveloperLogs' },
     ],
   },
 ]
@@ -727,8 +730,9 @@ const SidebarContent = ({
 }: SidebarContentProps) => {
   const isActive = (path: string) => isActivePath(pathname, path)
   const { hasPermission } = usePermissions()
+  const { data: features } = useFeatures()
 
-  // Filter sections and items based on permissions and search query
+  // Filter sections and items based on permissions, features, and search query
   const visibleSections = useMemo(() => {
     const searchLower = searchQuery.toLowerCase().trim()
 
@@ -739,6 +743,12 @@ const SidebarContent = ({
           // First check permissions
           if (item.permission && !hasPermission(item.permission)) return false
 
+          // Then check feature availability
+          if (item.feature && features) {
+            const featureState = features[item.feature]
+            if (featureState && !featureState.isEffective) return false
+          }
+
           // Then check search query
           if (!searchLower) return true
           const itemLabel = t(item.titleKey).toLowerCase()
@@ -746,7 +756,7 @@ const SidebarContent = ({
         }),
       }))
       .filter(section => section.items.length > 0)
-  }, [searchQuery, hasPermission, t])
+  }, [searchQuery, hasPermission, features, t])
 
   const renderNavItem = (item: NavItem) => {
     const Icon = item.icon
@@ -970,12 +980,20 @@ export const MobileSidebarTrigger = ({
   const { hasPermission } = usePermissions()
   const { unreadCount } = useNotificationContext()
   const { branding } = useBranding()
+  const { data: features } = useFeatures()
 
-  // Filter sections and items based on permissions
+  // Filter sections and items based on permissions and features
   const visibleSections = navSections
     .map(section => ({
       ...section,
-      items: section.items.filter(item => !item.permission || hasPermission(item.permission)),
+      items: section.items.filter(item => {
+        if (item.permission && !hasPermission(item.permission)) return false
+        if (item.feature && features) {
+          const featureState = features[item.feature]
+          if (featureState && !featureState.isEffective) return false
+        }
+        return true
+      }),
     }))
     .filter(section => section.items.length > 0)
 

@@ -9,6 +9,7 @@ public class ProductFilterIndexMaintenanceJob : IScopedService
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ProductFilterIndexReindexJob _reindexJob;
+    private readonly ITenantJobRunner _tenantJobRunner;
     private readonly ILogger<ProductFilterIndexMaintenanceJob> _logger;
     private readonly IDateTime _dateTime;
 
@@ -18,45 +19,49 @@ public class ProductFilterIndexMaintenanceJob : IScopedService
     public ProductFilterIndexMaintenanceJob(
         ApplicationDbContext dbContext,
         ProductFilterIndexReindexJob reindexJob,
+        ITenantJobRunner tenantJobRunner,
         ILogger<ProductFilterIndexMaintenanceJob> logger,
         IDateTime dateTime)
     {
         _dbContext = dbContext;
         _reindexJob = reindexJob;
+        _tenantJobRunner = tenantJobRunner;
         _logger = logger;
         _dateTime = dateTime;
     }
 
     /// <summary>
     /// Main job entry point. Performs maintenance tasks on the filter index.
+    /// Runs only for tenants that have the Ecommerce.Attributes feature enabled.
     /// </summary>
     public async Task ExecuteAsync(CancellationToken ct = default)
     {
-        _logger.LogInformation("Starting ProductFilterIndex maintenance job");
-        var sw = Stopwatch.StartNew();
+        await _tenantJobRunner.RunForEnabledTenantsAsync(
+            ModuleNames.Ecommerce.Attributes,
+            async (tenantId, token) =>
+            {
+                _logger.LogInformation("Starting ProductFilterIndex maintenance for tenant {TenantId}", tenantId);
+                var sw = Stopwatch.StartNew();
 
-        try
-        {
-            // Step 1: Find and remove orphaned index entries (products deleted)
-            var orphansRemoved = await RemoveOrphanedIndexesAsync(ct);
+                try
+                {
+                    var orphansRemoved = await RemoveOrphanedIndexesAsync(token);
+                    var staleFixed = await FixStaleIndexesAsync(token);
+                    var missingCreated = await CreateMissingIndexesAsync(token);
 
-            // Step 2: Find and reindex stale entries
-            var staleFixed = await FixStaleIndexesAsync(ct);
-
-            // Step 3: Find products missing index entries and create them
-            var missingCreated = await CreateMissingIndexesAsync(ct);
-
-            sw.Stop();
-            _logger.LogInformation(
-                "ProductFilterIndex maintenance completed in {ElapsedMs}ms. " +
-                "Orphans removed: {Orphans}, Stale fixed: {Stale}, Missing created: {Missing}",
-                sw.ElapsedMilliseconds, orphansRemoved, staleFixed, missingCreated);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "ProductFilterIndex maintenance job failed");
-            throw;
-        }
+                    sw.Stop();
+                    _logger.LogInformation(
+                        "ProductFilterIndex maintenance for tenant {TenantId} completed in {ElapsedMs}ms. " +
+                        "Orphans removed: {Orphans}, Stale fixed: {Stale}, Missing created: {Missing}",
+                        tenantId, sw.ElapsedMilliseconds, orphansRemoved, staleFixed, missingCreated);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "ProductFilterIndex maintenance failed for tenant {TenantId}", tenantId);
+                    throw;
+                }
+            },
+            ct);
     }
 
     /// <summary>

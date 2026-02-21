@@ -4,6 +4,7 @@ namespace NOIR.Application.Features.Blog.Commands.CreateTag;
 /// <summary>
 /// Command to create a new blog tag.
 /// </summary>
+[RequiresFeature(ModuleNames.Content.Blog)]
 public sealed record CreateTagCommand(
     string Name,
     string Slug,

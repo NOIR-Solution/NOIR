@@ -14,7 +14,8 @@ public static class FilterAnalyticsEndpoints
     public static void MapFilterAnalyticsEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/analytics/filter-events")
-            .WithTags("Filter Analytics");
+            .WithTags("Filter Analytics")
+            .RequireFeature(ModuleNames.Ecommerce.Attributes);
 
         // Track a filter event (public - allows anonymous tracking)
         group.MapPost("/", async (

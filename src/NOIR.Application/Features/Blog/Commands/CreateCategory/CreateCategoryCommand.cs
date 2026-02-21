@@ -4,6 +4,7 @@ namespace NOIR.Application.Features.Blog.Commands.CreateCategory;
 /// <summary>
 /// Command to create a new blog category.
 /// </summary>
+[RequiresFeature(ModuleNames.Content.Blog)]
 public sealed record CreateCategoryCommand(
     string Name,
     string Slug,

@@ -3,6 +3,7 @@ namespace NOIR.Application.Features.Blog.Commands.DeletePost;
 /// <summary>
 /// Command to soft delete a blog post.
 /// </summary>
+[RequiresFeature(ModuleNames.Content.Blog)]
 public sealed record DeletePostCommand(
     Guid Id,
     string? PostTitle = null) : IAuditableCommand

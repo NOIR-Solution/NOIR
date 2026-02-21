@@ -47,6 +47,7 @@ public static class PaymentEndpoints
     {
         var group = app.MapGroup("/api/payments")
             .WithTags("Payments")
+            .RequireFeature(ModuleNames.Ecommerce.Payments)
             .RequireAuthorization();
 
         // Get all payment transactions (paginated)
@@ -271,6 +272,7 @@ public static class PaymentEndpoints
     {
         var group = app.MapGroup("/api/payment-gateways")
             .WithTags("Payment Gateways")
+            .RequireFeature(ModuleNames.Ecommerce.Payments)
             .RequireAuthorization();
 
         // Get all gateways (admin)
@@ -402,6 +404,7 @@ public static class PaymentEndpoints
     {
         var group = app.MapGroup("/api/refunds")
             .WithTags("Payment Refunds")
+            .RequireFeature(ModuleNames.Ecommerce.Payments)
             .RequireAuthorization();
 
         // Get refunds for a payment

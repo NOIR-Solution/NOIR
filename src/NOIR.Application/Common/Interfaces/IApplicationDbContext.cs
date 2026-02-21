@@ -82,6 +82,12 @@ public interface IApplicationDbContext
     DbSet<CustomerGroupMembership> CustomerGroupMemberships { get; }
 
     /// <summary>
+    /// Tenant module states DbSet for feature management CRUD.
+    /// TenantModuleState is a TenantEntity (not AggregateRoot), so IRepository is not applicable.
+    /// </summary>
+    DbSet<TenantModuleState> TenantModuleStates { get; }
+
+    /// <summary>
     /// Attaches an entity to the context for tracking.
     EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
 

@@ -19,6 +19,7 @@ public static class CustomerGroupEndpoints
     {
         var group = app.MapGroup("/api/customer-groups")
             .WithTags("Customer Groups")
+            .RequireFeature(ModuleNames.Ecommerce.CustomerGroups)
             .RequireAuthorization();
 
         // Get all customer groups (paged)
