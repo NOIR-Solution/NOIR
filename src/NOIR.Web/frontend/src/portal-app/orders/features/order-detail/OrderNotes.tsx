@@ -79,7 +79,7 @@ export const OrderNotes = ({ orderId, canWrite }: OrderNotesProps) => {
         </CardHeader>
         <CardContent className="space-y-4">
           {canWrite && (
-            <div className="flex gap-2">
+            <div className="space-y-2">
               <Textarea
                 value={noteContent}
                 onChange={(e) => setNoteContent(e.target.value)}
@@ -89,15 +89,18 @@ export const OrderNotes = ({ orderId, canWrite }: OrderNotesProps) => {
                 className="resize-none"
                 maxLength={2000}
               />
-              <Button
-                size="icon"
-                className="cursor-pointer shrink-0 self-end"
-                onClick={handleAdd}
-                disabled={!noteContent.trim() || addMutation.isPending}
-                aria-label={t('orders.notes.addNote')}
-              >
-                <Send className="h-4 w-4" />
-              </Button>
+              <div className="flex justify-end">
+                <Button
+                  size="sm"
+                  className="cursor-pointer"
+                  onClick={handleAdd}
+                  disabled={!noteContent.trim() || addMutation.isPending}
+                  aria-label={t('orders.notes.addNote')}
+                >
+                  <Send className="h-3.5 w-3.5 mr-1.5" />
+                  {t('orders.notes.addNote', 'Add note')}
+                </Button>
+              </div>
             </div>
           )}
 

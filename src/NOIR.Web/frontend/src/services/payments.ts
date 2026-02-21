@@ -164,6 +164,10 @@ export const getPayments = async (params: GetPaymentsParams = {}): Promise<Payme
   return apiClient<PaymentPagedResult>(`/payments${query ? `?${query}` : ''}`)
 }
 
+export const getOrderPayments = async (orderId: string): Promise<PaymentTransactionDto[]> => {
+  return apiClient<PaymentTransactionDto[]>(`/payments/order/${orderId}`)
+}
+
 export const getPaymentDetails = async (id: string): Promise<PaymentDetailsDto> => {
   return apiClient<PaymentDetailsDto>(`/payments/${id}/details`)
 }

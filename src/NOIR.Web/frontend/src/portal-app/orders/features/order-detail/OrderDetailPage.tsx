@@ -60,15 +60,17 @@ import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { formatCurrency } from '@/lib/utils/currency'
 import { getOrderStatusColor } from '@/portal-app/orders/utils/orderStatus'
 import { OrderNotes } from './OrderNotes'
+import { OrderPaymentInfo } from './OrderPaymentInfo'
+import { OrderShipmentTracking } from './OrderShipmentTracking'
 
-// Status timeline steps with their order
-const STATUS_STEPS: { status: OrderStatus; icon: React.ElementType }[] = [
-  { status: 'Pending', icon: Clock },
-  { status: 'Confirmed', icon: Check },
-  { status: 'Processing', icon: Package },
-  { status: 'Shipped', icon: Truck },
-  { status: 'Delivered', icon: MapPin },
-  { status: 'Completed', icon: Check },
+// Status timeline steps with distinct colors per step
+const STATUS_STEPS: { status: OrderStatus; icon: React.ElementType; color: string; bgColor: string; borderColor: string; lineColor: string }[] = [
+  { status: 'Pending', icon: Clock, color: 'text-amber-600 dark:text-amber-400', bgColor: 'bg-amber-100 dark:bg-amber-900/40', borderColor: 'border-amber-400 dark:border-amber-600', lineColor: 'from-amber-400 to-blue-400' },
+  { status: 'Confirmed', icon: Check, color: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-100 dark:bg-blue-900/40', borderColor: 'border-blue-400 dark:border-blue-600', lineColor: 'from-blue-400 to-indigo-400' },
+  { status: 'Processing', icon: Package, color: 'text-indigo-600 dark:text-indigo-400', bgColor: 'bg-indigo-100 dark:bg-indigo-900/40', borderColor: 'border-indigo-400 dark:border-indigo-600', lineColor: 'from-indigo-400 to-violet-400' },
+  { status: 'Shipped', icon: Truck, color: 'text-violet-600 dark:text-violet-400', bgColor: 'bg-violet-100 dark:bg-violet-900/40', borderColor: 'border-violet-400 dark:border-violet-600', lineColor: 'from-violet-400 to-emerald-400' },
+  { status: 'Delivered', icon: MapPin, color: 'text-emerald-600 dark:text-emerald-400', bgColor: 'bg-emerald-100 dark:bg-emerald-900/40', borderColor: 'border-emerald-400 dark:border-emerald-600', lineColor: 'from-emerald-400 to-green-400' },
+  { status: 'Completed', icon: Check, color: 'text-green-600 dark:text-green-400', bgColor: 'bg-green-100 dark:bg-green-900/40', borderColor: 'border-green-400 dark:border-green-600', lineColor: '' },
 ]
 
 const STATUS_ORDER: Record<OrderStatus, number> = {
@@ -81,6 +83,15 @@ const STATUS_ORDER: Record<OrderStatus, number> = {
   Cancelled: -1,
   Refunded: -2,
   Returned: -3,
+}
+
+// Map order status to timestamp field
+const STATUS_TIMESTAMP_MAP: Record<string, string> = {
+  Pending: 'createdAt',
+  Confirmed: 'confirmedAt',
+  Shipped: 'shippedAt',
+  Delivered: 'deliveredAt',
+  Completed: 'completedAt',
 }
 
 const AddressCard = ({ title, address, icon: Icon }: { title: string; address: AddressDto | null | undefined; icon: React.ElementType }) => {
@@ -304,42 +315,61 @@ export const OrderDetailPage = () => {
         />
       </div>
 
-      {/* Status Timeline */}
+      {/* Status Timeline - Full Width */}
       {!isTerminalStatus && (
-        <Card className="shadow-sm gap-4 py-5">
-          <CardHeader>
-            <CardTitle className="text-sm">{t('orders.orderTimeline', 'Order Timeline')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              {STATUS_STEPS.map((step, index) => {
+        <Card className="shadow-sm py-6 px-2">
+          <CardContent className="px-4">
+            {/* Icons row */}
+            <div className="relative flex items-center justify-between">
+              {/* Connecting lines (positioned behind icons) */}
+              <div className="absolute inset-x-0 top-6 flex px-6">
+                {STATUS_STEPS.slice(0, -1).map((step) => {
+                  const stepOrder = STATUS_ORDER[step.status]
+                  return (
+                    <div key={`line-${step.status}`} className="flex-1 px-3">
+                      <div className={`h-1 rounded-full w-full transition-all duration-500 ${
+                        currentStatusOrder > stepOrder
+                          ? `bg-gradient-to-r ${step.lineColor}`
+                          : 'bg-muted-foreground/10'
+                      }`} />
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Step nodes */}
+              {STATUS_STEPS.map((step) => {
                 const stepOrder = STATUS_ORDER[step.status]
                 const isCompleted = currentStatusOrder >= stepOrder
                 const isCurrent = currentStatusOrder === stepOrder
                 const StepIcon = step.icon
+                const timestampField = STATUS_TIMESTAMP_MAP[step.status] as keyof typeof order | undefined
+                const timestamp = timestampField ? (order[timestampField] as string | undefined) : undefined
 
                 return (
-                  <div key={step.status} className="flex items-center flex-1">
-                    <div className="flex flex-col items-center gap-1.5">
-                      <div
-                        className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all ${
-                          isCompleted
-                            ? 'bg-primary border-primary text-primary-foreground'
-                            : isCurrent
-                              ? 'bg-primary/10 border-primary text-primary'
-                              : 'bg-muted border-muted-foreground/20 text-muted-foreground/40'
-                        }`}
-                      >
-                        <StepIcon className="h-4 w-4" />
-                      </div>
-                      <span className={`text-xs text-center ${isCompleted || isCurrent ? 'font-medium text-foreground' : 'text-muted-foreground/60'}`}>
-                        {t(`orders.status.${step.status.toLowerCase()}`, step.status)}
-                      </span>
+                  <div key={step.status} className="relative z-10 flex flex-col items-center gap-2">
+                    <div
+                      className={`h-12 w-12 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
+                        isCompleted
+                          ? `${step.bgColor} ${step.borderColor} ${step.color}`
+                          : isCurrent
+                            ? `${step.bgColor} ${step.borderColor} ${step.color} animate-pulse ring-4 ring-offset-2 ring-offset-background ring-current/20`
+                            : 'bg-muted border-muted-foreground/20 text-muted-foreground/30'
+                      }`}
+                    >
+                      <StepIcon className="h-5 w-5" />
                     </div>
-                    {index < STATUS_STEPS.length - 1 && (
-                      <div className={`flex-1 h-0.5 mx-2 mt-[-1.5rem] ${
-                        currentStatusOrder > stepOrder ? 'bg-primary' : 'bg-muted-foreground/20'
-                      }`} />
+                    <span className={`text-xs text-center font-medium whitespace-nowrap ${
+                      isCompleted || isCurrent ? 'text-foreground' : 'text-muted-foreground/40'
+                    }`}>
+                      {t(`orders.status.${step.status.toLowerCase()}`, step.status)}
+                    </span>
+                    {isCompleted && timestamp ? (
+                      <span className="text-[10px] text-muted-foreground text-center leading-tight whitespace-nowrap">
+                        {formatDateTime(timestamp)}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] invisible">-</span>
                     )}
                   </div>
                 )
@@ -571,6 +601,16 @@ export const OrderDetailPage = () => {
             </Card>
           )}
 
+          {/* Shipment Tracking */}
+          {order.trackingNumber && (
+            <OrderShipmentTracking
+              orderId={order.id}
+              trackingNumber={order.trackingNumber}
+              shippingCarrier={order.shippingCarrier}
+              currency={order.currency}
+            />
+          )}
+
           {/* Internal Notes */}
           <OrderNotes orderId={order.id} canWrite={canWriteOrders} />
         </div>
@@ -608,7 +648,10 @@ export const OrderDetailPage = () => {
             </CardContent>
           </Card>
 
-          {/* Shipping Info */}
+          {/* Payment Info */}
+          <OrderPaymentInfo orderId={order.id} currency={order.currency} />
+
+          {/* Shipping Info — method only; tracking detail is in OrderShipmentTracking */}
           {order.shippingMethod && (
             <Card className="shadow-sm gap-4 py-5">
               <CardHeader>
@@ -622,18 +665,6 @@ export const OrderDetailPage = () => {
                   <p className="text-muted-foreground text-xs">{t('orders.shippingMethod', 'Shipping Method')}</p>
                   <p className="font-medium">{order.shippingMethod}</p>
                 </div>
-                {order.shippingCarrier && (
-                  <div>
-                    <p className="text-muted-foreground text-xs">{t('orders.carrier', 'Carrier')}</p>
-                    <p className="font-medium">{order.shippingCarrier}</p>
-                  </div>
-                )}
-                {order.trackingNumber && (
-                  <div>
-                    <p className="text-muted-foreground text-xs">{t('orders.trackingNumber', 'Tracking Number')}</p>
-                    <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{order.trackingNumber}</code>
-                  </div>
-                )}
                 {order.estimatedDeliveryAt && (
                   <div>
                     <p className="text-muted-foreground text-xs">{t('orders.estimatedDelivery', 'Estimated Delivery')}</p>

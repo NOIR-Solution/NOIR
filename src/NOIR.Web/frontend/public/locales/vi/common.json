@@ -1038,6 +1038,10 @@
     "returnSuccess": "Đã xử lý trả hàng",
     "actionError": "Không thể cập nhật đơn hàng",
     "refundedDescription": "Đơn hàng này đã được hoàn tiền cho khách hàng.",
+    "paymentInfo": "Thông tin thanh toán",
+    "noPaymentInfo": "Chưa có thanh toán",
+    "shipmentTracking": "Theo dõi vận chuyển",
+    "manualTrackingOnly": "Theo dõi qua trang đơn vị vận chuyển",
     "notes": {
       "title": "Ghi chú nội bộ",
       "description": "Ghi chú chỉ nhân viên mới xem được",
@@ -2992,6 +2996,7 @@
     "amount": "Số tiền",
     "status": "Trạng thái",
     "provider": "Nhà cung cấp",
+    "transaction": "Giao dịch",
     "method": "Phương thức",
     "createdAt": "Ngày tạo",
     "paidAt": "Ngày thanh toán",

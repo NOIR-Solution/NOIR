@@ -1038,6 +1038,10 @@
     "returnSuccess": "Order return processed successfully",
     "actionError": "Failed to update order",
     "refundedDescription": "This order has been refunded to the customer.",
+    "paymentInfo": "Payment Information",
+    "noPaymentInfo": "No payment recorded",
+    "shipmentTracking": "Shipment Tracking",
+    "manualTrackingOnly": "Tracking via carrier website",
     "notes": {
       "title": "Internal Notes",
       "description": "Staff-only notes visible to team members",
@@ -2992,6 +2996,7 @@
     "amount": "Amount",
     "status": "Status",
     "provider": "Provider",
+    "transaction": "Transaction",
     "method": "Method",
     "createdAt": "Created",
     "paidAt": "Paid At",

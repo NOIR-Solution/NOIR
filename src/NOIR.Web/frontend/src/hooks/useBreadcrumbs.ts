@@ -54,12 +54,6 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
         { label: 'E-commerce' },
         { label: 'Inventory' },
       ],
-      '/portal/ecommerce/orders/tracking': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Orders', href: '/portal/ecommerce/orders' },
-        { label: 'Shipment Tracking' },
-      ],
       '/portal/ecommerce/customers': [
         { label: 'Portal', href: '/portal' },
         { label: 'E-commerce' },

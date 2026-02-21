@@ -40,6 +40,7 @@ export const useShippingOrderByOrderIdQuery = (orderId: string | undefined) =>
     queryKey: shippingKeys.orderByOrderId(orderId!),
     queryFn: () => getShippingOrderByOrderId(orderId!),
     enabled: !!orderId,
+    retry: false,
   })
 
 export const useShippingTrackingQuery = (trackingNumber: string | undefined) =>

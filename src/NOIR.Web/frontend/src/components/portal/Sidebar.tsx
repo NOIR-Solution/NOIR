@@ -39,7 +39,6 @@ import {
   Tags,
   ShoppingCart,
   CreditCard,
-  Truck,
   Warehouse,
   Percent,
   Star,
@@ -130,7 +129,6 @@ const navSections: NavSection[] = [
     items: [
       { titleKey: 'ecommerce.orders', icon: ShoppingCart, path: '/portal/ecommerce/orders', permission: Permissions.OrdersRead, feature: 'Ecommerce.Orders' },
       { titleKey: 'ecommerce.payments', icon: CreditCard, path: '/portal/ecommerce/payments', permission: Permissions.PaymentsRead, feature: 'Ecommerce.Payments' },
-      { titleKey: 'ecommerce.shipmentTracking', icon: Truck, path: '/portal/ecommerce/orders/tracking', permission: Permissions.OrdersRead, feature: 'Ecommerce.Orders' },
       { titleKey: 'ecommerce.inventory', icon: Warehouse, path: '/portal/ecommerce/inventory', permission: Permissions.InventoryRead, feature: 'Ecommerce.Inventory' },
     ],
   },

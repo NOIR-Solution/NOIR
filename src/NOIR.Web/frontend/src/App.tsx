@@ -51,7 +51,6 @@ const OrdersPage = lazy(() => import('@/portal-app/orders/features/order-list/Or
 const OrderDetailPage = lazy(() => import('@/portal-app/orders/features/order-detail/OrderDetailPage'))
 const ManualCreateOrderPage = lazy(() => import('@/portal-app/orders/features/manual-create/ManualCreateOrderPage'))
 const InventoryReceiptsPage = lazy(() => import('@/portal-app/inventory/features/inventory-receipts/InventoryReceiptsPage'))
-const ShipmentTrackingPage = lazy(() => import('@/portal-app/orders/features/shipment-tracking/ShipmentTrackingPage'))
 // Customers
 const CustomersPage = lazy(() => import('@/portal-app/customers/features/customer-list/CustomersPage'))
 const CustomerDetailPage = lazy(() => import('@/portal-app/customers/features/customer-detail/CustomerDetailPage'))
@@ -166,7 +165,7 @@ export const App = () => {
                         <Route path="ecommerce/orders/create" element={<Suspense fallback={<LazyFallback />}><ManualCreateOrderPage /></Suspense>} />
                         <Route path="ecommerce/orders/:id" element={<Suspense fallback={<LazyFallback />}><OrderDetailPage /></Suspense>} />
                         <Route path="ecommerce/inventory" element={<Suspense fallback={<LazyFallback />}><InventoryReceiptsPage /></Suspense>} />
-                        <Route path="ecommerce/orders/tracking" element={<Suspense fallback={<LazyFallback />}><ShipmentTrackingPage /></Suspense>} />
+                        <Route path="ecommerce/orders/tracking" element={<Navigate to="/portal/ecommerce/orders" replace />} />
                         {/* Redirect old shipping URL to tenant settings */}
                         <Route path="ecommerce/shipping" element={<Navigate to="/portal/admin/tenant-settings?tab=shippingProviders" replace />} />
                         {/* Customers */}
