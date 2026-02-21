@@ -286,6 +286,15 @@ public class PermissionsTests
         Permissions.Groups.Reports.Should().Contain(Permissions.ReportsRead);
     }
 
+    [Fact]
+    public void Groups_Features_ShouldContainAllFeaturePermissions()
+    {
+        // Assert
+        Permissions.Groups.Features.Should().HaveCount(2);
+        Permissions.Groups.Features.Should().Contain(Permissions.FeaturesRead);
+        Permissions.Groups.Features.Should().Contain(Permissions.FeaturesUpdate);
+    }
+
     #endregion
 
     #region All Permissions Tests
@@ -318,7 +327,8 @@ public class PermissionsTests
             + Permissions.Groups.Reports.Count
             + Permissions.Groups.Payments.Count
             + Permissions.Groups.Customers.Count
-            + Permissions.Groups.CustomerGroups.Count;
+            + Permissions.Groups.CustomerGroups.Count
+            + Permissions.Groups.Features.Count;
 
         // Assert
         Permissions.All.Should().HaveCount(expectedCount);
