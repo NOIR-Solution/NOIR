@@ -105,6 +105,7 @@ export const TenantsPage = () => {
         title={t('tenants.title')}
         description={t('tenants.description')}
         action={<CreateTenantDialog onSuccess={refresh} />}
+        responsive
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
@@ -113,7 +114,7 @@ export const TenantsPage = () => {
             <div>
               <CardTitle>{t('tenants.listTitle')}</CardTitle>
               <CardDescription>
-                {data ? t('labels.showing') + ' ' + data.items.length + ' ' + t('labels.of') + ' ' + data.totalCount + ' ' + t('labels.items') : ''}
+                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">

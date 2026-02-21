@@ -25,7 +25,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         )}
       >
         <div className="flex items-center gap-4">
-          <div className="vt-page-icon flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 backdrop-blur-sm border border-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-105">
+          <div className="vt-page-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 backdrop-blur-sm border border-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-105">
             <Icon className="h-6 w-6 text-primary" />
           </div>
           <div>

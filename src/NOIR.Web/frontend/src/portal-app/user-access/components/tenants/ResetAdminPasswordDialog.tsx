@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { KeyRound, Eye, EyeOff, Loader2 } from 'lucide-react'
@@ -39,20 +39,16 @@ export const ResetAdminPasswordDialog = ({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const resetForm = () => {
-    setNewPassword('')
-    setConfirmPassword('')
-    setShowPassword(false)
-    setShowConfirmPassword(false)
-    setError(null)
-  }
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      resetForm()
+  // Reset form when dialog opens (not on close — avoids content flash during close animation)
+  useEffect(() => {
+    if (open) {
+      setNewPassword('')
+      setConfirmPassword('')
+      setShowPassword(false)
+      setShowConfirmPassword(false)
+      setError(null)
     }
-    onOpenChange(open)
-  }
+  }, [open])
 
   const validatePassword = (): string | null => {
     if (!newPassword) {
@@ -89,7 +85,7 @@ export const ResetAdminPasswordDialog = ({
             email: result.adminEmail || tenant.name
           })
         )
-        handleOpenChange(false)
+        onOpenChange(false)
         onSuccess?.()
       } else {
         setError(result.message || t('messages.operationFailed'))
@@ -102,7 +98,7 @@ export const ResetAdminPasswordDialog = ({
   }
 
   return (
-    <Credenza open={open} onOpenChange={handleOpenChange}>
+    <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <CredenzaHeader>
@@ -191,7 +187,7 @@ export const ResetAdminPasswordDialog = ({
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleOpenChange(false)}
+              onClick={() => onOpenChange(false)}
               disabled={loading}
               className="cursor-pointer"
             >

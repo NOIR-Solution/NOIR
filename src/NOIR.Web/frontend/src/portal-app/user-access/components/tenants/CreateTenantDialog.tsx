@@ -48,13 +48,11 @@ export const CreateTenantDialog = ({ onSuccess }: CreateTenantDialogProps) => {
     if (result.adminUserCreated && result.adminEmail) {
       // Full success - tenant and admin user created
       toast.success(t('tenants.messages.provisionSuccess', {
-        defaultValue: 'Tenant created successfully with admin user {{email}}',
         email: result.adminEmail,
       }))
     } else if (result.adminCreationError) {
       // Partial success - tenant created but admin user failed
       toast.warning(t('tenants.messages.provisionPartial', {
-        defaultValue: 'Tenant created, but admin user creation failed: {{error}}',
         error: result.adminCreationError,
       }))
     } else {
@@ -69,9 +67,9 @@ export const CreateTenantDialog = ({ onSuccess }: CreateTenantDialogProps) => {
   return (
     <Credenza open={open} onOpenChange={setOpen}>
       <CredenzaTrigger asChild>
-        <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
-          <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
-          {t('tenants.createNew')}
+        <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" aria-label={t('tenants.createNew')}>
+          <Plus className="h-4 w-4 transition-transform group-hover:rotate-90 duration-300 md:mr-2" />
+          <span className="hidden md:inline">{t('tenants.createNew')}</span>
         </Button>
       </CredenzaTrigger>
       <CredenzaContent className="sm:max-w-[550px]">

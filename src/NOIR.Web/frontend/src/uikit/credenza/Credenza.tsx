@@ -136,9 +136,19 @@ const CredenzaBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 
 const CredenzaFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
   const { isMobile } = useCredenzaContext()
-  const Comp = isMobile ? DrawerFooter : DialogFooter
 
-  return <Comp className={className} {...props} />
+  // Both paths use the same layout: reversed column on mobile (primary action on top), row on desktop.
+  // DialogFooter already has this. DrawerFooter uses flex-col (not reversed), so we override it.
+  if (isMobile) {
+    return (
+      <DrawerFooter
+        className={cn('flex flex-col-reverse gap-2', className)}
+        {...props}
+      />
+    )
+  }
+
+  return <DialogFooter className={className} {...props} />
 }
 
 export {

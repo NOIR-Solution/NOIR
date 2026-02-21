@@ -842,6 +842,7 @@
       "details": "Details",
       "modules": "Modules"
     },
+    "deleteWarning": "This will permanently delete all tenant data including users, settings, and content.",
     "noTenantsFound": "No tenants found",
     "noTenantsFoundDescription": "No tenants match your search criteria.",
     "showingFirst100": "Showing first 100 tenants. Use search to find others."

@@ -14,7 +14,7 @@
  */
 
 import { useTranslation } from "react-i18next"
-import { Button, Label, SimpleFormField as FormField, FormTextarea, FormError } from '@uikit'
+import { Button, Checkbox, Label, SimpleFormField as FormField, FormTextarea, FormError } from '@uikit'
 import { useValidatedForm } from "@/hooks/useValidatedForm"
 import { updateTenantSchema } from "@/validation/schemas.generated"
 import type { Tenant } from "@/types"
@@ -221,18 +221,20 @@ export const TenantFormValidated = ({ tenant, onSubmit, onCancel }: TenantFormVa
         </>
       )}
 
-      {isEditing && (
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="isActive"
-            {...form.register("isActive" as never)}
-            disabled={isSubmitting}
-            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-          />
-          <Label htmlFor="isActive">{t("labels.active")}</Label>
-        </div>
-      )}
+      {isEditing && (() => {
+        const isActive = form.watch("isActive" as never) as unknown as boolean
+        return (
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="isActive"
+              checked={!!isActive}
+              onCheckedChange={(checked) => form.setValue("isActive" as never, !!checked as never)}
+              disabled={isSubmitting}
+            />
+            <Label htmlFor="isActive" className="cursor-pointer">{t("labels.active")}</Label>
+          </div>
+        )
+      })()}
 
       <div className="flex flex-col-reverse gap-2 pt-4 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="cursor-pointer">

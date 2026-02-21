@@ -54,29 +54,29 @@ export const EditTenantDialog = ({ tenant, open, onOpenChange, onSuccess, active
   }, [activeTab, onTabChange])
 
   // Fetch full tenant data when dialog opens
+  // Don't clear state on close — avoids content flash during close animation
   useEffect(() => {
-    if (open && tenant) {
-      const fetchTenant = async () => {
-        setLoading(true)
-        try {
-          const data = await getTenant(tenant.id)
-          setFullTenant(data)
-        } catch (err) {
-          const message = err instanceof ApiError ? err.message : 'Failed to load tenant'
-          toast.error(message)
-          // Only close if on details tab; modules tab works without fullTenant
-          if (effectiveTab === 'details') {
-            onOpenChange(false)
-          }
-        } finally {
-          setLoading(false)
+    if (!open || !tenant) return
+    setFullTenant(null)
+    setLoading(true)
+    const fetchTenant = async () => {
+      try {
+        const data = await getTenant(tenant.id)
+        setFullTenant(data)
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : 'Failed to load tenant'
+        toast.error(message)
+        // Only close if on details tab; modules tab works without fullTenant
+        if (effectiveTab === 'details') {
+          onOpenChange(false)
         }
+      } finally {
+        setLoading(false)
       }
-      fetchTenant()
-    } else {
-      setFullTenant(null)
     }
-  }, [open, tenant, onOpenChange])
+    fetchTenant()
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- onOpenChange identity changes on parent re-render; effectiveTab causes re-fetch on tab switch
+  }, [open, tenant])
 
   const handleSubmit = async (data: ProvisionTenantRequest | UpdateTenantFormData) => {
     if (!tenant) return

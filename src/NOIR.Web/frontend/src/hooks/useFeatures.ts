@@ -34,7 +34,7 @@ export const useFeatures = () => {
 export const useFeature = (featureName: string): { isEnabled: boolean; isLoading: boolean } => {
   const { data, isLoading } = useFeatures()
 
-  const isEnabled = data?.[featureName]?.isEffective ?? true // Default to enabled if not loaded
+  const isEnabled = data?.[featureName]?.isEffective ?? false // Fail-closed: hide gated content until features load
 
   return { isEnabled, isLoading }
 }

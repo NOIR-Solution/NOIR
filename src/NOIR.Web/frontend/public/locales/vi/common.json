@@ -842,6 +842,7 @@
       "details": "Chi tiết",
       "modules": "Module"
     },
+    "deleteWarning": "Hành động này sẽ xóa vĩnh viễn toàn bộ dữ liệu tổ chức bao gồm người dùng, cài đặt và nội dung.",
     "noTenantsFound": "Không tìm thấy tenant",
     "noTenantsFoundDescription": "Không có tenant nào phù hợp với tiêu chí tìm kiếm.",
     "showingFirst100": "Hiển thị 100 tổ chức đầu tiên. Dùng tìm kiếm để tìm các tổ chức khác."

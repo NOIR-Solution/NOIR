@@ -462,10 +462,11 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
+              className="cursor-pointer"
             >
               {t('buttons.cancel', 'Cancel')}
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="cursor-pointer">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('buttons.create', 'Create')}
             </Button>
