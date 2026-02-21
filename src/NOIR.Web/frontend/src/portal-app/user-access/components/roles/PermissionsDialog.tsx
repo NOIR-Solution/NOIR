@@ -1,6 +1,10 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Key, ChevronDown, ChevronRight, Loader2, Search, Sparkles, Shield, Check } from 'lucide-react'
+import {
+  Key, ChevronDown, ChevronRight, Loader2, Search, Sparkles, Shield, Check,
+  BarChart3, ShoppingCart, UserCheck, Package, FileText, Users, Building2,
+  Settings as SettingsIcon, Activity, SlidersHorizontal, type LucideIcon,
+} from 'lucide-react'
 import {
   Badge,
   Button,
@@ -27,9 +31,23 @@ import { usePermissionsQuery, usePermissionTemplatesQuery } from '@/portal-app/u
 import { assignPermissions, getRoleById } from '@/services/roles'
 import { ApiError } from '@/services/apiClient'
 import type { RoleListItem, Permission } from '@/types'
-import { translatePermissionCategory, translatePermissionDisplayName, translatePermissionDescription } from '@/portal-app/user-access/utils/permissionTranslation'
+import { translatePermissionCategory, translatePermissionDisplayName, translatePermissionDescription, comparePermissionCategories } from '@/portal-app/user-access/utils/permissionTranslation'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { isPlatformAdmin } from '@/lib/roles'
+
+// Category icons matching sidebar navigation
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  'Marketing': BarChart3,
+  'Orders': ShoppingCart,
+  'Customers': UserCheck,
+  'Catalog': Package,
+  'Content': FileText,
+  'Users & Access': Users,
+  'Tenant Management': Building2,
+  'Settings': SettingsIcon,
+  'System': Activity,
+  'Platform': SlidersHorizontal,
+}
 
 interface PermissionsDialogProps {
   role: RoleListItem | null
@@ -282,11 +300,14 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
                     : t('roles.noPermissions', 'No permissions available.')}
                 </div>
               ) : (
-                Object.entries(filteredPermissionsByCategory).map(([category, categoryPermissions]) => {
+                Object.entries(filteredPermissionsByCategory)
+                  .sort(([a], [b]) => comparePermissionCategories(a, b))
+                  .map(([category, categoryPermissions]) => {
                   const stats = getCategoryStats(category)
                   const isExpanded = expandedCategories.has(category)
                   const allSelected = stats.selected === stats.total && stats.total > 0
                   const someSelected = stats.selected > 0 && stats.selected < stats.total
+                  const CategoryIcon = CATEGORY_ICONS[category]
 
                   return (
                     <Collapsible
@@ -312,6 +333,7 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
                             ) : (
                               <ChevronRight className="h-4 w-4 mr-2" />
                             )}
+                            {CategoryIcon && <CategoryIcon className="h-4 w-4 mr-1.5 text-muted-foreground" />}
                             <span className="font-medium">{translatePermissionCategory(t, category)}</span>
                             <Badge variant="secondary" className="ml-2">
                               {stats.selected}/{stats.total}

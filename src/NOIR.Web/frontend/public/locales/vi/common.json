@@ -1796,25 +1796,16 @@
     "categories": {
       "other": "Khác",
       "uncategorized": "Chưa phân loại",
-      "usermanagement": "Quản lý Người dùng",
-      "rolemanagement": "Quản lý Vai trò",
-      "tenantmanagement": "Quản lý Tenant",
-      "audit": "Kiểm toán",
-      "settings": "Cài đặt",
-      "content": "Nội dung",
-      "blog": "Blog",
-      "ecommerce": "Thương mại điện tử",
-      "e-commerce": "Thương mại điện tử",
+      "marketing": "Tiếp thị",
       "orders": "Đơn hàng",
-      "products": "Sản phẩm",
-      "categories": "Danh mục",
-      "reports": "Báo cáo",
+      "customers": "Khách hàng",
+      "catalog": "Danh mục sản phẩm",
+      "content": "Nội dung",
+      "usersaccess": "Người dùng & Truy cập",
+      "tenantmanagement": "Quản lý Tenant",
+      "settings": "Cài đặt",
       "system": "Hệ thống",
-      "emailtemplates": "Mẫu Email",
-      "legalpages": "Trang Pháp lý",
-      "platform": "Nền tảng",
-      "payments": "Thanh toán",
-      "configurationmanagement": "Quản lý Cấu hình"
+      "platform": "Nền tảng"
     },
     "displayNames": {
       "users": {

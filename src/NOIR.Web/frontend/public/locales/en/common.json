@@ -1796,25 +1796,16 @@
     "categories": {
       "other": "Other",
       "uncategorized": "Uncategorized",
-      "usermanagement": "User Management",
-      "rolemanagement": "Role Management",
-      "tenantmanagement": "Tenant Management",
-      "audit": "Audit",
-      "settings": "Settings",
-      "content": "Content",
-      "blog": "Blog",
-      "ecommerce": "E-commerce",
-      "e-commerce": "E-commerce",
+      "marketing": "Marketing",
       "orders": "Orders",
-      "products": "Products",
-      "categories": "Categories",
-      "reports": "Reports",
+      "customers": "Customers",
+      "catalog": "Catalog",
+      "content": "Content",
+      "usersaccess": "Users & Access",
+      "tenantmanagement": "Tenant Management",
+      "settings": "Settings",
       "system": "System",
-      "emailtemplates": "Email Templates",
-      "legalpages": "Legal Pages",
-      "platform": "Platform",
-      "payments": "Payments",
-      "configurationmanagement": "Configuration Management"
+      "platform": "Platform"
     },
     "displayNames": {
       "users": {

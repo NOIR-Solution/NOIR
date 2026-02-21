@@ -4,7 +4,7 @@ import { Info, Loader2 } from 'lucide-react'
 import { TippyTooltip } from '@uikit'
 import { getEffectivePermissions, getAllPermissions } from '@/services/roles'
 import type { Permission, RoleListItem } from '@/types'
-import { translatePermissionCategory, translatePermissionDisplayName } from '@/portal-app/user-access/utils/permissionTranslation'
+import { translatePermissionCategory, translatePermissionDisplayName, comparePermissionCategories } from '@/portal-app/user-access/utils/permissionTranslation'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { isPlatformAdmin } from '@/lib/roles'
 
@@ -120,7 +120,9 @@ export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded
             onWheel={handleWheel}
           >
             {groupedPermissions &&
-              Object.entries(groupedPermissions).map(([category, perms]) => (
+              Object.entries(groupedPermissions)
+                .sort(([a], [b]) => comparePermissionCategories(a, b))
+                .map(([category, perms]) => (
                 <div key={category}>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                     {translatePermissionCategory(t, category)} ({perms.length})
