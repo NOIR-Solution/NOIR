@@ -135,7 +135,7 @@ export const LoyaltyPointsDialog = ({ open, onOpenChange, customerId, customerNa
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody>
+            <CredenzaBody className="space-y-4">
               <FormField
                 control={form.control}
                 name="points"

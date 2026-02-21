@@ -202,7 +202,7 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody>
+            <CredenzaBody className="space-y-4">
               {!isEditing && (
                 <FormField
                   control={form.control}

@@ -242,7 +242,7 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody>
+            <CredenzaBody className="space-y-4">
               {/* Name */}
               <FormField
                 control={form.control}

@@ -246,7 +246,7 @@ export const ConfigureProviderDialog = ({
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <CredenzaBody>
+              <CredenzaBody className="space-y-4">
                 {/* Documentation Link */}
                 {schema.documentationUrl && (
                   <a

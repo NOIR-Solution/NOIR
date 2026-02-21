@@ -124,7 +124,7 @@ export const FilePreviewTrigger = ({
       type="button"
       onClick={handleClick}
       className={cn(
-        'cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md transition-all hover:opacity-80 hover:ring-2 hover:ring-primary/50 flex-shrink-0',
+        'cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md transition-all hover:opacity-90 hover:shadow-md flex-shrink-0 overflow-hidden',
         className,
       )}
       style={{ width: widthStyle, height: heightStyle }}
@@ -146,7 +146,7 @@ export const FilePreviewTrigger = ({
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto p-1"
+        className="w-auto p-0 overflow-hidden rounded-xl shadow-xl border-0"
         side="top"
         align="start"
         onMouseEnter={showPopover}
@@ -156,7 +156,7 @@ export const FilePreviewTrigger = ({
         <img
           src={file.url}
           alt={file.name}
-          className="max-w-[240px] max-h-[240px] rounded object-contain"
+          className="max-w-[240px] max-h-[240px] object-contain"
           onError={handleImageError}
         />
       </PopoverContent>

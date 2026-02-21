@@ -129,7 +129,7 @@ export const CustomerGroupDialog = ({ open, onOpenChange, group, onSuccess }: Cu
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody>
+            <CredenzaBody className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"

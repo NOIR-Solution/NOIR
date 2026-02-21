@@ -123,7 +123,7 @@ export const RecordManualPaymentDialog = ({ open, onOpenChange, onSuccess }: Rec
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody>
+            <CredenzaBody className="space-y-4">
               <FormField
                 control={form.control}
                 name="orderId"

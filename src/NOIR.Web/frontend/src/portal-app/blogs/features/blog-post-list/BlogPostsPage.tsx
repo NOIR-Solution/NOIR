@@ -1,6 +1,6 @@
 import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, FileText, Plus, Eye, Pencil, Trash2, Send, EllipsisVertical } from 'lucide-react'
+import { Search, FileText, Plus, Pencil, Trash2, Send, EllipsisVertical } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -225,12 +225,6 @@ export const BlogPostsPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start">
-                            <DropdownMenuItem className="cursor-pointer" asChild>
-                              <ViewTransitionLink to={`/portal/blog/posts/${post.id}`}>
-                                <Eye className="h-4 w-4 mr-2" />
-                                {t('blog.viewPost', 'View')}
-                              </ViewTransitionLink>
-                            </DropdownMenuItem>
                             <DropdownMenuItem className="cursor-pointer" asChild>
                               <ViewTransitionLink to={`/portal/blog/posts/${post.id}/edit`}>
                                 <Pencil className="h-4 w-4 mr-2" />

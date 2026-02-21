@@ -385,6 +385,8 @@
     "selectBrand": "Select brand",
     "noBrand": "No brand",
     "filterByAttribute": "Filter by Attribute",
+    "filterByAttributeDescription": "Select values across attributes to filter products",
+    "clearAllFilters": "Clear All",
     "selectAttribute": "Select Attribute",
     "values": "values",
     "clearAttributeFilter": "Clear Filter",

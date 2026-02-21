@@ -48,6 +48,7 @@ import {
   SelectValue,
   Separator,
   Textarea,
+  FilePreviewTrigger,
 } from '@uikit'
 import {
   useManualCreateOrderMutation,
@@ -814,17 +815,15 @@ export const ManualCreateOrderPage = () => {
                           <tr key={item.variantId} className="border-b last:border-b-0">
                             <td className="p-3">
                               <div className="flex items-center gap-3">
-                                {item.imageUrl ? (
-                                  <img
-                                    src={item.imageUrl}
-                                    alt={item.productName}
-                                    className="h-10 w-10 rounded-md object-cover flex-shrink-0"
-                                  />
-                                ) : (
-                                  <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
-                                    <Package className="h-5 w-5 text-muted-foreground" />
-                                  </div>
-                                )}
+                                <FilePreviewTrigger
+                                  file={{
+                                    url: item.imageUrl ?? '',
+                                    name: item.productName,
+                                  }}
+                                  thumbnailWidth={40}
+                                  thumbnailHeight={40}
+                                  className="rounded-md"
+                                />
                                 <div className="min-w-0">
                                   <p className="text-sm font-medium truncate">{item.productName}</p>
                                   {item.variantName && (

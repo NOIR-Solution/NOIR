@@ -25,11 +25,12 @@ export const EnhancedProductGridView = ({
   canCreate = true,
 }: EnhancedProductGridViewProps) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.map((product) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {products.map((product, index) => (
         <EnhancedProductCard
           key={product.id}
           product={product}
+          index={index}
           onDelete={canDelete ? onDelete : undefined}
           onPublish={canPublish ? onPublish : undefined}
           onArchive={canEdit ? onArchive : undefined}

@@ -271,7 +271,7 @@ export const ProductAttributeDialog = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody>
+            <CredenzaBody className="space-y-4">
               <Tabs defaultValue="basic" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="basic" className="cursor-pointer">{t('productAttributes.tabs.basic', 'Basic')}</TabsTrigger>

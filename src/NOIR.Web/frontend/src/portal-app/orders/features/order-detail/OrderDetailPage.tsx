@@ -44,6 +44,7 @@ import {
   TableHeader,
   TableRow,
   Textarea,
+  FilePreviewTrigger,
 } from '@uikit'
 import {
   useOrderQuery,
@@ -421,13 +422,15 @@ export const OrderDetailPage = () => {
                       <TableRow key={item.id}>
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            {item.imageUrl && (
-                              <img
-                                src={item.imageUrl}
-                                alt={item.productName}
-                                className="h-10 w-10 rounded-md object-cover"
-                              />
-                            )}
+                            <FilePreviewTrigger
+                              file={{
+                                url: item.imageUrl ?? '',
+                                name: item.productName,
+                              }}
+                              thumbnailWidth={40}
+                              thumbnailHeight={40}
+                              className="rounded-md"
+                            />
                             <div>
                               <p className="font-medium text-sm">{item.productName}</p>
                               {item.variantName && (

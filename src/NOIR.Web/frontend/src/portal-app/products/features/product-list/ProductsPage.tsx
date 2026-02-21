@@ -13,7 +13,6 @@ import {
   Send,
   Archive,
   EllipsisVertical,
-  Filter,
   LayoutGrid,
   List as ListIcon,
   X,
@@ -32,13 +31,12 @@ import {
   CardTitle,
   Checkbox,
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   EmptyState,
+  FilePreviewTrigger,
   Input,
   PageHeader,
   Pagination,
@@ -76,6 +74,7 @@ import { useActiveBrandsQuery } from '@/portal-app/brands/queries'
 import { DeleteProductDialog } from '../../components/products/DeleteProductDialog'
 import { ProductStatsCards } from '../../components/products/ProductStatsCards'
 import { EnhancedProductGridView } from '../../components/products/EnhancedProductGridView'
+import { AttributeFilterDialog } from '../../components/products/AttributeFilterDialog'
 import { LowStockAlert } from '../../components/products/LowStockAlert'
 import { ProductImportExport } from '../../components/products/ProductImportExport'
 import type { ProductListItem, ProductStatus } from '@/types/product'
@@ -159,9 +158,6 @@ export const ProductsPage = () => {
     setParams((prev) => ({ ...prev, attributeFilters, page: 1 }))
   )
 
-  // Track selected attribute and values for the attribute filter
-  const [selectedAttributeCode, setSelectedAttributeCode] = useState<string | null>(null)
-  const [selectedAttributeValues, setSelectedAttributeValues] = useState<Set<string>>(new Set())
 
   const [productToDelete, setProductToDelete] = useState<ProductListItem | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
@@ -318,50 +314,6 @@ export const ProductsPage = () => {
     setInStockOnly(value === 'inStock' ? true : undefined)
   }
 
-  // Get the currently selected attribute object
-  const selectedAttribute = filterableAttributes.find(a => a.code === selectedAttributeCode)
-
-  const handleAttributeSelect = (attributeCode: string) => {
-    if (attributeCode === 'all') {
-      // Clear attribute filter
-      setSelectedAttributeCode(null)
-      setSelectedAttributeValues(new Set())
-      setAttributeFilters(undefined)
-    } else {
-      // When selecting a new attribute, clear previous values
-      setSelectedAttributeCode(attributeCode)
-      setSelectedAttributeValues(new Set())
-      setAttributeFilters(undefined)
-    }
-  }
-
-  const handleAttributeValueToggle = (displayValue: string) => {
-    if (!selectedAttributeCode) return
-
-    setSelectedAttributeValues(prev => {
-      const next = new Set(prev)
-      if (next.has(displayValue)) {
-        next.delete(displayValue)
-      } else {
-        next.add(displayValue)
-      }
-
-      // Update the filter
-      if (next.size > 0) {
-        setAttributeFilters({ [selectedAttributeCode]: Array.from(next) })
-      } else {
-        setAttributeFilters(undefined)
-      }
-
-      return next
-    })
-  }
-
-  const clearAttributeFilter = () => {
-    setSelectedAttributeCode(null)
-    setSelectedAttributeValues(new Set())
-    setAttributeFilters(undefined)
-  }
 
   const onPublish = async (product: ProductListItem) => {
     try {
@@ -522,97 +474,13 @@ export const ProductsPage = () => {
               </SelectContent>
             </Select>
 
-            {/* Attribute Filter Dropdown */}
+            {/* Attribute Filter Dialog */}
             {filterableAttributes.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full sm:w-auto cursor-pointer transition-all duration-200 hover:border-primary/50"
-                  >
-                    <Filter className="h-4 w-4 mr-2" />
-                    {selectedAttributeCode && selectedAttributeValues.size > 0
-                      ? `${selectedAttribute?.name}: ${selectedAttributeValues.size} ${t('labels.selected', 'selected')}`
-                      : t('products.filterByAttribute', 'Filter by Attribute')}
-                    {selectedAttributeCode && selectedAttributeValues.size > 0 && (
-                      <X
-                        className="h-3 w-3 ml-2 hover:text-destructive cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          clearAttributeFilter()
-                        }}
-                      />
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  {!selectedAttributeCode ? (
-                    // Show attribute selection
-                    <>
-                      <DropdownMenuLabel>{t('products.selectAttribute', 'Select Attribute')}</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {filterableAttributes.map((attr) => (
-                        <DropdownMenuItem
-                          key={attr.id}
-                          className="cursor-pointer"
-                          onClick={() => handleAttributeSelect(attr.code)}
-                        >
-                          {attr.name}
-                          <span className="ml-auto text-xs text-muted-foreground">
-                            {attr.values.length} {t('products.values', 'values')}
-                          </span>
-                        </DropdownMenuItem>
-                      ))}
-                    </>
-                  ) : (
-                    // Show value selection for selected attribute
-                    <>
-                      <DropdownMenuLabel className="flex items-center justify-between">
-                        <span>{selectedAttribute?.name}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 px-2 text-xs cursor-pointer"
-                          onClick={() => handleAttributeSelect('all')}
-                        >
-                          {t('buttons.back', 'Back')}
-                        </Button>
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {selectedAttribute?.values.filter(v => v.isActive).map((value) => (
-                        <DropdownMenuCheckboxItem
-                          key={value.id}
-                          checked={selectedAttributeValues.has(value.displayValue)}
-                          onSelect={(e) => e.preventDefault()}
-                          onCheckedChange={() => handleAttributeValueToggle(value.displayValue)}
-                          className="cursor-pointer"
-                        >
-                          {value.colorCode && (
-                            <span
-                              className="w-3 h-3 rounded-full mr-2 border border-border"
-                              style={{ backgroundColor: value.colorCode }}
-                            />
-                          )}
-                          {value.displayValue}
-                        </DropdownMenuCheckboxItem>
-                      ))}
-                      {selectedAttributeValues.size > 0 && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="cursor-pointer text-destructive focus:text-destructive"
-                            onClick={clearAttributeFilter}
-                          >
-                            <X className="h-4 w-4 mr-2" />
-                            {t('products.clearAttributeFilter', 'Clear Filter')}
-                          </DropdownMenuItem>
-                        </>
-                      )}
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <AttributeFilterDialog
+                attributes={filterableAttributes}
+                activeFilters={params.attributeFilters}
+                onApply={setAttributeFilters}
+              />
             )}
 
             </div>
@@ -698,14 +566,14 @@ export const ProductsPage = () => {
           {viewMode === 'grid' ? (
             // Grid View
             loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {[...Array(8)].map((_, i) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {[...Array(DEFAULT_PRODUCT_PAGE_SIZE)].map((_, i) => (
                   <div key={i} className="animate-pulse">
-                    <div className="aspect-square bg-muted rounded-xl mb-4" />
-                    <div className="space-y-3">
+                    <div className="aspect-square bg-muted rounded-xl" />
+                    <div className="p-3 space-y-2">
+                      <Skeleton className="h-3 w-1/3" />
                       <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-3 w-1/2" />
-                      <Skeleton className="h-6 w-full" />
+                      <Skeleton className="h-5 w-1/2" />
                     </div>
                   </div>
                 ))}
@@ -892,19 +760,17 @@ export const ProductsPage = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            {/* Enhanced product image with animation */}
-                            <div className="relative h-14 w-14 rounded-xl border-2 border-border/50 bg-muted overflow-hidden flex-shrink-0 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-lg group-hover:shadow-primary/10">
-                              {product.primaryImageUrl ? (
-                                <img
-                                  src={product.primaryImageUrl}
-                                  alt={product.name}
-                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                />
-                              ) : (
-                                <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
-                                  <Package className="h-6 w-6 text-muted-foreground/50" />
-                                </div>
-                              )}
+                            {/* Product image thumbnail - Click to view full image */}
+                            <div style={{ viewTransitionName: `product-image-${product.id}` }}>
+                              <FilePreviewTrigger
+                                file={{
+                                  url: product.primaryImageUrl ?? '',
+                                  name: product.name,
+                                }}
+                                thumbnailWidth={56}
+                                thumbnailHeight={56}
+                                className="rounded-xl"
+                              />
                             </div>
                             <div className="flex flex-col min-w-0">
                               <span className="font-medium truncate group-hover:text-primary transition-colors duration-200">

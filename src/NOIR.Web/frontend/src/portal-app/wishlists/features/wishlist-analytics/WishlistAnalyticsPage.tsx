@@ -21,6 +21,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  FilePreviewTrigger,
 } from '@uikit'
 import { useWishlistAnalyticsQuery } from '@/portal-app/wishlists/queries'
 
@@ -145,17 +146,15 @@ export const WishlistAnalyticsPage = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        {product.productImage ? (
-                          <img
-                            src={product.productImage}
-                            alt={product.productName}
-                            className="h-10 w-10 rounded-lg object-cover border border-border/50"
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center border border-border/50">
-                            <Package className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                        )}
+                        <FilePreviewTrigger
+                          file={{
+                            url: product.productImage ?? '',
+                            name: product.productName,
+                          }}
+                          thumbnailWidth={40}
+                          thumbnailHeight={40}
+                          className="rounded-lg"
+                        />
                         <span className="font-medium text-sm">{product.productName}</span>
                       </div>
                     </TableCell>

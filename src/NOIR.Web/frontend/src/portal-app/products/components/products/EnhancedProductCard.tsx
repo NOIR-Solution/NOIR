@@ -9,8 +9,11 @@ import {
   AlertTriangle,
   Send,
   Archive,
+  MoreHorizontal,
+  Tag,
 } from 'lucide-react'
-import { Badge, Button, Card } from '@uikit'
+import { Badge, Button, Card, FilePreviewModal, TippyTooltip } from '@uikit'
+import { cn } from '@/lib/utils'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 import type { ProductListItem, ProductAttributeDisplay } from '@/types/product'
@@ -21,6 +24,7 @@ import { AttributeBadges } from './AttributeBadges'
 
 interface EnhancedProductCardProps {
   product: ProductListItem
+  index?: number
   displayAttributes?: ProductAttributeDisplay[]
   onDelete?: (product: ProductListItem) => void
   onPublish?: (product: ProductListItem) => void
@@ -34,6 +38,7 @@ interface EnhancedProductCardProps {
 
 export const EnhancedProductCard = ({
   product,
+  index = 0,
   displayAttributes,
   onDelete,
   onPublish,
@@ -46,28 +51,37 @@ export const EnhancedProductCard = ({
 }: EnhancedProductCardProps) => {
   const { t } = useTranslation('common')
   const [isHovered, setIsHovered] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
 
   const status = PRODUCT_STATUS_CONFIG[product.status]
   const StatusIcon = status.icon
 
   const isLowStock = product.totalStock > 0 && product.totalStock < LOW_STOCK_THRESHOLD
+  const isOutOfStock = !product.inStock
+
+  // Explicit prop overrides product's own attributes
+  const attrs = displayAttributes?.length ? displayAttributes : product.displayAttributes
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.4), ease: 'easeOut' }}
       className="w-full"
     >
       <Card
-        className="group relative overflow-hidden border-border/60 bg-background/50 backdrop-blur-xl shadow-sm hover:shadow-lg transition-all duration-300 p-0"
+        className="group relative overflow-hidden border-border/60 bg-background shadow-sm hover:shadow-lg transition-all duration-300 p-0"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Image Container — view-transition-name enables shared element morphing to detail page */}
+        {/* Image Container */}
         <div
-          className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted to-muted/50"
+          className={cn(
+            'relative aspect-square overflow-hidden bg-gradient-to-br from-muted to-muted/50',
+            product.primaryImageUrl && 'cursor-pointer'
+          )}
           style={{ viewTransitionName: `product-image-${product.id}` } as React.CSSProperties}
+          onClick={() => { if (product.primaryImageUrl) setPreviewOpen(true) }}
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -82,26 +96,32 @@ export const EnhancedProductCard = ({
                 <img
                   src={product.primaryImageUrl}
                   alt={product.name}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className={cn(
+                    'h-full w-full object-cover transition-all duration-500 group-hover:scale-105',
+                    isOutOfStock && 'grayscale-[60%] opacity-75'
+                  )}
                   loading="lazy"
                 />
               ) : (
-                <div className="h-full w-full flex items-center justify-center">
+                <div className={cn(
+                  'h-full w-full flex items-center justify-center',
+                  isOutOfStock && 'opacity-50'
+                )}>
                   <Package className="h-16 w-16 text-muted-foreground/30" />
                 </div>
               )}
             </motion.div>
           </AnimatePresence>
 
-          {/* Glassmorphism Overlay on Hover */}
+          {/* Hover gradient overlay */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: isHovered ? 1 : 0 }}
             transition={{ duration: 0.3 }}
           />
 
-          {/* Status Badge */}
+          {/* Status Badge — top-left */}
           <Badge
             className={`absolute top-3 left-3 ${status.color} border transition-all duration-200 shadow-lg gap-1`}
             variant="outline"
@@ -110,171 +130,176 @@ export const EnhancedProductCard = ({
             {status.label}
           </Badge>
 
-          {/* Low Stock Warning */}
+          {/* Low Stock Warning — top-right */}
           {isLowStock && (
-            <Badge variant="outline" className={`absolute top-3 right-3 ${getStatusBadgeClasses('orange')} shadow-lg gap-1 backdrop-blur-sm`}>
+            <Badge
+              variant="outline"
+              className={`absolute top-3 right-3 ${getStatusBadgeClasses('orange')} shadow-lg gap-1 backdrop-blur-sm`}
+            >
               <AlertTriangle className="h-3 w-3" />
               {t('products.lowStock', 'Low Stock')}
             </Badge>
           )}
 
-          {/* Category Badge */}
+          {/* Category Badge — top-right (when not low stock) */}
           {product.categoryName && !isLowStock && (
-            <Badge className="absolute top-3 right-3 bg-background/80 backdrop-blur-sm border-border/60">
+            <Badge variant="secondary" className="absolute top-3 right-3 shadow-md text-xs gap-1 bg-background border-border">
+              <Tag className="h-2.5 w-2.5" />
               {product.categoryName}
             </Badge>
           )}
 
-          {/* Quick Action Buttons - Appear on Hover */}
+          {/* Out of Stock badge — bottom-left, subtle */}
+          {isOutOfStock && (
+            <Badge
+              variant="secondary"
+              className="absolute bottom-3 left-3 shadow-md text-xs bg-background/90 backdrop-blur-sm text-muted-foreground"
+            >
+              {t('products.outOfStock', 'Out of Stock')}
+            </Badge>
+          )}
+
+          {/* Quick Action Buttons — on hover, bottom-right */}
           <motion.div
-            className="absolute bottom-3 right-3 flex gap-2"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 20 }}
-            transition={{ duration: 0.3 }}
+            className="absolute bottom-3 right-3 flex gap-1.5"
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 16 }}
+            transition={{ duration: 0.25 }}
           >
-            {/* Status Quick Actions */}
             {canPublish && product.status === 'Draft' && onPublish && (
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="h-9 w-9 rounded-full bg-emerald-500/90 text-white backdrop-blur-md border-0 shadow-lg hover:bg-emerald-600 cursor-pointer"
-                  aria-label={`Publish ${product.name}`}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    onPublish(product)
-                  }}
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
+                <TippyTooltip content={t('labels.publish', 'Publish')} placement="top">
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="h-8 w-8 rounded-full bg-emerald-500/90 text-white backdrop-blur-md border-0 shadow-lg hover:bg-emerald-600 cursor-pointer"
+                    aria-label={`Publish ${product.name}`}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      onPublish(product)
+                    }}
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                  </Button>
+                </TippyTooltip>
               </motion.div>
             )}
             {canEdit && product.status === 'Active' && onArchive && (
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="h-9 w-9 rounded-full bg-amber-500/90 text-white backdrop-blur-md border-0 shadow-lg hover:bg-amber-600 cursor-pointer"
-                  aria-label={`Archive ${product.name}`}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    onArchive(product)
-                  }}
-                >
-                  <Archive className="h-4 w-4" />
-                </Button>
-              </motion.div>
-            )}
-            {/* Navigation Actions */}
-            <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="h-9 w-9 rounded-full bg-background/90 backdrop-blur-md border-border shadow-lg hover:bg-background cursor-pointer"
-                  aria-label={`View ${product.name} details`}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-              </motion.div>
-            </ViewTransitionLink>
-            {canEdit && (
-              <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}/edit`}>
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <TippyTooltip content={t('labels.archive', 'Archive')} placement="top">
                   <Button
                     size="icon"
                     variant="secondary"
-                    className="h-9 w-9 rounded-full bg-background/90 backdrop-blur-md border-border shadow-lg hover:bg-background cursor-pointer"
-                    aria-label={`Edit ${product.name}`}
+                    className="h-8 w-8 rounded-full bg-amber-500/90 text-white backdrop-blur-md border-0 shadow-lg hover:bg-amber-600 cursor-pointer"
+                    aria-label={`Archive ${product.name}`}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      onArchive(product)
+                    }}
                   >
-                    <Pencil className="h-4 w-4" />
+                    <Archive className="h-3.5 w-3.5" />
                   </Button>
+                </TippyTooltip>
+              </motion.div>
+            )}
+            <div onClick={(e) => e.stopPropagation()}>
+              <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                  <TippyTooltip content={t('labels.viewDetails', 'View Details')} placement="top">
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className="h-8 w-8 rounded-full bg-background/90 backdrop-blur-md border-border shadow-lg hover:bg-background cursor-pointer"
+                      aria-label={`View ${product.name} details`}
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                    </Button>
+                  </TippyTooltip>
                 </motion.div>
               </ViewTransitionLink>
+            </div>
+            {canEdit && (
+              <div onClick={(e) => e.stopPropagation()}>
+                <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}/edit`}>
+                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                    <TippyTooltip content={t('products.editProduct', 'Edit Product')} placement="top">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="h-8 w-8 rounded-full bg-background/90 backdrop-blur-md border-border shadow-lg hover:bg-background cursor-pointer"
+                        aria-label={`Edit ${product.name}`}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                    </TippyTooltip>
+                  </motion.div>
+                </ViewTransitionLink>
+              </div>
             )}
           </motion.div>
-
-          {/* Out of Stock Overlay */}
-          {!product.inStock && (
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-              <Badge variant="secondary" className="text-lg px-6 py-2 shadow-lg">
-                {t('products.outOfStock', 'Out of Stock')}
-              </Badge>
-            </div>
-          )}
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-3 bg-background/30 backdrop-blur-md">
-          {/* Brand & SKU */}
+        <div className="p-3 space-y-2">
+          {/* Brand + Actions row */}
           <div className="flex items-center justify-between gap-2">
-            {(product.brandName || product.brand) && (
-              <div className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-                {product.brandName || product.brand}
-              </div>
-            )}
-            {product.sku && (
-              <div className="text-xs text-muted-foreground font-mono">
-                SKU: {product.sku}
-              </div>
-            )}
+            <span className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium truncate">
+              {product.brandName || product.brand || '\u00A0'}
+            </span>
+            <ProductActionsMenu
+              product={product}
+              onDelete={onDelete}
+              onPublish={onPublish}
+              onArchive={onArchive}
+              onDuplicate={onDuplicate}
+              canEdit={canEdit}
+              canDelete={canDelete}
+              canPublish={canPublish}
+              canCreate={canCreate}
+              align="end"
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 -mr-1.5 text-muted-foreground hover:text-foreground cursor-pointer shrink-0"
+                  aria-label={`Actions for ${product.name}`}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              }
+            />
           </div>
 
           {/* Product Name */}
-          <h3 className="font-semibold text-base text-foreground line-clamp-2 leading-snug min-h-[2.5rem] group-hover:text-primary transition-colors duration-200">
+          <h3 className="font-semibold text-sm text-foreground line-clamp-2 leading-snug min-h-[2.5rem] group-hover:text-primary transition-colors duration-200">
             {product.name}
           </h3>
 
-          {/* Stock Info */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">{t('labels.stock', 'Stock')}:</span>
+          {/* Attribute Badges */}
+          {attrs && attrs.length > 0 && (
+            <AttributeBadges displayAttributes={attrs} maxColors={5} />
+          )}
+
+          {/* Price + Stock row */}
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <span className="text-lg font-bold text-foreground">
+              {formatCurrency(product.basePrice, product.currency)}
+            </span>
             <Badge
-              variant={product.inStock ? 'default' : 'destructive'}
-              className="transition-all duration-200 hover:scale-105"
+              variant={product.inStock ? 'secondary' : 'destructive'}
+              className={cn(
+                'text-xs tabular-nums',
+                product.inStock && 'text-muted-foreground'
+              )}
             >
               {product.totalStock}
             </Badge>
           </div>
-
-          {/* Price */}
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-foreground">
-              {formatCurrency(product.basePrice, product.currency)}
-            </span>
-          </div>
-
-          {/* Attribute Badges */}
-          {displayAttributes && displayAttributes.length > 0 && (
-            <AttributeBadges displayAttributes={displayAttributes} maxColors={5} />
-          )}
-
-          {/* Actions Dropdown */}
-          <ProductActionsMenu
-            product={product}
-            onDelete={onDelete}
-            onPublish={onPublish}
-            onArchive={onArchive}
-            onDuplicate={onDuplicate}
-            canEdit={canEdit}
-            canDelete={canDelete}
-            canPublish={canPublish}
-            canCreate={canCreate}
-            trigger={
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  variant="outline"
-                  className="w-full cursor-pointer bg-background/50 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-                >
-                  {t('labels.actions', 'Actions')}
-                </Button>
-              </motion.div>
-            }
-          />
         </div>
 
-        {/* Glassmorphism Border Effect */}
+        {/* Hover border accent */}
         <motion.div
           className="absolute inset-0 rounded-xl border-2 border-primary/0 pointer-events-none"
           animate={{
@@ -283,6 +308,15 @@ export const EnhancedProductCard = ({
           transition={{ duration: 0.3 }}
         />
       </Card>
+
+      {/* Image Preview Lightbox */}
+      {product.primaryImageUrl && (
+        <FilePreviewModal
+          open={previewOpen}
+          onOpenChange={setPreviewOpen}
+          files={[{ url: product.primaryImageUrl, name: product.name }]}
+        />
+      )}
     </motion.div>
   )
 }

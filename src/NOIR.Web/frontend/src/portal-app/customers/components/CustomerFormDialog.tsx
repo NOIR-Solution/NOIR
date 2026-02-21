@@ -143,7 +143,7 @@ export const CustomerFormDialog = ({ open, onOpenChange, customer, onSuccess }: 
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody>
+            <CredenzaBody className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}

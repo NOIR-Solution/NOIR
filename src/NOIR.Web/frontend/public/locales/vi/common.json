@@ -385,6 +385,8 @@
     "selectBrand": "Chọn thương hiệu",
     "noBrand": "Không có thương hiệu",
     "filterByAttribute": "Lọc theo thuộc tính",
+    "filterByAttributeDescription": "Chọn giá trị thuộc tính để lọc sản phẩm",
+    "clearAllFilters": "Xóa tất cả",
     "selectAttribute": "Chọn thuộc tính",
     "values": "giá trị",
     "clearAttributeFilter": "Xóa bộ lọc",
