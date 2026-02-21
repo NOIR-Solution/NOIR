@@ -1841,10 +1841,7 @@
         "admin": "System Admin",
         "audit-logs": "View Audit Logs",
         "settings": "Manage System Settings",
-        "hangfire": "Hangfire Dashboard",
-        "config:view": "View Configuration",
-        "config:edit": "Edit Configuration",
-        "app:restart": "Restart Application"
+        "hangfire": "Hangfire Dashboard"
       },
       "audit": {
         "read": "View Audit Data",
@@ -2004,10 +2001,7 @@
         "admin": "Full system administration access",
         "audit-logs": "Access system audit logs",
         "settings": "Configure system settings",
-        "hangfire": "Access Hangfire background job dashboard",
-        "config:view": "View platform configuration settings",
-        "config:edit": "Edit platform configuration settings",
-        "app:restart": "Restart the application"
+        "hangfire": "Access Hangfire background job dashboard"
       },
       "audit": {
         "read": "View audit records",
@@ -2054,10 +2048,60 @@
         "update": "Edit product categories",
         "delete": "Delete product categories"
       },
+      "brands": {
+        "read": "View product brands",
+        "create": "Create new brands",
+        "update": "Edit brand details",
+        "delete": "Delete brands"
+      },
+      "attributes": {
+        "read": "View product attributes",
+        "create": "Create new product attributes",
+        "update": "Edit product attributes",
+        "delete": "Delete product attributes"
+      },
+      "reviews": {
+        "read": "View product reviews",
+        "write": "Submit product reviews",
+        "manage": "Moderate and manage reviews"
+      },
+      "customer-groups": {
+        "read": "View customer group configurations",
+        "create": "Create new customer groups",
+        "update": "Edit customer group settings",
+        "delete": "Delete customer groups",
+        "manage-members": "Add or remove members from customer groups"
+      },
+      "customers": {
+        "read": "View customer profiles",
+        "create": "Create new customer accounts",
+        "update": "Edit customer information",
+        "delete": "Delete customer accounts",
+        "manage": "Full customer management access"
+      },
       "orders": {
         "read": "View order details",
         "write": "Create new orders",
         "manage": "Full order management access"
+      },
+      "promotions": {
+        "read": "View promotions and discounts",
+        "write": "Create and edit promotions",
+        "delete": "Delete promotions",
+        "manage": "Full promotion management access"
+      },
+      "inventory": {
+        "read": "View stock levels and receipts",
+        "write": "Create stock adjustments",
+        "manage": "Full inventory management access"
+      },
+      "wishlists": {
+        "read": "View customer wishlists",
+        "write": "Edit wishlist items",
+        "manage": "Full wishlist management access"
+      },
+      "reports": {
+        "read": "View business reports and analytics"
       },
       "legal-pages": {
         "read": "View legal documents",

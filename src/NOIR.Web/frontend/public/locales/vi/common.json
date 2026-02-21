@@ -1841,10 +1841,7 @@
         "admin": "Quản trị Hệ thống",
         "audit-logs": "Xem Nhật ký Kiểm toán",
         "settings": "Quản lý Cài đặt Hệ thống",
-        "hangfire": "Bảng điều khiển Hangfire",
-        "config:view": "Xem Cấu hình",
-        "config:edit": "Sửa Cấu hình",
-        "app:restart": "Khởi động lại Ứng dụng"
+        "hangfire": "Bảng điều khiển Hangfire"
       },
       "audit": {
         "read": "Xem Dữ liệu Kiểm toán",
@@ -2004,10 +2001,7 @@
         "admin": "Quyền quản trị hệ thống đầy đủ",
         "audit-logs": "Truy cập nhật ký kiểm toán hệ thống",
         "settings": "Cấu hình cài đặt hệ thống",
-        "hangfire": "Truy cập bảng điều khiển tác vụ nền Hangfire",
-        "config:view": "Xem cài đặt cấu hình nền tảng",
-        "config:edit": "Sửa cài đặt cấu hình nền tảng",
-        "app:restart": "Khởi động lại ứng dụng"
+        "hangfire": "Truy cập bảng điều khiển tác vụ nền Hangfire"
       },
       "audit": {
         "read": "Xem bản ghi kiểm toán",
@@ -2054,10 +2048,60 @@
         "update": "Sửa danh mục sản phẩm",
         "delete": "Xóa danh mục sản phẩm"
       },
+      "brands": {
+        "read": "Xem thương hiệu sản phẩm",
+        "create": "Tạo thương hiệu mới",
+        "update": "Sửa thông tin thương hiệu",
+        "delete": "Xóa thương hiệu"
+      },
+      "attributes": {
+        "read": "Xem thuộc tính sản phẩm",
+        "create": "Tạo thuộc tính sản phẩm mới",
+        "update": "Sửa thuộc tính sản phẩm",
+        "delete": "Xóa thuộc tính sản phẩm"
+      },
+      "reviews": {
+        "read": "Xem đánh giá sản phẩm",
+        "write": "Gửi đánh giá sản phẩm",
+        "manage": "Kiểm duyệt và quản lý đánh giá"
+      },
+      "customer-groups": {
+        "read": "Xem cấu hình nhóm khách hàng",
+        "create": "Tạo nhóm khách hàng mới",
+        "update": "Sửa cài đặt nhóm khách hàng",
+        "delete": "Xóa nhóm khách hàng",
+        "manage-members": "Thêm hoặc xóa thành viên nhóm khách hàng"
+      },
+      "customers": {
+        "read": "Xem hồ sơ khách hàng",
+        "create": "Tạo tài khoản khách hàng mới",
+        "update": "Sửa thông tin khách hàng",
+        "delete": "Xóa tài khoản khách hàng",
+        "manage": "Toàn quyền quản lý khách hàng"
+      },
       "orders": {
         "read": "Xem chi tiết đơn hàng",
         "write": "Tạo đơn hàng mới",
         "manage": "Toàn quyền quản lý đơn hàng"
+      },
+      "promotions": {
+        "read": "Xem khuyến mãi và giảm giá",
+        "write": "Tạo và sửa khuyến mãi",
+        "delete": "Xóa khuyến mãi",
+        "manage": "Toàn quyền quản lý khuyến mãi"
+      },
+      "inventory": {
+        "read": "Xem tồn kho và phiếu nhập xuất",
+        "write": "Tạo phiếu điều chỉnh tồn kho",
+        "manage": "Toàn quyền quản lý kho hàng"
+      },
+      "wishlists": {
+        "read": "Xem danh sách yêu thích của khách hàng",
+        "write": "Sửa mục danh sách yêu thích",
+        "manage": "Toàn quyền quản lý danh sách yêu thích"
+      },
+      "reports": {
+        "read": "Xem báo cáo và phân tích kinh doanh"
       },
       "legal-pages": {
         "read": "Xem tài liệu pháp lý",

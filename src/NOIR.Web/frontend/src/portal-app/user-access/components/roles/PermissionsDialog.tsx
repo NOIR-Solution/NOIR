@@ -28,6 +28,8 @@ import { assignPermissions, getRoleById } from '@/services/roles'
 import { ApiError } from '@/services/apiClient'
 import type { RoleListItem, Permission } from '@/types'
 import { translatePermissionCategory, translatePermissionDisplayName, translatePermissionDescription } from '@/portal-app/user-access/utils/permissionTranslation'
+import { useAuthContext } from '@/contexts/AuthContext'
+import { isPlatformAdmin } from '@/lib/roles'
 
 interface PermissionsDialogProps {
   role: RoleListItem | null
@@ -38,8 +40,15 @@ interface PermissionsDialogProps {
 
 export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: PermissionsDialogProps) => {
   const { t } = useTranslation('common')
-  const { data: permissions = [], isLoading: permissionsLoading } = usePermissionsQuery()
+  const { user } = useAuthContext()
+  const { data: allPermissions = [], isLoading: permissionsLoading } = usePermissionsQuery()
   const { data: templates = [], isLoading: templatesLoading } = usePermissionTemplatesQuery()
+
+  // Exclude platform-only permissions for non-platform admins
+  const permissions = useMemo(() => {
+    if (isPlatformAdmin(user?.roles)) return allPermissions
+    return allPermissions.filter(p => p.isTenantAllowed)
+  }, [allPermissions, user?.roles])
 
   // Group permissions by category
   const permissionsByCategory = useMemo(() => {

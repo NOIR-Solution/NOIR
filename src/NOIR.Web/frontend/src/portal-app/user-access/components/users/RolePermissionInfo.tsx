@@ -5,6 +5,8 @@ import { TippyTooltip } from '@uikit'
 import { getEffectivePermissions, getAllPermissions } from '@/services/roles'
 import type { Permission, RoleListItem } from '@/types'
 import { translatePermissionCategory, translatePermissionDisplayName } from '@/portal-app/user-access/utils/permissionTranslation'
+import { useAuthContext } from '@/contexts/AuthContext'
+import { isPlatformAdmin } from '@/lib/roles'
 
 // Shared ref for permission details across instances (avoids module-level mutable state)
 const sharedPermissionDetails = { current: null as Permission[] | null }
@@ -17,6 +19,8 @@ interface RolePermissionInfoProps {
 
 export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded }: RolePermissionInfoProps) => {
   const { t } = useTranslation('common')
+  const { user } = useAuthContext()
+  const showPlatformPermissions = isPlatformAdmin(user?.roles)
   const [loading, setLoading] = useState(false)
   const [permissions, setPermissions] = useState<string[] | null>(null)
   const [allPermissions, setAllPermissions] = useState<Permission[]>(sharedPermissionDetails.current || [])
@@ -70,9 +74,10 @@ export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded
     }
   }, [role.id, permissionsCache, onPermissionsLoaded, permissions])
 
-  // Group permissions by category for display
+  // Group permissions by category for display (exclude platform-only for non-platform admins)
   const groupedPermissions = permissions?.reduce((groups, permName) => {
     const permDetail = allPermissions.find((p) => p.name === permName)
+    if (!showPlatformPermissions && (!permDetail || !permDetail.isTenantAllowed)) return groups
     const category = permDetail?.category || t('permissions.categories.other', 'Other')
     if (!groups[category]) {
       groups[category] = []
@@ -84,7 +89,9 @@ export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded
     return groups
   }, {} as Record<string, { name: string; displayName: string }[]>)
 
-  const totalCount = permissions?.length || 0
+  const totalCount = groupedPermissions
+    ? Object.values(groupedPermissions).reduce((sum, perms) => sum + perms.length, 0)
+    : 0
 
   const tooltipContent = (
     <div className="min-w-[200px] max-w-[280px]">

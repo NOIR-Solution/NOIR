@@ -96,10 +96,60 @@ public static class PermissionDtoFactory
         [DomainPermissions.ProductCategoriesUpdate] = ("Update Product Categories", "Edit product categories", "E-commerce"),
         [DomainPermissions.ProductCategoriesDelete] = ("Delete Product Categories", "Delete product categories", "E-commerce"),
 
+        // Brands
+        [DomainPermissions.BrandsRead] = ("View Brands", "View product brands", "E-commerce"),
+        [DomainPermissions.BrandsCreate] = ("Create Brands", "Create new brands", "E-commerce"),
+        [DomainPermissions.BrandsUpdate] = ("Update Brands", "Edit brand details", "E-commerce"),
+        [DomainPermissions.BrandsDelete] = ("Delete Brands", "Delete brands", "E-commerce"),
+
+        // Product Attributes
+        [DomainPermissions.AttributesRead] = ("View Attributes", "View product attributes", "E-commerce"),
+        [DomainPermissions.AttributesCreate] = ("Create Attributes", "Create new product attributes", "E-commerce"),
+        [DomainPermissions.AttributesUpdate] = ("Update Attributes", "Edit product attributes", "E-commerce"),
+        [DomainPermissions.AttributesDelete] = ("Delete Attributes", "Delete product attributes", "E-commerce"),
+
+        // Reviews
+        [DomainPermissions.ReviewsRead] = ("View Reviews", "View product reviews", "E-commerce"),
+        [DomainPermissions.ReviewsWrite] = ("Write Reviews", "Submit product reviews", "E-commerce"),
+        [DomainPermissions.ReviewsManage] = ("Manage Reviews", "Moderate and manage reviews", "E-commerce"),
+
+        // Customer Groups
+        [DomainPermissions.CustomerGroupsRead] = ("View Customer Groups", "View customer group configurations", "E-commerce"),
+        [DomainPermissions.CustomerGroupsCreate] = ("Create Customer Groups", "Create new customer groups", "E-commerce"),
+        [DomainPermissions.CustomerGroupsUpdate] = ("Update Customer Groups", "Edit customer group settings", "E-commerce"),
+        [DomainPermissions.CustomerGroupsDelete] = ("Delete Customer Groups", "Delete customer groups", "E-commerce"),
+        [DomainPermissions.CustomerGroupsManageMembers] = ("Manage Group Members", "Add or remove members from customer groups", "E-commerce"),
+
+        // Customers
+        [DomainPermissions.CustomersRead] = ("View Customers", "View customer profiles", "E-commerce"),
+        [DomainPermissions.CustomersCreate] = ("Create Customers", "Create new customer accounts", "E-commerce"),
+        [DomainPermissions.CustomersUpdate] = ("Update Customers", "Edit customer information", "E-commerce"),
+        [DomainPermissions.CustomersDelete] = ("Delete Customers", "Delete customer accounts", "E-commerce"),
+        [DomainPermissions.CustomersManage] = ("Manage Customers", "Full customer management access", "E-commerce"),
+
         // Orders
         [DomainPermissions.OrdersRead] = ("View Orders", "View order details", "Orders"),
         [DomainPermissions.OrdersWrite] = ("Create Orders", "Create new orders", "Orders"),
         [DomainPermissions.OrdersManage] = ("Manage Orders", "Full order management access", "Orders"),
+
+        // Promotions
+        [DomainPermissions.PromotionsRead] = ("View Promotions", "View promotions and discounts", "E-commerce"),
+        [DomainPermissions.PromotionsWrite] = ("Create/Edit Promotions", "Create and edit promotions", "E-commerce"),
+        [DomainPermissions.PromotionsDelete] = ("Delete Promotions", "Delete promotions", "E-commerce"),
+        [DomainPermissions.PromotionsManage] = ("Manage Promotions", "Full promotion management access", "E-commerce"),
+
+        // Inventory
+        [DomainPermissions.InventoryRead] = ("View Inventory", "View stock levels and receipts", "E-commerce"),
+        [DomainPermissions.InventoryWrite] = ("Adjust Inventory", "Create stock adjustments", "E-commerce"),
+        [DomainPermissions.InventoryManage] = ("Manage Inventory", "Full inventory management access", "E-commerce"),
+
+        // Wishlists
+        [DomainPermissions.WishlistsRead] = ("View Wishlists", "View customer wishlists", "E-commerce"),
+        [DomainPermissions.WishlistsWrite] = ("Edit Wishlists", "Edit wishlist items", "E-commerce"),
+        [DomainPermissions.WishlistsManage] = ("Manage Wishlists", "Full wishlist management access", "E-commerce"),
+
+        // Reports
+        [DomainPermissions.ReportsRead] = ("View Reports", "View business reports and analytics", "E-commerce"),
 
         // Legal Pages
         [DomainPermissions.LegalPagesRead] = ("View Legal Pages", "View legal documents", "Legal Pages"),
@@ -108,6 +158,10 @@ public static class PermissionDtoFactory
         // Tenant Settings
         [DomainPermissions.TenantSettingsRead] = ("View Tenant Settings", "View organization settings", "Settings"),
         [DomainPermissions.TenantSettingsUpdate] = ("Update Tenant Settings", "Modify organization settings", "Settings"),
+
+        // Feature Management
+        [DomainPermissions.FeaturesRead] = ("View Features", "View feature module configurations", "Settings"),
+        [DomainPermissions.FeaturesUpdate] = ("Update Features", "Enable or disable feature modules", "Settings"),
 
         // Platform Settings
         [DomainPermissions.PlatformSettingsRead] = ("View Platform Settings", "View platform configuration", "Platform"),
