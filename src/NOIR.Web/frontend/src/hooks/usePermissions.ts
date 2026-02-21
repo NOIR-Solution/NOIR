@@ -31,7 +31,9 @@ interface UsePermissionsResult {
 export const usePermissions = (): UsePermissionsResult => {
   const { isAuthenticated, user } = useAuthContext()
   const [permissionsData, setPermissionsData] = useState<UserPermissions | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  // Start as loading when authenticated to prevent ProtectedRoute from
+  // redirecting before the first fetch completes (race condition)
+  const [isLoading, setIsLoading] = useState(isAuthenticated)
   const [error, setError] = useState<Error | null>(null)
 
   const fetchPermissions = useCallback(async () => {
@@ -59,6 +61,7 @@ export const usePermissions = (): UsePermissionsResult => {
       fetchPermissions()
     } else {
       setPermissionsData(null)
+      setIsLoading(false)
     }
   }, [isAuthenticated, user?.id, fetchPermissions])
 

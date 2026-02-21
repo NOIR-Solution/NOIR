@@ -49,7 +49,7 @@ export const getProductAttributes = async (
   if (params.isFilterable !== undefined) queryParams.append('isFilterable', String(params.isFilterable))
   if (params.isVariantAttribute !== undefined) queryParams.append('isVariantAttribute', String(params.isVariantAttribute))
   if (params.type) queryParams.append('type', params.type)
-  if (params.page) queryParams.append('pageNumber', params.page.toString())
+  if (params.page) queryParams.append('page', params.page.toString())
   if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString())
 
   const query = queryParams.toString()

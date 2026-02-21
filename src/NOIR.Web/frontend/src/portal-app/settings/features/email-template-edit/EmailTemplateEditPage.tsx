@@ -96,6 +96,10 @@ export const EmailTemplateEditPage = () => {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const [searchParams, setSearchParams] = useSearchParams()
+  const fromContext = searchParams.get('from')
+  const settingsBackUrl = fromContext === 'platform'
+    ? '/portal/admin/platform-settings?tab=emailTemplates'
+    : '/portal/admin/tenant-settings?tab=emailTemplates'
   const editorRef = useRef<TinyMCEEditor | null>(null)
 
   // Track editor initialization to prevent false "unsaved changes" from TinyMCE normalization
@@ -154,14 +158,14 @@ export const EmailTemplateEditPage = () => {
         } else {
           toast.error(t('messages.operationFailed'))
         }
-        navigate('/portal/admin/tenant-settings?tab=emailTemplates')
+        navigate(settingsBackUrl)
       } finally {
         setLoading(false)
       }
     }
 
     loadTemplate()
-  }, [id, navigate, t])
+  }, [id, navigate, t, settingsBackUrl])
 
   // Auto-open preview when navigated with ?mode=preview
   useEffect(() => {
@@ -383,7 +387,7 @@ export const EmailTemplateEditPage = () => {
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/portal/admin/tenant-settings?tab=emailTemplates')}>
+          <Button variant="ghost" size="icon" onClick={() => navigate(settingsBackUrl)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>

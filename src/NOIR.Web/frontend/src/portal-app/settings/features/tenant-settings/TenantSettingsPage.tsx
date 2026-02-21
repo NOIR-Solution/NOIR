@@ -127,11 +127,11 @@ export const TenantSettingsPage = () => {
           <SmtpSettingsTab canEdit={canEdit} />
         </TabsContent>
         <TabsContent value="emailTemplates">
-          <EmailTemplatesTab onEdit={(id) => navigate(`/portal/email-templates/${id}`)} />
+          <EmailTemplatesTab onEdit={(id) => navigate(`/portal/email-templates/${id}?from=tenant`)} />
         </TabsContent>
         {/* Compliance */}
         <TabsContent value="legalPages">
-          <LegalPagesTab onEdit={(id) => navigate(`/portal/legal-pages/${id}`)} />
+          <LegalPagesTab onEdit={(id) => navigate(`/portal/legal-pages/${id}?from=tenant`)} />
         </TabsContent>
         {/* Modules */}
         <TabsContent value="modules">

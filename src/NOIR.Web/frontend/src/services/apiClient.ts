@@ -232,8 +232,8 @@ export const apiClient = async <T>(
 
     // Provide user-friendly error messages for common HTTP status codes
     let message = error.detail || error.title || `HTTP ${response.status}`
-    if (response.status === 403) {
-      // Use translation key that will be handled by the calling code
+    if (response.status === 403 && !error.detail) {
+      // No backend detail — use generic i18n permission message
       message = i18n.t('messages.permissionDenied', { ns: 'common' }) || 'You don\'t have permission to perform this action.'
     } else if (response.status === 401 && !token) {
       message = i18n.t('messages.sessionExpired', { ns: 'common' }) || 'Your session has expired. Please sign in again.'
@@ -283,7 +283,8 @@ export const apiClientPublic = async <T>(
 
     // Provide user-friendly error messages for common HTTP status codes
     let message = error.detail || error.title || `HTTP ${response.status}`
-    if (response.status === 403) {
+    if (response.status === 403 && !error.detail) {
+      // No backend detail — use generic i18n permission message
       message = i18n.t('messages.permissionDenied', { ns: 'common' }) || 'You don\'t have permission to perform this action.'
     }
 

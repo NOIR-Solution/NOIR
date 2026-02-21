@@ -55,7 +55,7 @@ public class GetBrandsQueryHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(5);
 
-        var query = new GetBrandsQuery(PageNumber: 1, PageSize: 10);
+        var query = new GetBrandsQuery(Page: 1, PageSize: 10);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -88,7 +88,7 @@ public class GetBrandsQueryHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(25); // 25 total items across all pages
 
-        var query = new GetBrandsQuery(PageNumber: 2, PageSize: 10);
+        var query = new GetBrandsQuery(Page: 2, PageSize: 10);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -119,7 +119,7 @@ public class GetBrandsQueryHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);
 
-        var query = new GetBrandsQuery(PageNumber: 1, PageSize: 10);
+        var query = new GetBrandsQuery(Page: 1, PageSize: 10);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -149,7 +149,7 @@ public class GetBrandsQueryHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
-        var query = new GetBrandsQuery(PageNumber: 1, PageSize: 10);
+        var query = new GetBrandsQuery(Page: 1, PageSize: 10);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -184,7 +184,7 @@ public class GetBrandsQueryHandlerTests
 
         var query = new GetBrandsQuery(
             Search: "Nike",
-            PageNumber: 1,
+            Page: 1,
             PageSize: 10);
 
         // Act
@@ -218,7 +218,7 @@ public class GetBrandsQueryHandlerTests
 
         var query = new GetBrandsQuery(
             IsActive: true,
-            PageNumber: 1,
+            Page: 1,
             PageSize: 10);
 
         // Act
@@ -248,7 +248,7 @@ public class GetBrandsQueryHandlerTests
 
         var query = new GetBrandsQuery(
             IsFeatured: true,
-            PageNumber: 1,
+            Page: 1,
             PageSize: 10);
 
         // Act
@@ -283,7 +283,7 @@ public class GetBrandsQueryHandlerTests
                 token))
             .ReturnsAsync(0);
 
-        var query = new GetBrandsQuery(PageNumber: 1, PageSize: 10);
+        var query = new GetBrandsQuery(Page: 1, PageSize: 10);
 
         // Act
         await _handler.Handle(query, token);

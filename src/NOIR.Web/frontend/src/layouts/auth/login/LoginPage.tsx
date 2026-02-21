@@ -9,6 +9,7 @@ import { useAuthContext } from "@/contexts/AuthContext"
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher"
 import { OrganizationSelection } from "@/components/auth/OrganizationSelection"
 import type { TenantOption } from "@/types"
+import { isPlatformAdmin } from "@/lib/roles"
 import { motion, AnimatePresence } from "framer-motion"
 
 /**
@@ -26,6 +27,27 @@ const validateReturnUrl = (url: string): string => {
 }
 
 /**
+ * Paths only accessible by platform admin (TenantId = null).
+ * Keep in sync with navSections in Sidebar.tsx — these correspond to items gated
+ * by Permissions.PlatformSettingsRead, TenantsRead, and SystemAdmin.
+ */
+const PLATFORM_ONLY_PATHS = ['/portal/admin/platform-settings', '/portal/admin/tenants', '/portal/developer-logs']
+/** Paths only accessible by tenant admin */
+const TENANT_ONLY_PATHS = ['/portal/admin/tenant-settings']
+
+/**
+ * Validates that a returnUrl is compatible with the user's admin type.
+ * Only guards the hard partition: platform-admin-only vs tenant-admin-only routes.
+ * Per-feature and per-permission access is enforced by the pages themselves, not here.
+ */
+const isUrlCompatibleWithRole = (url: string, roles: string[]): boolean => {
+  if (isPlatformAdmin(roles)) {
+    return !TENANT_ONLY_PATHS.some(p => url.startsWith(p))
+  }
+  return !PLATFORM_ONLY_PATHS.some(p => url.startsWith(p))
+}
+
+/**
  * Login Page - Multi-step login with organization selection
  * Step 1: Enter email + password → Submit
  * Step 2: If multiple tenants → Show organization selection step
@@ -36,7 +58,7 @@ export const LoginPage = () => {
   const [searchParams] = useSearchParams()
   const returnUrl = searchParams.get('returnUrl') || '/portal'
   const { login } = useLogin()
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuthContext()
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuthContext()
   const { t } = useTranslation('auth')
 
   // Step management
@@ -57,13 +79,15 @@ export const LoginPage = () => {
   const [emailError, setEmailError] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
-  // Redirect to portal if already logged in
+  // Redirect after login or if already authenticated
+  // Uses user.roles to validate returnUrl is compatible with user's role type
   useEffect(() => {
-    if (isAuthenticated) {
-      const safeReturnUrl = validateReturnUrl(returnUrl)
-      navigate(safeReturnUrl, { replace: true })
+    if (isAuthenticated && user) {
+      const safeUrl = validateReturnUrl(returnUrl)
+      const redirectUrl = isUrlCompatibleWithRole(safeUrl, user.roles) ? safeUrl : '/portal'
+      navigate(redirectUrl, { replace: true })
     }
-  }, [isAuthenticated, navigate, returnUrl])
+  }, [isAuthenticated, user, navigate, returnUrl])
 
   // Handle login form submission
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -98,9 +122,7 @@ export const LoginPage = () => {
       const result = await login({ email, password })
 
       if (result.success) {
-        // Login successful - redirect
-        const safeReturnUrl = validateReturnUrl(returnUrl)
-        navigate(safeReturnUrl)
+        // Login successful - useEffect handles redirect after user state updates
       } else if (result.requiresTenantSelection && result.availableTenants) {
         // Multiple tenants matched - show organization selection step
         setAvailableTenants(result.availableTenants)
@@ -130,8 +152,7 @@ export const LoginPage = () => {
       })
 
       if (result.success) {
-        const safeReturnUrl = validateReturnUrl(returnUrl)
-        navigate(safeReturnUrl)
+        // Login successful - useEffect handles redirect after user state updates
       }
     } catch (error) {
       if (error instanceof Error) {

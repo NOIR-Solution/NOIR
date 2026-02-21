@@ -6,5 +6,5 @@ namespace NOIR.Application.Features.CustomerGroups.Queries.GetCustomerGroups;
 public sealed record GetCustomerGroupsQuery(
     string? Search = null,
     bool? IsActive = null,
-    int PageNumber = 1,
+    int Page = 1,
     int PageSize = 20);

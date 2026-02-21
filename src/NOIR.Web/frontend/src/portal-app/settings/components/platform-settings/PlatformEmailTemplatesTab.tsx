@@ -33,8 +33,7 @@ export const PlatformEmailTemplatesTab = ({ onEdit }: PlatformEmailTemplatesTabP
     const loadTemplates = async () => {
       try {
         const data = await getEmailTemplates()
-        // Filter to only platform templates (isInherited = true means it's a platform default)
-        setTemplates(data.filter(t => t.isInherited))
+        setTemplates(data)
       } catch (err) {
         const message = err instanceof ApiError ? err.message : t('emailTemplates.failedToLoad')
         toast.error(message)

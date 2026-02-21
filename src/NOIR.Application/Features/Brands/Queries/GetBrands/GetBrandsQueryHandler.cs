@@ -21,7 +21,7 @@ public class GetBrandsQueryHandler
             query.Search,
             query.IsActive,
             query.IsFeatured,
-            query.PageNumber,
+            query.Page,
             query.PageSize);
 
         var brands = await _brandRepository.ListAsync(spec, cancellationToken);
@@ -36,8 +36,8 @@ public class GetBrandsQueryHandler
 
         var items = brands.Select(BrandMapper.ToListDto).ToList();
 
-        // PagedResult expects pageIndex (0-based), but query.PageNumber is 1-based
-        var pageIndex = query.PageNumber - 1;
+        // PagedResult expects pageIndex (0-based), but query.Page is 1-based
+        var pageIndex = query.Page - 1;
 
         return Result.Success(PagedResult<BrandListDto>.Create(
             items,

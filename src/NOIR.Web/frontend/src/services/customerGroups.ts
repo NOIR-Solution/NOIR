@@ -31,7 +31,7 @@ export const getCustomerGroups = async (params: GetCustomerGroupsParams = {}): P
   const queryParams = new URLSearchParams()
   if (params.search) queryParams.append('search', params.search)
   if (params.isActive !== undefined) queryParams.append('isActive', String(params.isActive))
-  if (params.page) queryParams.append('pageNumber', params.page.toString())
+  if (params.page) queryParams.append('page', params.page.toString())
   if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString())
 
   const query = queryParams.toString()

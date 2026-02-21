@@ -95,7 +95,7 @@ public class GetCustomerGroupsQueryHandlerTests
     public async Task Handle_CustomPaging_ReturnsCorrectPageInfo()
     {
         // Arrange
-        var query = new GetCustomerGroupsQuery(PageNumber: 2, PageSize: 5);
+        var query = new GetCustomerGroupsQuery(Page: 2, PageSize: 5);
         var groups = CreateTestGroups(5);
 
         _repositoryMock.Setup(x => x.ListAsync(

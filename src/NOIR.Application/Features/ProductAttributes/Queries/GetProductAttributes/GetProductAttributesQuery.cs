@@ -9,5 +9,5 @@ public sealed record GetProductAttributesQuery(
     bool? IsFilterable = null,
     bool? IsVariantAttribute = null,
     string? Type = null,
-    int PageNumber = 1,
+    int Page = 1,
     int PageSize = 20);

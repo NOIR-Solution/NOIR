@@ -63,11 +63,11 @@ export const PlatformSettingsPage = () => {
         </TabsContent>
 
         <TabsContent value="emailTemplates">
-          <PlatformEmailTemplatesTab onEdit={(id) => navigate(`/portal/email-templates/${id}`)} />
+          <PlatformEmailTemplatesTab onEdit={(id) => navigate(`/portal/email-templates/${id}?from=platform`)} />
         </TabsContent>
 
         <TabsContent value="legalPages">
-          <PlatformLegalPagesTab onEdit={(id) => navigate(`/portal/legal-pages/${id}`)} />
+          <PlatformLegalPagesTab onEdit={(id) => navigate(`/portal/legal-pages/${id}?from=platform`)} />
         </TabsContent>
       </Tabs>
     </div>

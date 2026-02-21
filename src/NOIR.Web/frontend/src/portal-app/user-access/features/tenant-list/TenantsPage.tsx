@@ -29,7 +29,7 @@ export const TenantsPage = () => {
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
   const [isPaginationPending, startPaginationTransition] = useTransition()
-  const [params, setParams] = useState<GetTenantsParams>({ pageNumber: 1, pageSize: 10 })
+  const [params, setParams] = useState<GetTenantsParams>({ page: 1, pageSize: 10 })
 
   const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
   const { data, isLoading: loading, error: queryError, refetch: refresh } = useTenantsQuery(queryParams)
@@ -37,7 +37,7 @@ export const TenantsPage = () => {
   const error = queryError?.message ?? null
 
   const setPage = (page: number) => startPaginationTransition(() =>
-    setParams((prev) => ({ ...prev, pageNumber: page }))
+    setParams((prev) => ({ ...prev, page }))
   )
   const [tenantToEdit, setTenantToEdit] = useState<TenantListItem | null>(null)
   const [tenantToDelete, setTenantToDelete] = useState<TenantListItem | null>(null)
@@ -89,7 +89,7 @@ export const TenantsPage = () => {
                 <Input
                   placeholder={t('tenants.searchPlaceholder')}
                   value={searchInput}
-                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, pageNumber: 1 })) }}
+                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
                   className="pl-9 h-9"
                   aria-label={t('tenants.searchTenants', 'Search tenants')}
                 />

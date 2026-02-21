@@ -23,7 +23,7 @@ public class GetProductAttributesQueryHandler
             query.IsFilterable,
             query.IsVariantAttribute,
             query.Type,
-            query.PageNumber,
+            query.Page,
             query.PageSize,
             includeValues: true);
 
@@ -41,8 +41,8 @@ public class GetProductAttributesQueryHandler
 
         var items = attributes.Select(ProductAttributeMapper.ToListDto).ToList();
 
-        // PagedResult expects pageIndex (0-based), but query.PageNumber is 1-based
-        var pageIndex = query.PageNumber - 1;
+        // PagedResult expects pageIndex (0-based), but query.Page is 1-based
+        var pageIndex = query.Page - 1;
 
         return Result.Success(PagedResult<ProductAttributeListDto>.Create(
             items,

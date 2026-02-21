@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import { AccessibilityProvider } from '@/contexts/AccessibilityContext'
 import { DensityProvider } from '@/contexts/DensityContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { Permissions } from '@/hooks/usePermissions'
 import { PortalLayout } from '@/layouts/PortalLayout'
 import { PageSkeleton } from '@uikit'
 import { CommandProvider, CommandPalette } from '@/components/command-palette'
@@ -135,17 +136,17 @@ export const App = () => {
                         <Route path="legal-pages/:id" element={<Suspense fallback={<LazyFallback />}><LegalPageEditPage /></Suspense>} />
                         <Route path="notifications" element={<Suspense fallback={<LazyFallback />}><NotificationsPage /></Suspense>} />
                         <Route path="settings/notifications" element={<Suspense fallback={<LazyFallback />}><NotificationPreferencesPage /></Suspense>} />
-                        {/* Admin Routes */}
-                        <Route path="admin/platform-settings" element={<Suspense fallback={<LazyFallback />}><PlatformSettingsPage /></Suspense>} />
-                        <Route path="admin/tenant-settings" element={<Suspense fallback={<LazyFallback />}><TenantSettingsPage /></Suspense>} />
+                        {/* Admin Routes - guarded by permission to prevent direct URL access */}
+                        <Route path="admin/platform-settings" element={<ProtectedRoute permissions={Permissions.PlatformSettingsRead}><Suspense fallback={<LazyFallback />}><PlatformSettingsPage /></Suspense></ProtectedRoute>} />
+                        <Route path="admin/tenant-settings" element={<ProtectedRoute permissions={Permissions.TenantSettingsRead}><Suspense fallback={<LazyFallback />}><TenantSettingsPage /></Suspense></ProtectedRoute>} />
                         {/* Payment Gateways redirect - now a tab in Tenant Settings */}
                         <Route path="admin/payment-gateways" element={<Navigate to="/portal/admin/tenant-settings?tab=paymentGateways" replace />} />
-                        <Route path="admin/tenants" element={<Suspense fallback={<LazyFallback />}><TenantsPage /></Suspense>} />
-                        <Route path="admin/tenants/:id" element={<Suspense fallback={<LazyFallback />}><TenantDetailPage /></Suspense>} />
+                        <Route path="admin/tenants" element={<ProtectedRoute permissions={Permissions.TenantsRead}><Suspense fallback={<LazyFallback />}><TenantsPage /></Suspense></ProtectedRoute>} />
+                        <Route path="admin/tenants/:id" element={<ProtectedRoute permissions={Permissions.TenantsRead}><Suspense fallback={<LazyFallback />}><TenantDetailPage /></Suspense></ProtectedRoute>} />
                         <Route path="admin/roles" element={<Suspense fallback={<LazyFallback />}><RolesPage /></Suspense>} />
                         <Route path="admin/users" element={<Suspense fallback={<LazyFallback />}><UsersPage /></Suspense>} />
                         <Route path="activity-timeline" element={<Suspense fallback={<LazyFallback />}><ActivityTimelinePage /></Suspense>} />
-                        <Route path="developer-logs" element={<Suspense fallback={<LazyFallback />}><DeveloperLogsPage /></Suspense>} />
+                        <Route path="developer-logs" element={<ProtectedRoute permissions={Permissions.SystemAdmin}><Suspense fallback={<LazyFallback />}><DeveloperLogsPage /></Suspense></ProtectedRoute>} />
                         {/* Blog CMS */}
                         <Route path="blog/posts" element={<Suspense fallback={<LazyFallback />}><BlogPostsPage /></Suspense>} />
                         <Route path="blog/posts/new" element={<Suspense fallback={<LazyFallback />}><BlogPostEditPage /></Suspense>} />

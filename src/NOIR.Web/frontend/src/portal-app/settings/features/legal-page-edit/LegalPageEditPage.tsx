@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
@@ -72,6 +72,11 @@ export const LegalPageEditPage = () => {
   const { id } = useParams<{ id: string }>()
   const { t } = useTranslation('common')
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const fromContext = searchParams.get('from')
+  const settingsBackUrl = fromContext === 'platform'
+    ? '/portal/admin/platform-settings?tab=legalPages'
+    : '/portal/admin/tenant-settings?tab=legalPages'
   const { formatDate } = useRegionalSettings()
   const { hasPermission } = usePermissions()
   const canEdit = hasPermission(Permissions.LegalPagesUpdate)
@@ -110,7 +115,7 @@ export const LegalPageEditPage = () => {
       } else {
         toast.error(t('messages.operationFailed'))
       }
-      navigate('/portal/admin/tenant-settings?tab=legalPages')
+      navigate(settingsBackUrl)
     } finally {
       setLoading(false)
     }
@@ -158,9 +163,10 @@ export const LegalPageEditPage = () => {
       })
       setPage(updated)
       toast.success(t('legalPages.savedSuccess'))
-      // If COW created a new page, navigate to the new ID
+      // If COW created a new page, navigate to the new ID (preserve from param)
       if (updated.id !== id) {
-        navigate(`/portal/legal-pages/${updated.id}`, { replace: true })
+        const fromParam = fromContext ? `?from=${fromContext}` : ''
+        navigate(`/portal/legal-pages/${updated.id}${fromParam}`, { replace: true })
       }
     } catch (error) {
       if (error instanceof ApiError) {
@@ -197,9 +203,10 @@ export const LegalPageEditPage = () => {
       setCanonicalUrl(reverted.canonicalUrl || '')
       setAllowIndexing(reverted.allowIndexing)
       toast.success(t('legalPages.revertedSuccess'))
-      // Navigate to the platform page ID
+      // Navigate to the platform page ID (preserve from param)
       if (reverted.id !== id) {
-        navigate(`/portal/legal-pages/${reverted.id}`, { replace: true })
+        const fromParam = fromContext ? `?from=${fromContext}` : ''
+        navigate(`/portal/legal-pages/${reverted.id}${fromParam}`, { replace: true })
       }
     } catch (error) {
       if (error instanceof ApiError) {
@@ -242,7 +249,7 @@ export const LegalPageEditPage = () => {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/portal/admin/tenant-settings?tab=legalPages')}>
+          <Button variant="ghost" size="icon" onClick={() => navigate(settingsBackUrl)}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="p-2 bg-primary/10 rounded-lg">

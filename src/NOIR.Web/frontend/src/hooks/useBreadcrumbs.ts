@@ -9,6 +9,8 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
 
   return useMemo(() => {
     const path = location.pathname
+    const searchParams = new URLSearchParams(location.search)
+    const fromContext = searchParams.get('from')
 
     // Define breadcrumb configurations for routes
     const breadcrumbConfig: Record<string, BreadcrumbItem[]> = {
@@ -246,27 +248,39 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
       ]
     }
 
-    // Email template edit
+    // Email template edit - context-aware breadcrumb based on ?from= param
     if (path.match(/^\/portal\/email-templates\/[^/]+$/)) {
+      const isPlatformContext = fromContext === 'platform'
       return [
         { label: 'Portal', href: '/portal' },
         { label: 'Settings' },
-        { label: 'Tenant Settings', href: '/portal/admin/tenant-settings' },
+        {
+          label: isPlatformContext ? 'Platform Settings' : 'Tenant Settings',
+          href: isPlatformContext
+            ? '/portal/admin/platform-settings?tab=emailTemplates'
+            : '/portal/admin/tenant-settings?tab=emailTemplates',
+        },
         { label: 'Edit Email Template' },
       ]
     }
 
-    // Legal page edit
+    // Legal page edit - context-aware breadcrumb based on ?from= param
     if (path.match(/^\/portal\/legal-pages\/[^/]+$/)) {
+      const isPlatformContext = fromContext === 'platform'
       return [
         { label: 'Portal', href: '/portal' },
         { label: 'Settings' },
-        { label: 'Tenant Settings', href: '/portal/admin/tenant-settings' },
+        {
+          label: isPlatformContext ? 'Platform Settings' : 'Tenant Settings',
+          href: isPlatformContext
+            ? '/portal/admin/platform-settings?tab=legalPages'
+            : '/portal/admin/tenant-settings?tab=legalPages',
+        },
         { label: 'Edit Legal Page' },
       ]
     }
 
     // Default fallback - just show Portal
     return [{ label: 'Portal', href: '/portal' }]
-  }, [location.pathname])
+  }, [location.pathname, location.search])
 }

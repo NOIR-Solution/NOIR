@@ -20,7 +20,7 @@ public class GetCustomerGroupsQueryHandler
         var spec = new CustomerGroupsPagedSpec(
             query.Search,
             query.IsActive,
-            query.PageNumber,
+            query.Page,
             query.PageSize);
 
         var groups = await _repository.ListAsync(spec, cancellationToken);
@@ -34,8 +34,8 @@ public class GetCustomerGroupsQueryHandler
 
         var items = groups.Select(CustomerGroupMapper.ToListDto).ToList();
 
-        // PagedResult expects pageIndex (0-based), but query.PageNumber is 1-based
-        var pageIndex = query.PageNumber - 1;
+        // PagedResult expects pageIndex (0-based), but query.Page is 1-based
+        var pageIndex = query.Page - 1;
 
         return Result.Success(PagedResult<CustomerGroupListDto>.Create(
             items,

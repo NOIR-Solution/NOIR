@@ -17,7 +17,7 @@ import type {
  * Tenant list query parameters
  */
 export interface GetTenantsParams {
-  pageNumber?: number
+  page?: number
   pageSize?: number
   search?: string
   isActive?: boolean
@@ -31,8 +31,8 @@ export const getTenants = async (
 ): Promise<PaginatedResponse<TenantListItem>> => {
   const searchParams = new URLSearchParams()
 
-  if (params.pageNumber !== undefined) {
-    searchParams.set('pageNumber', params.pageNumber.toString())
+  if (params.page !== undefined) {
+    searchParams.set('page', params.page.toString())
   }
   if (params.pageSize !== undefined) {
     searchParams.set('pageSize', params.pageSize.toString())

@@ -241,7 +241,7 @@ public class GetProductAttributesQueryHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(50); // Total of 50 items
 
-        var query = new GetProductAttributesQuery(PageNumber: 2, PageSize: 5);
+        var query = new GetProductAttributesQuery(Page: 2, PageSize: 5);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);

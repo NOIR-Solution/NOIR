@@ -22,8 +22,7 @@ export const PlatformLegalPagesTab = ({ onEdit }: PlatformLegalPagesTabProps) =>
     const loadPages = async () => {
       try {
         const data = await getLegalPages()
-        // Filter to only platform pages (isInherited = true means it's a platform default)
-        setPages(data.filter(p => p.isInherited))
+        setPages(data)
       } catch (err) {
         const message = err instanceof ApiError ? err.message : t('legalPages.failedToLoad')
         toast.error(message)
