@@ -35,20 +35,14 @@ public class GetPaymentTimelineQueryHandler
                 Error.NotFound("Payment transaction not found.", ErrorCodes.Payment.TransactionNotFound));
         }
 
-        // Load all related data in parallel
+        // Load all related data sequentially (repositories share the same DbContext)
         var operationLogsSpec = new PaymentOperationLogsByTransactionIdSpec(query.PaymentTransactionId);
         var webhookLogsSpec = new WebhookLogsByPaymentSpec(query.PaymentTransactionId);
         var refundsSpec = new RefundsByPaymentSpec(query.PaymentTransactionId);
 
-        var operationLogsTask = _operationLogRepository.ListAsync(operationLogsSpec, cancellationToken);
-        var webhookLogsTask = _webhookLogRepository.ListAsync(webhookLogsSpec, cancellationToken);
-        var refundsTask = _refundRepository.ListAsync(refundsSpec, cancellationToken);
-
-        await Task.WhenAll(operationLogsTask, webhookLogsTask, refundsTask);
-
-        var operationLogs = operationLogsTask.Result;
-        var webhookLogs = webhookLogsTask.Result;
-        var refunds = refundsTask.Result;
+        var operationLogs = await _operationLogRepository.ListAsync(operationLogsSpec, cancellationToken);
+        var webhookLogs = await _webhookLogRepository.ListAsync(webhookLogsSpec, cancellationToken);
+        var refunds = await _refundRepository.ListAsync(refundsSpec, cancellationToken);
 
         var events = new List<PaymentTimelineEventDto>();
 
