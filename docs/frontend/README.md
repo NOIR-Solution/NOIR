@@ -43,7 +43,7 @@ src/NOIR.Web/frontend/
 │   │   ├── welcome/        # Landing, Terms, Privacy
 │   │   └── wishlists/      # Customer wishlists
 │   ├── layouts/        # Layout components + auth pages
-│   ├── uikit/          # UI component library + stories (72 components, @uikit alias)
+│   ├── uikit/          # UI component library + stories (92 components, @uikit alias)
 │   ├── components/     # Shared app-level components
 │   ├── contexts/       # React Context providers
 │   ├── hooks/          # Shared custom hooks
@@ -105,7 +105,7 @@ pnpm run lint
 
 ## Storybook & UIKit
 
-The project includes a **Storybook** setup for interactive component documentation with 72 component stories.
+The project includes a **Storybook** setup for interactive component documentation with 91 component stories.
 
 ```bash
 # Run Storybook (component catalog)
@@ -126,7 +126,7 @@ src/uikit/
 ├── card/Card.stories.tsx
 ├── dialog/Dialog.stories.tsx
 ├── table/Table.stories.tsx
-├── ... (72 total)
+├── ... (91 total)
 ```
 
 **Path alias:** `@uikit` maps to `src/uikit/` (`tsconfig.app.json`)

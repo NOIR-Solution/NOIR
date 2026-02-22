@@ -33,10 +33,9 @@ NOIR needs a modern frontend for:
 - **Active community** - 60k+ GitHub stars, widely adopted
 
 ### Current Implementation
-- 58 UI components in `src/uikit/`
-- 103 total components (including custom)
-- 72 Storybook stories in `src/uikit/` (interactive component catalog)
-- 28 custom React hooks
+- 92 UI components in `src/uikit/`
+- 91 Storybook stories in `src/uikit/` (interactive component catalog)
+- 25 custom React hooks
 - OKLCH color system (see `docs/frontend/COLOR_SCHEMA_GUIDE.md`)
 - pnpm for disk-optimized dependency management
 
@@ -50,7 +49,7 @@ pnpm storybook          # http://localhost:6006
 ```
 
 - **Config:** `.storybook/main.ts` (React + Vite + Tailwind CSS 4)
-- **Stories:** 72 component stories in `src/uikit/{component}/`
+- **Stories:** 91 component stories in `src/uikit/{component}/`
 - **Path alias:** `@uikit` → `src/uikit/`
 
 ## References

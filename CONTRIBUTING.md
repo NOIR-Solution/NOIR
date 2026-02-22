@@ -70,7 +70,7 @@ When reporting bugs:
 ## Testing
 
 ```bash
-# Run all tests (10,595+)
+# Run all tests (10,889+)
 dotnet test src/NOIR.sln
 
 # Run with coverage

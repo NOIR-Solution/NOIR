@@ -14,7 +14,7 @@ Empty states, Loading states, Toasts, Status badges, Config/Settings pages.
 ### Goal 2: Storybook 100% Sync
 Every UI component used in the website MUST have a Storybook story showing all variants, states, and sizes.
 - Story location: `src/uikit/{component-name}/{Component}.stories.tsx`
-- Cross-reference `src/components/ui/` vs `src/uikit/` vs app imports
+- Cross-reference `src/uikit/` vs app component imports
 - Missing stories → create. Outdated stories → update. `pnpm build-storybook` → 0 errors.
 
 ### Goal 3: Backend Consistency — Same Pattern Everywhere
@@ -23,7 +23,7 @@ Handler structure, Specifications, Folder structure, Error handling, Audit comma
 DI registration, Entity configuration, Repository pattern, DTOs, Endpoint structure, Dead code.
 
 ### Goal 4: Fill All Test Coverage Gaps
-Audit existing tests (10,595+), find what's NOT covered, fill every gap.
+Audit existing tests (10,889+), find what's NOT covered, fill every gap.
 Phase 0 auditor MUST produce a **Test Gap Report**.
 
 ### Goal 5: Feature Completeness — Match Top E-commerce Platforms

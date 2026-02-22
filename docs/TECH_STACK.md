@@ -2,7 +2,7 @@
 
 > **Complete reference of technologies, libraries, and frameworks used in NOIR.**
 
-**Last Updated:** 2026-02-18
+**Last Updated:** 2026-02-23
 
 ---
 
@@ -394,8 +394,7 @@ public class CustomerService : ICustomerService, IScopedService { }
 - Custom: `PageSkeleton`, `TippyTooltip`
 
 **Configuration:**
-- `src/NOIR.Web/frontend/src/components/ui/` - Component source
-- `src/NOIR.Web/frontend/src/uikit/` - Storybook stories (58 components)
+- `src/NOIR.Web/frontend/src/uikit/` - Components and stories (92 components, 91 stories)
 - `.storybook/main.ts` - Storybook config (Vite + Tailwind CSS 4)
 
 ---
@@ -594,8 +593,8 @@ const form = useForm<FormData>({
 | **NSubstitute** | 5.0 | Mocking | [NSubstitute](https://nsubstitute.github.io/) |
 
 **Test Projects:**
-- `NOIR.Domain.UnitTests` - 842 tests
-- `NOIR.Application.UnitTests` - 5,231 tests
+- `NOIR.Domain.UnitTests` - 2,586 tests
+- `NOIR.Application.UnitTests` - 7,483 tests
 
 ---
 
@@ -612,7 +611,7 @@ const form = useForm<FormData>({
 - **Cleanup** - Automatic after each test
 
 **Test Project:**
-- `NOIR.IntegrationTests` - 654 tests
+- `NOIR.IntegrationTests` - 788 tests
 
 ---
 
@@ -628,7 +627,7 @@ const form = useForm<FormData>({
 - Circular references
 
 **Test Project:**
-- `NOIR.ArchitectureTests` - 25 tests
+- `NOIR.ArchitectureTests` - 32 tests
 
 ---
 
@@ -657,7 +656,7 @@ const form = useForm<FormData>({
 |------|---------|---------|
 | **Storybook** | 10.2 | Interactive component catalog |
 
-**Storybook** provides an isolated development environment for 58 UI components in `src/uikit/`. Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
+**Storybook** provides an isolated development environment for 92 UI components in `src/uikit/` with 91 stories. Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
 
 ### Package Management
 
@@ -746,5 +745,5 @@ const form = useForm<FormData>({
 
 ---
 
-**Last Updated:** 2026-02-18
+**Last Updated:** 2026-02-23
 **Maintainer:** NOIR Team

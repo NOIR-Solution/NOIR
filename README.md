@@ -168,7 +168,7 @@ dotnet run --project src/NOIR.Web -c Release
 
 - **Hot Reload** - Backend and frontend live reloading
 - **Type Generation** - Swagger → TypeScript types
-- **Storybook** - 72 interactive component stories with UIKit catalog
+- **Storybook** - 91 interactive component stories with UIKit catalog
 - **10,889+ Tests** - Unit, Integration, Architecture
 - **Architecture Tests** - Enforce layer boundaries
 - **Comprehensive Docs** - 15,000+ lines of documentation
@@ -281,7 +281,7 @@ NOIR/
 │   └── NOIR.Web/              # 🌐 API endpoints, middleware, SPA host
 │       └── frontend/          # ⚛️  React application (pnpm)
 │           ├── .storybook/    # 📖 Storybook configuration
-│           └── src/uikit/     # 📚 72 component stories
+│           └── src/uikit/     # 📚 91 component stories
 ├── ✅ tests/                  # 10,889+ tests (Unit, Integration, Architecture)
 ├── 📚 docs/                   # 15,000+ lines of documentation
 └── ⚙️  .github/               # CI/CD workflows and templates

@@ -1,6 +1,6 @@
 # NOIR - Claude Code Instructions
 
-> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.0 (2026-02-21).
+> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.1 (2026-02-23).
 
 ## SuperClaude Framework
 
@@ -236,7 +236,7 @@ For TanStack Query hooks, React 19 performance patterns (useDeferredValue, useTr
 
 ## Storybook & UIKit
 
-**72 component stories** in `src/uikit/{component}/`. Config: `.storybook/main.ts` (React + Vite + Tailwind CSS 4).
+**91 component stories** in `src/uikit/{component}/`. Config: `.storybook/main.ts` (React + Vite + Tailwind CSS 4).
 
 ```bash
 cd src/NOIR.Web/frontend && pnpm storybook       # Dev: http://localhost:6006
@@ -245,7 +245,7 @@ cd src/NOIR.Web/frontend && pnpm build-storybook  # Build check
 
 - `@uikit` alias → `src/uikit/` (tsconfig.app.json)
 - Stories excluded from prod build
-- Components live in `src/components/ui/`, stories in `src/uikit/`
+- Components and stories co-located in `src/uikit/{component}/`
 
 ---
 
@@ -286,4 +286,4 @@ Research reports → `docs/backend/research/` or `docs/frontend/research/`.
 
 ---
 
-> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.0 (2026-02-21).
+> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.1 (2026-02-23).

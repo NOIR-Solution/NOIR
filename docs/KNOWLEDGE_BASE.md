@@ -2189,11 +2189,11 @@ new Error(ErrorCodes.Auth.DuplicateEmail, "This email address is already in use.
 
 | Project | Tests | Purpose |
 |---------|-------|---------|
-| `NOIR.Domain.UnitTests` | 842 | Domain entity tests |
-| `NOIR.Application.UnitTests` | 5,231 | Handler, specification, validator tests |
-| `NOIR.ArchitectureTests` | 25 | Dependency constraints |
-| `NOIR.IntegrationTests` | 654 | API integration tests |
-| **Total** | **10,595+** | |
+| `NOIR.Domain.UnitTests` | 2,586 | Domain entity tests |
+| `NOIR.Application.UnitTests` | 7,483 | Handler, specification, validator tests |
+| `NOIR.ArchitectureTests` | 32 | Dependency constraints |
+| `NOIR.IntegrationTests` | 788 | API integration tests |
+| **Total** | **10,889+** | |
 
 ### Test Patterns
 
@@ -2353,4 +2353,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-02-21 | Total Tests: 10,595+ | Features: 26 | Endpoints: 200+ | Entities: 50+*
+*Updated: 2026-02-23 | Total Tests: 10,889+ | Features: 34 | Endpoints: 200+ | Entities: 50+*

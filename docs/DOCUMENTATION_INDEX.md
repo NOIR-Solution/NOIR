@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-02-21
+**Last Updated:** 2026-02-23
 
 ---
 
@@ -116,13 +116,13 @@
 |----------|---------|
 | [README.md](testing/README.md) | Testing overview, conventions, and running tests |
 
-### Test Coverage Summary (2026-02-21)
+### Test Coverage Summary (2026-02-23)
 
-**Backend Tests:** 10,595+ tests across 4 test projects
-- 842 Domain unit tests
-- 5,231 Application unit tests
-- 654 Integration tests
-- 25 Architecture tests
+**Backend Tests:** 10,889+ tests across 4 test projects
+- 2,586 Domain unit tests
+- 7,483 Application unit tests
+- 788 Integration tests
+- 32 Architecture tests
 
 ---
 
@@ -143,7 +143,7 @@
 | Document | Status |
 |----------|--------|
 | [feature-roadmap-basic.md](plans/feature-roadmap-basic.md) | Phases 1-4 Complete |
-| [feature-roadmap-ecommerce.md](plans/feature-roadmap-ecommerce.md) | In Progress |
+| [feature-roadmap-ecommerce.md](plans/feature-roadmap-ecommerce.md) | Complete |
 
 ---
 
@@ -178,7 +178,7 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 60 |
+| **Total Docs** | 59 |
 | **Backend Patterns** | 11 |
 | **Backend Architecture** | 2 |
 | **Backend Research** | 7 |
@@ -188,8 +188,8 @@
 | **Plans** | 2 |
 | **Research (General)** | 3 |
 | **Designs** | 1 |
-| **Backend Tests** | 10,595+ |
+| **Backend Tests** | 10,889+ |
 
 ---
 
-**Version:** 3.4 (Updated 2026-02-21 - Updated backend test count to 10,595+, Storybook stories to 72, docs total to 53)
+**Version:** 3.5 (Updated 2026-02-23 - Synced test counts 10,889+, Storybook stories 91, docs total 59)
