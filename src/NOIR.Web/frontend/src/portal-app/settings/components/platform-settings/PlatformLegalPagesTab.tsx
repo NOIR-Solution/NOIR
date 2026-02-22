@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
-import { Pencil, Eye, GitFork } from 'lucide-react'
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@uikit'
+import { FileText, Pencil, Eye, GitFork } from 'lucide-react'
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, EmptyState, Skeleton } from '@uikit'
 
 import { ApiError } from '@/services/apiClient'
 import { getLegalPages, type LegalPageListDto } from '@/services/legalPages'
@@ -96,9 +96,11 @@ export const PlatformLegalPagesTab = ({ onEdit }: PlatformLegalPagesTabProps) =>
           ))}
         </div>
         {pages.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            {t('legalPages.noPlatformPagesFound')}
-          </div>
+          <EmptyState
+            icon={FileText}
+            title={t('legalPages.noPlatformPagesFound')}
+            description={t('legalPages.noPlatformPagesDescription', 'No platform legal pages have been configured yet.')}
+          />
         )}
       </CardContent>
     </Card>

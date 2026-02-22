@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 import { Checkbox, Label } from '@uikit'
 
 import { cn } from '@/lib/utils'
@@ -31,6 +32,7 @@ export const FacetCheckbox = ({
   maxVisible = 5,
   className,
 }: FacetCheckboxProps) => {
+  const { t } = useTranslation('common')
   const [showAll, setShowAll] = React.useState(false)
 
   const visibleOptions = showAll ? options : options.slice(0, maxVisible)
@@ -61,7 +63,7 @@ export const FacetCheckbox = ({
                   id={checkboxId}
                   checked={isSelected}
                   onCheckedChange={() => handleToggle(option.value)}
-                  aria-label={`Filter by ${option.label}`}
+                  aria-label={t('storefront.filterBy', { value: option.label, defaultValue: `Filter by ${option.label}` })}
                 />
                 <Label
                   htmlFor={checkboxId}
@@ -85,8 +87,8 @@ export const FacetCheckbox = ({
           className="text-sm text-primary hover:underline cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
         >
           {showAll
-            ? `Show less`
-            : `Show ${options.length - maxVisible} more`}
+            ? t('storefront.showLess', 'Show less')
+            : t('storefront.showMore', { count: options.length - maxVisible, defaultValue: `Show ${options.length - maxVisible} more` })}
         </button>
       )}
     </div>

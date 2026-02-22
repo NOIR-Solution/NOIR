@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Building2, ArrowLeft, Check, Loader2 } from 'lucide-react'
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@uikit'
@@ -19,10 +20,11 @@ export const OrganizationSelection = ({
   organizations,
   onSelect,
   onBack,
-  userEmail,
+  userEmail: _userEmail,
   isLoading = false,
   error = null,
 }: OrganizationSelectionProps) => {
+  const { t } = useTranslation('auth')
   const [selectedOrg, setSelectedOrg] = useState<TenantOption | null>(null)
 
   const handleSelect = (org: TenantOption) => {
@@ -48,7 +50,7 @@ export const OrganizationSelection = ({
         className="text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to login
+        {t('forgotPassword.backToLogin')}
       </Button>
 
       {/* Header */}
@@ -67,19 +69,19 @@ export const OrganizationSelection = ({
         </motion.div>
 
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Select Organization
+          {t('login.selectOrganization')}
         </h1>
         <p className="text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">{userEmail}</span> has access to multiple organizations
+          {t('login.multiTenantMessage')}
         </p>
       </div>
 
       {/* Organization Selection Card */}
       <Card className="backdrop-blur-xl bg-background/80 border-border/50 shadow-2xl">
         <CardHeader>
-          <CardTitle className="text-lg">Choose Organization</CardTitle>
+          <CardTitle className="text-lg">{t('login.organizationLabel')}</CardTitle>
           <CardDescription>
-            Select which organization you want to sign in to
+            {t('login.selectOrganizationPlaceholder')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -171,10 +173,10 @@ export const OrganizationSelection = ({
             {isLoading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="h-5 w-5 animate-spin" />
-                Signing in...
+                {t('login.submitting')}
               </span>
             ) : (
-              'Continue'
+              t('login.continue')
             )}
           </Button>
         </CardContent>
@@ -183,7 +185,7 @@ export const OrganizationSelection = ({
       {/* Footer */}
       <div className="text-center">
         <p className="text-xs text-muted-foreground">
-          Select an organization to access your account
+          {t('login.selectOrganization')}
         </p>
       </div>
     </div>

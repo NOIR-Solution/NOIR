@@ -46,7 +46,7 @@ export const ThemeToggle = ({ className }: ThemeToggleProps) => {
           />
         )}
         <Sun className="relative z-10 h-4 w-4" />
-        <span className="relative z-10">Light</span>
+        <span className="relative z-10">{t('theme.light', 'Light')}</span>
       </button>
 
       {/* Dark button */}
@@ -71,7 +71,7 @@ export const ThemeToggle = ({ className }: ThemeToggleProps) => {
             }}
           />
         )}
-        <span className="relative z-10">Dark</span>
+        <span className="relative z-10">{t('theme.dark', 'Dark')}</span>
         <Moon className="relative z-10 h-4 w-4" />
       </button>
     </div>
@@ -82,6 +82,7 @@ export const ThemeToggle = ({ className }: ThemeToggleProps) => {
  * Compact icon button for theme toggle (for collapsed sidebar)
  */
 export const ThemeToggleCompact = ({ className }: ThemeToggleProps) => {
+  const { t } = useTranslation('common')
   const { resolvedTheme, toggleTheme } = useTheme()
 
   return (
@@ -91,7 +92,7 @@ export const ThemeToggleCompact = ({ className }: ThemeToggleProps) => {
         'relative flex items-center justify-center h-9 w-9 rounded-md border border-input bg-transparent hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer',
         className
       )}
-      aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
+      aria-label={resolvedTheme === 'dark' ? t('theme.switchToLight') : t('theme.switchToDark')}
     >
       <Sun
         className={cn(

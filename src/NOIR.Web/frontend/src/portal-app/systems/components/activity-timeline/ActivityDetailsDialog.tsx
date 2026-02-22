@@ -29,6 +29,7 @@ import {
   CredenzaTitle,
   CredenzaBody,
   DiffViewer,
+  EmptyState,
   HttpMethodBadge,
   JsonViewer,
   ScrollArea,
@@ -119,6 +120,7 @@ const CopyableMetadata = ({
   variant?: MetadataVariant
   maxWidth?: string
 }) => {
+  const { t } = useTranslation('common')
   const [copied, setCopied] = useState(false)
   const colors = metadataVariants[variant]
 
@@ -140,7 +142,7 @@ const CopyableMetadata = ({
         'flex items-center gap-1.5 px-2 py-1 rounded-md border transition-colors group cursor-pointer min-w-0',
         copied ? colors.copiedBg : `${colors.bg} ${colors.border} hover:opacity-80`
       )}
-      title={`Click to copy: ${value}`}
+      title={t('activityTimeline.clickToCopy', { defaultValue: 'Click to copy: {{value}}', value })}
     >
       <Icon className={cn('h-3.5 w-3.5 flex-shrink-0', copied ? 'text-green-500' : colors.icon)} />
       <span className="text-xs text-muted-foreground flex-shrink-0">{label}:</span>
@@ -166,32 +168,32 @@ const FieldChangeItem = ({ change }: { change: FieldChange }) => {
         >
           {change.operation === 'Added' && <Plus className="h-3 w-3 mr-1" />}
           {change.operation === 'Removed' && <Minus className="h-3 w-3 mr-1" />}
-          {change.operation}
+          {t(`activityTimeline.operations.${change.operation.toLowerCase()}`, change.operation)}
         </Badge>
         <span className="font-mono text-sm font-medium">{change.fieldName}</span>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
         {change.operation !== 'Added' && (
           <div className="p-2 rounded bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800">
-            <span className="text-xs text-muted-foreground block mb-1">{t('activityTimeline.oldValue')}:</span>
+            <span className="text-xs text-muted-foreground block mb-1">{t('activityTimeline.oldValue')}</span>
             <code className="text-xs break-all">
               {change.oldValue !== null && change.oldValue !== undefined
                 ? typeof change.oldValue === 'object'
                   ? JSON.stringify(change.oldValue, null, 2)
                   : String(change.oldValue)
-                : t('activityTimeline.null')}
+                : t('activityTimeline.nullValue')}
             </code>
           </div>
         )}
         {change.operation !== 'Removed' && (
           <div className="p-2 rounded bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800">
-            <span className="text-xs text-muted-foreground block mb-1">{t('activityTimeline.newValue')}:</span>
+            <span className="text-xs text-muted-foreground block mb-1">{t('activityTimeline.newValue')}</span>
             <code className="text-xs break-all">
               {change.newValue !== null && change.newValue !== undefined
                 ? typeof change.newValue === 'object'
                   ? JSON.stringify(change.newValue, null, 2)
                   : String(change.newValue)
-                : t('activityTimeline.null')}
+                : t('activityTimeline.nullValue')}
             </code>
           </div>
         )}
@@ -244,7 +246,7 @@ export const ActivityDetailsDialog = ({
               <div className="flex items-center gap-4 text-sm">
                 <span className="flex items-center gap-1">
                   <User className="h-4 w-4" />
-                  {entry.userEmail || 'System'}
+                  {entry.userEmail || t('activityTimeline.systemUser', 'System')}
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
@@ -259,7 +261,7 @@ export const ActivityDetailsDialog = ({
                     entry.operationType === 'Delete' && 'text-red-700 dark:text-red-400'
                   )}
                 >
-                  {entry.operationType}
+                  {t(`activityTimeline.operations.${entry.operationType.toLowerCase()}`, entry.operationType)}
                 </Badge>
               </div>
               {/* Technical metadata row - clickable to copy */}
@@ -267,7 +269,7 @@ export const ActivityDetailsDialog = ({
                 {entry.handlerName && (
                   <CopyableMetadata
                     icon={Terminal}
-                    label="Handler"
+                    label={t('activityTimeline.handler', 'Handler')}
                     value={entry.handlerName}
                     variant="blue"
                     maxWidth="max-w-[180px]"
@@ -276,7 +278,7 @@ export const ActivityDetailsDialog = ({
                 {entry.targetDtoId && (
                   <CopyableMetadata
                     icon={Hash}
-                    label="Entity"
+                    label={t('activityTimeline.entity', 'Entity')}
                     value={entry.targetDtoId}
                     variant="purple"
                     maxWidth="max-w-[100px]"
@@ -285,7 +287,7 @@ export const ActivityDetailsDialog = ({
                 {entry.correlationId && (
                   <CopyableMetadata
                     icon={Fingerprint}
-                    label="Corr"
+                    label={t('activityTimeline.correlation', 'Corr')}
                     value={entry.correlationId}
                     variant="amber"
                     maxWidth="max-w-[100px]"
@@ -311,21 +313,21 @@ export const ActivityDetailsDialog = ({
           ) : details ? (
             <Tabs defaultValue="http" className="flex-1">
               <TabsList className="grid grid-cols-4 w-full">
-                <TabsTrigger value="http" className="text-xs">
+                <TabsTrigger value="http" className="text-xs cursor-pointer">
                   <Globe className="h-4 w-4 mr-1" />
-                  HTTP
+                  {t('activityTimeline.tabs.http', 'HTTP')}
                 </TabsTrigger>
-                <TabsTrigger value="dto" className="text-xs">
+                <TabsTrigger value="dto" className="text-xs cursor-pointer">
                   <FileJson className="h-4 w-4 mr-1" />
-                  Handler
+                  {t('activityTimeline.tabs.handler', 'Handler')}
                 </TabsTrigger>
-                <TabsTrigger value="changes" className="text-xs">
+                <TabsTrigger value="changes" className="text-xs cursor-pointer">
                   <Database className="h-4 w-4 mr-1" />
-                  Database ({details.entityChanges.reduce((acc, e) => acc + e.changes.length, 0)})
+                  {t('activityTimeline.tabs.database', 'Database')} ({details.entityChanges.reduce((acc, e) => acc + e.changes.length, 0)})
                 </TabsTrigger>
-                <TabsTrigger value="raw" className="text-xs">
+                <TabsTrigger value="raw" className="text-xs cursor-pointer">
                   <Code className="h-4 w-4 mr-1" />
-                  Raw
+                  {t('activityTimeline.tabs.raw', 'Raw')}
                 </TabsTrigger>
               </TabsList>
 
@@ -333,16 +335,17 @@ export const ActivityDetailsDialog = ({
               <TabsContent value="changes" className="flex-1">
                 <ScrollArea className="h-[400px] pr-4">
                   {details.entityChanges.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>{t('activityTimeline.noEntityChanges')}</p>
-                    </div>
+                    <EmptyState
+                      icon={Database}
+                      title={t('activityTimeline.noEntityChanges')}
+                      size="sm"
+                    />
                   ) : (
                     <div className="space-y-4">
                       {details.entityChanges.map((entityChange) => (
                         <div key={entityChange.id} className="space-y-3">
                           <div className="flex items-center gap-2 text-sm font-medium">
-                            <Badge variant="outline">{entityChange.operation}</Badge>
+                            <Badge variant="outline">{t(`activityTimeline.operations.${entityChange.operation.toLowerCase()}`, entityChange.operation)}</Badge>
                             <span className="font-mono">{entityChange.entityType}</span>
                             <ArrowRight className="h-4 w-4" />
                             <code className="text-xs bg-muted px-2 py-1 rounded">
@@ -377,10 +380,11 @@ export const ActivityDetailsDialog = ({
                         <DiffViewer data={details.dtoDiff} />
                       </div>
                     ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <FileJson className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>{t('activityTimeline.noHandlerDiff')}</p>
-                      </div>
+                      <EmptyState
+                        icon={FileJson}
+                        title={t('activityTimeline.noHandlerDiff')}
+                        size="sm"
+                      />
                     )}
 
                     {details.inputParameters && (
@@ -431,7 +435,7 @@ export const ActivityDetailsDialog = ({
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.duration')}</span>
                           <span className="text-sm font-mono font-medium">
-                            {details.httpRequest.durationMs ?? 'N/A'}ms
+                            {details.httpRequest.durationMs != null ? `${details.httpRequest.durationMs}ms` : t('labels.notAvailable', 'N/A')}
                           </span>
                         </div>
                       </div>
@@ -451,7 +455,7 @@ export const ActivityDetailsDialog = ({
                       <div className="space-y-1.5">
                         <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('activityTimeline.clientIp')}</span>
                         <code className="block p-3 bg-muted/50 rounded-lg text-sm font-mono">
-                          {details.httpRequest.clientIpAddress || 'N/A'}
+                          {details.httpRequest.clientIpAddress || t('labels.notAvailable', 'N/A')}
                         </code>
                       </div>
 
@@ -466,10 +470,11 @@ export const ActivityDetailsDialog = ({
                       )}
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <Globe className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>{t('activityTimeline.noHttpRequest')}</p>
-                    </div>
+                    <EmptyState
+                      icon={Globe}
+                      title={t('activityTimeline.noHttpRequest')}
+                      size="sm"
+                    />
                   )}
                 </ScrollArea>
               </TabsContent>

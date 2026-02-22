@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@uikit'
 
 import type { ProductAttributeDisplay } from '@/types/product'
@@ -16,6 +17,7 @@ export const AttributeBadges = ({
   displayAttributes,
   maxColors = 5,
 }: AttributeBadgesProps) => {
+  const { t } = useTranslation('common')
   if (!displayAttributes || displayAttributes.length === 0) {
     return null
   }
@@ -65,7 +67,7 @@ export const AttributeBadges = ({
                 </TooltipTrigger>
                 <TooltipContent side="top" className="text-xs">
                   <p>
-                    {overflowCount} more color{overflowCount > 1 ? 's' : ''}
+                    {t('products.moreColors', { count: overflowCount, defaultValue: '+{{count}} more colors' })}
                   </p>
                 </TooltipContent>
               </Tooltip>

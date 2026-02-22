@@ -33,6 +33,7 @@ import {
   Input,
   Label,
   Pagination,
+  EmptyState,
   Skeleton,
   Switch,
 } from '@uikit'
@@ -426,12 +427,13 @@ export const HistoryTab = () => {
         </div>
       ) : filteredDates.length === 0 ? (
         <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-          <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-            <History className="h-12 w-12 mb-4 opacity-50" />
-            <p>{t('developerLogs.noHistoricalFiles')}</p>
-            <p className="text-xs mt-1">
-              {dateRange?.from ? t('developerLogs.adjustDateRange') : t('developerLogs.logFilesCreatedDaily')}
-            </p>
+          <CardContent className="p-0">
+            <EmptyState
+              icon={History}
+              title={t('developerLogs.noHistoricalFiles')}
+              description={dateRange?.from ? t('developerLogs.adjustDateRange') : t('developerLogs.logFilesCreatedDaily')}
+              className="border-0 rounded-none px-4 py-12"
+            />
           </CardContent>
         </Card>
       ) : (

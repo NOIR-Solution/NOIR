@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
-import { Pencil, Eye, GitFork } from 'lucide-react'
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@uikit'
+import { FileText, Pencil, Eye, GitFork } from 'lucide-react'
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, EmptyState, Skeleton } from '@uikit'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 import { ApiError } from '@/services/apiClient'
 import { getLegalPages, type LegalPageListDto } from '@/services/legalPages'
@@ -67,7 +68,7 @@ export const LegalPagesTab = ({ onEdit }: LegalPagesTabProps) => {
                     <h4 className="font-medium">{page.title}</h4>
                     <p className="text-sm text-muted-foreground">/{page.slug}</p>
                     <div className="flex items-center gap-2 pt-2">
-                      <Badge variant={page.isActive ? 'default' : 'secondary'} className="text-xs">
+                      <Badge variant="outline" className={getStatusBadgeClasses(page.isActive ? 'green' : 'gray')}>
                         {page.isActive ? t('labels.active') : t('labels.inactive')}
                       </Badge>
                       <Badge
@@ -106,9 +107,11 @@ export const LegalPagesTab = ({ onEdit }: LegalPagesTabProps) => {
           ))}
         </div>
         {pages.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            {t('legalPages.noPagesFound')}
-          </div>
+          <EmptyState
+            icon={FileText}
+            title={t('legalPages.noPagesFound')}
+            size="sm"
+          />
         )}
       </CardContent>
     </Card>

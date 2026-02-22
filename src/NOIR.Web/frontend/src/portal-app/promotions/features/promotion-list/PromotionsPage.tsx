@@ -68,16 +68,16 @@ const statusBadgeColors: Record<PromotionStatus, 'green' | 'gray' | 'blue' | 'or
   Cancelled: 'red',
 }
 
-const formatDiscountValue = (dto: PromotionDto): string => {
+const formatDiscountValue = (dto: PromotionDto, t: (...args: any[]) => any): string => {
   switch (dto.discountType) {
     case 'Percentage':
       return `${dto.discountValue}%`
     case 'FixedAmount':
       return `${dto.discountValue.toLocaleString()}`
     case 'FreeShipping':
-      return 'Free Shipping'
+      return t('promotions.discountType.freeShipping', 'Free Shipping')
     case 'BuyXGetY':
-      return 'Buy X Get Y'
+      return t('promotions.discountType.buyXGetY', 'Buy X Get Y')
     default:
       return String(dto.discountValue)
   }
@@ -193,7 +193,7 @@ export const PromotionsPage = () => {
         responsive
         action={
           canWrite && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('promotions.newPromotion', 'New Promotion')}
             </Button>
@@ -385,7 +385,7 @@ export const PromotionsPage = () => {
                       </TableCell>
                       <TableCell>
                         <span className="font-medium text-sm">
-                          {formatDiscountValue(promotion)}
+                          {formatDiscountValue(promotion, t)}
                         </span>
                       </TableCell>
                       <TableCell>

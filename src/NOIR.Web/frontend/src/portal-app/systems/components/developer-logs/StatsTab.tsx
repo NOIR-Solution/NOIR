@@ -126,13 +126,13 @@ export const StatsTab = ({ stats, onRefresh }: StatsTabProps) => {
               <div className="p-3 bg-muted rounded-lg">
                 <div className="text-xs text-muted-foreground mb-1">{t('developerLogs.oldestEntry')}</div>
                 <div className="font-mono text-sm">
-                  {stats.oldestEntry ? formatFullTimestamp(stats.oldestEntry) : 'N/A'}
+                  {stats.oldestEntry ? formatFullTimestamp(stats.oldestEntry) : t('labels.notAvailable', 'N/A')}
                 </div>
               </div>
               <div className="p-3 bg-muted rounded-lg">
                 <div className="text-xs text-muted-foreground mb-1">{t('developerLogs.newestEntry')}</div>
                 <div className="font-mono text-sm">
-                  {stats.newestEntry ? formatFullTimestamp(stats.newestEntry) : 'N/A'}
+                  {stats.newestEntry ? formatFullTimestamp(stats.newestEntry) : t('labels.notAvailable', 'N/A')}
                 </div>
               </div>
             </>

@@ -1,18 +1,17 @@
 import type { Meta, StoryObj } from 'storybook'
 import { useState } from 'react'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Input,
 } from '@uikit'
 import {
@@ -295,29 +294,31 @@ const ProductOptionsManagerDemo = ({
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
+      <Credenza open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
+            <CredenzaTitle>
               {deleteTarget?.type === 'option' ? 'Delete option?' : 'Delete value?'}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
+            </CredenzaTitle>
+            <CredenzaDescription>
               {deleteTarget?.type === 'option'
                 ? `This will permanently delete the "${deleteTarget?.name}" option and all its values.`
                 : `This will permanently delete the "${deleteTarget?.name}" value.`}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-            <AlertDialogAction
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} className="cursor-pointer">Cancel</Button>
+            <Button
+              variant="destructive"
               onClick={handleConfirmDelete}
-              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

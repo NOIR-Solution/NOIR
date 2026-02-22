@@ -10,6 +10,7 @@ import {
   RotateCcw,
   AlertTriangle,
 } from 'lucide-react'
+import { EmptyState } from '@uikit'
 import { cn } from '@/lib/utils'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import type { TrackingEventDto, ShippingStatus } from '@/types/shipping'
@@ -86,10 +87,12 @@ export const TrackingTimeline = ({ events, className }: TrackingTimelineProps) =
 
   if (events.length === 0) {
     return (
-      <div className={cn('flex flex-col items-center justify-center py-8 text-muted-foreground', className)}>
-        <Clock className="h-8 w-8 mb-2" />
-        <p className="text-sm">{t('shipping.noTrackingEvents', 'No tracking events yet')}</p>
-      </div>
+      <EmptyState
+        icon={Clock}
+        title={t('shipping.noTrackingEvents', 'No tracking events yet')}
+        description={t('shipping.noTrackingEventsDescription', 'Tracking updates will appear here once the shipment is in transit.')}
+        className={cn('border-0 rounded-none px-4 py-8', className)}
+      />
     )
   }
 

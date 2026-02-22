@@ -99,7 +99,7 @@ export const DeleteTenantDialog = ({
             variant="destructive"
             onClick={handleConfirm}
             disabled={loading}
-            className="cursor-pointer"
+            className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {loading ? t('labels.deleting') : t('buttons.delete')}

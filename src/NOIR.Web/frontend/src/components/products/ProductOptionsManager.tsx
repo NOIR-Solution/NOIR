@@ -16,15 +16,14 @@ import {
   X,
 } from 'lucide-react'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -331,40 +330,42 @@ export const ProductOptionsManager = ({
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <Trash2 className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>
+                <CredenzaTitle>
                   {deleteTarget?.type === 'option'
                     ? t('products.options.confirmDeleteOption')
                     : t('products.options.confirmDeleteValue')}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
+                </CredenzaTitle>
+                <CredenzaDescription>
                   {deleteTarget?.type === 'option'
                     ? t('products.options.deleteOptionWarning', { name: deleteTarget?.name })
                     : t('products.options.deleteValueWarning', { name: deleteTarget?.name })}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} className="cursor-pointer">
               {t('buttons.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleConfirmDelete}
-              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {t('buttons.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

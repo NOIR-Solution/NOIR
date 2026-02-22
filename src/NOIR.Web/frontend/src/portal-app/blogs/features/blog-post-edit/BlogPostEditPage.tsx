@@ -531,7 +531,7 @@ export const BlogPostEditPage = () => {
                           })
 
                           if (!response.ok) {
-                            throw new Error('Upload failed')
+                            throw new Error(t('errors.uploadFailed', 'Upload failed'))
                           }
 
                           // Response includes location (alias for defaultUrl) for TinyMCE compatibility
@@ -738,7 +738,7 @@ export const BlogPostEditPage = () => {
                       >
                         <img
                           src={form.watch('featuredImageUrl')}
-                          alt={form.watch('featuredImageAlt') || 'Featured image preview'}
+                          alt={form.watch('featuredImageAlt') || t('blog.featuredImagePreview', 'Featured image preview')}
                           className="w-full h-auto"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none'

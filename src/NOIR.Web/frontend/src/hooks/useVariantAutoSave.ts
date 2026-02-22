@@ -1,23 +1,30 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
 import { updateProductVariant } from '@/services/products'
 import type { ProductVariant, UpdateProductVariantRequest } from '@/types/product'
 import { ApiError } from '@/services/apiClient'
 
-// Validation schema for variant row
-export const variantRowSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TranslateFn = (...args: any[]) => any
+
+// Validation schema factory for variant row
+export const createVariantRowSchema = (t: TranslateFn) => z.object({
+  name: z.string().min(1, t('validation.nameRequired', 'Name is required')),
   sku: z.string().optional().nullable(),
-  price: z.coerce.number().min(0, 'Price must be non-negative'),
-  compareAtPrice: z.coerce.number().min(0, 'Compare price must be non-negative').optional().nullable(),
-  costPrice: z.coerce.number().min(0, 'Cost price must be non-negative').optional().nullable(),
-  stockQuantity: z.coerce.number().int('Stock must be a whole number').min(0, 'Stock must be non-negative'),
-  sortOrder: z.coerce.number().int('Sort order must be a whole number').min(0, 'Sort order must be non-negative'),
+  price: z.coerce.number().min(0, t('validation.priceMustBeNonNegative', 'Price must be non-negative')),
+  compareAtPrice: z.coerce.number().min(0, t('validation.comparePriceMustBeNonNegative', 'Compare price must be non-negative')).optional().nullable(),
+  costPrice: z.coerce.number().min(0, t('validation.costPriceMustBeNonNegative', 'Cost price must be non-negative')).optional().nullable(),
+  stockQuantity: z.coerce.number().int(t('validation.stockMustBeWholeNumber', 'Stock must be a whole number')).min(0, t('validation.stockMustBeNonNegative', 'Stock must be non-negative')),
+  sortOrder: z.coerce.number().int(t('validation.sortOrderMustBeWholeNumber', 'Sort order must be a whole number')).min(0, t('validation.sortOrderMustBeNonNegative', 'Sort order must be non-negative')),
 }).refine(
   (data) => !data.compareAtPrice || data.compareAtPrice > data.price,
-  { message: 'Compare-at price must be higher than the regular price', path: ['compareAtPrice'] },
+  { message: t('validation.compareAtPriceMustBeHigher', 'Compare-at price must be higher than the regular price'), path: ['compareAtPrice'] },
 )
+
+// Static schema for type inference only
+const variantRowSchema = createVariantRowSchema((_key: string, defaultValue: string) => defaultValue)
 
 export type VariantRowData = z.infer<typeof variantRowSchema>
 
@@ -74,6 +81,8 @@ export const useVariantAutoSave = ({
   onSaveError,
   savedDisplayMs = 2000,
 }: UseVariantAutoSaveOptions): UseVariantAutoSaveReturn => {
+  const { t } = useTranslation('common')
+
   // Current form values
   const [values, setValues] = useState<VariantRowData>(() => ({
     name: variant.name,
@@ -98,6 +107,9 @@ export const useVariantAutoSave = ({
 
   // Timeout for 'saved' display
   const savedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Localized validation schema
+  const schema = useMemo(() => createVariantRowSchema(t), [t])
 
   // Update values when variant prop changes (e.g., after external update)
   useEffect(() => {
@@ -129,7 +141,7 @@ export const useVariantAutoSave = ({
 
   // Validate current values
   const validate = useCallback((data: VariantRowData): VariantFieldError[] => {
-    const result = variantRowSchema.safeParse(data)
+    const result = schema.safeParse(data)
     if (result.success) {
       return []
     }
@@ -137,7 +149,7 @@ export const useVariantAutoSave = ({
       field: issue.path[0] as keyof VariantRowData,
       message: issue.message,
     }))
-  }, [])
+  }, [schema])
 
   // Save function
   const performSave = useCallback(async (data: VariantRowData) => {
@@ -147,7 +159,7 @@ export const useVariantAutoSave = ({
 
     if (errors.length > 0) {
       setStatus('error')
-      setError('Validation failed')
+      setError(t('validation.validationFailed', 'Validation failed'))
       return
     }
 
@@ -187,12 +199,12 @@ export const useVariantAutoSave = ({
 
       onSaveSuccess?.(updatedVariant || variant)
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Failed to save variant'
+      const message = err instanceof ApiError ? err.message : t('errors.failedToSaveVariant', 'Failed to save variant')
       setStatus('error')
       setError(message)
       onSaveError?.(message)
     }
-  }, [productId, variant.id, validate, savedDisplayMs, onSaveSuccess, onSaveError])
+  }, [productId, variant.id, validate, savedDisplayMs, onSaveSuccess, onSaveError, t])
 
   // Debounced save
   const debouncedSave = useDebouncedCallback((data: VariantRowData) => {

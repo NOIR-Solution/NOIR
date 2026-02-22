@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronRight, ChevronDown, Copy, Check, Maximize2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '../button/Button'
@@ -49,6 +50,7 @@ const JsonNode = ({
   defaultExpanded: boolean
   maxDepth: number
 }) => {
+  const { t } = useTranslation('common')
   const [isExpanded, setIsExpanded] = useState(defaultExpanded && depth < maxDepth)
 
   const valueType = useMemo(() => {
@@ -91,7 +93,7 @@ const JsonNode = ({
           <>
             <span className={typeColors.bracket}>[</span>
             <span className="text-muted-foreground text-xs ml-1">
-              {(value as JsonArray).length} items
+              {t('json.itemCount', { count: (value as JsonArray).length, defaultValue: '{{count}} items' })}
             </span>
           </>
         )
@@ -103,7 +105,7 @@ const JsonNode = ({
           <>
             <span className={typeColors.bracket}>{'{'}</span>
             <span className="text-muted-foreground text-xs ml-1">
-              {Object.keys(value as JsonObject).length} keys
+              {t('json.keyCount', { count: Object.keys(value as JsonObject).length, defaultValue: '{{count}} keys' })}
             </span>
           </>
         )
@@ -206,6 +208,7 @@ export const JsonViewer = ({
   allowFullscreen = true,
   maxHeight = '300px',
 }: JsonViewerProps) => {
+  const { t } = useTranslation('common')
   const [copied, setCopied] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
@@ -241,7 +244,7 @@ export const JsonViewer = ({
   if (parsedData === undefined || parsedData === null || parsedData === '') {
     return (
       <div className={cn('p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground', className)}>
-        No data
+        {t('json.noData', 'No data')}
       </div>
     )
   }
@@ -293,7 +296,7 @@ export const JsonViewer = ({
             size="icon"
             className="h-7 w-7"
             onClick={handleCopy}
-            title="Copy to clipboard"
+            title={t('buttons.copyToClipboard', 'Copy to clipboard')}
           >
             {copied ? (
               <Check className="h-3.5 w-3.5 text-green-500" />
@@ -307,7 +310,7 @@ export const JsonViewer = ({
               size="icon"
               className="h-7 w-7"
               onClick={() => setIsFullscreen(true)}
-              title="View fullscreen"
+              title={t('buttons.viewFullscreen', 'View fullscreen')}
             >
               <Maximize2 className="h-3.5 w-3.5" />
             </Button>
@@ -321,7 +324,7 @@ export const JsonViewer = ({
         <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
           <DialogHeader className="flex-shrink-0">
             <DialogTitle className="flex items-center justify-between">
-              <span>{title || 'JSON Data'}</span>
+              <span>{title || t('json.jsonData', 'JSON Data')}</span>
               <Button
                 variant="ghost"
                 size="icon"

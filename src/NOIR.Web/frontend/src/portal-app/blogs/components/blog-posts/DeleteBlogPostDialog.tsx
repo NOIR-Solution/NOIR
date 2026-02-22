@@ -80,8 +80,8 @@ export const DeleteBlogPostDialog = ({ post, open, onOpenChange, onConfirm }: De
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{post.title}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge className={statusColors[post.status]} variant="secondary">
-                      {post.status}
+                    <Badge className={statusColors[post.status]} variant="outline">
+                      {t(`blog.status.${post.status.toLowerCase()}`, post.status)}
                     </Badge>
                     {post.categoryName && (
                       <span className="text-sm text-muted-foreground">{post.categoryName}</span>
@@ -103,9 +103,10 @@ export const DeleteBlogPostDialog = ({ post, open, onOpenChange, onConfirm }: De
             {t('buttons.cancel')}
           </Button>
           <Button
+            variant="destructive"
             onClick={handleConfirm}
             disabled={loading}
-            className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
+            className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {loading ? t('buttons.deleting') : t('buttons.delete')}

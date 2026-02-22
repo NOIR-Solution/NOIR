@@ -8,6 +8,7 @@ import {
   CredenzaDescription,
   CredenzaHeader,
   CredenzaTitle,
+  EmptyState,
   Separator,
   Skeleton,
   Table,
@@ -71,7 +72,7 @@ export const InventoryReceiptDetailDialog = ({
               ))}
             </div>
           ) : receipt ? (
-            <div className="space-y-5">
+            <div className="space-y-4">
               {/* Header: Receipt Number + Badges */}
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="font-mono font-semibold text-base">{receipt.receiptNumber}</span>
@@ -153,9 +154,12 @@ export const InventoryReceiptDetailDialog = ({
                     <TableBody>
                       {receipt.items.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                            <Package className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                            {t('inventory.noItems', 'No items')}
+                          <TableCell colSpan={6}>
+                            <EmptyState
+                              icon={Package}
+                              title={t('inventory.noItems', 'No items')}
+                              size="sm"
+                            />
                           </TableCell>
                         </TableRow>
                       ) : (
@@ -199,9 +203,12 @@ export const InventoryReceiptDetailDialog = ({
               </div>
             </div>
           ) : (
-            <div className="py-8 text-center text-muted-foreground">
-              {t('inventory.receiptNotFound', 'Receipt not found')}
-            </div>
+            <EmptyState
+              icon={Package}
+              title={t('inventory.receiptNotFound', 'Receipt not found')}
+              description={t('inventory.receiptNotFoundDescription', 'The requested receipt could not be loaded.')}
+              className="border-0 rounded-none px-4 py-12"
+            />
           )}
         </CredenzaBody>
       </CredenzaContent>

@@ -63,7 +63,7 @@ export const DeletePromotionDialog = ({ promotion, onOpenChange, onSuccess }: De
             variant="destructive"
             onClick={handleDelete}
             disabled={deleteMutation.isPending}
-            className="cursor-pointer"
+            className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
           >
             {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {deleteMutation.isPending ? t('labels.deleting', 'Deleting...') : t('labels.delete', 'Delete')}

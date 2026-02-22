@@ -93,7 +93,7 @@ export const RejectReviewDialog = ({
           </Button>
           <Button
             variant="destructive"
-            className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90 border-destructive/30"
+            className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             onClick={handleConfirm}
           >
             {t('reviews.reject', 'Reject')}

@@ -143,7 +143,7 @@ export const LiveLogsToolbar = ({
             onValueChange={onLevelChange}
             disabled={isChangingLevel}
           >
-            <SelectTrigger className="w-[160px] h-8" title="Server minimum log level - also filters display" aria-label={t('developerLogs.serverMinLevel', 'Server minimum log level')}>
+            <SelectTrigger className="cursor-pointer w-[160px] h-8" title={t('developerLogs.serverMinLevelTooltip', 'Server minimum log level - also filters display')} aria-label={t('developerLogs.serverMinLevel', 'Server minimum log level')}>
               <span className="text-muted-foreground mr-1">{t('developerLogs.minLabel')}</span>
               <SelectValue />
             </SelectTrigger>

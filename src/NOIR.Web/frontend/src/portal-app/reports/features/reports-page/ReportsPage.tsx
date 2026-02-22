@@ -31,6 +31,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  EmptyState,
   PageHeader,
   Skeleton,
   Table,
@@ -151,7 +152,7 @@ const RevenueBarChart = ({
                 <div
                   className="w-full bg-primary/80 hover:bg-primary rounded-t-sm transition-colors duration-200 min-h-[2px]"
                   style={{ height: `${Math.max(heightPercent, 1)}%`, minHeight: heightPercent > 0 ? '4px' : '2px' }}
-                  title={`${dateLabel}: ${formatCurrency(day.revenue)} (${day.orderCount} orders)`}
+                  title={`${dateLabel}: ${formatCurrency(day.revenue)} (${day.orderCount} ${t('reports.ordersLabel', 'orders')})`}
                 />
               </div>
             </div>
@@ -453,9 +454,12 @@ export const ReportsPage = () => {
                     isLoading={revenueLoading}
                   />
                   {!revenueLoading && !revenueData?.revenueByCategory?.length && (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      {t('labels.noData', 'No data available')}
-                    </p>
+                    <EmptyState
+                      icon={BarChart3}
+                      title={t('labels.noData', 'No data available')}
+                      description={t('reports.noDataDescription', 'Try adjusting the date range to see results.')}
+                      className="border-0 rounded-none px-4 py-12"
+                    />
                   )}
                 </CardContent>
               </Card>
@@ -495,9 +499,12 @@ export const ReportsPage = () => {
                       </Table>
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      {t('labels.noData', 'No data available')}
-                    </p>
+                    <EmptyState
+                      icon={BarChart3}
+                      title={t('labels.noData', 'No data available')}
+                      description={t('reports.noDataDescription', 'Try adjusting the date range to see results.')}
+                      className="border-0 rounded-none px-4 py-12"
+                    />
                   )}
                 </CardContent>
               </Card>
@@ -559,8 +566,12 @@ export const ReportsPage = () => {
                         ))
                       ) : (
                         <TableRow>
-                          <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                            {t('labels.noData', 'No data available')}
+                          <TableCell colSpan={4}>
+                            <EmptyState
+                              icon={Award}
+                              title={t('labels.noData', 'No data available')}
+                              size="sm"
+                            />
                           </TableCell>
                         </TableRow>
                       )}
@@ -667,8 +678,12 @@ export const ReportsPage = () => {
                         ))
                       ) : (
                         <TableRow>
-                          <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                            {t('reports.noLowStock', 'All products are well stocked')}
+                          <TableCell colSpan={5}>
+                            <EmptyState
+                              icon={Package}
+                              title={t('reports.noLowStock', 'All products are well stocked')}
+                              size="sm"
+                            />
                           </TableCell>
                         </TableRow>
                       )}
@@ -755,9 +770,12 @@ export const ReportsPage = () => {
                       </Table>
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      {t('labels.noData', 'No data available')}
-                    </p>
+                    <EmptyState
+                      icon={Users}
+                      title={t('labels.noData', 'No data available')}
+                      description={t('reports.noDataDescription', 'Try adjusting the date range to see results.')}
+                      className="border-0 rounded-none px-4 py-12"
+                    />
                   )}
                 </CardContent>
               </Card>
@@ -799,9 +817,12 @@ export const ReportsPage = () => {
                       </Table>
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      {t('labels.noData', 'No data available')}
-                    </p>
+                    <EmptyState
+                      icon={Users}
+                      title={t('labels.noData', 'No data available')}
+                      description={t('reports.noDataDescription', 'Try adjusting the date range to see results.')}
+                      className="border-0 rounded-none px-4 py-12"
+                    />
                   )}
                 </CardContent>
               </Card>

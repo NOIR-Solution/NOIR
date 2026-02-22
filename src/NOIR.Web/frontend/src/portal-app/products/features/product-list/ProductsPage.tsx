@@ -127,7 +127,7 @@ export const ProductsPage = () => {
       await deleteProductMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete product'
+      const message = err instanceof Error ? err.message : t('products.deleteFailed', 'Failed to delete product')
       return { success: false, error: message }
     }
   }
@@ -368,7 +368,7 @@ export const ProductsPage = () => {
             />
             {canCreateProducts && (
               <ViewTransitionLink to="/portal/ecommerce/products/new">
-                <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
+                <Button className="group transition-all duration-300">
                   <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
                   {t('products.newProduct', 'New Product')}
                 </Button>
@@ -688,7 +688,7 @@ export const ProductsPage = () => {
                                 variant="ghost"
                                 size="sm"
                                 className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                                aria-label={`Actions for ${product.name}`}
+                                aria-label={t('labels.actionsFor', { name: product.name })}
                               >
                                 <EllipsisVertical className="h-4 w-4" />
                               </Button>
@@ -755,7 +755,7 @@ export const ProductsPage = () => {
                           <Checkbox
                             checked={selectedIds.has(product.id)}
                             onCheckedChange={() => handleToggleSelect(product.id)}
-                            aria-label={`Select ${product.name}`}
+                            aria-label={t('labels.selectItem', { name: product.name, defaultValue: `Select ${product.name}` })}
                             className="cursor-pointer"
                           />
                         </TableCell>
@@ -791,7 +791,7 @@ export const ProductsPage = () => {
                             variant="outline"
                           >
                             <StatusIcon className="h-3 w-3" />
-                            {status.label}
+                            {t(status.labelKey)}
                           </Badge>
                         </TableCell>
                         <TableCell>

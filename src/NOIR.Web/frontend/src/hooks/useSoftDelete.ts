@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from '@/lib/toast'
 
 interface UseSoftDeleteOptions<T> {
@@ -59,6 +60,7 @@ export const useSoftDelete = <T>({
   successMessage = '{entityType} "{name}" deleted',
   restoredMessage = '{entityType} "{name}" restored',
 }: UseSoftDeleteOptions<T>): UseSoftDeleteReturn<T> => {
+  const { t } = useTranslation('common')
   const [pendingItem, setPendingItem] = useState<T | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const toastIdRef = useRef<string | number | null>(null)
@@ -104,11 +106,12 @@ export const useSoftDelete = <T>({
               setPendingItem(null)
               toast.success(formatMessage(restoredMessage, item))
             } catch (error) {
-              toast.error(`Failed to restore ${entityType.toLowerCase()}`)
+              toast.error(t('errors.failedToRestore', { defaultValue: 'Failed to restore {{entity}}', entity: entityType.toLowerCase() }))
               throw error
             }
           },
-          undoDuration
+          undoDuration,
+          t('buttons.undo', 'Undo')
         )
 
         // Set timeout to finalize deletion
@@ -118,7 +121,7 @@ export const useSoftDelete = <T>({
         }, undoDuration)
       } catch (error) {
         setPendingItem(null)
-        toast.error(`Failed to delete ${entityType.toLowerCase()} "${itemName}"`)
+        toast.error(t('errors.failedToDelete', { defaultValue: 'Failed to delete {{entity}} "{{name}}"', entity: entityType.toLowerCase(), name: itemName }))
         throw error
       }
     },

@@ -14,7 +14,7 @@ export const DashboardPage = () => {
       <PageHeader
         icon={LayoutDashboard}
         title={t('dashboard.title', 'Dashboard')}
-        description={t('dashboard.welcome', { name: user?.fullName || 'User' })}
+        description={t('dashboard.welcome', { name: user?.fullName || t('labels.user', { defaultValue: 'User' }) })}
         responsive
       />
     </div>

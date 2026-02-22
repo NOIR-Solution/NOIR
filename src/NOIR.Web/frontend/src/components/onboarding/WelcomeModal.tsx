@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Sparkles, ArrowRight, X, Rocket, Shield, Users } from 'lucide-react'
@@ -34,6 +35,7 @@ const FeatureCard = ({ icon: Icon, title, description, delay }: FeatureCardProps
 }
 
 export const WelcomeModal = () => {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { user } = useAuthContext()
   const { shouldShowWelcome, markWelcomeShown } = useOnboarding()
@@ -75,7 +77,7 @@ export const WelcomeModal = () => {
             size="icon"
             className="absolute top-3 right-3 h-8 w-8 text-muted-foreground hover:text-foreground"
             onClick={handleSkip}
-            aria-label="Close welcome dialog"
+            aria-label={t('onboarding.closeWelcome', 'Close welcome dialog')}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -98,10 +100,10 @@ export const WelcomeModal = () => {
               transition={{ delay: 0.1 }}
             >
               <DialogTitle className="text-2xl font-bold">
-                Welcome, {displayName}!
+                {t('onboarding.welcomeUser', { name: displayName, defaultValue: `Welcome, ${displayName}!` })}
               </DialogTitle>
               <p className="text-muted-foreground mt-2">
-                Let's get you set up and ready to go. Here's what you can do with NOIR.
+                {t('onboarding.welcomeDescription', "Let's get you set up and ready to go. Here's what you can do with NOIR.")}
               </p>
             </motion.div>
           </DialogHeader>
@@ -111,20 +113,20 @@ export const WelcomeModal = () => {
         <div className="p-6 pt-4 space-y-3">
           <FeatureCard
             icon={Rocket}
-            title="Manage Products"
-            description="Create and organize your product catalog with ease"
+            title={t('onboarding.features.products.title', 'Manage Products')}
+            description={t('onboarding.features.products.description', 'Create and organize your product catalog with ease')}
             delay={0.2}
           />
           <FeatureCard
             icon={Shield}
-            title="Secure Access"
-            description="Control who can access what with role-based permissions"
+            title={t('onboarding.features.security.title', 'Secure Access')}
+            description={t('onboarding.features.security.description', 'Control who can access what with role-based permissions')}
             delay={0.3}
           />
           <FeatureCard
             icon={Users}
-            title="Team Collaboration"
-            description="Invite team members and work together seamlessly"
+            title={t('onboarding.features.team.title', 'Team Collaboration')}
+            description={t('onboarding.features.team.description', 'Invite team members and work together seamlessly')}
             delay={0.4}
           />
         </div>
@@ -140,7 +142,7 @@ export const WelcomeModal = () => {
               onClick={handleGetStarted}
               className="w-full h-11 text-base font-semibold"
             >
-              Get Started
+              {t('onboarding.getStarted', 'Get Started')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </motion.div>
@@ -149,7 +151,7 @@ export const WelcomeModal = () => {
             onClick={handleSkip}
             className="text-muted-foreground hover:text-foreground"
           >
-            Skip for now
+            {t('onboarding.skipForNow', 'Skip for now')}
           </Button>
         </div>
       </DialogContent>

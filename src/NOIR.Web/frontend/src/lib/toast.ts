@@ -107,14 +107,15 @@ export const toast = {
   undo: (
     message: string,
     onUndo: () => void | Promise<void>,
-    duration = 5000
+    duration = 5000,
+    undoLabel = 'Undo'
   ): string | number => {
     let undone = false
 
     const id = sonnerToast(message, {
       duration,
       action: {
-        label: 'Undo',
+        label: undoLabel,
         onClick: async () => {
           undone = true
           await onUndo()

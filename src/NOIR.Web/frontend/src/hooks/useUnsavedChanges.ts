@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useBlocker, type Blocker } from 'react-router-dom'
 
 interface UseUnsavedChangesOptions {
@@ -33,27 +34,30 @@ interface UseUnsavedChangesReturn {
  *
  * // Show confirmation dialog when blocker is triggered
  * {blocker.state === 'blocked' && (
- *   <AlertDialog open>
- *     <AlertDialogContent>
- *       <AlertDialogHeader>
- *         <AlertDialogTitle>Unsaved changes</AlertDialogTitle>
- *         <AlertDialogDescription>
+ *   <Credenza open onOpenChange={(open) => !open && cancel()}>
+ *     <CredenzaContent>
+ *       <CredenzaHeader>
+ *         <CredenzaTitle>Unsaved changes</CredenzaTitle>
+ *         <CredenzaDescription>
  *           You have unsaved changes. Are you sure you want to leave?
- *         </AlertDialogDescription>
- *       </AlertDialogHeader>
- *       <AlertDialogFooter>
- *         <AlertDialogCancel onClick={cancel}>Stay</AlertDialogCancel>
- *         <AlertDialogAction onClick={proceed}>Leave</AlertDialogAction>
- *       </AlertDialogFooter>
- *     </AlertDialogContent>
- *   </AlertDialog>
+ *         </CredenzaDescription>
+ *       </CredenzaHeader>
+ *       <CredenzaBody />
+ *       <CredenzaFooter>
+ *         <Button variant="outline" onClick={cancel}>Stay</Button>
+ *         <Button variant="destructive" onClick={proceed}>Leave</Button>
+ *       </CredenzaFooter>
+ *     </CredenzaContent>
+ *   </Credenza>
  * )}
  */
 export const useUnsavedChanges = ({
   isDirty,
-  message = 'You have unsaved changes. Are you sure you want to leave?',
+  message,
   enabled = true,
 }: UseUnsavedChangesOptions): UseUnsavedChangesReturn => {
+  const { t } = useTranslation('common')
+  const effectiveMessage = message ?? t('messages.unsavedChanges', 'You have unsaved changes. Are you sure you want to leave?')
   // Block SPA navigation
   const shouldBlock = enabled && isDirty
   const blocker = useBlocker(shouldBlock)
@@ -65,13 +69,13 @@ export const useUnsavedChanges = ({
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault()
       // Modern browsers ignore custom messages, but we set it anyway
-      e.returnValue = message
-      return message
+      e.returnValue = effectiveMessage
+      return effectiveMessage
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [shouldBlock, message])
+  }, [shouldBlock, effectiveMessage])
 
   const proceed = useCallback(() => {
     if (blocker.state === 'blocked') {

@@ -11,6 +11,7 @@
  */
 import { useState, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { Mail, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react'
 import {
   Button,
@@ -47,9 +48,9 @@ import { z } from 'zod'
 type Step = 'email' | 'otp' | 'success'
 
 // Email step schema - extend to check new email differs from current
-const createEmailStepSchema = (currentEmail: string) =>
+const createEmailStepSchema = (currentEmail: string, t: TFunction) =>
   requestEmailChangeSchema.refine((data) => data.newEmail !== currentEmail, {
-    message: 'New email must be different from current email',
+    message: t('validation.emailSameAsCurrent', 'New email must be different from current email'),
     path: ['newEmail'],
   })
 
@@ -101,7 +102,7 @@ export const EmailChangeDialog = ({
 
   // Email step form
   const emailForm = useValidatedForm<EmailStepFormData>({
-    schema: createEmailStepSchema(currentEmail),
+    schema: createEmailStepSchema(currentEmail, tCommon),
     defaultValues: { newEmail: '' },
     onSubmit: async (data) => {
       const result = await requestEmailChange(data.newEmail)
@@ -245,7 +246,7 @@ export const EmailChangeDialog = ({
                     e.stopPropagation() // Prevent any bubbling to parent forms
                     emailForm.handleSubmit(e)
                   }}
-                  className="space-y-5"
+                  className="space-y-4"
                 >
                   <div className="space-y-2">
                     <Label htmlFor="currentEmail" className="text-sm font-medium">
@@ -321,7 +322,7 @@ export const EmailChangeDialog = ({
 
             {/* Step 2: Enter OTP - direct state management (avoids infinite loops with OtpInput) */}
             {step === 'otp' && (
-              <div className="space-y-5">
+              <div className="space-y-4">
                 <Button
                   type="button"
                   variant="ghost"

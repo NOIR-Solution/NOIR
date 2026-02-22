@@ -17,14 +17,6 @@ import {
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -32,6 +24,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -175,7 +174,7 @@ export const WishlistPage = () => {
         description={t('wishlists.description', 'Manage your saved products and wishlists')}
         responsive
         action={
-          <Button onClick={handleCreateNew} className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+          <Button onClick={handleCreateNew} className="group transition-all duration-300 cursor-pointer">
             <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
             {t('wishlists.newWishlist', 'New Wishlist')}
           </Button>
@@ -378,38 +377,40 @@ export const WishlistPage = () => {
       />
 
       {/* Delete Confirmation */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <Trash2 className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>
+                <CredenzaTitle>
                   {t('wishlists.deleteTitle', 'Delete Wishlist')}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
+                </CredenzaTitle>
+                <CredenzaDescription>
                   {t('wishlists.deleteDescription', 'Are you sure you want to delete "{{name}}"? All items in this wishlist will be lost.', { name: deleteTarget?.name })}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleteWishlistMutation.isPending} className="cursor-pointer">
               {t('buttons.cancel', 'Cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90 border-destructive/30"
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleDelete}
               disabled={deleteWishlistMutation.isPending}
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {deleteWishlistMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('buttons.delete', 'Delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {deleteWishlistMutation.isPending ? t('labels.deleting', 'Deleting...') : t('labels.delete', 'Delete')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

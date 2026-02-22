@@ -16,7 +16,7 @@ import {
   Lock,
   Unlock,
 } from 'lucide-react'
-import { ScrollArea } from '@uikit'
+import { EmptyState, ScrollArea } from '@uikit'
 import { cn } from '@/lib/utils'
 
 export type StockMovementType =
@@ -117,11 +117,12 @@ export const StockHistoryTimeline = ({
 
   if (movements.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
-        <History className="h-12 w-12 mb-3 opacity-50" />
-        <p className="text-sm">{t('products.stock.noHistory')}</p>
-        <p className="text-xs mt-1">{t('products.stock.noHistoryHint')}</p>
-      </div>
+      <EmptyState
+        icon={History}
+        title={t('products.stock.noHistory')}
+        description={t('products.stock.noHistoryHint')}
+        className="border-0 rounded-none px-4 py-8"
+      />
     )
   }
 

@@ -55,7 +55,7 @@ export const BlogTagsPage = () => {
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete tag'
+      const message = err instanceof Error ? err.message : t('blog.deleteTagFailed', 'Failed to delete tag')
       return { success: false, error: message }
     }
   }
@@ -71,7 +71,7 @@ export const BlogTagsPage = () => {
         title={t('blogTags.title', 'Tags')}
         description={t('blogTags.description', 'Label and organize your content')}
         action={
-          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+          <Button className="group transition-all duration-300" onClick={() => openCreate()}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
             {t('blogTags.newTag', 'New Tag')}
           </Button>

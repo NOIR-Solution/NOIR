@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, Circle, Sparkles, ChevronRight, X } from 'lucide-react'
@@ -26,6 +27,8 @@ const ChecklistItem = ({
   completed,
   onComplete,
 }: ChecklistItemProps) => {
+  const { t } = useTranslation('common')
+
   return (
     <motion.div
       layout
@@ -45,7 +48,9 @@ const ChecklistItem = ({
           'flex-shrink-0 transition-transform',
           !completed && 'hover:scale-110'
         )}
-        aria-label={completed ? `${label} completed` : `Mark ${label} as complete`}
+        aria-label={completed
+          ? t('onboarding.itemCompleted', { label, defaultValue: `${label} completed` })
+          : t('onboarding.markComplete', { label, defaultValue: `Mark ${label} as complete` })}
       >
         {completed ? (
           <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -94,6 +99,7 @@ export const OnboardingChecklist = ({
   dismissible = true,
   onDismiss,
 }: OnboardingChecklistProps) => {
+  const { t } = useTranslation('common')
   const { progress, completeItem, isItemCompleted, shouldShowChecklist } =
     useOnboarding()
 
@@ -115,9 +121,9 @@ export const OnboardingChecklist = ({
               <Sparkles className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-base">Complete Your Setup</CardTitle>
+              <CardTitle className="text-base">{t('onboarding.completeSetup', 'Complete Your Setup')}</CardTitle>
               <CardDescription className="text-xs">
-                {progress.completed} of {progress.total} tasks completed
+                {t('onboarding.progress', { completed: progress.completed, total: progress.total, defaultValue: `${progress.completed} of ${progress.total} tasks completed` })}
               </CardDescription>
             </div>
           </div>
@@ -127,7 +133,7 @@ export const OnboardingChecklist = ({
               size="icon"
               className="h-7 w-7 text-muted-foreground hover:text-foreground"
               onClick={onDismiss}
-              aria-label="Dismiss onboarding checklist"
+              aria-label={t('onboarding.dismissChecklist', 'Dismiss onboarding checklist')}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -147,8 +153,8 @@ export const OnboardingChecklist = ({
               <ChecklistItem
                 key={item.id}
                 id={item.id}
-                label={item.label}
-                description={item.description}
+                label={t(item.labelKey)}
+                description={t(item.descriptionKey)}
                 href={item.href}
                 completed={isItemCompleted(item.id)}
                 onComplete={() => completeItem(item.id)}
@@ -165,7 +171,7 @@ export const OnboardingChecklist = ({
             className="mt-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-center"
           >
             <p className="text-sm font-medium text-green-600">
-              All done! You're all set up.
+              {t('onboarding.allDone', "All done! You're all set up.")}
             </p>
           </motion.div>
         )}

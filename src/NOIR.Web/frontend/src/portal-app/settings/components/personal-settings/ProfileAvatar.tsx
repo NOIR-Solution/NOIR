@@ -182,7 +182,7 @@ export const ProfileAvatar = ({
               size="sm"
               onClick={handleUploadClick}
               disabled={isLoading}
-              className="bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white"
+              className="cursor-pointer"
             >
               {isUploading ? (
                 <>

@@ -4,6 +4,7 @@ import {
   Warehouse,
   CheckCircle2,
   Eye,
+  Loader2,
   Search,
   XCircle,
   EllipsisVertical,
@@ -12,14 +13,6 @@ import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -27,6 +20,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -364,47 +364,54 @@ export const InventoryReceiptsPage = () => {
       </Card>
 
       {/* Cancel Receipt Dialog */}
-      <AlertDialog open={!!receiptToCancel} onOpenChange={(open) => { if (!open) { setReceiptToCancel(null); setCancelReason('') } }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={!!receiptToCancel} onOpenChange={(open: boolean) => { if (!open) { setReceiptToCancel(null); setCancelReason('') } }}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <XCircle className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('inventory.cancelReceiptTitle', 'Cancel Receipt')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('inventory.cancelReceiptTitle', 'Cancel Receipt')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('inventory.cancelReceiptDescription', {
                     receiptNumber: receiptToCancel?.receiptNumber,
                     defaultValue: `Are you sure you want to cancel receipt "${receiptToCancel?.receiptNumber}"? This action cannot be undone.`,
                   })}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <div className="py-4">
-            <div className="space-y-2">
-              <Label htmlFor="cancelReason">{t('inventory.reasonOptional', 'Reason (optional)')}</Label>
-              <Textarea
-                id="cancelReason"
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                placeholder={t('inventory.cancelReasonPlaceholder', 'Enter cancellation reason...')}
-                rows={3}
-              />
+          </CredenzaHeader>
+          <CredenzaBody>
+            <div className="py-2">
+              <div className="space-y-2">
+                <Label htmlFor="cancelReason">{t('inventory.reasonOptional', 'Reason (optional)')}</Label>
+                <Textarea
+                  id="cancelReason"
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder={t('inventory.cancelReasonPlaceholder', 'Enter cancellation reason...')}
+                  rows={3}
+                />
+              </div>
             </div>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaBody>
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => { setReceiptToCancel(null); setCancelReason('') }} disabled={cancelMutation.isPending} className="cursor-pointer">
+              {t('labels.cancel', 'Cancel')}
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleCancel}
+              disabled={cancelMutation.isPending}
               className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
-              {t('inventory.cancelReceipt', 'Cancel Receipt')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {cancelMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {cancelMutation.isPending ? t('labels.cancelling', 'Cancelling...') : t('inventory.cancelReceipt', 'Cancel Receipt')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Receipt Detail Dialog */}
       <InventoryReceiptDetailDialog

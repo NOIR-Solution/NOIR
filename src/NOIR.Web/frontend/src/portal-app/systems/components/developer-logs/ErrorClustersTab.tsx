@@ -17,6 +17,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  EmptyState,
 } from '@uikit'
 
 import type { ErrorClusterDto } from '@/services/developerLogs'
@@ -47,9 +48,12 @@ const ErrorClusters = ({
       </div>
 
       {clusters.length === 0 ? (
-        <div className="text-center py-6 text-muted-foreground text-sm">
-          {t('developerLogs.noErrorPatterns')}
-        </div>
+        <EmptyState
+          icon={AlertCircle}
+          title={t('developerLogs.noErrorPatterns')}
+          description=""
+          className="border-0 rounded-none px-4 py-8"
+        />
       ) : (
         <div className="space-y-2">
           {clusters.map(cluster => (

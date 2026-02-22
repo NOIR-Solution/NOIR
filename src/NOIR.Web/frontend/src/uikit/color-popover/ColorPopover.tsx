@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Copy, Check } from 'lucide-react'
 import { Button } from '../button/Button'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/Popover'
@@ -11,6 +12,7 @@ interface ColorPopoverProps {
 }
 
 export const ColorPopover = ({ color, size = 'sm', className }: ColorPopoverProps) => {
+  const { t } = useTranslation('common')
   const [copied, setCopied] = useState(false)
   const [open, setOpen] = useState(false)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -45,7 +47,7 @@ export const ColorPopover = ({ color, size = 'sm', className }: ColorPopoverProp
             className,
           )}
           style={{ backgroundColor: color }}
-          aria-label={`Color: ${color}`}
+          aria-label={t('labels.colorValue', { defaultValue: 'Color: {{color}}', color })}
           onMouseEnter={showPopover}
           onMouseLeave={scheduleClose}
         />
@@ -71,7 +73,7 @@ export const ColorPopover = ({ color, size = 'sm', className }: ColorPopoverProp
             size="icon"
             className="h-6 w-6 shrink-0 cursor-pointer"
             onClick={handleCopy}
-            aria-label="Copy color code"
+            aria-label={t('buttons.copyColorCode', 'Copy color code')}
           >
             {copied ? (
               <Check className="h-3 w-3 text-green-500" />

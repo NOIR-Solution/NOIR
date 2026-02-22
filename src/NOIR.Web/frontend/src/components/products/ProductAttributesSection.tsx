@@ -11,15 +11,14 @@ import { Package, AlertCircle, ChevronDown, ChevronUp, FolderOpen } from 'lucide
 import {
   Alert,
   AlertDescription,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Card,
   CardContent,
   CardDescription,
@@ -306,34 +305,36 @@ export const ProductAttributesSection = ({
       </Collapsible>
 
       {/* Category change confirmation dialog */}
-      <AlertDialog open={showCategoryChangeDialog} onOpenChange={setShowCategoryChangeDialog}>
-        <AlertDialogContent className="border-destructive/30">
-          <AlertDialogHeader>
+      <Credenza open={showCategoryChangeDialog} onOpenChange={setShowCategoryChangeDialog}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertCircle className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('products.attributes.confirmCategoryChangeTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('products.attributes.confirmCategoryChangeTitle')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('products.attributes.confirmCategoryChangeDescription')}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setShowCategoryChangeDialog(false)} className="cursor-pointer">
               {t('buttons.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="cursor-pointer bg-destructive hover:bg-destructive/90"
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleConfirmCategoryChange}
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {t('buttons.continue')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </Card>
   )
 }

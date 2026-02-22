@@ -12,6 +12,7 @@ import {
   CredenzaHeader,
   CredenzaTitle,
   CredenzaBody,
+  EmptyState,
   Label,
   ScrollArea,
 } from '@uikit'
@@ -156,9 +157,11 @@ export const AssignRolesDialog = ({ user, open, onOpenChange, onSuccess }: Assig
               <ScrollArea className="h-[300px] rounded-md border p-4">
                 <div className="space-y-3">
                   {availableRoles.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      {t('users.noRolesAvailable', 'No roles available')}
-                    </div>
+                    <EmptyState
+                      icon={Shield}
+                      title={t('users.noRolesAvailable', 'No roles available')}
+                      size="sm"
+                    />
                   ) : (
                     availableRoles.map((role) => (
                       <div

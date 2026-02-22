@@ -127,7 +127,7 @@ export const EnhancedProductCard = ({
             variant="outline"
           >
             <StatusIcon className="h-3 w-3" />
-            {status.label}
+            {t(status.labelKey)}
           </Badge>
 
           {/* Low Stock Warning — top-right */}
@@ -173,7 +173,7 @@ export const EnhancedProductCard = ({
                     size="icon"
                     variant="secondary"
                     className="h-8 w-8 rounded-full bg-emerald-500/90 text-white backdrop-blur-md border-0 shadow-lg hover:bg-emerald-600 cursor-pointer"
-                    aria-label={`Publish ${product.name}`}
+                    aria-label={t('labels.publishItem', { name: product.name, defaultValue: `Publish ${product.name}` })}
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
@@ -192,7 +192,7 @@ export const EnhancedProductCard = ({
                     size="icon"
                     variant="secondary"
                     className="h-8 w-8 rounded-full bg-amber-500/90 text-white backdrop-blur-md border-0 shadow-lg hover:bg-amber-600 cursor-pointer"
-                    aria-label={`Archive ${product.name}`}
+                    aria-label={t('labels.archiveItem', { name: product.name, defaultValue: `Archive ${product.name}` })}
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
@@ -212,7 +212,7 @@ export const EnhancedProductCard = ({
                       size="icon"
                       variant="secondary"
                       className="h-8 w-8 rounded-full bg-background/90 backdrop-blur-md border-border shadow-lg hover:bg-background cursor-pointer"
-                      aria-label={`View ${product.name} details`}
+                      aria-label={t('labels.viewDetailsFor', { name: product.name, defaultValue: `View ${product.name} details` })}
                     >
                       <Eye className="h-3.5 w-3.5" />
                     </Button>
@@ -229,7 +229,7 @@ export const EnhancedProductCard = ({
                         size="icon"
                         variant="secondary"
                         className="h-8 w-8 rounded-full bg-background/90 backdrop-blur-md border-border shadow-lg hover:bg-background cursor-pointer"
-                        aria-label={`Edit ${product.name}`}
+                        aria-label={t('labels.editItem', { name: product.name, defaultValue: `Edit ${product.name}` })}
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
@@ -264,7 +264,7 @@ export const EnhancedProductCard = ({
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7 -mr-1.5 text-muted-foreground hover:text-foreground cursor-pointer shrink-0"
-                  aria-label={`Actions for ${product.name}`}
+                  aria-label={t('labels.actionsFor', { name: product.name })}
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>

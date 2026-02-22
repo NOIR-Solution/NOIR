@@ -129,7 +129,7 @@ export const PaymentsPage = () => {
         action={
           <Button
             onClick={() => setRecordDialogOpen(true)}
-            className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+            className="group transition-all duration-300 cursor-pointer"
           >
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
             {t('payments.recordPayment.title')}

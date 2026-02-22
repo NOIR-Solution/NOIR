@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon, X } from 'lucide-react'
 import type { DateRange } from 'react-day-picker'
@@ -33,13 +34,15 @@ interface DateRangePickerProps {
 export const DateRangePicker = ({
   value,
   onChange,
-  placeholder = 'Pick a date range',
+  placeholder,
   className,
   align = 'end', // Default to 'end' so popover extends left, avoiding right viewport overflow
   showClear = true,
   disabled = false,
   numberOfMonths = 2,
 }: DateRangePickerProps) => {
+  const { t } = useTranslation('common')
+  const effectivePlaceholder = placeholder ?? t('labels.pickDateRange', 'Pick a date range')
   const [open, setOpen] = React.useState(false)
 
   const handleSelect = (range: DateRange | undefined) => {
@@ -52,7 +55,7 @@ export const DateRangePicker = ({
   }
 
   const formatDateRange = () => {
-    if (!value?.from) return placeholder
+    if (!value?.from) return effectivePlaceholder
 
     if (value.to) {
       return `${format(value.from, 'MMM d, yyyy')} - ${format(value.to, 'MMM d, yyyy')}`
@@ -98,7 +101,7 @@ export const DateRangePicker = ({
           <div className="text-xs text-muted-foreground">
             {hasValue
               ? `${value.from ? format(value.from, 'PP') : ''} ${value.to ? ' → ' + format(value.to, 'PP') : ''}`
-              : 'Select start and end dates'}
+              : t('labels.selectDateRange', 'Select start and end dates')}
           </div>
           <div className="flex gap-2">
             <Button
@@ -108,13 +111,13 @@ export const DateRangePicker = ({
                 onChange?.(undefined)
               }}
             >
-              Clear
+              {t('buttons.clear', 'Clear')}
             </Button>
             <Button
               size="sm"
               onClick={() => setOpen(false)}
             >
-              Apply
+              {t('buttons.apply', 'Apply')}
             </Button>
           </div>
         </div>

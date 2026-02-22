@@ -89,7 +89,7 @@ export const BlogCategoriesPage = () => {
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete category'
+      const message = err instanceof Error ? err.message : t('blog.deleteCategoryFailed', 'Failed to delete category')
       return { success: false, error: message }
     }
   }
@@ -108,7 +108,7 @@ export const BlogCategoriesPage = () => {
         title={t('blogCategories.title', 'Categories')}
         description={t('blogCategories.description', 'Organize your blog posts')}
         action={
-          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+          <Button className="group transition-all duration-300" onClick={() => openCreate()}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
             {t('blogCategories.newCategory', 'New Category')}
           </Button>

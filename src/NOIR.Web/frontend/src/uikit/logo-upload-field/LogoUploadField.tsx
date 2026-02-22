@@ -41,7 +41,7 @@ export const LogoUploadField = ({
 
       // Validate file size
       if (file.size > maxSizeMB * 1024 * 1024) {
-        setError(t('errors.fileTooLarge', `File must be less than ${maxSizeMB}MB`))
+        setError(t('errors.fileTooLarge', { maxSize: maxSizeMB, defaultValue: 'File must be less than {{maxSize}}MB' }))
         return
       }
 
@@ -120,7 +120,7 @@ export const LogoUploadField = ({
             <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md bg-background border">
               <img
                 src={value}
-                alt="Logo preview"
+                alt={t('labels.logoPreview', 'Logo preview')}
                 className="h-full w-full object-contain"
               />
             </div>

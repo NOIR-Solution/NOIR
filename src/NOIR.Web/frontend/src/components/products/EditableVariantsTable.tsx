@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next'
+import { Package } from 'lucide-react'
+import { EmptyState } from '@uikit'
 import { EditableVariantRow } from './EditableVariantRow'
 import type { ProductVariant } from '@/types/product'
 
@@ -26,9 +28,12 @@ export const EditableVariantsTable = ({
 
   if (variants.length === 0) {
     return (
-      <p className="text-center text-muted-foreground py-8">
-        {t('products.variants.empty')}
-      </p>
+      <EmptyState
+        icon={Package}
+        title={t('products.variants.empty')}
+        description={t('products.variants.emptyDescription', 'Add variants to define different options for this product.')}
+        className="border-0 rounded-none px-4 py-12"
+      />
     )
   }
 

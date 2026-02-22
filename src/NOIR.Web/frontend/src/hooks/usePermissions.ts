@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getUserPermissions, type UserPermissions } from '@/services/auth'
 import { useAuthContext } from '@/contexts/AuthContext'
 
@@ -29,6 +30,7 @@ interface UsePermissionsResult {
  * Provides utility functions for permission checking
  */
 export const usePermissions = (): UsePermissionsResult => {
+  const { t } = useTranslation('common')
   const { isAuthenticated, user } = useAuthContext()
   const [permissionsData, setPermissionsData] = useState<UserPermissions | null>(null)
   // Start as loading when authenticated to prevent ProtectedRoute from
@@ -48,12 +50,12 @@ export const usePermissions = (): UsePermissionsResult => {
       const data = await getUserPermissions()
       setPermissionsData(data)
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to fetch permissions'))
+      setError(err instanceof Error ? err : new Error(t('errors.failedToFetchPermissions', 'Failed to fetch permissions')))
       setPermissionsData(null)
     } finally {
       setIsLoading(false)
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, t])
 
   // Fetch permissions when authentication state changes
   useEffect(() => {

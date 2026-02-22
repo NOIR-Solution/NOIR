@@ -230,8 +230,8 @@ interface UserProfileDropdownProps {
 }
 
 const UserProfileDropdown = ({ isExpanded, t, user }: UserProfileDropdownProps) => {
-  const displayName = user?.fullName || 'User'
-  const displayEmail = user?.email || 'user@example.com'
+  const displayName = user?.fullName || t('labels.user', { defaultValue: 'User' })
+  const displayEmail = user?.email || ''
   // Use same initials logic as ProfileAvatar for consistency
   const initials = getInitials(user?.firstName ?? null, user?.lastName ?? null, displayEmail)
   // Use email-based color for consistency with ProfileAvatar
@@ -812,7 +812,7 @@ const SidebarContent = ({
             {logoUrl ? (
               <img
                 src={logoUrl}
-                alt="Logo"
+                alt={t('labels.logo')}
                 className="h-10 max-w-[160px] object-contain"
               />
             ) : (
@@ -1041,7 +1041,7 @@ export const MobileSidebarTrigger = ({
               {branding?.logoUrl ? (
                 <img
                   src={branding.logoUrl}
-                  alt="Logo"
+                  alt={t('labels.logo')}
                   className="h-10 max-w-[160px] object-contain"
                 />
               ) : (

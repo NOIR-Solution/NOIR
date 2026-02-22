@@ -810,7 +810,9 @@ const ColorInput = ({ field, value, onChange, disabled }: InputComponentProps) =
                           disabled && 'opacity-50 cursor-not-allowed hover:scale-100'
                         )}
                         style={{ backgroundColor: colorValue }}
-                        aria-label={`${option.displayValue}${isSelected ? ' (selected)' : ''}`}
+                        aria-label={isSelected
+                          ? t('products.attributes.colorSelected', { color: option.displayValue, defaultValue: `${option.displayValue} (selected)` })
+                          : option.displayValue}
                         aria-checked={isSelected}
                         role="radio"
                         tabIndex={index === 0 || isSelected ? 0 : -1}
@@ -924,7 +926,7 @@ const RangeInput = ({ field, value, onChange, disabled }: InputComponentProps) =
             '[&::-moz-range-thumb]:pointer-events-auto',
             disabled && 'opacity-50 cursor-not-allowed'
           )}
-          aria-label={`${field.name} ${t('products.attributes.min')}`}
+          aria-label={t('products.attributes.fieldMin', { field: field.name, defaultValue: `${field.name} ${t('products.attributes.min')}` })}
         />
 
         {/* Max thumb (range input) */}
@@ -948,7 +950,7 @@ const RangeInput = ({ field, value, onChange, disabled }: InputComponentProps) =
             '[&::-moz-range-thumb]:pointer-events-auto',
             disabled && 'opacity-50 cursor-not-allowed'
           )}
-          aria-label={`${field.name} ${t('products.attributes.max')}`}
+          aria-label={t('products.attributes.fieldMax', { field: field.name, defaultValue: `${field.name} ${t('products.attributes.max')}` })}
         />
 
         {/* Bounds labels */}
@@ -973,7 +975,7 @@ const RangeInput = ({ field, value, onChange, disabled }: InputComponentProps) =
             max={fieldMax}
             disabled={disabled}
             className="text-center"
-            aria-label={`${field.name} ${t('products.attributes.min')}`}
+            aria-label={t('products.attributes.fieldMin', { field: field.name, defaultValue: `${field.name} ${t('products.attributes.min')}` })}
           />
         </div>
         <div className="flex items-center justify-center pt-5">
@@ -992,7 +994,7 @@ const RangeInput = ({ field, value, onChange, disabled }: InputComponentProps) =
             max={fieldMax}
             disabled={disabled}
             className="text-center"
-            aria-label={`${field.name} ${t('products.attributes.max')}`}
+            aria-label={t('products.attributes.fieldMax', { field: field.name, defaultValue: `${field.name} ${t('products.attributes.max')}` })}
           />
         </div>
       </div>

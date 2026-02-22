@@ -26,7 +26,7 @@ export const OrderPaymentInfo = ({ orderId, currency }: OrderPaymentInfoProps) =
 
   if (isLoading) {
     return (
-      <Card className="shadow-sm gap-4 py-5">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
         <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
@@ -44,7 +44,7 @@ export const OrderPaymentInfo = ({ orderId, currency }: OrderPaymentInfoProps) =
 
   if (!payments || payments.length === 0) {
     return (
-      <Card className="shadow-sm gap-4 py-5">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
         <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
@@ -59,7 +59,7 @@ export const OrderPaymentInfo = ({ orderId, currency }: OrderPaymentInfoProps) =
   }
 
   return (
-    <Card className="shadow-sm gap-4 py-5">
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
       <CardHeader>
         <CardTitle className="text-sm flex items-center gap-2">
           <CreditCard className="h-4 w-4" />

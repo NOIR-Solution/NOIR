@@ -25,6 +25,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  EmptyState,
   ScrollArea,
   Skeleton,
   Tooltip,
@@ -62,6 +63,7 @@ const CompactTimelineEntry = ({
   entry: ActivityTimelineEntry
   onViewDetails: () => void
 }) => {
+  const { t } = useTranslation('common')
   const { formatRelativeTime } = useRegionalSettings()
   const config = operationConfig[entry.operationType as keyof typeof operationConfig] || operationConfig.Update
   const Icon = config.icon
@@ -92,7 +94,7 @@ const CompactTimelineEntry = ({
           )}
         </div>
         <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
-          <span className="truncate">{entry.userEmail || 'System'}</span>
+          <span className="truncate">{entry.userEmail || t('activityTimeline.systemUser', 'System')}</span>
           <span>·</span>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -110,7 +112,7 @@ const CompactTimelineEntry = ({
 
       {/* Badge */}
       <Badge variant="outline" className={cn('text-xs flex-shrink-0', config.color)}>
-        {entry.operationType}
+        {t(`activityTimeline.operations.${entry.operationType.toLowerCase()}`, entry.operationType)}
       </Badge>
     </button>
   )
@@ -140,7 +142,7 @@ export const ProductActivityLog = ({
       })
       setEntries(result.items)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load activity')
+      setError(err instanceof Error ? err.message : t('activityTimeline.loadFailed', 'Failed to load activity'))
     } finally {
       setLoading(false)
     }
@@ -191,7 +193,7 @@ export const ProductActivityLog = ({
             </div>
           ) : error ? (
             <div className="text-center py-6 text-muted-foreground">
-              <XCircle className="h-8 w-8 mx-auto mb-2 text-red-500" />
+              <XCircle className="h-8 w-8 mx-auto mb-2 text-destructive" />
               <p className="text-sm">{error}</p>
               <Button
                 variant="ghost"
@@ -203,10 +205,12 @@ export const ProductActivityLog = ({
               </Button>
             </div>
           ) : entries.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground">
-              <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">{t('products.noActivity', 'No activity recorded yet')}</p>
-            </div>
+            <EmptyState
+              icon={Activity}
+              title={t('products.noActivity', 'No activity recorded yet')}
+              description={t('products.noActivityDescription', 'Activity will appear here as changes are made to this product.')}
+              className="border-0 rounded-none px-4 py-12"
+            />
           ) : (
             <ScrollArea className="h-[280px] -mx-2">
               <div className="space-y-1 px-2">

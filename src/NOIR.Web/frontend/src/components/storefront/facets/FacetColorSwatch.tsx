@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { FilterOption } from '@/types/filter'
@@ -26,6 +27,7 @@ export const FacetColorSwatch = ({
   onChange,
   className,
 }: FacetColorSwatchProps) => {
+  const { t } = useTranslation('common')
   const handleToggle = (value: string) => {
     const newValues = selectedValues.includes(value)
       ? selectedValues.filter((v) => v !== value)
@@ -60,7 +62,7 @@ export const FacetColorSwatch = ({
               type="button"
               onClick={() => handleToggle(option.value)}
               title={`${option.label} (${option.count})`}
-              aria-label={`Filter by color ${option.label}`}
+              aria-label={t('storefront.filterByColor', { color: option.label, defaultValue: `Filter by color ${option.label}` })}
               aria-pressed={isSelected}
               className={cn(
                 'relative size-8 rounded-full border-2 transition-all cursor-pointer',

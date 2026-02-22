@@ -216,6 +216,18 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 
 **i18n schema factories**: Use `zodResolver(createSchema(t)) as unknown as Resolver<FormData>` — `z.default()` causes type mismatch. Never use `as any`. See [docs/frontend/architecture.md#form-validation-standards](docs/frontend/architecture.md#form-validation-standards).
 
+### Design Language
+
+**ONE design language** — ALL UI must follow [docs/frontend/design-standards.md](docs/frontend/design-standards.md). Key rules:
+
+- **Dialogs**: Use `Credenza` (not `AlertDialog`). Destructive dialogs: `border-destructive/30` on `CredenzaContent`.
+- **Destructive buttons**: `variant="destructive"` + `className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"`.
+- **Status badges**: `variant="outline"` + `getStatusBadgeClasses('green'|'gray'|'red'|...)` from `@/utils/statusBadge`. Never `variant="default"/"secondary"` for status.
+- **Empty states**: Use `<EmptyState icon={X} title={t('...')} description={t('...')} />` from `@uikit`. Never plain `<div className="text-center py-8 text-muted-foreground">`.
+- **Create buttons**: No `shadow-lg hover:shadow-xl`. Use `className="group transition-all duration-300"`.
+- **Form spacing**: `space-y-4` in dialog bodies. Never `space-y-5`.
+- **No gradient buttons**: Never use `bg-gradient-to-r` on standard action buttons. Use default Button variants.
+
 ### Patterns (Reference)
 
 For TanStack Query hooks, React 19 performance patterns (useDeferredValue, useTransition, optimistic mutations), and UI standardization patterns, see [docs/frontend/architecture.md](docs/frontend/architecture.md). Check existing code per Rule 1.

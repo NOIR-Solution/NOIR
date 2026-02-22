@@ -1,22 +1,22 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MessageSquare, Send, Trash2 } from 'lucide-react'
+import { MessageSquare, Send, Trash2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  EmptyState,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Skeleton,
   Textarea,
 } from '@uikit'
@@ -69,7 +69,7 @@ export const OrderNotes = ({ orderId, canWrite }: OrderNotesProps) => {
 
   return (
     <>
-      <Card className="shadow-sm gap-4 py-5">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
         <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             <MessageSquare className="h-4 w-4" />
@@ -110,9 +110,12 @@ export const OrderNotes = ({ orderId, canWrite }: OrderNotesProps) => {
               <Skeleton className="h-16 w-full rounded-lg" />
             </div>
           ) : notes.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              {t('orders.notes.noNotes')}
-            </p>
+            <EmptyState
+              icon={MessageSquare}
+              title={t('orders.notes.noNotes')}
+              description={t('orders.notes.noNotesDescription', 'Notes added to this order will appear here.')}
+              className="border-0 rounded-none px-4 py-8"
+            />
           ) : (
             <div className="space-y-3">
               {notes.map((note) => (
@@ -143,31 +146,36 @@ export const OrderNotes = ({ orderId, canWrite }: OrderNotesProps) => {
         </CardContent>
       </Card>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <Trash2 className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('orders.notes.deleteTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>{t('orders.notes.deleteDescription')}</AlertDialogDescription>
+                <CredenzaTitle>{t('orders.notes.deleteTitle')}</CredenzaTitle>
+                <CredenzaDescription>{t('orders.notes.deleteDescription')}</CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)} disabled={deleteMutation.isPending} className="cursor-pointer">
+              {t('labels.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleDelete}
+              disabled={deleteMutation.isPending}
               className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {t('orders.notes.confirmDelete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {deleteMutation.isPending ? t('labels.deleting', 'Deleting...') : t('labels.delete', 'Delete')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </>
   )
 }

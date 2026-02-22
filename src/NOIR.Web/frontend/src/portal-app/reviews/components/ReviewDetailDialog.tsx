@@ -18,6 +18,7 @@ import {
   CredenzaDescription,
   CredenzaHeader,
   CredenzaTitle,
+  EmptyState,
   Separator,
   Skeleton,
 } from '@uikit'
@@ -83,7 +84,7 @@ export const ReviewDetailDialog = ({
               <Skeleton className="h-20 w-full" />
             </div>
           ) : review ? (
-            <div className="space-y-5">
+            <div className="space-y-4">
               {/* Header: Rating + Status */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -263,9 +264,12 @@ export const ReviewDetailDialog = ({
               </div>
             </div>
           ) : (
-            <div className="py-8 text-center text-muted-foreground">
-              {t('reviews.reviewNotFound', 'Review not found')}
-            </div>
+            <EmptyState
+              icon={MessageSquare}
+              title={t('reviews.reviewNotFound', 'Review not found')}
+              description={t('reviews.reviewNotFoundDescription', 'The requested review could not be loaded.')}
+              className="border-0 rounded-none px-4 py-12"
+            />
           )}
         </CredenzaBody>
       </CredenzaContent>

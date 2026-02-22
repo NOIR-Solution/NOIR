@@ -83,7 +83,7 @@ export const ProductCategoriesPage = () => {
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete category'
+      const message = err instanceof Error ? err.message : t('categories.deleteFailed', 'Failed to delete category')
       return { success: false, error: message }
     }
   }
@@ -114,7 +114,7 @@ export const ProductCategoriesPage = () => {
         responsive
         action={
           canCreateCategories && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('categories.newCategory', 'New Category')}
             </Button>

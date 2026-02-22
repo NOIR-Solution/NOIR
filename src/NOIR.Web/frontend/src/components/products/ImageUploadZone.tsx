@@ -57,7 +57,7 @@ export const ImageUploadZone = ({
                 ? {
                     ...u,
                     status: 'error',
-                    error: error instanceof Error ? error.message : 'Upload failed',
+                    error: error instanceof Error ? error.message : t('errors.uploadFailed', 'Upload failed'),
                   }
                 : u
             )
@@ -65,7 +65,7 @@ export const ImageUploadZone = ({
         }
       }
     },
-    [onUpload]
+    [onUpload, t]
   )
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({

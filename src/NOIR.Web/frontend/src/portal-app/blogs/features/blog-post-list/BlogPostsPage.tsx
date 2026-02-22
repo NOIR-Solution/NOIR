@@ -89,7 +89,7 @@ export const BlogPostsPage = () => {
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete post'
+      const message = err instanceof Error ? err.message : t('blog.deletePostFailed', 'Failed to delete post')
       return { success: false, error: message }
     }
   }
@@ -102,7 +102,7 @@ export const BlogPostsPage = () => {
         description={t('blog.postsDescription')}
         action={
           <ViewTransitionLink to="/portal/blog/posts/new">
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button className="group transition-all duration-300">
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('blog.newPost')}
             </Button>

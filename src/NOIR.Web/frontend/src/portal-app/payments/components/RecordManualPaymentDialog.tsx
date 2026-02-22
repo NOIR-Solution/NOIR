@@ -173,7 +173,7 @@ export const RecordManualPaymentDialog = ({ open, onOpenChange, onSuccess }: Rec
                     <FormItem>
                       <FormLabel>{t('payments.recordPayment.currency')}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="VND" />
+                        <Input {...field} placeholder={t('payments.recordPayment.currencyPlaceholder', 'VND')} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -23,14 +23,6 @@ import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useUrlTab } from '@/hooks/useUrlTab'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -39,6 +31,7 @@ import {
   CardHeader,
   CardTitle,
   Credenza,
+  CredenzaBody,
   CredenzaContent,
   CredenzaDescription,
   CredenzaFooter,
@@ -590,7 +583,7 @@ export const PaymentDetailPage = () => {
                       {operationLogs.map((log) => (
                         <TableRow key={log.id}>
                           <TableCell>
-                            <span className="font-medium text-sm">{log.operationType}</span>
+                            <span className="font-medium text-sm">{t(`activityTimeline.operations.${log.operationType.toLowerCase()}`, log.operationType)}</span>
                           </TableCell>
                           <TableCell>
                             <span className="text-sm capitalize">{log.provider}</span>
@@ -689,7 +682,7 @@ export const PaymentDetailPage = () => {
                                   ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
                                   : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
                             }>
-                              {log.processingStatus}
+                              {t(`payments.processingStatus.${log.processingStatus}`, log.processingStatus)}
                             </Badge>
                             {log.processingError && (
                               <p className="text-xs text-destructive mt-1">{log.processingError}</p>
@@ -787,7 +780,7 @@ export const PaymentDetailPage = () => {
                                   ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
                                   : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
                             }>
-                              {refund.status}
+                              {t(`payments.refundStatus.${refund.status.toLowerCase()}`, refund.status)}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -816,22 +809,22 @@ export const PaymentDetailPage = () => {
       </Tabs>
 
       {/* COD Collection Confirmation Dialog */}
-      <AlertDialog open={codConfirmOpen} onOpenChange={(open) => { if (!open) { setCodConfirmOpen(false); setCodNotes('') } }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={codConfirmOpen} onOpenChange={(open) => { if (!open) { setCodConfirmOpen(false); setCodNotes('') } }}>
+        <CredenzaContent>
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
                 <Banknote className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <AlertDialogTitle>{t('payments.codConfirm.title')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('payments.codConfirm.title')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('payments.codConfirm.description')}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <div className="py-4">
+          </CredenzaHeader>
+          <CredenzaBody>
             <div className="space-y-2">
               <Label htmlFor="codNotes">{t('payments.codConfirm.notes')}</Label>
               <Textarea
@@ -842,20 +835,20 @@ export const PaymentDetailPage = () => {
                 rows={3}
               />
             </div>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaBody>
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => { setCodConfirmOpen(false); setCodNotes('') }} disabled={codConfirmMutation.isPending} className="cursor-pointer">{t('labels.cancel', 'Cancel')}</Button>
+            <Button
               onClick={handleConfirmCod}
               disabled={codConfirmMutation.isPending}
               className="cursor-pointer"
             >
               {codConfirmMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('payments.codConfirm.submit')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Request Refund Dialog */}
       <Credenza open={requestRefundOpen} onOpenChange={(open) => { if (!open) { setRequestRefundOpen(false); setRefundAmount(''); setRefundReason(''); setRefundNotes('') } }}>
@@ -929,22 +922,22 @@ export const PaymentDetailPage = () => {
       </Credenza>
 
       {/* Reject Refund Dialog */}
-      <AlertDialog open={rejectRefundOpen} onOpenChange={(open) => { if (!open) { setRejectRefundOpen(false); setRejectRefundId(null); setRejectReason('') } }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={rejectRefundOpen} onOpenChange={(open) => { if (!open) { setRejectRefundOpen(false); setRejectRefundId(null); setRejectReason('') } }}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <ThumbsDown className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('payments.refund.rejectTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('payments.refund.rejectTitle')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('payments.refund.rejectDescription')}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <div className="py-4">
+          </CredenzaHeader>
+          <CredenzaBody>
             <div className="space-y-2">
               <Label htmlFor="rejectReason">{t('payments.detail.reason')}</Label>
               <Textarea
@@ -955,20 +948,21 @@ export const PaymentDetailPage = () => {
                 rows={3}
               />
             </div>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaBody>
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => { setRejectRefundOpen(false); setRejectRefundId(null); setRejectReason('') }} disabled={rejectRefundMutation.isPending} className="cursor-pointer">{t('labels.cancel', 'Cancel')}</Button>
+            <Button
+              variant="destructive"
               onClick={handleRejectRefund}
               disabled={rejectRefundMutation.isPending || !rejectReason}
-              className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {rejectRefundMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('payments.refund.confirmReject')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

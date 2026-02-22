@@ -125,7 +125,7 @@ export const CreateRoleDialog = ({ open, onOpenChange, onSuccess }: CreateRoleDi
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody className="space-y-5">
+            <CredenzaBody className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -168,7 +168,7 @@ export const CreateRoleDialog = ({ open, onOpenChange, onSuccess }: CreateRoleDi
                       value={field.value || '__none__'}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="cursor-pointer">
                           <SelectValue placeholder={t('roles.fields.parentRolePlaceholder', 'Select parent role (optional)')} />
                         </SelectTrigger>
                       </FormControl>

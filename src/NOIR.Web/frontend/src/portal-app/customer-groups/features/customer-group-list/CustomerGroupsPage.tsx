@@ -1,19 +1,11 @@
 import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, UsersRound, Plus, Eye, Trash2, EllipsisVertical } from 'lucide-react'
+import { Search, UsersRound, Plus, Eye, Trash2, EllipsisVertical, Loader2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -21,6 +13,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -38,6 +37,7 @@ import {
   TableRow,
 } from '@uikit'
 
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { useCustomerGroupsQuery, useDeleteCustomerGroupMutation } from '@/portal-app/customer-groups/queries'
 import type { GetCustomerGroupsParams } from '@/services/customerGroups'
 import { CustomerGroupDialog } from '../../components/CustomerGroupDialog'
@@ -106,7 +106,7 @@ export const CustomerGroupsPage = () => {
         responsive
         action={
           canCreateGroups && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('customerGroups.newGroup', 'New Group')}
             </Button>
@@ -237,7 +237,7 @@ export const CustomerGroupsPage = () => {
                         </code>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={group.isActive ? 'default' : 'secondary'}>
+                        <Badge variant="outline" className={getStatusBadgeClasses(group.isActive ? 'green' : 'gray')}>
                           {group.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
                         </Badge>
                       </TableCell>
@@ -280,35 +280,41 @@ export const CustomerGroupsPage = () => {
       />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!groupToDelete} onOpenChange={(open) => !open && setGroupToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={!!groupToDelete} onOpenChange={(open) => !open && setGroupToDelete(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <Trash2 className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('customerGroups.deleteTitle', 'Delete Customer Group')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('customerGroups.deleteTitle', 'Delete Customer Group')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('customerGroups.deleteDescription', {
                     name: groupToDelete?.name,
                     defaultValue: `Are you sure you want to delete "${groupToDelete?.name}"? This action cannot be undone.`
                   })}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setGroupToDelete(null)} disabled={deleteMutation.isPending} className="cursor-pointer">
+              {t('labels.cancel', 'Cancel')}
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleDelete}
+              disabled={deleteMutation.isPending}
               className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
-              {t('labels.delete', 'Delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {deleteMutation.isPending ? t('labels.deleting', 'Deleting...') : t('labels.delete', 'Delete')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

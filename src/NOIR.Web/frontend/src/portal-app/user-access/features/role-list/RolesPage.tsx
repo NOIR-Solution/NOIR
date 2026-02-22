@@ -52,7 +52,7 @@ export const RolesPage = () => {
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete role'
+      const message = err instanceof Error ? err.message : t('roles.deleteError', 'Failed to delete role')
       return { success: false, error: message }
     }
   }
@@ -76,7 +76,7 @@ export const RolesPage = () => {
         title={t('roles.title', 'Roles')}
         description={t('roles.description', 'Manage roles and permissions')}
         action={
-          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+          <Button className="group transition-all duration-300" onClick={() => openCreate()}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
             {t('roles.create', 'Create Role')}
           </Button>

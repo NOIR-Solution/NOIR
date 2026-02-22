@@ -45,7 +45,7 @@ export const ShippingProvidersTab = () => {
       await configureMutation.mutateAsync(request)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to configure provider'
+      const message = err instanceof Error ? err.message : t('shippingProviders.configureFailed', 'Failed to configure provider')
       return { success: false, error: message }
     }
   }
@@ -55,7 +55,7 @@ export const ShippingProvidersTab = () => {
       await updateMutation.mutateAsync({ id, request })
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update provider'
+      const message = err instanceof Error ? err.message : t('shippingProviders.updateFailed', 'Failed to update provider')
       return { success: false, error: message }
     }
   }
@@ -85,7 +85,7 @@ export const ShippingProvidersTab = () => {
           : t('shippingProviders.disabledSuccess', 'Provider disabled')
       )
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to toggle provider')
+      toast.error(err instanceof Error ? err.message : t('shippingProviders.toggleFailed', 'Failed to toggle provider'))
     }
   }
 

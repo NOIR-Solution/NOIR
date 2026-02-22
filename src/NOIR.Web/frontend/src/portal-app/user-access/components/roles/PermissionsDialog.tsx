@@ -19,6 +19,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  EmptyState,
   Input,
 } from '@uikit'
 
@@ -291,11 +292,14 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
                   {t('labels.loading', 'Loading...')}
                 </div>
               ) : Object.keys(filteredPermissionsByCategory).length === 0 ? (
-                <div className="p-8 text-center text-muted-foreground">
-                  {searchQuery
+                <EmptyState
+                  icon={Key}
+                  title={searchQuery
                     ? t('roles.noMatchingPermissions', 'No permissions match your search.')
                     : t('roles.noPermissions', 'No permissions available.')}
-                </div>
+                  description=""
+                  className="border-0 rounded-none px-4 py-8"
+                />
               ) : (
                 Object.entries(filteredPermissionsByCategory)
                   .sort(([a], [b]) => comparePermissionCategories(a, b))

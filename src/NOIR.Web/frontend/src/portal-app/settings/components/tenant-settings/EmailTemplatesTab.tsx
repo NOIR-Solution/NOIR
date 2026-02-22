@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Pencil, Eye, GitFork } from 'lucide-react'
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@uikit'
+import { Mail, Pencil, Eye, GitFork } from 'lucide-react'
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, EmptyState, Skeleton } from '@uikit'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 import { ApiError } from '@/services/apiClient'
 import {
@@ -99,7 +100,7 @@ export const EmailTemplatesTab = ({ onEdit }: EmailTemplatesTabProps) => {
                         {template.description}
                       </p>
                       <div className="flex items-center gap-2 pt-2">
-                        <Badge variant={template.isActive ? 'default' : 'secondary'} className="text-xs">
+                        <Badge variant="outline" className={getStatusBadgeClasses(template.isActive ? 'green' : 'gray')}>
                           {template.isActive ? t('labels.active') : t('labels.inactive')}
                         </Badge>
                         <Badge
@@ -129,9 +130,11 @@ export const EmailTemplatesTab = ({ onEdit }: EmailTemplatesTabProps) => {
             ))}
           </div>
           {templates.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              {t('emailTemplates.noTemplatesFound')}
-            </div>
+            <EmptyState
+              icon={Mail}
+              title={t('emailTemplates.noTemplatesFound')}
+              size="sm"
+            />
           )}
         </CardContent>
       </Card>

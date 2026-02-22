@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { useRef, useEffect, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 interface OtpInputProps {
@@ -25,6 +26,7 @@ export const OtpInput = ({
   error = false,
   autoFocus = true,
 }: OtpInputProps) => {
+  const { t } = useTranslation('auth')
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
   // Track the last value for which onComplete was called to prevent duplicate calls
@@ -183,7 +185,7 @@ export const OtpInput = ({
                 ? 'border-blue-600 ring-2 ring-blue-600/20'
                 : 'border-border hover:border-blue-400'
           )}
-          aria-label={`Digit ${index + 1} of ${length}`}
+          aria-label={t('otp.digitAriaLabel', { current: index + 1, total: length, defaultValue: `Digit ${index + 1} of ${length}` })}
         />
       ))}
     </div>

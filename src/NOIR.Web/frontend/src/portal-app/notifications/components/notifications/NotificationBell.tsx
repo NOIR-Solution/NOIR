@@ -4,6 +4,7 @@
  * Bell icon with unread notification badge for the header.
  * Triggers the notification dropdown when clicked.
  */
+import { useTranslation } from 'react-i18next'
 import { Bell } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge, Button } from '@uikit'
@@ -16,6 +17,7 @@ interface NotificationBellProps {
 }
 
 export const NotificationBell = ({ onClick, className }: NotificationBellProps) => {
+  const { t } = useTranslation('common')
   const { unreadCount, connectionState } = useNotificationContext()
 
   const displayCount = unreadCount > 99 ? '99+' : unreadCount.toString()
@@ -26,7 +28,9 @@ export const NotificationBell = ({ onClick, className }: NotificationBellProps) 
       size="icon"
       onClick={onClick}
       className={cn('relative', className)}
-      aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+      aria-label={unreadCount > 0
+        ? t('notifications.bellAriaLabelWithCount', { count: unreadCount, defaultValue: `Notifications (${unreadCount} unread)` })
+        : t('notifications.bellAriaLabel', 'Notifications')}
     >
       <Bell className="h-5 w-5" />
 

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { Badge, Button } from '@uikit'
 
@@ -25,6 +26,7 @@ export const AppliedFilters = ({
   onClearAll,
   className,
 }: AppliedFiltersProps) => {
+  const { t } = useTranslation('common')
   if (filters.length === 0) {
     return null
   }
@@ -33,7 +35,7 @@ export const AppliedFilters = ({
     <div
       className={cn('flex flex-wrap items-center gap-2', className)}
       role="region"
-      aria-label="Applied filters"
+      aria-label={t('storefront.appliedFilters', 'Applied filters')}
     >
       {filters.map((filter) => {
         const filterKey = `${filter.code}-${filter.value}`
@@ -56,7 +58,7 @@ export const AppliedFilters = ({
                 'hover:bg-muted-foreground/20 transition-colors',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
               )}
-              aria-label={`Remove ${filter.label} filter`}
+              aria-label={t('storefront.removeFilter', { label: filter.label, defaultValue: `Remove ${filter.label} filter` })}
             >
               <X className="size-3" aria-hidden="true" />
             </button>
@@ -72,7 +74,7 @@ export const AppliedFilters = ({
           onClick={onClearAll}
           className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
         >
-          Clear all
+          {t('storefront.clearAll', 'Clear all')}
         </Button>
       )}
     </div>

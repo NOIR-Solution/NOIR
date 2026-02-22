@@ -43,7 +43,7 @@ export const PaymentGatewaysTab = () => {
       await configureMutation.mutateAsync(request)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to configure gateway'
+      const message = err instanceof Error ? err.message : t('paymentGateways.configureFailed', 'Failed to configure gateway')
       return { success: false, error: message }
     }
   }
@@ -53,7 +53,7 @@ export const PaymentGatewaysTab = () => {
       await updateMutation.mutateAsync({ id, request })
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update gateway'
+      const message = err instanceof Error ? err.message : t('paymentGateways.updateFailed', 'Failed to update gateway')
       return { success: false, error: message }
     }
   }
@@ -84,7 +84,7 @@ export const PaymentGatewaysTab = () => {
           : t('paymentGateways.disabled', 'Gateway disabled')
       )
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to toggle gateway')
+      toast.error(err instanceof Error ? err.message : t('paymentGateways.toggleFailed', 'Failed to toggle gateway'))
     }
   }
 

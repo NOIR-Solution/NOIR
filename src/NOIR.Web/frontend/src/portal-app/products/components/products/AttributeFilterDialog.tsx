@@ -121,7 +121,7 @@ export const AttributeFilterDialog = ({
           </CredenzaDescription>
         </CredenzaHeader>
         <CredenzaBody>
-          <div className="space-y-5">
+          <div className="space-y-4">
             {attributes.map(attr => {
               const selected = draft[attr.code] || new Set<string>()
               const activeValues = attr.values.filter(v => v.isActive)

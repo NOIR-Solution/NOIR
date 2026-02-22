@@ -48,6 +48,29 @@
     "noResults": "Không tìm thấy kết quả",
     "openMenu": "Mở menu"
   },
+  "breadcrumbs": {
+    "dashboard": "Bảng điều khiển",
+    "ecommerce": "Thương mại điện tử",
+    "manage": "Quản lý",
+    "blog": "Blog",
+    "posts": "Bài viết",
+    "tags": "Thẻ",
+    "roles": "Vai trò",
+    "tenants": "Tổ chức",
+    "platformSettings": "Cài đặt nền tảng",
+    "tenantSettings": "Cài đặt tổ chức",
+    "activityTimeline": "Dòng thời gian hoạt động",
+    "developerLogs": "Nhật ký nhà phát triển",
+    "notificationPreferences": "Tùy chọn thông báo",
+    "productDetails": "Chi tiết sản phẩm",
+    "editProduct": "Sửa sản phẩm",
+    "orderDetails": "Chi tiết đơn hàng",
+    "customerDetails": "Chi tiết khách hàng",
+    "editPost": "Sửa bài viết",
+    "tenantDetails": "Chi tiết tổ chức",
+    "editEmailTemplate": "Sửa mẫu email",
+    "editLegalPage": "Sửa trang pháp lý"
+  },
   "ecommerce": {
     "products": "Sản phẩm",
     "categories": "Danh mục",
@@ -110,6 +133,7 @@
     "price": "Giá",
     "noProductsFound": "Không tìm thấy sản phẩm",
     "noProductsDescription": "Bắt đầu bằng cách tạo sản phẩm đầu tiên để xây dựng danh mục của bạn.",
+    "productImage": "Hình ảnh sản phẩm",
     "addProduct": "Thêm sản phẩm",
     "editProduct": "Sửa sản phẩm",
     "deleteProduct": "Xóa sản phẩm",
@@ -125,6 +149,12 @@
       "draft": "Bản nháp",
       "active": "Đang bán",
       "archived": "Đã lưu trữ",
+      "outOfStock": "Hết hàng"
+    },
+    "stats": {
+      "total": "Tổng sản phẩm",
+      "active": "Đang bán",
+      "draft": "Bản nháp",
       "outOfStock": "Hết hàng"
     },
     "shortDescription": "Mô tả ngắn",
@@ -154,6 +184,7 @@
     "uploadFirstImage": "Tải lên hình ảnh sản phẩm đầu tiên của bạn",
     "setAsPrimary": "Đặt làm hình chính",
     "deleteImage": "Xóa hình ảnh",
+    "moreColors": "+{{count}} màu khác",
     "imagesReordered": "Đã sắp xếp lại hình ảnh thành công",
     "options": {
       "title": "Tùy chọn sản phẩm",
@@ -171,6 +202,7 @@
     },
     "variants": {
       "noOptionsAvailable": "Không có tùy chọn nào. Thêm tùy chọn sản phẩm trước để tạo biến thể.",
+      "optionValue": "{{option}}: {{value}}",
       "selectOption": "Chọn {{option}}",
       "generateVariants": "Tạo biến thể",
       "generateTitle": "Tạo biến thể sản phẩm",
@@ -195,6 +227,7 @@
         "adjustStock": "Điều chỉnh tồn kho (+/-)"
       },
       "empty": "Chưa có biến thể. Thêm biến thể cho các kích cỡ, màu sắc khác nhau.",
+      "emptyDescription": "Thêm biến thể để xác định các tùy chọn khác nhau cho sản phẩm này.",
       "columnName": "Tên",
       "columnSku": "SKU",
       "columnPrice": "Giá",
@@ -248,6 +281,7 @@
     "activityLog": "Nhật ký hoạt động",
     "activityLogDescription": "Các thay đổi gần đây của sản phẩm này",
     "noActivity": "Chưa có hoạt động nào được ghi nhận",
+    "noActivityDescription": "Hoạt động sẽ xuất hiện ở đây khi có thay đổi đối với sản phẩm này.",
     "viewAllActivity": "Xem tất cả hoạt động",
     "duplicate": "Nhân bản",
     "duplicateSuccess": "Nhân bản sản phẩm thành công",
@@ -329,6 +363,7 @@
     "organization": "Tổ chức",
     "viewProduct": "Xem sản phẩm",
     "noVariants": "Chưa có biến thể. Thêm biến thể cho các kích cỡ, màu sắc khác nhau, v.v.",
+    "noVariantsDescription": "Thêm biến thể để xác định các tùy chọn khác nhau cho sản phẩm này.",
     "deleteVariant": "Xóa biến thể",
     "deleteVariantConfirmation": "Bạn có chắc chắn muốn xóa \"{{name}}\"? Điều này sẽ xóa vĩnh viễn biến thể này.",
     "deleteImageTitle": "Xóa hình ảnh",
@@ -340,7 +375,7 @@
     "importExport": "Nhập/Xuất",
     "viewModeGrid": "Xem dạng lưới",
     "viewModeTable": "Xem dạng bảng",
-    "filterByStatus": "Lọc theo trạng thái",
+    "filterByStatus": "Lọc theo {{status}}",
     "filterByCategory": "Lọc theo danh mục",
     "filterByBrand": "Lọc theo thương hiệu",
     "filterByStock": "Lọc theo tồn kho",
@@ -364,6 +399,9 @@
       "min": "Tối thiểu",
       "max": "Tối đa",
       "rangeSelected": "{{min}} - {{max}} {{unit}}",
+      "colorSelected": "{{color}} (đã chọn)",
+      "fieldMin": "{{field}} Tối thiểu",
+      "fieldMax": "{{field}} Tối đa",
       "selectDate": "Chọn ngày",
       "selectDateTime": "Chọn ngày & giờ",
       "increment": "Tăng giá trị",
@@ -614,7 +652,8 @@
     "sortOrderDescription": "Số nhỏ hơn hiển thị trước",
     "updateSuccess": "Cập nhật danh mục thành công",
     "createSuccess": "Tạo danh mục thành công",
-    "saveFailed": "Lưu danh mục thất bại"
+    "saveFailed": "Lưu danh mục thất bại",
+    "deleteFailed": "Xóa danh mục thất bại"
   },
   "blog": {
     "posts": "Bài viết Blog",
@@ -674,6 +713,7 @@
     "noTagsAvailable": "Không có thẻ nào",
     "clickToToggleTags": "Nhấn để chọn/bỏ chọn thẻ",
     "featuredImage": "Ảnh đại diện",
+    "featuredImagePreview": "Xem trước ảnh đại diện",
     "uploadingImage": "Đang tải ảnh lên...",
     "processingImage": "Vui lòng đợi trong khi chúng tôi xử lý ảnh",
     "clickToUpload": "Nhấn để tải ảnh đại diện lên",
@@ -848,7 +888,9 @@
     "deleteWarning": "Hành động này sẽ xóa vĩnh viễn toàn bộ dữ liệu tổ chức bao gồm người dùng, cài đặt và nội dung.",
     "noTenantsFound": "Không tìm thấy tenant",
     "noTenantsFoundDescription": "Không có tenant nào phù hợp với tiêu chí tìm kiếm.",
-    "showingFirst100": "Hiển thị 100 tổ chức đầu tiên. Dùng tìm kiếm để tìm các tổ chức khác."
+    "showingFirst100": "Hiển thị 100 tổ chức đầu tiên. Dùng tìm kiếm để tìm các tổ chức khác.",
+    "deleteError": "Xóa tenant thất bại",
+    "loadError": "Tải thông tin tenant thất bại"
   },
   "roles": {
     "title": "Vai trò",
@@ -906,7 +948,9 @@
       "noParent": "Không có vai trò cha",
       "hierarchyLevel": "Cấp độ phân cấp",
       "isSystem": "Vai trò Hệ thống"
-    }
+    },
+    "deleteError": "Xóa vai trò thất bại",
+    "updateError": "Cập nhật vai trò thất bại"
   },
   "users": {
     "title": "Người dùng",
@@ -921,6 +965,7 @@
     "noUsers": "Không tìm thấy người dùng",
     "noUsersDescription": "Không có người dùng phù hợp với bộ lọc hiện tại.",
     "noRolesAvailable": "Không có vai trò nào",
+    "noRolesDescription": "Hãy tạo vai trò trước khi gán cho người dùng.",
     "locked": "Đã khóa",
     "lock": "Khóa",
     "unlock": "Mở khóa",
@@ -933,6 +978,8 @@
     "lockSuccess": "Đã khóa người dùng thành công",
     "unlockSuccess": "Đã mở khóa người dùng thành công",
     "loadError": "Không thể tải thông tin người dùng",
+    "lockError": "Khóa người dùng thất bại",
+    "unlockError": "Mở khóa người dùng thất bại",
     "editTitle": "Sửa Người dùng",
     "editDescription": "Cập nhật thông tin và trạng thái tài khoản",
     "viewActivity": "Xem Hoạt động",
@@ -1055,6 +1102,7 @@
       "addNote": "Thêm ghi chú",
       "deleteNote": "Xóa ghi chú",
       "noNotes": "Chưa có ghi chú",
+      "noNotesDescription": "Ghi chú được thêm vào đơn hàng sẽ hiển thị tại đây.",
       "addSuccess": "Đã thêm ghi chú",
       "addError": "Không thể thêm ghi chú",
       "deleteSuccess": "Đã xóa ghi chú",
@@ -1183,6 +1231,7 @@
     "submitting": "Đang gửi...",
     "submitResponse": "Gửi phản hồi",
     "reviewNotFound": "Không tìm thấy đánh giá",
+    "reviewNotFoundDescription": "Không thể tải đánh giá được yêu cầu.",
     "status": {
       "pending": "Đang chờ",
       "approved": "Đã duyệt",
@@ -1236,7 +1285,8 @@
     "confirmedAt": "Đã xác nhận",
     "cancelledAt": "Đã hủy",
     "cancellationReason": "Lý do hủy",
-    "receiptNotFound": "Không tìm thấy phiếu"
+    "receiptNotFound": "Không tìm thấy phiếu",
+    "receiptNotFoundDescription": "Không thể tải phiếu được yêu cầu."
   },
   "shipping": {
     "title": "Quản lý vận chuyển",
@@ -1306,6 +1356,7 @@
     "trackingStatus": "Trạng thái: {{status}}",
     "loadingTracking": "Đang tải thông tin theo dõi...",
     "noTrackingEvents": "Chưa có sự kiện theo dõi",
+    "noTrackingEventsDescription": "Cập nhật theo dõi sẽ xuất hiện ở đây khi lô hàng đang vận chuyển.",
     "openTracking": "Mở trang theo dõi",
     "trackingNumber": "Mã vận đơn",
     "env": {
@@ -1379,7 +1430,9 @@
     "topCustomersDesc": "Khách hàng xếp hạng theo tổng chi tiêu",
     "month": "Tháng",
     "orders": "Đơn hàng",
+    "ordersLabel": "đơn hàng",
     "totalSpent": "Tổng chi tiêu",
+    "noDataDescription": "Thử điều chỉnh khoảng thời gian để xem kết quả.",
     "exportSuccess": "Xuất báo cáo thành công",
     "exportFailed": "Xuất báo cáo thất bại",
     "exportCsv": "Xuất dạng CSV",
@@ -1399,11 +1452,84 @@
       "custom": "Tùy chỉnh"
     }
   },
+  "storefront": {
+    "minPrice": "Giá tối thiểu",
+    "maxPrice": "Giá tối đa",
+    "minPriceIn": "Giá tối thiểu theo {{currency}}",
+    "maxPriceIn": "Giá tối đa theo {{currency}}",
+    "to": "đến",
+    "range": "Khoảng",
+    "filterByColor": "Lọc theo màu {{color}}",
+    "filterBy": "Lọc theo {{value}}",
+    "removeFilter": "Xóa bộ lọc {{label}}",
+    "clearAll": "Xóa tất cả",
+    "showLess": "Thu gọn",
+    "showMore": "Hiển thị thêm {{count}}",
+    "productFilters": "Bộ lọc sản phẩm",
+    "filters": "Bộ lọc",
+    "price": "Giá",
+    "priceRange": "Khoảng giá",
+    "openFilters": "Mở bộ lọc",
+    "refineResults": "Lọc kết quả tìm kiếm",
+    "viewResults": "Xem kết quả",
+    "appliedFilters": "Bộ lọc đã áp dụng"
+  },
+  "onboarding": {
+    "closeWelcome": "Đóng hộp thoại chào mừng",
+    "welcomeUser": "Chào mừng, {{name}}!",
+    "welcomeDescription": "Hãy để chúng tôi giúp bạn thiết lập mọi thứ cần thiết để quản lý cửa hàng hiệu quả.",
+    "getStarted": "Bắt đầu",
+    "skipForNow": "Bỏ qua",
+    "features": {
+      "products": {
+        "title": "Quản lý sản phẩm",
+        "description": "Tạo và sắp xếp danh mục sản phẩm với biến thể, hình ảnh và giá cả."
+      },
+      "security": {
+        "title": "Bảo mật & Tin cậy",
+        "description": "Bảo mật cấp doanh nghiệp với kiểm soát truy cập theo vai trò và ghi nhật ký hoạt động."
+      },
+      "team": {
+        "title": "Cộng tác nhóm",
+        "description": "Mời thành viên nhóm và quản lý quyền hạn để cộng tác liền mạch."
+      }
+    },
+    "completeSetup": "Hoàn tất thiết lập",
+    "progress": "{{completed}} trên {{total}} tác vụ đã hoàn thành",
+    "dismissChecklist": "Ẩn danh sách kiểm tra",
+    "allDone": "Hoàn tất! Bạn đã sẵn sàng.",
+    "itemCompleted": "{{label}} - đã hoàn thành",
+    "markComplete": "Đánh dấu {{label}} hoàn thành",
+    "items": {
+      "profile": {
+        "label": "Hoàn thiện hồ sơ",
+        "description": "Thêm tên và ảnh đại diện của bạn"
+      },
+      "explore": {
+        "label": "Khám phá bảng điều khiển",
+        "description": "Làm quen với các tính năng chính"
+      },
+      "product": {
+        "label": "Thêm sản phẩm đầu tiên",
+        "description": "Tạo sản phẩm để bắt đầu xây dựng danh mục"
+      },
+      "blog": {
+        "label": "Viết bài blog đầu tiên",
+        "description": "Chia sẻ tin tức và cập nhật với khách hàng"
+      },
+      "team": {
+        "label": "Mời thành viên nhóm",
+        "description": "Cộng tác với nhóm để quản lý cửa hàng"
+      }
+    }
+  },
   "settings": {
     "title": "Cài đặt"
   },
   "notifications": {
     "title": "Thông báo",
+    "bellAriaLabel": "Thông báo",
+    "bellAriaLabelWithCount": "Thông báo ({{count}} chưa đọc)",
     "markAllRead": "Đánh dấu đã đọc",
     "viewAll": "Xem tất cả thông báo",
     "noNotifications": "Không có thông báo",
@@ -1649,7 +1775,11 @@
     "revert": "Khôi phục",
     "preview": "Xem trước",
     "showPassword": "Hiện mật khẩu",
-    "hidePassword": "Ẩn mật khẩu"
+    "hidePassword": "Ẩn mật khẩu",
+    "undo": "Hoàn tác",
+    "copyToClipboard": "Sao chép vào clipboard",
+    "viewFullscreen": "Xem toàn màn hình",
+    "copyColorCode": "Sao chép mã màu"
   },
   "labels": {
     "loading": "Đang tải...",
@@ -1695,6 +1825,10 @@
     "creating": "Đang tạo...",
     "saving": "Đang lưu...",
     "deleting": "Đang xóa...",
+    "cancelling": "Đang hủy...",
+    "processing": "Đang xử lý...",
+    "revoking": "Đang thu hồi...",
+    "reverting": "Đang khôi phục...",
     "exporting": "Đang xuất...",
     "page": "Trang",
     "perPage": "Số mục mỗi trang",
@@ -1737,6 +1871,11 @@
     "breadcrumb": "Đường dẫn",
     "pickCustomColor": "Chọn màu tùy chỉnh",
     "colorPicker": "Bộ chọn màu",
+    "customColor": "Tùy chỉnh",
+    "clickToChangeColor": "Màu: {{color}}. Nhấp để thay đổi.",
+    "notAvailable": "N/A",
+    "logoPreview": "Xem trước logo",
+    "user": "Người dùng",
     "closeWelcomeDialog": "Đóng hộp thoại chào mừng",
     "dismissOnboarding": "Đóng danh sách hướng dẫn",
     "goBack": "Quay lại",
@@ -1752,6 +1891,8 @@
     "goToPreviousPage": "Đến trang trước",
     "goToNextPage": "Đến trang sau",
     "goToLastPage": "Đến trang cuối",
+    "currentPageNumber": "Trang hiện tại, trang {{page}}",
+    "goToPageNumber": "Đến trang {{page}}",
     "list": "Danh sách",
     "tree": "Cây",
     "tableView": "Xem dạng bảng",
@@ -1773,6 +1914,12 @@
     "previousPage": "Trang trước",
     "nextPage": "Trang sau",
     "actionsFor": "Thao tác cho {{name}}",
+    "publishItem": "Xuất bản {{name}}",
+    "archiveItem": "Lưu trữ {{name}}",
+    "viewDetailsFor": "Xem chi tiết {{name}}",
+    "editItem": "Chỉnh sửa {{name}}",
+    "deleteItem": "Xóa {{name}}",
+    "selectItem": "Chọn {{name}}",
     "allBrands": "Tất cả thương hiệu",
     "brand": "Thương hiệu",
     "delete": "Xóa",
@@ -1797,7 +1944,10 @@
     "addressLine2": "Địa chỉ dòng 2",
     "ward": "Phường/Xã",
     "district": "Quận/Huyện",
-    "province": "Tỉnh/Thành phố"
+    "province": "Tỉnh/Thành phố",
+    "selectDateRange": "Chọn ngày bắt đầu và kết thúc",
+    "colorValue": "Màu: {{color}}",
+    "pickDateRange": "Chọn khoảng ngày"
   },
   "permissions": {
     "categories": {
@@ -2151,7 +2301,25 @@
     "loadFailed": "Không thể tải dữ liệu",
     "invalidFileType": "Loại tệp không hợp lệ",
     "fileTooLarge": "Tệp phải nhỏ hơn {{maxSize}}MB",
-    "uploadFailed": "Tải lên thất bại"
+    "uploadFailed": "Tải lên thất bại",
+    "failedToRestore": "Khôi phục {{entity}} thất bại",
+    "failedToDelete": "Xóa {{entity}} \"{{name}}\" thất bại",
+    "failedToSaveVariant": "Lưu biến thể thất bại",
+    "anErrorOccurred": "Đã xảy ra lỗi",
+    "failedToFetchPermissions": "Không thể tải quyền truy cập"
+  },
+  "media": {
+    "imageUploaded": "Đã tải ảnh lên",
+    "uploading": "Đang tải lên...",
+    "preview": "Xem trước",
+    "clickToViewFullImage": "Nhấn để xem ảnh đầy đủ",
+    "clickToUpload": "Nhấn để tải lên"
+  },
+  "json": {
+    "noData": "Không có dữ liệu",
+    "jsonData": "Dữ liệu JSON",
+    "itemCount": "{{count}} mục",
+    "keyCount": "{{count}} khóa"
   },
   "filePreview": {
     "openPreview": "Xem trước {{name}}",
@@ -2210,7 +2378,17 @@
     "emailSameAsCurrent": "Email mới phải khác email hiện tại",
     "emailRequired": "Email là bắt buộc",
     "onlyLowercaseNumbersHyphens": "Chỉ cho phép chữ thường, số và dấu gạch ngang",
-    "identifierFormat": "Chỉ cho phép chữ thường, số và dấu gạch ngang"
+    "identifierFormat": "Chỉ cho phép chữ thường, số và dấu gạch ngang",
+    "nameRequired": "Tên là bắt buộc",
+    "priceMustBeNonNegative": "Giá không được âm",
+    "comparePriceMustBeNonNegative": "Giá so sánh không được âm",
+    "costPriceMustBeNonNegative": "Giá vốn không được âm",
+    "stockMustBeWholeNumber": "Tồn kho phải là số nguyên",
+    "stockMustBeNonNegative": "Tồn kho không được âm",
+    "sortOrderMustBeWholeNumber": "Thứ tự sắp xếp phải là số nguyên",
+    "sortOrderMustBeNonNegative": "Thứ tự sắp xếp không được âm",
+    "compareAtPriceMustBeHigher": "Giá so sánh phải cao hơn giá bán thường",
+    "validationFailed": "Xác thực thất bại"
   },
   "activityTimeline": {
     "title": "Dòng thời gian hoạt động",
@@ -2238,8 +2416,13 @@
     "operations": {
       "create": "Tạo mới",
       "update": "Cập nhật",
-      "delete": "Xóa"
+      "delete": "Xóa",
+      "added": "Thêm",
+      "removed": "Xóa",
+      "modified": "Sửa đổi"
     },
+    "changeCount_one": "{{count}} thay đổi",
+    "changeCount_other": "{{count}} thay đổi",
     "oldValue": "Giá trị cũ:",
     "newValue": "Giá trị mới:",
     "nullValue": "(rỗng)",
@@ -2257,7 +2440,20 @@
     "noHttpRequest": "Không có thông tin yêu cầu HTTP",
     "entryInformation": "Thông tin mục",
     "errorMessage": "Thông báo lỗi",
-    "failedToLoadDetails": "Không thể tải chi tiết"
+    "failedToLoadDetails": "Không thể tải chi tiết",
+    "tabs": {
+      "http": "HTTP",
+      "handler": "Xử lý",
+      "database": "Cơ sở dữ liệu",
+      "raw": "Dữ liệu thô"
+    },
+    "handler": "Xử lý",
+    "entity": "Thực thể",
+    "correlation": "Tương quan",
+    "systemUser": "Hệ thống",
+    "correlationId": "ID tương quan",
+    "loadFailed": "Tải dòng thời gian hoạt động thất bại",
+    "clickToCopy": "Nhấn để sao chép: {{value}}"
   },
   "pageContexts": {
     "Products": "Sản phẩm",
@@ -2312,6 +2508,7 @@
     "resetFilters": "Đặt lại bộ lọc",
     "noErrorPatterns": "Không phát hiện mẫu lỗi",
     "serverMinLevel": "Cấp độ log tối thiểu của server",
+    "serverMinLevelTooltip": "Cấp độ log tối thiểu của server - cũng lọc hiển thị",
     "filterDisplayedLevels": "Lọc các cấp độ log hiển thị",
     "filterByLevel": "Lọc theo cấp độ log",
     "copyEntryAsJson": "Sao chép mục dưới dạng JSON",
@@ -2640,6 +2837,13 @@
       "displayName": "Tên hiển thị",
       "displayNameHelp": "Hiển thị cho khách hàng khi thanh toán",
       "environment": "Môi trường"
+    },
+    "timeAgo": {
+      "never": "Chưa bao giờ",
+      "justNow": "Vừa xong",
+      "minutesAgo": "{{count}} phút trước",
+      "hoursAgo": "{{count}} giờ trước",
+      "daysAgo": "{{count}} ngày trước"
     }
   },
   "shippingProviders": {
@@ -2683,7 +2887,11 @@
       "displayName": "Tên hiển thị",
       "displayNameHelp": "Hiển thị cho khách hàng khi thanh toán",
       "environment": "Môi trường"
-    }
+    },
+    "configureFailed": "Cấu hình nhà vận chuyển thất bại",
+    "updateFailed": "Cập nhật nhà vận chuyển thất bại",
+    "sandbox": "Sandbox",
+    "production": "Production"
   },
   "audit": {
     "entityHistory": "Lịch sử thực thể",
@@ -3097,6 +3305,16 @@
       "reason": "Lý do",
       "requestedBy": "Người yêu cầu"
     },
+    "refundStatus": {
+      "completed": "Hoàn thành",
+      "failed": "Thất bại",
+      "pending": "Đang chờ"
+    },
+    "processingStatus": {
+      "Processed": "Đã xử lý",
+      "Failed": "Thất bại",
+      "Pending": "Đang chờ"
+    },
     "recordPayment": {
       "title": "Ghi nhận thanh toán",
       "description": "Ghi nhận thanh toán ngoại tuyến hoặc thủ công cho đơn hàng",
@@ -3107,6 +3325,7 @@
       "amount": "Số tiền",
       "amountPlaceholder": "Nhập số tiền thanh toán",
       "currency": "Loại tiền",
+      "currencyPlaceholder": "VND",
       "paymentMethod": "Phương thức thanh toán",
       "selectPaymentMethod": "Chọn phương thức thanh toán",
       "referenceNumber": "Số tham chiếu",

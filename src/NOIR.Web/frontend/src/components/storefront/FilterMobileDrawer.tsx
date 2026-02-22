@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 import { SlidersHorizontal } from 'lucide-react'
 import {
   Button,
@@ -37,9 +38,11 @@ export const FilterMobileDrawer = ({
   onOpenChange,
   children,
   activeFilterCount = 0,
-  title = 'Filters',
-  description = 'Refine your search results',
+  title,
+  description,
 }: FilterMobileDrawerProps) => {
+  const { t } = useTranslation('common')
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="w-full sm:max-w-md p-0 flex flex-col">
@@ -47,7 +50,7 @@ export const FilterMobileDrawer = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="size-5" aria-hidden="true" />
-              <SheetTitle>{title}</SheetTitle>
+              <SheetTitle>{title || t('storefront.filters', 'Filters')}</SheetTitle>
               {activeFilterCount > 0 && (
                 <span className="ml-1 rounded-full bg-primary text-primary-foreground text-xs font-medium px-2 py-0.5">
                   {activeFilterCount}
@@ -56,7 +59,7 @@ export const FilterMobileDrawer = ({
             </div>
           </div>
           <SheetDescription className="text-left text-sm">
-            {description}
+            {description || t('storefront.refineResults', 'Refine your search results')}
           </SheetDescription>
         </SheetHeader>
 
@@ -67,7 +70,7 @@ export const FilterMobileDrawer = ({
         <div className="border-t p-4">
           <SheetClose asChild>
             <Button className="w-full">
-              View Results
+              {t('storefront.viewResults', 'View Results')}
             </Button>
           </SheetClose>
         </div>
@@ -93,6 +96,8 @@ export const FilterMobileTrigger = ({
   activeFilterCount = 0,
   className,
 }: FilterMobileTriggerProps) => {
+  const { t } = useTranslation('common')
+
   return (
     <Button
       type="button"
@@ -100,10 +105,10 @@ export const FilterMobileTrigger = ({
       size="sm"
       onClick={onClick}
       className={cn('lg:hidden gap-2', className)}
-      aria-label="Open filters"
+      aria-label={t('storefront.openFilters', 'Open filters')}
     >
       <SlidersHorizontal className="size-4" aria-hidden="true" />
-      <span>Filters</span>
+      <span>{t('storefront.filters', 'Filters')}</span>
       {activeFilterCount > 0 && (
         <span className="rounded-full bg-primary text-primary-foreground text-xs font-medium px-1.5 py-0.5 min-w-5 text-center">
           {activeFilterCount}

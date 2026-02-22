@@ -3,7 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
-import { FileText, ArrowLeft, RotateCcw, Save, Info } from 'lucide-react'
+import { FileText, ArrowLeft, RotateCcw, Save, Info, Loader2 } from 'lucide-react'
 import { Editor } from '@tinymce/tinymce-react'
 import type { Editor as TinyMCEEditor } from 'tinymce'
 
@@ -33,21 +33,19 @@ import 'tinymce/plugins/wordcount'
 
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
   Badge,
   Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Input,
   Label,
   Skeleton,
@@ -88,6 +86,7 @@ export const LegalPageEditPage = () => {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [reverting, setReverting] = useState(false)
+  const [revertDialogOpen, setRevertDialogOpen] = useState(false)
 
   // Form state
   const [title, setTitle] = useState('')
@@ -217,6 +216,7 @@ export const LegalPageEditPage = () => {
       }
     } finally {
       setReverting(false)
+      setRevertDialogOpen(false)
     }
   }
 
@@ -308,35 +308,44 @@ export const LegalPageEditPage = () => {
         <div className="flex items-center gap-2">
           {/* Revert button - only shown for non-inherited (tenant-owned) pages */}
           {!page.isInherited && canEdit && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" disabled={reverting} className="cursor-pointer">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  {t('buttons.revert')}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
-                      <RotateCcw className="h-5 w-5 text-destructive" />
+            <>
+              <Button variant="outline" disabled={reverting} className="cursor-pointer" onClick={() => setRevertDialogOpen(true)}>
+                <RotateCcw className="h-4 w-4 mr-2" />
+                {t('buttons.revert')}
+              </Button>
+              <Credenza open={revertDialogOpen} onOpenChange={setRevertDialogOpen}>
+                <CredenzaContent className="border-destructive/30">
+                  <CredenzaHeader>
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                        <RotateCcw className="h-5 w-5 text-destructive" />
+                      </div>
+                      <div>
+                        <CredenzaTitle>{t('legalPages.revertTitle')}</CredenzaTitle>
+                        <CredenzaDescription>
+                          {t('legalPages.revertDescription')}
+                        </CredenzaDescription>
+                      </div>
                     </div>
-                    <div>
-                      <AlertDialogTitle>{t('legalPages.revertTitle')}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t('legalPages.revertDescription')}
-                      </AlertDialogDescription>
-                    </div>
-                  </div>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="cursor-pointer">{t('buttons.cancel')}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleRevert} className="cursor-pointer">
-                    {t('buttons.revert')}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                  </CredenzaHeader>
+                  <CredenzaBody />
+                  <CredenzaFooter>
+                    <Button variant="outline" onClick={() => setRevertDialogOpen(false)} disabled={reverting} className="cursor-pointer">
+                      {t('buttons.cancel')}
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={handleRevert}
+                      disabled={reverting}
+                      className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                    >
+                      {reverting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {reverting ? t('labels.reverting', 'Reverting...') : t('buttons.revert')}
+                    </Button>
+                  </CredenzaFooter>
+                </CredenzaContent>
+              </Credenza>
+            </>
           )}
           {canEdit && (
             <Button onClick={handleSave} disabled={saving || !hasChanges} className="cursor-pointer">
@@ -484,7 +493,7 @@ export const LegalPageEditPage = () => {
                       })
 
                       if (!response.ok) {
-                        throw new Error('Upload failed')
+                        throw new Error(t('errors.uploadFailed', 'Upload failed'))
                       }
 
                       const { location } = await response.json()

@@ -67,7 +67,7 @@ export const UsersPage = () => {
       await lockMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to lock user'
+      const message = err instanceof Error ? err.message : t('users.lockError', 'Failed to lock user')
       return { success: false, error: message }
     }
   }
@@ -77,7 +77,7 @@ export const UsersPage = () => {
       await unlockMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to unlock user'
+      const message = err instanceof Error ? err.message : t('users.unlockError', 'Failed to unlock user')
       return { success: false, error: message }
     }
   }
@@ -113,7 +113,7 @@ export const UsersPage = () => {
         description={t('users.description', 'Manage platform users and their roles')}
         action={
           canCreateUsers && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('users.createUser', 'Create User')}
             </Button>

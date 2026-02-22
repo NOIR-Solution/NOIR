@@ -125,6 +125,7 @@ const TimelineEntry = ({
   isLast: boolean
   onViewDetails: () => void
 }) => {
+  const { t } = useTranslation('common')
   const config = operationConfig[entry.operationType as keyof typeof operationConfig] || operationConfig.Update
   const Icon = config.icon
   const { formatRelativeTime, timezone, dateFormat } = useRegionalSettings()
@@ -139,7 +140,7 @@ const TimelineEntry = ({
       {/* Avatar with page context initials and status indicator */}
       <div className="relative z-10 flex-shrink-0 h-10 w-10">
         <Avatar
-          fallback={entry.displayContext || 'System'}
+          fallback={entry.displayContext || t('activityTimeline.systemUser', 'System')}
           size="md"
           className={cn(
             'ring-4 ring-background',
@@ -183,12 +184,12 @@ const TimelineEntry = ({
                 {entry.actionDescription || entry.displayContext}
               </span>
               <Badge variant="outline" className={cn('text-xs', config.textColor)}>
-                {entry.operationType}
+                {t(`activityTimeline.operations.${entry.operationType.toLowerCase()}`, entry.operationType)}
               </Badge>
               {entry.entityChangeCount > 0 && (
                 <Badge variant="secondary" className="text-xs">
                   <Database className="h-3 w-3 mr-1" />
-                  {entry.entityChangeCount} {entry.entityChangeCount === 1 ? 'change' : 'changes'}
+                  {t('activityTimeline.changeCount', { count: entry.entityChangeCount, defaultValue: '{{count}} change' })}
                 </Badge>
               )}
               {entry.targetDtoId && (
@@ -199,7 +200,7 @@ const TimelineEntry = ({
             </div>
 
             <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-              <span>{entry.userEmail || 'System'}</span>
+              <span>{entry.userEmail || t('activityTimeline.systemUser', 'System')}</span>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span className="flex items-center gap-1 cursor-default tabular-nums">
@@ -221,7 +222,7 @@ const TimelineEntry = ({
                 </span>
               )}
               {entry.correlationId && (
-                <span className="flex items-center gap-1" title="Correlation ID">
+                <span className="flex items-center gap-1" title={t('activityTimeline.correlationId', 'Correlation ID')}>
                   <Fingerprint className="h-3 w-3" />
                   <span className="font-mono truncate max-w-[100px]">{entry.correlationId}</span>
                 </span>
@@ -297,7 +298,7 @@ export const ActivityTimelinePage = () => {
       setTotalCount(result.totalCount)
       setTotalPages(result.totalPages)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load activity timeline')
+      setError(err instanceof Error ? err.message : t('activityTimeline.loadFailed', 'Failed to load activity timeline'))
     } finally {
       setLoading(false)
     }
@@ -417,7 +418,7 @@ export const ActivityTimelinePage = () => {
                     setCurrentPage(1)
                   })}
                 >
-                  <SelectTrigger className="w-[130px] h-9" aria-label={t('labels.filterByContext', 'Filter by context')}>
+                  <SelectTrigger className="cursor-pointer w-[130px] h-9" aria-label={t('labels.filterByContext', 'Filter by context')}>
                     <SelectValue placeholder={t('activityTimeline.allContexts')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -438,7 +439,7 @@ export const ActivityTimelinePage = () => {
                     setCurrentPage(1)
                   })}
                 >
-                  <SelectTrigger className="w-[130px] h-9" aria-label={t('labels.filterByAction', 'Filter by action')}>
+                  <SelectTrigger className="cursor-pointer w-[130px] h-9" aria-label={t('labels.filterByAction', 'Filter by action')}>
                     <SelectValue placeholder={t('activityTimeline.allActions')} />
                   </SelectTrigger>
                   <SelectContent>

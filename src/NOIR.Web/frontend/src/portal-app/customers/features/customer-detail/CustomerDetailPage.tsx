@@ -64,6 +64,7 @@ import { AddressFormDialog } from '../../components/AddressFormDialog'
 import { LoyaltyPointsDialog } from '../../components/LoyaltyPointsDialog'
 import { DeleteCustomerDialog } from '../../components/DeleteCustomerDialog'
 import { getSegmentBadgeClass, getTierBadgeClass } from '@/portal-app/customers/utils/customerStatus'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 const CUSTOMER_SEGMENTS: CustomerSegment[] = ['New', 'Active', 'AtRisk', 'Dormant', 'Lost', 'VIP']
 
@@ -330,7 +331,7 @@ export const CustomerDetailPage = () => {
                           </TableRow>
                         ) : (
                           orders.map((order) => (
-                            <TableRow key={order.id} className="group transition-colors hover:bg-muted/50">
+                            <TableRow key={order.id} className="group cursor-pointer transition-colors hover:bg-muted/50">
                               <TableCell className="sticky left-0 z-10 bg-background">
                                 <Button
                                   variant="ghost"
@@ -346,7 +347,7 @@ export const CustomerDetailPage = () => {
                                 <span className="font-mono font-medium text-sm">{order.orderNumber}</span>
                               </TableCell>
                               <TableCell>
-                                <Badge variant="outline">{order.status}</Badge>
+                                <Badge variant="outline">{t(`orders.status.${order.status.toLowerCase()}`, order.status)}</Badge>
                               </TableCell>
                               <TableCell className="text-center">
                                 <Badge variant="secondary">{order.itemCount}</Badge>
@@ -540,7 +541,7 @@ export const CustomerDetailPage = () => {
               <Separator />
               <div>
                 <p className="text-muted-foreground text-xs mb-1">{t('labels.status', 'Status')}</p>
-                <Badge variant={customer.isActive ? 'default' : 'secondary'}>
+                <Badge variant="outline" className={getStatusBadgeClasses(customer.isActive ? 'green' : 'gray')}>
                   {customer.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
                 </Badge>
               </div>

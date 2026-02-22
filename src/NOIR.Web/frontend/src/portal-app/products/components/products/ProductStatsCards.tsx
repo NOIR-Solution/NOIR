@@ -44,7 +44,7 @@ export const ProductStatsCards = ({
 
     return {
       key: config.key,
-      title: config.title,
+      title: t(config.titleKey),
       iconBg: config.iconBg,
       iconColor: config.iconColor,
       icon: <Icon className="h-5 w-5" />,
@@ -83,7 +83,7 @@ export const ProductStatsCards = ({
             tabIndex={card.onClick ? 0 : undefined}
             role={card.onClick ? 'button' : undefined}
             aria-pressed={card.onClick ? card.isActive : undefined}
-            aria-label={card.onClick ? `Filter by ${card.title}` : undefined}
+            aria-label={card.onClick ? t('products.filterByStatus', { status: card.title, defaultValue: `Filter by ${card.title}` }) : undefined}
           >
             {card.isActive && (
               <div className="absolute top-2 right-2 p-1 rounded-full bg-primary text-primary-foreground">

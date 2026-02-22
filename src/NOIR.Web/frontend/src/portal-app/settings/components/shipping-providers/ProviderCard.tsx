@@ -151,14 +151,14 @@ export const ProviderCard = ({
             {provider?.environment && (
               <p className="text-xs text-muted-foreground mt-1">
                 {provider.environment === 'Sandbox' ? '🧪 ' : '🚀 '}
-                {provider.environment}
+                {t(`shippingProviders.${provider.environment.toLowerCase()}`, provider.environment)}
               </p>
             )}
           </div>
           <div className="flex flex-col items-end gap-1">
             {isConfigured && (
               <p className="text-xs text-muted-foreground">
-                {t('shippingProviders.lastCheck', 'Last check')}: {formatLastHealthCheck(provider?.lastHealthCheck ?? null)}
+                {t('shippingProviders.lastCheck', 'Last check')}: {formatLastHealthCheck(provider?.lastHealthCheck ?? null, t)}
               </p>
             )}
             {/* Feature badges */}

@@ -15,7 +15,7 @@ import {
   ArrowDownToLine,
   Loader2,
 } from 'lucide-react'
-import { Badge, Button, Dialog, DialogContent, DialogHeader, DialogTitle, ScrollArea } from '@uikit'
+import { Badge, Button, Dialog, DialogContent, DialogHeader, DialogTitle, EmptyState, ScrollArea } from '@uikit'
 
 import type { LogEntryDto } from '@/services/developerLogs'
 import { LogEntryRow } from './LogEntryRow'
@@ -197,13 +197,12 @@ const LogTableContent = ({
 
   if (entries.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground py-12">
-        <Terminal className="h-12 w-12 mb-4 opacity-40" />
-        <p className="text-base font-medium">{emptyMessage}</p>
-        {emptySubMessage && (
-          <p className="text-sm mt-1 opacity-70">{emptySubMessage}</p>
-        )}
-      </div>
+      <EmptyState
+        icon={Terminal}
+        title={emptyMessage}
+        description={emptySubMessage || ''}
+        className="border-0 rounded-none px-4 py-12 min-h-[400px]"
+      />
     )
   }
 
@@ -256,10 +255,12 @@ const FullscreenLogDialog = ({
         </DialogHeader>
         <div className="flex-1 overflow-y-auto bg-card dark:bg-slate-950">
           {entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground py-20">
-              <FileText className="h-12 w-12 mb-4 opacity-50" />
-              <p>{t('developerLogs.noLogEntries')}</p>
-            </div>
+            <EmptyState
+              icon={FileText}
+              title={t('developerLogs.noLogEntries')}
+              description=""
+              className="border-0 rounded-none px-4 py-20"
+            />
           ) : (
             <div className="divide-y divide-border">
               {entries.map(entry => (

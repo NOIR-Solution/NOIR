@@ -1,6 +1,7 @@
 /**
  * Product UI configuration constants
  * Shared across all product-related pages and components
+ * Uses i18n keys (labelKey/titleKey) resolved by rendering components
  */
 
 import type { ProductStatus } from '@/types/product'
@@ -10,27 +11,27 @@ import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 export const PRODUCT_STATUS_CONFIG: Record<
   ProductStatus,
-  { color: string; icon: FC<{ className?: string }>; label: string }
+  { color: string; icon: FC<{ className?: string }>; labelKey: string }
 > = {
   Draft: {
     color: getStatusBadgeClasses('gray'),
     icon: AlertCircle,
-    label: 'Draft'
+    labelKey: 'products.status.draft'
   },
   Active: {
     color: getStatusBadgeClasses('green'),
     icon: CheckCircle2,
-    label: 'Active'
+    labelKey: 'products.status.active'
   },
   Archived: {
     color: getStatusBadgeClasses('yellow'),
     icon: Archive,
-    label: 'Archived'
+    labelKey: 'products.status.archived'
   },
   OutOfStock: {
     color: getStatusBadgeClasses('red'),
     icon: XCircle,
-    label: 'Out of Stock'
+    labelKey: 'products.status.outOfStock'
   },
 }
 
@@ -64,25 +65,25 @@ export const STAT_CARD_THEMES = {
 export const PRODUCT_STAT_CARDS_CONFIG = [
   {
     key: 'total' as const,
-    title: 'Total Products',
+    titleKey: 'products.stats.total',
     icon: Package,
     ...STAT_CARD_THEMES.total,
   },
   {
     key: 'active' as const,
-    title: 'Active Products',
+    titleKey: 'products.stats.active',
     icon: CheckCircle2,
     ...STAT_CARD_THEMES.active,
   },
   {
     key: 'draft' as const,
-    title: 'Draft Products',
+    titleKey: 'products.stats.draft',
     icon: FileText,
     ...STAT_CARD_THEMES.draft,
   },
   {
     key: 'outOfStock' as const,
-    title: 'Out of Stock',
+    titleKey: 'products.stats.outOfStock',
     icon: AlertCircle,
     ...STAT_CARD_THEMES.outOfStock,
   },

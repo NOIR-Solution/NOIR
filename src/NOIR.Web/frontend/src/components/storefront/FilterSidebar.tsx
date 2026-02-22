@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronDown } from 'lucide-react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger, Separator, Skeleton } from '@uikit'
 
@@ -103,6 +104,7 @@ export const FilterSidebar = ({
   currency = '$',
   className,
 }: FilterSidebarProps) => {
+  const { t } = useTranslation('common')
   // Use placeholder data if no available filters provided
   const filters = availableFilters || PLACEHOLDER_FILTERS
 
@@ -220,9 +222,9 @@ export const FilterSidebar = ({
     <aside
       className={cn('space-y-4', className)}
       role="complementary"
-      aria-label="Product filters"
+      aria-label={t('storefront.productFilters', 'Product filters')}
     >
-      <h3 className="font-semibold text-lg">Filters</h3>
+      <h3 className="font-semibold text-lg">{t('storefront.filters', 'Filters')}</h3>
 
       {/* Price Range - Always show first */}
       <Collapsible
@@ -230,7 +232,7 @@ export const FilterSidebar = ({
         onOpenChange={() => toggleSection('price')}
       >
         <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
-          <span>Price</span>
+          <span>{t('storefront.price', 'Price')}</span>
           <ChevronDown
             className={cn(
               'size-4 transition-transform duration-200',

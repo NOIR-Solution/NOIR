@@ -30,6 +30,7 @@
  */
 
 import { useCallback, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useForm } from "react-hook-form"
 import type { UseFormReturn, DefaultValues, Path, FieldValues, Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -134,6 +135,7 @@ export const useValidatedForm = <TValues extends FieldValues>({
   onError,
   mode = "onBlur",
 }: UseValidatedFormOptions<TValues>): UseValidatedFormReturn<TValues> => {
+  const { t } = useTranslation('common')
   const [serverError, setServerError] = useState<string | null>(null)
 
   // Use type assertion for resolver to avoid complex generic compatibility issues
@@ -173,14 +175,14 @@ export const useValidatedForm = <TValues extends FieldValues>({
               })
             }
 
-            setServerError(problemDetails.detail || problemDetails.title || "An error occurred")
+            setServerError(problemDetails.detail || problemDetails.title || t('errors.anErrorOccurred', 'An error occurred'))
           }
 
           onError?.(error)
         }
       })(e)
     },
-    [form, onSubmit, onError]
+    [form, onSubmit, onError, t]
   )
 
   const setFieldError = useCallback(

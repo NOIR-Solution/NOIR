@@ -69,7 +69,7 @@ export const VariantOptionsSelector = ({
                         backgroundColor: sanitizeColorCode(value.colorCode),
                       }}
                       title={value.displayValue || value.value}
-                      aria-label={`${option.displayName || option.name}: ${value.displayValue || value.value}`}
+                      aria-label={t('products.variants.optionValue', { option: option.displayName || option.name, value: value.displayValue || value.value, defaultValue: `${option.displayName || option.name}: ${value.displayValue || value.value}` })}
                       aria-pressed={isSelected}
                     >
                       {isSelected && (

@@ -131,7 +131,7 @@ export const NotificationPreferencesPage = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-5 pt-0">
+              <CardContent className="space-y-4 pt-0">
                 <div className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-3">
                     <Skeleton className="h-4 w-4 rounded" />
@@ -211,7 +211,7 @@ export const NotificationPreferencesPage = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-5 pt-0">
+              <CardContent className="space-y-4 pt-0">
                 {/* In-app notifications toggle */}
                 <div className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-3">

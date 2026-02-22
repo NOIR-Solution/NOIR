@@ -432,7 +432,7 @@ export const CategoryTreeView = <T extends TreeCategory>({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0"
-                    aria-label={`Actions for ${category.name}`}
+                    aria-label={t('labels.actionsFor', { name: category.name })}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreHorizontal className="h-4 w-4" />

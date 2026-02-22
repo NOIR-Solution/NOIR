@@ -15,6 +15,7 @@ import {
   CredenzaHeader,
   CredenzaTitle,
   CredenzaBody,
+  EmptyState,
   Input,
   Label,
 } from '@uikit'
@@ -291,9 +292,12 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
                     <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                   </div>
                 ) : availableRoles.length === 0 ? (
-                  <div className="text-center py-4 border rounded-md text-muted-foreground text-sm">
-                    {t('users.noRolesAvailable', 'No roles available')}
-                  </div>
+                  <EmptyState
+                    icon={UserPlus}
+                    title={t('users.noRolesAvailable', 'No roles available')}
+                    description={t('users.noRolesDescription', 'Create roles first before assigning them to users.')}
+                    className="border-0 rounded-none px-4 py-8"
+                  />
                 ) : (
                   <div className="border rounded-md p-3 space-y-2 max-h-[150px] overflow-y-auto">
                     {availableRoles.map((role) => (

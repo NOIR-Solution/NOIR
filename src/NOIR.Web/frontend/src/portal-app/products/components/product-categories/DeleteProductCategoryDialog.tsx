@@ -63,7 +63,7 @@ export const DeleteProductCategoryDialog = ({
               <CredenzaTitle>{t('productCategories.deleteCategory')}</CredenzaTitle>
               <CredenzaDescription className="pt-2 space-y-2">
                 <span>
-                  Are you sure you want to delete{' '}
+                  {t('productCategories.deleteCategoryConfirmName')}{' '}
                   <span className="font-semibold text-foreground">"{category?.name}"</span>?
                 </span>
                 {hasProducts && (
@@ -89,7 +89,7 @@ export const DeleteProductCategoryDialog = ({
             variant="destructive"
             onClick={handleConfirm}
             disabled={isDeleting || !!hasChildren}
-            className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
+            className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
           >
             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isDeleting ? t('buttons.deleting') : t('buttons.delete')}

@@ -30,12 +30,12 @@ interface GatewayCardProps {
 const healthStatusConfig: Record<GatewayHealthStatus, {
   icon: React.ElementType
   color: string
-  label: string
+  labelKey: string
 }> = {
-  Healthy: { icon: CheckCircle2, color: 'text-green-500', label: 'Healthy' },
-  Degraded: { icon: AlertCircle, color: 'text-yellow-500', label: 'Degraded' },
-  Unhealthy: { icon: XCircle, color: 'text-red-500', label: 'Unhealthy' },
-  Unknown: { icon: Clock, color: 'text-muted-foreground', label: 'Unknown' },
+  Healthy: { icon: CheckCircle2, color: 'text-green-500', labelKey: 'shipping.healthStatus.healthy' },
+  Degraded: { icon: AlertCircle, color: 'text-yellow-500', labelKey: 'shipping.healthStatus.degraded' },
+  Unhealthy: { icon: XCircle, color: 'text-red-500', labelKey: 'shipping.healthStatus.unhealthy' },
+  Unknown: { icon: Clock, color: 'text-muted-foreground', labelKey: 'shipping.healthStatus.unknown' },
 }
 
 export const GatewayCard = ({
@@ -142,7 +142,7 @@ export const GatewayCard = ({
             <div className="flex items-center gap-1.5">
               <HealthIcon className={cn('h-4 w-4', healthStatusConfig[healthStatus].color)} />
               <span className={cn('text-xs', healthStatusConfig[healthStatus].color)}>
-                {healthStatusConfig[healthStatus].label}
+                {t(healthStatusConfig[healthStatus].labelKey)}
               </span>
             </div>
           )}
@@ -157,13 +157,13 @@ export const GatewayCard = ({
             {gateway?.environment && (
               <p className="text-xs text-muted-foreground mt-1">
                 {gateway.environment === 'Sandbox' ? '🧪 ' : '🚀 '}
-                {gateway.environment}
+                {t(`paymentGateways.${gateway.environment.toLowerCase()}`, gateway.environment)}
               </p>
             )}
           </div>
           {isConfigured && (
             <p className="text-xs text-muted-foreground">
-              {t('paymentGateways.lastCheck', 'Last check')}: {formatLastHealthCheck(gateway?.lastHealthCheck ?? null)}
+              {t('paymentGateways.lastCheck', 'Last check')}: {formatLastHealthCheck(gateway?.lastHealthCheck ?? null, t)}
             </p>
           )}
         </div>

@@ -6,6 +6,7 @@ import {
   Check,
   Clock,
   CreditCard,
+  Loader2,
   MapPin,
   Package,
   RotateCcw,
@@ -17,14 +18,6 @@ import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -32,6 +25,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Input,
   Label,
   PageHeader,
@@ -781,68 +781,75 @@ export const OrderDetailPage = () => {
       </div>
 
       {/* Ship Order Dialog */}
-      <AlertDialog open={showShipDialog} onOpenChange={setShowShipDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={showShipDialog} onOpenChange={setShowShipDialog}>
+        <CredenzaContent>
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
                 <Truck className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <AlertDialogTitle>{t('orders.shipOrderTitle', 'Ship Order')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('orders.shipOrderTitle', 'Ship Order')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('orders.shipOrderDescription', 'Enter tracking information for this shipment.')}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="trackingNumber">{t('orders.trackingNumber', 'Tracking Number')}</Label>
-              <Input
-                id="trackingNumber"
-                value={trackingNumber}
-                onChange={(e) => setTrackingNumber(e.target.value)}
-                placeholder={t('orders.trackingNumberPlaceholder', 'Enter tracking number...')}
-              />
+          </CredenzaHeader>
+          <CredenzaBody>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="trackingNumber">{t('orders.trackingNumber', 'Tracking Number')}</Label>
+                <Input
+                  id="trackingNumber"
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  placeholder={t('orders.trackingNumberPlaceholder', 'Enter tracking number...')}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="shippingCarrier">{t('orders.carrier', 'Carrier')}</Label>
+                <Input
+                  id="shippingCarrier"
+                  value={shippingCarrier}
+                  onChange={(e) => setShippingCarrier(e.target.value)}
+                  placeholder={t('orders.carrierPlaceholder', 'e.g. GHN, GHTK, VNPost...')}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="shippingCarrier">{t('orders.carrier', 'Carrier')}</Label>
-              <Input
-                id="shippingCarrier"
-                value={shippingCarrier}
-                onChange={(e) => setShippingCarrier(e.target.value)}
-                placeholder={t('orders.carrierPlaceholder', 'e.g. GHN, GHTK, VNPost...')}
-              />
-            </div>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleShip} className="cursor-pointer">
+          </CredenzaBody>
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setShowShipDialog(false)} disabled={shipMutation.isPending} className="cursor-pointer">{t('labels.cancel', 'Cancel')}</Button>
+            <Button
+              onClick={handleShip}
+              disabled={shipMutation.isPending}
+              className="cursor-pointer"
+            >
+              {shipMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               <Truck className="h-4 w-4 mr-2" />
-              {t('orders.shipOrder', 'Ship Order')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {shipMutation.isPending ? t('labels.processing', 'Processing...') : t('orders.shipOrder', 'Ship Order')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Cancel Order Dialog */}
-      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <XIcon className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('orders.cancelOrderTitle', 'Cancel Order')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('orders.cancelOrderTitle', 'Cancel Order')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('orders.cancelOrderDescription', 'Are you sure you want to cancel this order? This action cannot be undone.')}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <div className="py-4">
+          </CredenzaHeader>
+          <CredenzaBody>
             <div className="space-y-2">
               <Label htmlFor="cancelReason">{t('orders.reasonOptional', 'Reason (optional)')}</Label>
               <Textarea
@@ -853,36 +860,39 @@ export const OrderDetailPage = () => {
                 rows={3}
               />
             </div>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaBody>
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setShowCancelDialog(false)} disabled={cancelMutation.isPending} className="cursor-pointer">{t('labels.cancel', 'Cancel')}</Button>
+            <Button
+              variant="destructive"
               onClick={handleCancel}
+              disabled={cancelMutation.isPending}
               className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
-              {t('orders.cancelOrder', 'Cancel Order')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {cancelMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {cancelMutation.isPending ? t('labels.processing', 'Processing...') : t('orders.cancelOrder', 'Cancel Order')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Return Order Dialog */}
-      <AlertDialog open={showReturnDialog} onOpenChange={setShowReturnDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={showReturnDialog} onOpenChange={setShowReturnDialog}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <RotateCcw className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('orders.returnOrderTitle', 'Return Order')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('orders.returnOrderTitle', 'Return Order')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('orders.returnOrderDescription', 'Process a return for this order. Inventory will be restocked.')}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <div className="py-4">
+          </CredenzaHeader>
+          <CredenzaBody>
             <div className="space-y-2">
               <Label htmlFor="returnReason">{t('orders.returnReasonLabel', 'Reason')}</Label>
               <Textarea
@@ -893,20 +903,22 @@ export const OrderDetailPage = () => {
                 rows={3}
               />
             </div>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaBody>
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setShowReturnDialog(false)} disabled={returnMutation.isPending} className="cursor-pointer">{t('labels.cancel', 'Cancel')}</Button>
+            <Button
+              variant="destructive"
               onClick={handleReturn}
-              disabled={!returnReason.trim()}
+              disabled={!returnReason.trim() || returnMutation.isPending}
               className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
+              {returnMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               <RotateCcw className="h-4 w-4 mr-2" />
-              {t('orders.processReturn', 'Process Return')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {returnMutation.isPending ? t('labels.processing', 'Processing...') : t('orders.processReturn', 'Process Return')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
     </div>
   )

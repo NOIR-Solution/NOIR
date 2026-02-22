@@ -141,7 +141,7 @@ export const CustomersPage = () => {
         responsive
         action={
           canCreate && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('customers.newCustomer', 'New Customer')}
             </Button>

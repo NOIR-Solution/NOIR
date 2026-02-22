@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button, Input, Label } from '@uikit'
 
 import { cn } from '@/lib/utils'
@@ -33,6 +34,7 @@ export const FacetPriceRange = ({
   currency = '$',
   className,
 }: FacetPriceRangeProps) => {
+  const { t } = useTranslation('common')
   const [localMin, setLocalMin] = React.useState<string>(
     selectedMin?.toString() || ''
   )
@@ -81,12 +83,12 @@ export const FacetPriceRange = ({
 
   return (
     <div className={cn('space-y-3', className)}>
-      <h4 className="text-sm font-medium text-foreground">Price Range</h4>
+      <h4 className="text-sm font-medium text-foreground">{t('storefront.priceRange', 'Price Range')}</h4>
 
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <Label htmlFor="price-min" className="sr-only">
-            Minimum price
+            {t('storefront.minPrice', 'Minimum price')}
           </Label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
@@ -101,16 +103,16 @@ export const FacetPriceRange = ({
               onKeyDown={handleKeyDown}
               min={0}
               className="pl-7"
-              aria-label={`Minimum price in ${currency}`}
+              aria-label={t('storefront.minPriceIn', { currency, defaultValue: `Minimum price in ${currency}` })}
             />
           </div>
         </div>
 
-        <span className="text-muted-foreground text-sm">to</span>
+        <span className="text-muted-foreground text-sm">{t('storefront.to', 'to')}</span>
 
         <div className="flex-1">
           <Label htmlFor="price-max" className="sr-only">
-            Maximum price
+            {t('storefront.maxPrice', 'Maximum price')}
           </Label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
@@ -125,7 +127,7 @@ export const FacetPriceRange = ({
               onKeyDown={handleKeyDown}
               min={0}
               className="pl-7"
-              aria-label={`Maximum price in ${currency}`}
+              aria-label={t('storefront.maxPriceIn', { currency, defaultValue: `Maximum price in ${currency}` })}
             />
           </div>
         </div>
@@ -139,7 +141,7 @@ export const FacetPriceRange = ({
           onClick={handleApply}
           className="flex-1"
         >
-          Apply
+          {t('buttons.apply', 'Apply')}
         </Button>
         {hasValue && (
           <Button
@@ -149,13 +151,13 @@ export const FacetPriceRange = ({
             onClick={handleClear}
             className="flex-1"
           >
-            Clear
+            {t('buttons.clear', 'Clear')}
           </Button>
         )}
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Range: {currency}
+        {t('storefront.range', 'Range')}: {currency}
         {min.toLocaleString()} - {currency}
         {max.toLocaleString()}
       </p>

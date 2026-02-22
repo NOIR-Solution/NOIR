@@ -1,19 +1,11 @@
 import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, EllipsisVertical, Filter, List, Minus, Pencil, Plus, Search, Tags, Trash2 } from 'lucide-react'
+import { Check, EllipsisVertical, Filter, List, Loader2, Minus, Pencil, Plus, Search, Tags, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -21,6 +13,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -37,6 +36,7 @@ import {
   TableRow,
 } from '@uikit'
 
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { useProductAttributesQuery, useDeleteProductAttributeMutation } from '@/portal-app/products/queries'
 import type { GetProductAttributesParams } from '@/services/productAttributes'
 import { ProductAttributeDialog } from '../../components/product-attributes/ProductAttributeDialog'
@@ -96,7 +96,7 @@ export const ProductAttributesPage = () => {
         responsive
         action={
           canCreateAttributes && (
-            <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('productAttributes.newAttribute', 'New Attribute')}
             </Button>
@@ -266,7 +266,7 @@ export const ProductAttributesPage = () => {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={attribute.isActive ? 'default' : 'secondary'}>
+                        <Badge variant="outline" className={getStatusBadgeClasses(attribute.isActive ? 'green' : 'gray')}>
                           {attribute.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
                         </Badge>
                       </TableCell>
@@ -293,35 +293,39 @@ export const ProductAttributesPage = () => {
       />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!attributeToDelete} onOpenChange={(open) => !open && setAttributeToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={!!attributeToDelete} onOpenChange={(open) => !open && setAttributeToDelete(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <Trash2 className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('productAttributes.deleteTitle', 'Delete Product Attribute')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('productAttributes.deleteTitle', 'Delete Product Attribute')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('productAttributes.deleteDescription', {
                     name: attributeToDelete?.name,
                     defaultValue: `Are you sure you want to delete "${attributeToDelete?.name}"? This action cannot be undone.`
                   })}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('labels.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setAttributeToDelete(null)} disabled={deleteMutation.isPending} className="cursor-pointer">{t('labels.cancel', 'Cancel')}</Button>
+            <Button
+              variant="destructive"
               onClick={handleDelete}
+              disabled={deleteMutation.isPending}
               className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
-              {t('labels.delete', 'Delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {deleteMutation.isPending ? t('labels.deleting', 'Deleting...') : t('labels.delete', 'Delete')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

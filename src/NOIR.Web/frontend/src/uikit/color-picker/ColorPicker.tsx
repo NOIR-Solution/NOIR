@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Check, Pipette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '../input/Input';
@@ -11,6 +12,7 @@ interface ColorSwatchProps {
 }
 
 const ColorSwatch: React.FC<ColorSwatchProps> = ({ color, isSelected, onClick }) => {
+  const { t } = useTranslation('common')
   return (
     <button
       type="button"
@@ -20,7 +22,7 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ color, isSelected, onClick })
       )}
       style={{ backgroundColor: color }}
       onClick={onClick}
-      aria-label={`Select color ${color}`}
+      aria-label={t('labels.colorValue', { color, defaultValue: 'Color: {{color}}' })}
     >
       {isSelected && (
         <div className="absolute inset-0 flex items-center justify-center">
@@ -61,6 +63,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   className,
   showCustomInput = true,
 }) => {
+  const { t } = useTranslation('common');
   const colorInputRef = useRef<HTMLInputElement>(null);
   const isCustomColor = !colors.includes(value?.toUpperCase()) && !colors.includes(value?.toLowerCase());
 
@@ -97,7 +100,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
               isCustomColor && 'ring-2 ring-foreground ring-offset-2 border-solid border-transparent'
             )}
             style={isCustomColor ? { backgroundColor: value } : undefined}
-            aria-label="Pick custom color"
+            aria-label={t('labels.pickCustomColor', 'Pick custom color')}
           >
             {isCustomColor ? (
               <Check className="w-4 h-4 text-white drop-shadow-lg" strokeWidth={3} />
@@ -111,7 +114,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             value={value || '#3B82F6'}
             onChange={handleNativeColorChange}
             className="sr-only"
-            aria-label="Color picker"
+            aria-label={t('labels.colorPicker', 'Color picker')}
           />
           <Input
             type="text"
@@ -121,7 +124,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             className="w-28 h-8 text-sm font-mono"
             maxLength={7}
           />
-          <span className="text-xs text-muted-foreground">Custom</span>
+          <span className="text-xs text-muted-foreground">{t('labels.customColor', 'Custom')}</span>
         </div>
       )}
     </div>
@@ -149,6 +152,7 @@ const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
   align = 'start',
   side = 'bottom',
 }) => {
+  const { t } = useTranslation('common')
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -159,7 +163,7 @@ const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
             triggerClassName,
           )}
           style={{ backgroundColor: value }}
-          aria-label={`Color: ${value}. Click to change.`}
+          aria-label={t('labels.clickToChangeColor', { color: value, defaultValue: 'Color: {{color}}. Click to change.' })}
         />
       </PopoverTrigger>
       <PopoverContent

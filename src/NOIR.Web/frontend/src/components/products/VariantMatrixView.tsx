@@ -239,7 +239,7 @@ export const VariantMatrixView = ({
         <TooltipContent>
           <div className="text-xs space-y-1">
             <p><strong>{cell.variant.name}</strong></p>
-            {cell.variant.sku && <p>SKU: {cell.variant.sku}</p>}
+            {cell.variant.sku && <p>{t('products.variantSku', 'SKU')}: {cell.variant.sku}</p>}
             <p>{t('labels.clickToEdit', 'Click to edit')}</p>
           </div>
         </TooltipContent>

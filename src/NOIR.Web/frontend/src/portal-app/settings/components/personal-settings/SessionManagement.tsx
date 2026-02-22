@@ -9,14 +9,6 @@ import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { Monitor, Smartphone, Globe, Trash2, Loader2, RefreshCw, CheckCircle2 } from 'lucide-react'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -24,6 +16,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  EmptyState,
   Skeleton,
 } from '@uikit'
 
@@ -143,9 +143,12 @@ export const SessionManagement = () => {
             ))}
           </div>
         ) : sessions.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">
-            {t('sessions.noSessions')}
-          </p>
+          <EmptyState
+            icon={Monitor}
+            title={t('sessions.noSessions')}
+            description={t('sessions.noSessionsDescription', 'Your active sessions will appear here.')}
+            className="border-0 rounded-none px-4 py-12"
+          />
         ) : (
           <div className="space-y-4">
             {sessions.map((session) => {
@@ -183,7 +186,7 @@ export const SessionManagement = () => {
                       onClick={() => setSessionToRevoke(session)}
                       disabled={isRevoking === session.id}
                       className="cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10"
-                      aria-label={`Revoke session on ${getDeviceInfo(session)}`}
+                      aria-label={t('sessions.revokeSessionAriaLabel', { device: getDeviceInfo(session), defaultValue: `Revoke session on ${getDeviceInfo(session)}` })}
                     >
                       {isRevoking === session.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -200,34 +203,40 @@ export const SessionManagement = () => {
       </CardContent>
 
       {/* Revoke Confirmation Dialog */}
-      <AlertDialog open={!!sessionToRevoke} onOpenChange={() => setSessionToRevoke(null)}>
-        <AlertDialogContent className="border-destructive/30">
-          <AlertDialogHeader>
+      <Credenza open={!!sessionToRevoke} onOpenChange={(open) => !open && setSessionToRevoke(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <Trash2 className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('sessions.revokeTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('sessions.revokeTitle')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('sessions.revokeDescription', {
                     device: sessionToRevoke ? getDeviceInfo(sessionToRevoke) : '',
                   })}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setSessionToRevoke(null)} disabled={isRevoking !== null} className="cursor-pointer">
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleRevoke}
-              className="cursor-pointer border border-destructive bg-transparent text-destructive hover:bg-destructive hover:text-white"
+              disabled={isRevoking !== null}
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
-              {t('sessions.revoke')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {isRevoking !== null && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isRevoking !== null ? t('labels.revoking', 'Revoking...') : t('sessions.revoke')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </Card>
   )
 }

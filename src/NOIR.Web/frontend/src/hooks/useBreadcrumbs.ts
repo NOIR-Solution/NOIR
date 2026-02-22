@@ -1,180 +1,166 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import type { BreadcrumbItem } from '@uikit'
+
 /**
  * Hook to generate breadcrumb items based on current route
  */
 export const useBreadcrumbs = (): BreadcrumbItem[] => {
   const location = useLocation()
+  const { t } = useTranslation('common')
 
   return useMemo(() => {
     const path = location.pathname
     const searchParams = new URLSearchParams(location.search)
     const fromContext = searchParams.get('from')
 
+    // Reusable breadcrumb segments
+    const portal = { label: t('nav.portal'), href: '/portal' }
+    const ecommerce = { label: t('breadcrumbs.ecommerce') }
+    const marketing = { label: t('nav.marketing') }
+    const blog = { label: t('breadcrumbs.blog') }
+    const usersAccess = { label: t('nav.usersAccess') }
+    const settings = { label: t('nav.settings') }
+    const system = { label: t('nav.system') }
+
     // Define breadcrumb configurations for routes
     const breadcrumbConfig: Record<string, BreadcrumbItem[]> = {
       // Dashboard
-      '/portal': [{ label: 'Dashboard' }],
+      '/portal': [{ label: t('breadcrumbs.dashboard') }],
 
       // E-commerce
       '/portal/ecommerce/products': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Products' },
+        portal, ecommerce,
+        { label: t('ecommerce.products') },
       ],
       '/portal/ecommerce/products/new': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Products', href: '/portal/ecommerce/products' },
-        { label: 'New Product' },
+        portal, ecommerce,
+        { label: t('ecommerce.products'), href: '/portal/ecommerce/products' },
+        { label: t('ecommerce.newProduct') },
       ],
       '/portal/ecommerce/categories': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Categories' },
+        portal, ecommerce,
+        { label: t('ecommerce.categories') },
       ],
       '/portal/ecommerce/brands': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Brands' },
+        portal, ecommerce,
+        { label: t('ecommerce.brands') },
       ],
       '/portal/ecommerce/attributes': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Attributes' },
+        portal, ecommerce,
+        { label: t('ecommerce.attributes') },
       ],
       '/portal/ecommerce/orders': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Orders' },
+        portal, ecommerce,
+        { label: t('ecommerce.orders') },
       ],
       '/portal/ecommerce/inventory': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Inventory' },
+        portal, ecommerce,
+        { label: t('ecommerce.inventory') },
       ],
       '/portal/ecommerce/customers': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Customers' },
+        portal, ecommerce,
+        { label: t('ecommerce.customers') },
       ],
       '/portal/ecommerce/customer-groups': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Customer Groups' },
+        portal, ecommerce,
+        { label: t('ecommerce.customerGroups') },
       ],
       '/portal/ecommerce/reviews': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Reviews' },
+        portal, ecommerce,
+        { label: t('ecommerce.reviews') },
       ],
       '/portal/ecommerce/wishlists': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Wishlists' },
+        portal, ecommerce,
+        { label: t('ecommerce.wishlists') },
       ],
       '/portal/ecommerce/wishlists/manage': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Wishlists', href: '/portal/ecommerce/wishlists' },
-        { label: 'Manage' },
+        portal, ecommerce,
+        { label: t('ecommerce.wishlists'), href: '/portal/ecommerce/wishlists' },
+        { label: t('breadcrumbs.manage') },
       ],
       '/portal/ecommerce/shipping': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Shipping' },
+        portal, ecommerce,
+        { label: t('ecommerce.shipping') },
       ],
 
       // Marketing
       '/portal/marketing/promotions': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Marketing' },
-        { label: 'Promotions' },
+        portal, marketing,
+        { label: t('ecommerce.promotions') },
       ],
       '/portal/marketing/reports': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Marketing' },
-        { label: 'Reports' },
+        portal, marketing,
+        { label: t('nav.reports') },
       ],
 
       // Blog
       '/portal/blog/posts': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Blog' },
-        { label: 'Posts' },
+        portal, blog,
+        { label: t('breadcrumbs.posts') },
       ],
       '/portal/blog/posts/new': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Blog' },
-        { label: 'Posts', href: '/portal/blog/posts' },
-        { label: 'New Post' },
+        portal, blog,
+        { label: t('breadcrumbs.posts'), href: '/portal/blog/posts' },
+        { label: t('blog.newPost') },
       ],
       '/portal/blog/categories': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Blog' },
-        { label: 'Categories' },
+        portal, blog,
+        { label: t('ecommerce.categories') },
       ],
       '/portal/blog/tags': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Blog' },
-        { label: 'Tags' },
+        portal, blog,
+        { label: t('breadcrumbs.tags') },
       ],
 
       // Admin - Users & Access
       '/portal/admin/users': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Users & Access' },
-        { label: 'Users' },
+        portal, usersAccess,
+        { label: t('nav.users') },
       ],
       '/portal/admin/roles': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Users & Access' },
-        { label: 'Roles' },
+        portal, usersAccess,
+        { label: t('breadcrumbs.roles') },
       ],
       '/portal/admin/tenants': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Users & Access' },
-        { label: 'Tenants' },
+        portal, usersAccess,
+        { label: t('breadcrumbs.tenants') },
       ],
 
       // Admin - Settings
       '/portal/admin/platform-settings': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Settings' },
-        { label: 'Platform Settings' },
+        portal, settings,
+        { label: t('breadcrumbs.platformSettings') },
       ],
       '/portal/admin/tenant-settings': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Settings' },
-        { label: 'Tenant Settings' },
+        portal, settings,
+        { label: t('breadcrumbs.tenantSettings') },
       ],
 
       // Admin - System
       '/portal/activity-timeline': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'System' },
-        { label: 'Activity Timeline' },
+        portal, system,
+        { label: t('breadcrumbs.activityTimeline') },
       ],
       '/portal/developer-logs': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'System' },
-        { label: 'Developer Logs' },
+        portal, system,
+        { label: t('breadcrumbs.developerLogs') },
       ],
 
       // User Settings
       '/portal/settings': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Settings' },
+        portal,
+        settings,
       ],
       '/portal/notifications': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Notifications' },
+        portal,
+        { label: t('nav.notifications') },
       ],
       '/portal/settings/notifications': [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Settings', href: '/portal/settings' },
-        { label: 'Notification Preferences' },
+        portal,
+        { label: t('nav.settings'), href: '/portal/settings' },
+        { label: t('breadcrumbs.notificationPreferences') },
       ],
     }
 
@@ -187,58 +173,52 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
     // Product detail/edit pages
     if (path.match(/^\/portal\/ecommerce\/products\/[^/]+$/)) {
       return [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Products', href: '/portal/ecommerce/products' },
-        { label: 'Product Details' },
+        portal, ecommerce,
+        { label: t('ecommerce.products'), href: '/portal/ecommerce/products' },
+        { label: t('breadcrumbs.productDetails') },
       ]
     }
     if (path.match(/^\/portal\/ecommerce\/products\/[^/]+\/edit$/)) {
       return [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Products', href: '/portal/ecommerce/products' },
-        { label: 'Edit Product' },
+        portal, ecommerce,
+        { label: t('ecommerce.products'), href: '/portal/ecommerce/products' },
+        { label: t('breadcrumbs.editProduct') },
       ]
     }
 
     // Order detail
     if (path.match(/^\/portal\/ecommerce\/orders\/[^/]+$/)) {
       return [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Orders', href: '/portal/ecommerce/orders' },
-        { label: 'Order Details' },
+        portal, ecommerce,
+        { label: t('ecommerce.orders'), href: '/portal/ecommerce/orders' },
+        { label: t('breadcrumbs.orderDetails') },
       ]
     }
 
     // Customer detail
     if (path.match(/^\/portal\/ecommerce\/customers\/[^/]+$/)) {
       return [
-        { label: 'Portal', href: '/portal' },
-        { label: 'E-commerce' },
-        { label: 'Customers', href: '/portal/ecommerce/customers' },
-        { label: 'Customer Details' },
+        portal, ecommerce,
+        { label: t('ecommerce.customers'), href: '/portal/ecommerce/customers' },
+        { label: t('breadcrumbs.customerDetails') },
       ]
     }
 
     // Blog post edit
     if (path.match(/^\/portal\/blog\/posts\/[^/]+\/edit$/)) {
       return [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Blog' },
-        { label: 'Posts', href: '/portal/blog/posts' },
-        { label: 'Edit Post' },
+        portal, blog,
+        { label: t('breadcrumbs.posts'), href: '/portal/blog/posts' },
+        { label: t('breadcrumbs.editPost') },
       ]
     }
 
     // Tenant detail
     if (path.match(/^\/portal\/admin\/tenants\/[^/]+$/)) {
       return [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Users & Access' },
-        { label: 'Tenants', href: '/portal/admin/tenants' },
-        { label: 'Tenant Details' },
+        portal, usersAccess,
+        { label: t('breadcrumbs.tenants'), href: '/portal/admin/tenants' },
+        { label: t('breadcrumbs.tenantDetails') },
       ]
     }
 
@@ -246,15 +226,14 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
     if (path.match(/^\/portal\/email-templates\/[^/]+$/)) {
       const isPlatformContext = fromContext === 'platform'
       return [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Settings' },
+        portal, settings,
         {
-          label: isPlatformContext ? 'Platform Settings' : 'Tenant Settings',
+          label: isPlatformContext ? t('breadcrumbs.platformSettings') : t('breadcrumbs.tenantSettings'),
           href: isPlatformContext
             ? '/portal/admin/platform-settings?tab=emailTemplates'
             : '/portal/admin/tenant-settings?tab=emailTemplates',
         },
-        { label: 'Edit Email Template' },
+        { label: t('breadcrumbs.editEmailTemplate') },
       ]
     }
 
@@ -262,19 +241,18 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
     if (path.match(/^\/portal\/legal-pages\/[^/]+$/)) {
       const isPlatformContext = fromContext === 'platform'
       return [
-        { label: 'Portal', href: '/portal' },
-        { label: 'Settings' },
+        portal, settings,
         {
-          label: isPlatformContext ? 'Platform Settings' : 'Tenant Settings',
+          label: isPlatformContext ? t('breadcrumbs.platformSettings') : t('breadcrumbs.tenantSettings'),
           href: isPlatformContext
             ? '/portal/admin/platform-settings?tab=legalPages'
             : '/portal/admin/tenant-settings?tab=legalPages',
         },
-        { label: 'Edit Legal Page' },
+        { label: t('breadcrumbs.editLegalPage') },
       ]
     }
 
     // Default fallback - just show Portal
-    return [{ label: 'Portal', href: '/portal' }]
-  }, [location.pathname, location.search])
+    return [{ label: t('nav.portal'), href: '/portal' }]
+  }, [location.pathname, location.search, t])
 }

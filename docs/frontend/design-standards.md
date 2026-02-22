@@ -1,6 +1,6 @@
 # NOIR Frontend Design Standards
 
-> Auto-generated from Phase 0 audit. Patterns verified against 44 pages and 96 Storybook stories.
+> Verified against 44 pages and 96 Storybook stories. Version 2.0 (2026-02-22).
 
 > Gold Standard: Payment Provider Settings (`PaymentGatewaysTab.tsx` + `GatewayCard.tsx`)
 
@@ -27,15 +27,54 @@
 - Row hover: `group transition-colors hover:bg-muted/50 cursor-pointer`
 - Sticky column: `w-10 sticky left-0 z-10 bg-background`
 - Loading: 5 skeleton rows with `animate-pulse`
-- Empty state: `EmptyState` component, `border-0 rounded-none px-4 py-12`
+- Empty state: `EmptyState` component from `@uikit`, `border-0 rounded-none px-4 py-12`
 
 ## Button Patterns
-- Primary action: `shadow-lg hover:shadow-xl transition-all duration-300`
+- Primary/Create action: `className="group transition-all duration-300"` — NO `shadow-lg hover:shadow-xl`
 - Create button icon: `group-hover:rotate-90 duration-300`
 - Icon sizing: `h-4 w-4 mr-2`
 - ALL buttons: `cursor-pointer`
 - Loading: `<Loader2 className="h-4 w-4 mr-2 animate-spin" />`
 - Size: `sm` for table actions, `default` for forms, `lg` for page CTAs
+- NO gradient buttons (`bg-gradient-to-r`) — use default Button variants
+
+## Destructive Actions
+
+### Destructive Buttons
+```tsx
+<Button
+  variant="destructive"
+  onClick={handleDelete}
+  disabled={mutation.isPending}
+  className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+>
+  {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+  {mutation.isPending ? t('labels.deleting', 'Deleting...') : t('labels.delete', 'Delete')}
+</Button>
+```
+
+### Destructive Dialogs
+- Use `Credenza` (NEVER `AlertDialog`) with `CredenzaContent className="border-destructive/30"`
+- Header: icon in `p-2 rounded-xl bg-destructive/10 border border-destructive/20` with `Trash2`/`XCircle` icon
+- Footer: Cancel (`variant="outline"`, disabled during pending) + Delete (destructive soft style above)
+- Cancel button must have `onClick` handler (not rely on `AlertDialogCancel` auto-close)
+
+## Status Badges
+- ALWAYS: `variant="outline"` + `getStatusBadgeClasses('green'|'gray'|'red'|...)` from `@/utils/statusBadge`
+- NEVER: `variant="default"` or `variant="secondary"` for active/inactive status
+- Health indicators: icon + text with matching color (`text-green-500`, `text-yellow-500`, `text-red-600`)
+
+## Empty States
+- ALWAYS: `<EmptyState icon={IconComponent} title={t('...')} description={t('...')} />` from `@uikit`
+- NEVER: `<div className="text-center py-8 text-muted-foreground">{text}</div>`
+
+## Dialog Patterns
+- Component: `Credenza` (NEVER `AlertDialog`) — handles mobile responsiveness
+- Width: `sm:max-w-[550px]` (standard), adjust for content
+- Header icon: `p-2 bg-primary/10 rounded-lg` with `h-5 w-5 text-primary`
+- Footer: Cancel (outline) left, Submit (default) right
+- Form spacing: `space-y-4` (NEVER `space-y-5`)
+- MUST use `useUrlDialog` for create, `useUrlEditDialog` for edit
 
 ## Filter Patterns
 - SelectTrigger: `h-9 cursor-pointer`
@@ -53,6 +92,7 @@
 - Button groups: `gap-2` (8px)
 - Tight spacing: `gap-1` (4px)
 - CardHeader bottom: `pb-3` or `pb-4`
+- Dialog body form fields: `space-y-4` (NEVER `space-y-5`)
 
 ## Color Semantics
 - Primary: `bg-primary/10`, `text-primary`
@@ -64,17 +104,6 @@
 ## Error States
 - Container: `p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive`
 - Retry button: with `group-hover:rotate-180` icon animation
-
-## Status Badges
-- Badge: `variant="outline"` with status-specific color
-- Health indicators: icon + text with matching color (`text-green-500`, `text-yellow-500`, `text-red-600`)
-
-## Dialog Patterns
-- Width: `sm:max-w-[550px]` (standard), adjust for content
-- Header icon: `p-2 bg-primary/10 rounded-lg` with `h-5 w-5 text-primary`
-- Footer: Cancel (outline) left, Submit (default) right
-- Form spacing: `space-y-4`
-- MUST use `useUrlDialog` for create, `useUrlEditDialog` for edit
 
 ## Accessibility
 - `cursor-pointer` on ALL interactive elements (Buttons, Tabs, Checkboxes, Select, DropdownMenu, Switch)

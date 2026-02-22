@@ -49,14 +49,6 @@ import {
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -64,6 +56,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   Form,
   FormControl,
   FormDescription,
@@ -77,6 +76,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  EmptyState,
   Switch,
   Textarea,
 } from '@uikit'
@@ -1376,9 +1376,12 @@ export const ProductFormPage = () => {
                 ) : (
                   // Create mode: show local variants
                   localVariants.length === 0 && !newVariant ? (
-                    <p className="text-center text-muted-foreground py-8">
-                      {t('products.noVariants')}
-                    </p>
+                    <EmptyState
+                      icon={Package}
+                      title={t('products.noVariants')}
+                      description={t('products.noVariantsDescription', 'Add variants to define different options for this product.')}
+                      className="border-0 rounded-none px-4 py-12"
+                    />
                   ) : (
                     <div className="space-y-2">
                       {localVariants.map((variant) => (
@@ -1425,7 +1428,7 @@ export const ProductFormPage = () => {
                                 size="icon"
                                 className="cursor-pointer"
                                 onClick={() => setEditingVariantId(variant.tempId)}
-                                aria-label={`Edit variant ${variant.name}`}
+                                aria-label={t('labels.editItem', { name: variant.name, defaultValue: `Edit ${variant.name}` })}
                               >
                                 <Pencil className="h-4 w-4 text-muted-foreground" />
                               </Button>
@@ -1434,7 +1437,7 @@ export const ProductFormPage = () => {
                                 size="icon"
                                 className="cursor-pointer"
                                 onClick={() => setLocalVariantToDelete(variant)}
-                                aria-label={`Delete variant ${variant.name}`}
+                                aria-label={t('labels.deleteItem', { name: variant.name, defaultValue: `Delete ${variant.name}` })}
                               >
                                 <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>
@@ -1463,7 +1466,7 @@ export const ProductFormPage = () => {
                   variant={product.status === 'Active' ? 'default' : 'secondary'}
                   className="text-sm"
                 >
-                  {product.status}
+                  {t(`products.status.${product.status.toLowerCase()}`, product.status)}
                 </Badge>
               </CardContent>
             </Card>
@@ -1660,7 +1663,7 @@ export const ProductFormPage = () => {
                         >
                           <img
                             src={img.url}
-                            alt={img.altText || 'Product image'}
+                            alt={img.altText || t('products.productImage', 'Product image')}
                             className="w-full aspect-square object-cover"
                           />
                           {img.isPrimary && (
@@ -1785,124 +1788,132 @@ export const ProductFormPage = () => {
       </div>
 
       {/* Delete Variant Confirmation Dialog */}
-      <AlertDialog open={!!variantToDelete} onOpenChange={(open) => !open && setVariantToDelete(null)}>
-        <AlertDialogContent className="border-destructive/30">
-          <AlertDialogHeader>
+      <Credenza open={!!variantToDelete} onOpenChange={(open) => !open && setVariantToDelete(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('products.deleteVariant')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('products.deleteVariant')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('products.deleteVariantConfirmation', { name: variantToDelete?.name })}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeletingVariant} className="cursor-pointer">
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setVariantToDelete(null)} disabled={isDeletingVariant} className="cursor-pointer">
               {t('buttons.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleConfirmDeleteVariant}
               disabled={isDeletingVariant}
-              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {isDeletingVariant && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isDeletingVariant ? t('buttons.saving') : t('buttons.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Delete Image Confirmation Dialog */}
-      <AlertDialog open={!!imageToDelete} onOpenChange={(open) => !open && setImageToDelete(null)}>
-        <AlertDialogContent className="border-destructive/30">
-          <AlertDialogHeader>
+      <Credenza open={!!imageToDelete} onOpenChange={(open) => !open && setImageToDelete(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('products.deleteImageTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('products.deleteImageTitle')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('products.deleteImageConfirmation')}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeletingImage} className="cursor-pointer">
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setImageToDelete(null)} disabled={isDeletingImage} className="cursor-pointer">
               {t('buttons.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleConfirmDeleteImage}
               disabled={isDeletingImage}
-              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {isDeletingImage && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isDeletingImage ? t('buttons.saving') : t('buttons.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Delete Local Variant Confirmation Dialog (create mode) */}
-      <AlertDialog open={!!localVariantToDelete} onOpenChange={(open) => !open && setLocalVariantToDelete(null)}>
-        <AlertDialogContent className="border-destructive/30">
-          <AlertDialogHeader>
+      <Credenza open={!!localVariantToDelete} onOpenChange={(open) => !open && setLocalVariantToDelete(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('products.removeVariant')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('products.removeVariant')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('products.removeVariantConfirmation')}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('buttons.cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setLocalVariantToDelete(null)} className="cursor-pointer">{t('buttons.cancel')}</Button>
+            <Button
+              variant="destructive"
               onClick={handleConfirmDeleteLocalVariant}
-              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {t('buttons.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Delete Temp Image Confirmation Dialog (create mode) */}
-      <AlertDialog open={!!tempImageToDelete} onOpenChange={(open) => !open && setTempImageToDelete(null)}>
-        <AlertDialogContent className="border-destructive/30">
-          <AlertDialogHeader>
+      <Credenza open={!!tempImageToDelete} onOpenChange={(open) => !open && setTempImageToDelete(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <AlertDialogTitle>{t('products.deleteImageTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>
+                <CredenzaTitle>{t('products.deleteImageTitle')}</CredenzaTitle>
+                <CredenzaDescription>
                   {t('products.deleteImageConfirmation')}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">{t('buttons.cancel')}</AlertDialogCancel>
-            <AlertDialogAction
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setTempImageToDelete(null)} className="cursor-pointer">{t('buttons.cancel')}</Button>
+            <Button
+              variant="destructive"
               onClick={handleConfirmDeleteTempImage}
-              className="bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {t('buttons.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

@@ -6,6 +6,7 @@
  * Used for logos, favicons, and other branding images.
  */
 import { useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Trash2, Loader2, ImageIcon } from 'lucide-react'
 import { Button } from '../button/Button'
 import { uploadMedia, type MediaFolder } from '@/services/media'
@@ -39,7 +40,7 @@ export const ImageUploadField = ({
   value,
   onChange,
   folder = 'branding',
-  placeholder = 'Click to upload',
+  placeholder,
   hint,
   disabled = false,
   aspectClass = 'aspect-video',
@@ -47,6 +48,8 @@ export const ImageUploadField = ({
   maxSize = 2 * 1024 * 1024,
   label,
 }: ImageUploadFieldProps) => {
+  const { t } = useTranslation('common')
+  const effectivePlaceholder = placeholder ?? t('media.clickToUpload', 'Click to upload')
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -67,14 +70,14 @@ export const ImageUploadField = ({
     // Validate file type
     const allowedTypes = accept.split(',').map(t => t.trim())
     if (!allowedTypes.some(type => file.type === type || type === '*/*')) {
-      setError('Invalid file type')
+      setError(t('errors.invalidFileType', 'Invalid file type'))
       return
     }
 
     // Validate file size
     if (file.size > maxSize) {
       const maxSizeMB = (maxSize / 1024 / 1024).toFixed(1)
-      setError(`File must be less than ${maxSizeMB}MB`)
+      setError(t('errors.fileTooLarge', { defaultValue: 'File must be less than {{maxSize}}MB', maxSize: maxSizeMB }))
       return
     }
 
@@ -85,9 +88,9 @@ export const ImageUploadField = ({
       const result = await uploadMedia(file, folder)
       const uploadedUrl = result.defaultUrl || ''
       onChange(uploadedUrl)
-      toast.success('Image uploaded')
+      toast.success(t('media.imageUploaded', 'Image uploaded'))
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Upload failed'
+      const message = err instanceof Error ? err.message : t('errors.uploadFailed', 'Upload failed')
       setError(message)
       toast.error(message)
     } finally {
@@ -120,13 +123,13 @@ export const ImageUploadField = ({
         {uploading ? (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <Loader2 className="h-8 w-8 animate-spin" />
-            <span className="text-xs">Uploading...</span>
+            <span className="text-xs">{t('media.uploading', 'Uploading...')}</span>
           </div>
         ) : value ? (
           <>
             <img
               src={value}
-              alt={label || 'Preview'}
+              alt={label || t('media.preview', 'Preview')}
               className="max-w-full max-h-full object-contain p-2"
             />
             {/* Delete button on hover */}
@@ -145,7 +148,7 @@ export const ImageUploadField = ({
         ) : (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <ImageIcon className="h-8 w-8" />
-            <span className="text-sm font-medium">{placeholder}</span>
+            <span className="text-sm font-medium">{effectivePlaceholder}</span>
             {hint && <span className="text-xs">{hint}</span>}
           </div>
         )}

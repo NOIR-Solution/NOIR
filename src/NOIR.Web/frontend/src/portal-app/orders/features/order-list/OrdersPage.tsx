@@ -112,7 +112,7 @@ export const OrdersPage = () => {
         action={
           canManageOrders ? (
             <Button
-              className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+              className="group transition-all duration-300 cursor-pointer"
               onClick={() => navigate('/portal/ecommerce/orders/create')}
             >
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />

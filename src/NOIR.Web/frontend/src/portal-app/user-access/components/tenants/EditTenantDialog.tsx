@@ -64,7 +64,7 @@ export const EditTenantDialog = ({ tenant, open, onOpenChange, onSuccess, active
         const data = await getTenant(tenant.id)
         setFullTenant(data)
       } catch (err) {
-        const message = err instanceof ApiError ? err.message : 'Failed to load tenant'
+        const message = err instanceof ApiError ? err.message : t('tenants.loadError', 'Failed to load tenant')
         toast.error(message)
         // Only close if on details tab; modules tab works without fullTenant
         if (effectiveTab === 'details') {

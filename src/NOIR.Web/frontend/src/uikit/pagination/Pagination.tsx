@@ -156,7 +156,7 @@ const Pagination: React.FC<PaginationProps> = ({
                 size="icon"
                 className="h-8 w-8 cursor-pointer"
                 onClick={() => handlePageChange(page)}
-                aria-label={currentPage === page ? `Current page, page ${page}` : `Go to page ${page}`}
+                aria-label={currentPage === page ? t('labels.currentPageNumber', { page, defaultValue: 'Current page, page {{page}}' }) : t('labels.goToPageNumber', { page, defaultValue: 'Go to page {{page}}' })}
                 aria-current={currentPage === page ? 'page' : undefined}
               >
                 {page}

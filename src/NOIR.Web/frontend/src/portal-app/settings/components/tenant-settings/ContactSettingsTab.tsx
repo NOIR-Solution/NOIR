@@ -111,7 +111,7 @@ export const ContactSettingsTab = ({ canEdit }: ContactSettingsTabProps) => {
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="contact@example.com"
+            placeholder={t('tenantSettings.contact.emailPlaceholder', 'contact@example.com')}
             disabled={!canEdit}
           />
         </div>
@@ -121,7 +121,7 @@ export const ContactSettingsTab = ({ canEdit }: ContactSettingsTabProps) => {
             id="contactPhone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="+1 (555) 123-4567"
+            placeholder={t('tenantSettings.contact.phonePlaceholder', '+1 (555) 123-4567')}
             disabled={!canEdit}
           />
         </div>
@@ -131,7 +131,7 @@ export const ContactSettingsTab = ({ canEdit }: ContactSettingsTabProps) => {
             id="contactAddress"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="123 Business St, Suite 100, City, State 12345"
+            placeholder={t('tenantSettings.contact.addressPlaceholder', '123 Business St, Suite 100, City, State 12345')}
             className="min-h-[80px]"
             disabled={!canEdit}
           />

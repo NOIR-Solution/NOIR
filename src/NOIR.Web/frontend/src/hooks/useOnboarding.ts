@@ -22,36 +22,37 @@ const DEFAULT_STATE: OnboardingState = {
 
 /**
  * Onboarding checklist items
+ * Uses i18n keys (labelKey/descriptionKey) resolved by the rendering component
  */
 export const ONBOARDING_ITEMS = [
   {
     id: 'profile',
-    label: 'Complete your profile',
-    description: 'Add your name and profile picture',
+    labelKey: 'onboarding.items.profile.label',
+    descriptionKey: 'onboarding.items.profile.description',
     href: '/portal/settings',
   },
   {
     id: 'explore',
-    label: 'Explore the dashboard',
-    description: 'Get familiar with the interface',
+    labelKey: 'onboarding.items.explore.label',
+    descriptionKey: 'onboarding.items.explore.description',
     href: '/portal',
   },
   {
     id: 'product',
-    label: 'Create your first product',
-    description: 'Add a product to your catalog',
+    labelKey: 'onboarding.items.product.label',
+    descriptionKey: 'onboarding.items.product.description',
     href: '/portal/ecommerce/products/new',
   },
   {
     id: 'blog',
-    label: 'Write your first blog post',
-    description: 'Share content with your audience',
+    labelKey: 'onboarding.items.blog.label',
+    descriptionKey: 'onboarding.items.blog.description',
     href: '/portal/blog/posts/new',
   },
   {
     id: 'team',
-    label: 'Invite team members',
-    description: 'Collaborate with your team',
+    labelKey: 'onboarding.items.team.label',
+    descriptionKey: 'onboarding.items.team.description',
     href: '/portal/admin/users',
   },
 ] as const

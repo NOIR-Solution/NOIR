@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import Lightbox from 'yet-another-react-lightbox'
 import Zoom from 'yet-another-react-lightbox/plugins/zoom'
 import 'yet-another-react-lightbox/styles.css'
@@ -41,6 +42,7 @@ export const ImageLightbox = ({
   fallback,
   showPlaceholder = true,
 }: ImageLightboxProps) => {
+  const { t } = useTranslation('common')
   // Use thumbnailSrc for display, src for lightbox full view
   const displaySrc = thumbnailSrc || src
   const [open, setOpen] = useState(false)
@@ -94,7 +96,7 @@ export const ImageLightbox = ({
           width: typeof thumbnailWidth === 'number' ? `${thumbnailWidth}px` : thumbnailWidth,
           height: typeof thumbnailHeight === 'number' ? `${thumbnailHeight}px` : thumbnailHeight,
         }}
-        title="Click to view full image"
+        title={t('media.clickToViewFullImage', 'Click to view full image')}
       >
         <img
           src={displaySrc}

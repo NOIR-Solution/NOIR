@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from 'storybook'
 import { useState } from 'react'
-import { Pencil, Save, X, Trash2, Check } from 'lucide-react'
-import { Button, Input } from '@uikit'
+import { Package, Pencil, Save, X, Trash2, Check } from 'lucide-react'
+import { Button, EmptyState, Input } from '@uikit'
 
 // --- Visual Replica ---
 // EditableVariantsTable depends on EditableVariantRow which uses TanStack Query,
@@ -273,9 +273,12 @@ const EditableVariantsTableDemo = ({
 
   if (variants.length === 0) {
     return (
-      <p className="text-center text-muted-foreground py-8">
-        No variants yet. Add attributes to generate variants automatically.
-      </p>
+      <EmptyState
+        icon={Package}
+        title="No variants yet"
+        description="Add attributes to generate variants automatically."
+        className="border-0 rounded-none px-4 py-12"
+      />
     )
   }
 

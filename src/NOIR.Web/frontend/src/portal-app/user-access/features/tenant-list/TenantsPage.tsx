@@ -98,7 +98,7 @@ export const TenantsPage = () => {
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete tenant'
+      const message = err instanceof Error ? err.message : t('tenants.deleteError', 'Failed to delete tenant')
       return { success: false, error: message }
     }
   }
@@ -110,7 +110,7 @@ export const TenantsPage = () => {
         title={t('tenants.title')}
         description={t('tenants.description')}
         action={
-          <Button className="group shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => openCreate()}>
+          <Button className="group transition-all duration-300" onClick={() => openCreate()}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
             {t('tenants.createNew')}
           </Button>

@@ -135,21 +135,29 @@ export const getGatewayStatusLabel = (
 
 /**
  * Format health check time
+ * Accepts a translation function for localized output
  */
-export const formatLastHealthCheck = (lastHealthCheck: string | null): string => {
-  if (!lastHealthCheck) return 'Never'
+export const formatLastHealthCheck = (
+  lastHealthCheck: string | null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t?: (...args: any[]) => any
+): string => {
+  const translate = (key: string, defaultValue: string, options?: Record<string, unknown>) =>
+    t ? t(key, { defaultValue, ...options }) : defaultValue
+
+  if (!lastHealthCheck) return translate('paymentGateways.timeAgo.never', 'Never')
 
   const date = new Date(lastHealthCheck)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffMins = Math.floor(diffMs / 60000)
 
-  if (diffMins < 1) return 'Just now'
-  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`
+  if (diffMins < 1) return translate('paymentGateways.timeAgo.justNow', 'Just now')
+  if (diffMins < 60) return translate('paymentGateways.timeAgo.minutesAgo', `${diffMins} minute(s) ago`, { count: diffMins })
 
   const diffHours = Math.floor(diffMins / 60)
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+  if (diffHours < 24) return translate('paymentGateways.timeAgo.hoursAgo', `${diffHours} hour(s) ago`, { count: diffHours })
 
   const diffDays = Math.floor(diffHours / 24)
-  return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+  return translate('paymentGateways.timeAgo.daysAgo', `${diffDays} day(s) ago`, { count: diffDays })
 }

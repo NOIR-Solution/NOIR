@@ -34,7 +34,7 @@ export const OrderShipmentTracking = ({ orderId, trackingNumber, shippingCarrier
   // Loading state
   if (shippingLoading) {
     return (
-      <Card className="shadow-sm gap-4 py-5">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
         <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             <Truck className="h-4 w-4" />
@@ -71,7 +71,7 @@ export const OrderShipmentTracking = ({ orderId, trackingNumber, shippingCarrier
     if (!trackingNumber) return null
 
     return (
-      <Card className="shadow-sm gap-4 py-5">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
         <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             <Truck className="h-4 w-4" />
@@ -97,7 +97,7 @@ export const OrderShipmentTracking = ({ orderId, trackingNumber, shippingCarrier
 
   // Full shipping integration view
   return (
-    <Card className="shadow-sm gap-4 py-5">
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">

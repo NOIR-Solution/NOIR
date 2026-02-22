@@ -281,7 +281,7 @@ export const ProfileForm = () => {
           <Button
             type="submit"
             disabled={isSubmitting || !form.formState.isDirty}
-            className="w-full bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg disabled:opacity-50"
+            className="w-full cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

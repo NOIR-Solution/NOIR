@@ -48,6 +48,29 @@
     "noResults": "No results found",
     "openMenu": "Open menu"
   },
+  "breadcrumbs": {
+    "dashboard": "Dashboard",
+    "ecommerce": "E-commerce",
+    "manage": "Manage",
+    "blog": "Blog",
+    "posts": "Posts",
+    "tags": "Tags",
+    "roles": "Roles",
+    "tenants": "Tenants",
+    "platformSettings": "Platform Settings",
+    "tenantSettings": "Tenant Settings",
+    "activityTimeline": "Activity Timeline",
+    "developerLogs": "Developer Logs",
+    "notificationPreferences": "Notification Preferences",
+    "productDetails": "Product Details",
+    "editProduct": "Edit Product",
+    "orderDetails": "Order Details",
+    "customerDetails": "Customer Details",
+    "editPost": "Edit Post",
+    "tenantDetails": "Tenant Details",
+    "editEmailTemplate": "Edit Email Template",
+    "editLegalPage": "Edit Legal Page"
+  },
   "ecommerce": {
     "products": "Products",
     "categories": "Categories",
@@ -110,6 +133,7 @@
     "price": "Price",
     "noProductsFound": "No products found",
     "noProductsDescription": "Get started by creating your first product to build your catalog.",
+    "productImage": "Product image",
     "addProduct": "Add Product",
     "editProduct": "Edit Product",
     "deleteProduct": "Delete Product",
@@ -125,6 +149,12 @@
       "draft": "Draft",
       "active": "Active",
       "archived": "Archived",
+      "outOfStock": "Out of Stock"
+    },
+    "stats": {
+      "total": "Total Products",
+      "active": "Active",
+      "draft": "Draft",
       "outOfStock": "Out of Stock"
     },
     "shortDescription": "Short Description",
@@ -154,6 +184,7 @@
     "uploadFirstImage": "Upload your first product image",
     "setAsPrimary": "Set as primary image",
     "deleteImage": "Delete image",
+    "moreColors": "+{{count}} more colors",
     "imagesReordered": "Images reordered successfully",
     "options": {
       "title": "Product Options",
@@ -172,6 +203,7 @@
     "variants": {
       "noOptionsAvailable": "No options available. Add product options first to create variants.",
       "selectOption": "Select {{option}}",
+      "optionValue": "{{option}}: {{value}}",
       "generateVariants": "Generate Variants",
       "generateTitle": "Generate Product Variants",
       "generateDescription": "Create variants from all possible option combinations automatically.",
@@ -195,6 +227,7 @@
         "adjustStock": "Adjust Stock (+/-)"
       },
       "empty": "No variants yet. Add variants for different sizes, colors, etc.",
+      "emptyDescription": "Add variants to define different options for this product.",
       "columnName": "Name",
       "columnSku": "SKU",
       "columnPrice": "Price",
@@ -248,6 +281,7 @@
     "activityLog": "Activity Log",
     "activityLogDescription": "Recent changes to this product",
     "noActivity": "No activity recorded yet",
+    "noActivityDescription": "Activity will appear here as changes are made to this product.",
     "viewAllActivity": "View all activity",
     "duplicate": "Duplicate",
     "duplicateSuccess": "Product duplicated successfully",
@@ -329,6 +363,7 @@
     "organization": "Organization",
     "viewProduct": "View Product",
     "noVariants": "No variants yet. Add variants for different sizes, colors, etc.",
+    "noVariantsDescription": "Add variants to define different options for this product.",
     "deleteVariant": "Delete Variant",
     "deleteVariantConfirmation": "Are you sure you want to delete \"{{name}}\"? This will permanently remove this variant.",
     "deleteImageTitle": "Delete Image",
@@ -340,7 +375,7 @@
     "importExport": "Import/Export",
     "viewModeGrid": "Grid view",
     "viewModeTable": "Table view",
-    "filterByStatus": "Filter by status",
+    "filterByStatus": "Filter by {{status}}",
     "filterByCategory": "Filter by category",
     "filterByBrand": "Filter by brand",
     "filterByStock": "Filter by stock",
@@ -364,6 +399,9 @@
       "min": "Min",
       "max": "Max",
       "rangeSelected": "{{min}} - {{max}} {{unit}}",
+      "colorSelected": "{{color}} (selected)",
+      "fieldMin": "{{field}} Min",
+      "fieldMax": "{{field}} Max",
       "selectDate": "Select a date",
       "selectDateTime": "Select date & time",
       "increment": "Increment value",
@@ -614,7 +652,8 @@
     "sortOrderDescription": "Lower numbers appear first",
     "updateSuccess": "Category updated successfully",
     "createSuccess": "Category created successfully",
-    "saveFailed": "Failed to save category"
+    "saveFailed": "Failed to save category",
+    "deleteFailed": "Failed to delete category"
   },
   "blog": {
     "posts": "Blog Posts",
@@ -674,6 +713,7 @@
     "noTagsAvailable": "No tags available",
     "clickToToggleTags": "Click to toggle tags",
     "featuredImage": "Featured Image",
+    "featuredImagePreview": "Featured image preview",
     "uploadingImage": "Uploading image...",
     "processingImage": "Please wait while we process your image",
     "clickToUpload": "Click to upload featured image",
@@ -848,7 +888,9 @@
     "deleteWarning": "This will permanently delete all tenant data including users, settings, and content.",
     "noTenantsFound": "No tenants found",
     "noTenantsFoundDescription": "No tenants match your search criteria.",
-    "showingFirst100": "Showing first 100 tenants. Use search to find others."
+    "showingFirst100": "Showing first 100 tenants. Use search to find others.",
+    "deleteError": "Failed to delete tenant",
+    "loadError": "Failed to load tenant"
   },
   "roles": {
     "title": "Roles",
@@ -906,7 +948,9 @@
       "noParent": "No Parent",
       "hierarchyLevel": "Hierarchy Level",
       "isSystem": "System Role"
-    }
+    },
+    "deleteError": "Failed to delete role",
+    "updateError": "Failed to update role"
   },
   "users": {
     "title": "Users",
@@ -921,6 +965,7 @@
     "noUsers": "No users found",
     "noUsersDescription": "No users match your current filters.",
     "noRolesAvailable": "No roles available",
+    "noRolesDescription": "Create roles first before assigning them to users.",
     "locked": "Locked",
     "lock": "Lock",
     "unlock": "Unlock",
@@ -933,6 +978,8 @@
     "lockSuccess": "User locked successfully",
     "unlockSuccess": "User unlocked successfully",
     "loadError": "Failed to load user details",
+    "lockError": "Failed to lock user",
+    "unlockError": "Failed to unlock user",
     "editTitle": "Edit User",
     "editDescription": "Update user details and account status",
     "viewActivity": "View Activity",
@@ -1055,6 +1102,7 @@
       "addNote": "Add note",
       "deleteNote": "Delete note",
       "noNotes": "No notes yet",
+      "noNotesDescription": "Notes added to this order will appear here.",
       "addSuccess": "Note added successfully",
       "addError": "Failed to add note",
       "deleteSuccess": "Note deleted successfully",
@@ -1183,6 +1231,7 @@
     "submitting": "Submitting...",
     "submitResponse": "Submit Response",
     "reviewNotFound": "Review not found",
+    "reviewNotFoundDescription": "The requested review could not be loaded.",
     "status": {
       "pending": "Pending",
       "approved": "Approved",
@@ -1236,7 +1285,8 @@
     "confirmedAt": "Confirmed",
     "cancelledAt": "Cancelled",
     "cancellationReason": "Cancellation Reason",
-    "receiptNotFound": "Receipt not found"
+    "receiptNotFound": "Receipt not found",
+    "receiptNotFoundDescription": "The requested receipt could not be loaded."
   },
   "shipping": {
     "title": "Shipping Management",
@@ -1306,6 +1356,7 @@
     "trackingStatus": "Status: {{status}}",
     "loadingTracking": "Loading tracking information...",
     "noTrackingEvents": "No tracking events yet",
+    "noTrackingEventsDescription": "Tracking updates will appear here once the shipment is in transit.",
     "openTracking": "Open tracking page",
     "trackingNumber": "Tracking Number",
     "env": {
@@ -1379,7 +1430,9 @@
     "topCustomersDesc": "Customers ranked by total spending",
     "month": "Month",
     "orders": "Orders",
+    "ordersLabel": "orders",
     "totalSpent": "Total Spent",
+    "noDataDescription": "Try adjusting the date range to see results.",
     "exportSuccess": "Report exported successfully",
     "exportFailed": "Failed to export report",
     "exportCsv": "Export as CSV",
@@ -1399,11 +1452,84 @@
       "custom": "Custom range"
     }
   },
+  "storefront": {
+    "minPrice": "Minimum price",
+    "maxPrice": "Maximum price",
+    "minPriceIn": "Minimum price in {{currency}}",
+    "maxPriceIn": "Maximum price in {{currency}}",
+    "to": "to",
+    "range": "Range",
+    "filterByColor": "Filter by color {{color}}",
+    "filterBy": "Filter by {{value}}",
+    "removeFilter": "Remove {{label}} filter",
+    "clearAll": "Clear all",
+    "showLess": "Show less",
+    "showMore": "Show {{count}} more",
+    "productFilters": "Product filters",
+    "filters": "Filters",
+    "price": "Price",
+    "priceRange": "Price Range",
+    "openFilters": "Open filters",
+    "refineResults": "Refine your search results",
+    "viewResults": "View Results",
+    "appliedFilters": "Applied filters"
+  },
+  "onboarding": {
+    "closeWelcome": "Close welcome dialog",
+    "welcomeUser": "Welcome, {{name}}!",
+    "welcomeDescription": "Let's get you set up with everything you need to manage your store effectively.",
+    "getStarted": "Get Started",
+    "skipForNow": "Skip for now",
+    "features": {
+      "products": {
+        "title": "Manage Products",
+        "description": "Create and organize your product catalog with variants, images, and pricing."
+      },
+      "security": {
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security with role-based access control and audit logging."
+      },
+      "team": {
+        "title": "Team Collaboration",
+        "description": "Invite team members and manage permissions for seamless collaboration."
+      }
+    },
+    "completeSetup": "Complete Your Setup",
+    "progress": "{{completed}} of {{total}} tasks completed",
+    "dismissChecklist": "Dismiss onboarding checklist",
+    "allDone": "All done! You're all set up.",
+    "itemCompleted": "{{label}} - completed",
+    "markComplete": "Mark {{label}} as complete",
+    "items": {
+      "profile": {
+        "label": "Complete your profile",
+        "description": "Add your name and profile picture"
+      },
+      "explore": {
+        "label": "Explore the dashboard",
+        "description": "Get familiar with the main features"
+      },
+      "product": {
+        "label": "Add your first product",
+        "description": "Create a product to start building your catalog"
+      },
+      "blog": {
+        "label": "Write your first blog post",
+        "description": "Share news and updates with your customers"
+      },
+      "team": {
+        "label": "Invite a team member",
+        "description": "Collaborate with your team on store management"
+      }
+    }
+  },
   "settings": {
     "title": "Settings"
   },
   "notifications": {
     "title": "Notifications",
+    "bellAriaLabel": "Notifications",
+    "bellAriaLabelWithCount": "Notifications ({{count}} unread)",
     "markAllRead": "Mark all read",
     "viewAll": "View all notifications",
     "noNotifications": "No notifications",
@@ -1649,7 +1775,11 @@
     "revert": "Revert",
     "preview": "Preview",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "undo": "Undo",
+    "copyToClipboard": "Copy to clipboard",
+    "viewFullscreen": "View fullscreen",
+    "copyColorCode": "Copy color code"
   },
   "labels": {
     "loading": "Loading...",
@@ -1695,6 +1825,10 @@
     "creating": "Creating...",
     "saving": "Saving...",
     "deleting": "Deleting...",
+    "cancelling": "Cancelling...",
+    "processing": "Processing...",
+    "revoking": "Revoking...",
+    "reverting": "Reverting...",
     "exporting": "Exporting...",
     "page": "Page",
     "perPage": "Per page",
@@ -1737,6 +1871,11 @@
     "breadcrumb": "Breadcrumb",
     "pickCustomColor": "Pick custom color",
     "colorPicker": "Color picker",
+    "customColor": "Custom",
+    "clickToChangeColor": "Color: {{color}}. Click to change.",
+    "notAvailable": "N/A",
+    "logoPreview": "Logo preview",
+    "user": "User",
     "closeWelcomeDialog": "Close welcome dialog",
     "dismissOnboarding": "Dismiss onboarding checklist",
     "goBack": "Go back",
@@ -1752,6 +1891,8 @@
     "goToPreviousPage": "Go to previous page",
     "goToNextPage": "Go to next page",
     "goToLastPage": "Go to last page",
+    "currentPageNumber": "Current page, page {{page}}",
+    "goToPageNumber": "Go to page {{page}}",
     "list": "List",
     "tree": "Tree",
     "tableView": "Table view",
@@ -1773,6 +1914,12 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "actionsFor": "Actions for {{name}}",
+    "publishItem": "Publish {{name}}",
+    "archiveItem": "Archive {{name}}",
+    "viewDetailsFor": "View {{name}} details",
+    "editItem": "Edit {{name}}",
+    "deleteItem": "Delete {{name}}",
+    "selectItem": "Select {{name}}",
     "allBrands": "All Brands",
     "brand": "Brand",
     "delete": "Delete",
@@ -1797,7 +1944,10 @@
     "addressLine2": "Address Line 2",
     "ward": "Ward",
     "district": "District",
-    "province": "Province"
+    "province": "Province",
+    "selectDateRange": "Select start and end dates",
+    "colorValue": "Color: {{color}}",
+    "pickDateRange": "Pick a date range"
   },
   "permissions": {
     "categories": {
@@ -2151,7 +2301,25 @@
     "loadFailed": "Failed to load data",
     "invalidFileType": "Invalid file type",
     "fileTooLarge": "File must be less than {{maxSize}}MB",
-    "uploadFailed": "Upload failed"
+    "uploadFailed": "Upload failed",
+    "failedToRestore": "Failed to restore {{entity}}",
+    "failedToDelete": "Failed to delete {{entity}} \"{{name}}\"",
+    "failedToSaveVariant": "Failed to save variant",
+    "anErrorOccurred": "An error occurred",
+    "failedToFetchPermissions": "Failed to fetch permissions"
+  },
+  "media": {
+    "imageUploaded": "Image uploaded",
+    "uploading": "Uploading...",
+    "preview": "Preview",
+    "clickToViewFullImage": "Click to view full image",
+    "clickToUpload": "Click to upload"
+  },
+  "json": {
+    "noData": "No data",
+    "jsonData": "JSON Data",
+    "itemCount": "{{count}} items",
+    "keyCount": "{{count}} keys"
   },
   "filePreview": {
     "openPreview": "Open preview for {{name}}",
@@ -2210,7 +2378,17 @@
     "emailSameAsCurrent": "New email must be different from current email",
     "emailRequired": "Email is required",
     "onlyLowercaseNumbersHyphens": "Only lowercase letters, numbers, and hyphens allowed",
-    "identifierFormat": "Only lowercase letters, numbers, and hyphens allowed"
+    "identifierFormat": "Only lowercase letters, numbers, and hyphens allowed",
+    "nameRequired": "Name is required",
+    "priceMustBeNonNegative": "Price must be non-negative",
+    "comparePriceMustBeNonNegative": "Compare price must be non-negative",
+    "costPriceMustBeNonNegative": "Cost price must be non-negative",
+    "stockMustBeWholeNumber": "Stock must be a whole number",
+    "stockMustBeNonNegative": "Stock must be non-negative",
+    "sortOrderMustBeWholeNumber": "Sort order must be a whole number",
+    "sortOrderMustBeNonNegative": "Sort order must be non-negative",
+    "compareAtPriceMustBeHigher": "Compare-at price must be higher than the regular price",
+    "validationFailed": "Validation failed"
   },
   "activityTimeline": {
     "title": "Activity Timeline",
@@ -2238,8 +2416,13 @@
     "operations": {
       "create": "Create",
       "update": "Update",
-      "delete": "Delete"
+      "delete": "Delete",
+      "added": "Added",
+      "removed": "Removed",
+      "modified": "Modified"
     },
+    "changeCount_one": "{{count}} change",
+    "changeCount_other": "{{count}} changes",
     "oldValue": "Old Value:",
     "newValue": "New Value:",
     "nullValue": "(null)",
@@ -2257,7 +2440,20 @@
     "noHttpRequest": "No HTTP request information available",
     "entryInformation": "Entry Information",
     "errorMessage": "Error Message",
-    "failedToLoadDetails": "Failed to load details"
+    "failedToLoadDetails": "Failed to load details",
+    "tabs": {
+      "http": "HTTP",
+      "handler": "Handler",
+      "database": "Database",
+      "raw": "Raw"
+    },
+    "handler": "Handler",
+    "entity": "Entity",
+    "correlation": "Corr",
+    "systemUser": "System",
+    "correlationId": "Correlation ID",
+    "loadFailed": "Failed to load activity timeline",
+    "clickToCopy": "Click to copy: {{value}}"
   },
   "pageContexts": {
     "Products": "Products",
@@ -2312,6 +2508,7 @@
     "resetFilters": "Reset filters",
     "noErrorPatterns": "No error patterns detected",
     "serverMinLevel": "Server minimum log level",
+    "serverMinLevelTooltip": "Server minimum log level - also filters display",
     "filterDisplayedLevels": "Filter displayed log levels",
     "filterByLevel": "Filter by log level",
     "copyEntryAsJson": "Copy entry as JSON",
@@ -2640,6 +2837,13 @@
       "displayName": "Display Name",
       "displayNameHelp": "Shown to customers at checkout",
       "environment": "Environment"
+    },
+    "timeAgo": {
+      "never": "Never",
+      "justNow": "Just now",
+      "minutesAgo": "{{count}} minute(s) ago",
+      "hoursAgo": "{{count}} hour(s) ago",
+      "daysAgo": "{{count}} day(s) ago"
     }
   },
   "shippingProviders": {
@@ -2683,7 +2887,11 @@
       "displayName": "Display Name",
       "displayNameHelp": "Shown to customers during checkout",
       "environment": "Environment"
-    }
+    },
+    "configureFailed": "Failed to configure provider",
+    "updateFailed": "Failed to update provider",
+    "sandbox": "Sandbox",
+    "production": "Production"
   },
   "audit": {
     "entityHistory": "Entity History",
@@ -3097,6 +3305,16 @@
       "reason": "Reason",
       "requestedBy": "Requested By"
     },
+    "refundStatus": {
+      "completed": "Completed",
+      "failed": "Failed",
+      "pending": "Pending"
+    },
+    "processingStatus": {
+      "Processed": "Processed",
+      "Failed": "Failed",
+      "Pending": "Pending"
+    },
     "recordPayment": {
       "title": "Record Payment",
       "description": "Record an offline or manual payment for an order",
@@ -3107,6 +3325,7 @@
       "amount": "Amount",
       "amountPlaceholder": "Enter payment amount",
       "currency": "Currency",
+      "currencyPlaceholder": "VND",
       "paymentMethod": "Payment Method",
       "selectPaymentMethod": "Select payment method",
       "referenceNumber": "Reference Number",

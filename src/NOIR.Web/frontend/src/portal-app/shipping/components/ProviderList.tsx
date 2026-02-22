@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
   Check,
+  Loader2,
   Pencil,
   Plus,
   Search,
@@ -11,14 +12,6 @@ import {
   XCircle,
 } from 'lucide-react'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -26,6 +19,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   EmptyState,
   Input,
   Skeleton,
@@ -36,6 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from '@uikit'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { useShippingProvidersQuery } from '@/portal-app/shipping/queries'
 import {
   useActivateProviderMutation,
@@ -157,7 +158,7 @@ export const ProviderList = () => {
                   </Button>
                 )}
               </div>
-              <Button onClick={handleCreate} className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+              <Button onClick={handleCreate} className="group transition-all duration-300 cursor-pointer">
                 <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
                 {t('shipping.addProvider', 'Add Provider')}
               </Button>
@@ -249,7 +250,7 @@ export const ProviderList = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={provider.isActive ? 'default' : 'outline'} className={provider.isActive ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' : ''}>
+                        <Badge variant="outline" className={getStatusBadgeClasses(provider.isActive ? 'green' : 'gray')}>
                           {provider.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
                         </Badge>
                       </TableCell>
@@ -284,20 +285,20 @@ export const ProviderList = () => {
       />
 
       {/* Toggle active/inactive confirmation */}
-      <AlertDialog open={!!toggleProvider} onOpenChange={(open) => !open && setToggleProvider(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <Credenza open={!!toggleProvider} onOpenChange={(open) => !open && setToggleProvider(null)}>
+        <CredenzaContent>
+          <CredenzaHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
                 <Truck className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <AlertDialogTitle>
+                <CredenzaTitle>
                   {toggleProvider?.isActive
                     ? t('shipping.confirmDeactivate', 'Deactivate Provider?')
                     : t('shipping.confirmActivate', 'Activate Provider?')}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
+                </CredenzaTitle>
+                <CredenzaDescription>
                   {toggleProvider?.isActive
                     ? t('shipping.deactivateDescription', {
                         name: toggleProvider?.displayName,
@@ -307,25 +308,28 @@ export const ProviderList = () => {
                         name: toggleProvider?.displayName,
                         defaultValue: `This will enable "${toggleProvider?.displayName}" for use in checkout.`,
                       })}
-                </AlertDialogDescription>
+                </CredenzaDescription>
               </div>
             </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setToggleProvider(null)} disabled={activateMutation.isPending || deactivateMutation.isPending} className="cursor-pointer">
               {t('buttons.cancel', 'Cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
+            </Button>
+            <Button
               onClick={handleToggleActive}
+              disabled={activateMutation.isPending || deactivateMutation.isPending}
               className="cursor-pointer"
             >
+              {(activateMutation.isPending || deactivateMutation.isPending) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {toggleProvider?.isActive
                 ? t('shipping.deactivateBtn', 'Deactivate')
                 : t('shipping.activateBtn', 'Activate')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </>
   )
 }

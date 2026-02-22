@@ -144,7 +144,7 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody className="space-y-5">
+            <CredenzaBody className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -196,7 +196,7 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
                       value={field.value || '__none__'}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="cursor-pointer">
                           <SelectValue placeholder={t('roles.fields.parentRolePlaceholder', 'Select parent role (optional)')} />
                         </SelectTrigger>
                       </FormControl>

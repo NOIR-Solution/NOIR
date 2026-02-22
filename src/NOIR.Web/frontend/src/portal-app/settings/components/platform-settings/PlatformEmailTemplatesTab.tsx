@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Pencil, Eye, GitFork } from 'lucide-react'
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@uikit'
+import { Mail, Pencil, Eye, GitFork } from 'lucide-react'
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, EmptyState, Skeleton } from '@uikit'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 import { ApiError } from '@/services/apiClient'
 import {
@@ -99,7 +100,7 @@ export const PlatformEmailTemplatesTab = ({ onEdit }: PlatformEmailTemplatesTabP
                         {template.description}
                       </p>
                       <div className="flex items-center gap-2 pt-2">
-                        <Badge variant={template.isActive ? 'default' : 'secondary'} className="text-xs">
+                        <Badge variant="outline" className={getStatusBadgeClasses(template.isActive ? 'green' : 'gray')}>
                           {template.isActive ? t('labels.active') : t('labels.inactive')}
                         </Badge>
                         <Badge variant="outline" className="text-purple-600 border-purple-600/30 text-xs">
@@ -122,9 +123,11 @@ export const PlatformEmailTemplatesTab = ({ onEdit }: PlatformEmailTemplatesTabP
             ))}
           </div>
           {templates.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              {t('emailTemplates.noPlatformTemplatesFound')}
-            </div>
+            <EmptyState
+              icon={Mail}
+              title={t('emailTemplates.noPlatformTemplatesFound')}
+              description={t('emailTemplates.noPlatformTemplatesDescription', 'No platform email templates have been configured yet.')}
+            />
           )}
         </CardContent>
       </Card>
