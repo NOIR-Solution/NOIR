@@ -47,6 +47,12 @@ import {
   SelectTrigger,
   SelectValue,
   Separator,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   Textarea,
   FilePreviewTrigger,
 } from '@uikit'
@@ -793,27 +799,27 @@ export const ManualCreateOrderPage = () => {
 
               {/* Order Items Table */}
               {orderItems.length > 0 ? (
-                <div className="rounded-lg border overflow-hidden">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b bg-muted/50">
-                        <th className="text-left p-3 text-sm font-medium">{t('orders.manualCreate.product')}</th>
-                        <th className="text-left p-3 text-sm font-medium">{t('orders.manualCreate.sku')}</th>
-                        <th className="text-center p-3 text-sm font-medium w-20">{t('orders.manualCreate.quantity')}</th>
-                        <th className="text-right p-3 text-sm font-medium w-32">{t('orders.manualCreate.unitPrice')}</th>
-                        <th className="text-right p-3 text-sm font-medium w-28">{t('orders.manualCreate.discount')}</th>
-                        <th className="text-right p-3 text-sm font-medium w-32">{t('orders.manualCreate.lineTotal')}</th>
-                        <th className="w-10 p-3"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                <div className="rounded-xl border border-border/50 overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50 hover:bg-muted/50">
+                        <TableHead>{t('orders.manualCreate.product')}</TableHead>
+                        <TableHead>{t('orders.manualCreate.sku')}</TableHead>
+                        <TableHead className="text-center w-20">{t('orders.manualCreate.quantity')}</TableHead>
+                        <TableHead className="text-right w-32">{t('orders.manualCreate.unitPrice')}</TableHead>
+                        <TableHead className="text-right w-28">{t('orders.manualCreate.discount')}</TableHead>
+                        <TableHead className="text-right w-32">{t('orders.manualCreate.lineTotal')}</TableHead>
+                        <TableHead className="w-10"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {orderItems.map((item) => {
                         const price = item.customPrice ?? item.originalPrice
                         const lineTotal = price * item.quantity - item.discount
 
                         return (
-                          <tr key={item.variantId} className="border-b last:border-b-0">
-                            <td className="p-3">
+                          <TableRow key={item.variantId}>
+                            <TableCell>
                               <div className="flex items-center gap-3">
                                 <FilePreviewTrigger
                                   file={{
@@ -831,15 +837,15 @@ export const ManualCreateOrderPage = () => {
                                   )}
                                 </div>
                               </div>
-                            </td>
-                            <td className="p-3">
+                            </TableCell>
+                            <TableCell>
                               {item.sku ? (
                                 <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{item.sku}</code>
                               ) : (
                                 <span className="text-muted-foreground">-</span>
                               )}
-                            </td>
-                            <td className="p-3">
+                            </TableCell>
+                            <TableCell>
                               <Input
                                 type="number"
                                 min={1}
@@ -851,8 +857,8 @@ export const ManualCreateOrderPage = () => {
                                 className="w-20 text-center h-8"
                                 aria-label={t('orders.manualCreate.quantity')}
                               />
-                            </td>
-                            <td className="p-3">
+                            </TableCell>
+                            <TableCell>
                               <Input
                                 type="number"
                                 min={0}
@@ -868,8 +874,8 @@ export const ManualCreateOrderPage = () => {
                                 className="w-32 text-right h-8"
                                 aria-label={t('orders.manualCreate.unitPrice')}
                               />
-                            </td>
-                            <td className="p-3">
+                            </TableCell>
+                            <TableCell>
                               <Input
                                 type="number"
                                 min={0}
@@ -884,13 +890,13 @@ export const ManualCreateOrderPage = () => {
                                 className="w-28 text-right h-8"
                                 aria-label={t('orders.manualCreate.discount')}
                               />
-                            </td>
-                            <td className="p-3 text-right">
+                            </TableCell>
+                            <TableCell className="text-right">
                               <span className="text-sm font-medium">
                                 {formatCurrency(lineTotal, currency)}
                               </span>
-                            </td>
-                            <td className="p-3">
+                            </TableCell>
+                            <TableCell>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -901,23 +907,23 @@ export const ManualCreateOrderPage = () => {
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
-                            </td>
-                          </tr>
+                            </TableCell>
+                          </TableRow>
                         )
                       })}
-                    </tbody>
+                    </TableBody>
                     <tfoot>
-                      <tr className="bg-muted/30">
-                        <td colSpan={5} className="p-3 text-right text-sm font-medium">
+                      <TableRow className="bg-muted/30">
+                        <TableCell colSpan={5} className="text-right text-sm font-medium">
                           {t('orders.manualCreate.subtotal')}
-                        </td>
-                        <td className="p-3 text-right text-sm font-medium">
+                        </TableCell>
+                        <TableCell className="text-right text-sm font-medium">
                           {formatCurrency(subtotal, currency)}
-                        </td>
-                        <td></td>
-                      </tr>
+                        </TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
                     </tfoot>
-                  </table>
+                  </Table>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 border rounded-lg border-dashed">

@@ -130,6 +130,7 @@ export interface CreateInventoryReceiptRequest {
 export interface GetInventoryReceiptsParams {
   page?: number
   pageSize?: number
+  search?: string
   type?: InventoryReceiptType
   status?: InventoryReceiptStatus
 }

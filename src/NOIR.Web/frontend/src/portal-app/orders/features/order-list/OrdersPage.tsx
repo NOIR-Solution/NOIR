@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Calendar,
   Eye,
+  MoreHorizontal,
   Plus,
   Search,
   ShoppingCart,
@@ -18,6 +19,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   EmptyState,
   Input,
   PageHeader,
@@ -107,10 +112,10 @@ export const OrdersPage = () => {
         action={
           canManageOrders ? (
             <Button
-              className="cursor-pointer"
+              className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
               onClick={() => navigate('/portal/ecommerce/orders/create')}
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('orders.createNew', 'Create Order')}
             </Button>
           ) : undefined
@@ -209,19 +214,25 @@ export const OrdersPage = () => {
                       className="group transition-colors hover:bg-muted/50 cursor-pointer"
                       onClick={() => handleViewOrder(order)}
                     >
-                      <TableCell className="sticky left-0 z-10 bg-background">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                          aria-label={t('orders.viewOrder', { orderNumber: order.orderNumber, defaultValue: `View order ${order.orderNumber}` })}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleViewOrder(order)
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
+                      <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                              aria-label={t('labels.actions')}
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem className="cursor-pointer" onClick={() => handleViewOrder(order)}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              {t('labels.viewDetails')}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                       <TableCell>
                         <span className="font-mono font-medium text-sm">{order.orderNumber}</span>

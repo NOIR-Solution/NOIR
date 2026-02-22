@@ -1198,6 +1198,7 @@
     "items": "Sản phẩm",
     "totalQuantity": "Tổng SL",
     "totalCost": "Tổng chi phí",
+    "searchPlaceholder": "Tìm phiếu...",
     "filterByType": "Lọc theo loại",
     "filterByStatus": "Lọc trạng thái",
     "noReceiptsFound": "Không tìm thấy phiếu",

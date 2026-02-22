@@ -396,7 +396,7 @@ export const ProductsPage = () => {
         onFilterChange={(status) => setStatus(status || undefined)}
       />
 
-      <Card className="shadow-sm hover:shadow-lg transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/95">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -829,17 +829,15 @@ export const ProductsPage = () => {
 
           {/* Enhanced Pagination */}
           {data && data.totalPages > 1 && (
-            <div className="mt-6 pt-6 border-t border-border/50">
-              <Pagination
-                currentPage={data.page}
-                totalPages={data.totalPages}
-                totalItems={data.totalCount}
-                pageSize={params.pageSize || DEFAULT_PRODUCT_PAGE_SIZE}
-                onPageChange={setPage}
-                showPageSizeSelector={false}
-                className="justify-center"
-              />
-            </div>
+            <Pagination
+              currentPage={data.page}
+              totalPages={data.totalPages}
+              totalItems={data.totalCount}
+              pageSize={params.pageSize || DEFAULT_PRODUCT_PAGE_SIZE}
+              onPageChange={setPage}
+              showPageSizeSelector={false}
+              className="mt-4 justify-center"
+            />
           )}
         </CardContent>
       </Card>

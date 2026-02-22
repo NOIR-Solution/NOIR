@@ -865,7 +865,7 @@ export const ProductFormPage = () => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Basic Information */}
-              <Card className="shadow-sm hover:shadow-lg transition-shadow duration-300">
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle>{t('products.basicInfo')}</CardTitle>
                   <CardDescription>{t('products.basicInfoDescription')}</CardDescription>

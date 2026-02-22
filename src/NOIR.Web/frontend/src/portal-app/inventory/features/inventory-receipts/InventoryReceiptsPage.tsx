@@ -1,9 +1,10 @@
-import { useState, useMemo, useTransition } from 'react'
+import { useState, useMemo, useDeferredValue, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Warehouse,
   CheckCircle2,
   Eye,
+  Search,
   XCircle,
   EllipsisVertical,
 } from 'lucide-react'
@@ -32,6 +33,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   EmptyState,
+  Input,
   Label,
   PageHeader,
   Pagination,
@@ -71,6 +73,9 @@ export const InventoryReceiptsPage = () => {
   const canWriteInventory = hasPermission(Permissions.InventoryWrite)
   const canManageInventory = hasPermission(Permissions.InventoryManage)
 
+  const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
+  const isSearchStale = searchInput !== deferredSearch
   const [params, setParams] = useState<GetInventoryReceiptsParams>({ page: 1, pageSize: 20 })
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -78,9 +83,10 @@ export const InventoryReceiptsPage = () => {
 
   const queryParams = useMemo(() => ({
     ...params,
+    search: deferredSearch || undefined,
     type: typeFilter !== 'all' ? typeFilter as InventoryReceiptType : undefined,
     status: statusFilter !== 'all' ? statusFilter as InventoryReceiptStatus : undefined,
-  }), [params, typeFilter, statusFilter])
+  }), [params, deferredSearch, typeFilter, statusFilter])
 
   const { data: receiptsResponse, isLoading: loading, error: queryError } = useInventoryReceiptsQuery(queryParams)
   const confirmMutation = useConfirmInventoryReceiptMutation()
@@ -160,7 +166,18 @@ export const InventoryReceiptsPage = () => {
                 {t('inventory.totalCount', { count: totalCount, defaultValue: `${totalCount} receipts total` })}
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Search */}
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <Input
+                  placeholder={t('inventory.searchPlaceholder')}
+                  value={searchInput}
+                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
+                  className="pl-9 h-9"
+                  aria-label={t('inventory.searchPlaceholder')}
+                />
+              </div>
               {/* Type Filter */}
               <Select value={typeFilter} onValueChange={handleTypeFilter}>
                 <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('inventory.filterByType', 'Filter by type')}>
@@ -187,7 +204,7 @@ export const InventoryReceiptsPage = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className={isFilterPending ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}

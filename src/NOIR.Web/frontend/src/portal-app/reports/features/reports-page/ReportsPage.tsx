@@ -335,7 +335,7 @@ export const ReportsPage = () => {
   // ─── Render ─────────────────────────────────────────────────────────
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="container max-w-7xl py-6 space-y-6">
       {/* Page Header */}
       <PageHeader
         icon={BarChart3}

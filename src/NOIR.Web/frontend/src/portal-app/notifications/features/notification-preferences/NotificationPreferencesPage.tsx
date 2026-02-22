@@ -16,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
   Label,
+  PageHeader,
   Skeleton,
   Switch,
 } from '@uikit'
@@ -161,20 +162,26 @@ export const NotificationPreferencesPage = () => {
     <div className="container max-w-4xl py-6">
       {/* Page Header */}
       <div className="flex items-center justify-between mb-8">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" asChild className="h-8 w-8">
-              <ViewTransitionLink to="/portal/notifications">
-                <ArrowLeft className="h-4 w-4" />
-              </ViewTransitionLink>
-            </Button>
-            <h1 className="text-2xl font-bold text-foreground">{t('notifications.preferencesTitle')}</h1>
-          </div>
-          <p className="text-muted-foreground ml-11">
-            {t('notifications.preferencesDescription')}
-          </p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="cursor-pointer"
+            aria-label={t('common.back', 'Back')}
+          >
+            <ViewTransitionLink to="/portal/notifications">
+              <ArrowLeft className="h-5 w-5" />
+            </ViewTransitionLink>
+          </Button>
+          <PageHeader
+            icon={Bell}
+            title={t('notifications.preferencesTitle')}
+            description={t('notifications.preferencesDescription')}
+            responsive
+          />
         </div>
-        <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
+        <Button onClick={handleSave} disabled={!hasChanges || isSaving} className="cursor-pointer">
           {isSaving ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
           ) : (

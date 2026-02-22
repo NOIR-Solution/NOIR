@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   CreditCard,
   Eye,
+  MoreHorizontal,
   Plus,
   Search,
 } from 'lucide-react'
@@ -16,6 +17,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   EmptyState,
   Input,
   PageHeader,
@@ -237,19 +242,25 @@ export const PaymentsPage = () => {
                       className="group transition-colors hover:bg-muted/50 cursor-pointer"
                       onClick={() => handleViewPayment(payment)}
                     >
-                      <TableCell className="sticky left-0 z-10 bg-background">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                          aria-label={t('payments.viewPayment', { transactionNumber: payment.transactionNumber, defaultValue: `View payment ${payment.transactionNumber}` })}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleViewPayment(payment)
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
+                      <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                              aria-label={t('labels.actions')}
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem className="cursor-pointer" onClick={() => handleViewPayment(payment)}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              {t('labels.viewDetails')}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                       <TableCell>
                         <span className="font-mono font-medium text-sm">{payment.transactionNumber}</span>

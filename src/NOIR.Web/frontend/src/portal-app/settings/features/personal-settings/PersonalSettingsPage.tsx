@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { Shield, User, Paintbrush } from 'lucide-react'
+import { Shield, User, Paintbrush, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PageHeader } from '@uikit'
 import { ChangePasswordForm } from '../../components/personal-settings/ChangePasswordForm'
 import { ProfileForm } from '../../components/personal-settings/ProfileForm'
 import { SessionManagement } from '../../components/personal-settings/SessionManagement'
@@ -31,10 +32,13 @@ export const PersonalSettingsPage = () => {
 
   return (
     <div className="container max-w-6xl py-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">{t('settings.title')}</h1>
-        <p className="text-muted-foreground">{t('settings.description')}</p>
-      </div>
+      <PageHeader
+        icon={Settings}
+        title={t('settings.title')}
+        description={t('settings.description')}
+        responsive
+        className="mb-8"
+      />
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar Navigation */}

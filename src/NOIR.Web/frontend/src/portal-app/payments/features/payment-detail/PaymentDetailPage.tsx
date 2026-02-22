@@ -38,12 +38,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   EmptyState,
   Input,
   Label,
@@ -858,14 +858,14 @@ export const PaymentDetailPage = () => {
       </AlertDialog>
 
       {/* Request Refund Dialog */}
-      <Dialog open={requestRefundOpen} onOpenChange={(open) => { if (!open) { setRequestRefundOpen(false); setRefundAmount(''); setRefundReason(''); setRefundNotes('') } }}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>{t('payments.refund.requestRefund')}</DialogTitle>
-            <DialogDescription>
+      <Credenza open={requestRefundOpen} onOpenChange={(open) => { if (!open) { setRequestRefundOpen(false); setRefundAmount(''); setRefundReason(''); setRefundNotes('') } }}>
+        <CredenzaContent className="sm:max-w-[500px]">
+          <CredenzaHeader>
+            <CredenzaTitle>{t('payments.refund.requestRefund')}</CredenzaTitle>
+            <CredenzaDescription>
               {t('payments.refund.requestDescription')}
-            </DialogDescription>
-          </DialogHeader>
+            </CredenzaDescription>
+          </CredenzaHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="refundAmount">{t('payments.amount')}</Label>
@@ -912,7 +912,7 @@ export const PaymentDetailPage = () => {
               />
             </div>
           </div>
-          <DialogFooter>
+          <CredenzaFooter>
             <Button variant="outline" onClick={() => setRequestRefundOpen(false)} className="cursor-pointer">
               {t('labels.cancel', 'Cancel')}
             </Button>
@@ -924,9 +924,9 @@ export const PaymentDetailPage = () => {
               {requestRefundMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('payments.refund.submitRequest')}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Reject Refund Dialog */}
       <AlertDialog open={rejectRefundOpen} onOpenChange={(open) => { if (!open) { setRejectRefundOpen(false); setRejectRefundId(null); setRejectReason('') } }}>

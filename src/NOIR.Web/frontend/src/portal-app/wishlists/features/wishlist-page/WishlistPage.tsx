@@ -175,8 +175,8 @@ export const WishlistPage = () => {
         description={t('wishlists.description', 'Manage your saved products and wishlists')}
         responsive
         action={
-          <Button onClick={handleCreateNew} className="cursor-pointer">
-            <Plus className="mr-2 h-4 w-4" />
+          <Button onClick={handleCreateNew} className="group shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+            <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90 duration-300" />
             {t('wishlists.newWishlist', 'New Wishlist')}
           </Button>
         }

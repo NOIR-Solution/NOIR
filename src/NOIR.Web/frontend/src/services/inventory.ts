@@ -19,6 +19,7 @@ export const getInventoryReceipts = async (
   const queryParams = new URLSearchParams()
   if (params.page != null) queryParams.append('page', params.page.toString())
   if (params.pageSize != null) queryParams.append('pageSize', params.pageSize.toString())
+  if (params.search) queryParams.append('search', params.search)
   if (params.type) queryParams.append('type', params.type)
   if (params.status) queryParams.append('status', params.status)
 

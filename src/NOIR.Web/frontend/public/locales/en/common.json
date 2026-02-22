@@ -1198,6 +1198,7 @@
     "items": "Items",
     "totalQuantity": "Total Qty",
     "totalCost": "Total Cost",
+    "searchPlaceholder": "Search receipts...",
     "filterByType": "Filter by type",
     "filterByStatus": "Filter by status",
     "noReceiptsFound": "No receipts found",
