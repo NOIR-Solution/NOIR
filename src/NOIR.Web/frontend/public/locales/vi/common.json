@@ -1435,6 +1435,7 @@
     "noDataDescription": "Thử điều chỉnh khoảng thời gian để xem kết quả.",
     "exportSuccess": "Xuất báo cáo thành công",
     "exportFailed": "Xuất báo cáo thất bại",
+    "exportFailedWithStatus": "Xuất thất bại: {{status}}",
     "exportCsv": "Xuất dạng CSV",
     "exportExcel": "Xuất dạng Excel",
     "tabs": {
@@ -1875,6 +1876,7 @@
     "clickToChangeColor": "Màu: {{color}}. Nhấp để thay đổi.",
     "notAvailable": "N/A",
     "logoPreview": "Xem trước logo",
+    "percentComplete": "{{percent}}% hoàn thành",
     "user": "Người dùng",
     "closeWelcomeDialog": "Đóng hộp thoại chào mừng",
     "dismissOnboarding": "Đóng danh sách hướng dẫn",
@@ -2307,7 +2309,9 @@
     "failedToDelete": "Xóa {{entity}} \"{{name}}\" thất bại",
     "failedToSaveVariant": "Lưu biến thể thất bại",
     "anErrorOccurred": "Đã xảy ra lỗi",
-    "failedToFetchPermissions": "Không thể tải quyền truy cập"
+    "failedToFetchPermissions": "Không thể tải quyền truy cập",
+    "storageUnavailable": "Không thể lưu trữ mã xác thực. Vui lòng bật localStorage hoặc tắt chế độ duyệt riêng tư.",
+    "requestFailed": "Yêu cầu thất bại"
   },
   "media": {
     "imageUploaded": "Đã tải ảnh lên",
@@ -2353,7 +2357,15 @@
     "yesterday": "Hôm qua",
     "tomorrow": "Ngày mai",
     "earlierThisWeek": "Đầu tuần này",
-    "older": "Cũ hơn"
+    "older": "Cũ hơn",
+    "minutesAgoShort": "{{count}} phút trước",
+    "hoursAgoShort": "{{count}} giờ trước",
+    "daysAgoShort": "{{count}} ngày trước"
+  },
+  "autoSave": {
+    "draftRestored": "Đã khôi phục bản nháp",
+    "draftFrom": "Từ {{date}}",
+    "discard": "Hủy bỏ"
   },
   "validation": {
     "required": "Trường này là bắt buộc",
@@ -2389,7 +2401,9 @@
     "sortOrderMustBeWholeNumber": "Thứ tự sắp xếp phải là số nguyên",
     "sortOrderMustBeNonNegative": "Thứ tự sắp xếp không được âm",
     "compareAtPriceMustBeHigher": "Giá so sánh phải cao hơn giá bán thường",
-    "validationFailed": "Xác thực thất bại"
+    "validationFailed": "Xác thực thất bại",
+    "invalidFileType": "Loại tệp không hợp lệ. Cho phép: {{types}}",
+    "fileTooLarge": "Tệp quá lớn. Kích thước tối đa: {{maxSize}}MB"
   },
   "activityTimeline": {
     "title": "Dòng thời gian hoạt động",

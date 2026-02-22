@@ -8,6 +8,7 @@
  * - Clean up on unmount
  */
 import { useState, useRef, useCallback, useEffect, type RefObject } from 'react'
+import { i18n } from '@/i18n'
 
 interface UseImageUploadOptions {
   /** Maximum file size in bytes (default: 2MB) */
@@ -90,14 +91,14 @@ export const useImageUpload = (options: UseImageUploadOptions = {}): UseImageUpl
 
       // Validate type
       if (!allowedTypes.includes(file.type)) {
-        setError(`Invalid file type. Allowed: ${allowedTypes.map(t => t.split('/')[1]).join(', ')}`)
+        setError(i18n.t('validation.invalidFileType', { ns: 'common', types: allowedTypes.map(t => t.split('/')[1]).join(', '), defaultValue: 'Invalid file type. Allowed: {{types}}' }))
         return
       }
 
       // Validate size
       if (file.size > maxSize) {
         const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(1)
-        setError(`File too large. Maximum size: ${maxSizeMB}MB`)
+        setError(i18n.t('validation.fileTooLarge', { ns: 'common', maxSize: maxSizeMB, defaultValue: 'File too large. Maximum size: {{maxSize}}MB' }))
         return
       }
 

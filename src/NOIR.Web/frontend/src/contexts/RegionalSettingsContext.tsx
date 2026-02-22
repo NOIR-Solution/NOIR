@@ -15,7 +15,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef, ty
 import { useAuthContext } from './AuthContext'
 import { getRegionalSettings, type RegionalSettingsDto } from '@/services/tenantSettings'
 import { useLanguage } from '@/i18n/useLanguage'
-import { type SupportedLanguage, supportedLanguages } from '@/i18n'
+import { i18n, type SupportedLanguage, supportedLanguages } from '@/i18n'
 
 /**
  * LocalStorage key for tracking the last tenant language applied.
@@ -225,15 +225,15 @@ export const RegionalSettingsProvider = ({ children }: RegionalSettingsProviderP
     const diffDays = Math.floor(diffHours / 24)
 
     if (diffSeconds < 60) {
-      return 'Just now'
+      return i18n.t('time.now', { ns: 'common', defaultValue: 'Just now' })
     } else if (diffMinutes < 60) {
-      return `${diffMinutes}m ago`
+      return i18n.t('time.minutesAgoShort', { ns: 'common', count: diffMinutes, defaultValue: '{{count}}m ago' })
     } else if (diffHours < 24) {
-      return `${diffHours}h ago`
+      return i18n.t('time.hoursAgoShort', { ns: 'common', count: diffHours, defaultValue: '{{count}}h ago' })
     } else if (diffDays === 1) {
-      return 'Yesterday'
+      return i18n.t('time.yesterday', { ns: 'common', defaultValue: 'Yesterday' })
     } else if (diffDays < 7) {
-      return `${diffDays}d ago`
+      return i18n.t('time.daysAgoShort', { ns: 'common', count: diffDays, defaultValue: '{{count}}d ago' })
     } else {
       return formatDate(d)
     }

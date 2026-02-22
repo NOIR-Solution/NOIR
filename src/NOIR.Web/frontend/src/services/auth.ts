@@ -17,6 +17,7 @@
 import type { LoginRequest, LoginResponse, CurrentUser, ActiveSession } from '@/types'
 import { storeTokens, clearTokens, getAccessToken } from './tokenStorage'
 import { apiClient, apiClientPublic, ApiError } from './apiClient'
+import { i18n } from '@/i18n'
 
 /**
  * Authenticate user with email and password
@@ -48,7 +49,7 @@ export const login = async (request: LoginRequest): Promise<LoginResponse> => {
 
     if (!stored) {
       throw new Error(
-        'Unable to store authentication tokens. Please enable localStorage or disable private browsing.'
+        i18n.t('errors.storageUnavailable', { ns: 'common', defaultValue: 'Unable to store authentication tokens. Please enable localStorage or disable private browsing.' })
       )
     }
   }

@@ -122,7 +122,7 @@ export const exportReport = async (params: ExportReportParams): Promise<void> =>
   })
 
   if (!response.ok) {
-    throw new Error(`Export failed: ${response.status}`)
+    throw new Error(i18n.t('reports.exportFailedWithStatus', { ns: 'common', status: response.status, defaultValue: 'Export failed: {{status}}' }))
   }
 
   // Extract filename from Content-Disposition header or generate one

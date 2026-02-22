@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { type UseFormReturn, type FieldValues } from 'react-hook-form'
 import { toast } from '@/lib/toast'
+import { i18n } from '@/i18n'
 
 interface DraftData<T> {
   data: T
@@ -66,7 +67,7 @@ export const useAutoSave = <T extends FieldValues>({
   enabled = true,
   maxAge = DEFAULT_MAX_AGE,
   onRestore,
-  restoreMessage = 'Draft restored',
+  restoreMessage = i18n.t('autoSave.draftRestored', { ns: 'common', defaultValue: 'Draft restored' }),
 }: UseAutoSaveOptions<T>): UseAutoSaveReturn => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSavedRef = useRef<string>('')
@@ -91,9 +92,9 @@ export const useAutoSave = <T extends FieldValues>({
 
           // Show restoration toast
           toast.info(restoreMessage, {
-            description: `From ${new Date(savedAt).toLocaleString()}`,
+            description: i18n.t('autoSave.draftFrom', { ns: 'common', date: new Date(savedAt).toLocaleString(), defaultValue: 'From {{date}}' }),
             action: {
-              label: 'Discard',
+              label: i18n.t('autoSave.discard', { ns: 'common', defaultValue: 'Discard' }),
               onClick: () => {
                 localStorage.removeItem(storageKey)
                 setHasDraft(false)

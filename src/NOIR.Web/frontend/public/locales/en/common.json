@@ -1435,6 +1435,7 @@
     "noDataDescription": "Try adjusting the date range to see results.",
     "exportSuccess": "Report exported successfully",
     "exportFailed": "Failed to export report",
+    "exportFailedWithStatus": "Export failed: {{status}}",
     "exportCsv": "Export as CSV",
     "exportExcel": "Export as Excel",
     "tabs": {
@@ -1875,6 +1876,7 @@
     "clickToChangeColor": "Color: {{color}}. Click to change.",
     "notAvailable": "N/A",
     "logoPreview": "Logo preview",
+    "percentComplete": "{{percent}}% complete",
     "user": "User",
     "closeWelcomeDialog": "Close welcome dialog",
     "dismissOnboarding": "Dismiss onboarding checklist",
@@ -2307,7 +2309,9 @@
     "failedToDelete": "Failed to delete {{entity}} \"{{name}}\"",
     "failedToSaveVariant": "Failed to save variant",
     "anErrorOccurred": "An error occurred",
-    "failedToFetchPermissions": "Failed to fetch permissions"
+    "failedToFetchPermissions": "Failed to fetch permissions",
+    "storageUnavailable": "Unable to store authentication tokens. Please enable localStorage or disable private browsing.",
+    "requestFailed": "Request failed"
   },
   "media": {
     "imageUploaded": "Image uploaded",
@@ -2353,7 +2357,15 @@
     "yesterday": "Yesterday",
     "tomorrow": "Tomorrow",
     "earlierThisWeek": "Earlier this week",
-    "older": "Older"
+    "older": "Older",
+    "minutesAgoShort": "{{count}}m ago",
+    "hoursAgoShort": "{{count}}h ago",
+    "daysAgoShort": "{{count}}d ago"
+  },
+  "autoSave": {
+    "draftRestored": "Draft restored",
+    "draftFrom": "From {{date}}",
+    "discard": "Discard"
   },
   "validation": {
     "required": "This field is required",
@@ -2389,7 +2401,9 @@
     "sortOrderMustBeWholeNumber": "Sort order must be a whole number",
     "sortOrderMustBeNonNegative": "Sort order must be non-negative",
     "compareAtPriceMustBeHigher": "Compare-at price must be higher than the regular price",
-    "validationFailed": "Validation failed"
+    "validationFailed": "Validation failed",
+    "invalidFileType": "Invalid file type. Allowed: {{types}}",
+    "fileTooLarge": "File too large. Maximum size: {{maxSize}}MB"
   },
   "activityTimeline": {
     "title": "Activity Timeline",

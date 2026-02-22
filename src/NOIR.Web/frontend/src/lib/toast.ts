@@ -1,4 +1,5 @@
 import { toast as sonnerToast } from 'sonner'
+import { i18n } from '@/i18n'
 import type { ExternalToast } from 'sonner'
 
 interface ActionButton {
@@ -108,7 +109,7 @@ export const toast = {
     message: string,
     onUndo: () => void | Promise<void>,
     duration = 5000,
-    undoLabel = 'Undo'
+    undoLabel = i18n.t('buttons.undo', { ns: 'common', defaultValue: 'Undo' })
   ): string | number => {
     let undone = false
 
@@ -150,7 +151,7 @@ export const toast = {
       update: (progress: number, description?: string) => {
         sonnerToast.loading(options.title, {
           id,
-          description: description || `${Math.round(progress)}% complete`,
+          description: description || i18n.t('labels.percentComplete', { ns: 'common', percent: Math.round(progress), defaultValue: '{{percent}}% complete' }),
         })
       },
       success: (message: string) => {

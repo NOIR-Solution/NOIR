@@ -226,7 +226,7 @@ export const apiClient = async <T>(
   // Handle errors consistently
   if (!response.ok) {
     const error = await response.json().catch(() => ({
-      title: 'Request failed',
+      title: i18n.t('errors.requestFailed', { ns: 'common', defaultValue: 'Request failed' }),
       status: response.status,
     })) as ApiErrorType
 
@@ -234,9 +234,9 @@ export const apiClient = async <T>(
     let message = error.detail || error.title || `HTTP ${response.status}`
     if (response.status === 403 && !error.detail) {
       // No backend detail — use generic i18n permission message
-      message = i18n.t('messages.permissionDenied', { ns: 'common' }) || 'You don\'t have permission to perform this action.'
+      message = i18n.t('messages.permissionDenied', { ns: 'common', defaultValue: 'You don\'t have permission to perform this action.' })
     } else if (response.status === 401 && !token) {
-      message = i18n.t('messages.sessionExpired', { ns: 'common' }) || 'Your session has expired. Please sign in again.'
+      message = i18n.t('messages.sessionExpired', { ns: 'common', defaultValue: 'Your session has expired. Please sign in again.' })
     }
 
     throw new ApiError(
@@ -277,7 +277,7 @@ export const apiClientPublic = async <T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({
-      title: 'Request failed',
+      title: i18n.t('errors.requestFailed', { ns: 'common', defaultValue: 'Request failed' }),
       status: response.status,
     })) as ApiErrorType
 
@@ -285,7 +285,7 @@ export const apiClientPublic = async <T>(
     let message = error.detail || error.title || `HTTP ${response.status}`
     if (response.status === 403 && !error.detail) {
       // No backend detail — use generic i18n permission message
-      message = i18n.t('messages.permissionDenied', { ns: 'common' }) || 'You don\'t have permission to perform this action.'
+      message = i18n.t('messages.permissionDenied', { ns: 'common', defaultValue: 'You don\'t have permission to perform this action.' })
     }
 
     throw new ApiError(
