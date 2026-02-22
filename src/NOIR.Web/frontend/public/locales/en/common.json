@@ -881,9 +881,11 @@
     "noPermissions": "No permissions assigned",
     "system": "System",
     "userCount": "{{count}} users",
+    "systemRoleReadOnly": "System role permissions cannot be modified.",
     "columns": {
       "name": "Name",
       "description": "Description",
+      "permissions": "Permissions",
       "users": "Users",
       "type": "Type"
     },

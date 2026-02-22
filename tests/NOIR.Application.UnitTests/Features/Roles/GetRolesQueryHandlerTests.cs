@@ -14,6 +14,14 @@ public class GetRolesQueryHandlerTests
     public GetRolesQueryHandlerTests()
     {
         _roleIdentityServiceMock = new Mock<IRoleIdentityService>();
+
+        // Default: return empty permission counts (tests that need specific values will override)
+        _roleIdentityServiceMock
+            .Setup(x => x.GetPermissionCountsAsync(
+                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<string, int>() as IReadOnlyDictionary<string, int>);
+
         _handler = new GetRolesQueryHandler(_roleIdentityServiceMock.Object);
     }
 
@@ -206,6 +214,7 @@ public class GetRolesQueryHandlerTests
         };
 
         var userCounts = new Dictionary<string, int> { { "role-1", 25 } };
+        var permissionCounts = new Dictionary<string, int> { { "role-1", 12 } };
 
         _roleIdentityServiceMock
             .Setup(x => x.GetRolesPaginatedAsync(
@@ -217,6 +226,12 @@ public class GetRolesQueryHandlerTests
                 It.IsAny<IEnumerable<string>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(userCounts as IReadOnlyDictionary<string, int>);
+
+        _roleIdentityServiceMock
+            .Setup(x => x.GetPermissionCountsAsync(
+                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(permissionCounts as IReadOnlyDictionary<string, int>);
 
         var query = new GetRolesQuery();
 
@@ -235,6 +250,7 @@ public class GetRolesQueryHandlerTests
         dto.IconName.Should().Be("shield");
         dto.Color.Should().Be("#FF5733");
         dto.UserCount.Should().Be(25);
+        dto.PermissionCount.Should().Be(12);
     }
 
     [Fact]

@@ -25,9 +25,10 @@ public class GetRolesQueryHandler
             query.IncludeSystemRoles,
             cancellationToken);
 
-        // Get user counts for all roles
+        // Get user counts and permission counts for all roles
         var roleIds = roles.Select(r => r.Id).ToList();
         var userCounts = await _roleIdentityService.GetUserCountsAsync(roleIds, cancellationToken);
+        var permissionCounts = await _roleIdentityService.GetPermissionCountsAsync(roleIds, cancellationToken);
 
         // Map to RoleListDto with all properties
         var roleListDtos = roles.Select(role => new RoleListDto(
@@ -39,7 +40,8 @@ public class GetRolesQueryHandler
             role.SortOrder,
             role.IconName,
             role.Color,
-            userCounts.TryGetValue(role.Id, out var count) ? count : 0
+            userCounts.TryGetValue(role.Id, out var userCount) ? userCount : 0,
+            permissionCounts.TryGetValue(role.Id, out var permCount) ? permCount : 0
         )).ToList();
 
         var result = PaginatedList<RoleListDto>.Create(

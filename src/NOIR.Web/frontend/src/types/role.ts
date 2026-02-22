@@ -38,6 +38,7 @@ export interface RoleListItem {
   iconName: string | null
   color: string | null
   userCount: number
+  permissionCount: number
 }
 
 /**

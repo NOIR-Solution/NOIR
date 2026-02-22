@@ -881,9 +881,11 @@
     "noPermissions": "Chưa có quyền hạn",
     "system": "Hệ thống",
     "userCount": "{{count}} người dùng",
+    "systemRoleReadOnly": "Không thể thay đổi quyền hạn của vai trò hệ thống.",
     "columns": {
       "name": "Tên",
       "description": "Mô tả",
+      "permissions": "Quyền hạn",
       "users": "Người dùng",
       "type": "Loại"
     },

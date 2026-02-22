@@ -435,6 +435,19 @@ public class RoleIdentityService : IRoleIdentityService, IScopedService
             .ToDictionaryAsync(x => x.RoleId, x => x.Count, ct);
     }
 
+    public async Task<IReadOnlyDictionary<string, int>> GetPermissionCountsAsync(
+        IEnumerable<string> roleIds,
+        CancellationToken ct = default)
+    {
+        var roleIdList = roleIds.ToList();
+        return await _dbContext.RoleClaims
+            .TagWith("RoleIdentityService_GetPermissionCounts")
+            .Where(rc => roleIdList.Contains(rc.RoleId) && rc.ClaimType == Permissions.ClaimType)
+            .GroupBy(rc => rc.RoleId)
+            .Select(g => new { RoleId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.RoleId, x => x.Count, ct);
+    }
+
     public async Task<IReadOnlyList<UserIdentityDto>> GetUsersInRoleAsync(
         string roleName,
         string? tenantId,

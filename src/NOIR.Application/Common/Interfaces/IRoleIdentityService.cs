@@ -151,6 +151,13 @@ public interface IRoleIdentityService
         CancellationToken ct = default);
 
     /// <summary>
+    /// Gets permission counts for multiple roles in a single query.
+    /// </summary>
+    Task<IReadOnlyDictionary<string, int>> GetPermissionCountsAsync(
+        IEnumerable<string> roleIds,
+        CancellationToken ct = default);
+
+    /// <summary>
     /// Gets users assigned to a specific role within a tenant.
     /// </summary>
     /// <param name="roleName">The role name to search for.</param>

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { EllipsisVertical, Edit, Trash2, Key, Shield, Users } from 'lucide-react'
+import { EllipsisVertical, Edit, Key, Shield, Trash2, Users } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -65,14 +65,22 @@ export const RoleTable = ({ roles, onEdit, onDelete, onPermissions, loading }: R
             <TableHead className="w-10 sticky left-0 z-10 bg-background" />
             <TableHead>{t('roles.columns.name', 'Name')}</TableHead>
             <TableHead>{t('roles.columns.description', 'Description')}</TableHead>
+            <TableHead className="text-center">{t('roles.columns.permissions', 'Permissions')}</TableHead>
             <TableHead className="text-center">{t('roles.columns.users', 'Users')}</TableHead>
             <TableHead className="text-center">{t('roles.columns.type', 'Type')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {roles.map((role) => (
-            <TableRow key={role.id}>
-              <TableCell className="sticky left-0 z-10 bg-background">
+            <TableRow
+              key={role.id}
+              className="cursor-pointer transition-colors"
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
+                onEdit(role)
+              }}
+            >
+              <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -130,6 +138,12 @@ export const RoleTable = ({ roles, onEdit, onDelete, onPermissions, loading }: R
                 <span className="text-muted-foreground line-clamp-2">
                   {role.description || '-'}
                 </span>
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="flex items-center justify-center gap-1">
+                  <Key className="h-4 w-4 text-muted-foreground" />
+                  <span>{role.permissionCount}</span>
+                </div>
               </TableCell>
               <TableCell className="text-center">
                 <div className="flex items-center justify-center gap-1">

@@ -54,7 +54,7 @@ public class AssignPermissionToRoleCommandHandlerTests
             .ReturnsAsync(CreateTestRoleDto(roleId));
 
         _roleIdentityServiceMock
-            .Setup(x => x.AddPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SetPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Success());
 
         _roleIdentityServiceMock
@@ -83,7 +83,7 @@ public class AssignPermissionToRoleCommandHandlerTests
             .ReturnsAsync(CreateTestRoleDto(roleId));
 
         _roleIdentityServiceMock
-            .Setup(x => x.AddPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SetPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Success());
 
         _roleIdentityServiceMock
@@ -98,7 +98,7 @@ public class AssignPermissionToRoleCommandHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         _roleIdentityServiceMock.Verify(
-            x => x.AddPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()),
+            x => x.SetPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -126,7 +126,7 @@ public class AssignPermissionToRoleCommandHandlerTests
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
         _roleIdentityServiceMock.Verify(
-            x => x.AddPermissionsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()),
+            x => x.SetPermissionsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -135,7 +135,7 @@ public class AssignPermissionToRoleCommandHandlerTests
     #region Failure Scenarios
 
     [Fact]
-    public async Task Handle_WhenAddPermissionsFails_ShouldReturnValidationError()
+    public async Task Handle_WhenSetPermissionsFails_ShouldReturnValidationError()
     {
         // Arrange
         const string roleId = "role-123";
@@ -146,7 +146,7 @@ public class AssignPermissionToRoleCommandHandlerTests
             .ReturnsAsync(CreateTestRoleDto(roleId));
 
         _roleIdentityServiceMock
-            .Setup(x => x.AddPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SetPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Failure("Permission is invalid"));
 
         var command = new AssignPermissionToRoleCommand(roleId, permissions);
@@ -175,7 +175,7 @@ public class AssignPermissionToRoleCommandHandlerTests
             .ReturnsAsync(CreateTestRoleDto(roleId));
 
         _roleIdentityServiceMock
-            .Setup(x => x.AddPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SetPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Success());
 
         _roleIdentityServiceMock
@@ -191,32 +191,30 @@ public class AssignPermissionToRoleCommandHandlerTests
 
         // Assert
         _roleIdentityServiceMock.Verify(x => x.FindByIdAsync(roleId, token), Times.Once);
-        _roleIdentityServiceMock.Verify(x => x.AddPermissionsAsync(roleId, permissions, token), Times.Once);
+        _roleIdentityServiceMock.Verify(x => x.SetPermissionsAsync(roleId, permissions, token), Times.Once);
         _roleIdentityServiceMock.Verify(x => x.GetPermissionsAsync(roleId, token), Times.Once);
     }
 
     [Fact]
     public async Task Handle_ShouldReturnUpdatedPermissionsFromService()
     {
-        // Arrange
+        // Arrange - SetPermissionsAsync replaces all permissions with the provided set
         const string roleId = "role-123";
-        var permissionsToAdd = new List<string> { "new.permission" };
-        var existingPermissions = new List<string> { "existing.permission" };
-        var expectedPermissions = new List<string> { "existing.permission", "new.permission" };
+        var permissionsToSet = new List<string> { "new.permission", "another.permission" };
 
         _roleIdentityServiceMock
             .Setup(x => x.FindByIdAsync(roleId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateTestRoleDto(roleId));
 
         _roleIdentityServiceMock
-            .Setup(x => x.AddPermissionsAsync(roleId, permissionsToAdd, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SetPermissionsAsync(roleId, permissionsToSet, It.IsAny<CancellationToken>()))
             .ReturnsAsync(IdentityOperationResult.Success());
 
         _roleIdentityServiceMock
             .Setup(x => x.GetPermissionsAsync(roleId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedPermissions);
+            .ReturnsAsync(permissionsToSet);
 
-        var command = new AssignPermissionToRoleCommand(roleId, permissionsToAdd);
+        var command = new AssignPermissionToRoleCommand(roleId, permissionsToSet);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -224,8 +222,8 @@ public class AssignPermissionToRoleCommandHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().HaveCount(2);
-        result.Value.Should().Contain("existing.permission");
         result.Value.Should().Contain("new.permission");
+        result.Value.Should().Contain("another.permission");
     }
 
     #endregion

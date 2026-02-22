@@ -4,7 +4,7 @@ namespace NOIR.Application.Features.Permissions.Commands.AssignToRole;
 
 /// <summary>
 /// Wolverine handler for assigning permissions to a role.
-/// Adds permissions to the role's existing permissions.
+/// Replaces the role's permissions with the provided set (full sync).
 /// Validates that permissions are appropriate for the role's tenant scope.
 /// </summary>
 public class AssignPermissionToRoleCommandHandler
@@ -45,8 +45,8 @@ public class AssignPermissionToRoleCommandHandler
                     ErrorCodes.Validation.General));
         }
 
-        // Add permissions
-        var result = await _roleIdentityService.AddPermissionsAsync(
+        // Set permissions (replaces existing with the new set)
+        var result = await _roleIdentityService.SetPermissionsAsync(
             command.RoleId,
             command.Permissions,
             cancellationToken);

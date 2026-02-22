@@ -31,7 +31,8 @@ public sealed record RoleListDto(
     int SortOrder,
     string? IconName,
     string? Color,
-    int UserCount);
+    int UserCount,
+    int PermissionCount);
 
 /// <summary>
 /// Role hierarchy item showing parent-child relationships.
