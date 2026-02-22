@@ -23,7 +23,7 @@ import {
 } from '@uikit'
 import { useReviewQuery } from '@/portal-app/reviews/queries'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
-import type { ReviewStatus } from '@/types/review'
+import { getReviewStatusColor } from '@/portal-app/reviews/utils/reviewStatus'
 
 interface ReviewDetailDialogProps {
   reviewId: string | undefined
@@ -32,19 +32,6 @@ interface ReviewDetailDialogProps {
   onApprove: (id: string) => void
   onReject: (id: string) => void
   onRespond: (id: string) => void
-}
-
-const getStatusColor = (status: ReviewStatus): string => {
-  switch (status) {
-    case 'Pending':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700'
-    case 'Approved':
-      return 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700'
-    case 'Rejected':
-      return 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700'
-    default:
-      return ''
-  }
 }
 
 const StarRating = ({ rating, size = 'md' }: { rating: number; size?: 'sm' | 'md' }) => {
@@ -105,7 +92,7 @@ export const ReviewDetailDialog = ({
                     {review.rating}/5
                   </span>
                 </div>
-                <Badge variant="outline" className={getStatusColor(review.status)}>
+                <Badge variant="outline" className={getReviewStatusColor(review.status)}>
                   {t(`reviews.status.${review.status.toLowerCase()}`, review.status)}
                 </Badge>
               </div>

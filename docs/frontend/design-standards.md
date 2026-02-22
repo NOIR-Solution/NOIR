@@ -343,16 +343,14 @@ import { Badge } from '@uikit'
 **Status color utility pattern** (`variant="outline"` + System A colors):
 
 ```tsx
-// Define per-module in utils/ or lib/constants/
-const getStatusColor = (status: string): string => {
-  const colors: Record<string, string> = {
-    active:    'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
-    inactive:  'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/30 dark:text-gray-400 dark:border-gray-800',
-    pending:   'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
-    error:     'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
-  }
-  return colors[status.toLowerCase()] ?? ''
-}
+// ALWAYS use the shared utility — NEVER define local badge functions
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
+
+<Badge variant="outline" className={getStatusBadgeClasses('green')}>Active</Badge>
+<Badge variant="outline" className={getStatusBadgeClasses('red')}>Cancelled</Badge>
+<Badge variant="outline" className={getStatusBadgeClasses('yellow')}>Pending</Badge>
+<Badge variant="outline" className={getStatusBadgeClasses('blue')}>Processing</Badge>
+<Badge variant="outline" className={getStatusBadgeClasses('gray')}>Draft</Badge>
 ```
 
 **Color palette reference:**
@@ -373,8 +371,10 @@ const getStatusColor = (status: string): string => {
 - Using `/10` opacity variants (System C) — not the standard
 - Forgetting dark mode variants — always include `dark:` classes
 - Mixing `emerald` vs `green` — pick one per semantic meaning and be consistent
+- **Creating local badge functions** (`getOrderStatusColor`, `paymentStatusColors`, `getSegmentBadgeClass`, etc.) — use `getStatusBadgeClasses` from `@/utils/statusBadge` instead
+- Using `variant={isActive ? 'default' : 'secondary'}` — use outline + `getStatusBadgeClasses`
 
-**Reference:** `portal-app/orders/utils/orderStatus.ts` for a production example.
+**Reference:** `@/utils/statusBadge` is the single source of truth for badge colors.
 
 ---
 

@@ -60,23 +60,11 @@ import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { ReviewDetailDialog } from '@/portal-app/reviews/components/ReviewDetailDialog'
 import { RejectReviewDialog } from '@/portal-app/reviews/components/RejectReviewDialog'
 import { AdminResponseDialog } from '@/portal-app/reviews/components/AdminResponseDialog'
+import { getReviewStatusColor } from '@/portal-app/reviews/utils/reviewStatus'
 
 const REVIEW_STATUSES: ReviewStatus[] = ['Pending', 'Approved', 'Rejected']
 
 const RATING_OPTIONS = [1, 2, 3, 4, 5]
-
-const getStatusColor = (status: ReviewStatus): string => {
-  switch (status) {
-    case 'Pending':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700'
-    case 'Approved':
-      return 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700'
-    case 'Rejected':
-      return 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700'
-    default:
-      return ''
-  }
-}
 
 const StarRating = ({ rating }: { rating: number }) => (
   <div className="flex items-center gap-0.5">
@@ -282,7 +270,7 @@ export const ReviewsPage = () => {
 
             <div className="space-y-3">
               <div>
-                <CardTitle>{t('reviews.allReviews', 'All Reviews')}</CardTitle>
+                <CardTitle className="text-lg">{t('reviews.allReviews', 'All Reviews')}</CardTitle>
                 <CardDescription>
                   {t('reviews.totalCount', {
                     count: totalCount,
@@ -378,7 +366,7 @@ export const ReviewsPage = () => {
           }
         >
           {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">{error}</div>
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">{error}</div>
           )}
 
           <div className="rounded-xl border border-border/50 overflow-hidden">
@@ -640,7 +628,7 @@ const ReviewTableRow = ({
       <span className="text-sm truncate max-w-[200px] block">{review.title || '-'}</span>
     </TableCell>
     <TableCell>
-      <Badge variant="outline" className={getStatusColor(review.status)}>
+      <Badge variant="outline" className={getReviewStatusColor(review.status)}>
         {t(`reviews.status.${review.status.toLowerCase()}`, review.status)}
       </Badge>
     </TableCell>

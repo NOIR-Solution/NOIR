@@ -424,7 +424,7 @@ const AddressSection = ({ title, expanded, onToggle, values, onChange }: Address
   }
 
   return (
-    <Card>
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
       <CardHeader className="pb-0">
         <button
           type="button"
@@ -678,7 +678,7 @@ export const ManualCreateOrderPage = () => {
 
   if (!canManageOrders) {
     return (
-      <div className="space-y-6">
+      <div className="container max-w-6xl py-6 space-y-6">
         <div className="p-8 text-center">
           <p className="text-muted-foreground">{t('messages.permissionDenied', 'You do not have permission to access this page.')}</p>
         </div>
@@ -687,7 +687,7 @@ export const ManualCreateOrderPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       {/* Page Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -710,7 +710,7 @@ export const ManualCreateOrderPage = () => {
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Section 1: Customer Info */}
-          <Card className="shadow-sm">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
@@ -776,7 +776,7 @@ export const ManualCreateOrderPage = () => {
           </Card>
 
           {/* Section 2: Order Items */}
-          <Card className="shadow-sm">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Package className="h-4 w-4" />
@@ -940,7 +940,7 @@ export const ManualCreateOrderPage = () => {
           />
 
           {/* Section 4: Billing Address */}
-          <Card>
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader className="pb-0">
               <div className="flex items-center justify-between">
                 <button
@@ -1034,7 +1034,7 @@ export const ManualCreateOrderPage = () => {
           </Card>
 
           {/* Section 5: Order Summary */}
-          <Card className="shadow-sm">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <FileText className="h-4 w-4" />

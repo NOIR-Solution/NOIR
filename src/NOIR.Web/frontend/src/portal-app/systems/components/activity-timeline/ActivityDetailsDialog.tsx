@@ -304,7 +304,7 @@ export const ActivityDetailsDialog = ({
               <Skeleton className="h-32 w-full" />
             </div>
           ) : error ? (
-            <div className="p-4 bg-destructive/10 text-destructive rounded-md flex items-center gap-2">
+            <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-2">
               <AlertCircle className="h-4 w-4" />
               {error}
             </div>

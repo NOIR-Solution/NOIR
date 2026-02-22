@@ -155,7 +155,7 @@ export const InventoryReceiptsPage = () => {
         <CardHeader className="pb-4">
           <div className="space-y-3">
             <div>
-              <CardTitle>{t('inventory.allReceipts', 'All Receipts')}</CardTitle>
+              <CardTitle className="text-lg">{t('inventory.allReceipts', 'All Receipts')}</CardTitle>
               <CardDescription>
                 {t('inventory.totalCount', { count: totalCount, defaultValue: `${totalCount} receipts total` })}
               </CardDescription>
@@ -189,7 +189,7 @@ export const InventoryReceiptsPage = () => {
         </CardHeader>
         <CardContent className={isFilterPending ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
             </div>
           )}

@@ -401,7 +401,7 @@ export const ProductsPage = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-xl">{t('products.allProducts', 'All Products')}</CardTitle>
+                <CardTitle className="text-lg">{t('products.allProducts', 'All Products')}</CardTitle>
                 <CardDescription className="text-sm">
                   {data ? t('labels.showingOfItems', { from: paginationRange.from, to: paginationRange.to, total: data.totalCount }) : t('labels.loading', 'Loading...')}
                 </CardDescription>

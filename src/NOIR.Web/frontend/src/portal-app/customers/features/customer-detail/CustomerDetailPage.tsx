@@ -63,31 +63,9 @@ import { CustomerFormDialog } from '../../components/CustomerFormDialog'
 import { AddressFormDialog } from '../../components/AddressFormDialog'
 import { LoyaltyPointsDialog } from '../../components/LoyaltyPointsDialog'
 import { DeleteCustomerDialog } from '../../components/DeleteCustomerDialog'
+import { getSegmentBadgeClass, getTierBadgeClass } from '@/portal-app/customers/utils/customerStatus'
 
 const CUSTOMER_SEGMENTS: CustomerSegment[] = ['New', 'Active', 'AtRisk', 'Dormant', 'Lost', 'VIP']
-
-const getSegmentBadgeClass = (segment: CustomerSegment): string => {
-  switch (segment) {
-    case 'New': return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800'
-    case 'Active': return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800'
-    case 'VIP': return 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800'
-    case 'AtRisk': return 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800'
-    case 'Dormant': return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800'
-    case 'Lost': return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'
-    default: return 'bg-gray-100 text-gray-800 border-gray-200'
-  }
-}
-
-const getTierBadgeClass = (tier: string): string => {
-  switch (tier) {
-    case 'Standard': return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-900/30 dark:text-slate-400 dark:border-slate-800'
-    case 'Silver': return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-700'
-    case 'Gold': return 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800'
-    case 'Platinum': return 'bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800'
-    case 'Diamond': return 'bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-900/30 dark:text-violet-400 dark:border-violet-800'
-    default: return 'bg-gray-100 text-gray-800 border-gray-200'
-  }
-}
 
 export const CustomerDetailPage = () => {
   const { t } = useTranslation('common')
@@ -142,7 +120,7 @@ export const CustomerDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="container max-w-6xl py-6 space-y-6">
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-10 rounded" />
           <div className="space-y-2">
@@ -150,14 +128,67 @@ export const CustomerDetailPage = () => {
             <Skeleton className="h-4 w-72" />
           </div>
         </div>
+        {/* Stats row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-4 text-center">
+                <Skeleton className="h-3 w-16 mx-auto mb-2" />
+                <Skeleton className="h-6 w-12 mx-auto" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Skeleton className="h-64 w-full rounded-lg" />
-            <Skeleton className="h-48 w-full rounded-lg" />
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-32 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-32 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
           <div className="space-y-6">
-            <Skeleton className="h-48 w-full rounded-lg" />
-            <Skeleton className="h-48 w-full rounded-lg" />
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-24 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-24 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -166,7 +197,7 @@ export const CustomerDetailPage = () => {
 
   if (queryError || !customer) {
     return (
-      <div className="space-y-6">
+      <div className="container max-w-6xl py-6 space-y-6">
         <Button variant="ghost" onClick={() => navigate('/portal/ecommerce/customers')} className="cursor-pointer">
           <ArrowLeft className="h-4 w-4 mr-2" />
           {t('customers.backToCustomers', 'Back to Customers')}
@@ -181,7 +212,7 @@ export const CustomerDetailPage = () => {
   const fullName = `${customer.firstName} ${customer.lastName}`
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/portal/ecommerce/customers')} className="cursor-pointer" aria-label={t('customers.backToCustomers', 'Back to Customers')}>
@@ -210,25 +241,25 @@ export const CustomerDetailPage = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <Card className="shadow-sm">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
               <CardContent className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">{t('customers.totalOrders', 'Total Orders')}</p>
                 <p className="text-2xl font-bold">{customer.totalOrders}</p>
               </CardContent>
             </Card>
-            <Card className="shadow-sm">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
               <CardContent className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">{t('customers.totalSpent', 'Total Spent')}</p>
                 <p className="text-2xl font-bold">{formatCurrency(customer.totalSpent, 'VND')}</p>
               </CardContent>
             </Card>
-            <Card className="shadow-sm">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
               <CardContent className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">{t('customers.avgOrderValue', 'Avg Order')}</p>
                 <p className="text-2xl font-bold">{formatCurrency(customer.averageOrderValue, 'VND')}</p>
               </CardContent>
             </Card>
-            <Card className="shadow-sm">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
               <CardContent className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">{t('customers.loyaltyPoints', 'Points')}</p>
                 <p className="text-2xl font-bold">{customer.loyaltyPoints.toLocaleString()}</p>
@@ -251,7 +282,7 @@ export const CustomerDetailPage = () => {
 
             {/* Orders Tab */}
             <TabsContent value="orders">
-              <Card className="shadow-sm gap-4 py-5">
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
                 <CardHeader>
                   <CardTitle className="text-sm flex items-center gap-2">
                     <ShoppingCart className="h-4 w-4" />
@@ -350,7 +381,7 @@ export const CustomerDetailPage = () => {
 
             {/* Addresses Tab */}
             <TabsContent value="addresses">
-              <Card className="shadow-sm gap-4 py-5">
+              <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
@@ -395,7 +426,7 @@ export const CustomerDetailPage = () => {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {customer.addresses.map((address) => (
-                        <Card key={address.id} className="relative shadow-sm">
+                        <Card key={address.id} className="relative shadow-sm hover:shadow-lg transition-all duration-300">
                           <CardHeader className="pb-2">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
@@ -461,7 +492,7 @@ export const CustomerDetailPage = () => {
         {/* Right Column - Customer Info & Actions */}
         <div className="space-y-6">
           {/* Customer Info */}
-          <Card className="shadow-sm gap-4 py-5">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm">{t('customers.customerInfo', 'Customer Information')}</CardTitle>
@@ -546,7 +577,7 @@ export const CustomerDetailPage = () => {
 
           {/* Segment Management */}
           {canManage && (
-            <Card className="shadow-sm gap-4 py-5">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
               <CardHeader>
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Crown className="h-4 w-4" />
@@ -578,7 +609,7 @@ export const CustomerDetailPage = () => {
           )}
 
           {/* Loyalty Points */}
-          <Card className="shadow-sm gap-4 py-5">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
             <CardHeader>
               <CardTitle className="text-sm flex items-center gap-2">
                 <Gift className="h-4 w-4" />

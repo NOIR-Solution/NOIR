@@ -102,21 +102,27 @@ export const ResetAdminPasswordDialog = ({
       <CredenzaContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <CredenzaHeader>
-            <CredenzaTitle className="flex items-center gap-2">
-              <KeyRound className="h-5 w-5" />
-              {t('tenants.resetAdminPasswordTitle')}
-            </CredenzaTitle>
-            <CredenzaDescription>
-              {t('tenants.resetAdminPasswordDescription', {
-                name: tenant?.name || tenant?.identifier
-              })}
-            </CredenzaDescription>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <KeyRound className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <CredenzaTitle>
+                  {t('tenants.resetAdminPasswordTitle')}
+                </CredenzaTitle>
+                <CredenzaDescription>
+                  {t('tenants.resetAdminPasswordDescription', {
+                    name: tenant?.name || tenant?.identifier
+                  })}
+                </CredenzaDescription>
+              </div>
+            </div>
           </CredenzaHeader>
 
           <CredenzaBody>
             <div className="grid gap-4 py-4">
               {error && (
-                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg">
                   {error}
                 </div>
               )}

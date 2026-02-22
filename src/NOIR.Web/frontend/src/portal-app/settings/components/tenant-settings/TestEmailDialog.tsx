@@ -159,10 +159,10 @@ export const TestEmailDialog = ({
           </CredenzaBody>
 
           <CredenzaFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+            <Button type="button" variant="outline" className="cursor-pointer" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
               {t('buttons.cancel')}
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting} className="cursor-pointer">
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

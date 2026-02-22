@@ -13,7 +13,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@uikit'
-import { Settings, Blocks } from 'lucide-react'
+import { Settings, Blocks, Building2 } from 'lucide-react'
 import { TenantFormValidated, type UpdateTenantFormData } from './TenantFormValidated'
 import { TenantModulesTab } from './TenantModulesTab'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -97,8 +97,15 @@ export const EditTenantDialog = ({ tenant, open, onOpenChange, onSuccess, active
     <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[650px]">
         <CredenzaHeader>
-          <CredenzaTitle>{tenant?.name || tenant?.identifier || t('tenants.editTitle')}</CredenzaTitle>
-          <CredenzaDescription>{t('tenants.editDescription')}</CredenzaDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Building2 className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <CredenzaTitle>{tenant?.name || tenant?.identifier || t('tenants.editTitle')}</CredenzaTitle>
+              <CredenzaDescription>{t('tenants.editDescription')}</CredenzaDescription>
+            </div>
+          </div>
         </CredenzaHeader>
         <CredenzaBody>
           <Tabs value={effectiveTab} onValueChange={(v) => handleTabChange(v as 'details' | 'modules')}>

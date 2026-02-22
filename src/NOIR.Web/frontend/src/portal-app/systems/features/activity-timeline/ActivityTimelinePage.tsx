@@ -316,13 +316,13 @@ export const ActivityTimelinePage = () => {
   })
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       <PageHeader
         icon={Activity}
         title={t('activityTimeline.title', 'Activity Timeline')}
         description={t('activityTimeline.description', 'Track and audit all user actions')}
         action={
-          <Button variant="outline" className="group hover:shadow-md transition-all duration-300" onClick={handleRefresh} disabled={loading}>
+          <Button variant="outline" className="cursor-pointer group hover:shadow-md transition-all duration-300" onClick={handleRefresh} disabled={loading}>
             <RefreshCw className={cn('mr-2 h-4 w-4 transition-transform duration-300', loading ? 'animate-spin' : 'group-hover:rotate-180')} />
             {t('buttons.refresh', 'Refresh')}
           </Button>
@@ -513,7 +513,7 @@ export const ActivityTimelinePage = () => {
         </CardHeader>
         <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md flex items-center gap-2">
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-2">
               <AlertCircle className="h-4 w-4" />
               {error}
             </div>

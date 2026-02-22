@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2 } from 'lucide-react'
+import { Loader2, UserPlus, UserCog } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
@@ -131,14 +131,21 @@ export const CustomerFormDialog = ({ open, onOpenChange, customer, onSuccess }: 
     <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[500px]">
         <CredenzaHeader>
-          <CredenzaTitle>
-            {isEditing ? t('customers.editCustomer', 'Edit Customer') : t('customers.createCustomer', 'Create Customer')}
-          </CredenzaTitle>
-          <CredenzaDescription>
-            {isEditing
-              ? t('customers.editCustomerDescription', 'Update the customer details below.')
-              : t('customers.createCustomerDescription', 'Fill in the details to create a new customer.')}
-          </CredenzaDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              {isEditing ? <UserCog className="h-5 w-5 text-primary" /> : <UserPlus className="h-5 w-5 text-primary" />}
+            </div>
+            <div>
+              <CredenzaTitle>
+                {isEditing ? t('customers.editCustomer', 'Edit Customer') : t('customers.createCustomer', 'Create Customer')}
+              </CredenzaTitle>
+              <CredenzaDescription>
+                {isEditing
+                  ? t('customers.editCustomerDescription', 'Update the customer details below.')
+                  : t('customers.createCustomerDescription', 'Fill in the details to create a new customer.')}
+              </CredenzaDescription>
+            </div>
+          </div>
         </CredenzaHeader>
 
         <Form {...form}>

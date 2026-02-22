@@ -99,7 +99,7 @@ const AddressCard = ({ title, address, icon: Icon }: { title: string; address: A
 
   if (!address) {
     return (
-      <Card className="gap-4 py-5">
+      <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
         <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             <Icon className="h-4 w-4" />
@@ -114,7 +114,7 @@ const AddressCard = ({ title, address, icon: Icon }: { title: string; address: A
   }
 
   return (
-    <Card className="gap-4 py-5">
+    <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
       <CardHeader>
         <CardTitle className="text-sm flex items-center gap-2">
           <Icon className="h-4 w-4" />
@@ -248,7 +248,7 @@ export const OrderDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="container max-w-6xl py-6 space-y-6">
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-10 rounded" />
           <div className="space-y-2">
@@ -258,12 +258,54 @@ export const OrderDetailPage = () => {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Skeleton className="h-64 w-full rounded-lg" />
-            <Skeleton className="h-48 w-full rounded-lg" />
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-32 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-32 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
           <div className="space-y-6">
-            <Skeleton className="h-48 w-full rounded-lg" />
-            <Skeleton className="h-48 w-full rounded-lg" />
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-24 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-24 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -272,7 +314,7 @@ export const OrderDetailPage = () => {
 
   if (queryError || !order) {
     return (
-      <div className="space-y-6">
+      <div className="container max-w-6xl py-6 space-y-6">
         <Button variant="ghost" onClick={() => navigate('/portal/ecommerce/orders')} className="cursor-pointer">
           <ArrowLeft className="h-4 w-4 mr-2" />
           {t('orders.backToOrders', 'Back to Orders')}
@@ -296,7 +338,7 @@ export const OrderDetailPage = () => {
   const canReturn = canManageOrders && order.status === 'Delivered'
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/portal/ecommerce/orders')} className="cursor-pointer" aria-label={t('orders.backToOrders', 'Back to Orders')}>
@@ -317,7 +359,7 @@ export const OrderDetailPage = () => {
 
       {/* Status Timeline - Full Width */}
       {!isTerminalStatus && (
-        <Card className="shadow-sm py-6 px-2">
+        <Card className="shadow-sm hover:shadow-lg transition-all duration-300 py-6 px-2">
           <CardContent className="px-4">
             {/* Icons row */}
             <div className="relative flex items-center justify-between">
@@ -425,7 +467,7 @@ export const OrderDetailPage = () => {
         {/* Left Column - Items and Actions */}
         <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
-          <Card className="shadow-sm gap-4 py-5">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
             <CardHeader>
               <CardTitle className="text-sm flex items-center gap-2">
                 <Package className="h-4 w-4" />
@@ -528,7 +570,7 @@ export const OrderDetailPage = () => {
 
           {/* Order Actions */}
           {(canConfirm || canShip || canDeliver || canComplete || canCancel || canReturn) && (
-            <Card className="shadow-sm gap-4 py-5">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
               <CardHeader>
                 <CardTitle className="text-sm">{t('orders.orderActions', 'Order Actions')}</CardTitle>
               </CardHeader>
@@ -618,7 +660,7 @@ export const OrderDetailPage = () => {
         {/* Right Column - Customer & Shipping Info */}
         <div className="space-y-6">
           {/* Customer Info */}
-          <Card className="shadow-sm gap-4 py-5">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
             <CardHeader>
               <CardTitle className="text-sm">{t('orders.customerInfo', 'Customer Information')}</CardTitle>
             </CardHeader>
@@ -653,7 +695,7 @@ export const OrderDetailPage = () => {
 
           {/* Shipping Info — method only; tracking detail is in OrderShipmentTracking */}
           {order.shippingMethod && (
-            <Card className="shadow-sm gap-4 py-5">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
               <CardHeader>
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Truck className="h-4 w-4" />
@@ -688,7 +730,7 @@ export const OrderDetailPage = () => {
           />
 
           {/* Order Timestamps */}
-          <Card className="shadow-sm gap-4 py-5">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
             <CardHeader>
               <CardTitle className="text-sm">{t('orders.timeline', 'Timeline')}</CardTitle>
             </CardHeader>

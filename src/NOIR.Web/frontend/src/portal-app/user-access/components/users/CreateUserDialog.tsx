@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useForm, type Resolver } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Loader2, Eye, EyeOff, UserPlus, Check } from 'lucide-react'
 import {
@@ -62,19 +64,12 @@ const createUserSchemaFactory = (t: (key: string, options?: Record<string, unkno
   path: ['confirmPassword'],
 })
 
+type FormData = z.infer<ReturnType<typeof createUserSchemaFactory>>
+
 interface CreateUserDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
-}
-
-interface FieldErrors {
-  email?: string
-  password?: string
-  confirmPassword?: string
-  firstName?: string
-  lastName?: string
-  displayName?: string
 }
 
 export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDialogProps) => {
@@ -91,101 +86,29 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
     permissionsCache.set(roleId, permissions)
   }, [permissionsCache])
 
-  // Form fields
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [displayName, setDisplayName] = useState('')
-
-  // Field errors for real-time validation
-  const [errors, setErrors] = useState<FieldErrors>({})
-  const [touched, setTouched] = useState<Record<string, boolean>>({})
-
-  const resetForm = () => {
-    setEmail('')
-    setPassword('')
-    setConfirmPassword('')
-    setFirstName('')
-    setLastName('')
-    setDisplayName('')
-    setSelectedRoles(new Set())
-    setShowPassword(false)
-    setErrors({})
-    setTouched({})
-  }
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+    mode: 'onBlur',
+    // TypeScript cannot infer resolver types from dynamic schema factories
+    // Using 'as unknown as Resolver<T>' for type-safe assertion
+    resolver: zodResolver(createUserSchemaFactory(t)) as unknown as Resolver<FormData>,
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      firstName: '',
+      lastName: '',
+      displayName: '',
+    },
+  })
 
   // Reset form when dialog closes
   useEffect(() => {
     if (!open) {
-      resetForm()
+      reset()
+      setSelectedRoles(new Set())
+      setShowPassword(false)
     }
-  }, [open])
-
-  // Field-specific validation schemas with i18n messages
-  const fieldSchemas = {
-    email: z
-      .string()
-      .min(1, { message: t('validation.emailRequired') })
-      .max(256, { message: t('validation.maxLength', { count: 256 }) })
-      .email({ message: t('validation.pleaseEnterValidEmail') }),
-    password: z
-      .string()
-      .min(1, { message: t('validation.passwordRequired') })
-      .min(6, { message: t('validation.passwordMinLength', { count: 6 }) })
-      .max(100, { message: t('validation.passwordMaxLength', { count: 100 }) }),
-    confirmPassword: z
-      .string()
-      .min(1, { message: t('validation.passwordConfirm') }),
-    firstName: z
-      .string()
-      .max(50, { message: t('validation.maxLength', { count: 50 }) }),
-    lastName: z
-      .string()
-      .max(50, { message: t('validation.maxLength', { count: 50 }) }),
-    displayName: z
-      .string()
-      .max(100, { message: t('validation.maxLength', { count: 100 }) }),
-  }
-
-  // Validate a single field
-  const validateField = (field: keyof FieldErrors, value: string): string | undefined => {
-    // For confirmPassword, also check if it matches password
-    if (field === 'confirmPassword') {
-      const result = fieldSchemas.confirmPassword.safeParse(value)
-      if (!result.success && result.error?.issues?.length > 0) {
-        return result.error.issues[0].message
-      }
-      if (value && value !== password) {
-        return t('validation.passwordMismatch')
-      }
-      return undefined
-    }
-
-    // For password changes, also re-validate confirmPassword if it was touched
-    if (field === 'password' && touched.confirmPassword && confirmPassword) {
-      if (value !== confirmPassword) {
-        setErrors((prev) => ({ ...prev, confirmPassword: t('validation.passwordMismatch') }))
-      } else {
-        setErrors((prev) => ({ ...prev, confirmPassword: undefined }))
-      }
-    }
-
-    const schema = fieldSchemas[field]
-    const result = schema.safeParse(value)
-    if (!result.success && result.error?.issues?.length > 0) {
-      return result.error.issues[0].message
-    }
-    return undefined
-  }
-
-  // Handle field blur for real-time validation
-  const handleBlur = (field: keyof FieldErrors, value: string) => {
-    setTouched((prev) => ({ ...prev, [field]: true }))
-    const error = validateField(field, value)
-    setErrors((prev) => ({ ...prev, [field]: error }))
-  }
+  }, [open, reset])
 
   const handleToggleRole = (roleName: string) => {
     setSelectedRoles((prev) => {
@@ -199,44 +122,15 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
     })
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    // Validate all fields
-    const data = { email, password, confirmPassword, firstName, lastName, displayName }
-    const result = createUserSchemaFactory(t).safeParse(data)
-
-    if (!result.success) {
-      // Show all errors
-      const newErrors: FieldErrors = {}
-      result.error.issues.forEach((err) => {
-        const field = err.path[0] as keyof FieldErrors
-        if (!newErrors[field]) {
-          newErrors[field] = err.message
-        }
-      })
-      setErrors(newErrors)
-      // Mark all as touched
-      setTouched({
-        email: true,
-        password: true,
-        confirmPassword: true,
-        firstName: true,
-        lastName: true,
-        displayName: true,
-      })
-      toast.error(t('validation.fixErrors', 'Please fix the errors in the form'))
-      return
-    }
-
+  const onSubmit = async (data: FormData) => {
     setLoading(true)
     try {
       await createUser({
-        email: email.trim(),
-        password,
-        firstName: firstName.trim() || null,
-        lastName: lastName.trim() || null,
-        displayName: displayName.trim() || null,
+        email: data.email.trim(),
+        password: data.password,
+        firstName: data.firstName?.trim() || null,
+        lastName: data.lastName?.trim() || null,
+        displayName: data.displayName?.trim() || null,
         roleNames: selectedRoles.size > 0 ? Array.from(selectedRoles) : null,
       })
       toast.success(t('users.createSuccess', 'User created successfully'))
@@ -257,7 +151,7 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
       <CredenzaContent className="sm:max-w-[550px]">
         <CredenzaHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-xl shadow-sm">
+            <div className="p-2 bg-primary/10 rounded-lg shadow-sm">
               <UserPlus className="h-5 w-5 text-primary" />
             </div>
             <div>
@@ -269,40 +163,36 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
           </div>
         </CredenzaHeader>
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
           <CredenzaBody>
             <div className="grid gap-4">
               {/* Email */}
               <div className="grid gap-2">
-                <Label htmlFor="email" className={touched.email && errors.email ? 'text-destructive' : ''}>{t('labels.email', 'Email')} *</Label>
+                <Label htmlFor="email" className={errors.email ? 'text-destructive' : ''}>{t('labels.email', 'Email')} *</Label>
                 <Input
                   id="email"
                   type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onBlur={(e) => handleBlur('email', e.target.value)}
+                  {...register('email')}
                   placeholder={t('users.form.emailPlaceholder', 'user@example.com')}
                   autoComplete="off"
-                  className={touched.email && errors.email ? 'border-destructive' : ''}
+                  className={errors.email ? 'border-destructive' : ''}
                 />
-                {touched.email && errors.email && (
-                  <p className="text-sm font-medium text-destructive">{errors.email}</p>
+                {errors.email && (
+                  <p className="text-sm font-medium text-destructive">{errors.email.message}</p>
                 )}
               </div>
 
               {/* Password */}
               <div className="grid gap-2">
-                <Label htmlFor="password" className={touched.password && errors.password ? 'text-destructive' : ''}>{t('labels.password', 'Password')} *</Label>
+                <Label htmlFor="password" className={errors.password ? 'text-destructive' : ''}>{t('labels.password', 'Password')} *</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onBlur={(e) => handleBlur('password', e.target.value)}
+                    {...register('password')}
                     placeholder={t('users.form.passwordPlaceholder', 'Enter password')}
                     autoComplete="new-password"
-                    className={touched.password && errors.password ? 'border-destructive' : ''}
+                    className={errors.password ? 'border-destructive' : ''}
                   />
                   <Button
                     type="button"
@@ -319,77 +209,69 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
                     )}
                   </Button>
                 </div>
-                {touched.password && errors.password && (
-                  <p className="text-sm font-medium text-destructive">{errors.password}</p>
+                {errors.password && (
+                  <p className="text-sm font-medium text-destructive">{errors.password.message}</p>
                 )}
               </div>
 
               {/* Confirm Password */}
               <div className="grid gap-2">
-                <Label htmlFor="confirmPassword" className={touched.confirmPassword && errors.confirmPassword ? 'text-destructive' : ''}>{t('labels.confirmPassword', 'Confirm Password')} *</Label>
+                <Label htmlFor="confirmPassword" className={errors.confirmPassword ? 'text-destructive' : ''}>{t('labels.confirmPassword', 'Confirm Password')} *</Label>
                 <Input
                   id="confirmPassword"
                   type={showPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  onBlur={(e) => handleBlur('confirmPassword', e.target.value)}
+                  {...register('confirmPassword')}
                   placeholder={t('users.form.confirmPasswordPlaceholder', 'Confirm password')}
                   autoComplete="new-password"
-                  className={touched.confirmPassword && errors.confirmPassword ? 'border-destructive' : ''}
+                  className={errors.confirmPassword ? 'border-destructive' : ''}
                 />
-                {touched.confirmPassword && errors.confirmPassword && (
-                  <p className="text-sm font-medium text-destructive">{errors.confirmPassword}</p>
+                {errors.confirmPassword && (
+                  <p className="text-sm font-medium text-destructive">{errors.confirmPassword.message}</p>
                 )}
               </div>
 
               {/* First Name & Last Name */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="firstName" className={touched.firstName && errors.firstName ? 'text-destructive' : ''}>{t('users.form.firstName', 'First Name')}</Label>
+                  <Label htmlFor="firstName" className={errors.firstName ? 'text-destructive' : ''}>{t('users.form.firstName', 'First Name')}</Label>
                   <Input
                     id="firstName"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    onBlur={(e) => handleBlur('firstName', e.target.value)}
+                    {...register('firstName')}
                     placeholder={t('users.form.firstNamePlaceholder', 'John')}
-                    className={touched.firstName && errors.firstName ? 'border-destructive' : ''}
+                    className={errors.firstName ? 'border-destructive' : ''}
                   />
-                  {touched.firstName && errors.firstName && (
-                    <p className="text-sm font-medium text-destructive">{errors.firstName}</p>
+                  {errors.firstName && (
+                    <p className="text-sm font-medium text-destructive">{errors.firstName.message}</p>
                   )}
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="lastName" className={touched.lastName && errors.lastName ? 'text-destructive' : ''}>{t('users.form.lastName', 'Last Name')}</Label>
+                  <Label htmlFor="lastName" className={errors.lastName ? 'text-destructive' : ''}>{t('users.form.lastName', 'Last Name')}</Label>
                   <Input
                     id="lastName"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    onBlur={(e) => handleBlur('lastName', e.target.value)}
+                    {...register('lastName')}
                     placeholder={t('users.form.lastNamePlaceholder', 'Doe')}
-                    className={touched.lastName && errors.lastName ? 'border-destructive' : ''}
+                    className={errors.lastName ? 'border-destructive' : ''}
                   />
-                  {touched.lastName && errors.lastName && (
-                    <p className="text-sm font-medium text-destructive">{errors.lastName}</p>
+                  {errors.lastName && (
+                    <p className="text-sm font-medium text-destructive">{errors.lastName.message}</p>
                   )}
                 </div>
               </div>
 
               {/* Display Name */}
               <div className="grid gap-2">
-                <Label htmlFor="displayName" className={touched.displayName && errors.displayName ? 'text-destructive' : ''}>{t('users.form.displayName', 'Display Name')}</Label>
+                <Label htmlFor="displayName" className={errors.displayName ? 'text-destructive' : ''}>{t('users.form.displayName', 'Display Name')}</Label>
                 <Input
                   id="displayName"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  onBlur={(e) => handleBlur('displayName', e.target.value)}
+                  {...register('displayName')}
                   placeholder={t('users.form.displayNamePlaceholder', 'John Doe')}
-                  className={touched.displayName && errors.displayName ? 'border-destructive' : ''}
+                  className={errors.displayName ? 'border-destructive' : ''}
                 />
                 <p className="text-xs text-muted-foreground">
                   {t('users.form.displayNameHint', 'Optional. Overrides first/last name display.')}
                 </p>
-                {touched.displayName && errors.displayName && (
-                  <p className="text-sm font-medium text-destructive">{errors.displayName}</p>
+                {errors.displayName && (
+                  <p className="text-sm font-medium text-destructive">{errors.displayName.message}</p>
                 )}
               </div>
 

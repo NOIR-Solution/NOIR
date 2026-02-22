@@ -244,7 +244,7 @@ export const PaymentDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="container max-w-6xl py-6 space-y-6">
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-10 rounded" />
           <div className="space-y-2">
@@ -252,15 +252,35 @@ export const PaymentDetailPage = () => {
             <Skeleton className="h-4 w-72" />
           </div>
         </div>
-        <Skeleton className="h-64 w-full rounded-lg" />
-        <Skeleton className="h-48 w-full rounded-lg" />
+        <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+          <CardContent className="pt-6">
+            <Skeleton className="h-4 w-32 mb-4" />
+            <Skeleton className="h-3 w-full mb-2" />
+            <Skeleton className="h-3 w-full mb-2" />
+            <Skeleton className="h-3 w-3/4" />
+          </CardContent>
+        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-24 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     )
   }
 
   if (queryError || !payment) {
     return (
-      <div className="space-y-6">
+      <div className="container max-w-6xl py-6 space-y-6">
         <Button variant="ghost" onClick={() => navigate('/portal/ecommerce/payments')} className="cursor-pointer">
           <ArrowLeft className="h-4 w-4 mr-2" />
           {t('payments.backToPayments', 'Back to Payments')}
@@ -273,7 +293,7 @@ export const PaymentDetailPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -366,7 +386,7 @@ export const PaymentDetailPage = () => {
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Transaction Info */}
-            <Card className="shadow-sm gap-4 py-5">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
               <CardHeader>
                 <CardTitle className="text-sm">{t('payments.detail.transactionInfo')}</CardTitle>
               </CardHeader>
@@ -408,7 +428,7 @@ export const PaymentDetailPage = () => {
             </Card>
 
             {/* Financial */}
-            <Card className="shadow-sm gap-4 py-5">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
               <CardHeader>
                 <CardTitle className="text-sm">{t('payments.detail.financial')}</CardTitle>
               </CardHeader>
@@ -436,7 +456,7 @@ export const PaymentDetailPage = () => {
             </Card>
 
             {/* Gateway Info */}
-            <Card className="shadow-sm gap-4 py-5">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
               <CardHeader>
                 <CardTitle className="text-sm">{t('payments.detail.gatewayInfo')}</CardTitle>
               </CardHeader>
@@ -467,7 +487,7 @@ export const PaymentDetailPage = () => {
             </Card>
 
             {/* Timing */}
-            <Card className="shadow-sm gap-4 py-5">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
               <CardHeader>
                 <CardTitle className="text-sm">{t('payments.detail.timing')}</CardTitle>
               </CardHeader>
@@ -507,7 +527,7 @@ export const PaymentDetailPage = () => {
 
         {/* Timeline Tab */}
         <TabsContent value="timeline">
-          <Card className="shadow-sm gap-4 py-5">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
             <CardHeader>
               <CardTitle className="text-sm">{t('payments.detail.timeline')}</CardTitle>
               <CardDescription>
@@ -539,7 +559,7 @@ export const PaymentDetailPage = () => {
 
         {/* API Logs Tab */}
         <TabsContent value="apiLogs">
-          <Card className="shadow-sm gap-4 py-5">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
             <CardHeader>
               <CardTitle className="text-sm">{t('payments.detail.apiLogs')}</CardTitle>
             </CardHeader>
@@ -623,7 +643,7 @@ export const PaymentDetailPage = () => {
 
         {/* Webhooks Tab */}
         <TabsContent value="webhooks">
-          <Card className="shadow-sm gap-4 py-5">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
             <CardHeader>
               <CardTitle className="text-sm">{t('payments.detail.webhooks')}</CardTitle>
             </CardHeader>
@@ -699,7 +719,7 @@ export const PaymentDetailPage = () => {
 
         {/* Refunds Tab */}
         <TabsContent value="refunds">
-          <Card className="shadow-sm gap-4 py-5">
+          <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-4 py-5">
             <CardHeader>
               <CardTitle className="text-sm">{t('payments.detail.refunds')}</CardTitle>
             </CardHeader>

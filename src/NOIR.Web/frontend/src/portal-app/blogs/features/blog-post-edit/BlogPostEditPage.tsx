@@ -326,11 +326,11 @@ export const BlogPostEditPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/portal/blog/posts')}>
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={() => navigate('/portal/blog/posts')}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="p-2 bg-primary/10 rounded-lg">
@@ -356,7 +356,7 @@ export const BlogPostEditPage = () => {
                 : t(`blog.status.${post.status.toLowerCase()}`)}
             </Badge>
           )}
-          <Button onClick={() => form.handleSubmit(onSubmit)()} disabled={saving}>
+          <Button onClick={() => form.handleSubmit(onSubmit)()} disabled={saving} className="cursor-pointer">
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -748,7 +748,7 @@ export const BlogPostEditPage = () => {
                           type="button"
                           variant="destructive"
                           size="icon"
-                          className="absolute top-2 right-2 h-8 w-8"
+                          className="absolute top-2 right-2 h-8 w-8 cursor-pointer"
                           onClick={handleClearImage}
                         >
                           <X className="h-4 w-4" />
@@ -779,7 +779,7 @@ export const BlogPostEditPage = () => {
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="w-full"
+                        className="w-full cursor-pointer"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploadingImage}
                       >

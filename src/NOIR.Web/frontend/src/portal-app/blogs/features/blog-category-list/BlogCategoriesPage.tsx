@@ -120,7 +120,7 @@ export const BlogCategoriesPage = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>{t('blogCategories.allCategories', 'All Categories')}</CardTitle>
+                <CardTitle className="text-lg">{t('blogCategories.allCategories', 'All Categories')}</CardTitle>
                 <CardDescription>
                   {data ? t('blogCategories.totalCount', { count: data.length, defaultValue: `${data.length} categories` }) : ''}
                 </CardDescription>
@@ -144,7 +144,7 @@ export const BlogCategoriesPage = () => {
         </CardHeader>
         <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
             </div>
           )}

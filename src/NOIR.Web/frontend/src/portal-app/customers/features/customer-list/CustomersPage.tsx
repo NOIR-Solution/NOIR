@@ -52,45 +52,10 @@ import type { CustomerSegment, CustomerSummaryDto, CustomerTier } from '@/types/
 import { formatCurrency } from '@/lib/utils/currency'
 import { CustomerFormDialog } from '../../components/CustomerFormDialog'
 import { DeleteCustomerDialog } from '../../components/DeleteCustomerDialog'
+import { getSegmentBadgeClass, getTierBadgeClass } from '@/portal-app/customers/utils/customerStatus'
 
 const CUSTOMER_SEGMENTS: CustomerSegment[] = ['New', 'Active', 'AtRisk', 'Dormant', 'Lost', 'VIP']
 const CUSTOMER_TIERS: CustomerTier[] = ['Standard', 'Silver', 'Gold', 'Platinum', 'Diamond']
-
-const getSegmentBadgeClass = (segment: CustomerSegment): string => {
-  switch (segment) {
-    case 'New':
-      return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800'
-    case 'Active':
-      return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800'
-    case 'VIP':
-      return 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800'
-    case 'AtRisk':
-      return 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800'
-    case 'Dormant':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800'
-    case 'Lost':
-      return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/30 dark:text-gray-400 dark:border-gray-800'
-  }
-}
-
-const getTierBadgeClass = (tier: CustomerTier): string => {
-  switch (tier) {
-    case 'Standard':
-      return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-900/30 dark:text-slate-400 dark:border-slate-800'
-    case 'Silver':
-      return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-700'
-    case 'Gold':
-      return 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800'
-    case 'Platinum':
-      return 'bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800'
-    case 'Diamond':
-      return 'bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-900/30 dark:text-violet-400 dark:border-violet-800'
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200'
-  }
-}
 
 export const CustomersPage = () => {
   const { t } = useTranslation('common')
@@ -245,7 +210,7 @@ export const CustomersPage = () => {
         <CardHeader className="pb-4">
           <div className="space-y-3">
             <div>
-              <CardTitle>{t('customers.allCustomers', 'All Customers')}</CardTitle>
+              <CardTitle className="text-lg">{t('customers.allCustomers', 'All Customers')}</CardTitle>
               <CardDescription>
                 {t('customers.totalCount', { count: totalCount, defaultValue: `${totalCount} customers total` })}
               </CardDescription>
@@ -295,7 +260,7 @@ export const CustomersPage = () => {
         </CardHeader>
         <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
             </div>
           )}

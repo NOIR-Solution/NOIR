@@ -27,7 +27,7 @@ import {
 import { useCreateCustomerGroupMutation, useUpdateCustomerGroupMutation } from '@/portal-app/customer-groups/queries'
 import type { CustomerGroupListItem } from '@/types/customerGroup'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Users } from 'lucide-react'
 
 const createCustomerGroupSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -117,14 +117,21 @@ export const CustomerGroupDialog = ({ open, onOpenChange, group, onSuccess }: Cu
     <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[500px]">
         <CredenzaHeader>
-          <CredenzaTitle>
-            {isEditing ? t('customerGroups.editGroup', 'Edit Customer Group') : t('customerGroups.createGroup', 'Create Customer Group')}
-          </CredenzaTitle>
-          <CredenzaDescription>
-            {isEditing
-              ? t('customerGroups.editGroupDescription', 'Update the customer group details below.')
-              : t('customerGroups.createGroupDescription', 'Fill in the details to create a new customer group.')}
-          </CredenzaDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Users className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <CredenzaTitle>
+                {isEditing ? t('customerGroups.editGroup', 'Edit Customer Group') : t('customerGroups.createGroup', 'Create Customer Group')}
+              </CredenzaTitle>
+              <CredenzaDescription>
+                {isEditing
+                  ? t('customerGroups.editGroupDescription', 'Update the customer group details below.')
+                  : t('customerGroups.createGroupDescription', 'Fill in the details to create a new customer group.')}
+              </CredenzaDescription>
+            </div>
+          </div>
         </CredenzaHeader>
 
         <Form {...form}>

@@ -118,7 +118,7 @@ export const CustomerGroupsPage = () => {
         <CardHeader className="pb-4">
           <div className="space-y-3">
             <div>
-              <CardTitle>{t('customerGroups.allGroups', 'All Groups')}</CardTitle>
+              <CardTitle className="text-lg">{t('customerGroups.allGroups', 'All Groups')}</CardTitle>
               <CardDescription>
                 {t('customerGroups.totalCount', { count: totalCount, defaultValue: `${totalCount} groups total` })}
               </CardDescription>
@@ -139,7 +139,7 @@ export const CustomerGroupsPage = () => {
         </CardHeader>
         <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
             </div>
           )}

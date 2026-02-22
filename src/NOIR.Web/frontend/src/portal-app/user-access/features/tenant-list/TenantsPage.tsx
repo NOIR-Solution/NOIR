@@ -121,7 +121,7 @@ export const TenantsPage = () => {
         <CardHeader className="pb-4">
           <div className="space-y-3">
             <div>
-              <CardTitle>{t('tenants.listTitle')}</CardTitle>
+              <CardTitle className="text-lg">{t('tenants.listTitle')}</CardTitle>
               <CardDescription>
                 {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
@@ -142,7 +142,7 @@ export const TenantsPage = () => {
         </CardHeader>
         <CardContent className={(isSearchStale || isPaginationPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
             </div>
           )}

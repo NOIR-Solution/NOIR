@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { Building2 } from 'lucide-react'
 import {
   Credenza,
   CredenzaBody,
@@ -65,8 +66,15 @@ export const CreateTenantDialog = ({ open, onOpenChange, onSuccess }: CreateTena
     <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[550px]">
         <CredenzaHeader>
-          <CredenzaTitle>{t('tenants.createTitle')}</CredenzaTitle>
-          <CredenzaDescription>{t('tenants.createDescription')}</CredenzaDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Building2 className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <CredenzaTitle>{t('tenants.createTitle')}</CredenzaTitle>
+              <CredenzaDescription>{t('tenants.createDescription')}</CredenzaDescription>
+            </div>
+          </div>
         </CredenzaHeader>
         <CredenzaBody>
           <TenantFormValidated

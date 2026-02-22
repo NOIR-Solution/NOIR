@@ -808,7 +808,7 @@ export const ProductFormPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       {/* Page Header with Glassmorphism */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
@@ -837,7 +837,7 @@ export const ProductFormPage = () => {
         <div className="flex items-center gap-2">
           {isViewMode ? (
             <ViewTransitionLink to={`/portal/ecommerce/products/${id}/edit`}>
-              <Button>
+              <Button className="cursor-pointer">
                 <Pencil className="h-4 w-4 mr-2" />
                 {t('labels.edit', 'Edit')}
               </Button>
@@ -845,12 +845,12 @@ export const ProductFormPage = () => {
           ) : (
             <>
               {isEditing && product?.status === 'Draft' && canPublishProducts && (
-                <Button variant="outline" onClick={handlePublish} disabled={isPublishing}>
+                <Button variant="outline" onClick={handlePublish} disabled={isPublishing} className="cursor-pointer">
                   <Send className="h-4 w-4 mr-2" />
                   {isPublishing ? t('products.publishing') : t('buttons.publish')}
                 </Button>
               )}
-              <Button onClick={form.handleSubmit(onSubmit)} disabled={isSaving}>
+              <Button onClick={form.handleSubmit(onSubmit)} disabled={isSaving} className="cursor-pointer">
                 <Save className="h-4 w-4 mr-2" />
                 {isSaving ? t('buttons.saving') : t('buttons.save')}
               </Button>

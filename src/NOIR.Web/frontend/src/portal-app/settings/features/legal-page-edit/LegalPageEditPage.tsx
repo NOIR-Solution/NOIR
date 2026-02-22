@@ -50,6 +50,7 @@ import {
   CardTitle,
   Input,
   Label,
+  Skeleton,
   Switch,
   Textarea,
 } from '@uikit'
@@ -231,10 +232,42 @@ export const LegalPageEditPage = () => {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 w-48 bg-muted rounded" />
-          <div className="h-64 bg-muted rounded" />
+      <div className="container max-w-6xl py-6 space-y-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-10 w-10 rounded" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        </div>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-4">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-24 mb-3" />
+                <Skeleton className="h-10 w-full mb-4" />
+                <Skeleton className="h-[400px] w-full rounded" />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="space-y-4">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6 space-y-3">
+                <Skeleton className="h-4 w-20 mb-3" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6 space-y-3">
+                <Skeleton className="h-4 w-16 mb-3" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-2/3" />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     )
@@ -245,11 +278,11 @@ export const LegalPageEditPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(settingsBackUrl)}>
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={() => navigate(settingsBackUrl)}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="p-2 bg-primary/10 rounded-lg">
@@ -277,7 +310,7 @@ export const LegalPageEditPage = () => {
           {!page.isInherited && canEdit && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" disabled={reverting}>
+                <Button variant="outline" disabled={reverting} className="cursor-pointer">
                   <RotateCcw className="h-4 w-4 mr-2" />
                   {t('buttons.revert')}
                 </Button>
@@ -290,8 +323,8 @@ export const LegalPageEditPage = () => {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleRevert}>
+                  <AlertDialogCancel className="cursor-pointer">{t('buttons.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleRevert} className="cursor-pointer">
                     {t('buttons.revert')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -299,7 +332,7 @@ export const LegalPageEditPage = () => {
             </AlertDialog>
           )}
           {canEdit && (
-            <Button onClick={handleSave} disabled={saving || !hasChanges}>
+            <Button onClick={handleSave} disabled={saving || !hasChanges} className="cursor-pointer">
               <Save className="h-4 w-4 mr-2" />
               {saving ? t('buttons.saving') : t('buttons.save')}
             </Button>

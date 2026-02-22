@@ -1,4 +1,3 @@
-import { useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Shield, User, Paintbrush } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -7,6 +6,7 @@ import { ProfileForm } from '../../components/personal-settings/ProfileForm'
 import { SessionManagement } from '../../components/personal-settings/SessionManagement'
 import { AppearanceSettings } from '../../components/personal-settings/AppearanceSettings'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useUrlTab } from '@/hooks/useUrlTab'
 
 type SettingsSection = 'profile' | 'security' | 'appearance'
 
@@ -24,8 +24,7 @@ const navItems: NavItem[] = [
 
 export const PersonalSettingsPage = () => {
   const { t } = useTranslation('auth')
-  const [activeSection, setActiveSection] = useState<SettingsSection>('profile')
-  const [isSectionPending, startSectionTransition] = useTransition()
+  const { activeTab: activeSection, handleTabChange, isPending: isSectionPending } = useUrlTab({ defaultTab: 'profile', paramName: 'section' })
 
   // Set page context for audit logging (Activity Timeline)
   usePageContext('Profile')
@@ -48,7 +47,7 @@ export const PersonalSettingsPage = () => {
                 <button
                   type="button"
                   key={item.id}
-                  onClick={() => startSectionTransition(() => setActiveSection(item.id))}
+                  onClick={() => handleTabChange(item.id)}
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all cursor-pointer',
                     isActive

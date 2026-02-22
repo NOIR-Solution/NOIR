@@ -60,7 +60,7 @@ export const WishlistAnalyticsPage = () => {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       <PageHeader
         icon={Heart}
         title={t('wishlists.analytics.title', 'Wishlist Analytics')}
@@ -97,7 +97,7 @@ export const WishlistAnalyticsPage = () => {
       {/* Top Wishlisted Products */}
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader>
-          <CardTitle>{t('wishlists.analytics.topProducts', 'Top Wishlisted Products')}</CardTitle>
+          <CardTitle className="text-lg">{t('wishlists.analytics.topProducts', 'Top Wishlisted Products')}</CardTitle>
           <CardDescription>
             {t('wishlists.analytics.topProductsDescription', 'Most wishlisted products by your customers')}
           </CardDescription>

@@ -384,7 +384,7 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
         </CredenzaBody>
 
         <CredenzaFooter className="pt-4">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <Button type="button" variant="outline" className="cursor-pointer" onClick={() => onOpenChange(false)}>
             {isReadOnly ? t('buttons.close', 'Close') : t('buttons.cancel', 'Cancel')}
           </Button>
           {!isReadOnly && (

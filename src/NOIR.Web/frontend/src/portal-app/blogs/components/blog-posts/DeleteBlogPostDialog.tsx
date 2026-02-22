@@ -15,12 +15,13 @@ import {
 
 import { toast } from 'sonner'
 import type { PostListItem, PostStatus } from '@/types'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 const statusColors: Record<PostStatus, string> = {
-  Draft: 'bg-gray-100 text-gray-800',
-  Published: 'bg-green-100 text-green-800',
-  Scheduled: 'bg-blue-100 text-blue-800',
-  Archived: 'bg-yellow-100 text-yellow-800',
+  Draft: getStatusBadgeClasses('gray'),
+  Published: getStatusBadgeClasses('green'),
+  Scheduled: getStatusBadgeClasses('blue'),
+  Archived: getStatusBadgeClasses('yellow'),
 }
 
 interface DeleteBlogPostDialogProps {

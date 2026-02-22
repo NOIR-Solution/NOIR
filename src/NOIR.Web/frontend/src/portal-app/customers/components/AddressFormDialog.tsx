@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2 } from 'lucide-react'
+import { Loader2, MapPin } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
@@ -159,14 +159,21 @@ export const AddressFormDialog = ({ open, onOpenChange, customerId, address, onS
     <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[550px]">
         <CredenzaHeader>
-          <CredenzaTitle>
-            {isEditing ? t('customers.editAddress', 'Edit Address') : t('customers.addAddress', 'Add Address')}
-          </CredenzaTitle>
-          <CredenzaDescription>
-            {isEditing
-              ? t('customers.editAddressDescription', 'Update the address details below.')
-              : t('customers.addAddressDescription', 'Fill in the address details.')}
-          </CredenzaDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <MapPin className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <CredenzaTitle>
+                {isEditing ? t('customers.editAddress', 'Edit Address') : t('customers.addAddress', 'Add Address')}
+              </CredenzaTitle>
+              <CredenzaDescription>
+                {isEditing
+                  ? t('customers.editAddressDescription', 'Update the address details below.')
+                  : t('customers.addAddressDescription', 'Fill in the address details.')}
+              </CredenzaDescription>
+            </div>
+          </div>
         </CredenzaHeader>
 
         <Form {...form}>

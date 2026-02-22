@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Heart } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
@@ -114,16 +114,23 @@ export const WishlistFormDialog = ({
     <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[425px]">
         <CredenzaHeader>
-          <CredenzaTitle>
-            {isEditing
-              ? t('wishlists.editWishlist', 'Edit Wishlist')
-              : t('wishlists.createWishlist', 'Create Wishlist')}
-          </CredenzaTitle>
-          <CredenzaDescription>
-            {isEditing
-              ? t('wishlists.editWishlistDescription', 'Update the wishlist details below.')
-              : t('wishlists.createWishlistDescription', 'Fill in the details to create a new wishlist.')}
-          </CredenzaDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Heart className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <CredenzaTitle>
+                {isEditing
+                  ? t('wishlists.editWishlist', 'Edit Wishlist')
+                  : t('wishlists.createWishlist', 'Create Wishlist')}
+              </CredenzaTitle>
+              <CredenzaDescription>
+                {isEditing
+                  ? t('wishlists.editWishlistDescription', 'Update the wishlist details below.')
+                  : t('wishlists.createWishlistDescription', 'Fill in the details to create a new wishlist.')}
+              </CredenzaDescription>
+            </div>
+          </div>
         </CredenzaHeader>
 
         <Form {...form}>

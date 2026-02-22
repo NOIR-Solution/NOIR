@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2, Shuffle } from 'lucide-react'
+import { Loader2, Shuffle, Tag } from 'lucide-react'
 import {
   Button,
   Credenza,
@@ -230,14 +230,21 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
     <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent className="sm:max-w-[600px]">
         <CredenzaHeader>
-          <CredenzaTitle>
-            {isEditing ? t('promotions.editPromotion', 'Edit Promotion') : t('promotions.createPromotion', 'Create Promotion')}
-          </CredenzaTitle>
-          <CredenzaDescription>
-            {isEditing
-              ? t('promotions.editPromotionDescription', 'Update the promotion details below.')
-              : t('promotions.createPromotionDescription', 'Fill in the details to create a new promotion.')}
-          </CredenzaDescription>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Tag className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <CredenzaTitle>
+                {isEditing ? t('promotions.editPromotion', 'Edit Promotion') : t('promotions.createPromotion', 'Create Promotion')}
+              </CredenzaTitle>
+              <CredenzaDescription>
+                {isEditing
+                  ? t('promotions.editPromotionDescription', 'Update the promotion details below.')
+                  : t('promotions.createPromotionDescription', 'Fill in the details to create a new promotion.')}
+              </CredenzaDescription>
+            </div>
+          </div>
         </CredenzaHeader>
 
         <Form {...form}>

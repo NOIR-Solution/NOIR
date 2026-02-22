@@ -108,7 +108,7 @@ export const ProductAttributesPage = () => {
         <CardHeader className="pb-4">
           <div className="space-y-3">
             <div>
-              <CardTitle>{t('productAttributes.allAttributes', 'All Attributes')}</CardTitle>
+              <CardTitle className="text-lg">{t('productAttributes.allAttributes', 'All Attributes')}</CardTitle>
               <CardDescription>
                 {t('productAttributes.totalCount', { count: attributes.length, defaultValue: `${attributes.length} attributes total` })}
               </CardDescription>
@@ -130,7 +130,7 @@ export const ProductAttributesPage = () => {
         </CardHeader>
         <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
             </div>
           )}

@@ -335,7 +335,7 @@ export const ReportsPage = () => {
   // ─── Render ─────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       {/* Page Header */}
       <PageHeader
         icon={BarChart3}
@@ -429,7 +429,7 @@ export const ReportsPage = () => {
             {/* Revenue Chart */}
             <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
               <CardHeader>
-                <CardTitle>{t('reports.revenueOverTime', 'Revenue Over Time')}</CardTitle>
+                <CardTitle className="text-lg">{t('reports.revenueOverTime', 'Revenue Over Time')}</CardTitle>
                 <CardDescription>{t('reports.revenueOverTimeDesc', 'Daily revenue breakdown for the selected period')}</CardDescription>
               </CardHeader>
               <CardContent>
@@ -444,7 +444,7 @@ export const ReportsPage = () => {
               {/* Revenue by Category */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader>
-                  <CardTitle>{t('reports.revenueByCategory', 'Revenue by Category')}</CardTitle>
+                  <CardTitle className="text-lg">{t('reports.revenueByCategory', 'Revenue by Category')}</CardTitle>
                   <CardDescription>{t('reports.revenueByCategoryDesc', 'How revenue is distributed across product categories')}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -463,7 +463,7 @@ export const ReportsPage = () => {
               {/* Revenue by Payment Method */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader>
-                  <CardTitle>{t('reports.revenueByPayment', 'Revenue by Payment Method')}</CardTitle>
+                  <CardTitle className="text-lg">{t('reports.revenueByPayment', 'Revenue by Payment Method')}</CardTitle>
                   <CardDescription>{t('reports.revenueByPaymentDesc', 'Breakdown of revenue by payment provider')}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -508,7 +508,7 @@ export const ReportsPage = () => {
           <TabsContent value="bestSellers" className="mt-6">
             <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
               <CardHeader>
-                <CardTitle>{t('reports.topSellingProducts', 'Top Selling Products')}</CardTitle>
+                <CardTitle className="text-lg">{t('reports.topSellingProducts', 'Top Selling Products')}</CardTitle>
                 <CardDescription>
                   {t('reports.topSellingDesc', 'Products ranked by units sold in the selected period')}
                 </CardDescription>
@@ -623,7 +623,7 @@ export const ReportsPage = () => {
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
                   <div>
-                    <CardTitle>{t('reports.lowStockProducts', 'Low Stock Products')}</CardTitle>
+                    <CardTitle className="text-lg">{t('reports.lowStockProducts', 'Low Stock Products')}</CardTitle>
                     <CardDescription>
                       {t('reports.lowStockDesc', 'Products that need restocking attention')}
                     </CardDescription>
@@ -723,7 +723,7 @@ export const ReportsPage = () => {
               {/* Monthly Acquisition */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader>
-                  <CardTitle>{t('reports.customerAcquisition', 'Customer Acquisition')}</CardTitle>
+                  <CardTitle className="text-lg">{t('reports.customerAcquisition', 'Customer Acquisition')}</CardTitle>
                   <CardDescription>{t('reports.customerAcquisitionDesc', 'Monthly new customer and revenue trends')}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -765,7 +765,7 @@ export const ReportsPage = () => {
               {/* Top Customers */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader>
-                  <CardTitle>{t('reports.topCustomers', 'Top Customers')}</CardTitle>
+                  <CardTitle className="text-lg">{t('reports.topCustomers', 'Top Customers')}</CardTitle>
                   <CardDescription>{t('reports.topCustomersDesc', 'Customers ranked by total spending')}</CardDescription>
                 </CardHeader>
                 <CardContent>

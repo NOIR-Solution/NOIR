@@ -58,6 +58,7 @@ import {
   DropdownMenuTrigger,
   Input,
   Label,
+  Skeleton,
   Switch,
 } from '@uikit'
 
@@ -365,15 +366,47 @@ export const EmailTemplateEditPage = () => {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="container max-w-6xl py-6 space-y-6">
         <div className="flex items-center gap-4">
-          <div className="h-10 w-10 bg-muted rounded animate-pulse" />
+          <Skeleton className="h-10 w-10 rounded" />
           <div className="space-y-2">
-            <div className="h-6 w-48 bg-muted rounded animate-pulse" />
-            <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-32" />
           </div>
         </div>
-        <div className="h-[600px] bg-muted rounded animate-pulse" />
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-24 mb-3" />
+                <Skeleton className="h-10 w-full" />
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6">
+                <Skeleton className="h-4 w-32 mb-3" />
+                <Skeleton className="h-[400px] w-full rounded" />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="space-y-6">
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6 space-y-3">
+                <Skeleton className="h-4 w-32 mb-3" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-2/3" />
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
+              <CardContent className="pt-6 space-y-3">
+                <Skeleton className="h-4 w-36 mb-3" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-full" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     )
   }
@@ -383,11 +416,11 @@ export const EmailTemplateEditPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-6xl py-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(settingsBackUrl)}>
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={() => navigate(settingsBackUrl)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
@@ -401,21 +434,21 @@ export const EmailTemplateEditPage = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handlePreview}>
+          <Button variant="outline" className="cursor-pointer" onClick={handlePreview}>
             <Eye className="h-4 w-4 mr-2" />
             {t('emailTemplates.preview')}
           </Button>
-          <Button variant="outline" onClick={() => setTestEmailOpen(true)}>
+          <Button variant="outline" className="cursor-pointer" onClick={() => setTestEmailOpen(true)}>
             <Send className="h-4 w-4 mr-2" />
             {t('emailTemplates.sendTestEmail')}
           </Button>
           {template.isInherited === false && (
-            <Button variant="outline" onClick={handleRevert} disabled={saving}>
+            <Button variant="outline" className="cursor-pointer" onClick={handleRevert} disabled={saving}>
               <GitFork className="h-4 w-4 mr-2" />
               {t('buttons.revert')}
             </Button>
           )}
-          <Button onClick={handleSave} disabled={!hasChanges || saving}>
+          <Button className="cursor-pointer" onClick={handleSave} disabled={!hasChanges || saving}>
             <Save className="h-4 w-4 mr-2" />
             {saving ? t('labels.loading') : t('buttons.save')}
           </Button>

@@ -205,7 +205,7 @@ export const PromotionsPage = () => {
         <CardHeader className="pb-4">
           <div className="space-y-3">
             <div>
-              <CardTitle>{t('promotions.allPromotions', 'All Promotions')}</CardTitle>
+              <CardTitle className="text-lg">{t('promotions.allPromotions', 'All Promotions')}</CardTitle>
               <CardDescription>
                 {t('promotions.totalCount', { count: totalCount, defaultValue: `${totalCount} promotions total` })}
               </CardDescription>
@@ -255,7 +255,7 @@ export const PromotionsPage = () => {
         </CardHeader>
         <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-md">
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
             </div>
           )}
