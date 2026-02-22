@@ -72,7 +72,7 @@ export const NotificationList = ({ className }: NotificationListProps) => {
               key={f}
               variant={filter === f ? 'secondary' : 'ghost'}
               size="sm"
-              className={cn(filter === f && 'bg-background shadow-sm')}
+              className={cn('cursor-pointer', filter === f && 'bg-background shadow-sm')}
               onClick={() => setFilter(f)}
             >
               {t(`notifications.filter.${f}`)}
@@ -90,6 +90,7 @@ export const NotificationList = ({ className }: NotificationListProps) => {
           <Button
             variant="outline"
             size="sm"
+            className="cursor-pointer"
             onClick={handleRefresh}
             disabled={isLoading}
           >
@@ -100,6 +101,7 @@ export const NotificationList = ({ className }: NotificationListProps) => {
             <Button
               variant="outline"
               size="sm"
+              className="cursor-pointer"
               onClick={handleMarkAllAsRead}
             >
               <Check className="h-4 w-4 mr-1" />
@@ -151,6 +153,7 @@ export const NotificationList = ({ className }: NotificationListProps) => {
         <div className="flex justify-center pt-4">
           <Button
             variant="outline"
+            className="cursor-pointer"
             onClick={loadMore}
             disabled={isLoading}
           >

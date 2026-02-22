@@ -74,8 +74,15 @@ export const TenantTable = ({ tenants, onEdit, onEditModules, onDelete, onResetP
         </TableHeader>
         <TableBody>
           {tenants.map((tenant) => (
-            <TableRow key={tenant.id}>
-              <TableCell className="sticky left-0 z-10 bg-background">
+            <TableRow
+              key={tenant.id}
+              className="cursor-pointer transition-colors"
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
+                onEdit(tenant)
+              }}
+            >
+              <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button

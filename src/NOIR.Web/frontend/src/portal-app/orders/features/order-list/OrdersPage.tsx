@@ -221,7 +221,7 @@ export const OrdersPage = () => {
                               variant="ghost"
                               size="sm"
                               className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actions')}
+                              aria-label={t('labels.actionsFor', { name: order.orderNumber, defaultValue: `Actions for ${order.orderNumber}` })}
                             >
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>

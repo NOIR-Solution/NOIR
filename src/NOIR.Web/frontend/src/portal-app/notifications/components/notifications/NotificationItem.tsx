@@ -143,6 +143,7 @@ export const NotificationItem = ({
                     : 'outline'
                 }
                 size="sm"
+                className="cursor-pointer"
                 onClick={(e) => handleAction(e, action.url, action.method)}
               >
                 {action.label}
@@ -160,11 +161,11 @@ export const NotificationItem = ({
         <Button
           variant="ghost"
           size="icon"
-          className="opacity-0 group-hover:opacity-100 shrink-0 size-8"
+          className="opacity-0 group-hover:opacity-100 shrink-0 size-8 cursor-pointer"
           onClick={handleDelete}
+          aria-label={t('notifications.deleteNotification', { defaultValue: `Delete notification: ${notification.title}` })}
         >
           <Trash2 className="h-4 w-4" />
-          <span className="sr-only">{t('notifications.deleteNotification')}</span>
         </Button>
       )}
     </div>
