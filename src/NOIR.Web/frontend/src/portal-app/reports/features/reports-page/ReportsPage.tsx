@@ -76,7 +76,7 @@ const MetricCard = ({
   iconColor?: string
   iconBg?: string
 }) => (
-  <Card className="shadow-sm hover:shadow-lg transition-all duration-300 border-border/50">
+  <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
     <CardContent className="pt-6">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
@@ -335,7 +335,7 @@ export const ReportsPage = () => {
   // ─── Render ─────────────────────────────────────────────────────────
 
   return (
-    <div className="container max-w-7xl py-6 space-y-6">
+    <div className="space-y-6">
       {/* Page Header */}
       <PageHeader
         icon={BarChart3}

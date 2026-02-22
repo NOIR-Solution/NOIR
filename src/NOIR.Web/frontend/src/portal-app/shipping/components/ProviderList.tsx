@@ -287,27 +287,29 @@ export const ProviderList = () => {
       <AlertDialog open={!!toggleProvider} onOpenChange={(open) => !open && setToggleProvider(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
                 <Truck className="h-5 w-5 text-primary" />
               </div>
+              <div>
+                <AlertDialogTitle>
+                  {toggleProvider?.isActive
+                    ? t('shipping.confirmDeactivate', 'Deactivate Provider?')
+                    : t('shipping.confirmActivate', 'Activate Provider?')}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {toggleProvider?.isActive
+                    ? t('shipping.deactivateDescription', {
+                        name: toggleProvider?.displayName,
+                        defaultValue: `This will disable "${toggleProvider?.displayName}" from being used in checkout.`,
+                      })
+                    : t('shipping.activateDescription', {
+                        name: toggleProvider?.displayName,
+                        defaultValue: `This will enable "${toggleProvider?.displayName}" for use in checkout.`,
+                      })}
+                </AlertDialogDescription>
+              </div>
             </div>
-            <AlertDialogTitle>
-              {toggleProvider?.isActive
-                ? t('shipping.confirmDeactivate', 'Deactivate Provider?')
-                : t('shipping.confirmActivate', 'Activate Provider?')}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {toggleProvider?.isActive
-                ? t('shipping.deactivateDescription', {
-                    name: toggleProvider?.displayName,
-                    defaultValue: `This will disable "${toggleProvider?.displayName}" from being used in checkout.`,
-                  })
-                : t('shipping.activateDescription', {
-                    name: toggleProvider?.displayName,
-                    defaultValue: `This will enable "${toggleProvider?.displayName}" for use in checkout.`,
-                  })}
-            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">

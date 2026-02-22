@@ -1792,11 +1792,13 @@ export const ProductFormPage = () => {
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <AlertDialogTitle>{t('products.deleteVariant')}</AlertDialogTitle>
+              <div>
+                <AlertDialogTitle>{t('products.deleteVariant')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('products.deleteVariantConfirmation', { name: variantToDelete?.name })}
+                </AlertDialogDescription>
+              </div>
             </div>
-            <AlertDialogDescription className="pt-2">
-              {t('products.deleteVariantConfirmation', { name: variantToDelete?.name })}
-            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeletingVariant} className="cursor-pointer">
@@ -1822,11 +1824,13 @@ export const ProductFormPage = () => {
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <AlertDialogTitle>{t('products.deleteImageTitle')}</AlertDialogTitle>
+              <div>
+                <AlertDialogTitle>{t('products.deleteImageTitle')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('products.deleteImageConfirmation')}
+                </AlertDialogDescription>
+              </div>
             </div>
-            <AlertDialogDescription className="pt-2">
-              {t('products.deleteImageConfirmation')}
-            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeletingImage} className="cursor-pointer">
@@ -1852,11 +1856,13 @@ export const ProductFormPage = () => {
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <AlertDialogTitle>{t('products.removeVariant')}</AlertDialogTitle>
+              <div>
+                <AlertDialogTitle>{t('products.removeVariant')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('products.removeVariantConfirmation')}
+                </AlertDialogDescription>
+              </div>
             </div>
-            <AlertDialogDescription className="pt-2">
-              {t('products.removeVariantConfirmation')}
-            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">{t('buttons.cancel')}</AlertDialogCancel>
@@ -1878,11 +1884,13 @@ export const ProductFormPage = () => {
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <AlertDialogTitle>{t('products.deleteImageTitle')}</AlertDialogTitle>
+              <div>
+                <AlertDialogTitle>{t('products.deleteImageTitle')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('products.deleteImageConfirmation')}
+                </AlertDialogDescription>
+              </div>
             </div>
-            <AlertDialogDescription className="pt-2">
-              {t('products.deleteImageConfirmation')}
-            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">{t('buttons.cancel')}</AlertDialogCancel>

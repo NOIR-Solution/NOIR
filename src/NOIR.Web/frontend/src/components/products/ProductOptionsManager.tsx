@@ -334,16 +334,23 @@ export const ProductOptionsManager = ({
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {deleteTarget?.type === 'option'
-                ? t('products.options.confirmDeleteOption')
-                : t('products.options.confirmDeleteValue')}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteTarget?.type === 'option'
-                ? t('products.options.deleteOptionWarning', { name: deleteTarget?.name })
-                : t('products.options.deleteValueWarning', { name: deleteTarget?.name })}
-            </AlertDialogDescription>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <Trash2 className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <AlertDialogTitle>
+                  {deleteTarget?.type === 'option'
+                    ? t('products.options.confirmDeleteOption')
+                    : t('products.options.confirmDeleteValue')}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {deleteTarget?.type === 'option'
+                    ? t('products.options.deleteOptionWarning', { name: deleteTarget?.name })
+                    : t('products.options.deleteValueWarning', { name: deleteTarget?.name })}
+                </AlertDialogDescription>
+              </div>
+            </div>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">

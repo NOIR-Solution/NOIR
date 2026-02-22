@@ -60,7 +60,7 @@ export const WishlistAnalyticsPage = () => {
   ]
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="space-y-6">
       <PageHeader
         icon={Heart}
         title={t('wishlists.analytics.title', 'Wishlist Analytics')}
@@ -103,6 +103,7 @@ export const WishlistAnalyticsPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="rounded-xl border border-border/50 overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -168,6 +169,7 @@ export const WishlistAnalyticsPage = () => {
               )}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -203,12 +203,19 @@ export const SessionManagement = () => {
       <AlertDialog open={!!sessionToRevoke} onOpenChange={() => setSessionToRevoke(null)}>
         <AlertDialogContent className="border-destructive/30">
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('sessions.revokeTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('sessions.revokeDescription', {
-                device: sessionToRevoke ? getDeviceInfo(sessionToRevoke) : '',
-              })}
-            </AlertDialogDescription>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <Trash2 className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <AlertDialogTitle>{t('sessions.revokeTitle')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('sessions.revokeDescription', {
+                    device: sessionToRevoke ? getDeviceInfo(sessionToRevoke) : '',
+                  })}
+                </AlertDialogDescription>
+              </div>
+            </div>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">{t('common.cancel')}</AlertDialogCancel>

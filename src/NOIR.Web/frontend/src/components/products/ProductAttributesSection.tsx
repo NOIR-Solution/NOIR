@@ -309,15 +309,17 @@ export const ProductAttributesSection = ({
       <AlertDialog open={showCategoryChangeDialog} onOpenChange={setShowCategoryChangeDialog}>
         <AlertDialogContent className="border-destructive/30">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
                 <AlertCircle className="h-5 w-5 text-destructive" />
               </div>
-              {t('products.attributes.confirmCategoryChangeTitle')}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('products.attributes.confirmCategoryChangeDescription')}
-            </AlertDialogDescription>
+              <div>
+                <AlertDialogTitle>{t('products.attributes.confirmCategoryChangeTitle')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('products.attributes.confirmCategoryChangeDescription')}
+                </AlertDialogDescription>
+              </div>
+            </div>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="cursor-pointer">

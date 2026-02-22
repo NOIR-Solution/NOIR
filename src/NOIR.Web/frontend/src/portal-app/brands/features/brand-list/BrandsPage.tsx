@@ -257,7 +257,7 @@ export const BrandsPage = () => {
                         </code>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={brand.isActive ? 'default' : 'secondary'}>
+                        <Badge variant="outline" className={brand.isActive ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300' : 'border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300'}>
                           {brand.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
                         </Badge>
                       </TableCell>

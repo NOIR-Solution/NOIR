@@ -607,7 +607,7 @@ export const ProductsPage = () => {
             <div className="rounded-xl border border-border/50 overflow-hidden min-h-[400px]">
               <Table>
               <TableHeader>
-                <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableRow>
                   <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead className="w-[40px]">
                     <Checkbox

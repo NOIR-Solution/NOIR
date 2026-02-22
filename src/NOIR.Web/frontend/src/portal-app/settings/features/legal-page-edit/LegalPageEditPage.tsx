@@ -317,10 +317,17 @@ export const LegalPageEditPage = () => {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>{t('legalPages.revertTitle')}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {t('legalPages.revertDescription')}
-                  </AlertDialogDescription>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                      <RotateCcw className="h-5 w-5 text-destructive" />
+                    </div>
+                    <div>
+                      <AlertDialogTitle>{t('legalPages.revertTitle')}</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t('legalPages.revertDescription')}
+                      </AlertDialogDescription>
+                    </div>
+                  </div>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel className="cursor-pointer">{t('buttons.cancel')}</AlertDialogCancel>
