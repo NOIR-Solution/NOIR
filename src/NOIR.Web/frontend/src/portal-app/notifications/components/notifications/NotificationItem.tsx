@@ -8,11 +8,21 @@
  * - Action buttons
  * - Read/unread state
  */
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Info, CheckCircle, AlertTriangle, XCircle, Trash2, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
-import { Button } from '@uikit'
+import {
+  Button,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
+} from '@uikit'
 import type { Notification, NotificationType } from '@/types'
 import { useNavigate } from 'react-router-dom'
 
@@ -58,6 +68,7 @@ export const NotificationItem = ({
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { formatRelativeTime } = useRegionalSettings()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const config = typeConfig[notification.type] || typeConfig.info
   const Icon = config.icon
 
@@ -77,7 +88,12 @@ export const NotificationItem = ({
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
+    setShowDeleteConfirm(true)
+  }
+
+  const handleDeleteConfirm = () => {
     onDelete?.(notification.id)
+    setShowDeleteConfirm(false)
   }
 
   const handleAction = (e: React.MouseEvent, url: string, method?: string) => {
@@ -168,6 +184,42 @@ export const NotificationItem = ({
           <Trash2 className="h-4 w-4" />
         </Button>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Credenza open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <Trash2 className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <CredenzaTitle>{t('notifications.deleteTitle', 'Delete Notification')}</CredenzaTitle>
+                <CredenzaDescription>
+                  {t('notifications.deleteConfirmation', 'Are you sure you want to delete this notification? This action cannot be undone.')}
+                </CredenzaDescription>
+              </div>
+            </div>
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(false)}
+              className="cursor-pointer"
+            >
+              {t('labels.cancel', 'Cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+            >
+              {t('labels.delete', 'Delete')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

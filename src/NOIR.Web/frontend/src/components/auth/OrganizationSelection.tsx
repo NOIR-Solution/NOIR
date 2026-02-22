@@ -168,7 +168,7 @@ export const OrganizationSelection = ({
           <Button
             onClick={handleContinue}
             disabled={!selectedOrg || isLoading}
-            className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+            className="w-full h-12 text-base font-semibold rounded-xl cursor-pointer transition-all duration-200"
           >
             {isLoading ? (
               <span className="flex items-center gap-2">

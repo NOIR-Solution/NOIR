@@ -39,6 +39,7 @@ import {
   Switch,
 } from '@uikit'
 
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { ApiError } from '@/services/apiClient'
 import {
   getTenantSmtpSettings,
@@ -254,7 +255,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
                   {t('legalPages.revertToDefault')}
                 </Button>
               )}
-              <Badge variant={isInherited ? 'outline' : 'default'}>
+              <Badge variant="outline" className={getStatusBadgeClasses(isInherited ? 'gray' : 'green')}>
                 {isInherited ? (
                   <>
                     <GitFork className="h-3 w-3 mr-1" />

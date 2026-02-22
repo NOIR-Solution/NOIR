@@ -28,6 +28,7 @@ import {
 } from '@uikit'
 
 import { toast } from 'sonner'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { getActiveSessions, revokeSession } from '@/services/auth'
 import type { ActiveSession } from '@/types'
 
@@ -166,7 +167,7 @@ export const SessionManagement = () => {
                       <div className="flex items-center gap-2">
                         <p className="font-medium">{getDeviceInfo(session)}</p>
                         {session.isCurrent && (
-                          <Badge variant="default" className="text-xs">
+                          <Badge variant="outline" className={`${getStatusBadgeClasses('green')} text-xs`}>
                             <CheckCircle2 className="h-3 w-3 mr-1" />
                             {t('sessions.current')}
                           </Badge>

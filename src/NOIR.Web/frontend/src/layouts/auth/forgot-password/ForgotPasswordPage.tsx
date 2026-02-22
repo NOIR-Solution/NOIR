@@ -142,7 +142,7 @@ export const ForgotPasswordPage = () => {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01]"
+                  className="w-full h-12 text-base font-semibold rounded-xl cursor-pointer transition-all duration-200"
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-2">

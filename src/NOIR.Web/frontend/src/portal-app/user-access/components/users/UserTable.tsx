@@ -202,7 +202,7 @@ export const UserTable = ({
               </TableCell>
               <TableCell className="text-center">
                 {user.isLocked ? (
-                  <Badge variant="destructive" className="gap-1">
+                  <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('red')}`}>
                     <Lock className="h-3 w-3" />
                     {t('users.locked', 'Locked')}
                   </Badge>

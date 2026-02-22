@@ -61,7 +61,7 @@ export const ProviderCard = ({
   const getStatusBadge = () => {
     if (!isConfigured) {
       return (
-        <Badge variant="secondary" className="text-muted-foreground">
+        <Badge variant="outline" className={getStatusBadgeClasses('gray')}>
           {t('shippingProviders.status.notConfigured', 'Not Configured')}
         </Badge>
       )
@@ -74,7 +74,7 @@ export const ProviderCard = ({
       )
     }
     return (
-      <Badge variant="outline">
+      <Badge variant="outline" className={getStatusBadgeClasses('blue')}>
         {t('shippingProviders.status.configured', 'Configured')}
       </Badge>
     )

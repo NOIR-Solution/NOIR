@@ -162,7 +162,7 @@ const OrganizationSelectionDemo = ({
           {/* Continue Button */}
           <Button
             disabled={!selectedOrg || isLoading}
-            className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-blue-700 to-cyan-700 hover:from-blue-800 hover:to-cyan-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer"
+            className="w-full h-12 text-base font-semibold rounded-xl cursor-pointer transition-all duration-200"
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
@@ -199,7 +199,7 @@ const meta = {
         component:
           'Organization selection screen shown during multi-tenant login when a user ' +
           'belongs to more than one organization. Displays organization cards with ' +
-          'selection state and a gradient continue button. This is a visual replica ' +
+          'selection state and a continue button. This is a visual replica ' +
           '— the real component uses framer-motion, react-router-dom, and auth contexts.',
       },
     },

@@ -30,6 +30,13 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -160,6 +167,7 @@ export const ProductsPage = () => {
 
 
   const [productToDelete, setProductToDelete] = useState<ProductListItem | null>(null)
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
   const viewModeOptions: ViewModeOption<'table' | 'grid'>[] = useMemo(() => [
     { value: 'table', label: t('labels.list', 'List'), icon: ListIcon, ariaLabel: t('labels.tableView', 'Table view') },
@@ -264,7 +272,10 @@ export const ProductsPage = () => {
 
   const onBulkDelete = () => {
     if (selectedIds.size === 0) return
+    setShowBulkDeleteConfirm(true)
+  }
 
+  const handleBulkDeleteConfirm = () => {
     const selectedProductIds = Array.from(selectedIds)
 
     startBulkTransition(async () => {
@@ -281,6 +292,7 @@ export const ProductsPage = () => {
         toast.error(message)
       }
       setSelectedIds(new Set())
+      setShowBulkDeleteConfirm(false)
     })
   }
 
@@ -849,6 +861,50 @@ export const ProductsPage = () => {
         onOpenChange={(open) => !open && setProductToDelete(null)}
         onConfirm={handleDelete}
       />
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <Credenza open={showBulkDeleteConfirm} onOpenChange={setShowBulkDeleteConfirm}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <Trash2 className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <CredenzaTitle>{t('products.bulkDeleteTitle', 'Delete Products')}</CredenzaTitle>
+                <CredenzaDescription>
+                  {t('products.bulkDeleteConfirmation', {
+                    count: selectedIds.size,
+                    defaultValue: `Are you sure you want to delete ${selectedIds.size} selected products? This action cannot be undone.`,
+                  })}
+                </CredenzaDescription>
+              </div>
+            </div>
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowBulkDeleteConfirm(false)}
+              disabled={isBulkPending}
+              className="cursor-pointer"
+            >
+              {t('labels.cancel', 'Cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleBulkDeleteConfirm}
+              disabled={isBulkPending}
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+            >
+              {isBulkPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isBulkPending
+                ? t('labels.deleting', 'Deleting...')
+                : t('products.deleteCount', { count: selectedIds.size, defaultValue: `Delete ${selectedIds.size} Products` })}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

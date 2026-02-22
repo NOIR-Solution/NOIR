@@ -102,6 +102,9 @@ export const InventoryReceiptsPage = () => {
   const [receiptToCancel, setReceiptToCancel] = useState<InventoryReceiptSummaryDto | null>(null)
   const [cancelReason, setCancelReason] = useState('')
 
+  // Confirm dialog state
+  const [receiptToConfirm, setReceiptToConfirm] = useState<InventoryReceiptSummaryDto | null>(null)
+
   // Detail dialog state
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | undefined>(undefined)
 
@@ -125,10 +128,16 @@ export const InventoryReceiptsPage = () => {
     })
   }
 
-  const handleConfirm = async (receipt: InventoryReceiptSummaryDto) => {
+  const handleConfirm = (receipt: InventoryReceiptSummaryDto) => {
+    setReceiptToConfirm(receipt)
+  }
+
+  const handleConfirmReceipt = async () => {
+    if (!receiptToConfirm) return
     try {
-      await confirmMutation.mutateAsync(receipt.id)
-      toast.success(t('inventory.confirmSuccess', { receiptNumber: receipt.receiptNumber, defaultValue: `Receipt ${receipt.receiptNumber} confirmed` }))
+      await confirmMutation.mutateAsync(receiptToConfirm.id)
+      toast.success(t('inventory.confirmSuccess', { receiptNumber: receiptToConfirm.receiptNumber, defaultValue: `Receipt ${receiptToConfirm.receiptNumber} confirmed` }))
+      setReceiptToConfirm(null)
     } catch (err) {
       const message = err instanceof Error ? err.message : t('inventory.actionError', 'Failed to update receipt')
       toast.error(message)
@@ -362,6 +371,39 @@ export const InventoryReceiptsPage = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Confirm Receipt Dialog */}
+      <Credenza open={!!receiptToConfirm} onOpenChange={(open: boolean) => { if (!open) setReceiptToConfirm(null) }}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-green-500/10 border border-green-500/20">
+                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <CredenzaTitle>{t('inventory.confirmReceiptTitle', 'Confirm Receipt')}</CredenzaTitle>
+                <CredenzaDescription>
+                  {t('inventory.confirmReceiptDescription', 'Are you sure you want to confirm receipt "{{receiptNumber}}"? This action is irreversible and inventory quantities will be updated.', { receiptNumber: receiptToConfirm?.receiptNumber })}
+                </CredenzaDescription>
+              </div>
+            </div>
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setReceiptToConfirm(null)} disabled={confirmMutation.isPending} className="cursor-pointer">
+              {t('buttons.cancel', 'Cancel')}
+            </Button>
+            <Button
+              onClick={handleConfirmReceipt}
+              disabled={confirmMutation.isPending}
+              className="cursor-pointer"
+            >
+              {confirmMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {confirmMutation.isPending ? t('labels.confirming', 'Confirming...') : t('inventory.confirm', 'Confirm')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Cancel Receipt Dialog */}
       <Credenza open={!!receiptToCancel} onOpenChange={(open: boolean) => { if (!open) { setReceiptToCancel(null); setCancelReason('') } }}>

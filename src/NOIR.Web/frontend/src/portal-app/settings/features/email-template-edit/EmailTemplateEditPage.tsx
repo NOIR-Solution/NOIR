@@ -420,7 +420,7 @@ export const EmailTemplateEditPage = () => {
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={() => navigate(settingsBackUrl)}>
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={() => navigate(settingsBackUrl)} aria-label={t('buttons.back')}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>

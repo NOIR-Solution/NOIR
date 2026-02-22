@@ -109,6 +109,7 @@ import { StockHistoryTimeline, type StockMovement, type StockMovementType } from
 import type { InventoryMovement, InventoryMovementType } from '@/types/inventory'
 import { uploadMedia } from '@/services/media'
 import { toast } from 'sonner'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 import type { ProductVariant, ProductImage, CreateProductVariantRequest, CreateProductImageRequest } from '@/types/product'
 
@@ -1421,7 +1422,7 @@ export const ProductFormPage = () => {
                                 {formatCurrency(variant.price)}
                               </div>
                             </div>
-                            <Badge variant="outline" className="text-xs">{t('labels.pending', 'Pending')}</Badge>
+                            <Badge variant="outline" className={`${getStatusBadgeClasses('yellow')} text-xs`}>{t('labels.pending', 'Pending')}</Badge>
                             <div className="flex items-center gap-1">
                               <Button
                                 variant="ghost"
@@ -1463,8 +1464,8 @@ export const ProductFormPage = () => {
               </CardHeader>
               <CardContent>
                 <Badge
-                  variant={product.status === 'Active' ? 'default' : 'secondary'}
-                  className="text-sm"
+                  variant="outline"
+                  className={`${getStatusBadgeClasses(product.status === 'Active' ? 'green' : product.status === 'Draft' ? 'gray' : 'yellow')} text-sm`}
                 >
                   {t(`products.status.${product.status.toLowerCase()}`, product.status)}
                 </Badge>

@@ -44,7 +44,7 @@ export const LanguageSwitcher = ({
                 'flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium',
                 'transition-all duration-200',
                 currentLanguage === code
-                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
                   : 'bg-accent hover:bg-accent/80 text-foreground'
               )}
               aria-pressed={currentLanguage === code}

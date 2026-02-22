@@ -45,32 +45,6 @@ import {
 import type { ShippingProviderDto } from '@/types/shipping'
 import { ProviderFormDialog } from './ProviderFormDialog'
 
-const getHealthBadgeVariant = (status: string) => {
-  switch (status) {
-    case 'Healthy':
-      return 'default'
-    case 'Degraded':
-      return 'secondary'
-    case 'Unhealthy':
-      return 'destructive'
-    default:
-      return 'outline'
-  }
-}
-
-const getHealthBadgeClass = (status: string) => {
-  switch (status) {
-    case 'Healthy':
-      return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800'
-    case 'Degraded':
-      return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800'
-    case 'Unhealthy':
-      return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'
-    default:
-      return ''
-  }
-}
-
 export const ProviderList = () => {
   const { t } = useTranslation('common')
   const { data: providers, isLoading } = useShippingProvidersQuery()
@@ -245,7 +219,7 @@ export const ProviderList = () => {
                         <span className="font-mono text-sm">{provider.providerCode}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={provider.environment === 'Production' ? 'default' : 'secondary'}>
+                        <Badge variant="outline" className={getStatusBadgeClasses(provider.environment === 'Production' ? 'green' : 'yellow')}>
                           {t(`shipping.env.${provider.environment.toLowerCase()}`, provider.environment)}
                         </Badge>
                       </TableCell>
@@ -255,7 +229,11 @@ export const ProviderList = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getHealthBadgeVariant(provider.healthStatus)} className={getHealthBadgeClass(provider.healthStatus)}>
+                        <Badge variant="outline" className={getStatusBadgeClasses(
+                          provider.healthStatus === 'Healthy' ? 'green' :
+                          provider.healthStatus === 'Degraded' ? 'yellow' :
+                          provider.healthStatus === 'Unhealthy' ? 'red' : 'gray'
+                        )}>
                           {t(`shipping.healthStatus.${provider.healthStatus.toLowerCase()}`, provider.healthStatus)}
                         </Badge>
                       </TableCell>

@@ -11,6 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@uikit'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 import { useTenantFeatureStates, useSetModuleAvailability } from '@/hooks/useFeatures'
 import {
@@ -231,7 +232,7 @@ export const TenantModulesTab = ({ tenantId, canEdit, compact }: TenantModulesTa
                         <p className="text-xs text-muted-foreground leading-snug">
                           {t(descKey ?? module.descriptionKey)}
                         </p>
-                        <Badge variant={isAvailable && isEnabled ? 'default' : 'secondary'} className={`text-[10px] px-1.5 py-0${!isAvailable ? ' opacity-50' : ''}`}>
+                        <Badge variant="outline" className={`${getStatusBadgeClasses(isAvailable && isEnabled ? 'green' : 'gray')} text-[10px] px-1.5 py-0${!isAvailable ? ' opacity-50' : ''}`}>
                           {isEnabled ? t('featureManagement.tenantEnabled') : t('featureManagement.tenantDisabled')}
                         </Badge>
                       </div>

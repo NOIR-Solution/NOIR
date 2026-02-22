@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Trash2, Loader2, Check, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import {
   Badge,
   Button,
@@ -246,12 +247,12 @@ export const EditableVariantRow = ({
             min={0}
           />
           {showOutOfStock && (
-            <Badge variant="secondary" className="text-xs whitespace-nowrap">
+            <Badge variant="outline" className={`${getStatusBadgeClasses('red')} text-xs whitespace-nowrap`}>
               {t('products.variants.outOfStock')}
             </Badge>
           )}
           {showLowStock && !showOutOfStock && (
-            <Badge variant="destructive" className="text-xs whitespace-nowrap">
+            <Badge variant="outline" className={`${getStatusBadgeClasses('yellow')} text-xs whitespace-nowrap`}>
               {t('products.variants.lowStock')}
             </Badge>
           )}

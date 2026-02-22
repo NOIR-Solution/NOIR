@@ -66,7 +66,7 @@ export const GatewayCard = ({
   const getStatusBadge = () => {
     if (!isConfigured) {
       return (
-        <Badge variant="secondary" className="text-muted-foreground">
+        <Badge variant="outline" className={getStatusBadgeClasses('gray')}>
           {t('paymentGateways.status.notConfigured', 'Not Configured')}
         </Badge>
       )
@@ -79,7 +79,7 @@ export const GatewayCard = ({
       )
     }
     return (
-      <Badge variant="outline">
+      <Badge variant="outline" className={getStatusBadgeClasses('blue')}>
         {t('paymentGateways.status.configured', 'Configured')}
       </Badge>
     )

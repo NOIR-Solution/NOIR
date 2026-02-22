@@ -7,7 +7,16 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Camera, Trash2, Loader2 } from 'lucide-react'
-import { Button } from '@uikit'
+import {
+  Button,
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaBody,
+} from '@uikit'
 import { useImageUpload } from '@/hooks/useImageUpload'
 import { getGravatarUrl, getInitials, getAvatarColor } from '@/lib/gravatar'
 
@@ -83,8 +92,19 @@ export const ProfileAvatar = ({
     }
   }
 
-  const handleRemoveClick = async () => {
-    await onRemove()
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false)
+
+  const handleRemoveClick = () => {
+    setShowRemoveConfirm(true)
+  }
+
+  const handleRemoveConfirm = async () => {
+    try {
+      await onRemove()
+      setShowRemoveConfirm(false)
+    } catch {
+      // onRemove handles its own error display; dialog stays open for retry
+    }
   }
 
   const isLoading = isUploading || isRemoving
@@ -231,6 +251,45 @@ export const ProfileAvatar = ({
       <p className="text-xs text-muted-foreground">
         {t('profile.avatar.maxSize')}
       </p>
+
+      {/* Remove Avatar Confirmation Dialog */}
+      <Credenza open={showRemoveConfirm} onOpenChange={setShowRemoveConfirm}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <Trash2 className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <CredenzaTitle>{t('profile.avatar.removeTitle', 'Remove Avatar')}</CredenzaTitle>
+                <CredenzaDescription>
+                  {t('profile.avatar.removeConfirmation', 'Are you sure you want to remove your profile photo? Your avatar will revert to the default.')}
+                </CredenzaDescription>
+              </div>
+            </div>
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowRemoveConfirm(false)}
+              disabled={isRemoving}
+              className="cursor-pointer"
+            >
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRemoveConfirm}
+              disabled={isRemoving}
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+            >
+              {isRemoving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isRemoving ? t('profile.avatar.removing', 'Removing...') : t('profile.avatar.remove', 'Remove')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }

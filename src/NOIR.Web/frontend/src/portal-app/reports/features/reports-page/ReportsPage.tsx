@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { formatCurrency } from '@/lib/utils/currency'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import {
   Badge,
   Card,
@@ -325,12 +326,12 @@ export const ReportsPage = () => {
 
   const getStockStatusBadge = (currentStock: number, reorderLevel: number) => {
     if (currentStock === 0) {
-      return <Badge variant="destructive">{t('products.outOfStock', 'Out of Stock')}</Badge>
+      return <Badge variant="outline" className={getStatusBadgeClasses('red')}>{t('products.outOfStock', 'Out of Stock')}</Badge>
     }
     if (currentStock <= reorderLevel) {
-      return <Badge variant="outline" className="border-amber-500 text-amber-600">{t('products.lowStock', 'Low Stock')}</Badge>
+      return <Badge variant="outline" className={getStatusBadgeClasses('yellow')}>{t('products.lowStock', 'Low Stock')}</Badge>
     }
-    return <Badge variant="outline" className="border-green-500 text-green-600">{t('products.inStock', 'In Stock')}</Badge>
+    return <Badge variant="outline" className={getStatusBadgeClasses('green')}>{t('products.inStock', 'In Stock')}</Badge>
   }
 
   // ─── Render ─────────────────────────────────────────────────────────

@@ -282,7 +282,7 @@ export const LegalPageEditPage = () => {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={() => navigate(settingsBackUrl)}>
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={() => navigate(settingsBackUrl)} aria-label={t('buttons.back')}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="p-2 bg-primary/10 rounded-lg">

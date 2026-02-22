@@ -65,6 +65,8 @@ import { LoyaltyPointsDialog } from '../../components/LoyaltyPointsDialog'
 import { DeleteCustomerDialog } from '../../components/DeleteCustomerDialog'
 import { getSegmentBadgeClass, getTierBadgeClass } from '@/portal-app/customers/utils/customerStatus'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
+import { getOrderStatusColor } from '@/portal-app/orders/utils/orderStatus'
+import type { OrderStatus } from '@/types/order'
 
 const CUSTOMER_SEGMENTS: CustomerSegment[] = ['New', 'Active', 'AtRisk', 'Dormant', 'Lost', 'VIP']
 
@@ -347,7 +349,7 @@ export const CustomerDetailPage = () => {
                                 <span className="font-mono font-medium text-sm">{order.orderNumber}</span>
                               </TableCell>
                               <TableCell>
-                                <Badge variant="outline">{t(`orders.status.${order.status.toLowerCase()}`, order.status)}</Badge>
+                                <Badge variant="outline" className={getOrderStatusColor(order.status as OrderStatus)}>{t(`orders.status.${order.status.toLowerCase()}`, order.status)}</Badge>
                               </TableCell>
                               <TableCell className="text-center">
                                 <Badge variant="secondary">{order.itemCount}</Badge>

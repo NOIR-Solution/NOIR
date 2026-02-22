@@ -5,6 +5,7 @@
  * log level selector, display level filter, search, errors-only toggle,
  * and clear buffer button.
  */
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Play,
@@ -22,6 +23,13 @@ import {
   Button,
   Card,
   CardContent,
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -87,9 +95,16 @@ export const LiveLogsToolbar = ({
   onClearBuffer,
 }: LiveLogsToolbarProps) => {
   const { t } = useTranslation('common')
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
   const hasActiveFilters = searchTerm || exceptionsOnly || selectedLevels.size > 0
 
+  const handleClearConfirm = () => {
+    onClearBuffer()
+    setShowClearConfirm(false)
+  }
+
   return (
+    <>
     <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
       <CardContent className="p-4 space-y-3">
         {/* Row 1: Main controls */}
@@ -285,8 +300,8 @@ export const LiveLogsToolbar = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onClearBuffer}
-            className="h-9 gap-1.5 text-muted-foreground hover:text-destructive"
+            onClick={() => setShowClearConfirm(true)}
+            className="h-9 gap-1.5 text-muted-foreground hover:text-destructive cursor-pointer"
           >
             <Trash2 className="h-4 w-4" />
             {t('developerLogs.clearBuffer')}
@@ -294,5 +309,42 @@ export const LiveLogsToolbar = ({
         </div>
       </CardContent>
     </Card>
+
+    {/* Clear Buffer Confirmation Dialog */}
+    <Credenza open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+      <CredenzaContent className="border-destructive/30">
+        <CredenzaHeader>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+              <Trash2 className="h-5 w-5 text-destructive" />
+            </div>
+            <div>
+              <CredenzaTitle>{t('developerLogs.clearBufferTitle', 'Clear Log Buffer')}</CredenzaTitle>
+              <CredenzaDescription>
+                {t('developerLogs.clearBufferConfirmation', 'Are you sure you want to clear all buffered log entries? This action cannot be undone.')}
+              </CredenzaDescription>
+            </div>
+          </div>
+        </CredenzaHeader>
+        <CredenzaBody />
+        <CredenzaFooter>
+          <Button
+            variant="outline"
+            onClick={() => setShowClearConfirm(false)}
+            className="cursor-pointer"
+          >
+            {t('labels.cancel', 'Cancel')}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleClearConfirm}
+            className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+          >
+            {t('developerLogs.clearBuffer', 'Clear Buffer')}
+          </Button>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
+    </>
   )
 }

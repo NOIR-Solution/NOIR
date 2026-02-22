@@ -42,6 +42,7 @@ import {
   Switch,
 } from '@uikit'
 
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { ApiError } from '@/services/apiClient'
 import {
   getSmtpSettings,
@@ -213,7 +214,7 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
                 <CardDescription>{t('platformSettings.smtp.description')}</CardDescription>
               </div>
             </div>
-            <Badge variant={isConfigured ? 'default' : 'secondary'}>
+            <Badge variant="outline" className={getStatusBadgeClasses(isConfigured ? 'green' : 'gray')}>
               {isConfigured ? (
                 <>
                   <Check className="h-3 w-3 mr-1" />

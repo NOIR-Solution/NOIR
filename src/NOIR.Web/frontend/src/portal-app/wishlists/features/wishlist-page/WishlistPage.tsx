@@ -61,6 +61,7 @@ import {
 import { WishlistFormDialog } from '@/portal-app/wishlists/components/WishlistFormDialog'
 import type { WishlistDto, WishlistItemDto, WishlistItemPriority } from '@/types/wishlist'
 import { formatCurrency } from '@/lib/utils/currency'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
 const PRIORITY_OPTIONS: WishlistItemPriority[] = ['None', 'Low', 'Medium', 'High']
 
@@ -85,6 +86,7 @@ export const WishlistPage = () => {
   const [formDialogOpen, setFormDialogOpen] = useState(false)
   const [editingWishlist, setEditingWishlist] = useState<WishlistDto | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<WishlistDto | null>(null)
+  const [itemToRemove, setItemToRemove] = useState<WishlistItemDto | null>(null)
 
   const { data: wishlists, isLoading: loadingWishlists } = useWishlistsQuery()
   const selectedId = activeWishlistId || wishlists?.[0]?.id
@@ -122,15 +124,21 @@ export const WishlistPage = () => {
     }
   }, [deleteTarget, deleteWishlistMutation, t, activeWishlistId])
 
-  const handleRemoveItem = useCallback(async (item: WishlistItemDto) => {
+  const handleRemoveItem = useCallback((item: WishlistItemDto) => {
+    setItemToRemove(item)
+  }, [])
+
+  const handleRemoveItemConfirm = useCallback(async () => {
+    if (!itemToRemove) return
     try {
-      await removeItemMutation.mutateAsync(item.id)
+      await removeItemMutation.mutateAsync(itemToRemove.id)
       toast.success(t('wishlists.itemRemoved', 'Item removed from wishlist'))
+      setItemToRemove(null)
     } catch (err) {
       const message = err instanceof Error ? err.message : t('wishlists.removeFailed', 'Failed to remove item')
       toast.error(message)
     }
-  }, [removeItemMutation, t])
+  }, [itemToRemove, removeItemMutation, t])
 
   const handleMoveToCart = useCallback(async (item: WishlistItemDto) => {
     try {
@@ -411,6 +419,42 @@ export const WishlistPage = () => {
           </CredenzaFooter>
         </CredenzaContent>
       </Credenza>
+
+      {/* Remove Item Confirmation */}
+      <Credenza open={!!itemToRemove} onOpenChange={(open) => !open && setItemToRemove(null)}>
+        <CredenzaContent className="border-destructive/30">
+          <CredenzaHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-destructive/10 border border-destructive/20">
+                <Trash2 className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <CredenzaTitle>
+                  {t('wishlists.removeItemTitle', 'Remove Item')}
+                </CredenzaTitle>
+                <CredenzaDescription>
+                  {t('wishlists.removeItemConfirmation', 'Are you sure you want to remove "{{name}}" from this wishlist?', { name: itemToRemove?.productName })}
+                </CredenzaDescription>
+              </div>
+            </div>
+          </CredenzaHeader>
+          <CredenzaBody />
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setItemToRemove(null)} disabled={removeItemMutation.isPending} className="cursor-pointer">
+              {t('buttons.cancel', 'Cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRemoveItemConfirm}
+              disabled={removeItemMutation.isPending}
+              className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+            >
+              {removeItemMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {removeItemMutation.isPending ? t('labels.removing', 'Removing...') : t('labels.remove', 'Remove')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </div>
   )
 }
@@ -454,7 +498,7 @@ const WishlistItemCard = ({
           </div>
         )}
         {!item.isInStock && (
-          <Badge variant="destructive" className="absolute top-2 left-2 text-xs">
+          <Badge variant="outline" className={`${getStatusBadgeClasses('red')} absolute top-2 left-2 text-xs`}>
             {t('wishlists.outOfStock', 'Out of Stock')}
           </Badge>
         )}

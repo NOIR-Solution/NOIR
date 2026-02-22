@@ -66,6 +66,7 @@ import {
 
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { getPostById, createPost, updatePost, publishPost, unpublishPost } from '@/services/blog'
 
 import { uploadMedia } from '@/services/media'
@@ -330,7 +331,7 @@ export const BlogPostEditPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={() => navigate('/portal/blog/posts')}>
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={() => navigate('/portal/blog/posts')} aria-label={t('buttons.back')}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="p-2 bg-primary/10 rounded-lg">
@@ -347,10 +348,10 @@ export const BlogPostEditPage = () => {
         </div>
         <div className="flex items-center gap-2">
           {post?.status && (
-            <Badge variant={
-              post.status === 'Published' ? 'default' :
-              post.status === 'Scheduled' ? 'secondary' : 'outline'
-            }>
+            <Badge variant="outline" className={getStatusBadgeClasses(
+              post.status === 'Published' ? 'green' :
+              post.status === 'Scheduled' ? 'blue' : 'gray'
+            )}>
               {post.status === 'Scheduled' && post.scheduledPublishAt
                 ? t('blog.scheduledLabel', { date: formatDate(post.scheduledPublishAt!) })
                 : t(`blog.status.${post.status.toLowerCase()}`)}
@@ -750,6 +751,7 @@ export const BlogPostEditPage = () => {
                           size="icon"
                           className="absolute top-2 right-2 h-8 w-8 cursor-pointer"
                           onClick={handleClearImage}
+                          aria-label={t('blog.clearFeaturedImage', 'Clear featured image')}
                         >
                           <X className="h-4 w-4" />
                         </Button>
