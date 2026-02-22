@@ -50,13 +50,16 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
     return allPermissions.filter(p => p.isTenantAllowed)
   }, [allPermissions, user?.roles])
 
-  // Group permissions by category
+  // Group permissions by category, sorted by sortOrder within each group
   const permissionsByCategory = useMemo(() => {
     const grouped: Record<string, Permission[]> = {}
     for (const perm of permissions) {
       const category = perm.category || 'Other'
       if (!grouped[category]) grouped[category] = []
       grouped[category].push(perm)
+    }
+    for (const perms of Object.values(grouped)) {
+      perms.sort((a, b) => a.sortOrder - b.sortOrder)
     }
     return grouped
   }, [permissions])
@@ -347,11 +350,8 @@ export const PermissionsDialog = ({ role, open, onOpenChange, onSuccess }: Permi
                                       <Check className="h-3 w-3 text-primary" />
                                     )}
                                   </div>
-                                  <p className="text-xs text-muted-foreground truncate">
-                                    {permission.name}
-                                  </p>
                                   {description && (
-                                    <p className="text-xs text-muted-foreground mt-1">
+                                    <p className="text-xs text-muted-foreground">
                                       {description}
                                     </p>
                                   )}

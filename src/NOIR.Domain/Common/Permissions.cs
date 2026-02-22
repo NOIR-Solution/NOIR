@@ -251,61 +251,60 @@ public static class Permissions
     /// <summary>
     /// All available permissions.
     /// </summary>
+    /// <summary>
+    /// All available permissions ordered to match sidebar navigation sections.
+    /// SortOrder is derived from the index in this list, so order matters.
+    /// </summary>
     public static IReadOnlyList<string> All =>
     [
-        // Users
-        UsersRead, UsersCreate, UsersUpdate, UsersDelete, UsersManageRoles,
-        // Roles
-        RolesRead, RolesCreate, RolesUpdate, RolesDelete, RolesManagePermissions,
-        // Tenants
-        TenantsRead, TenantsCreate, TenantsUpdate, TenantsDelete,
-        // System
-        SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
-        // Audit
-        AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream,
-        // Email Templates
-        EmailTemplatesRead, EmailTemplatesUpdate,
-        // Blog Posts
-        BlogPostsRead, BlogPostsCreate, BlogPostsUpdate, BlogPostsDelete, BlogPostsPublish,
-        // Blog Categories
-        BlogCategoriesRead, BlogCategoriesCreate, BlogCategoriesUpdate, BlogCategoriesDelete,
-        // Blog Tags
-        BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete,
-        // Products
-        ProductsRead, ProductsCreate, ProductsUpdate, ProductsDelete, ProductsPublish,
-        // Product Categories
-        ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete,
-        // Brands
-        BrandsRead, BrandsCreate, BrandsUpdate, BrandsDelete,
-        // Product Attributes
-        AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
-        // Reviews
-        ReviewsRead, ReviewsWrite, ReviewsManage,
-        // Customer Groups
-        CustomerGroupsRead, CustomerGroupsCreate, CustomerGroupsUpdate, CustomerGroupsDelete, CustomerGroupsManageMembers,
-        // Customers
-        CustomersRead, CustomersCreate, CustomersUpdate, CustomersDelete, CustomersManage,
-        // Orders
-        OrdersRead, OrdersWrite, OrdersManage,
-        // Promotions
-        PromotionsRead, PromotionsWrite, PromotionsDelete, PromotionsManage,
-        // Inventory
-        InventoryRead, InventoryWrite, InventoryManage,
-        // Wishlists
-        WishlistsRead, WishlistsWrite, WishlistsManage,
-        // Reports
+        // ── Marketing ──────────────────────────────────────────────────
         ReportsRead,
-        // Legal Pages
-        LegalPagesRead, LegalPagesUpdate,
-        // Tenant Settings
+        PromotionsRead, PromotionsWrite, PromotionsDelete, PromotionsManage,
+
+        // ── Orders ─────────────────────────────────────────────────────
+        OrdersRead, OrdersWrite, OrdersManage,
+        PaymentsRead, PaymentsCreate, PaymentsManage,
+        PaymentGatewaysRead, PaymentGatewaysManage,
+        PaymentRefundsRead, PaymentRefundsManage,
+        PaymentWebhooksRead,
+        InventoryRead, InventoryWrite, InventoryManage,
+
+        // ── Customers ──────────────────────────────────────────────────
+        CustomersRead, CustomersCreate, CustomersUpdate, CustomersDelete, CustomersManage,
+        CustomerGroupsRead, CustomerGroupsCreate, CustomerGroupsUpdate, CustomerGroupsDelete, CustomerGroupsManageMembers,
+        ReviewsRead, ReviewsWrite, ReviewsManage,
+        WishlistsRead, WishlistsWrite, WishlistsManage,
+
+        // ── Catalog ────────────────────────────────────────────────────
+        ProductsRead, ProductsCreate, ProductsUpdate, ProductsDelete, ProductsPublish,
+        ProductCategoriesRead, ProductCategoriesCreate, ProductCategoriesUpdate, ProductCategoriesDelete,
+        BrandsRead, BrandsCreate, BrandsUpdate, BrandsDelete,
+        AttributesRead, AttributesCreate, AttributesUpdate, AttributesDelete,
+
+        // ── Content ────────────────────────────────────────────────────
+        BlogPostsRead, BlogPostsCreate, BlogPostsUpdate, BlogPostsDelete, BlogPostsPublish,
+        BlogCategoriesRead, BlogCategoriesCreate, BlogCategoriesUpdate, BlogCategoriesDelete,
+        BlogTagsRead, BlogTagsCreate, BlogTagsUpdate, BlogTagsDelete,
+
+        // ── Users & Access ─────────────────────────────────────────────
+        UsersRead, UsersCreate, UsersUpdate, UsersDelete, UsersManageRoles,
+        RolesRead, RolesCreate, RolesUpdate, RolesDelete, RolesManagePermissions,
+
+        // ── Tenant Management (platform-only) ──────────────────────────
+        TenantsRead, TenantsCreate, TenantsUpdate, TenantsDelete,
+
+        // ── Settings ───────────────────────────────────────────────────
         TenantSettingsRead, TenantSettingsUpdate,
-        // Feature Management
         FeaturesRead, FeaturesUpdate,
-        // Platform Settings
+        EmailTemplatesRead, EmailTemplatesUpdate,
+        LegalPagesRead, LegalPagesUpdate,
+
+        // ── System ─────────────────────────────────────────────────────
+        SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
+        AuditRead, AuditExport, AuditEntityHistory, AuditPolicyRead, AuditPolicyWrite, AuditPolicyDelete, AuditStream,
+
+        // ── Platform (platform-only) ───────────────────────────────────
         PlatformSettingsRead, PlatformSettingsManage,
-        // Payments
-        PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
-        PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead
     ];
 
     /// <summary>
