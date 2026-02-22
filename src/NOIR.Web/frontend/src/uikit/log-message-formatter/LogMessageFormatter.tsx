@@ -17,6 +17,7 @@
  * - Key-value pair highlighting
  */
 import React, { useMemo } from 'react'
+import { i18n } from '@/i18n'
 import { cn } from '@/lib/utils'
 import { Badge } from '../badge/Badge'
 import { Clock, Zap, AlertTriangle, Play, CheckCircle2, XCircle } from 'lucide-react'
@@ -487,7 +488,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
         <span
           key={index}
           className="text-purple-600 dark:text-purple-400 font-mono text-[11px]"
-          title="UUID"
+          title={i18n.t('developerLogs.uuid', { ns: 'common' })}
         >
           {segment.content}
         </span>
@@ -510,7 +511,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
         <span
           key={index}
           className="text-indigo-600 dark:text-indigo-400"
-          title="Correlation ID"
+          title={i18n.t('developerLogs.correlationId', { ns: 'common' })}
         >
           {segment.content}
         </span>
@@ -585,7 +586,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
         <span
           key={index}
           className="text-teal-600 dark:text-teal-400 font-medium"
-          title="Handler/Query/Command"
+          title={i18n.t('developerLogs.handlerQueryCommand', { ns: 'common' })}
         >
           {segment.content}
         </span>

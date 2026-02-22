@@ -4,6 +4,7 @@
  * Provides methods for uploading and managing media files.
  */
 import { apiClient } from './apiClient'
+import { i18n } from '@/i18n'
 import type { MediaFile, MediaUploadResult } from '@/types'
 
 export type MediaFolder = 'blog' | 'content' | 'avatars' | 'branding' | 'products'
@@ -32,8 +33,8 @@ export const uploadMedia = async (
   })
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Upload failed' }))
-    throw new Error(error.error || 'Upload failed')
+    const error = await response.json().catch(() => ({ error: i18n.t('errors.uploadFailed', { ns: 'common' }) }))
+    throw new Error(error.error || i18n.t('errors.uploadFailed', { ns: 'common' }))
   }
 
   return response.json()

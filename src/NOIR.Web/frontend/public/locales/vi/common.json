@@ -2302,6 +2302,7 @@
     "invalidFileType": "Loại tệp không hợp lệ",
     "fileTooLarge": "Tệp phải nhỏ hơn {{maxSize}}MB",
     "uploadFailed": "Tải lên thất bại",
+    "uploadAvatarFailed": "Tải lên ảnh đại diện thất bại",
     "failedToRestore": "Khôi phục {{entity}} thất bại",
     "failedToDelete": "Xóa {{entity}} \"{{name}}\" thất bại",
     "failedToSaveVariant": "Lưu biến thể thất bại",
@@ -2557,6 +2558,9 @@
     "pausedLabel": "Tạm dừng",
     "expandLabel": "Mở rộng",
     "noLogEntries": "Không có mục nhật ký",
+    "uuid": "UUID",
+    "correlationId": "ID Tương quan",
+    "handlerQueryCommand": "Handler/Query/Command",
     "tabs": {
       "live": "Nhật ký trực tiếp",
       "history": "Tệp lịch sử",

@@ -7,6 +7,7 @@
  * - Email change with OTP verification
  */
 import { apiClient, ApiError } from './apiClient'
+import { i18n } from '@/i18n'
 
 // Profile update types
 export interface UpdateProfileRequest {
@@ -85,7 +86,7 @@ export const uploadAvatar = async (file: File): Promise<AvatarUploadResponse> =>
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}))
     throw new ApiError(
-      errorData.detail || errorData.title || 'Failed to upload avatar',
+      errorData.detail || errorData.title || i18n.t('errors.uploadAvatarFailed', { ns: 'common' }),
       response.status,
       errorData.errors
     )

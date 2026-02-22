@@ -4,6 +4,7 @@
  * Provides methods for managing products and product categories.
  */
 import { apiClient } from './apiClient'
+import { i18n } from '@/i18n'
 import type {
   Product,
   ProductPagedResult,
@@ -445,8 +446,8 @@ export const uploadProductImage = async (
   })
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Upload failed' }))
-    throw new Error(error.message || 'Upload failed')
+    const error = await response.json().catch(() => ({ message: i18n.t('errors.uploadFailed', { ns: 'common' }) }))
+    throw new Error(error.message || i18n.t('errors.uploadFailed', { ns: 'common' }))
   }
 
   return response.json()

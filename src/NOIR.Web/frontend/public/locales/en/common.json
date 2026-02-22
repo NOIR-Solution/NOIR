@@ -2302,6 +2302,7 @@
     "invalidFileType": "Invalid file type",
     "fileTooLarge": "File must be less than {{maxSize}}MB",
     "uploadFailed": "Upload failed",
+    "uploadAvatarFailed": "Failed to upload avatar",
     "failedToRestore": "Failed to restore {{entity}}",
     "failedToDelete": "Failed to delete {{entity}} \"{{name}}\"",
     "failedToSaveVariant": "Failed to save variant",
@@ -2557,6 +2558,9 @@
     "pausedLabel": "Paused",
     "expandLabel": "Expand",
     "noLogEntries": "No log entries",
+    "uuid": "UUID",
+    "correlationId": "Correlation ID",
+    "handlerQueryCommand": "Handler/Query/Command",
     "tabs": {
       "live": "Live Logs",
       "history": "History Files",
