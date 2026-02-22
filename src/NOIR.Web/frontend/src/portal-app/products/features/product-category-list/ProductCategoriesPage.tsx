@@ -220,8 +220,15 @@ export const ProductCategoriesPage = () => {
                   </TableRow>
                 ) : (
                   categories.map((category) => (
-                    <TableRow key={category.id} className="group transition-colors hover:bg-muted/50">
-                      <TableCell className="sticky left-0 z-10 bg-background">
+                    <TableRow
+                      key={category.id}
+                      className={`group transition-colors hover:bg-muted/50${canUpdateCategories ? ' cursor-pointer' : ''}`}
+                      onClick={canUpdateCategories ? (e) => {
+                        if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
+                        openEditCategory(category)
+                      } : undefined}
+                    >
+                      <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button

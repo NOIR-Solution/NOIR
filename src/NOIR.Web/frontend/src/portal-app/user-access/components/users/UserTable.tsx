@@ -100,9 +100,16 @@ export const UserTable = ({
         </TableHeader>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.id}>
+            <TableRow
+              key={user.id}
+              className={canEdit ? 'cursor-pointer transition-colors' : undefined}
+              onClick={canEdit ? (e) => {
+                if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
+                onEdit(user)
+              } : undefined}
+            >
               {(canEdit || canDelete || canAssignRoles) && (
-                <TableCell className="sticky left-0 z-10 bg-background">
+                <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button

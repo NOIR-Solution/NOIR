@@ -150,8 +150,15 @@ export const BlogTagsPage = () => {
                   </TableRow>
                 ) : (
                   data.map((tag) => (
-                    <TableRow key={tag.id} className="group transition-colors hover:bg-muted/50">
-                      <TableCell className="sticky left-0 z-10 bg-background">
+                    <TableRow
+                      key={tag.id}
+                      className="group cursor-pointer transition-colors hover:bg-muted/50"
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
+                        openEditTag(tag)
+                      }}
+                    >
+                      <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button

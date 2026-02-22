@@ -187,8 +187,15 @@ export const ProductAttributesPage = () => {
                   </TableRow>
                 ) : (
                   attributes.map((attribute) => (
-                    <TableRow key={attribute.id} className="group transition-colors hover:bg-muted/50">
-                      <TableCell className="sticky left-0 z-10 bg-background">
+                    <TableRow
+                      key={attribute.id}
+                      className={`group transition-colors hover:bg-muted/50${canUpdateAttributes ? ' cursor-pointer' : ''}`}
+                      onClick={canUpdateAttributes ? (e) => {
+                        if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
+                        openEditAttribute(attribute)
+                      } : undefined}
+                    >
+                      <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
