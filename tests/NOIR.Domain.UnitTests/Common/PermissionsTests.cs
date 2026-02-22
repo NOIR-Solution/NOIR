@@ -335,6 +335,13 @@ public class PermissionsTests
     }
 
     [Fact]
+    public void All_ShouldContainNoDuplicates()
+    {
+        // Each permission must appear exactly once so sortOrder is deterministic
+        Permissions.All.Should().OnlyHaveUniqueItems();
+    }
+
+    [Fact]
     public void All_ShouldContainAllUserPermissions()
     {
         // Assert

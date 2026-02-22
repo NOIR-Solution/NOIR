@@ -74,20 +74,26 @@ export const RolePermissionInfo = ({ role, permissionsCache, onPermissionsLoaded
     }
   }, [role.id, permissionsCache, onPermissionsLoaded, permissions])
 
-  // Group permissions by category for display (exclude platform-only for non-platform admins)
-  const groupedPermissions = permissions?.reduce((groups, permName) => {
-    const permDetail = allPermissions.find((p) => p.name === permName)
-    if (!showPlatformPermissions && (!permDetail || !permDetail.isTenantAllowed)) return groups
-    const category = permDetail?.category || 'Other'
-    if (!groups[category]) {
-      groups[category] = []
+  // Group permissions by category for display, sorted by sortOrder within each category
+  const groupedPermissions = (() => {
+    if (!permissions) return undefined
+    const groups: Record<string, { name: string; displayName: string; sortOrder: number }[]> = {}
+    for (const permName of permissions) {
+      const permDetail = allPermissions.find((p) => p.name === permName)
+      if (!showPlatformPermissions && (!permDetail || !permDetail.isTenantAllowed)) continue
+      const category = permDetail?.category || 'Other'
+      if (!groups[category]) groups[category] = []
+      groups[category].push({
+        name: permName,
+        displayName: translatePermissionDisplayName(t, permName, permDetail?.displayName || permName),
+        sortOrder: permDetail?.sortOrder ?? 9999,
+      })
     }
-    groups[category].push({
-      name: permName,
-      displayName: translatePermissionDisplayName(t, permName, permDetail?.displayName || permName),
-    })
+    for (const perms of Object.values(groups)) {
+      perms.sort((a, b) => a.sortOrder - b.sortOrder)
+    }
     return groups
-  }, {} as Record<string, { name: string; displayName: string }[]>)
+  })()
 
   const totalCount = groupedPermissions
     ? Object.values(groupedPermissions).reduce((sum, perms) => sum + perms.length, 0)
