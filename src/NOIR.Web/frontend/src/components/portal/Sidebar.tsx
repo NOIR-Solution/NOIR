@@ -4,7 +4,6 @@ import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  ShieldCheck,
   LayoutDashboard,
   ChevronLeft,
   ChevronRight,
@@ -817,9 +816,11 @@ const SidebarContent = ({
               />
             ) : (
               <>
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center text-sidebar-primary-foreground shadow-lg group-hover:shadow-xl transition-all">
-                  <ShieldCheck className="h-5 w-5" />
-                </div>
+                <svg width="32" height="32" viewBox="0 0 110 110" fill="none" className="flex-shrink-0 orbital-animated text-sidebar-primary" aria-hidden="true">
+                  <circle cx="56" cy="58" r="48" stroke="currentColor" strokeWidth="7"/>
+                  <circle cx="48" cy="50" r="30" stroke="currentColor" strokeWidth="7"/>
+                  <circle cx="57" cy="50" r="13" stroke="currentColor" strokeWidth="7"/>
+                </svg>
                 <h2 className="text-lg font-semibold text-sidebar-foreground">NOIR</h2>
               </>
             )}
@@ -1047,9 +1048,11 @@ export const MobileSidebarTrigger = ({
                 />
               ) : (
                 <>
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center text-sidebar-primary-foreground shadow-lg">
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
+                  <svg width="32" height="32" viewBox="0 0 110 110" fill="none" className="flex-shrink-0 orbital-animated text-sidebar-primary" aria-hidden="true">
+                    <circle cx="56" cy="58" r="48" stroke="currentColor" strokeWidth="7"/>
+                    <circle cx="48" cy="50" r="30" stroke="currentColor" strokeWidth="7"/>
+                    <circle cx="57" cy="50" r="13" stroke="currentColor" strokeWidth="7"/>
+                  </svg>
                   <h2 className="text-lg font-semibold text-sidebar-foreground">NOIR</h2>
                 </>
               )}

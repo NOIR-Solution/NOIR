@@ -407,6 +407,26 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* ─── Orbital Logo Animation ─────────────────────────────────── */
+@keyframes orbital-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Fast speeds — outer 12s, middle 8s reverse, inner 5s */
+.orbital-animated circle:nth-child(1) {
+  transform-origin: 55px 55px;
+  animation: orbital-spin 12s linear infinite;
+}
+.orbital-animated circle:nth-child(2) {
+  transform-origin: 55px 55px;
+  animation: orbital-spin 8s linear infinite reverse;
+}
+.orbital-animated circle:nth-child(3) {
+  transform-origin: 55px 55px;
+  animation: orbital-spin 5s linear infinite;
+}
+
 /* Respect user's motion preferences (accessibility) */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -422,7 +442,8 @@
   .animate-gradient-shift,
   .animate-fade-in,
   .animate-fade-in-up,
-  .animate-bounce {
+  .animate-bounce,
+  .orbital-animated circle {
     animation: none !important;
   }
 }

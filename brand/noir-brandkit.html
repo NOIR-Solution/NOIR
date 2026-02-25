@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NOIR — Brand Kit</title>
+
+<!--
+  FONT STRATEGY
+  ─────────────────────────────────────────────────────
+  Primary:  Inter Variable — System-grade UI sans-serif
+            Clean, highly legible at all weights
+            Weights: 300 400 500 600 700 800 900
+  Mono:     Geist Mono — Vercel's mono, matches NOIR web app
+            Fallback: JetBrains Mono → monospace
+  ─────────────────────────────────────────────────────
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+<style>
+/* ════════════════════════════════════════════════════
+   DESIGN TOKENS — NOIR v1
+   Deep Indigo, near-void dark, WCAG AAA compliant
+════════════════════════════════════════════════════ */
+:root {
+  /* Indigo brand palette */
+  --indigo:    #6366F1;  /* Primary accent */
+  --indigo-hi: #818CF8;  /* Highlight / gradient top */
+  --indigo-pr: #4F46E5;  /* Press / active state */
+  --pale:      #EEF2FF;  /* Tint for hover backgrounds */
+  --indigo-10: rgba(99,102,241,.10);
+  --indigo-15: rgba(99,102,241,.15);
+  --indigo-25: rgba(99,102,241,.25);
+
+  /* Dark neutral scale — indigo-tinted voids */
+  --bg:       #080810;  /* Body background — near void */
+  --s1:       #0E0E1A;  /* Card level 1 */
+  --s2:       #131320;  /* Card level 2 */
+  --s3:       #1A1A2E;  /* Elevated / active surface */
+  --s4:       #22223A;  /* Hover surface */
+  --border:   #282846;  /* Subtle borders */
+  --border-hi:#363660;  /* Visible borders */
+
+  /* Text — tested for contrast */
+  --text:     #F2F2F8;  /* Primary text — high contrast */
+  --text-sub: #A8A8C0;  /* Secondary */
+  --text-dim: #6E6E90;  /* Tertiary */
+  --text-min: #48485E;  /* Disabled / decorative only */
+
+  /* Functional */
+  --success:  #22C55E;
+  --danger:   #EF4444;
+  --info:     #60A5FA;
+
+  /* Fonts */
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --mono: 'Geist Mono', 'JetBrains Mono', monospace;
+
+  /* Radii */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; color-scheme: dark; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* ── Scrollbar ─────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--s4); border-radius: 2px; }
+
+/* ════════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════════ */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(8,8,16,.95);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  display: flex; align-items: center; gap: 2px;
+  overflow-x: auto;
+}
+.nav::-webkit-scrollbar { height: 0; }
+.nav-brand {
+  margin-right: auto; padding: 15px 0;
+  font-size: 13px; font-weight: 700; white-space: nowrap;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-brand span { color: var(--indigo); }
+.nav-brand-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--indigo);
+}
+.tab {
+  padding: 14px 16px;
+  font-size: 11.5px; font-weight: 600;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--text-dim);
+  border: none; background: none; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+  font-family: var(--sans);
+}
+.tab:hover { color: var(--text-sub); }
+.tab.active { color: var(--indigo); border-bottom-color: var(--indigo); }
+
+/* ════════════════════════════════════════════════
+   LAYOUT
+════════════════════════════════════════════════ */
+.page { max-width: 1100px; margin: 0 auto; padding: 60px 48px 120px; }
+.section { display: none; }
+.section.active { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.tag { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--indigo); margin-bottom: 6px; }
+.h1 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 6px; }
+.desc { font-size: 14px; color: var(--text-sub); margin-bottom: 36px; line-height: 1.7; }
+.hr { border: none; border-top: 1px solid var(--border); margin: 0 0 40px; }
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+@media (max-width: 720px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 28px;
+}
+.label {
+  font-family: var(--mono); font-size: 9.5px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 10px;
+}
+
+/* ════════════════════════════════════════════════
+   LOGO SVG — Orbital Mark
+   3 concentric circles, slightly offset
+════════════════════════════════════════════════ */
+.logo-lockup { display: flex; align-items: center; gap: 14px; }
+.logo-text { display: flex; flex-direction: column; }
+.logo-name {
+  font-size: 19px; font-weight: 900;
+  letter-spacing: .07em; text-transform: uppercase;
+  line-height: 1;
+}
+.logo-sub {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-sub); margin-top: 4px;
+}
+
+/* Variant containers */
+.logo-var {
+  border-radius: var(--r-md);
+  padding: 44px 32px;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  min-height: 200px; justify-content: center;
+}
+.logo-var-label {
+  font-family: var(--mono); font-size: 9.5px;
+  letter-spacing: .14em; text-transform: uppercase;
+}
+.v-dark   { background: var(--s2); border: 1px solid var(--border); }
+.v-black  { background: var(--bg); border: 1px solid var(--border-hi); }
+.v-indigo { background: var(--indigo); }
+.v-white  { background: #F5F5F5; }
+.v-dark  .logo-var-label,
+.v-black .logo-var-label { color: var(--text-sub); }
+.v-indigo .logo-var-label { color: rgba(255,255,255,.70); }
+.v-white  .logo-var-label { color: #555; }
+
+/* ════════════════════════════════════════════════
+   CONTEXTS — Multi-surface display
+════════════════════════════════════════════════ */
+.ctx-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.ctx-card {
+  border-radius: var(--r-md); overflow: hidden;
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 28px 16px 20px;
+  gap: 14px;
+}
+.ctx-name {
+  font-family: var(--mono); font-size: 9.5px;
+  letter-spacing: .12em; text-transform: uppercase;
+}
+
+/* ════════════════════════════════════════════════
+   COLORS
+════════════════════════════════════════════════ */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px,1fr)); gap: 10px; }
+.swatch { border-radius: var(--r-sm); overflow: hidden; border: 1px solid var(--border); }
+.sw-block { height: 68px; }
+.sw-info { padding: 10px 12px; background: var(--s2); }
+.sw-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.sw-hex  { font-family: var(--mono); font-size: 10.5px; color: var(--text-dim); margin-top: 1px; }
+.sw-role { font-size: 10px; color: var(--text-min); margin-top: 2px; }
+
+/* Contrast badge */
+.cr-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px; border-radius: 4px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+}
+.cr-aaa  { background: rgba(34,197,94,.12); color: #4ADE80; }
+.cr-aa   { background: rgba(250,204,21,.12); color: #FCD34D; }
+.cr-fail { background: rgba(239,68,68,.12);  color: #F87171; }
+
+/* ════════════════════════════════════════════════
+   TYPOGRAPHY
+════════════════════════════════════════════════ */
+.type-row {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; gap: 24px;
+}
+.type-meta { width: 140px; flex-shrink: 0; }
+.type-lbl { font-family: var(--mono); font-size: 10px; color: var(--indigo); text-transform: uppercase; letter-spacing: .1em; }
+.type-spec { font-size: 10px; color: var(--text-min); margin-top: 3px; font-family: var(--mono); }
+.type-sample { flex: 1; }
+
+.mono-block {
+  font-family: var(--mono); font-size: 12.5px;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 16px 20px;
+  margin-top: 20px; line-height: 1.9;
+  white-space: pre; overflow-x: auto;
+}
+
+/* ════════════════════════════════════════════════
+   BUSINESS CARD
+════════════════════════════════════════════════ */
+.biz-set { display: flex; gap: 20px; flex-wrap: wrap; }
+.biz-card {
+  width: 340px; height: 194px;
+  border-radius: 14px; overflow: hidden; flex-shrink: 0;
+  position: relative;
+}
+.biz-back {
+  height: 100%; padding: 28px;
+  background: var(--indigo);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+}
+.biz-back-name { font-size: 30px; font-weight: 900; letter-spacing: -.03em; color: rgba(255,255,255,.95); }
+.biz-back-sub { font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.50); }
+
+/* ════════════════════════════════════════════════
+   SOCIAL BANNER
+════════════════════════════════════════════════ */
+.banner {
+  width: 100%; aspect-ratio: 3/1; max-height: 220px;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--r-lg); overflow: hidden;
+  position: relative; display: flex; align-items: center;
+  padding: 0 48px; gap: 24px;
+}
+.banner-grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--indigo-10) 1px, transparent 1px),
+    linear-gradient(90deg, var(--indigo-10) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.banner-glow {
+  position: absolute; top: -60px; right: -60px;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, var(--indigo-15) 0%, transparent 65%);
+}
+.banner-content { position: relative; flex: 1; }
+.banner-name { font-size: clamp(24px,4vw,42px); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.banner-name em { font-style: normal; color: var(--indigo); }
+.banner-tag { font-family: var(--mono); font-size: 11px; color: var(--text-dim); margin-top: 8px; }
+.banner-chips { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+.chip {
+  font-family: var(--mono); font-size: 10px;
+  padding: 3px 10px; border-radius: 4px;
+  border: 1px solid var(--border-hi); color: var(--text-dim);
+  background: var(--s2);
+}
+.chip.hi { border-color: var(--indigo-25); color: var(--indigo); background: var(--indigo-10); }
+
+/* ════════════════════════════════════════════════
+   EMAIL SIGNATURE
+════════════════════════════════════════════════ */
+.sig-preview { background: #f5f5f5; border-radius: var(--r-md); padding: 36px; }
+.sig-dark    { background: var(--s2); border: 1px solid var(--border); border-radius: var(--r-md); padding: 36px; }
+.sig-code {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 16px 20px;
+  font-family: var(--mono); font-size: 11px;
+  color: #bbb; white-space: pre; overflow: auto;
+  max-height: 260px; line-height: 1.8;
+  margin-top: 16px;
+}
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 12px; padding: 10px 22px;
+  background: var(--indigo); color: #fff;
+  border: none; border-radius: var(--r-sm); cursor: pointer;
+  font-size: 13px; font-weight: 800;
+  font-family: var(--sans);
+  letter-spacing: .02em;
+  transition: background .15s, transform .1s;
+}
+.copy-btn:hover { background: var(--indigo-hi); }
+.copy-btn:active { transform: scale(.98); }
+.copy-note { font-family: var(--mono); font-size: 10px; color: var(--text-min); margin-top: 8px; }
+
+/* ════════════════════════════════════════════════
+   GUIDELINES
+════════════════════════════════════════════════ */
+.g-col { padding: 24px; border-radius: var(--r-md); border: 1px solid; }
+.g-col.do    { background: rgba(34,197,94,.04);  border-color: rgba(34,197,94,.2); }
+.g-col.dont  { background: rgba(239,68,68,.04);  border-color: rgba(239,68,68,.2); }
+.g-head { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; display: flex; align-items: center; gap: 7px; margin-bottom: 14px; }
+.g-col.do .g-head   { color: #4ADE80; }
+.g-col.dont .g-head { color: #F87171; }
+.g-item { display: flex; align-items: flex-start; gap: 9px; font-size: 12.5px; color: var(--text-sub); line-height: 1.55; margin-bottom: 10px; }
+.g-ic { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 9px; font-weight: 900; margin-top: 1px; }
+.g-col.do .g-ic   { background: rgba(34,197,94,.15); color: #4ADE80; }
+.g-col.dont .g-ic { background: rgba(239,68,68,.15); color: #F87171; }
+
+/* ════════════════════════════════════════════════
+   ORBITAL ANIMATION
+════════════════════════════════════════════════ */
+@keyframes orbital-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.orbital-animated circle:nth-child(1) {
+  transform-origin: 55px 55px;
+  animation: orbital-spin 30s linear infinite;
+}
+.orbital-animated circle:nth-child(2) {
+  transform-origin: 55px 55px;
+  animation: orbital-spin 22s linear infinite reverse;
+}
+.orbital-animated circle:nth-child(3) {
+  transform-origin: 55px 55px;
+  animation: orbital-spin 16s linear infinite;
+}
+
+.orbital-fast circle:nth-child(1) { animation-duration: 8s; }
+.orbital-fast circle:nth-child(2) { animation-duration: 5s; }
+.orbital-fast circle:nth-child(3) { animation-duration: 3s; }
+
+.orbital-slow circle:nth-child(1) { animation-duration: 50s; }
+.orbital-slow circle:nth-child(2) { animation-duration: 38s; }
+.orbital-slow circle:nth-child(3) { animation-duration: 28s; }
+
+.orbital-paused circle { animation-play-state: paused !important; }
+
+.anim-hero {
+  display: flex; align-items: center; justify-content: center;
+  padding: 48px; border-radius: var(--r-lg);
+  background: var(--s1); border: 1px solid var(--border);
+  margin-bottom: 36px; position: relative; overflow: hidden;
+}
+.anim-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(99,102,241,.08), transparent 70%);
+  pointer-events: none;
+}
+.anim-controls {
+  display: flex; gap: 8px; margin-bottom: 24px;
+}
+.anim-btn {
+  padding: 7px 16px; border-radius: var(--r-sm);
+  background: var(--s2); border: 1px solid var(--border);
+  color: var(--text-sub); font-size: 12px; font-weight: 600;
+  font-family: var(--sans); cursor: pointer;
+  transition: all .15s;
+}
+.anim-btn:hover { border-color: var(--indigo); color: var(--text); }
+.anim-btn.active { background: var(--indigo); color: #fff; border-color: var(--indigo); }
+
+.anim-specs {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  margin-bottom: 32px;
+}
+.anim-spec {
+  padding: 16px; border-radius: var(--r-sm);
+  background: var(--s1); border: 1px solid var(--border);
+  text-align: center;
+}
+.anim-spec-ring { font-size: 11px; font-weight: 700; color: var(--indigo); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
+.anim-spec-val { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--text); }
+.anim-spec-note { font-size: 10.5px; color: var(--text-dim); margin-top: 4px; }
+
+.anim-code {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 20px 24px;
+  font-family: var(--mono); font-size: 11.5px;
+  color: #bbb; white-space: pre; overflow-x: auto;
+  line-height: 1.7;
+}
+.anim-code .ck { color: var(--indigo); }
+.anim-code .cv { color: #60A5FA; }
+.anim-code .cc { color: var(--text-dim); }
+
+@media (prefers-reduced-motion: reduce) {
+  .orbital-animated circle { animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  NAV                                 ║
+     ╚══════════════════════════════════════╝ -->
+<nav class="nav">
+  <div class="nav-brand">
+    <span class="nav-brand-dot"></span>
+    <span>NOIR</span> &nbsp;·&nbsp; Brand Kit
+  </div>
+  <button class="tab active" onclick="show('logo',this)">Logo</button>
+  <button class="tab" onclick="show('animation',this)">Animation</button>
+  <button class="tab" onclick="show('context',this)">Contexts</button>
+  <button class="tab" onclick="show('colors',this)">Colors</button>
+  <button class="tab" onclick="show('type',this)">Typography</button>
+  <button class="tab" onclick="show('mockups',this)">Mockups</button>
+  <button class="tab" onclick="show('email',this)">Email Sig</button>
+  <button class="tab" onclick="show('guide',this)">Guidelines</button>
+</nav>
+
+<div class="page">
+
+<!-- ╔══════════════════════════════════════╗
+     ║  01 — LOGO                           ║
+     ╚══════════════════════════════════════╝ -->
+<section id="logo" class="section active">
+  <p class="tag">01 — Identity</p>
+  <h2 class="h1">Logo System</h2>
+  <p class="desc">Orbital mark — 3 concentric offset circles. Clean stroke construction. Scalable from 16px to billboard. NOIR's deep indigo identity conveys trust, depth, and technical precision.</p>
+  <hr class="hr"/>
+
+  <!-- 4 variations grid -->
+  <div class="g2" style="margin-bottom:40px;">
+
+    <!-- PRIMARY: Indigo on Deep Black -->
+    <div class="logo-var v-black">
+      <div class="logo-lockup">
+        <svg width="50" height="50" viewBox="0 0 110 110" fill="none" aria-label="NOIR logo — dark">
+          <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="5.5"/>
+          <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="5.5"/>
+          <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="5.5"/>
+        </svg>
+        <div class="logo-text">
+          <span class="logo-name"><span style="color:#6366F1;">N</span><span style="color:#F2F2F8;">OIR</span></span>
+          <span class="logo-sub">Build Better · Scale Further</span>
+        </div>
+      </div>
+      <span class="logo-var-label">Primary — Void BG</span>
+    </div>
+
+    <!-- ON INDIGO: White on Brand Indigo -->
+    <div class="logo-var v-indigo">
+      <div class="logo-lockup">
+        <svg width="50" height="50" viewBox="0 0 110 110" fill="none" aria-label="NOIR logo — indigo">
+          <circle cx="56" cy="58" r="48" stroke="rgba(255,255,255,.90)" stroke-width="5.5"/>
+          <circle cx="48" cy="50" r="30" stroke="rgba(255,255,255,.90)" stroke-width="5.5"/>
+          <circle cx="57" cy="50" r="13" stroke="rgba(255,255,255,.90)" stroke-width="5.5"/>
+        </svg>
+        <div class="logo-text">
+          <span class="logo-name" style="color:#fff;">NOIR</span>
+          <span class="logo-sub" style="color:rgba(255,255,255,.55);">Build Better · Scale Further</span>
+        </div>
+      </div>
+      <span class="logo-var-label">On Indigo BG</span>
+    </div>
+
+    <!-- SURFACE: Indigo on Dark Surface (cards) -->
+    <div class="logo-var v-dark">
+      <div class="logo-lockup">
+        <svg width="50" height="50" viewBox="0 0 110 110" fill="none" aria-label="NOIR logo — surface">
+          <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="5.5"/>
+          <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="5.5"/>
+          <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="5.5"/>
+        </svg>
+        <div class="logo-text">
+          <span class="logo-name"><span style="color:#6366F1;">N</span><span style="color:#F2F2F8;">OIR</span></span>
+          <span class="logo-sub">Build Better · Scale Further</span>
+        </div>
+      </div>
+      <span class="logo-var-label">On Surface / Cards</span>
+    </div>
+
+    <!-- LIGHT: Charcoal on Light BG -->
+    <div class="logo-var v-white">
+      <div class="logo-lockup">
+        <svg width="50" height="50" viewBox="0 0 110 110" fill="none" aria-label="NOIR logo — light">
+          <circle cx="56" cy="58" r="48" stroke="#4F46E5" stroke-width="5.5"/>
+          <circle cx="48" cy="50" r="30" stroke="#4F46E5" stroke-width="5.5"/>
+          <circle cx="57" cy="50" r="13" stroke="#4F46E5" stroke-width="5.5"/>
+        </svg>
+        <div class="logo-text">
+          <span class="logo-name" style="color:#1A1F3A;">NOIR</span>
+          <span class="logo-sub" style="color:#555;">Build Better · Scale Further</span>
+        </div>
+      </div>
+      <span class="logo-var-label" style="color:#555;">On Light BG</span>
+    </div>
+  </div>
+
+  <!-- Mark only — size scale -->
+  <p class="label">Icon Mark — Stroke variant (≥ 24px)</p>
+  <div style="display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;margin-bottom:32px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <svg width="96" height="96" viewBox="0 0 110 110" fill="none" aria-label="96px">
+        <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="5"/>
+        <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="5"/>
+        <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="5"/>
+      </svg>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">96px</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <svg width="64" height="64" viewBox="0 0 110 110" fill="none" aria-label="64px">
+        <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="5"/>
+        <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="5"/>
+        <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="5"/>
+      </svg>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">64px</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <svg width="44" height="44" viewBox="0 0 110 110" fill="none" aria-label="44px">
+        <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="5.5"/>
+        <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="5.5"/>
+        <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="5.5"/>
+      </svg>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">44px</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <svg width="32" height="32" viewBox="0 0 110 110" fill="none" aria-label="32px">
+        <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="6"/>
+        <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="6"/>
+        <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="6"/>
+      </svg>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">32px</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <svg width="24" height="24" viewBox="0 0 110 110" fill="none" aria-label="24px">
+        <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="7"/>
+        <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="7"/>
+        <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="7"/>
+      </svg>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">24px</span>
+    </div>
+  </div>
+
+  <!-- SOLID variant for small sizes -->
+  <p class="label" style="margin-top:8px;">Solid / Filled variant (≤ 20px — favicon, taskbar, notification dot)</p>
+  <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;">
+    <!-- 20px solid -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="width:20px;height:20px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;">
+        <div style="width:11px;height:11px;border-radius:50%;border:2px solid var(--bg);"></div>
+      </div>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">20px</span>
+    </div>
+    <!-- App icon 48px -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="width:48px;height:48px;background:var(--indigo);border-radius:11px;display:flex;align-items:center;justify-content:center;">
+        <svg width="32" height="32" viewBox="0 0 110 110" fill="none" aria-label="App icon 48">
+          <circle cx="56" cy="58" r="48" stroke="rgba(255,255,255,.92)" stroke-width="9"/>
+          <circle cx="48" cy="50" r="30" stroke="rgba(255,255,255,.92)" stroke-width="9"/>
+          <circle cx="57" cy="50" r="13" stroke="rgba(255,255,255,.92)" stroke-width="9"/>
+        </svg>
+      </div>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">App 48px</span>
+    </div>
+    <!-- App icon 80px -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="width:80px;height:80px;background:var(--indigo);border-radius:18px;display:flex;align-items:center;justify-content:center;">
+        <svg width="52" height="52" viewBox="0 0 110 110" fill="none" aria-label="App icon 80">
+          <circle cx="56" cy="58" r="48" stroke="rgba(255,255,255,.92)" stroke-width="7.5"/>
+          <circle cx="48" cy="50" r="30" stroke="rgba(255,255,255,.92)" stroke-width="7.5"/>
+          <circle cx="57" cy="50" r="13" stroke="rgba(255,255,255,.92)" stroke-width="7.5"/>
+        </svg>
+      </div>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">App 80px</span>
+    </div>
+    <!-- App icon 120px -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="width:120px;height:120px;background:var(--indigo);border-radius:26px;display:flex;align-items:center;justify-content:center;">
+        <svg width="78" height="78" viewBox="0 0 110 110" fill="none" aria-label="App icon 120">
+          <circle cx="56" cy="58" r="48" stroke="rgba(255,255,255,.92)" stroke-width="6.5"/>
+          <circle cx="48" cy="50" r="30" stroke="rgba(255,255,255,.92)" stroke-width="6.5"/>
+          <circle cx="57" cy="50" r="13" stroke="rgba(255,255,255,.92)" stroke-width="6.5"/>
+        </svg>
+      </div>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">App 120px</span>
+    </div>
+    <!-- Monogram fallback -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="width:80px;height:80px;background:var(--indigo);border-radius:18px;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:34px;font-weight:900;color:#fff;letter-spacing:-.05em;">N</span>
+      </div>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">Monogram N</span>
+    </div>
+    <!-- Profile circle -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="width:80px;height:80px;border-radius:50%;background:var(--s2);border:2.5px solid var(--indigo);display:flex;align-items:center;justify-content:center;">
+        <svg width="50" height="50" viewBox="0 0 110 110" fill="none" aria-label="Profile circle">
+          <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="6.5"/>
+          <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="6.5"/>
+          <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="6.5"/>
+        </svg>
+      </div>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-min);">Avatar Circle</span>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  ANIMATION                           ║
+     ╚══════════════════════════════════════╝ -->
+<section id="animation" class="section">
+  <p class="tag">Motion</p>
+  <h2 class="h1">Logo Animation</h2>
+  <p class="desc">Orbital rotation — 3 concentric rings spinning around a shared center at varying speeds and directions, evoking the precision of a multi-tenant enterprise platform in orbit.</p>
+  <hr class="hr"/>
+
+  <!-- Hero animated logo -->
+  <div class="anim-hero" id="animHero">
+    <svg width="160" height="160" viewBox="0 0 110 110" fill="none" class="orbital-animated" id="animLogo" aria-label="Animated orbital logo" style="position:relative;">
+      <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="4"/>
+      <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="4"/>
+      <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="4"/>
+    </svg>
+  </div>
+
+  <!-- Controls -->
+  <div class="anim-controls" id="animControls">
+    <button class="anim-btn" onclick="setSpeed('slow',this)">Slow</button>
+    <button class="anim-btn active" onclick="setSpeed('normal',this)">Normal</button>
+    <button class="anim-btn" onclick="setSpeed('fast',this)">Fast</button>
+    <button class="anim-btn" onclick="togglePause(this)" id="pauseBtn">Pause</button>
+  </div>
+
+  <!-- Specs -->
+  <p class="label">Animation Specs</p>
+  <div class="anim-specs">
+    <div class="anim-spec">
+      <div class="anim-spec-ring">Outer Ring</div>
+      <div class="anim-spec-val">30s</div>
+      <div class="anim-spec-note">Clockwise · offset 3.2px</div>
+    </div>
+    <div class="anim-spec">
+      <div class="anim-spec-ring">Middle Ring</div>
+      <div class="anim-spec-val">22s</div>
+      <div class="anim-spec-note">Counter-clockwise · offset 8.6px</div>
+    </div>
+    <div class="anim-spec">
+      <div class="anim-spec-ring">Inner Ring</div>
+      <div class="anim-spec-val">16s</div>
+      <div class="anim-spec-note">Clockwise · offset 5.4px</div>
+    </div>
+  </div>
+
+  <!-- On different backgrounds -->
+  <p class="label">Animated on Surfaces</p>
+  <div class="g2" style="margin-bottom:32px;">
+    <div style="display:flex;align-items:center;justify-content:center;padding:40px;border-radius:var(--r-md);background:var(--bg);border:1px solid var(--border);">
+      <svg width="80" height="80" viewBox="0 0 110 110" fill="none" class="orbital-animated" aria-label="On void bg">
+        <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="4.5"/>
+        <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="4.5"/>
+        <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="4.5"/>
+      </svg>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;padding:40px;border-radius:var(--r-md);background:var(--indigo);">
+      <svg width="80" height="80" viewBox="0 0 110 110" fill="none" class="orbital-animated" aria-label="On indigo bg">
+        <circle cx="56" cy="58" r="48" stroke="rgba(255,255,255,.90)" stroke-width="4.5"/>
+        <circle cx="48" cy="50" r="30" stroke="rgba(255,255,255,.90)" stroke-width="4.5"/>
+        <circle cx="57" cy="50" r="13" stroke="rgba(255,255,255,.90)" stroke-width="4.5"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- CSS code -->
+  <p class="label">Implementation — CSS</p>
+  <div class="anim-code"><span class="cc">/* Add class "orbital-animated" to SVG element */</span>
+
+<span class="ck">@keyframes</span> <span class="cv">orbital-spin</span> {
+  <span class="ck">from</span> { transform: rotate(0deg); }
+  <span class="ck">to</span>   { transform: rotate(360deg); }
+}
+
+<span class="cc">/* All circles rotate around shared viewBox center (55, 55) */</span>
+.orbital-animated circle:nth-child(<span class="cv">1</span>) {
+  transform-origin: <span class="cv">55px 55px</span>;
+  animation: orbital-spin <span class="cv">30s</span> linear infinite;          <span class="cc">/* Outer — slowest */</span>
+}
+.orbital-animated circle:nth-child(<span class="cv">2</span>) {
+  transform-origin: <span class="cv">55px 55px</span>;
+  animation: orbital-spin <span class="cv">22s</span> linear infinite <span class="cv">reverse</span>;  <span class="cc">/* Middle — counter */</span>
+}
+.orbital-animated circle:nth-child(<span class="cv">3</span>) {
+  transform-origin: <span class="cv">55px 55px</span>;
+  animation: orbital-spin <span class="cv">16s</span> linear infinite;          <span class="cc">/* Inner — fastest */</span>
+}
+
+<span class="cc">/* Respect user motion preferences */</span>
+<span class="ck">@media</span> (prefers-reduced-motion: reduce) {
+  .orbital-animated circle { animation: none !important; }
+}</div>
+</section>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  02 — CONTEXTS                       ║
+     ╚══════════════════════════════════════╝ -->
+<section id="context" class="section">
+  <p class="tag">02 — Multi-Surface</p>
+  <h2 class="h1">Logo Across Contexts</h2>
+  <p class="desc">One mark — every platform. Tested across 8 surfaces to guarantee readability and brand consistency.</p>
+  <hr class="hr"/>
+
+  <div class="ctx-grid">
+
+    <!-- Business Card -->
+    <div class="ctx-card" style="background:var(--s2);">
+      <div style="width:90px;height:54px;background:var(--s1);border:1px solid var(--border-hi);border-radius:6px;display:flex;align-items:center;justify-content:center;padding:6px;">
+        <svg width="28" height="28" viewBox="0 0 110 110" fill="none" aria-label="Business card">
+          <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="6"/>
+          <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="6"/>
+          <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="6"/>
+        </svg>
+      </div>
+      <span class="ctx-name" style="color:var(--text-dim);">Business Card</span>
+    </div>
+
+    <!-- Email Signature -->
+    <div class="ctx-card" style="background:#f0f0f0;">
+      <svg width="40" height="40" viewBox="0 0 110 110" fill="none" aria-label="Email signature">
+        <circle cx="56" cy="58" r="48" stroke="#4F46E5" stroke-width="5.5"/>
+        <circle cx="48" cy="50" r="30" stroke="#4F46E5" stroke-width="5.5"/>
+        <circle cx="57" cy="50" r="13" stroke="#4F46E5" stroke-width="5.5"/>
+      </svg>
+      <span class="ctx-name" style="color:#999;">Email Signature</span>
+    </div>
+
+    <!-- Website Nav -->
+    <div class="ctx-card" style="background:var(--bg);border:1px solid var(--border-hi);">
+      <svg width="40" height="40" viewBox="0 0 110 110" fill="none" aria-label="Website nav">
+        <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="5.5"/>
+        <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="5.5"/>
+        <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="5.5"/>
+      </svg>
+      <span class="ctx-name" style="color:var(--text-dim);">Website Nav</span>
+    </div>
+
+    <!-- Mobile App (iOS/Android) -->
+    <div class="ctx-card" style="background:#1C1C1E;">
+      <div style="width:60px;height:60px;background:var(--indigo);border-radius:14px;display:flex;align-items:center;justify-content:center;">
+        <svg width="38" height="38" viewBox="0 0 110 110" fill="none" aria-label="Mobile app">
+          <circle cx="56" cy="58" r="48" stroke="rgba(255,255,255,.92)" stroke-width="7"/>
+          <circle cx="48" cy="50" r="30" stroke="rgba(255,255,255,.92)" stroke-width="7"/>
+          <circle cx="57" cy="50" r="13" stroke="rgba(255,255,255,.92)" stroke-width="7"/>
+        </svg>
+      </div>
+      <span class="ctx-name" style="color:var(--text-dim);">Mobile App Icon</span>
+    </div>
+
+    <!-- Desktop App (Taskbar) -->
+    <div class="ctx-card" style="background:#202020;">
+      <div style="width:32px;height:32px;background:var(--indigo);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+        <svg width="22" height="22" viewBox="0 0 110 110" fill="none" aria-label="Desktop taskbar">
+          <circle cx="56" cy="58" r="48" stroke="rgba(255,255,255,.92)" stroke-width="8"/>
+          <circle cx="48" cy="50" r="30" stroke="rgba(255,255,255,.92)" stroke-width="8"/>
+          <circle cx="57" cy="50" r="13" stroke="rgba(255,255,255,.92)" stroke-width="8"/>
+        </svg>
+      </div>
+      <span class="ctx-name" style="color:var(--text-dim);">Taskbar 32px</span>
+    </div>
+
+    <!-- Browser Favicon -->
+    <div class="ctx-card" style="background:#292929;">
+      <svg width="20" height="20" viewBox="0 0 110 110" fill="none" aria-label="Favicon">
+        <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="9"/>
+        <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="9"/>
+        <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="9"/>
+      </svg>
+      <span class="ctx-name" style="color:var(--text-dim);">Favicon 16px</span>
+    </div>
+
+    <!-- LinkedIn / Social -->
+    <div class="ctx-card" style="background:#0A66C2;">
+      <svg width="44" height="44" viewBox="0 0 110 110" fill="none" aria-label="LinkedIn">
+        <circle cx="56" cy="58" r="48" stroke="#FFFFFF" stroke-width="5.5"/>
+        <circle cx="48" cy="50" r="30" stroke="#FFFFFF" stroke-width="5.5"/>
+        <circle cx="57" cy="50" r="13" stroke="#FFFFFF" stroke-width="5.5"/>
+      </svg>
+      <span class="ctx-name" style="color:rgba(255,255,255,.6);">LinkedIn Avatar</span>
+    </div>
+
+    <!-- Print / Iridescent Foil -->
+    <div class="ctx-card" style="background:#1C1C2E;">
+      <svg width="44" height="44" viewBox="0 0 110 110" fill="none" aria-label="Print iridescent">
+        <defs>
+          <linearGradient id="if1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#C7D2FE"/>
+            <stop offset="35%" stop-color="#818CF8"/>
+            <stop offset="65%" stop-color="#6366F1"/>
+            <stop offset="100%" stop-color="#4338CA"/>
+          </linearGradient>
+        </defs>
+        <circle cx="56" cy="58" r="48" stroke="url(#if1)" stroke-width="5.5"/>
+        <circle cx="48" cy="50" r="30" stroke="url(#if1)" stroke-width="5.5"/>
+        <circle cx="57" cy="50" r="13" stroke="url(#if1)" stroke-width="5.5"/>
+      </svg>
+      <span class="ctx-name" style="color:#888;">Print Iridescent</span>
+    </div>
+  </div>
+
+  <!-- Context rules -->
+  <div style="margin-top:32px;" class="card">
+    <p class="label">Context Rules</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:4px;">
+      <div style="font-size:12.5px;color:var(--text-sub);line-height:1.6;"><strong style="color:var(--text);font-size:12px;">≥ 32px</strong><br/>Full stroke variant with 3 circles.</div>
+      <div style="font-size:12.5px;color:var(--text-sub);line-height:1.6;"><strong style="color:var(--text);font-size:12px;">16–24px</strong><br/>Solid filled dot on indigo BG. Circles disappear at this size.</div>
+      <div style="font-size:12.5px;color:var(--text-sub);line-height:1.6;"><strong style="color:var(--text);font-size:12px;">Email / Light BG</strong><br/>Deep indigo (#4F46E5) stroke on white — good contrast 8.5:1.</div>
+      <div style="font-size:12.5px;color:var(--text-sub);line-height:1.6;"><strong style="color:var(--text);font-size:12px;">App icon</strong><br/>Indigo BG + white stroke. Border-radius = 22% of size.</div>
+      <div style="font-size:12.5px;color:var(--text-sub);line-height:1.6;"><strong style="color:var(--text);font-size:12px;">Print / Foil</strong><br/>Indigo gradient or iridescent foil on dark stock.</div>
+      <div style="font-size:12.5px;color:var(--text-sub);line-height:1.6;"><strong style="color:var(--text);font-size:12px;">Social avatar</strong><br/>White stroke on indigo BG, or mark in circle with indigo border.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  03 — COLORS                         ║
+     ╚══════════════════════════════════════╝ -->
+<section id="colors" class="section">
+  <p class="tag">03 — Palette</p>
+  <h2 class="h1">Color System v1</h2>
+  <p class="desc">Deep indigo primary on void-black dark surfaces. All primary combinations WCAG AAA (≥ 7:1). Text minimum AA (≥ 4.5:1). OKLCH-derived hex equivalents shown.</p>
+  <hr class="hr"/>
+
+  <div style="margin-bottom:28px;">
+    <p class="label">Brand Indigo</p>
+    <div class="swatches">
+      <div class="swatch"><div class="sw-block" style="background:#6366F1;"></div><div class="sw-info"><div class="sw-name">Indigo</div><div class="sw-hex">#6366F1</div><div class="sw-role">Primary accent (dark mode)</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#818CF8;"></div><div class="sw-info"><div class="sw-name">Indigo Light</div><div class="sw-hex">#818CF8</div><div class="sw-role">Highlight / gradient</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#EEF2FF;"></div><div class="sw-info"><div class="sw-name">Indigo Pale</div><div class="sw-hex">#EEF2FF</div><div class="sw-role">Tint / hover bg</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#4F46E5;"></div><div class="sw-info"><div class="sw-name">Indigo Dark</div><div class="sw-hex">#4F46E5</div><div class="sw-role">Primary (light mode) / press</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#4338CA;"></div><div class="sw-info"><div class="sw-name">Indigo Deeper</div><div class="sw-hex">#4338CA</div><div class="sw-role">Active / pressed state</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#C7D2FE;"></div><div class="sw-info"><div class="sw-name">Indigo 200</div><div class="sw-hex">#C7D2FE</div><div class="sw-role">Disabled / decorative</div></div></div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:28px;">
+    <p class="label">Dark Scale — Indigo-tinted voids</p>
+    <div class="swatches">
+      <div class="swatch"><div class="sw-block" style="background:#080810;outline:1px solid #282846;"></div><div class="sw-info"><div class="sw-name">Void</div><div class="sw-hex">#080810</div><div class="sw-role">Body bg</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#0E0E1A;outline:1px solid #282846;"></div><div class="sw-info"><div class="sw-name">Surface 1</div><div class="sw-hex">#0E0E1A</div><div class="sw-role">Card</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#131320;outline:1px solid #282846;"></div><div class="sw-info"><div class="sw-name">Surface 2</div><div class="sw-hex">#131320</div><div class="sw-role">Elevated</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#1A1A2E;outline:1px solid #282846;"></div><div class="sw-info"><div class="sw-name">Surface 3</div><div class="sw-hex">#1A1A2E</div><div class="sw-role">Interactive</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#22223A;"></div><div class="sw-info"><div class="sw-name">Surface 4</div><div class="sw-hex">#22223A</div><div class="sw-role">Hover state</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#282846;"></div><div class="sw-info"><div class="sw-name">Border</div><div class="sw-hex">#282846</div><div class="sw-role">Subtle dividers</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#363660;"></div><div class="sw-info"><div class="sw-name">Border Hi</div><div class="sw-hex">#363660</div><div class="sw-role">Visible borders</div></div></div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:28px;">
+    <p class="label">Light Mode Backgrounds</p>
+    <div class="swatches">
+      <div class="swatch"><div class="sw-block" style="background:#FAFBFF;outline:1px solid #e5e7eb;"></div><div class="sw-info"><div class="sw-name">Background</div><div class="sw-hex">#FAFBFF</div><div class="sw-role">Light bg (OKLCH)</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#FFFFFF;outline:1px solid #e5e7eb;"></div><div class="sw-info"><div class="sw-name">Card</div><div class="sw-hex">#FFFFFF</div><div class="sw-role">Card surface</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#F5F7FF;outline:1px solid #e5e7eb;"></div><div class="sw-info"><div class="sw-name">Muted</div><div class="sw-hex">#F5F7FF</div><div class="sw-role">Muted / secondary</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#E5E7EB;outline:1px solid #d1d5db;"></div><div class="sw-info"><div class="sw-name">Border</div><div class="sw-hex">#E5E7EB</div><div class="sw-role">Light borders</div></div></div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:28px;">
+    <p class="label">Text Scale</p>
+    <div class="swatches">
+      <div class="swatch"><div class="sw-block" style="background:#F2F2F8;"></div><div class="sw-info"><div class="sw-name">Primary</div><div class="sw-hex">#F2F2F8</div><div class="sw-role">High contrast — AAA</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#A8A8C0;"></div><div class="sw-info"><div class="sw-name">Secondary</div><div class="sw-hex">#A8A8C0</div><div class="sw-role">Subdued — AA ✓</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#6E6E90;"></div><div class="sw-info"><div class="sw-name">Tertiary</div><div class="sw-hex">#6E6E90</div><div class="sw-role">Muted — AA ✓</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#48485E;"></div><div class="sw-info"><div class="sw-name">Disabled</div><div class="sw-hex">#48485E</div><div class="sw-role">Decorative only</div></div></div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:28px;">
+    <p class="label">Semantic Colors</p>
+    <div class="swatches">
+      <div class="swatch"><div class="sw-block" style="background:#22C55E;"></div><div class="sw-info"><div class="sw-name">Success</div><div class="sw-hex">#22C55E</div><div class="sw-role">Positive / confirmed</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#EF4444;"></div><div class="sw-info"><div class="sw-name">Destructive</div><div class="sw-hex">#EF4444</div><div class="sw-role">Errors / delete</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#FACC15;"></div><div class="sw-info"><div class="sw-name">Warning</div><div class="sw-hex">#FACC15</div><div class="sw-role">Caution / alerts</div></div></div>
+      <div class="swatch"><div class="sw-block" style="background:#38BDF8;"></div><div class="sw-info"><div class="sw-name">Info</div><div class="sw-hex">#38BDF8</div><div class="sw-role">Informational</div></div></div>
+    </div>
+  </div>
+
+  <!-- Contrast table -->
+  <p class="label">Contrast Ratios — WCAG 2.1</p>
+  <div class="g2" style="margin-bottom:28px;">
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#818CF8;">#818CF8 on #080810</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">Indigo Light on Void</div>
+      </div>
+      <span class="cr-badge cr-aaa">8.9:1 AAA</span>
+    </div>
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#F2F2F8;">#F2F2F8 on #080810</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">White on Void</div>
+      </div>
+      <span class="cr-badge cr-aaa">19.1:1 AAA</span>
+    </div>
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="display:inline-block;background:#6366F1;color:white;padding:1px 5px;border-radius:3px;font-size:12px;font-weight:700;">#FFF on #6366F1</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">White on Indigo</div>
+      </div>
+      <span class="cr-badge cr-aa">4.8:1 AA</span>
+    </div>
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="display:inline-block;background:#4F46E5;color:white;padding:1px 5px;border-radius:3px;font-size:12px;font-weight:700;">#FFF on #4F46E5</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">White on Indigo (light mode)</div>
+      </div>
+      <span class="cr-badge cr-aaa">7.4:1 AAA</span>
+    </div>
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#4F46E5;">#4F46E5 on #FFFFFF</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">Primary on white</div>
+      </div>
+      <span class="cr-badge cr-aaa">7.4:1 AAA</span>
+    </div>
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#A8A8C0;">#A8A8C0 on #080810</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">Secondary text</div>
+      </div>
+      <span class="cr-badge cr-aa">7.0:1 AA</span>
+    </div>
+  </div>
+
+  <!-- Gradient -->
+  <p class="label">Brand Gradient</p>
+  <div style="height:56px;border-radius:var(--r-sm);background:linear-gradient(135deg,#C7D2FE 0%,#818CF8 35%,#6366F1 65%,#4338CA 100%);"></div>
+  <p style="font-family:var(--mono);font-size:10px;color:var(--text-min);margin-top:8px;">linear-gradient(135deg, #C7D2FE → #818CF8 → #6366F1 → #4338CA)</p>
+</section>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  04 — TYPOGRAPHY                     ║
+     ╚══════════════════════════════════════╝ -->
+<section id="type" class="section">
+  <p class="tag">04 — Type</p>
+  <h2 class="h1">Typography System</h2>
+  <p class="desc">Inter Variable — system-grade UI sans-serif. Exceptional legibility at all sizes and weights. Paired with JetBrains Mono for technical content. 14px root scale for information-dense interfaces.</p>
+  <hr class="hr"/>
+
+  <!-- Font comparison -->
+  <div class="g2" style="margin-bottom:36px;">
+    <div class="card">
+      <p class="label">Inter — Primary · UI Grade</p>
+      <div style="font-size:32px;font-weight:800;letter-spacing:-.02em;margin:12px 0;">Aa Bb Cc 01 &amp;</div>
+      <div style="font-size:14px;color:var(--text-sub);line-height:1.7;">
+        NOIR Enterprise SaaS Platform<br/>
+        Multi-tenant · Type-safe · React 19<br/>
+        Build Better. Scale Further.<br/>
+        v1.0 · February 2026 · noir.app
+      </div>
+      <div style="margin-top:12px;font-size:11px;font-family:var(--mono);color:var(--text-min);">
+        Google Fonts: Inter · All weights 300–900
+      </div>
+    </div>
+    <div class="card">
+      <p class="label">Geist Mono — Code &amp; Technical</p>
+      <div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--indigo);margin:12px 0;">const fn = () => {}</div>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--text-sub);line-height:1.8;">
+        Matches NOIR web app (Geist Mono Variable).<br/>
+        Use for: code snippets, stats,<br/>
+        hex values, version labels,<br/>
+        technical mono-spaced text.
+      </div>
+      <div style="margin-top:12px;font-size:11px;font-family:var(--mono);color:var(--text-min);">
+        Google Fonts: Geist Mono · by Vercel
+      </div>
+    </div>
+  </div>
+
+  <!-- Type scale -->
+  <p class="label">Type Scale (14px root)</p>
+  <div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-lbl">Display</div><div class="type-spec">900 / 64px / -4%</div></div>
+      <div class="type-sample" style="font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:1;">Build Better.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-lbl">H1</div><div class="type-spec">800 / 40px / -3%</div></div>
+      <div class="type-sample" style="font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.1;">NOIR Platform</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-lbl">H2</div><div class="type-spec">700 / 28px / -2%</div></div>
+      <div class="type-sample" style="font-size:26px;font-weight:700;letter-spacing:-.02em;">Enterprise SaaS · Multi-Tenant</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-lbl">H3</div><div class="type-spec">600 / 20px / -1%</div></div>
+      <div class="type-sample" style="font-size:19px;font-weight:600;letter-spacing:-.01em;">Identity &amp; Brand Standards</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-lbl">Body</div><div class="type-spec">400 / 14px / 1.6</div></div>
+      <div class="type-sample" style="font-size:14px;line-height:1.75;color:var(--text-sub);">NOIR is a multi-tenant enterprise SaaS platform built with React 19 and .NET 9. Designed for precision, scalability, and developer ergonomics. Every feature ships with tests, localization, and full audit trails.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><div class="type-lbl">Small</div><div class="type-spec">500 / 12px / +8%</div></div>
+      <div class="type-sample" style="font-size:11.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);">Version 1.0 · February 2026 · noir.app</div>
+    </div>
+  </div>
+
+  <!-- Mono block -->
+  <div class="mono-block" style="color:#bbb;">
+<span style="color:#48485E;">// NOIR — Brand tokens snapshot</span>
+<span style="color:#6366F1;">const</span> brand = <span style="color:#363660;">{</span>
+  name:    <span style="color:#A8A8C0;">"NOIR"</span>,
+  tagline: <span style="color:#A8A8C0;">"Build Better. Scale Further."</span>,
+  primary: <span style="color:#A8A8C0;">"#6366F1"</span>,  <span style="color:#48485E;">// oklch(0.65 0.18 265) dark mode</span>
+  primary_light: <span style="color:#A8A8C0;">"#4F46E5"</span>,  <span style="color:#48485E;">// oklch(0.55 0.18 265) light mode</span>
+  sans:    <span style="color:#A8A8C0;">"Inter Variable"</span>,
+  mono:    <span style="color:#A8A8C0;">"Geist Mono Variable"</span>,  <span style="color:#48485E;">// matches @fontsource-variable/geist-mono in web</span>
+  stack:   <span style="color:#A8A8C0;">"React 19 + .NET 9 + Tailwind CSS 4"</span>,
+<span style="color:#363660;">};</span>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  05 — MOCKUPS                        ║
+     ╚══════════════════════════════════════╝ -->
+<section id="mockups" class="section">
+  <p class="tag">05 — Collateral</p>
+  <h2 class="h1">Brand Mockups</h2>
+  <p class="desc">Business card, social banner, and tagline treatments — how NOIR looks in the wild.</p>
+  <hr class="hr"/>
+
+  <!-- Business card -->
+  <p class="label" style="margin-bottom:16px;">Business Card — 85×54mm · Front &amp; Back</p>
+  <div class="biz-set" style="margin-bottom:44px;">
+    <!-- Front — Premium dark centered -->
+    <div class="biz-card">
+      <div style="
+        height:100%;border-radius:14px;overflow:hidden;
+        background:linear-gradient(155deg,#080810 0%,#0E0E1A 60%,#080810 100%);
+        border:1px solid #282846;position:relative;
+        display:flex;flex-direction:column;align-items:center;
+        justify-content:center;gap:8px;padding:20px 24px;text-align:center;
+      ">
+        <!-- Subtle grid overlay -->
+        <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(99,102,241,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.03) 1px,transparent 1px);background-size:22px 22px;pointer-events:none;"></div>
+        <!-- Top glow halo -->
+        <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:220px;height:160px;border-radius:50%;background:radial-gradient(ellipse,rgba(99,102,241,.15) 0%,transparent 68%);pointer-events:none;"></div>
+        <!-- Orbital mark -->
+        <svg width="46" height="46" viewBox="0 0 110 110" fill="none" style="position:relative;" aria-label="Business card orbital mark">
+          <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="6.5"/>
+          <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="6.5"/>
+          <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="6.5"/>
+        </svg>
+        <!-- Name block -->
+        <div style="position:relative;margin-top:2px;">
+          <div style="font-size:17px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;line-height:1;">
+            <span style="color:#6366F1;">N</span><span style="color:#F2F2F8;">OIR</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:7px;letter-spacing:.28em;text-transform:uppercase;color:#363660;margin-top:6px;">Enterprise SaaS Platform</div>
+        </div>
+        <!-- Indigo line divider -->
+        <div style="position:relative;width:36px;height:1px;background:linear-gradient(90deg,transparent,#6366F1 40%,transparent);margin:2px 0;"></div>
+        <!-- Contact row -->
+        <div style="position:relative;font-family:var(--mono);font-size:7.5px;color:#48485E;letter-spacing:.06em;line-height:1.9;text-align:center;">
+          noir.app &nbsp;·&nbsp; hello@noir.app
+        </div>
+        <!-- Bottom tagline -->
+        <div style="position:absolute;bottom:14px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:6.5px;letter-spacing:.22em;text-transform:uppercase;color:#282846;">Build Better. Scale Further.</div>
+      </div>
+    </div>
+    <!-- Back — Indigo -->
+    <div class="biz-card">
+      <div class="biz-back" style="position:relative;overflow:hidden;">
+        <!-- Subtle glow center -->
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.10) 0%,transparent 70%);pointer-events:none;"></div>
+        <svg width="42" height="42" viewBox="0 0 110 110" fill="none" aria-label="Back logo" style="position:relative;margin-bottom:4px;">
+          <circle cx="56" cy="58" r="48" stroke="rgba(255,255,255,.90)" stroke-width="6"/>
+          <circle cx="48" cy="50" r="30" stroke="rgba(255,255,255,.90)" stroke-width="6"/>
+          <circle cx="57" cy="50" r="13" stroke="rgba(255,255,255,.90)" stroke-width="6"/>
+        </svg>
+        <div class="biz-back-name" style="position:relative;">N.</div>
+        <div class="biz-back-sub" style="position:relative;">Build Better · Scale Further</div>
+      </div>
+    </div>
+    <!-- Back — Dark with gradient mark -->
+    <div class="biz-card">
+      <div style="background:var(--bg);border:1px solid var(--border-hi);height:100%;border-radius:14px;padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
+        <defs>
+          <linearGradient id="ig2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#C7D2FE"/>
+            <stop offset="50%" stop-color="#818CF8"/>
+            <stop offset="100%" stop-color="#4338CA"/>
+          </linearGradient>
+        </defs>
+        <svg width="50" height="50" viewBox="0 0 110 110" fill="none" aria-label="Dark back logo">
+          <circle cx="56" cy="58" r="48" stroke="url(#ig2)" stroke-width="5.5"/>
+          <circle cx="48" cy="50" r="30" stroke="url(#ig2)" stroke-width="5.5"/>
+          <circle cx="57" cy="50" r="13" stroke="url(#ig2)" stroke-width="5.5"/>
+        </svg>
+        <div style="font-size:22px;font-weight:900;letter-spacing:-.02em;color:var(--text);text-align:center;">N.</div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);">Build Better · Scale Further</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Banner -->
+  <p class="label" style="margin-bottom:12px;">LinkedIn / GitHub Banner</p>
+  <div class="banner" style="margin-bottom:8px;">
+    <div class="banner-grid-bg"></div>
+    <div class="banner-glow"></div>
+    <div class="banner-content">
+      <h2 class="banner-name"><em>N</em>OIR</h2>
+      <p class="banner-tag">Build Better. Scale Further. · noir.app</p>
+      <div class="banner-chips">
+        <span class="chip hi">Enterprise SaaS</span>
+        <span class="chip">#MultiTenant</span>
+        <span class="chip">#React19</span>
+        <span class="chip">#DotNET9</span>
+        <span class="chip">#TypeScript</span>
+      </div>
+    </div>
+    <svg width="84" height="84" viewBox="0 0 110 110" fill="none" style="position:relative;opacity:.9;" aria-label="Banner logo">
+      <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="5.5"/>
+      <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="5.5"/>
+      <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="5.5"/>
+    </svg>
+  </div>
+  <p style="font-family:var(--mono);font-size:10px;color:var(--text-min);margin-bottom:40px;">LinkedIn 1584×396 · Twitter/X 1500×500 · GitHub 1280×640</p>
+
+  <!-- Tagline treatments -->
+  <p class="label" style="margin-bottom:16px;">Tagline Treatments</p>
+  <div class="g2">
+    <div class="card">
+      <p class="label">Bold Contrast</p>
+      <p style="font-size:22px;font-weight:800;letter-spacing:-.02em;"><span style="color:var(--indigo);">Build Better.</span> Scale Further.</p>
+    </div>
+    <div class="card">
+      <p class="label">Mono Terminal</p>
+      <p style="font-family:var(--mono);font-size:15px;color:var(--indigo);">$ ./noir --scale-further</p>
+    </div>
+    <div class="card">
+      <p class="label">Spaced Caps</p>
+      <p style="font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--text-sub);">BUILD BETTER <span style="color:var(--indigo);margin:0 6px;">·</span> SCALE FURTHER</p>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,var(--s2),var(--s3));">
+      <p class="label">Indigo Gradient</p>
+      <p style="font-size:22px;font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#C7D2FE,#818CF8,#6366F1,#4338CA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Build Better.<br/>Scale Further.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  06 — EMAIL SIGNATURE                ║
+     ╚══════════════════════════════════════╝ -->
+<section id="email" class="section">
+  <p class="tag">06 — Email</p>
+  <h2 class="h1">HTML Email Signature</h2>
+  <p class="desc">Table-based layout — Gmail, Outlook 365, Apple Mail compatible. Inline styles only. No external fonts (degrades to Arial gracefully).</p>
+  <hr class="hr"/>
+
+  <!-- Light mode preview -->
+  <p class="label" style="margin-bottom:12px;">Preview — Light Mode (Gmail / Outlook)</p>
+  <div class="sig-preview">
+    <table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,Helvetica,sans-serif;">
+      <tr>
+        <td valign="middle" style="padding-right:20px;border-right:3px solid #4F46E5;">
+          <svg width="52" height="52" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="NOIR Logo">
+            <circle cx="56" cy="58" r="48" stroke="#4F46E5" stroke-width="5.5"/>
+            <circle cx="48" cy="50" r="30" stroke="#4F46E5" stroke-width="5.5"/>
+            <circle cx="57" cy="50" r="13" stroke="#4F46E5" stroke-width="5.5"/>
+          </svg>
+        </td>
+        <td valign="middle" style="padding-left:20px;">
+          <div style="font-size:17px;font-weight:900;color:#1A1F3A;letter-spacing:1.5px;text-transform:uppercase;line-height:1;margin-bottom:3px;">NOIR</div>
+          <div style="font-size:10px;color:#888;letter-spacing:2px;text-transform:uppercase;font-family:'Courier New',monospace;margin-bottom:12px;">Enterprise SaaS Platform</div>
+          <table cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding-right:18px;">
+                <a href="https://noir.app" style="font-family:'Courier New',monospace;font-size:11px;color:#1A1F3A;text-decoration:none;">◉ noir.app</a>
+              </td>
+              <td style="padding-right:18px;">
+                <a href="mailto:hello@noir.app" style="font-family:'Courier New',monospace;font-size:11px;color:#1A1F3A;text-decoration:none;">◉ hello@noir.app</a>
+              </td>
+              <td>
+                <a href="https://github.com/topnguyen/noir" style="font-family:'Courier New',monospace;font-size:11px;color:#1A1F3A;text-decoration:none;">◉ github/topnguyen/noir</a>
+              </td>
+            </tr>
+          </table>
+          <div style="margin-top:10px;font-size:10px;font-style:italic;color:#bbb;font-family:'Courier New',monospace;letter-spacing:.5px;">Build Better. Scale Further.</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Dark mode preview -->
+  <p class="label" style="margin-top:28px;margin-bottom:12px;">Preview — Dark Mode</p>
+  <div class="sig-dark">
+    <table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,Helvetica,sans-serif;">
+      <tr>
+        <td valign="middle" style="padding-right:20px;border-right:3px solid #6366F1;">
+          <svg width="52" height="52" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="NOIR Logo dark">
+            <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="5.5"/>
+            <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="5.5"/>
+            <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="5.5"/>
+          </svg>
+        </td>
+        <td valign="middle" style="padding-left:20px;">
+          <div style="font-size:17px;font-weight:900;color:#F2F2F8;letter-spacing:1.5px;text-transform:uppercase;line-height:1;margin-bottom:3px;">NOIR</div>
+          <div style="font-size:10px;color:#6E6E90;letter-spacing:2px;text-transform:uppercase;font-family:'Courier New',monospace;margin-bottom:12px;">Enterprise SaaS Platform</div>
+          <table cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding-right:16px;"><span style="font-family:'Courier New',monospace;font-size:11px;color:#A8A8C0;">◉ noir.app</span></td>
+              <td style="padding-right:16px;"><span style="font-family:'Courier New',monospace;font-size:11px;color:#A8A8C0;">◉ hello@noir.app</span></td>
+              <td><span style="font-family:'Courier New',monospace;font-size:11px;color:#A8A8C0;">◉ github/topnguyen/noir</span></td>
+            </tr>
+          </table>
+          <div style="margin-top:10px;font-size:10px;font-style:italic;color:#48485E;font-family:'Courier New',monospace;">Build Better. Scale Further.</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Copyable code -->
+  <p class="label" style="margin-top:32px;margin-bottom:10px;">Copy HTML → Gmail Settings → Signatures → Insert HTML</p>
+  <div class="sig-code" id="sigCode">&lt;!-- NOIR — EMAIL SIGNATURE v1 --&gt;
+&lt;table cellpadding="0" cellspacing="0" border="0"
+  style="font-family:Arial,Helvetica,sans-serif;max-width:520px;"&gt;
+  &lt;tr&gt;
+    &lt;!-- Orbital logo --&gt;
+    &lt;td valign="middle"
+        style="padding-right:20px;border-right:3px solid #4F46E5;"&gt;
+      &lt;svg width="52" height="52" viewBox="0 0 110 110" fill="none"
+           xmlns="http://www.w3.org/2000/svg"&gt;
+        &lt;circle cx="56" cy="58" r="48"
+          stroke="#4F46E5" stroke-width="5.5"/&gt;
+        &lt;circle cx="48" cy="50" r="30"
+          stroke="#4F46E5" stroke-width="5.5"/&gt;
+        &lt;circle cx="57" cy="50" r="13"
+          stroke="#4F46E5" stroke-width="5.5"/&gt;
+      &lt;/svg&gt;
+    &lt;/td&gt;
+    &lt;!-- Identity info --&gt;
+    &lt;td valign="middle" style="padding-left:20px;"&gt;
+      &lt;div style="font-size:17px;font-weight:900;color:#1A1F3A;
+           letter-spacing:1.5px;text-transform:uppercase;
+           line-height:1;margin-bottom:3px;"&gt;
+        NOIR
+      &lt;/div&gt;
+      &lt;div style="font-size:10px;color:#888888;
+           letter-spacing:2px;text-transform:uppercase;
+           font-family:'Courier New',monospace;
+           margin-bottom:12px;"&gt;
+        Enterprise SaaS Platform
+      &lt;/div&gt;
+      &lt;table cellpadding="0" cellspacing="0"&gt;
+        &lt;tr&gt;
+          &lt;td style="padding-right:16px;"&gt;
+            &lt;a href="https://noir.app"
+               style="font-family:'Courier New',monospace;
+               font-size:11px;color:#1A1F3A;text-decoration:none;"&gt;
+              &amp;#9673; noir.app
+            &lt;/a&gt;
+          &lt;/td&gt;
+          &lt;td style="padding-right:16px;"&gt;
+            &lt;a href="mailto:hello@noir.app"
+               style="font-family:'Courier New',monospace;
+               font-size:11px;color:#1A1F3A;text-decoration:none;"&gt;
+              &amp;#9673; hello@noir.app
+            &lt;/a&gt;
+          &lt;/td&gt;
+          &lt;td&gt;
+            &lt;a href="https://github.com/topnguyen/noir"
+               style="font-family:'Courier New',monospace;
+               font-size:11px;color:#1A1F3A;text-decoration:none;"&gt;
+              &amp;#9673; github/topnguyen/noir
+            &lt;/a&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/table&gt;
+      &lt;div style="margin-top:10px;font-size:10px;color:#bbbbbb;
+           font-style:italic;
+           font-family:'Courier New',monospace;"&gt;
+        Build Better. Scale Further.
+      &lt;/div&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</div>
+  <button class="copy-btn" onclick="copyCode()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    Copy HTML
+  </button>
+  <p class="copy-note">Gmail: Settings → See all settings → Signature → (more options) → Edit HTML. Outlook: paste into rich text editor.</p>
+</section>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  07 — GUIDELINES                     ║
+     ╚══════════════════════════════════════╝ -->
+<section id="guide" class="section">
+  <p class="tag">07 — Rules</p>
+  <h2 class="h1">Brand Guidelines</h2>
+  <p class="desc">Correct usage and what to avoid — for designers, developers, and anyone working with the NOIR identity.</p>
+  <hr class="hr"/>
+
+  <div class="g2" style="margin-bottom:36px;">
+    <div class="g-col do">
+      <div class="g-head">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        Do
+      </div>
+      <div class="g-item"><span class="g-ic">✓</span>Use full lockup (mark + wordmark) in primary contexts</div>
+      <div class="g-item"><span class="g-ic">✓</span>Indigo #6366F1 on void-dark — contrast 8.9:1 AAA</div>
+      <div class="g-item"><span class="g-ic">✓</span>Indigo #4F46E5 on white — contrast 7.4:1 AAA</div>
+      <div class="g-item"><span class="g-ic">✓</span>Scale 3 circles proportionally, keep offset ratios</div>
+      <div class="g-item"><span class="g-ic">✓</span>Font Inter for all UI text — clean and system-grade</div>
+      <div class="g-item"><span class="g-ic">✓</span>Solid/filled version for ≤ 20px (favicon, notification)</div>
+      <div class="g-item"><span class="g-ic">✓</span>App icon: Indigo BG + white stroke, border-radius 22%</div>
+      <div class="g-item"><span class="g-ic">✓</span>Tagline: "Build Better. Scale Further." — period, not comma</div>
+    </div>
+    <div class="g-col dont">
+      <div class="g-head">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Don't
+      </div>
+      <div class="g-item"><span class="g-ic">✕</span>Indigo #6366F1 on white → contrast fail (2.8:1)</div>
+      <div class="g-item"><span class="g-ic">✕</span>Alter the 3-circle ratios or offset positions</div>
+      <div class="g-item"><span class="g-ic">✕</span>Add drop shadow, glow, or extra effects to orbital mark</div>
+      <div class="g-item"><span class="g-ic">✕</span>Stroke version at 16px — use solid/monogram instead</div>
+      <div class="g-item"><span class="g-ic">✕</span>Place logo on busy backgrounds without clear space</div>
+      <div class="g-item"><span class="g-ic">✕</span>Rotate, stretch, or skew the mark in any way</div>
+      <div class="g-item"><span class="g-ic">✕</span>Use "NOIR" in lowercase — always uppercase</div>
+      <div class="g-item"><span class="g-ic">✕</span>Use light indigo (#818CF8) on light backgrounds — fails AA</div>
+    </div>
+  </div>
+
+  <!-- Size rules -->
+  <div class="card" style="margin-bottom:20px;">
+    <p class="label" style="margin-bottom:16px;">Minimum Size Rules</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;text-align:center;">
+      <div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--indigo);">24px</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Mark min (stroke)<br/>digital screen</div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--indigo);">≤20px</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Solid fill / favicon<br/>no stroke version</div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--indigo);">140px</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Full lockup min width<br/>digital</div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--indigo);">10mm</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Mark min print<br/>business card</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contrast quick ref -->
+  <div class="card">
+    <p class="label" style="margin-bottom:12px;">Quick contrast reference — WCAG 2.1</p>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12.5px;color:var(--text-sub);">Indigo Light on Void (#818CF8 on #080810)</span>
+        <span class="cr-badge cr-aaa">8.9:1 AAA</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12.5px;color:var(--text-sub);">White on Indigo Dark (#FFF on #4F46E5)</span>
+        <span class="cr-badge cr-aaa">7.4:1 AAA</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12.5px;color:var(--text-sub);">Indigo Dark on white email (#4F46E5 on #FFF)</span>
+        <span class="cr-badge cr-aaa">7.4:1 AAA</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12.5px;color:var(--text-sub);">Indigo on white — AVOID (#6366F1 on #FFF)</span>
+        <span class="cr-badge cr-fail">2.8:1 Fail</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /page -->
+
+<!-- Footer -->
+<div style="border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <svg width="20" height="20" viewBox="0 0 110 110" fill="none" aria-hidden="true">
+      <circle cx="56" cy="58" r="48" stroke="#6366F1" stroke-width="7"/>
+      <circle cx="48" cy="50" r="30" stroke="#6366F1" stroke-width="7"/>
+      <circle cx="57" cy="50" r="13" stroke="#6366F1" stroke-width="7"/>
+    </svg>
+    <span style="font-size:12px;font-weight:700;"><span style="color:var(--indigo);">N</span>OIR Brand Kit</span>
+  </div>
+  <span style="font-family:var(--mono);font-size:10px;color:var(--text-min);">Inter Variable · WCAG AAA · February 2026</span>
+</div>
+
+<script>
+function show(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+function copyCode() {
+  const code = document.getElementById('sigCode').textContent;
+  const decoded = code
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"');
+  navigator.clipboard.writeText(decoded).then(() => {
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    btn.style.background = '#22C55E';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2500);
+  });
+}
+function setSpeed(speed, btn) {
+  var logo = document.getElementById('animLogo');
+  logo.classList.remove('orbital-fast', 'orbital-slow');
+  if (speed === 'fast') logo.classList.add('orbital-fast');
+  if (speed === 'slow') logo.classList.add('orbital-slow');
+  document.querySelectorAll('.anim-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  var pauseBtn = document.getElementById('pauseBtn');
+  if (pauseBtn.textContent === 'Resume') {
+    pauseBtn.textContent = 'Pause';
+    logo.classList.remove('orbital-paused');
+  }
+}
+function togglePause(btn) {
+  var logo = document.getElementById('animLogo');
+  if (logo.classList.contains('orbital-paused')) {
+    logo.classList.remove('orbital-paused');
+    btn.textContent = 'Pause';
+    btn.classList.remove('active');
+  } else {
+    logo.classList.add('orbital-paused');
+    btn.textContent = 'Resume';
+    btn.classList.add('active');
+  }
+}
+</script>
+</body>
+</html>

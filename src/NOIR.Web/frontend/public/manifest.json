@@ -1,0 +1,19 @@
+{
+  "name": "NOIR",
+  "short_name": "NOIR",
+  "description": "Enterprise SaaS Platform",
+  "start_url": "/portal",
+  "display": "standalone",
+  "background_color": "#080810",
+  "theme_color": "#4F46E5",
+  "orientation": "any",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

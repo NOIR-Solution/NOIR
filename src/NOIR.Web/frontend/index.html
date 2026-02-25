@@ -3,14 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#4F46E5" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="NOIR" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>NOIR</title>
     <!-- Critical theme styles: visible BEFORE main CSS bundle loads, prevents white flash -->
     <style>
       .dark { background-color: oklch(0.145 0.014 260); color: oklch(0.93 0.005 260); color-scheme: dark; }
       .high-contrast { background-color: #000; color: #fff; color-scheme: light; }
     </style>
-    <!-- Blocking theme script: applies class + color-scheme before first paint -->
+    <!-- Blocking theme script: applies class + color-scheme + theme-color before first paint -->
     <script>
       (function() {
         var t = localStorage.getItem('noir-theme');
@@ -21,8 +27,13 @@
           else r = 'light';
         }
         var d = document.documentElement;
-        if (r === 'dark') { d.classList.add('dark'); d.style.colorScheme = 'dark'; }
-        else if (r === 'high-contrast') { d.classList.add('high-contrast'); }
+        if (r === 'dark') {
+          d.classList.add('dark'); d.style.colorScheme = 'dark';
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', '#080810');
+        } else if (r === 'high-contrast') {
+          d.classList.add('high-contrast');
+        }
       })();
     </script>
   </head>
