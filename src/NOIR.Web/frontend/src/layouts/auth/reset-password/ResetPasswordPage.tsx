@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ArrowLeft, Lock, Eye, EyeOff, ShieldCheck, KeyRound, Loader2 } from 'lucide-react'
+import { ArrowLeft, Lock, Eye, EyeOff, KeyRound, Loader2 } from 'lucide-react'
 import { Button, Card, CardContent, Input, Label } from '@uikit'
 
 import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
@@ -265,9 +265,11 @@ export const ResetPasswordPage = () => {
         </div>
         <div className="relative z-10 flex items-center justify-center p-8 lg:p-12 w-full">
           <div className="text-center space-y-8 max-w-md animate-fade-in-up">
-            <div className="inline-flex rounded-2xl p-5 bg-white/10 backdrop-blur-sm shadow-lg">
-              <ShieldCheck className="w-14 h-14 text-white" />
-            </div>
+            <svg width="80" height="80" viewBox="0 0 110 110" fill="none" className="orbital-animated mx-auto" aria-hidden="true">
+              <circle cx="56" cy="58" r="48" stroke="white" strokeWidth="7" strokeOpacity="0.9"/>
+              <circle cx="48" cy="50" r="30" stroke="white" strokeWidth="7" strokeOpacity="0.9"/>
+              <circle cx="57" cy="50" r="13" stroke="white" strokeWidth="7" strokeOpacity="0.9"/>
+            </svg>
             <h2 className="text-4xl lg:text-5xl font-bold text-white leading-tight">
               {t('forgotPassword.reset.secureTitle')}
             </h2>

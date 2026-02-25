@@ -28,9 +28,11 @@ export const WelcomePage = () => {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <ViewTransitionLink to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-700 to-cyan-700 flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
-                <ShieldCheck className="w-5 h-5 text-white" />
-              </div>
+              <svg width="40" height="40" viewBox="0 0 110 110" fill="none" className="flex-shrink-0 orbital-animated text-primary transition-transform group-hover:scale-105" aria-hidden="true">
+                <circle cx="56" cy="58" r="48" stroke="currentColor" strokeWidth="7"/>
+                <circle cx="48" cy="50" r="30" stroke="currentColor" strokeWidth="7"/>
+                <circle cx="57" cy="50" r="13" stroke="currentColor" strokeWidth="7"/>
+              </svg>
               <span className="text-xl font-semibold text-foreground">NOIR</span>
             </ViewTransitionLink>
 
@@ -134,9 +136,11 @@ export const WelcomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-blue-700 to-cyan-700">
-                <ShieldCheck className="h-3 w-3 text-white" />
-              </div>
+              <svg width="22" height="22" viewBox="0 0 110 110" fill="none" className="orbital-animated flex-shrink-0 text-primary" aria-hidden="true">
+                <circle cx="56" cy="58" r="48" stroke="currentColor" strokeWidth="10"/>
+                <circle cx="48" cy="50" r="30" stroke="currentColor" strokeWidth="10"/>
+                <circle cx="57" cy="50" r="13" stroke="currentColor" strokeWidth="10"/>
+              </svg>
               <span className="text-sm font-medium text-foreground">NOIR</span>
             </div>
             <div className="flex items-center gap-6">

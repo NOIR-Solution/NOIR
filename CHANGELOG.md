@@ -1,5 +1,18 @@
 # CLAUDE.md Changelog
 
+## [3.1.1] - 2026-02-26
+
+### Changed
+- Replaced ShieldCheck icon with NOIR orbital logo mark (3 concentric animated circles) across all pages: landing page, login, forgot-password, reset-password, verify-OTP, auth-success, portal sidebar
+- Logo uses `currentColor` + `text-primary` on light backgrounds (adapts to light/dark mode) and `stroke="white"` on dark gradient panels
+- Updated `public/favicon.svg` to orbital mark (`#6366F1`)
+
+### Added
+- CSS `.orbital-animated` keyframes in `index.css` (12s/8s/5s speeds, middle ring counter-clockwise)
+- `public/manifest.json` for PWA support
+- PWA meta tags in `index.html` (theme-color, apple-mobile-web-app-*, viewport-fit=cover)
+- `brand/noir-brandkit.html` — NOIR brand kit adapted from Top-Life with indigo color scheme
+
 ### Version 3.0 (2026-02-21)
 - **Rewrote:** Full rewrite from v2.8 (cut 2,390→272 lines, 88% reduction)
 - **Deleted:** `.claude/rules/superclaude-routing.md` (180 lines, skills self-route)

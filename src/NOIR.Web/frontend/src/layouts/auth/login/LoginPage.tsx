@@ -222,9 +222,11 @@ export const LoginPage = () => {
                 {/* Logo & Title */}
                 <div className="text-center space-y-2">
                   <div className="flex items-center justify-center mb-6">
-                    <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-700 to-cyan-700 shadow-xl">
-                      <ShieldCheck className="w-8 h-8 text-white" />
-                    </div>
+                    <svg width="56" height="56" viewBox="0 0 110 110" fill="none" className="orbital-animated text-primary" aria-hidden="true">
+                      <circle cx="56" cy="58" r="48" stroke="currentColor" strokeWidth="7"/>
+                      <circle cx="48" cy="50" r="30" stroke="currentColor" strokeWidth="7"/>
+                      <circle cx="57" cy="50" r="13" stroke="currentColor" strokeWidth="7"/>
+                    </svg>
                   </div>
                   <h1 className="text-3xl font-bold tracking-tight text-foreground">
                     {t('login.pageTitle')}
@@ -370,9 +372,11 @@ export const LoginPage = () => {
         <div className="relative z-10 flex items-center justify-center p-8 lg:p-12 w-full">
           <div className="text-center space-y-8 max-w-md animate-fade-in-up">
             {/* Icon */}
-            <div className="inline-flex rounded-2xl p-5 bg-white/10 backdrop-blur-sm shadow-lg">
-              <ShieldCheck className="w-14 h-14 text-white" />
-            </div>
+            <svg width="80" height="80" viewBox="0 0 110 110" fill="none" className="orbital-animated mx-auto" aria-hidden="true">
+              <circle cx="56" cy="58" r="48" stroke="white" strokeWidth="7" strokeOpacity="0.9"/>
+              <circle cx="48" cy="50" r="30" stroke="white" strokeWidth="7" strokeOpacity="0.9"/>
+              <circle cx="57" cy="50" r="13" stroke="white" strokeWidth="7" strokeOpacity="0.9"/>
+            </svg>
 
             {/* Title */}
             <h2 className="text-4xl lg:text-5xl font-bold text-white leading-tight">

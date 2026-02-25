@@ -173,6 +173,8 @@ dotnet run --project src/NOIR.Web -c Release
 - **Architecture Tests** - Enforce layer boundaries
 - **Comprehensive Docs** - 15,000+ lines of documentation
 - **AI-Assisted** - SuperClaude Framework integration
+- **Progressive Web App** — installable on iOS, Android, and Desktop with offline-ready manifest
+- **Brand Kit**: `brand/noir-brandkit.html` — complete brand reference (logo, colors, typography, mockups)
 
 ---
 

@@ -4,6 +4,45 @@
 
 > Gold Standard: Payment Provider Settings (`PaymentGatewaysTab.tsx` + `GatewayCard.tsx`)
 
+## Orbital Logo Mark
+
+NOIR's logo is 3 concentric offset SVG circles animated with CSS. Always use the pre-built SVG — never recreate it.
+
+### SVG Structure
+```tsx
+<svg width={SIZE} height={SIZE} viewBox="0 0 110 110" fill="none"
+  className="orbital-animated [COLOR_CLASS]" aria-hidden="true">
+  <circle cx="56" cy="58" r="48" stroke={COLOR} strokeWidth="7"/>
+  <circle cx="48" cy="50" r="30" stroke={COLOR} strokeWidth="7"/>
+  <circle cx="57" cy="50" r="13" stroke={COLOR} strokeWidth="7"/>
+</svg>
+```
+
+### Usage Patterns
+
+| Context | Size | stroke | className |
+|---------|------|--------|-----------|
+| Page header (light bg) | 56px | `currentColor` | `orbital-animated text-primary` |
+| Navbar logo | 40px | `currentColor` | `orbital-animated text-primary flex-shrink-0` |
+| Footer mini logo | 22px | `currentColor` | `orbital-animated text-primary flex-shrink-0` |
+| Auth right panel (dark bg) | 80px | `white` w/ `strokeOpacity="0.9"` | `orbital-animated mx-auto` |
+| Sidebar (portal) | 32px | `currentColor` | `orbital-animated text-sidebar-primary` |
+| Favicon (`public/favicon.svg`) | — | `#6366F1` hardcoded | *(CSS vars unavailable in favicon context)* |
+
+### Animation
+Defined in `src/index.css` as `.orbital-animated`:
+- Outer ring: 12s clockwise
+- Middle ring: 8s **counter-clockwise** (`animation-direction: reverse`)
+- Inner ring: 5s clockwise
+
+Respects `prefers-reduced-motion` (animation disabled automatically).
+
+### Rules
+- **Always** `aria-hidden="true"` — decorative SVG, not meaningful content
+- **Never** recreate the SVG inline with different circle positions — use the exact cx/cy/r values
+- **Never** wrap in a gradient `div` container — use `stroke="currentColor"` + Tailwind text color class
+- `strokeWidth="7"` for page logos, `strokeWidth="10"` for 22px and smaller
+
 ## Card Patterns
 
 ### List Page Cards

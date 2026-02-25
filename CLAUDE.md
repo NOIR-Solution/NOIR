@@ -1,6 +1,6 @@
 # NOIR - Claude Code Instructions
 
-> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.1 (2026-02-23).
+> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.1.1 (2026-02-26).
 
 ## SuperClaude Framework
 
@@ -227,6 +227,16 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 - **Create buttons**: No `shadow-lg hover:shadow-xl`. Use `className="group transition-all duration-300"`.
 - **Form spacing**: `space-y-4` in dialog bodies. Never `space-y-5`.
 - **No gradient buttons**: Never use `bg-gradient-to-r` on standard action buttons. Use default Button variants.
+
+### Branding & Logo
+
+**Orbital logo mark**: 3 concentric SVG circles. Always use `.orbital-animated` CSS class for animation.
+- Light backgrounds: `stroke="currentColor"` + `className="... text-primary"` (auto-adapts to light/dark `--primary`)
+- Dark/gradient panels: `stroke="white"` with `strokeOpacity="0.9"`
+- Sidebar: `stroke="currentColor"` + `className="text-sidebar-primary"`
+- Always include `aria-hidden="true"` on decorative logo SVGs
+
+**PWA**: `public/manifest.json` + `index.html` meta tags already configured. Do not duplicate or override.
 
 ### Patterns (Reference)
 
