@@ -143,7 +143,7 @@ export const PaymentsPage = () => {
             <div>
               <CardTitle className="text-lg">{t('payments.title')}</CardTitle>
               <CardDescription>
-                {t('payments.totalCount', { count: totalCount, defaultValue: `${totalCount} payments total` })}
+                {t('labels.showingCountOfTotal', { count: payments.length, total: totalCount })}
               </CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">

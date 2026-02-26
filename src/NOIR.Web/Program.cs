@@ -511,6 +511,11 @@ if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalI
             job => job.ExecuteAsync(CancellationToken.None),
             auditRetentionSettings.CronSchedule);
     }
+
+    RecurringJob.AddOrUpdate<CustomerSegmentationJob>(
+        "customer-segmentation",
+        job => job.ExecuteAsync(CancellationToken.None),
+        Cron.Daily(2));
 }
 
 // Map Health Checks (under /api to avoid React routing conflicts)

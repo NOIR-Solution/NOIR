@@ -22,7 +22,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
     private async Task<HttpClient> GetPlatformAdminClientAsync()
     {
         // Use platform admin (has SystemAdmin permission) for system-level endpoints
-        var loginCommand = new LoginCommand("platform@noir.local", "Platform123!");
+        var loginCommand = new LoginCommand("platform@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
         response.EnsureSuccessStatusCode();
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();

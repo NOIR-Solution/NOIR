@@ -28,6 +28,15 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
     }
 
+    private async Task<HttpClient> GetPlatformAdminClientAsync()
+    {
+        // Platform admin is a system user (TenantId = null) — no X-Tenant header needed
+        var loginCommand = new LoginCommand("platform@noir.local", "123qwe");
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return _factory.CreateAuthenticatedClient(loginResponse!.Auth!.AccessToken);
+    }
+
     #region GetCurrentTenantFeatures Tests
 
     [Fact]
@@ -178,6 +187,80 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    #endregion
+
+    #region SetModuleAvailability Tests
+
+    [Fact]
+    public async Task SetModuleAvailability_AsPlatformAdmin_ShouldSetAvailability()
+    {
+        // Arrange
+        var platformClient = await GetPlatformAdminClientAsync();
+        var request = new { FeatureName = ModuleNames.Content.Blog, IsAvailable = false };
+
+        // Act - Set module unavailable
+        var response = await platformClient.PutAsJsonAsync("/api/features/tenant/default/availability", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<TenantFeatureStateDto>();
+        result.Should().NotBeNull();
+        result!.FeatureName.Should().Be(ModuleNames.Content.Blog);
+        result.IsAvailable.Should().BeFalse();
+
+        // Cleanup - Set module back to available
+        var cleanupRequest = new { FeatureName = ModuleNames.Content.Blog, IsAvailable = true };
+        var cleanupResponse = await platformClient.PutAsJsonAsync("/api/features/tenant/default/availability", cleanupRequest);
+        cleanupResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task SetModuleAvailability_Unauthenticated_ShouldReturn401()
+    {
+        // Arrange
+        var request = new { FeatureName = ModuleNames.Content.Blog, IsAvailable = false };
+
+        // Act
+        var response = await _client.PutAsJsonAsync("/api/features/tenant/default/availability", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    #endregion
+
+    #region GetTenantFeatureStates Tests
+
+    [Fact]
+    public async Task GetTenantFeatureStates_AsPlatformAdmin_ShouldReturnStates()
+    {
+        // Arrange
+        var platformClient = await GetPlatformAdminClientAsync();
+
+        // Act
+        var response = await platformClient.GetAsync("/api/features/tenant/default");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<ModuleCatalogDto>();
+        result.Should().NotBeNull();
+        result!.Modules.Should().NotBeEmpty("the catalog should contain modules with tenant-specific states");
+
+        // Core modules should be present
+        result.Modules.Should().Contain(m => m.Name == ModuleNames.Core.Auth && m.IsCore);
+        result.Modules.Should().Contain(m => m.Name == ModuleNames.Core.Users && m.IsCore);
+    }
+
+    [Fact]
+    public async Task GetTenantFeatureStates_Unauthenticated_ShouldReturn401()
+    {
+        // Act
+        var response = await _client.GetAsync("/api/features/tenant/default");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     #endregion

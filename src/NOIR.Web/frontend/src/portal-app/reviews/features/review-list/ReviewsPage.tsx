@@ -272,10 +272,7 @@ export const ReviewsPage = () => {
               <div>
                 <CardTitle className="text-lg">{t('reviews.allReviews', 'All Reviews')}</CardTitle>
                 <CardDescription>
-                  {t('reviews.totalCount', {
-                    count: totalCount,
-                    defaultValue: `${totalCount} reviews total`,
-                  })}
+                  {t('labels.showingCountOfTotal', { count: reviews.length, total: totalCount })}
                 </CardDescription>
               </div>
               <div className="flex flex-wrap items-center gap-2">

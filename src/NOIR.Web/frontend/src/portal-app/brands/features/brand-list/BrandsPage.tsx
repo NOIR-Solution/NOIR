@@ -121,7 +121,7 @@ export const BrandsPage = () => {
             <div>
               <CardTitle className="text-lg">{t('brands.allBrands', 'All Brands')}</CardTitle>
               <CardDescription>
-                {t('brands.totalCount', { count: totalCount, defaultValue: `${totalCount} brands total` })}
+                {t('labels.showingCountOfTotal', { count: brands.length, total: totalCount })}
               </CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">

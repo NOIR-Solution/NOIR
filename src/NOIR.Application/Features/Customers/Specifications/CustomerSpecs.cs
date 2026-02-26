@@ -197,3 +197,17 @@ public sealed class CustomersByIdsSpec : Specification<Domain.Entities.Customer.
             .TagWith("CustomersByIds");
     }
 }
+
+/// <summary>
+/// Specification to load all active customers for batch segmentation.
+/// Uses AsTracking for mutation via EF change tracking.
+/// </summary>
+public sealed class AllActiveCustomersForSegmentationSpec : Specification<Domain.Entities.Customer.Customer>
+{
+    public AllActiveCustomersForSegmentationSpec()
+    {
+        Query.Where(c => c.IsActive)
+            .AsTracking()
+            .TagWith("AllActiveCustomersForSegmentation");
+    }
+}

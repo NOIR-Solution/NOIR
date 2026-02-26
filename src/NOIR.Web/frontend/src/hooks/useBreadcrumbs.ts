@@ -80,6 +80,10 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
         { label: t('ecommerce.wishlists'), href: '/portal/ecommerce/wishlists' },
         { label: t('breadcrumbs.manage') },
       ],
+      '/portal/ecommerce/payments': [
+        portal, ecommerce,
+        { label: t('ecommerce.payments') },
+      ],
       '/portal/ecommerce/shipping': [
         portal, ecommerce,
         { label: t('ecommerce.shipping') },
@@ -183,6 +187,15 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
         portal, ecommerce,
         { label: t('ecommerce.products'), href: '/portal/ecommerce/products' },
         { label: t('breadcrumbs.editProduct') },
+      ]
+    }
+
+    // Payment detail
+    if (path.match(/^\/portal\/ecommerce\/payments\/[^/]+$/)) {
+      return [
+        portal, ecommerce,
+        { label: t('ecommerce.payments'), href: '/portal/ecommerce/payments' },
+        { label: t('breadcrumbs.paymentDetails') },
       ]
     }
 

@@ -101,7 +101,7 @@ public abstract class BaseWebApplicationFactory : WebApplicationFactory<Program>
 
                 // Platform settings - for seeding platform admin and default tenant
                 ["Platform:PlatformAdmin:Email"] = "platform@noir.local",
-                ["Platform:PlatformAdmin:Password"] = "Platform123!",
+                ["Platform:PlatformAdmin:Password"] = "123qwe",
                 ["Platform:PlatformAdmin:FirstName"] = "Platform",
                 ["Platform:PlatformAdmin:LastName"] = "Administrator",
                 ["Platform:DefaultTenant:Enabled"] = "true",

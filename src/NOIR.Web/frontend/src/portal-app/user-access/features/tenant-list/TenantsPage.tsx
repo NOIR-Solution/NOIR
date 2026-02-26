@@ -112,7 +112,7 @@ export const TenantsPage = () => {
         action={
           <Button className="group transition-all duration-300" onClick={() => openCreate()}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-            {t('tenants.createNew')}
+            {t('tenants.newTenant', 'New Tenant')}
           </Button>
         }
       />

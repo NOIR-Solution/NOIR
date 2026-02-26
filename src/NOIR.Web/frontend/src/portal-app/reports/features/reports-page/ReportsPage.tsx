@@ -10,6 +10,18 @@ import { useTranslation } from 'react-i18next'
 import type { DateRange } from 'react-day-picker'
 import { subDays, startOfDay, endOfDay } from 'date-fns'
 import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts'
+import {
   BarChart3,
   DollarSign,
   ShoppingCart,
@@ -105,11 +117,7 @@ const MetricCard = ({
   </Card>
 )
 
-/**
- * Simple CSS-based bar chart using Tailwind classes.
- * Each bar represents a day's revenue as a percentage of the max.
- */
-const RevenueBarChart = ({
+const RevenueAreaChart = ({
   data,
   isLoading,
 }: {
@@ -118,70 +126,96 @@ const RevenueBarChart = ({
 }) => {
   const { t } = useTranslation('common')
 
+  const chartData = useMemo(
+    () =>
+      data.map((d) => ({
+        ...d,
+        dateLabel: new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+      })),
+    [data]
+  )
+
   if (isLoading) {
-    return (
-      <div className="flex items-end gap-1 h-48">
-        {[...Array(14)].map((_, i) => (
-          <Skeleton key={i} className="flex-1 h-full" />
-        ))}
-      </div>
-    )
+    return <Skeleton className="h-64 w-full" />
   }
 
-  if (!data.length) {
+  if (!chartData.length) {
     return (
-      <div className="flex items-center justify-center h-48 text-sm text-muted-foreground">
-        {t('labels.noData', 'No data available')}
-      </div>
+      <EmptyState
+        icon={BarChart3}
+        title={t('labels.noData', 'No data available')}
+        description={t('reports.noDataDescription', 'Try adjusting the date range to see results.')}
+        className="border-0 rounded-none px-4 py-12"
+      />
     )
   }
-
-  const maxRevenue = Math.max(...data.map((d) => d.revenue), 1)
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-end gap-1 h-48" role="img" aria-label={t('reports.revenueChart', 'Revenue chart')}>
-        {data.map((day, i) => {
-          const heightPercent = (day.revenue / maxRevenue) * 100
-          const dateLabel = new Date(day.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-          return (
-            <div
-              key={i}
-              className="flex-1 flex flex-col items-center justify-end h-full group"
-            >
-              <div className="relative w-full">
-                <div
-                  className="w-full bg-primary/80 hover:bg-primary rounded-t-sm transition-colors duration-200 min-h-[2px]"
-                  style={{ height: `${Math.max(heightPercent, 1)}%`, minHeight: heightPercent > 0 ? '4px' : '2px' }}
-                  title={`${dateLabel}: ${formatCurrency(day.revenue)} (${day.orderCount} ${t('reports.ordersLabel', 'orders')})`}
-                />
-              </div>
-            </div>
-          )
-        })}
-      </div>
-      {/* X-axis labels - show every few labels to avoid overlap */}
-      <div className="flex gap-1">
-        {data.map((day, i) => {
-          const showLabel = data.length <= 14 || i % Math.ceil(data.length / 7) === 0 || i === data.length - 1
-          return (
-            <div key={i} className="flex-1 text-center">
-              {showLabel && (
-                <span className="text-[10px] text-muted-foreground">
-                  {new Date(day.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                </span>
-              )}
-            </div>
-          )
-        })}
-      </div>
-    </div>
+    <ResponsiveContainer width="100%" height={280}>
+      <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id="reportsRevenueGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+        <XAxis
+          dataKey="dateLabel"
+          tick={{ fontSize: 11 }}
+          stroke="hsl(var(--muted-foreground))"
+          interval="preserveStartEnd"
+        />
+        <YAxis
+          tick={{ fontSize: 11 }}
+          stroke="hsl(var(--muted-foreground))"
+          tickFormatter={(v: number) =>
+            v >= 1_000_000
+              ? `${(v / 1_000_000).toFixed(0)}M`
+              : v >= 1_000
+              ? `${(v / 1_000).toFixed(0)}K`
+              : v.toString()
+          }
+        />
+        <RechartsTooltip
+          contentStyle={{
+            borderRadius: '8px',
+            border: '1px solid hsl(var(--border))',
+            backgroundColor: 'hsl(var(--card))',
+            color: 'hsl(var(--card-foreground))',
+          }}
+          formatter={(value, name) => [
+            name === 'revenue'
+              ? formatCurrency(Number(value ?? 0))
+              : Number(value ?? 0).toLocaleString(),
+            name === 'revenue'
+              ? t('reports.revenue', 'Revenue')
+              : t('reports.ordersLabel', 'orders'),
+          ]}
+          labelFormatter={(label) => String(label)}
+        />
+        <Area
+          type="monotone"
+          dataKey="revenue"
+          stroke="hsl(var(--primary))"
+          fill="url(#reportsRevenueGradient)"
+          strokeWidth={2}
+          dot={false}
+          activeDot={{ r: 4 }}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
   )
 }
 
-/**
- * Horizontal bar chart for category breakdown.
- */
+const CATEGORY_CHART_COLORS = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+]
+
 const CategoryBreakdownChart = ({
   data,
   isLoading,
@@ -189,54 +223,65 @@ const CategoryBreakdownChart = ({
   data: CategoryRevenueDto[]
   isLoading: boolean
 }) => {
+  const { t } = useTranslation('common')
+
+  const chartData = useMemo(
+    () => data.slice(0, 8).map((cat) => ({ name: cat.categoryName, revenue: cat.revenue })),
+    [data]
+  )
+
   if (isLoading) {
-    return (
-      <div className="space-y-3">
-        {[...Array(5)].map((_, i) => (
-          <Skeleton key={i} className="h-8 w-full" />
-        ))}
-      </div>
-    )
+    return <Skeleton className="h-64 w-full" />
   }
 
-  if (!data.length) {
+  if (!chartData.length) {
     return null
   }
 
-  const maxRevenue = Math.max(...data.map((d) => d.revenue), 1)
-  const colors = [
-    'bg-primary',
-    'bg-blue-500',
-    'bg-emerald-500',
-    'bg-amber-500',
-    'bg-rose-500',
-    'bg-violet-500',
-    'bg-cyan-500',
-    'bg-orange-500',
-  ]
-
   return (
-    <div className="space-y-3">
-      {data.slice(0, 8).map((cat, i) => {
-        const widthPercent = (cat.revenue / maxRevenue) * 100
-        return (
-          <div key={cat.categoryId ?? i} className="space-y-1">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium truncate">{cat.categoryName}</span>
-              <span className="text-muted-foreground ml-2 shrink-0">
-                {formatCurrency(cat.revenue)}
-              </span>
-            </div>
-            <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-              <div
-                className={`h-full rounded-full ${colors[i % colors.length]} transition-all duration-500`}
-                style={{ width: `${Math.max(widthPercent, 2)}%` }}
-              />
-            </div>
-          </div>
-        )
-      })}
-    </div>
+    <ResponsiveContainer width="100%" height={Math.max(chartData.length * 44, 200)}>
+      <BarChart
+        data={chartData}
+        layout="vertical"
+        margin={{ top: 0, right: 16, left: 0, bottom: 0 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+        <XAxis
+          type="number"
+          tick={{ fontSize: 11 }}
+          stroke="hsl(var(--muted-foreground))"
+          tickFormatter={(v: number) =>
+            v >= 1_000_000
+              ? `${(v / 1_000_000).toFixed(0)}M`
+              : v >= 1_000
+              ? `${(v / 1_000).toFixed(0)}K`
+              : v.toString()
+          }
+        />
+        <YAxis
+          type="category"
+          dataKey="name"
+          tick={{ fontSize: 11 }}
+          stroke="hsl(var(--muted-foreground))"
+          width={120}
+          tickLine={false}
+        />
+        <RechartsTooltip
+          contentStyle={{
+            borderRadius: '8px',
+            border: '1px solid hsl(var(--border))',
+            backgroundColor: 'hsl(var(--card))',
+            color: 'hsl(var(--card-foreground))',
+          }}
+          formatter={(value) => [formatCurrency(Number(value ?? 0)), t('reports.revenue', 'Revenue')]}
+        />
+        <Bar dataKey="revenue" radius={[0, 4, 4, 0]}>
+          {chartData.map((_, i) => (
+            <Cell key={i} fill={CATEGORY_CHART_COLORS[i % CATEGORY_CHART_COLORS.length]} />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
   )
 }
 
@@ -435,7 +480,7 @@ export const ReportsPage = () => {
                 <CardDescription>{t('reports.revenueOverTimeDesc', 'Daily revenue breakdown for the selected period')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <RevenueBarChart
+                <RevenueAreaChart
                   data={revenueData?.revenueByDay ?? []}
                   isLoading={revenueLoading}
                 />
@@ -744,32 +789,41 @@ export const ReportsPage = () => {
                 </CardHeader>
                 <CardContent>
                   {customerLoading ? (
-                    <div className="space-y-3">
-                      {[...Array(5)].map((_, i) => (
-                        <Skeleton key={i} className="h-8 w-full" />
-                      ))}
-                    </div>
+                    <Skeleton className="h-64 w-full" />
                   ) : customerData?.acquisitionByMonth?.length ? (
-                    <div className="rounded-xl border border-border/50 overflow-hidden">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>{t('reports.month', 'Month')}</TableHead>
-                            <TableHead className="text-right">{t('reports.newCustomers', 'New Customers')}</TableHead>
-                            <TableHead className="text-right">{t('reports.revenue', 'Revenue')}</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {customerData.acquisitionByMonth.map((month) => (
-                            <TableRow key={month.month}>
-                              <TableCell className="font-medium">{month.month}</TableCell>
-                              <TableCell className="text-right">{month.newCustomers}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(month.revenue)}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
+                    <ResponsiveContainer width="100%" height={280}>
+                      <BarChart
+                        data={customerData.acquisitionByMonth}
+                        margin={{ top: 5, right: 10, left: 0, bottom: 0 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis
+                          dataKey="month"
+                          tick={{ fontSize: 11 }}
+                          stroke="hsl(var(--muted-foreground))"
+                          interval="preserveStartEnd"
+                        />
+                        <YAxis
+                          tick={{ fontSize: 11 }}
+                          stroke="hsl(var(--muted-foreground))"
+                        />
+                        <RechartsTooltip
+                          contentStyle={{
+                            borderRadius: '8px',
+                            border: '1px solid hsl(var(--border))',
+                            backgroundColor: 'hsl(var(--card))',
+                            color: 'hsl(var(--card-foreground))',
+                          }}
+                          formatter={(value, name) => [
+                            Number(value ?? 0).toLocaleString(),
+                            name === 'newCustomers'
+                              ? t('reports.newCustomers', 'New Customers')
+                              : t('reports.returningCustomers', 'Returning Customers'),
+                          ]}
+                        />
+                        <Bar dataKey="newCustomers" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   ) : (
                     <EmptyState
                       icon={Users}

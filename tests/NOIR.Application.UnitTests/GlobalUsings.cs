@@ -113,6 +113,7 @@ global using NOIR.Domain.Interfaces;
 // NOIR Infrastructure
 global using NOIR.Infrastructure;
 global using NOIR.Infrastructure.BackgroundJobs;
+global using NOIR.Infrastructure.Customers;
 global using NOIR.Infrastructure.Email;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Identity.Authorization;

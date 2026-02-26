@@ -172,7 +172,7 @@ export const InventoryReceiptsPage = () => {
             <div>
               <CardTitle className="text-lg">{t('inventory.allReceipts', 'All Receipts')}</CardTitle>
               <CardDescription>
-                {t('inventory.totalCount', { count: totalCount, defaultValue: `${totalCount} receipts total` })}
+                {t('labels.showingCountOfTotal', { count: receipts.length, total: totalCount })}
               </CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">

@@ -26,8 +26,8 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
     /// </summary>
     private async Task<HttpClient> GetPlatformAdminClientAsync()
     {
-        // Platform admin: platform@noir.local / Platform123! (TenantId = null)
-        var loginCommand = new LoginCommand("platform@noir.local", "Platform123!");
+        // Platform admin: platform@noir.local / 123qwe (TenantId = null)
+        var loginCommand = new LoginCommand("platform@noir.local", "123qwe");
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
         response.EnsureSuccessStatusCode();
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();

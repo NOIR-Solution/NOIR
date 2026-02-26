@@ -84,6 +84,7 @@ global using NOIR.Domain.Interfaces;
 // NOIR Infrastructure
 global using NOIR.Infrastructure;
 global using NOIR.Infrastructure.Audit;
+global using NOIR.Infrastructure.Customers;
 global using NOIR.Infrastructure.Identity;
 global using NOIR.Infrastructure.Localization;
 global using NOIR.Infrastructure.Logging;

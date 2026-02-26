@@ -78,7 +78,7 @@ export const RolesPage = () => {
         action={
           <Button className="group transition-all duration-300" onClick={() => openCreate()}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-            {t('roles.create', 'Create Role')}
+            {t('roles.newRole', 'New Role')}
           </Button>
         }
       />

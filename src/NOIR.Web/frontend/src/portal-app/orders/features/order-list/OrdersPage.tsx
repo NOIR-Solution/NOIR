@@ -116,7 +116,7 @@ export const OrdersPage = () => {
               onClick={() => navigate('/portal/ecommerce/orders/create')}
             >
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-              {t('orders.createNew', 'Create Order')}
+              {t('orders.newOrder', 'New Order')}
             </Button>
           ) : undefined
         }
@@ -128,7 +128,7 @@ export const OrdersPage = () => {
             <div>
               <CardTitle className="text-lg">{t('orders.allOrders', 'All Orders')}</CardTitle>
               <CardDescription>
-                {t('orders.totalCount', { count: totalCount, defaultValue: `${totalCount} orders total` })}
+                {t('labels.showingCountOfTotal', { count: orders.length, total: totalCount })}
               </CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">
