@@ -2666,7 +2666,8 @@
       "customers": "Khách Hàng",
       "catalog": "Danh Mục Sản Phẩm",
       "content": "Nội Dung",
-      "tenantSettings": "Cài Đặt Tenant"
+      "tenantSettings": "Cài Đặt Tenant",
+      "integrations": "Tích Hợp"
     },
     "tenantSettingsModule": "Cài Đặt Tenant",
     "tenantSettingsModuleDesc": "Mẫu email, trang pháp lý và cấu hình tenant"
@@ -2735,6 +2736,10 @@
       "emailtemplates.description": "Cấu hình mẫu email",
       "legalpages": "Trang Pháp Lý",
       "legalpages.description": "Điều khoản dịch vụ và tài liệu pháp lý"
+    },
+    "integrations": {
+      "webhooks": "Webhooks",
+      "webhooks.description": "Đăng ký webhook cho thông báo sự kiện"
     },
     "analytics": {
       "reports": "Báo Cáo",

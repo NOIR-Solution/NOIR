@@ -22,6 +22,7 @@ import {
   UserCheck,
   UsersRound,
   Warehouse,
+  Webhook,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -52,6 +53,7 @@ export const iconMap: Record<string, LucideIcon> = {
   UserCheck,
   UsersRound,
   Warehouse,
+  Webhook,
 }
 
 /**
@@ -130,6 +132,13 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       { name: 'Content.Blog', titleKey: 'blog.posts' },
       { name: 'Content.BlogCategories', titleKey: 'blog.categories' },
       { name: 'Content.BlogTags', titleKey: 'blog.tags' },
+    ],
+  },
+  {
+    key: 'integrations',
+    labelKey: 'featureManagement.categories.integrations',
+    modules: [
+      { name: 'Integrations.Webhooks', titleKey: 'webhooks.title' },
     ],
   },
   {

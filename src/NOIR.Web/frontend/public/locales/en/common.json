@@ -2666,7 +2666,8 @@
       "customers": "Customers",
       "catalog": "Catalog",
       "content": "Content",
-      "tenantSettings": "Tenant Settings"
+      "tenantSettings": "Tenant Settings",
+      "integrations": "Integrations"
     },
     "tenantSettingsModule": "Tenant Settings",
     "tenantSettingsModuleDesc": "Email templates, legal pages, and tenant configuration"
@@ -2735,6 +2736,10 @@
       "emailtemplates.description": "Email template configuration",
       "legalpages": "Legal Pages",
       "legalpages.description": "Terms of service and legal documents"
+    },
+    "integrations": {
+      "webhooks": "Webhooks",
+      "webhooks.description": "Outbound webhook subscriptions for event notifications"
     },
     "analytics": {
       "reports": "Reports",
