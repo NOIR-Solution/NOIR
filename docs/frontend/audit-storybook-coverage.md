@@ -4,6 +4,7 @@
 **Storybook Version:** @storybook/react-vite v10.2.8
 **Framework:** React + Vite + Tailwind CSS 4
 **Build Status:** SUCCESS (0 errors)
+**Runtime Health:** 674/674 stories render without errors (verified via Playwright headless)
 
 ---
 
@@ -38,7 +39,9 @@ src/uikit/{component-name}/
 |------|-------|-------------|
 | **Self-contained** | 59 | Component in uikit, story in same directory |
 | **Cross-reference** | 4 | Story imports actual component from `src/components/` |
-| **Visual replica** | 3 | Story uses simplified demo (component has complex context deps) |
+| **Visual replica** | 19 | Story uses simplified demo (component has complex context deps) |
+
+> **Visual Replica Pattern:** 19 stories use self-contained demo components instead of importing the real implementation. This is intentional — the real components depend on providers (`@dnd-kit`, `react-router`, `AuthContext`, `RegionalSettingsContext`, etc.) not available in Storybook. Each visual replica story is clearly marked with a `// --- Visual Replica ---` comment at the top and documents limitations in Storybook's docs panel. See the [full list below](#visual-replica-stories).
 
 **7 components are NOT exported from `src/uikit/index.ts`** (the `@uikit` barrel):
 `command-palette`, `countdown-timer`, `offline-indicator`, `otp-input`, `password-strength-indicator`, `sidebar`, `view-transition-link`
@@ -252,6 +255,62 @@ These stories were previously at 3 stories ("minimal"). All have been expanded:
 
 ---
 
+## Visual Replica Stories
+
+19 stories use self-contained demo components. **Drag-and-drop, routing, auth context, and i18n are non-functional in these stories.** All other interactions (buttons, forms, state changes) work.
+
+| Story | Real Component Location | Missing Provider(s) | What Does NOT Work |
+|-------|------------------------|---------------------|--------------------|
+| AnimatedOutlet | `components/layout/AnimatedOutlet.tsx` | React Router, framer-motion | Page transitions |
+| BulkVariantEditor | `components/products/BulkVariantEditor.tsx` | react-i18next, API hooks | i18n labels, API calls |
+| CommandPalette | `components/command-palette/CommandPalette.tsx` | React Router, AuthContext | Navigation, auth checks |
+| EditableVariantRow | `components/products/EditableVariantRow.tsx` | react-i18next | i18n labels |
+| EditableVariantsTable | `components/products/EditableVariantsTable.tsx` | react-i18next, API hooks | i18n labels, API calls |
+| FeatureGuard | `components/features/FeatureGuard.tsx` | FeatureContext, react-i18next | Feature flag checks |
+| ImageUploadZone | `components/products/ImageUploadZone.tsx` | react-i18next, file upload API | File upload, i18n |
+| OnboardingChecklist | `components/onboarding/OnboardingChecklist.tsx` | React Router, localStorage | Navigation, persistence |
+| OrganizationSelection | `components/onboarding/OrganizationSelection.tsx` | AuthContext, react-i18next | Auth, tenant selection |
+| PermissionGate | `components/auth/PermissionGate.tsx` | AuthContext (usePermissions) | Permission checks |
+| ProductAttributesSection | `components/products/ProductAttributesSection.tsx` | react-i18next, API hooks | i18n labels, API calls |
+| ProductAttributesSectionCreate | `components/products/ProductAttributesSectionCreate.tsx` | react-i18next, API hooks | i18n labels, API calls |
+| ProductOptionsManager | `components/products/ProductOptionsManager.tsx` | react-i18next | i18n labels |
+| ProtectedRoute | `components/auth/ProtectedRoute.tsx` | AuthContext, React Router | Auth, routing |
+| Sidebar | `components/portal/Sidebar.tsx` | React Router, AuthContext | Navigation, auth |
+| SkipLink | `components/accessibility/SkipLink.tsx` | react-i18next | i18n labels |
+| **SortableImageGallery** | `components/products/SortableImageGallery.tsx` | **@dnd-kit/core, @dnd-kit/sortable** | **Drag-and-drop reordering** |
+| VariantGenerator | `components/products/VariantGenerator.tsx` | react-i18next, API hooks | i18n labels, API calls |
+| VariantMatrixView | `components/products/VariantMatrixView.tsx` | react-i18next | i18n labels |
+| VariantOptionsSelector | `components/products/VariantOptionsSelector.tsx` | react-i18next | i18n labels |
+| WelcomeModal | `components/onboarding/WelcomeModal.tsx` | AuthContext, framer-motion | Auth, animations |
+
+> **Convention:** Every visual replica story MUST have:
+> 1. `// --- Visual Replica ---` comment at the top of the file
+> 2. A `parameters.docs.description.component` or `story` explaining what works and what doesn't
+> 3. The real component path documented in the description
+
+---
+
+## Runtime Health Check (2026-02-27)
+
+Automated Playwright headless verification of all 674 stories across 97 components.
+
+| Result | Count | Details |
+|--------|-------|---------|
+| OK | **674** | Story renders without errors or blank page |
+| ERROR | 0 | — |
+| BLANK | 0 | — |
+
+**Issues fixed in this audit:**
+
+| Story | Issue | Fix |
+|-------|-------|-----|
+| TrackingTimeline (8 stories) | `useRegionalSettings` throws outside `RegionalSettingsProvider` | Switched to `useRegionalSettingsOptional` with fallback formatter |
+| OnboardingChecklist AllCompleted | React reused `useState` initial value across stories | Added `key` prop in render function to force remount |
+| ImageLightbox HidePlaceholder | Intentionally returns `null` — appeared blank | Wrapped in dashed border container with explanatory label |
+| ThumbHashImage BrokenImage | External invalid URL caused timeout | Changed to local `/non-existent-image-404.jpg` |
+
+---
+
 ## Issues and Recommendations
 
 ### Issue 1: Dialog ScrollableContent Anti-Pattern
@@ -267,13 +326,13 @@ Per CLAUDE.md: *"Never wrap form inputs in any overflow container"* — flex con
 
 **Recommendation:** Add a JSDoc comment to the story noting the focus-ring clipping caveat.
 
-### Issue 2: Visual Replica Stories Cannot Catch API Regressions
+### Issue 2: 19 Visual Replica Stories Cannot Catch API Regressions
 
-**Stories affected:** Sidebar, CommandPalette, OfflineIndicator
+**Stories affected:** See [Visual Replica Stories](#visual-replica-stories) table above (19 components).
 
-These stories use simplified demo components rather than importing the actual implementation. If the real components change their API, the stories won't fail.
+These stories use simplified demo components rather than importing the actual implementation. If the real components change their API, the stories won't fail. The most impactful limitation is **SortableImageGallery** where drag-and-drop is completely non-functional.
 
-**Recommendation:** These components are complex enough that visual replicas are the right choice for Storybook. The stories clearly document this in their comments. No action required, but the limitation should be acknowledged.
+**Recommendation:** Adding shared Storybook decorators for `react-i18next`, `RegionalSettingsContext`, and `React Router` would allow many of these to use the real component. `@dnd-kit` and `AuthContext` would still require visual replicas. Each visual replica clearly documents its limitations in both code comments and Storybook docs panel.
 
 ### Issue 3: 7 Components Not in @uikit Barrel
 
@@ -356,9 +415,9 @@ The NOIR UIKit Storybook has **near-100% coverage across 92 component directorie
 - Loading and skeleton states well-covered across the board
 
 **Remaining Gaps:**
-1. Complex product editor components (`SortableImageGallery`, `EditableVariantsTable`, `ProductAttributesSection`) in `src/components/products/` have no stories — highest value addition
-2. 7 components not in `@uikit` barrel may be undiscoverable to new developers
-3. No shared Storybook decorators for i18n/router providers (duplicated setup in 5+ story files)
-4. Dialog `ScrollableContent` story should warn about focus-ring clipping anti-pattern
+1. 7 components not in `@uikit` barrel may be undiscoverable to new developers
+2. No shared Storybook decorators for i18n/router providers (19 visual replicas could be reduced with global decorators)
+3. Dialog `ScrollableContent` story should warn about focus-ring clipping anti-pattern
+4. SortableImageGallery drag-and-drop is non-functional in Storybook (visual replica — needs @dnd-kit providers)
 
 *Report updated 2026-02-23 (originally generated by storybook-auditor on 2026-02-20)*

@@ -251,6 +251,16 @@ const meta = {
   tags: ['autodocs'],
   parameters: {
     layout: 'padded',
+    docs: {
+      description: {
+        component:
+          '**Visual Replica** — The real `SortableImageGallery` depends on `@dnd-kit/core`, `@dnd-kit/sortable`, ' +
+          'and `react-i18next` which require providers not available in Storybook.\n\n' +
+          '**What works:** Set primary, edit alt text, delete, hover overlays, empty state.\n\n' +
+          '**What does NOT work:** Drag-and-drop reordering (the grip handle is visible but non-functional).\n\n' +
+          'Real component: `src/components/products/SortableImageGallery.tsx`',
+      },
+    },
   },
 } satisfies Meta<typeof SortableImageGalleryDemo>
 
