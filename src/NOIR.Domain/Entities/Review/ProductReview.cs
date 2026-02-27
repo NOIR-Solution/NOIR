@@ -53,7 +53,7 @@ public class ProductReview : TenantAggregateRoot<Guid>
         if (rating < 1 || rating > 5)
             throw new ArgumentOutOfRangeException(nameof(rating), "Rating must be between 1 and 5.");
 
-        return new ProductReview(Guid.NewGuid(), tenantId)
+        var review = new ProductReview(Guid.NewGuid(), tenantId)
         {
             ProductId = productId,
             UserId = userId,
@@ -66,6 +66,9 @@ public class ProductReview : TenantAggregateRoot<Guid>
             HelpfulVotes = 0,
             NotHelpfulVotes = 0
         };
+
+        review.AddDomainEvent(new ReviewCreatedEvent(review.Id, productId, userId, rating));
+        return review;
     }
 
     /// <summary>
@@ -74,6 +77,8 @@ public class ProductReview : TenantAggregateRoot<Guid>
     public void Approve()
     {
         Status = ReviewStatus.Approved;
+
+        AddDomainEvent(new ReviewApprovedEvent(Id, ProductId));
     }
 
     /// <summary>
@@ -82,6 +87,8 @@ public class ProductReview : TenantAggregateRoot<Guid>
     public void Reject()
     {
         Status = ReviewStatus.Rejected;
+
+        AddDomainEvent(new ReviewRejectedEvent(Id, ProductId));
     }
 
     /// <summary>
@@ -93,6 +100,8 @@ public class ProductReview : TenantAggregateRoot<Guid>
 
         AdminResponse = response.Trim();
         AdminRespondedAt = DateTimeOffset.UtcNow;
+
+        AddDomainEvent(new ReviewAdminRespondedEvent(Id, ProductId));
     }
 
     /// <summary>

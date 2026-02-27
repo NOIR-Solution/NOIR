@@ -225,6 +225,7 @@ global using NOIR.Domain.Entities.Analytics;
 global using NOIR.Domain.Entities.Inventory;
 global using NOIR.Domain.Entities.Review;
 global using NOIR.Domain.Entities.Shipping;
+global using NOIR.Domain.Entities.Webhook;
 global using NOIR.Domain.Events.Cart;
 global using NOIR.Domain.Events.Checkout;
 global using NOIR.Domain.Events.Order;

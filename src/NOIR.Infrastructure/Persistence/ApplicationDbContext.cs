@@ -128,6 +128,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Domain.Entities.Promotion.PromotionCategory> PromotionCategories => Set<Domain.Entities.Promotion.PromotionCategory>();
     public DbSet<Domain.Entities.Promotion.PromotionUsage> PromotionUsages => Set<Domain.Entities.Promotion.PromotionUsage>();
 
+    // Webhook entities
+    public DbSet<Domain.Entities.Webhook.WebhookSubscription> WebhookSubscriptions => Set<Domain.Entities.Webhook.WebhookSubscription>();
+    public DbSet<Domain.Entities.Webhook.WebhookDeliveryLog> WebhookDeliveryLogs => Set<Domain.Entities.Webhook.WebhookDeliveryLog>();
+
     /// <summary>
     /// Configures global type conventions.
     /// This reduces repetitive configuration and ensures consistency.

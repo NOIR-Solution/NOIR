@@ -54,4 +54,9 @@ public static class ModuleNames
         public const string Reports = "Analytics.Reports";
         public const string DeveloperLogs = "Analytics.DeveloperLogs";
     }
+
+    public static class Integrations
+    {
+        public const string Webhooks = "Integrations.Webhooks";
+    }
 }

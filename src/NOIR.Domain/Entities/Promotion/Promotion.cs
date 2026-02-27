@@ -128,7 +128,7 @@ public class Promotion : TenantAggregateRoot<Guid>
         if (endDate <= startDate)
             throw new ArgumentException("End date must be after start date.", nameof(endDate));
 
-        return new Promotion(Guid.NewGuid(), tenantId)
+        var promotion = new Promotion(Guid.NewGuid(), tenantId)
         {
             Name = name,
             Code = code.ToUpperInvariant(),
@@ -148,6 +148,9 @@ public class Promotion : TenantAggregateRoot<Guid>
             Status = PromotionStatus.Draft,
             ApplyLevel = applyLevel
         };
+
+        promotion.AddDomainEvent(new PromotionCreatedEvent(promotion.Id, code.ToUpperInvariant(), name));
+        return promotion;
     }
 
     /// <summary>
@@ -195,6 +198,8 @@ public class Promotion : TenantAggregateRoot<Guid>
 
         IsActive = true;
         Status = PromotionStatus.Active;
+
+        AddDomainEvent(new PromotionActivatedEvent(Id, Code));
     }
 
     /// <summary>
@@ -207,6 +212,8 @@ public class Promotion : TenantAggregateRoot<Guid>
 
         IsActive = false;
         Status = PromotionStatus.Draft;
+
+        AddDomainEvent(new PromotionDeactivatedEvent(Id, Code));
     }
 
     /// <summary>
@@ -227,6 +234,8 @@ public class Promotion : TenantAggregateRoot<Guid>
     public void IncrementUsage()
     {
         CurrentUsageCount++;
+
+        AddDomainEvent(new PromotionAppliedEvent(Id, Code, CurrentUsageCount));
     }
 
     /// <summary>

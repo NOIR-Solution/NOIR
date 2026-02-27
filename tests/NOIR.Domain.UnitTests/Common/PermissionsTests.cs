@@ -295,6 +295,16 @@ public class PermissionsTests
         Permissions.Groups.Features.Should().Contain(Permissions.FeaturesUpdate);
     }
 
+    [Fact]
+    public void Groups_Webhooks_ShouldContainAllWebhookPermissions()
+    {
+        // Assert
+        Permissions.Groups.Webhooks.Should().HaveCount(3);
+        Permissions.Groups.Webhooks.Should().Contain(Permissions.WebhooksRead);
+        Permissions.Groups.Webhooks.Should().Contain(Permissions.WebhooksManage);
+        Permissions.Groups.Webhooks.Should().Contain(Permissions.WebhooksTest);
+    }
+
     #endregion
 
     #region All Permissions Tests
@@ -328,7 +338,8 @@ public class PermissionsTests
             + Permissions.Groups.Payments.Count
             + Permissions.Groups.Customers.Count
             + Permissions.Groups.CustomerGroups.Count
-            + Permissions.Groups.Features.Count;
+            + Permissions.Groups.Features.Count
+            + Permissions.Groups.Webhooks.Count;
 
         // Assert
         Permissions.All.Should().HaveCount(expectedCount);

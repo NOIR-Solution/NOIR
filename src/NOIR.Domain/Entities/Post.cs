@@ -139,7 +139,7 @@ public class Post : TenantAggregateRoot<Guid>
         if (authorId == Guid.Empty)
             throw new ArgumentException("AuthorId is required.", nameof(authorId));
 
-        return new Post
+        var post = new Post
         {
             Id = Guid.NewGuid(),
             Title = title,
@@ -148,6 +148,10 @@ public class Post : TenantAggregateRoot<Guid>
             Status = PostStatus.Draft,
             TenantId = tenantId
         };
+
+        post.AddDomainEvent(new PostCreatedEvent(post.Id, title, post.Slug));
+
+        return post;
     }
 
     /// <summary>
@@ -166,6 +170,8 @@ public class Post : TenantAggregateRoot<Guid>
         ContentJson = contentJson;
         ContentHtml = contentHtml;
         ReadingTimeMinutes = CalculateReadingTime(contentHtml);
+
+        AddDomainEvent(new PostUpdatedEvent(Id, Title));
     }
 
     /// <summary>
@@ -223,6 +229,8 @@ public class Post : TenantAggregateRoot<Guid>
         Status = PostStatus.Published;
         PublishedAt = DateTimeOffset.UtcNow;
         ScheduledPublishAt = null;
+
+        AddDomainEvent(new PostPublishedEvent(Id, Title, Slug));
     }
 
     /// <summary>
@@ -243,6 +251,8 @@ public class Post : TenantAggregateRoot<Guid>
         Status = PostStatus.Draft;
         PublishedAt = null;
         ScheduledPublishAt = null;
+
+        AddDomainEvent(new PostUnpublishedEvent(Id, Title));
     }
 
     /// <summary>

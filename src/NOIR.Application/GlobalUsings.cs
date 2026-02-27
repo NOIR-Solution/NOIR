@@ -24,8 +24,14 @@ global using System.ComponentModel.DataAnnotations;
 global using FluentValidation;
 global using FluentValidation.Results;
 
+// System - Net
+global using System.Net;
+global using System.Net.Http;
+global using System.Net.Sockets;
+
 // System - Security
 global using System.Security.Claims;
+global using System.Security.Cryptography;
 
 // Microsoft - Entity Framework Core (used by handlers via IApplicationDbContext)
 global using Microsoft.EntityFrameworkCore;
@@ -86,6 +92,8 @@ global using NOIR.Application.Features.Wishlists.DTOs;
 global using NOIR.Application.Features.Wishlists.Specifications;
 global using NOIR.Application.Features.FeatureManagement.DTOs;
 global using NOIR.Application.Features.FeatureManagement.Specifications;
+global using NOIR.Application.Features.Webhooks.DTOs;
+global using NOIR.Application.Features.Webhooks.Specifications;
 global using NOIR.Application.Modules;
 global using NOIR.Application.Specifications;
 global using NOIR.Application.Specifications.Notifications;
@@ -109,13 +117,22 @@ global using NOIR.Domain.Entities.Product;
 global using NOIR.Domain.Entities.Analytics;
 global using NOIR.Domain.Entities.Review;
 global using NOIR.Domain.Entities.Shipping;
+global using NOIR.Domain.Entities.Webhook;
 global using NOIR.Domain.Entities.Wishlist;
 global using NOIR.Domain.Enums;
 global using NOIR.Domain.Events.Cart;
 global using NOIR.Domain.Events.Checkout;
+global using NOIR.Domain.Events.Customer;
+global using NOIR.Domain.Events.Inventory;
 global using NOIR.Domain.Events.Order;
 global using NOIR.Domain.Events.Payment;
 global using NOIR.Domain.Events.Product;
+global using NOIR.Domain.Events.Review;
+global using NOIR.Domain.Events.Shipping;
+global using NOIR.Domain.Events.Webhook;
+global using NOIR.Domain.Events.Wishlist;
+global using NOIR.Domain.Events.Promotion;
+global using NOIR.Domain.Events.Blog;
 global using NOIR.Domain.ValueObjects;
 global using NOIR.Domain.Interfaces;
 global using NOIR.Domain.Specifications;

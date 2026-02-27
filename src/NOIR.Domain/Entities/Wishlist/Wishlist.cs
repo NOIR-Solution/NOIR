@@ -31,13 +31,16 @@ public class Wishlist : TenantAggregateRoot<Guid>
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
-        return new Wishlist(Guid.NewGuid(), tenantId)
+        var wishlist = new Wishlist(Guid.NewGuid(), tenantId)
         {
             UserId = userId,
             Name = name,
             IsDefault = isDefault,
             IsPublic = false
         };
+
+        wishlist.AddDomainEvent(new WishlistCreatedEvent(wishlist.Id, userId, name));
+        return wishlist;
     }
 
     /// <summary>
@@ -72,6 +75,8 @@ public class Wishlist : TenantAggregateRoot<Guid>
             .Replace("/", "_")
             .TrimEnd('=');
         IsPublic = true;
+
+        AddDomainEvent(new WishlistSharedEvent(Id, UserId));
         return ShareToken;
     }
 
@@ -91,6 +96,8 @@ public class Wishlist : TenantAggregateRoot<Guid>
 
         var item = WishlistItem.Create(Id, productId, productVariantId, note, TenantId);
         Items.Add(item);
+
+        AddDomainEvent(new WishlistItemAddedEvent(Id, productId, productVariantId));
         return item;
     }
 
@@ -103,6 +110,8 @@ public class Wishlist : TenantAggregateRoot<Guid>
         if (item != null)
         {
             Items.Remove(item);
+
+            AddDomainEvent(new WishlistItemRemovedEvent(Id, wishlistItemId));
         }
     }
 }

@@ -70,13 +70,16 @@ public class InventoryReceipt : TenantAggregateRoot<Guid>
         string? notes = null,
         string? tenantId = null)
     {
-        return new InventoryReceipt(Guid.NewGuid(), tenantId)
+        var receipt = new InventoryReceipt(Guid.NewGuid(), tenantId)
         {
             ReceiptNumber = receiptNumber,
             Type = type,
             Status = InventoryReceiptStatus.Draft,
             Notes = notes
         };
+
+        receipt.AddDomainEvent(new InventoryReceiptCreatedEvent(receipt.Id, receiptNumber, type));
+        return receipt;
     }
 
     /// <summary>
@@ -123,6 +126,8 @@ public class InventoryReceipt : TenantAggregateRoot<Guid>
         Status = InventoryReceiptStatus.Confirmed;
         ConfirmedBy = userId;
         ConfirmedAt = DateTimeOffset.UtcNow;
+
+        AddDomainEvent(new InventoryReceiptConfirmedEvent(Id, ReceiptNumber, Type));
     }
 
     /// <summary>
@@ -137,5 +142,7 @@ public class InventoryReceipt : TenantAggregateRoot<Guid>
         CancelledBy = userId;
         CancelledAt = DateTimeOffset.UtcNow;
         CancellationReason = reason;
+
+        AddDomainEvent(new InventoryReceiptCancelledEvent(Id, ReceiptNumber, reason));
     }
 }

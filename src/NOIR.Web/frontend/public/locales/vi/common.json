@@ -2666,7 +2666,8 @@
       "customers": "Khách Hàng",
       "catalog": "Danh Mục Sản Phẩm",
       "content": "Nội Dung",
-      "tenantSettings": "Cài Đặt Tenant"
+      "tenantSettings": "Cài Đặt Tenant",
+      "integrations": "Tích Hợp"
     },
     "tenantSettingsModule": "Cài Đặt Tenant",
     "tenantSettingsModuleDesc": "Mẫu email, trang pháp lý và cấu hình tenant"
@@ -2736,6 +2737,10 @@
       "legalpages": "Trang Pháp Lý",
       "legalpages.description": "Điều khoản dịch vụ và tài liệu pháp lý"
     },
+    "integrations": {
+      "webhooks": "Webhooks",
+      "webhooks.description": "Đăng ký webhook cho thông báo sự kiện"
+    },
     "analytics": {
       "reports": "Báo Cáo",
       "reports.description": "Báo cáo kinh doanh và phân tích",
@@ -2800,7 +2805,8 @@
       "legalPages": "Trang Pháp lý",
       "paymentGateways": "Cổng thanh toán",
       "shippingProviders": "Vận chuyển",
-      "modules": "Module"
+      "modules": "Module",
+      "webhooks": "Webhooks"
     },
     "branding": {
       "title": "Thương hiệu",
@@ -3472,5 +3478,56 @@
   "network": {
     "offline": "Bạn đang ngoại tuyến",
     "backOnline": "Đã kết nối lại"
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "description": "Cấu hình webhook để nhận thông báo sự kiện qua HTTP POST.",
+    "noWebhooks": "Chưa có webhook nào",
+    "noWebhooksDescription": "Tạo webhook để nhận thông báo sự kiện qua HTTP POST.",
+    "createWebhook": "Tạo Webhook",
+    "editWebhook": "Chỉnh sửa Webhook",
+    "deleteWebhook": "Xóa Webhook",
+    "deleteConfirmation": "Bạn có chắc muốn xóa webhook này? Hành động này không thể hoàn tác.",
+    "name": "Tên",
+    "url": "URL",
+    "eventPatterns": "Mẫu sự kiện",
+    "description": "Mô tả",
+    "customHeaders": "Header tùy chỉnh",
+    "maxRetries": "Số lần thử lại tối đa",
+    "timeoutSeconds": "Thời gian chờ (giây)",
+    "secret": "Khóa bí mật",
+    "status": "Trạng thái",
+    "lastDelivery": "Gửi lần cuối",
+    "successRate": "Tỷ lệ thành công",
+    "deliveryLogs": "Nhật ký gửi",
+    "testWebhook": "Thử Webhook",
+    "rotateSecret": "Đổi khóa bí mật",
+    "rotateSecretConfirmation": "Đổi khóa bí mật sẽ vô hiệu hóa khóa hiện tại. Bạn có chắc không?",
+    "activate": "Kích hoạt",
+    "deactivate": "Hủy kích hoạt",
+    "eventType": "Loại sự kiện",
+    "requestUrl": "URL yêu cầu",
+    "responseStatus": "Mã phản hồi",
+    "duration": "Thời gian",
+    "attempt": "Lần thử",
+    "error": "Lỗi",
+    "noDeliveryLogs": "Chưa có nhật ký gửi",
+    "noDeliveryLogsDescription": "Nhật ký gửi sẽ xuất hiện ở đây khi sự kiện được gửi đi.",
+    "secretCopied": "Đã sao chép khóa bí mật",
+    "testSent": "Đã gửi webhook thử nghiệm thành công",
+    "secretRotated": "Đã đổi khóa bí mật webhook thành công",
+    "created": "Đã tạo webhook thành công",
+    "updated": "Đã cập nhật webhook thành công",
+    "deleted": "Đã xóa webhook thành công",
+    "activated": "Đã kích hoạt webhook",
+    "deactivated": "Đã hủy kích hoạt webhook",
+    "urlPlaceholder": "https://tên-miền.com/webhook",
+    "eventPatternsPlaceholder": "order.*, payment.succeeded",
+    "eventPatternsHelp": "Mẫu sự kiện phân cách bằng dấu phẩy. Dùng * để khớp tất cả.",
+    "statuses": {
+      "Active": "Đang hoạt động",
+      "Inactive": "Không hoạt động",
+      "Suspended": "Bị tạm ngưng"
+    }
   }
 }

@@ -7291,6 +7291,235 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.ToTable("TenantSettings", (string)null);
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Webhook.WebhookDeliveryLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AttemptNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long?>("DurationMs")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("NextRetryAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("RequestBody")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RequestHeaders")
+                        .HasMaxLength(4000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("RequestUrl")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("ResponseBody")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ResponseHeaders")
+                        .HasMaxLength(4000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<int?>("ResponseStatusCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("WebhookSubscriptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("Status", "NextRetryAt")
+                        .HasDatabaseName("IX_WebhookDeliveryLogs_Status_NextRetryAt");
+
+                    b.HasIndex("WebhookSubscriptionId", "CreatedAt")
+                        .HasDatabaseName("IX_WebhookDeliveryLogs_SubscriptionId_CreatedAt");
+
+                    b.ToTable("WebhookDeliveryLogs", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Webhook.WebhookSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CustomHeaders")
+                        .HasMaxLength(4000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("EventPatterns")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("LastDeliveryAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("MaxRetries")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Secret")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("TimeoutSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("IsActive", "TenantId")
+                        .HasDatabaseName("IX_WebhookSubscriptions_IsActive_TenantId");
+
+                    b.HasIndex("Url", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_WebhookSubscriptions_Url_TenantId");
+
+                    b.ToTable("WebhookSubscriptions", (string)null);
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.Wishlist.Wishlist", b =>
                 {
                     b.Property<Guid>("Id")
@@ -8553,6 +8782,17 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Navigation("ShippingOrder");
                 });
 
+            modelBuilder.Entity("NOIR.Domain.Entities.Webhook.WebhookDeliveryLog", b =>
+                {
+                    b.HasOne("NOIR.Domain.Entities.Webhook.WebhookSubscription", "Subscription")
+                        .WithMany("DeliveryLogs")
+                        .HasForeignKey("WebhookSubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscription");
+                });
+
             modelBuilder.Entity("NOIR.Domain.Entities.Wishlist.WishlistItem", b =>
                 {
                     b.HasOne("NOIR.Domain.Entities.Product.Product", "Product")
@@ -8707,6 +8947,11 @@ namespace NOIR.Infrastructure.Migrations.App
             modelBuilder.Entity("NOIR.Domain.Entities.Shipping.ShippingOrder", b =>
                 {
                     b.Navigation("TrackingEvents");
+                });
+
+            modelBuilder.Entity("NOIR.Domain.Entities.Webhook.WebhookSubscription", b =>
+                {
+                    b.Navigation("DeliveryLogs");
                 });
 
             modelBuilder.Entity("NOIR.Domain.Entities.Wishlist.Wishlist", b =>

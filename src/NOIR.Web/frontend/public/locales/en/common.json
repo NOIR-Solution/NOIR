@@ -2666,7 +2666,8 @@
       "customers": "Customers",
       "catalog": "Catalog",
       "content": "Content",
-      "tenantSettings": "Tenant Settings"
+      "tenantSettings": "Tenant Settings",
+      "integrations": "Integrations"
     },
     "tenantSettingsModule": "Tenant Settings",
     "tenantSettingsModuleDesc": "Email templates, legal pages, and tenant configuration"
@@ -2736,6 +2737,10 @@
       "legalpages": "Legal Pages",
       "legalpages.description": "Terms of service and legal documents"
     },
+    "integrations": {
+      "webhooks": "Webhooks",
+      "webhooks.description": "Outbound webhook subscriptions for event notifications"
+    },
     "analytics": {
       "reports": "Reports",
       "reports.description": "Business reports and analytics",
@@ -2800,7 +2805,8 @@
       "legalPages": "Legal Pages",
       "paymentGateways": "Payment Gateways",
       "shippingProviders": "Shipping",
-      "modules": "Modules"
+      "modules": "Modules",
+      "webhooks": "Webhooks"
     },
     "branding": {
       "title": "Branding",
@@ -3472,5 +3478,56 @@
   "network": {
     "offline": "You're offline",
     "backOnline": "Back online"
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "description": "Configure outbound webhook subscriptions for event notifications.",
+    "noWebhooks": "No webhooks configured",
+    "noWebhooksDescription": "Create a webhook subscription to receive event notifications via HTTP POST.",
+    "createWebhook": "Create Webhook",
+    "editWebhook": "Edit Webhook",
+    "deleteWebhook": "Delete Webhook",
+    "deleteConfirmation": "Are you sure you want to delete this webhook? This action cannot be undone.",
+    "name": "Name",
+    "url": "URL",
+    "eventPatterns": "Event Patterns",
+    "description": "Description",
+    "customHeaders": "Custom Headers",
+    "maxRetries": "Max Retries",
+    "timeoutSeconds": "Timeout (seconds)",
+    "secret": "Secret",
+    "status": "Status",
+    "lastDelivery": "Last Delivery",
+    "successRate": "Success Rate",
+    "deliveryLogs": "Delivery Logs",
+    "testWebhook": "Test Webhook",
+    "rotateSecret": "Rotate Secret",
+    "rotateSecretConfirmation": "Rotating the secret will invalidate the current signing key. Are you sure?",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "eventType": "Event Type",
+    "requestUrl": "Request URL",
+    "responseStatus": "Response Status",
+    "duration": "Duration",
+    "attempt": "Attempt",
+    "error": "Error",
+    "noDeliveryLogs": "No delivery logs",
+    "noDeliveryLogsDescription": "Delivery logs will appear here once events are dispatched.",
+    "secretCopied": "Secret copied to clipboard",
+    "testSent": "Test webhook dispatched successfully",
+    "secretRotated": "Webhook secret rotated successfully",
+    "created": "Webhook created successfully",
+    "updated": "Webhook updated successfully",
+    "deleted": "Webhook deleted successfully",
+    "activated": "Webhook activated",
+    "deactivated": "Webhook deactivated",
+    "urlPlaceholder": "https://your-domain.com/webhook",
+    "eventPatternsPlaceholder": "order.*, payment.succeeded",
+    "eventPatternsHelp": "Comma-separated event patterns. Use * for wildcard matching.",
+    "statuses": {
+      "Active": "Active",
+      "Inactive": "Inactive",
+      "Suspended": "Suspended"
+    }
   }
 }

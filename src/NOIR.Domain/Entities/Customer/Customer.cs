@@ -108,7 +108,7 @@ public class Customer : TenantAggregateRoot<Guid>
         string? phone = null,
         string? tenantId = null)
     {
-        return new Customer(Guid.NewGuid(), tenantId)
+        var customer = new Customer(Guid.NewGuid(), tenantId)
         {
             UserId = userId,
             Email = email,
@@ -119,6 +119,9 @@ public class Customer : TenantAggregateRoot<Guid>
             Tier = CustomerTier.Standard,
             IsActive = true
         };
+
+        customer.AddDomainEvent(new CustomerCreatedEvent(customer.Id, email, firstName, lastName));
+        return customer;
     }
 
     /// <summary>
@@ -130,6 +133,8 @@ public class Customer : TenantAggregateRoot<Guid>
         LastName = lastName;
         Email = email;
         Phone = phone;
+
+        AddDomainEvent(new CustomerUpdatedEvent(Id, email));
     }
 
     /// <summary>
@@ -148,36 +153,40 @@ public class Customer : TenantAggregateRoot<Guid>
     /// </summary>
     public void RecalculateSegment()
     {
+        var oldSegment = Segment;
+
         // VIP: high frequency + high monetary
         if (TotalOrders >= 20 && TotalSpent >= 10_000_000m)
         {
             Segment = CustomerSegment.VIP;
-            return;
         }
-
         // New customer
-        if (TotalOrders <= 1)
+        else if (TotalOrders <= 1)
         {
             Segment = CustomerSegment.New;
-            return;
         }
-
         // Recency-based segments
-        if (LastOrderDate is null)
+        else if (LastOrderDate is null)
         {
             Segment = CustomerSegment.Lost;
-            return;
+        }
+        else
+        {
+            var daysSinceLastOrder = (DateTimeOffset.UtcNow - LastOrderDate.Value).TotalDays;
+
+            Segment = daysSinceLastOrder switch
+            {
+                <= 30 => CustomerSegment.Active,
+                <= 90 => CustomerSegment.AtRisk,
+                <= 180 => CustomerSegment.Dormant,
+                _ => CustomerSegment.Lost
+            };
         }
 
-        var daysSinceLastOrder = (DateTimeOffset.UtcNow - LastOrderDate.Value).TotalDays;
-
-        Segment = daysSinceLastOrder switch
+        if (oldSegment != Segment)
         {
-            <= 30 => CustomerSegment.Active,
-            <= 90 => CustomerSegment.AtRisk,
-            <= 180 => CustomerSegment.Dormant,
-            _ => CustomerSegment.Lost
-        };
+            AddDomainEvent(new CustomerSegmentChangedEvent(Id, oldSegment, Segment));
+        }
     }
 
     /// <summary>
@@ -185,6 +194,8 @@ public class Customer : TenantAggregateRoot<Guid>
     /// </summary>
     public void UpdateTier()
     {
+        var oldTier = Tier;
+
         Tier = LifetimeLoyaltyPoints switch
         {
             >= 50000 => CustomerTier.Diamond,
@@ -193,6 +204,11 @@ public class Customer : TenantAggregateRoot<Guid>
             >= 5000 => CustomerTier.Silver,
             _ => CustomerTier.Standard
         };
+
+        if (oldTier != Tier)
+        {
+            AddDomainEvent(new CustomerTierChangedEvent(Id, oldTier, Tier));
+        }
     }
 
     /// <summary>
@@ -206,6 +222,8 @@ public class Customer : TenantAggregateRoot<Guid>
         LoyaltyPoints += points;
         LifetimeLoyaltyPoints += points;
         UpdateTier();
+
+        AddDomainEvent(new CustomerLoyaltyPointsAddedEvent(Id, points, LoyaltyPoints));
     }
 
     /// <summary>
@@ -220,6 +238,8 @@ public class Customer : TenantAggregateRoot<Guid>
             throw new InvalidOperationException($"Insufficient loyalty points. Available: {LoyaltyPoints}, Requested: {points}");
 
         LoyaltyPoints -= points;
+
+        AddDomainEvent(new CustomerLoyaltyPointsRedeemedEvent(Id, points, LoyaltyPoints));
     }
 
     /// <summary>
@@ -278,6 +298,8 @@ public class Customer : TenantAggregateRoot<Guid>
     public void Deactivate()
     {
         IsActive = false;
+
+        AddDomainEvent(new CustomerDeactivatedEvent(Id, Email));
     }
 
     /// <summary>

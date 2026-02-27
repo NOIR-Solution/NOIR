@@ -241,6 +241,10 @@ export const Permissions = {
   // Features
   FeaturesRead: 'features:read',
   FeaturesUpdate: 'features:update',
+  // Webhooks
+  WebhooksRead: 'webhooks:read',
+  WebhooksManage: 'webhooks:manage',
+  WebhooksTest: 'webhooks:test',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

@@ -163,6 +163,11 @@ public static class Permissions
     public const string PaymentRefundsManage = "payment-refunds:manage";
     public const string PaymentWebhooksRead = "payment-webhooks:read";
 
+    // Webhooks
+    public const string WebhooksRead = "webhooks:read";
+    public const string WebhooksManage = "webhooks:manage";
+    public const string WebhooksTest = "webhooks:test";
+
     /// <summary>
     /// All permissions grouped by resource.
     /// </summary>
@@ -246,6 +251,9 @@ public static class Permissions
         public static readonly IReadOnlyList<string> Payments =
             [PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
              PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead];
+
+        public static readonly IReadOnlyList<string> Webhooks =
+            [WebhooksRead, WebhooksManage, WebhooksTest];
     }
 
     /// <summary>
@@ -298,6 +306,7 @@ public static class Permissions
         FeaturesRead, FeaturesUpdate,
         EmailTemplatesRead, EmailTemplatesUpdate,
         LegalPagesRead, LegalPagesUpdate,
+        WebhooksRead, WebhooksManage, WebhooksTest,
 
         // ── System ─────────────────────────────────────────────────────
         SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
@@ -376,7 +385,9 @@ public static class Permissions
         ReportsRead,
         // Payments within tenant
         PaymentsRead, PaymentsCreate, PaymentsManage, PaymentGatewaysRead, PaymentGatewaysManage,
-        PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead
+        PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead,
+        // Webhooks within tenant
+        WebhooksRead, WebhooksManage, WebhooksTest
     ];
 
     /// <summary>
@@ -521,7 +532,11 @@ public static class Permissions
             PaymentGatewaysManage,
             PaymentRefundsRead,
             PaymentRefundsManage,
-            PaymentWebhooksRead
+            PaymentWebhooksRead,
+            // Webhooks within tenant
+            WebhooksRead,
+            WebhooksManage,
+            WebhooksTest
         };
 
         /// <summary>

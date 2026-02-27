@@ -176,6 +176,16 @@ builder.Services.AddSignalR(options =>
     options.PayloadSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 });
 
+// Add HttpClient for webhook delivery
+builder.Services.AddHttpClient("WebhookDelivery", client =>
+{
+    client.DefaultRequestHeaders.Add("User-Agent", "NOIR-Webhook/1.0");
+}).ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+{
+    AllowAutoRedirect = false,
+    ConnectTimeout = TimeSpan.FromSeconds(10)
+});
+
 // Add Application and Infrastructure services
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
@@ -480,6 +490,7 @@ app.MapShippingEndpoints();
 app.MapPromotionEndpoints();
 app.MapWishlistEndpoints();
 app.MapReviewEndpoints();
+app.MapWebhookEndpoints();
 
 // Dev-only endpoints for E2E testing (not available in production)
 if (app.Environment.IsDevelopment())

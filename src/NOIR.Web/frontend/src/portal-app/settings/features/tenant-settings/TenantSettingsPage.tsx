@@ -12,6 +12,7 @@ import {
   CreditCard,
   Truck,
   Blocks,
+  Webhook,
 } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
@@ -27,6 +28,7 @@ import {
   PaymentGatewaysTab,
   ShippingProvidersTab,
   ModulesSettingsTab,
+  WebhooksSettingsTab,
 } from '../../components/tenant-settings'
 
 /**
@@ -42,7 +44,7 @@ export const TenantSettingsPage = () => {
   const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'branding' })
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="container max-w-full py-6 space-y-6">
       <PageHeader
         icon={Settings}
         title={t('tenantSettings.title')}
@@ -51,7 +53,7 @@ export const TenantSettingsPage = () => {
 
       {/* Tabbed Content */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className={isTabPending ? 'space-y-4 opacity-70 transition-opacity duration-200' : 'space-y-4 transition-opacity duration-200'}>
-        <TabsList className="flex-wrap h-auto">
+        <TabsList className="w-full h-auto justify-start overflow-x-auto">
           {/* Core Identity & Business Info */}
           <TabsTrigger value="branding" className="cursor-pointer">
             <Palette className="h-4 w-4 mr-2" />
@@ -93,6 +95,11 @@ export const TenantSettingsPage = () => {
             <Blocks className="h-4 w-4 mr-2" />
             {t('tenantSettings.tabs.modules')}
           </TabsTrigger>
+          {/* Integrations */}
+          <TabsTrigger value="webhooks" className="cursor-pointer">
+            <Webhook className="h-4 w-4 mr-2" />
+            {t('tenantSettings.tabs.webhooks')}
+          </TabsTrigger>
         </TabsList>
 
         {/* Core Identity & Business Info */}
@@ -126,6 +133,10 @@ export const TenantSettingsPage = () => {
         {/* Modules */}
         <TabsContent value="modules">
           <ModulesSettingsTab canEdit={canEdit} />
+        </TabsContent>
+        {/* Integrations */}
+        <TabsContent value="webhooks">
+          <WebhooksSettingsTab canEdit={canEdit} />
         </TabsContent>
       </Tabs>
     </div>

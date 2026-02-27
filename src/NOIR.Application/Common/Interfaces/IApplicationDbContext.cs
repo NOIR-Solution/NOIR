@@ -88,6 +88,12 @@ public interface IApplicationDbContext
     DbSet<TenantModuleState> TenantModuleStates { get; }
 
     /// <summary>
+    /// Webhook delivery logs DbSet for non-aggregate entity CRUD.
+    /// WebhookDeliveryLog is a TenantEntity (not AggregateRoot), so IRepository is not applicable.
+    /// </summary>
+    DbSet<WebhookDeliveryLog> WebhookDeliveryLogs { get; }
+
+    /// <summary>
     /// Attaches an entity to the context for tracking.
     EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
 
