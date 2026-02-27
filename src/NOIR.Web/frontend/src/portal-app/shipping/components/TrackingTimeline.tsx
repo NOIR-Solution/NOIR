@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { EmptyState } from '@uikit'
 import { cn } from '@/lib/utils'
-import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
+import { useRegionalSettingsOptional } from '@/contexts/RegionalSettingsContext'
 import type { TrackingEventDto, ShippingStatus } from '@/types/shipping'
 
 const getStatusIcon = (status: ShippingStatus) => {
@@ -83,7 +83,8 @@ interface TrackingTimelineProps {
 
 export const TrackingTimeline = ({ events, className }: TrackingTimelineProps) => {
   const { t } = useTranslation('common')
-  const { formatDateTime } = useRegionalSettings()
+  const regional = useRegionalSettingsOptional()
+  const formatDateTime = regional?.formatDateTime ?? ((d: Date | string) => new Date(d).toLocaleString())
 
   if (events.length === 0) {
     return (

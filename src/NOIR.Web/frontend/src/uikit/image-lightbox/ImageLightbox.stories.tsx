@@ -66,6 +66,25 @@ export const HidePlaceholder: Story = {
     alt: 'No image',
     showPlaceholder: false,
   },
+  render: (args) => (
+    <div
+      style={{
+        border: '2px dashed #e5e7eb',
+        padding: 16,
+        borderRadius: 8,
+        minHeight: 60,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+      }}
+    >
+      <ImageLightbox {...args} />
+      <span style={{ color: '#9ca3af', fontSize: 12, fontStyle: 'italic' }}>
+        Component renders nothing when src is empty and showPlaceholder is false
+      </span>
+    </div>
+  ),
 }
 
 export const CustomFallback: Story = {

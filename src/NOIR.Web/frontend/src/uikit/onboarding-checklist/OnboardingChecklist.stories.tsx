@@ -230,6 +230,12 @@ export const AllCompleted: Story = {
     initialCompleted: ['profile', 'explore', 'product', 'blog', 'team'],
     dismissible: true,
   },
+  render: (args) => (
+    <OnboardingChecklistDemo
+      key={args.initialCompleted.join(',')}
+      {...args}
+    />
+  ),
 }
 
 /** Fresh start — no items checked yet (0 % progress). */

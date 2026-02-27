@@ -49,7 +49,7 @@ export const ObjectContain: Story = {
 
 export const BrokenImage: Story = {
   args: {
-    src: 'https://invalid-url.example/broken.jpg',
+    src: '/non-existent-image-404.jpg',
     alt: 'Broken image shows error state',
     width: 400,
     height: 300,
