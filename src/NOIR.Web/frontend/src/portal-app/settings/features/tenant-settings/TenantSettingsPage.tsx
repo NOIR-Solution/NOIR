@@ -102,39 +102,39 @@ export const TenantSettingsPage = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Core Identity & Business Info */}
-        <TabsContent value="branding">
+        {/* Core Identity & Business Info — form-based, narrow */}
+        <TabsContent value="branding" className="max-w-3xl">
           <BrandingSettingsTab canEdit={canEdit} />
         </TabsContent>
-        <TabsContent value="contact">
+        <TabsContent value="contact" className="max-w-3xl">
           <ContactSettingsTab canEdit={canEdit} />
         </TabsContent>
-        <TabsContent value="regional">
+        <TabsContent value="regional" className="max-w-3xl">
           <RegionalSettingsTab canEdit={canEdit} />
         </TabsContent>
-        {/* Business Operations */}
+        {/* Business Operations — card grids, wider */}
         <TabsContent value="paymentGateways">
           <PaymentGatewaysTab />
         </TabsContent>
         <TabsContent value="shippingProviders">
           <ShippingProvidersTab />
         </TabsContent>
-        {/* Communication Stack */}
-        <TabsContent value="smtp">
+        {/* Communication Stack — SMTP is form (narrow), templates are card grid (medium) */}
+        <TabsContent value="smtp" className="max-w-3xl">
           <SmtpSettingsTab canEdit={canEdit} />
         </TabsContent>
-        <TabsContent value="emailTemplates">
+        <TabsContent value="emailTemplates" className="max-w-5xl">
           <EmailTemplatesTab onEdit={(id) => navigate(`/portal/email-templates/${id}?from=tenant`)} />
         </TabsContent>
-        {/* Compliance */}
-        <TabsContent value="legalPages">
+        {/* Compliance — card grid, medium */}
+        <TabsContent value="legalPages" className="max-w-5xl">
           <LegalPagesTab onEdit={(id) => navigate(`/portal/legal-pages/${id}?from=tenant`)} />
         </TabsContent>
-        {/* Modules */}
-        <TabsContent value="modules">
+        {/* Modules — toggle list, medium-narrow */}
+        <TabsContent value="modules" className="max-w-4xl">
           <ModulesSettingsTab canEdit={canEdit} />
         </TabsContent>
-        {/* Integrations */}
+        {/* Integrations — table, full width */}
         <TabsContent value="webhooks">
           <WebhooksSettingsTab canEdit={canEdit} />
         </TabsContent>
