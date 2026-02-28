@@ -366,7 +366,7 @@ export const EmailTemplateEditPage = () => {
 
   if (loading) {
     return (
-      <div className="container max-w-6xl py-6 space-y-6">
+      <div className="py-6 space-y-6">
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-10 rounded" />
           <div className="space-y-2">
@@ -416,7 +416,7 @@ export const EmailTemplateEditPage = () => {
   }
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="py-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">

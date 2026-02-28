@@ -237,7 +237,7 @@ export const PaymentDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="container max-w-6xl py-6 space-y-6">
+      <div className="py-6 space-y-6">
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-10 rounded" />
           <div className="space-y-2">
@@ -273,7 +273,7 @@ export const PaymentDetailPage = () => {
 
   if (queryError || !payment) {
     return (
-      <div className="container max-w-6xl py-6 space-y-6">
+      <div className="py-6 space-y-6">
         <Button variant="ghost" onClick={() => navigate('/portal/ecommerce/payments')} className="cursor-pointer">
           <ArrowLeft className="h-4 w-4 mr-2" />
           {t('payments.backToPayments', 'Back to Payments')}
@@ -286,7 +286,7 @@ export const PaymentDetailPage = () => {
   }
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button

@@ -175,7 +175,7 @@ export const WishlistPage = () => {
   const items = wishlistDetail?.items ?? []
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="py-6 space-y-6">
       <PageHeader
         icon={Heart}
         title={t('wishlists.title', 'My Wishlists')}

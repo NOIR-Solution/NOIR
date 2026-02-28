@@ -204,6 +204,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
   }
   html {
     font-size: 14px; /* Base font size: 0.875rem of browser default 16px */

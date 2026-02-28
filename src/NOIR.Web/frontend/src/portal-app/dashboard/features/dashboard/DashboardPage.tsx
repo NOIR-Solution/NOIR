@@ -18,7 +18,7 @@ export const DashboardPage = () => {
   usePageContext('Dashboard')
 
   return (
-    <div className="container max-w-7xl py-6 space-y-6">
+    <div className="py-6 space-y-6">
       <PageHeader
         icon={LayoutDashboard}
         title={t('dashboard.title', 'Dashboard')}

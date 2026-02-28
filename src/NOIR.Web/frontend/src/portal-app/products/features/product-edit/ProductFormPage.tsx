@@ -111,7 +111,7 @@ import { uploadMedia } from '@/services/media'
 import { toast } from 'sonner'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
 
-import type { ProductVariant, ProductImage, CreateProductVariantRequest, CreateProductImageRequest } from '@/types/product'
+import type { ProductVariant, ProductImage, CreateProductVariantRequest, CreateProductImageRequest, UpdateProductRequest } from '@/types/product'
 
 // Local types for create mode (before product exists)
 interface LocalVariant {
@@ -134,6 +134,41 @@ interface TempImage {
 }
 import { generateSlug } from '@/lib/utils/slug'
 import { formatCurrency } from '@/lib/utils/currency'
+
+/** Convert empty strings to null and ensure numbers are valid for backend decimal/int fields */
+const toNullableString = (v: string | null | undefined): string | null =>
+  v === undefined || v === '' ? null : v
+
+const toSafeNumber = (v: number | null | undefined): number =>
+  v === undefined || v === null || !Number.isFinite(v) ? 0 : v
+
+const toNullableNumber = (v: number | null | undefined): number | null =>
+  v === undefined || v === null || !Number.isFinite(v) ? null : v
+
+/** Build a normalized UpdateProductRequest that matches the backend record exactly */
+const buildUpdateRequest = (data: ProductFormData, editorHtml: string): UpdateProductRequest => ({
+  name: data.name,
+  slug: data.slug,
+  shortDescription: toNullableString(data.shortDescription),
+  description: toNullableString(data.description),
+  descriptionHtml: editorHtml || null,
+  basePrice: toSafeNumber(data.basePrice),
+  currency: 'VND',
+  categoryId: data.categoryId || null,
+  brandId: data.brandId || null,
+  sku: toNullableString(data.sku),
+  barcode: toNullableString(data.barcode),
+  trackInventory: data.trackInventory ?? true,
+  metaTitle: toNullableString(data.metaTitle),
+  metaDescription: toNullableString(data.metaDescription),
+  sortOrder: toSafeNumber(data.sortOrder),
+  weight: toNullableNumber(data.weight),
+  weightUnit: toNullableString(data.weightUnit),
+  length: toNullableNumber(data.length),
+  width: toNullableNumber(data.width),
+  height: toNullableNumber(data.height),
+  dimensionUnit: toNullableString(data.dimensionUnit),
+})
 
 // Form validation schema factory
 const createProductSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
@@ -437,12 +472,7 @@ export const ProductFormPage = () => {
       if (isEditing && id) {
         await updateProductMutation.mutateAsync({
           id,
-          request: {
-            ...data,
-            descriptionHtml, // Use TinyMCE editor state
-            currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
-            categoryId: data.categoryId || null,
-          },
+          request: buildUpdateRequest(data, descriptionHtml),
         })
       } else {
         // Convert local variants to CreateProductVariantRequest format
@@ -466,10 +496,7 @@ export const ProductFormPage = () => {
         }))
 
         const newProduct = await createProductMutation.mutateAsync({
-          ...data,
-          descriptionHtml, // Use TinyMCE editor state
-          currency: 'VND', // Hardcoded to VND for Vietnam market - UI selector removed
-          categoryId: data.categoryId || null,
+          ...buildUpdateRequest(data, descriptionHtml),
           variants: variantsToCreate.length > 0 ? variantsToCreate : [],
           images: imagesToCreate.length > 0 ? imagesToCreate : [],
         })
@@ -809,7 +836,7 @@ export const ProductFormPage = () => {
   }
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="py-6 space-y-6">
       {/* Page Header with Glassmorphism */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">

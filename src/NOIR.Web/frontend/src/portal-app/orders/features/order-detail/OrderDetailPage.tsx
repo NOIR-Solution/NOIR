@@ -248,7 +248,7 @@ export const OrderDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="container max-w-6xl py-6 space-y-6">
+      <div className="py-6 space-y-6">
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-10 rounded" />
           <div className="space-y-2">
@@ -314,7 +314,7 @@ export const OrderDetailPage = () => {
 
   if (queryError || !order) {
     return (
-      <div className="container max-w-6xl py-6 space-y-6">
+      <div className="py-6 space-y-6">
         <Button variant="ghost" onClick={() => navigate('/portal/ecommerce/orders')} className="cursor-pointer">
           <ArrowLeft className="h-4 w-4 mr-2" />
           {t('orders.backToOrders', 'Back to Orders')}
@@ -338,7 +338,7 @@ export const OrderDetailPage = () => {
   const canReturn = canManageOrders && order.status === 'Delivered'
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/portal/ecommerce/orders')} className="cursor-pointer" aria-label={t('orders.backToOrders', 'Back to Orders')}>

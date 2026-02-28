@@ -138,7 +138,9 @@ public class ExceptionHandlingMiddleware
         else if (statusCode == StatusCodes.Status400BadRequest)
         {
             // Validation errors are expected in normal operation - log at Information, not Warning
+            // Include inner exception for BadHttpRequestException (JSON deserialization failures)
             _logger.LogInformation(
+                exception.InnerException ?? exception,
                 "Validation failed [{ErrorCode}] CorrelationId={CorrelationId}: {Message}",
                 errorCode,
                 correlationId,
@@ -193,11 +195,15 @@ public class ExceptionHandlingMiddleware
         Microsoft.AspNetCore.Http.BadHttpRequestException exception)
     {
         var errorCode = ErrorCodes.Validation.General;
+        // Include inner exception detail (e.g. JsonException) for better diagnostics
+        var detail = exception.InnerException is not null
+            ? $"{exception.Message} {exception.InnerException.Message}"
+            : exception.Message;
         return (StatusCodes.Status400BadRequest, new ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
             Title = "Bad Request",
-            Detail = exception.Message,
+            Detail = detail,
             Type = $"https://api.noir.local/errors/{errorCode}"
         }, errorCode);
     }

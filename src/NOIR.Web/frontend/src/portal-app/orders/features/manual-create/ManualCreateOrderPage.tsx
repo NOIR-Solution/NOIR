@@ -684,7 +684,7 @@ export const ManualCreateOrderPage = () => {
 
   if (!canManageOrders) {
     return (
-      <div className="container max-w-6xl py-6 space-y-6">
+      <div className="py-6 space-y-6">
         <div className="p-8 text-center">
           <p className="text-muted-foreground">{t('messages.permissionDenied', 'You do not have permission to access this page.')}</p>
         </div>
@@ -693,7 +693,7 @@ export const ManualCreateOrderPage = () => {
   }
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="py-6 space-y-6">
       {/* Page Header */}
       <div className="flex items-center gap-4">
         <Button

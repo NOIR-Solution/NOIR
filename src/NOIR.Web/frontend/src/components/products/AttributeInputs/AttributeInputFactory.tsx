@@ -494,24 +494,8 @@ const NumberInput = ({
   }
 
   return (
-    <div className="flex items-stretch">
-      {/* Decrement button */}
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        onClick={handleDecrement}
-        disabled={disabled || isAtMin}
-        className={cn(
-          'rounded-r-none border-r-0 h-10 w-10 shrink-0 cursor-pointer',
-          'hover:bg-muted transition-colors'
-        )}
-        aria-label={t('products.attributes.decrement')}
-      >
-        <Minus className="h-4 w-4" />
-      </Button>
-
-      {/* Number input */}
+    <div className="relative flex items-stretch w-full">
+      {/* Number input - full width */}
       <Input
         id={`attr-${field.attributeId}`}
         type="number"
@@ -531,7 +515,7 @@ const NumberInput = ({
         step={isDecimal ? 'any' : 1}
         disabled={disabled}
         className={cn(
-          'rounded-none text-center flex-1',
+          'text-center w-full pl-12 pr-12',
           '[appearance:textfield]',
           '[&::-webkit-outer-spin-button]:appearance-none',
           '[&::-webkit-inner-spin-button]:appearance-none'
@@ -540,21 +524,39 @@ const NumberInput = ({
         aria-required={field.isRequired}
       />
 
-      {/* Increment button */}
-      <Button
+      {/* Decrement button - overlaid left */}
+      <button
         type="button"
-        variant="outline"
-        size="icon"
+        onClick={handleDecrement}
+        disabled={disabled || isAtMin}
+        className={cn(
+          'absolute left-0 inset-y-0 w-10 shrink-0 cursor-pointer',
+          'inline-flex items-center justify-center',
+          'text-muted-foreground hover:text-foreground',
+          'transition-colors focus-visible:outline-none',
+          'disabled:pointer-events-none disabled:opacity-50'
+        )}
+        aria-label={t('products.attributes.decrement')}
+      >
+        <Minus className="h-4 w-4" />
+      </button>
+
+      {/* Increment button - overlaid right */}
+      <button
+        type="button"
         onClick={handleIncrement}
         disabled={disabled || isAtMax}
         className={cn(
-          'rounded-l-none border-l-0 h-10 w-10 shrink-0 cursor-pointer',
-          'hover:bg-muted transition-colors'
+          'absolute right-0 inset-y-0 w-10 shrink-0 cursor-pointer',
+          'inline-flex items-center justify-center',
+          'text-muted-foreground hover:text-foreground',
+          'transition-colors focus-visible:outline-none',
+          'disabled:pointer-events-none disabled:opacity-50'
         )}
         aria-label={t('products.attributes.increment')}
       >
         <Plus className="h-4 w-4" />
-      </Button>
+      </button>
     </div>
   )
 }

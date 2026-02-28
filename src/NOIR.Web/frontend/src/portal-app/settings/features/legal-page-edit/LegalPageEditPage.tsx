@@ -232,7 +232,7 @@ export const LegalPageEditPage = () => {
 
   if (loading) {
     return (
-      <div className="container max-w-6xl py-6 space-y-6">
+      <div className="py-6 space-y-6">
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-10 rounded" />
           <div className="space-y-2">
@@ -278,7 +278,7 @@ export const LegalPageEditPage = () => {
   }
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
+    <div className="py-6 space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
