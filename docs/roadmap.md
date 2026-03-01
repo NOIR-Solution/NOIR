@@ -75,7 +75,7 @@ NOIR is a comprehensive, AI-built enterprise SaaS foundation — e-commerce core
 | Employee profiles (CRUD, auto-code, User account sync) | Ready | **Phase 1 Done** |
 | Department hierarchy (tree, self-referencing, manager) | Ready | **Phase 1 Done** |
 | Employee tags with categories (Team/Skill/Project/etc.) | Ready | **Phase 2 Done** |
-| Org chart visualization | Ready | Not Started (Phase 3) |
+| Org chart (d3-org-chart), bulk ops, import/export, reports | Ready | **Phase 3 Done** |
 
 **Design Doc:** [module-hr.md](designs/module-hr.md) — 100% complete (DTOs, sequence diagrams, NOIR pattern compliance, edge cases).
 
@@ -89,8 +89,8 @@ NOIR is a comprehensive, AI-built enterprise SaaS foundation — e-commerce core
 
 | # | Module | Problem It Solves | Depends On | Design | Design Doc |
 |---|--------|-------------------|------------|--------|------------|
-| 2 | **CRM** | Sales teams need to manage contacts, leads, and deal pipelines | HR | Draft | [module-crm.md](designs/module-crm.md) |
-| 3 | **Project Management** | Teams need to track tasks, milestones, and deadlines | HR | Draft | [module-pm.md](designs/module-pm.md) |
+| 2 | **CRM** | Sales teams need to manage contacts, leads, and deal pipelines | HR | Ready | [module-crm.md](designs/module-crm.md) |
+| 3 | **Project Management** | Teams need to track tasks, milestones, and deadlines | HR | Ready | [module-pm.md](designs/module-pm.md) |
 | 4 | **Calendar** | Teams need event scheduling and resource booking | Standalone | Draft | [module-calendar.md](designs/module-calendar.md) |
 | 5 | **Support Center** | Unified helpdesk ticketing + knowledge base for self-service and support | HR, Customers | Draft | [module-support-center.md](designs/module-support-center.md) |
 
