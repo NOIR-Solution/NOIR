@@ -52,7 +52,7 @@ public class Lead : TenantAggregateRoot<Guid>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
 
-        return new Lead(Guid.NewGuid(), tenantId)
+        var lead = new Lead(Guid.NewGuid(), tenantId)
         {
             Title = title.Trim(),
             ContactId = contactId,
@@ -67,6 +67,9 @@ public class Lead : TenantAggregateRoot<Guid>
             ExpectedCloseDate = expectedCloseDate,
             Notes = notes?.Trim()
         };
+
+        lead.AddDomainEvent(new Events.Crm.LeadCreatedEvent(lead.Id));
+        return lead;
     }
 
     /// <summary>

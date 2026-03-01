@@ -18,7 +18,7 @@ public static class DepartmentEndpoints
     {
         var group = app.MapGroup("/api/hr/departments")
             .WithTags("HR - Departments")
-            .RequireFeature(ModuleNames.Erp.Hr)
+            .RequireFeature(ModuleNames.Erp.HrSub.Departments)
             .RequireAuthorization();
 
         // Get all departments (tree structure)

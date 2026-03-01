@@ -50,6 +50,12 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .HasForeignKey(e => e.ParentDepartmentId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Unique name per parent per tenant
+        builder.HasIndex(e => new { e.Name, e.ParentDepartmentId, e.TenantId })
+            .IsUnique()
+            .HasFilter(null)
+            .HasDatabaseName("IX_Departments_Name_Parent_Tenant");
+
         // Indexes
         builder.HasIndex(e => new { e.TenantId, e.ParentDepartmentId, e.SortOrder })
             .HasDatabaseName("IX_Departments_TenantId_Parent_Sort");

@@ -11,6 +11,10 @@ public sealed record CrmDashboardDto(
     int LostLeads,
     decimal TotalPipelineValue,
     decimal WonDealValue,
+    int WonDealsThisMonth,
+    decimal WonValueThisMonth,
+    int LostDealsThisMonth,
+    decimal ConversionRate,
     IReadOnlyList<LeadsByStageDto> LeadsByStage,
     IReadOnlyList<LeadsByOwnerDto> LeadsByOwner);
 

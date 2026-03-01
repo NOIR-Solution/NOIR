@@ -29,13 +29,15 @@ public class GetProjectsQueryHandler
         {
             var taskCount = p.Tasks.Count;
             var completedTaskCount = p.Tasks.Count(t => t.Status == ProjectTaskStatus.Done);
+            var progressPercent = taskCount > 0 ? Math.Round((decimal)completedTaskCount / taskCount * 100, 1) : 0;
 
             return new Features.Pm.DTOs.ProjectListDto(
                 p.Id, p.Name, p.Slug, p.Status,
                 p.StartDate, p.EndDate, p.DueDate,
                 p.Owner != null ? $"{p.Owner.FirstName} {p.Owner.LastName}" : null,
                 p.Members.Count, taskCount, completedTaskCount,
-                p.Color, p.Icon, p.Visibility, p.CreatedAt);
+                p.Color, p.Icon, p.Visibility, p.CreatedAt,
+                p.ProjectCode, p.OwnerId, p.Owner?.AvatarUrl, progressPercent);
         }).ToList();
 
         return Result.Success(PagedResult<Features.Pm.DTOs.ProjectListDto>.Create(

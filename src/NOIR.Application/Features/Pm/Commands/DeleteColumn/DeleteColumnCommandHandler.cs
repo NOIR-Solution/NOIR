@@ -59,7 +59,8 @@ public class DeleteColumnCommandHandler
         }
 
         var dto = new Features.Pm.DTOs.ProjectColumnDto(
-            column.Id, column.Name, column.SortOrder, column.Color, column.WipLimit);
+            column.Id, column.Name, column.SortOrder, column.Color, column.WipLimit,
+            column.StatusMapping);
 
         _dbContext.ProjectColumns.Remove(column);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

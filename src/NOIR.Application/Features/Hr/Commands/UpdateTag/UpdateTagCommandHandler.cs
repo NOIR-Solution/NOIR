@@ -32,15 +32,17 @@ public class UpdateTagCommandHandler
         }
 
         // Check name+category uniqueness (exclude self)
-        var nameSpec = new EmployeeTagByNameAndCategorySpec(command.Name, command.Category, tenantId, command.Id);
+        // Category cannot be changed after creation — use existing tag's category
+        var nameSpec = new EmployeeTagByNameAndCategorySpec(command.Name, tag.Category, tenantId, command.Id);
         var existing = await _tagRepository.FirstOrDefaultAsync(nameSpec, cancellationToken);
         if (existing is not null)
         {
             return Result.Failure<EmployeeTagDto>(
-                Error.Conflict($"A tag with name '{command.Name}' in category '{command.Category}' already exists.", "NOIR-HR-032"));
+                Error.Conflict($"A tag with name '{command.Name}' in category '{tag.Category}' already exists.", "NOIR-HR-032"));
         }
 
-        tag.Update(command.Name, command.Category, command.Color, command.Description, command.SortOrder);
+        // Preserve existing category — cannot change after creation
+        tag.Update(command.Name, tag.Category, command.Color, command.Description, command.SortOrder);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success(new EmployeeTagDto(

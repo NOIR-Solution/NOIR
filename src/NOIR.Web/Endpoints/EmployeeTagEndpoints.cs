@@ -19,7 +19,7 @@ public static class EmployeeTagEndpoints
     {
         var group = app.MapGroup("/api/hr/tags")
             .WithTags("HR - Tags")
-            .RequireFeature(ModuleNames.Erp.Hr)
+            .RequireFeature(ModuleNames.Erp.HrSub.Tags)
             .RequireAuthorization();
 
         // Get all tags (with optional filters)

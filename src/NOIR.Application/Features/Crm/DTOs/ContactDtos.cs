@@ -30,6 +30,7 @@ public sealed record ContactListDto(
     string LastName,
     string Email,
     string? Phone,
+    string? JobTitle,
     string? CompanyName,
     string? OwnerName,
     ContactSource Source,

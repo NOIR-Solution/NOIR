@@ -122,6 +122,7 @@ public static class ApplicationDbContextSeeder
         var permissionSeeder = new PermissionSeeder();
         var permissionTemplateSeeder = new PermissionTemplateSeeder();
         var notificationPreferenceSeeder = new NotificationPreferenceSeeder();
+        var crmPipelineSeeder = new CrmPipelineSeeder();
 
         // === PHASE 1: System-Level Roles (TenantId = null) ===
         await roleSeeder.SeedAsync(seederContext);
@@ -157,6 +158,9 @@ public static class ApplicationDbContextSeeder
 
             // Fix notification preferences TenantId
             await notificationPreferenceSeeder.SeedAsync(seederContext);
+
+            // === PHASE 6b: Default CRM Pipeline ===
+            await crmPipelineSeeder.SeedAsync(seederContext);
         }
 
         // === PHASE 7: Permissions (database-backed Permission entities) ===

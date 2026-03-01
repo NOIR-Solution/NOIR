@@ -27,7 +27,9 @@ public sealed record TaskDto(
     List<SubtaskDto> Subtasks,
     List<TaskCommentDto> Comments,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? ModifiedAt);
+    DateTimeOffset? ModifiedAt,
+    string? ProjectName = null,
+    string? AssigneeAvatarUrl = null);
 
 /// <summary>
 /// Kanban card for board view.
@@ -184,3 +186,22 @@ public sealed record UpdateTaskLabelRequest(string Name, string Color);
 /// Request body for updating a task comment.
 /// </summary>
 public sealed record UpdateTaskCommentRequest(string Content);
+
+/// <summary>
+/// Request body for reordering a task within its column.
+/// </summary>
+public sealed record ReorderTaskRequest(double SortOrder);
+
+/// <summary>
+/// Request body for adding a subtask to a task.
+/// </summary>
+public sealed record AddSubtaskRequest(
+    string Title,
+    string? Description = null,
+    TaskPriority? Priority = null,
+    Guid? AssigneeId = null);
+
+/// <summary>
+/// Request body for changing project status.
+/// </summary>
+public sealed record ChangeProjectStatusRequest(ProjectStatus Status);

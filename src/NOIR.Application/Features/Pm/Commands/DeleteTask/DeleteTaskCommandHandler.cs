@@ -51,5 +51,6 @@ public class DeleteTaskCommandHandler
                 c.Author != null ? $"{c.Author.FirstName} {c.Author.LastName}" : string.Empty,
                 c.Author?.AvatarUrl,
                 c.Content, c.IsEdited, c.CreatedAt)).ToList(),
-            t.CreatedAt, t.ModifiedAt);
+            t.CreatedAt, t.ModifiedAt,
+            t.Project?.Name, t.Assignee?.AvatarUrl);
 }

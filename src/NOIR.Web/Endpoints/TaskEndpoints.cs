@@ -8,6 +8,8 @@ using NOIR.Application.Features.Pm.Commands.UpdateTaskComment;
 using NOIR.Application.Features.Pm.Commands.DeleteTaskComment;
 using NOIR.Application.Features.Pm.Commands.AddLabelToTask;
 using NOIR.Application.Features.Pm.Commands.RemoveLabelFromTask;
+using NOIR.Application.Features.Pm.Commands.ReorderTask;
+using NOIR.Application.Features.Pm.Commands.AddSubtask;
 using NOIR.Application.Features.Pm.Queries.GetTasks;
 using NOIR.Application.Features.Pm.Queries.GetTaskById;
 using NOIR.Application.Features.Pm.Queries.SearchTasks;
@@ -152,6 +154,46 @@ public static class TaskEndpoints
         .WithName("ChangeTaskStatus")
         .WithSummary("Change task status")
         .Produces<TaskDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        group.MapPost("/{id:guid}/reorder", async (
+            Guid id,
+            ReorderTaskRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new ReorderTaskCommand(id, request.SortOrder)
+            {
+                AuditUserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<TaskDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PmTasksUpdate)
+        .WithName("ReorderTask")
+        .WithSummary("Reorder a task within its column")
+        .Produces<TaskDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        group.MapPost("/{id:guid}/subtasks", async (
+            Guid id,
+            AddSubtaskRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new AddSubtaskCommand(id, request.Title, request.Description,
+                request.Priority ?? TaskPriority.Medium, request.AssigneeId)
+            {
+                AuditUserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<TaskDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PmTasksCreate)
+        .WithName("AddSubtask")
+        .WithSummary("Add a subtask to an existing task")
+        .Produces<TaskDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{id:guid}", async (

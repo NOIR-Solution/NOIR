@@ -22,7 +22,14 @@ public sealed record ProjectDto(
     List<ProjectMemberDto> Members,
     List<ProjectColumnDto> Columns,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? ModifiedAt);
+    DateTimeOffset? ModifiedAt,
+    string ProjectCode = "",
+    string? OwnerAvatarUrl = null,
+    int MemberCount = 0,
+    int TaskCount = 0,
+    int CompletedTaskCount = 0,
+    decimal ProgressPercent = 0,
+    List<TaskLabelDto>? Labels = null);
 
 /// <summary>
 /// Simplified project for list/table views.
@@ -42,7 +49,11 @@ public sealed record ProjectListDto(
     string? Color,
     string? Icon,
     ProjectVisibility Visibility,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    string ProjectCode = "",
+    Guid? OwnerId = null,
+    string? OwnerAvatarUrl = null,
+    decimal ProgressPercent = 0);
 
 /// <summary>
 /// Project member detail.
@@ -53,7 +64,9 @@ public sealed record ProjectMemberDto(
     string EmployeeName,
     string? AvatarUrl,
     ProjectMemberRole Role,
-    DateTimeOffset JoinedAt);
+    DateTimeOffset JoinedAt,
+    string? EmployeeCode = null,
+    string? Position = null);
 
 /// <summary>
 /// Project column detail.
@@ -63,7 +76,9 @@ public sealed record ProjectColumnDto(
     string Name,
     int SortOrder,
     string? Color,
-    int? WipLimit);
+    int? WipLimit,
+    string? StatusMapping = null,
+    int TaskCount = 0);
 
 /// <summary>
 /// Request body for creating a project.
@@ -115,4 +130,5 @@ public sealed record ProjectSearchDto(
     string Slug,
     ProjectStatus Status,
     string? Color,
-    string? Icon);
+    string? Icon,
+    string ProjectCode = "");

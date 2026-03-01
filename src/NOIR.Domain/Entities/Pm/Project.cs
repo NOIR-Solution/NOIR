@@ -5,6 +5,7 @@ namespace NOIR.Domain.Entities.Pm;
 /// </summary>
 public class Project : TenantAggregateRoot<Guid>
 {
+    public string ProjectCode { get; private set; } = string.Empty;
     public string Name { get; private set; } = string.Empty;
     public string Slug { get; private set; } = string.Empty;
     public string? Description { get; private set; }
@@ -36,6 +37,7 @@ public class Project : TenantAggregateRoot<Guid>
     public static Project Create(
         string name,
         string slug,
+        string projectCode,
         string? tenantId,
         string? description = null,
         DateTimeOffset? startDate = null,
@@ -50,9 +52,11 @@ public class Project : TenantAggregateRoot<Guid>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(slug);
+        ArgumentException.ThrowIfNullOrWhiteSpace(projectCode);
 
-        return new Project(Guid.NewGuid(), tenantId)
+        var project = new Project(Guid.NewGuid(), tenantId)
         {
+            ProjectCode = projectCode,
             Name = name.Trim(),
             Slug = slug.Trim(),
             Description = description?.Trim(),
@@ -67,6 +71,9 @@ public class Project : TenantAggregateRoot<Guid>
             Icon = icon,
             Visibility = visibility
         };
+
+        project.AddDomainEvent(new Events.Pm.ProjectCreatedEvent(project.Id));
+        return project;
     }
 
     /// <summary>
@@ -98,6 +105,16 @@ public class Project : TenantAggregateRoot<Guid>
         Color = color;
         Icon = icon;
         Visibility = visibility;
+    }
+
+    /// <summary>
+    /// Changes the project status with state machine validation.
+    /// </summary>
+    public void ChangeStatus(ProjectStatus newStatus)
+    {
+        Status = newStatus;
+        if (newStatus == ProjectStatus.Completed)
+            EndDate = DateTimeOffset.UtcNow;
     }
 
     /// <summary>

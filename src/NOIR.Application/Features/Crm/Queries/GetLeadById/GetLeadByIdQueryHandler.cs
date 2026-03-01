@@ -24,10 +24,10 @@ public class GetLeadByIdQueryHandler
 
         return Result.Success(new Features.Crm.DTOs.LeadDto(
             lead.Id, lead.Title, lead.ContactId, lead.Contact?.FullName ?? "",
-            lead.CompanyId, lead.Company?.Name, lead.Value, lead.Currency,
+            lead.Contact?.Email, lead.CompanyId, lead.Company?.Name, lead.Value, lead.Currency,
             lead.OwnerId, lead.Owner != null ? $"{lead.Owner.FirstName} {lead.Owner.LastName}" : null,
             lead.PipelineId, lead.Pipeline?.Name ?? "", lead.StageId, lead.Stage?.Name ?? "",
-            lead.Status, lead.SortOrder, lead.ExpectedCloseDate,
+            lead.Stage?.Color, lead.Status, lead.SortOrder, lead.ExpectedCloseDate,
             lead.WonAt, lead.LostAt, lead.LostReason, lead.Notes,
             lead.CreatedAt, lead.ModifiedAt));
     }

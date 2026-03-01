@@ -34,7 +34,7 @@ public class AddProjectMemberCommandHandlerTests
     public async Task Handle_ValidRequest_ShouldAddMember()
     {
         // Arrange
-        var project = Project.Create("Test", "test", TestTenantId);
+        var project = Project.Create("Test", "test", "PRJ-20260301-000001", TestTenantId);
         var employeeId = Guid.NewGuid();
 
         _projectRepoMock
@@ -75,7 +75,7 @@ public class AddProjectMemberCommandHandlerTests
     public async Task Handle_AlreadyMember_ShouldReturnError()
     {
         // Arrange
-        var project = Project.Create("Test", "test", TestTenantId);
+        var project = Project.Create("Test", "test", "PRJ-20260301-000001", TestTenantId);
         var employeeId = Guid.NewGuid();
 
         _projectRepoMock

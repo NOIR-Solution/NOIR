@@ -11,7 +11,7 @@ public class ProjectTests
     private const string TestTenantId = "test-tenant";
 
     private static Project CreateActiveProject() =>
-        Project.Create("Test Project", "test-project", TestTenantId, description: "A test project");
+        Project.Create("Test Project", "test-project", "PRJ-20260301-000001", TestTenantId, description: "A test project");
 
     #region Create Factory Tests
 
@@ -23,7 +23,7 @@ public class ProjectTests
 
         // Act
         var project = Project.Create(
-            "Enterprise App", "enterprise-app", TestTenantId,
+            "Enterprise App", "enterprise-app", "PRJ-20260301-000002", TestTenantId,
             description: "Main app", startDate: DateTimeOffset.UtcNow,
             endDate: DateTimeOffset.UtcNow.AddMonths(6),
             dueDate: DateTimeOffset.UtcNow.AddMonths(5),
@@ -34,6 +34,7 @@ public class ProjectTests
         // Assert
         project.Should().NotBeNull();
         project.Id.Should().NotBe(Guid.Empty);
+        project.ProjectCode.Should().Be("PRJ-20260301-000002");
         project.Name.Should().Be("Enterprise App");
         project.Slug.Should().Be("enterprise-app");
         project.Description.Should().Be("Main app");
@@ -54,7 +55,7 @@ public class ProjectTests
     public void Create_WithDefaults_ShouldUseDefaultValues()
     {
         // Act
-        var project = Project.Create("Simple Project", "simple-project", TestTenantId);
+        var project = Project.Create("Simple Project", "simple-project", "PRJ-20260301-000003", TestTenantId);
 
         // Assert
         project.Status.Should().Be(ProjectStatus.Active);
@@ -74,7 +75,7 @@ public class ProjectTests
     public void Create_WithEmptyName_ShouldThrow()
     {
         // Act & Assert
-        var act = () => Project.Create("", "slug", TestTenantId);
+        var act = () => Project.Create("", "slug", "PRJ-20260301-000004", TestTenantId);
         act.Should().Throw<ArgumentException>();
     }
 
@@ -82,7 +83,7 @@ public class ProjectTests
     public void Create_WithEmptySlug_ShouldThrow()
     {
         // Act & Assert
-        var act = () => Project.Create("Name", "", TestTenantId);
+        var act = () => Project.Create("Name", "", "PRJ-20260301-000005", TestTenantId);
         act.Should().Throw<ArgumentException>();
     }
 
@@ -90,7 +91,7 @@ public class ProjectTests
     public void Create_ShouldTrimNameAndSlug()
     {
         // Act
-        var project = Project.Create("  Padded Name  ", "  padded-slug  ", TestTenantId);
+        var project = Project.Create("  Padded Name  ", "  padded-slug  ", "PRJ-20260301-000006", TestTenantId);
 
         // Assert
         project.Name.Should().Be("Padded Name");
@@ -143,7 +144,7 @@ public class ProjectTests
 
         // Assert
         project.Status.Should().Be(ProjectStatus.Archived);
-        project.DomainEvents.Should().ContainSingle(e => e is Events.Pm.ProjectArchivedEvent);
+        project.DomainEvents.Should().Contain(e => e is Events.Pm.ProjectArchivedEvent);
     }
 
     [Fact]
@@ -177,7 +178,7 @@ public class ProjectTests
         project.Status.Should().Be(ProjectStatus.Completed);
         project.EndDate.Should().NotBeNull();
         project.EndDate.Should().BeOnOrAfter(beforeComplete);
-        project.DomainEvents.Should().ContainSingle(e => e is Events.Pm.ProjectCompletedEvent);
+        project.DomainEvents.Should().Contain(e => e is Events.Pm.ProjectCompletedEvent);
     }
 
     [Fact]

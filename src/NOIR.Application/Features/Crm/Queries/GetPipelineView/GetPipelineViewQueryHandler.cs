@@ -35,18 +35,22 @@ public class GetPipelineViewQueryHandler
 
         var stages = pipeline.Stages
             .OrderBy(s => s.SortOrder)
-            .Select(s => new Features.Crm.DTOs.StageWithLeadsDto(
-                s.Id,
-                s.Name,
-                s.SortOrder,
-                s.Color,
-                (leadsByStage.TryGetValue(s.Id, out var stageLeads) ? stageLeads : [])
+            .Select(s =>
+            {
+                var stageLeads = leadsByStage.TryGetValue(s.Id, out var sl) ? sl : [];
+                var leadCards = stageLeads
                     .Select(l => new Features.Crm.DTOs.LeadCardDto(
                         l.Id, l.Title, l.Contact?.FullName ?? "", l.Company?.Name,
                         l.Value, l.Currency,
                         l.Owner != null ? $"{l.Owner.FirstName} {l.Owner.LastName}" : null,
-                        l.Status, l.SortOrder, l.ExpectedCloseDate))
-                    .ToList()))
+                        l.Status, l.SortOrder, l.ExpectedCloseDate, l.CreatedAt))
+                    .ToList();
+
+                return new Features.Crm.DTOs.StageWithLeadsDto(
+                    s.Id, s.Name, s.SortOrder, s.Color, leadCards,
+                    stageLeads.Sum(l => l.Value),
+                    stageLeads.Count);
+            })
             .ToList();
 
         return Result.Success(new Features.Crm.DTOs.PipelineViewDto(

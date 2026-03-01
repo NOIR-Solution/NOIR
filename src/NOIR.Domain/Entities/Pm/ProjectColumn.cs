@@ -10,6 +10,7 @@ public class ProjectColumn : TenantEntity<Guid>
     public int SortOrder { get; private set; }
     public string? Color { get; private set; }
     public int? WipLimit { get; private set; }
+    public string? StatusMapping { get; private set; }
 
     // Navigation properties
     public virtual Project? Project { get; private set; }
@@ -29,7 +30,8 @@ public class ProjectColumn : TenantEntity<Guid>
         int sortOrder,
         string? tenantId,
         string? color = null,
-        int? wipLimit = null)
+        int? wipLimit = null,
+        string? statusMapping = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
@@ -39,18 +41,20 @@ public class ProjectColumn : TenantEntity<Guid>
             Name = name.Trim(),
             SortOrder = sortOrder,
             Color = color,
-            WipLimit = wipLimit
+            WipLimit = wipLimit,
+            StatusMapping = statusMapping
         };
     }
 
     /// <summary>
     /// Updates column details.
     /// </summary>
-    public void Update(string name, int sortOrder, string? color, int? wipLimit)
+    public void Update(string name, int sortOrder, string? color, int? wipLimit, string? statusMapping = null)
     {
         Name = name.Trim();
         SortOrder = sortOrder;
         Color = color;
         WipLimit = wipLimit;
+        StatusMapping = statusMapping;
     }
 }

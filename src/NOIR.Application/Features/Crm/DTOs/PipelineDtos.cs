@@ -36,7 +36,9 @@ public sealed record StageWithLeadsDto(
     string Name,
     int SortOrder,
     string Color,
-    IReadOnlyList<LeadCardDto> Leads);
+    IReadOnlyList<LeadCardDto> Leads,
+    decimal TotalValue,
+    int LeadCount);
 
 /// <summary>
 /// Stage data for creating a pipeline.

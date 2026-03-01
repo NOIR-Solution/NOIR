@@ -28,7 +28,7 @@ public class UpdateProjectCommandHandlerTests
     public async Task Handle_ValidRequest_ShouldUpdateProject()
     {
         // Arrange
-        var project = Project.Create("Old Name", "old-name", TestTenantId);
+        var project = Project.Create("Old Name", "old-name", "PRJ-20260301-000001", TestTenantId);
 
         _projectRepoMock
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<ProjectByIdForUpdateSpec>(), It.IsAny<CancellationToken>()))

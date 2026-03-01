@@ -8,6 +8,7 @@ public sealed class TaskByIdSpec : Specification<ProjectTask>
     public TaskByIdSpec(Guid id)
     {
         Query.Where(t => t.Id == id)
+             .Include(t => t.Project!)
              .Include(t => t.Column!)
              .Include(t => t.Assignee!)
              .Include(t => t.Reporter!)

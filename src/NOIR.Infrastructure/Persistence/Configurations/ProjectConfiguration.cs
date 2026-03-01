@@ -12,6 +12,15 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id).ValueGeneratedOnAdd();
 
+        // ProjectCode
+        builder.Property(e => e.ProjectCode)
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.HasIndex(e => new { e.ProjectCode, e.TenantId })
+            .IsUnique()
+            .HasDatabaseName("IX_Projects_ProjectCode_TenantId");
+
         // Name
         builder.Property(e => e.Name)
             .HasMaxLength(200)

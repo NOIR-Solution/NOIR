@@ -43,7 +43,7 @@ public class CrmCompany : TenantAggregateRoot<Guid>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
-        return new CrmCompany(Guid.NewGuid(), tenantId)
+        var company = new CrmCompany(Guid.NewGuid(), tenantId)
         {
             Name = name.Trim(),
             Domain = domain?.Trim().ToLowerInvariant(),
@@ -56,6 +56,9 @@ public class CrmCompany : TenantAggregateRoot<Guid>
             EmployeeCount = employeeCount,
             Notes = notes?.Trim()
         };
+
+        company.AddDomainEvent(new Events.Crm.CompanyCreatedEvent(company.Id));
+        return company;
     }
 
     /// <summary>

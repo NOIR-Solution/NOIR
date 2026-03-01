@@ -118,8 +118,14 @@ public class ProjectTask : TenantAggregateRoot<Guid>
     /// </summary>
     public void MoveToColumn(Guid columnId, double sortOrder)
     {
+        var oldColumnId = ColumnId;
         ColumnId = columnId;
         SortOrder = sortOrder;
+
+        if (oldColumnId != columnId)
+        {
+            AddDomainEvent(new Events.Pm.TaskMovedEvent(Id, oldColumnId, columnId));
+        }
     }
 
     /// <summary>

@@ -78,10 +78,10 @@ public class CreateLeadCommandHandler
 
     private static Features.Crm.DTOs.LeadDto MapToDto(Lead l, CrmContact contact, Pipeline pipeline, PipelineStage stage) =>
         new(l.Id, l.Title, l.ContactId, contact.FullName,
-            l.CompanyId, l.Company?.Name, l.Value, l.Currency,
+            contact.Email, l.CompanyId, l.Company?.Name, l.Value, l.Currency,
             l.OwnerId, l.Owner != null ? $"{l.Owner.FirstName} {l.Owner.LastName}" : null,
             l.PipelineId, pipeline.Name, l.StageId, stage.Name,
-            l.Status, l.SortOrder, l.ExpectedCloseDate,
+            stage.Color, l.Status, l.SortOrder, l.ExpectedCloseDate,
             l.WonAt, l.LostAt, l.LostReason, l.Notes,
             l.CreatedAt, l.ModifiedAt);
 }

@@ -50,7 +50,7 @@ public class CrmContact : TenantAggregateRoot<Guid>
         ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
         ArgumentException.ThrowIfNullOrWhiteSpace(email);
 
-        return new CrmContact(Guid.NewGuid(), tenantId)
+        var contact = new CrmContact(Guid.NewGuid(), tenantId)
         {
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
@@ -63,6 +63,9 @@ public class CrmContact : TenantAggregateRoot<Guid>
             CustomerId = customerId,
             Notes = notes?.Trim()
         };
+
+        contact.AddDomainEvent(new Events.Crm.ContactCreatedEvent(contact.Id));
+        return contact;
     }
 
     /// <summary>

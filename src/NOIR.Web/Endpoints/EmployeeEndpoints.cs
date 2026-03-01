@@ -27,7 +27,7 @@ public static class EmployeeEndpoints
     {
         var group = app.MapGroup("/api/hr/employees")
             .WithTags("HR - Employees")
-            .RequireFeature(ModuleNames.Erp.Hr)
+            .RequireFeature(ModuleNames.Erp.HrSub.Employees)
             .RequireAuthorization();
 
         // Get all employees (paginated)

@@ -37,6 +37,7 @@ public class CreateColumnCommandHandler
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success(new Features.Pm.DTOs.ProjectColumnDto(
-            column.Id, column.Name, column.SortOrder, column.Color, column.WipLimit));
+            column.Id, column.Name, column.SortOrder, column.Color, column.WipLimit,
+            column.StatusMapping));
     }
 }

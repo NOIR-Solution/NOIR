@@ -26,7 +26,7 @@ public class GetContactsQueryHandler
         var totalCount = await _contactRepository.CountAsync(countSpec, cancellationToken);
 
         var items = contacts.Select(c => new Features.Crm.DTOs.ContactListDto(
-            c.Id, c.FirstName, c.LastName, c.Email, c.Phone,
+            c.Id, c.FirstName, c.LastName, c.Email, c.Phone, c.JobTitle,
             c.Company?.Name, c.Owner != null ? $"{c.Owner.FirstName} {c.Owner.LastName}" : null,
             c.Source, c.CustomerId.HasValue, c.CreatedAt)).ToList();
 

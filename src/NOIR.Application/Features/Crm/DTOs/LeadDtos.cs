@@ -8,6 +8,7 @@ public sealed record LeadDto(
     string Title,
     Guid ContactId,
     string ContactName,
+    string? ContactEmail,
     Guid? CompanyId,
     string? CompanyName,
     decimal Value,
@@ -18,6 +19,7 @@ public sealed record LeadDto(
     string PipelineName,
     Guid StageId,
     string StageName,
+    string? StageColor,
     LeadStatus Status,
     double SortOrder,
     DateTimeOffset? ExpectedCloseDate,
@@ -41,7 +43,8 @@ public sealed record LeadCardDto(
     string? OwnerName,
     LeadStatus Status,
     double SortOrder,
-    DateTimeOffset? ExpectedCloseDate);
+    DateTimeOffset? ExpectedCloseDate,
+    DateTimeOffset CreatedAt);
 
 /// <summary>
 /// Request body for creating a lead.

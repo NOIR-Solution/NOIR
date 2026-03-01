@@ -2161,6 +2161,10 @@ namespace NOIR.Infrastructure.Migrations.App
                         .IsUnique()
                         .HasDatabaseName("IX_Departments_TenantId_Code");
 
+                    b.HasIndex("Name", "ParentDepartmentId", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Departments_Name_Parent_Tenant");
+
                     b.HasIndex("TenantId", "ParentDepartmentId", "SortOrder")
                         .HasDatabaseName("IX_Departments_TenantId_Parent_Sort");
 
@@ -4873,6 +4877,12 @@ namespace NOIR.Infrastructure.Migrations.App
                     b.Property<Guid?>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ProjectCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -4904,6 +4914,10 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("OwnerId", "TenantId")
                         .HasDatabaseName("IX_Projects_OwnerId_TenantId");
+
+                    b.HasIndex("ProjectCode", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Projects_ProjectCode_TenantId");
 
                     b.HasIndex("Slug", "TenantId")
                         .IsUnique()
@@ -4968,6 +4982,11 @@ namespace NOIR.Infrastructure.Migrations.App
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<string>("StatusMapping")
+                        .HasMaxLength(500)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -4983,6 +5002,10 @@ namespace NOIR.Infrastructure.Migrations.App
 
                     b.HasIndex("ProjectId", "SortOrder")
                         .HasDatabaseName("IX_ProjectColumns_ProjectId_SortOrder");
+
+                    b.HasIndex("TenantId", "ProjectId", "Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ProjectColumns_TenantId_ProjectId_Name");
 
                     b.ToTable("ProjectColumns", (string)null);
 

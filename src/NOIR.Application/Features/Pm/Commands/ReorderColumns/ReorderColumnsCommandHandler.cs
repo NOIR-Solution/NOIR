@@ -44,6 +44,7 @@ public class ReorderColumnsCommandHandler
             .ToListAsync(cancellationToken);
 
         return Result.Success(reloaded.Select(c => new Features.Pm.DTOs.ProjectColumnDto(
-            c.Id, c.Name, c.SortOrder, c.Color, c.WipLimit)).ToList());
+            c.Id, c.Name, c.SortOrder, c.Color, c.WipLimit,
+            c.StatusMapping)).ToList());
     }
 }

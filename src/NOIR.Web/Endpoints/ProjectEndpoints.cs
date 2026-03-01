@@ -1,6 +1,7 @@
 using NOIR.Application.Features.Pm.Commands.CreateProject;
 using NOIR.Application.Features.Pm.Commands.UpdateProject;
 using NOIR.Application.Features.Pm.Commands.ArchiveProject;
+using NOIR.Application.Features.Pm.Commands.ChangeProjectStatus;
 using NOIR.Application.Features.Pm.Commands.DeleteProject;
 using NOIR.Application.Features.Pm.Commands.AddProjectMember;
 using NOIR.Application.Features.Pm.Commands.RemoveProjectMember;
@@ -135,6 +136,26 @@ public static class ProjectEndpoints
         .WithName("ArchiveProject")
         .WithSummary("Archive a project")
         .Produces<ProjectDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        group.MapPost("/{id:guid}/status", async (
+            Guid id,
+            ChangeProjectStatusRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new ChangeProjectStatusCommand(id, request.Status)
+            {
+                AuditUserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ProjectDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PmProjectsUpdate)
+        .WithName("ChangeProjectStatus")
+        .WithSummary("Change project status with state machine validation")
+        .Produces<ProjectDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{id:guid}", async (

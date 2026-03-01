@@ -24,7 +24,8 @@ public class GetProjectMembersQueryHandler
             m.Id, m.EmployeeId,
             m.Employee != null ? $"{m.Employee.FirstName} {m.Employee.LastName}" : string.Empty,
             m.Employee?.AvatarUrl,
-            m.Role, m.JoinedAt)).ToList();
+            m.Role, m.JoinedAt,
+            m.Employee?.EmployeeCode, m.Employee?.Position)).ToList();
 
         return Result.Success(items);
     }

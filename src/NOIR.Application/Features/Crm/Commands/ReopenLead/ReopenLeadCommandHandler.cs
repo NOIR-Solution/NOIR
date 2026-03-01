@@ -35,10 +35,10 @@ public class ReopenLeadCommandHandler
 
     private static Features.Crm.DTOs.LeadDto MapToDto(Lead l) =>
         new(l.Id, l.Title, l.ContactId, l.Contact?.FullName ?? "",
-            l.CompanyId, l.Company?.Name, l.Value, l.Currency,
+            l.Contact?.Email, l.CompanyId, l.Company?.Name, l.Value, l.Currency,
             l.OwnerId, l.Owner != null ? $"{l.Owner.FirstName} {l.Owner.LastName}" : null,
             l.PipelineId, l.Pipeline?.Name ?? "", l.StageId, l.Stage?.Name ?? "",
-            l.Status, l.SortOrder, l.ExpectedCloseDate,
+            l.Stage?.Color, l.Status, l.SortOrder, l.ExpectedCloseDate,
             l.WonAt, l.LostAt, l.LostReason, l.Notes,
             l.CreatedAt, l.ModifiedAt);
 }

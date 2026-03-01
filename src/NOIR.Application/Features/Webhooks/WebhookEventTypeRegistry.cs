@@ -84,6 +84,9 @@ public sealed class WebhookEventTypeRegistry : ISingletonService
         { typeof(PostUnpublishedEvent), "blog.post_unpublished" },
 
         // CRM
+        { typeof(ContactCreatedEvent), "crm.contact_created" },
+        { typeof(CompanyCreatedEvent), "crm.company_created" },
+        { typeof(LeadCreatedEvent), "crm.lead_created" },
         { typeof(LeadWonEvent), "crm.lead_won" },
         { typeof(LeadLostEvent), "crm.lead_lost" },
         { typeof(LeadReopenedEvent), "crm.lead_reopened" },
@@ -97,8 +100,10 @@ public sealed class WebhookEventTypeRegistry : ISingletonService
         { typeof(DepartmentUpdatedEvent), "hr.department_updated" },
 
         // PM
+        { typeof(ProjectCreatedEvent), "pm.project_created" },
         { typeof(ProjectArchivedEvent), "pm.project_archived" },
         { typeof(ProjectCompletedEvent), "pm.project_completed" },
+        { typeof(TaskMovedEvent), "pm.task_moved" },
         { typeof(TaskCompletedEvent), "pm.task_completed" },
         { typeof(TaskAssignedEvent), "pm.task_assigned" },
     };

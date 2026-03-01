@@ -65,6 +65,13 @@ public static class ModuleNames
         public const string Hr = "Erp.Hr";
         public const string Crm = "Erp.Crm";
         public const string Pm = "Erp.Pm";
+
+        public static class HrSub
+        {
+            public const string Employees = Hr + ".Employees";
+            public const string Departments = Hr + ".Departments";
+            public const string Tags = Hr + ".Tags";
+        }
     }
 
     public static class Dashboard

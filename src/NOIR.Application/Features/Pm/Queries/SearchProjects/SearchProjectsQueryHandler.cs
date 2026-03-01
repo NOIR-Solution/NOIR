@@ -21,11 +21,11 @@ public class SearchProjectsQueryHandler
         var searchText = query.SearchText.Trim().ToLowerInvariant();
 
         var projects = await _dbContext.Projects
-            .Where(p => p.Name.ToLower().Contains(searchText) || p.Slug.ToLower().Contains(searchText))
+            .Where(p => p.Name.ToLower().Contains(searchText) || p.Slug.ToLower().Contains(searchText) || p.ProjectCode.ToLower().Contains(searchText))
             .OrderBy(p => p.Name)
             .Take(query.Take)
             .TagWith("SearchProjects")
-            .Select(p => new Features.Pm.DTOs.ProjectSearchDto(p.Id, p.Name, p.Slug, p.Status, p.Color, p.Icon))
+            .Select(p => new Features.Pm.DTOs.ProjectSearchDto(p.Id, p.Name, p.Slug, p.Status, p.Color, p.Icon, p.ProjectCode))
             .ToListAsync(cancellationToken);
 
         return Result.Success(projects);

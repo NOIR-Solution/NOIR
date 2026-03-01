@@ -58,7 +58,7 @@ public class CreateTaskCommandHandlerTests
     public async Task Handle_ValidRequest_ShouldCreateTask()
     {
         // Arrange
-        var project = Project.Create("Test Project", "test-project", TestTenantId);
+        var project = Project.Create("Test Project", "test-project", "PRJ-20260301-000001", TestTenantId);
         _projectRepoMock
             .Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(project);
@@ -96,7 +96,7 @@ public class CreateTaskCommandHandlerTests
     public async Task Handle_NoColumnIdSpecified_ShouldAssignFirstColumn()
     {
         // Arrange
-        var project = Project.Create("Test Project", "test-project", TestTenantId);
+        var project = Project.Create("Test Project", "test-project", "PRJ-20260301-000001", TestTenantId);
         _projectRepoMock
             .Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(project);

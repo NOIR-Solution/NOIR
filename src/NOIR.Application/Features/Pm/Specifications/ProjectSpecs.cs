@@ -11,6 +11,8 @@ public sealed class ProjectByIdSpec : Specification<Project>
              .Include(p => p.Owner!)
              .Include("Members.Employee")
              .Include(p => p.Columns)
+             .Include(p => p.Tasks)
+             .AsSplitQuery()
              .TagWith("ProjectById");
     }
 }

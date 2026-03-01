@@ -28,7 +28,7 @@ public class DeleteProjectCommandHandlerTests
     public async Task Handle_ValidRequest_ShouldDeleteProject()
     {
         // Arrange
-        var project = Project.Create("Test Project", "test-project", TestTenantId);
+        var project = Project.Create("Test Project", "test-project", "PRJ-20260301-000001", TestTenantId);
 
         _projectRepoMock
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<ProjectByIdSpec>(), It.IsAny<CancellationToken>()))

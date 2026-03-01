@@ -25,6 +25,10 @@ public class ProjectColumnConfiguration : IEntityTypeConfiguration<ProjectColumn
         builder.Property(e => e.Color)
             .HasMaxLength(7);
 
+        // StatusMapping (JSON)
+        builder.Property(e => e.StatusMapping)
+            .HasMaxLength(500);
+
         // Index on ProjectId + SortOrder
         builder.HasIndex(e => new { e.ProjectId, e.SortOrder })
             .HasDatabaseName("IX_ProjectColumns_ProjectId_SortOrder");
@@ -34,6 +38,11 @@ public class ProjectColumnConfiguration : IEntityTypeConfiguration<ProjectColumn
             .WithMany(p => p.Columns)
             .HasForeignKey(e => e.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Unique index on TenantId + ProjectId + Name
+        builder.HasIndex(e => new { e.TenantId, e.ProjectId, e.Name })
+            .IsUnique()
+            .HasDatabaseName("IX_ProjectColumns_TenantId_ProjectId_Name");
 
         // Tenant
         builder.Property(e => e.TenantId)
