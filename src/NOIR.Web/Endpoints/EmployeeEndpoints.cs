@@ -3,11 +3,17 @@ using NOIR.Application.Features.Hr.Commands.UpdateEmployee;
 using NOIR.Application.Features.Hr.Commands.DeactivateEmployee;
 using NOIR.Application.Features.Hr.Commands.ReactivateEmployee;
 using NOIR.Application.Features.Hr.Commands.LinkEmployeeToUser;
+using NOIR.Application.Features.Hr.Commands.BulkAssignTags;
+using NOIR.Application.Features.Hr.Commands.BulkChangeDepartment;
+using NOIR.Application.Features.Hr.Commands.ImportEmployees;
 using NOIR.Application.Features.Hr.Queries.GetEmployees;
 using NOIR.Application.Features.Hr.Queries.GetEmployeeById;
 using NOIR.Application.Features.Hr.Queries.SearchEmployees;
 using NOIR.Application.Features.Hr.Queries.GetOrgChart;
+using NOIR.Application.Features.Hr.Queries.GetHrReports;
+using NOIR.Application.Features.Hr.Queries.ExportEmployees;
 using NOIR.Application.Features.Hr.DTOs;
+using NOIR.Application.Features.Reports.DTOs;
 
 namespace NOIR.Web.Endpoints;
 
@@ -221,6 +227,111 @@ public static class EmployeeEndpoints
         .Produces<EmployeeDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // Get HR reports
+        group.MapGet("/reports", async (IMessageBus bus) =>
+        {
+            var query = new GetHrReportsQuery();
+            var result = await bus.InvokeAsync<Result<HrReportsDto>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.HrEmployeesRead)
+        .WithName("GetHrReports")
+        .WithSummary("Get HR aggregate reports")
+        .WithDescription("Returns aggregate HR statistics including headcount by department, tag distribution, employment type and status breakdowns.")
+        .Produces<HrReportsDto>(StatusCodes.Status200OK);
+
+        // Export employees as file
+        group.MapGet("/export", async (
+            [FromQuery] ExportFormat? format,
+            [FromQuery] Guid? departmentId,
+            [FromQuery] EmployeeStatus? status,
+            [FromQuery] EmploymentType? employmentType,
+            IMessageBus bus,
+            CancellationToken ct) =>
+        {
+            var query = new ExportEmployeesQuery(
+                format ?? ExportFormat.CSV,
+                departmentId,
+                status,
+                employmentType);
+            var result = await bus.InvokeAsync<Result<ExportResultDto>>(query, ct);
+            if (result.IsFailure)
+                return result.ToHttpResult();
+            return Results.File(result.Value.FileBytes, result.Value.ContentType, result.Value.FileName);
+        })
+        .RequireAuthorization(Permissions.HrEmployeesRead)
+        .WithName("ExportEmployees")
+        .WithSummary("Export employees as file")
+        .WithDescription("Export employees as a downloadable CSV or Excel file with optional filtering.")
+        .Produces<byte[]>(StatusCodes.Status200OK);
+
+        // Import employees from CSV
+        group.MapPost("/import", async (
+            IFormFile file,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus,
+            CancellationToken ct) =>
+        {
+            using var ms = new MemoryStream();
+            await file.CopyToAsync(ms, ct);
+
+            var command = new ImportEmployeesCommand(ms.ToArray(), file.FileName)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<ImportResultDto>>(command, ct);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.HrEmployeesCreate)
+        .WithName("ImportEmployees")
+        .WithSummary("Import employees from CSV")
+        .WithDescription("Import employees from a CSV file. Expected columns: FirstName, LastName, Email, Phone, DepartmentCode, Position, JoinDate, EmploymentType.")
+        .Produces<ImportResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .DisableAntiforgery();
+
+        // Bulk assign tags to employees
+        group.MapPost("/bulk-assign-tags", async (
+            BulkAssignTagsRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus,
+            CancellationToken ct) =>
+        {
+            var command = new BulkAssignTagsCommand(request.EmployeeIds, request.TagIds)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<BulkOperationResultDto>>(command, ct);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.HrTagsManage)
+        .WithName("BulkAssignTagsToEmployees")
+        .WithSummary("Bulk assign tags to employees")
+        .WithDescription("Assign one or more tags to multiple employees at once. Skips already-assigned tag-employee combinations.")
+        .Produces<BulkOperationResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
+
+        // Bulk change department
+        group.MapPost("/bulk-change-department", async (
+            BulkChangeDepartmentRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus,
+            CancellationToken ct) =>
+        {
+            var command = new BulkChangeDepartmentCommand(request.EmployeeIds, request.NewDepartmentId)
+            {
+                UserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<BulkOperationResultDto>>(command, ct);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.HrEmployeesUpdate)
+        .WithName("BulkChangeDepartment")
+        .WithSummary("Bulk change employee department")
+        .WithDescription("Change the department of multiple employees at once.")
+        .Produces<BulkOperationResultDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
     }
 }
 

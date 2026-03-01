@@ -197,6 +197,73 @@ export interface EmployeePagedResult {
   hasNextPage: boolean
 }
 
+// Org Chart DTOs
+export type OrgChartNodeType = 'Department' | 'Employee'
+
+export interface OrgChartNodeDto {
+  id: string
+  type: OrgChartNodeType
+  name: string
+  subtitle?: string | null
+  avatarUrl?: string | null
+  employeeCount?: number | null
+  status?: EmployeeStatus | null
+  children: OrgChartNodeDto[]
+}
+
+// Reports DTOs
+export interface HrReportsDto {
+  headcountByDepartment: DepartmentHeadcountDto[]
+  tagDistribution: TagDistributionDto[]
+  employmentTypeBreakdown: EmploymentTypeBreakdownDto[]
+  statusBreakdown: StatusBreakdownDto[]
+  totalActiveEmployees: number
+  totalDepartments: number
+}
+
+export interface DepartmentHeadcountDto {
+  departmentId: string
+  departmentName: string
+  count: number
+}
+
+export interface TagDistributionDto {
+  tagId: string
+  tagName: string
+  category: EmployeeTagCategory
+  color: string
+  count: number
+}
+
+export interface EmploymentTypeBreakdownDto {
+  type: EmploymentType
+  count: number
+}
+
+export interface StatusBreakdownDto {
+  status: EmployeeStatus
+  count: number
+}
+
+// Import/Export DTOs
+export interface ImportResultDto {
+  totalRows: number
+  successCount: number
+  failedCount: number
+  errors: { rowNumber: number; message: string }[]
+}
+
+// Bulk operation request types
+export interface BulkAssignTagsRequest {
+  employeeIds: string[]
+  tagIds: string[]
+}
+
+export interface BulkChangeDepartmentRequest {
+  employeeIds: string[]
+  newDepartmentId: string
+}
+
 // Query params
 export interface GetEmployeesParams {
   page?: number

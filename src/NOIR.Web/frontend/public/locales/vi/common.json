@@ -3841,6 +3841,50 @@
     "addSubDepartment": "Thêm phòng ban con",
     "sortOrder": "Thứ tự",
     "isActive": "Hoạt động",
+    "orgChart": {
+      "title": "Sơ đồ tổ chức",
+      "description": "Sơ đồ tổ chức tương tác",
+      "search": "Tìm nhân viên hoặc phòng ban...",
+      "export": "Xuất",
+      "expandAll": "Mở rộng tất cả",
+      "collapseAll": "Thu gọn tất cả",
+      "zoomIn": "Phóng to",
+      "zoomOut": "Thu nhỏ",
+      "fitScreen": "Vừa màn hình",
+      "employees": "nhân viên",
+      "noData": "Chưa có dữ liệu tổ chức",
+      "noDataDescription": "Thêm phòng ban và nhân viên để xem sơ đồ tổ chức"
+    },
+    "reports": {
+      "title": "Báo cáo HR",
+      "description": "Phân tích và thống kê nhân sự",
+      "headcountByDepartment": "Nhân sự theo phòng ban",
+      "tagDistribution": "Phân bổ nhãn",
+      "employmentTypeBreakdown": "Loại hình lao động",
+      "statusBreakdown": "Trạng thái nhân viên",
+      "totalActiveEmployees": "Nhân viên đang làm việc",
+      "totalDepartments": "Phòng ban"
+    },
+    "import": {
+      "title": "Nhập nhân viên",
+      "description": "Tải lên file CSV để tạo nhân viên hàng loạt",
+      "selectFile": "Chọn file CSV",
+      "importing": "Đang nhập...",
+      "success": "Nhập hoàn tất",
+      "downloadTemplate": "Tải mẫu"
+    },
+    "export": {
+      "title": "Xuất nhân viên",
+      "excel": "Xuất Excel",
+      "csv": "Xuất CSV"
+    },
+    "bulk": {
+      "assignTags": "Gán nhãn",
+      "changeDepartment": "Đổi phòng ban",
+      "assignTagsDescription": "Chọn nhãn để gán cho {{count}} nhân viên",
+      "changeDepartmentDescription": "Chọn phòng ban cho {{count}} nhân viên",
+      "success": "Thao tác hàng loạt hoàn tất"
+    },
     "tags": {
       "title": "Nhãn Nhân viên",
       "description": "Quản lý nhãn phân loại nhân viên",

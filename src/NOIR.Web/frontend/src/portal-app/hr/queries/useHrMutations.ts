@@ -13,6 +13,9 @@ import {
   deleteTag,
   assignTagsToEmployee,
   removeTagsFromEmployee,
+  bulkAssignTags,
+  bulkChangeDepartment,
+  importEmployees,
 } from '@/services/hr'
 import type {
   CreateEmployeeRequest,
@@ -25,6 +28,8 @@ import type {
   UpdateTagRequest,
   AssignTagsRequest,
   RemoveTagsRequest,
+  BulkAssignTagsRequest,
+  BulkChangeDepartmentRequest,
 } from '@/types/hr'
 import { employeeKeys, departmentKeys, tagKeys } from './queryKeys'
 
@@ -160,6 +165,40 @@ export const useRemoveTags = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: employeeKeys.all })
       queryClient.invalidateQueries({ queryKey: tagKeys.all })
+    },
+  })
+}
+
+// ─── Bulk mutations ──────────────────────────────────────────────────────
+
+export const useBulkAssignTags = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: BulkAssignTagsRequest) => bulkAssignTags(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: employeeKeys.all })
+      queryClient.invalidateQueries({ queryKey: tagKeys.all })
+    },
+  })
+}
+
+export const useBulkChangeDepartment = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: BulkChangeDepartmentRequest) => bulkChangeDepartment(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: employeeKeys.all })
+      queryClient.invalidateQueries({ queryKey: departmentKeys.all })
+    },
+  })
+}
+
+export const useImportEmployees = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => importEmployees(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: employeeKeys.all })
     },
   })
 }

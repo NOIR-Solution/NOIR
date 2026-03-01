@@ -46,6 +46,7 @@ import {
   Heart,
   UsersRound,
   Image,
+  GitBranch,
 } from 'lucide-react'
 import {
   Badge,
@@ -149,6 +150,8 @@ const navSections: NavSection[] = [
       { titleKey: 'hr.employees', icon: Users, path: '/portal/hr/employees', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr' },
       { titleKey: 'hr.departments', icon: Building2, path: '/portal/hr/departments', permission: Permissions.HrDepartmentsRead, feature: 'Erp.Hr' },
       { titleKey: 'hr.tags.title', icon: Tags, path: '/portal/hr/tags', permission: Permissions.HrTagsRead, feature: 'Erp.Hr' },
+      { titleKey: 'hr.orgChart.title', icon: GitBranch, path: '/portal/hr/org-chart', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr' },
+      { titleKey: 'hr.reports.title', icon: BarChart3, path: '/portal/hr/reports', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr' },
     ],
   },
   {

@@ -196,6 +196,12 @@ public class LayerDependencyTests
             .DoNotResideInNamespace("NOIR.Application.Features.Hr.Queries.GetEmployeesByTag")
             .And()
             .DoNotResideInNamespace("NOIR.Application.Features.Hr.Queries.GetEmployeeById")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.Hr.Queries.GetHrReports")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.Hr.Queries.ExportEmployees")
+            .And()
+            .DoNotResideInNamespace("NOIR.Application.Features.Hr.Commands.BulkAssignTags")
             .ShouldNot()
             .HaveDependencyOn("Microsoft.EntityFrameworkCore")
             .GetResult();

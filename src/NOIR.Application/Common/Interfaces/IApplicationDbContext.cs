@@ -100,6 +100,21 @@ public interface IApplicationDbContext
     DbSet<EmployeeTagAssignment> EmployeeTagAssignments { get; }
 
     /// <summary>
+    /// Employees DbSet for aggregate queries (GROUP BY reports).
+    /// </summary>
+    DbSet<Employee> Employees { get; }
+
+    /// <summary>
+    /// Departments DbSet for aggregate queries (GROUP BY reports).
+    /// </summary>
+    DbSet<Department> Departments { get; }
+
+    /// <summary>
+    /// Employee tags DbSet for aggregate queries (GROUP BY reports).
+    /// </summary>
+    DbSet<EmployeeTag> EmployeeTags { get; }
+
+    /// <summary>
     /// Attaches an entity to the context for tracking.
     EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
 

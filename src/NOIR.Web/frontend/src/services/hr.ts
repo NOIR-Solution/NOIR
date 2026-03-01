@@ -11,6 +11,7 @@ import type {
   CreateEmployeeRequest,
   UpdateEmployeeRequest,
   EmployeeStatus,
+  EmploymentType,
   DepartmentDto,
   DepartmentTreeNodeDto,
   CreateDepartmentRequest,
@@ -24,6 +25,11 @@ import type {
   AssignTagsRequest,
   RemoveTagsRequest,
   TagBriefDto,
+  OrgChartNodeDto,
+  HrReportsDto,
+  ImportResultDto,
+  BulkAssignTagsRequest,
+  BulkChangeDepartmentRequest,
 } from '@/types/hr'
 
 // ─── Employee endpoints ────────────────────────────────────────────────────
@@ -178,4 +184,86 @@ export const getEmployeesByTag = async (tagId: string, params?: { page?: number;
   if (params?.pageSize != null) queryParams.append('pageSize', params.pageSize.toString())
   const query = queryParams.toString()
   return apiClient<EmployeePagedResult>(`/hr/tags/${tagId}/employees${query ? `?${query}` : ''}`)
+}
+
+// ─── Org Chart endpoints ──────────────────────────────────────────────────
+
+export const getOrgChart = async (departmentId?: string): Promise<OrgChartNodeDto[]> => {
+  const queryParams = new URLSearchParams()
+  if (departmentId) queryParams.append('departmentId', departmentId)
+  const query = queryParams.toString()
+  return apiClient<OrgChartNodeDto[]>(`/hr/employees/org-chart${query ? `?${query}` : ''}`)
+}
+
+// ─── Reports endpoints ────────────────────────────────────────────────────
+
+export const getHrReports = async (): Promise<HrReportsDto> => {
+  return apiClient<HrReportsDto>('/hr/employees/reports')
+}
+
+// ─── Import/Export endpoints ──────────────────────────────────────────────
+
+export const exportEmployees = async (params?: {
+  format?: string
+  departmentId?: string
+  status?: EmployeeStatus
+  employmentType?: EmploymentType
+}): Promise<Blob> => {
+  const queryParams = new URLSearchParams()
+  if (params?.format) queryParams.append('format', params.format)
+  if (params?.departmentId) queryParams.append('departmentId', params.departmentId)
+  if (params?.status) queryParams.append('status', params.status)
+  if (params?.employmentType) queryParams.append('employmentType', params.employmentType)
+  const query = queryParams.toString()
+
+  const { getAccessToken } = await import('./tokenStorage')
+  const { i18n } = await import('@/i18n')
+  const token = getAccessToken()
+  const response = await fetch(`/api/hr/employees/export${query ? `?${query}` : ''}`, {
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'Accept-Language': i18n.language,
+    },
+    credentials: 'include',
+  })
+  if (!response.ok) throw new Error('Export failed')
+  return response.blob()
+}
+
+export const importEmployees = async (file: File): Promise<ImportResultDto> => {
+  const { getAccessToken } = await import('./tokenStorage')
+  const { i18n } = await import('@/i18n')
+  const token = getAccessToken()
+  const formData = new FormData()
+  formData.append('file', file)
+  const response = await fetch('/api/hr/employees/import', {
+    method: 'POST',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'Accept-Language': i18n.language,
+    },
+    credentials: 'include',
+    body: formData,
+  })
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ title: 'Import failed' }))
+    throw new Error(error.detail || error.title || 'Import failed')
+  }
+  return response.json()
+}
+
+// ─── Bulk operation endpoints ─────────────────────────────────────────────
+
+export const bulkAssignTags = async (data: BulkAssignTagsRequest): Promise<void> => {
+  await apiClient('/hr/employees/bulk-assign-tags', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export const bulkChangeDepartment = async (data: BulkChangeDepartmentRequest): Promise<void> => {
+  await apiClient('/hr/employees/bulk-change-department', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
 }

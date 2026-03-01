@@ -239,3 +239,64 @@ public sealed record AssignTagsRequest(
 /// </summary>
 public sealed record RemoveTagsRequest(
     List<Guid> TagIds);
+
+// === Report DTOs ===
+
+/// <summary>
+/// HR reports aggregate data.
+/// </summary>
+public sealed record HrReportsDto(
+    IReadOnlyList<DepartmentHeadcountDto> HeadcountByDepartment,
+    IReadOnlyList<TagDistributionDto> TagDistribution,
+    IReadOnlyList<EmploymentTypeBreakdownDto> EmploymentTypeBreakdown,
+    IReadOnlyList<StatusBreakdownDto> StatusBreakdown,
+    int TotalActiveEmployees,
+    int TotalDepartments);
+
+/// <summary>
+/// Department headcount for reports.
+/// </summary>
+public sealed record DepartmentHeadcountDto(Guid DepartmentId, string DepartmentName, int Count);
+
+/// <summary>
+/// Tag distribution for reports.
+/// </summary>
+public sealed record TagDistributionDto(Guid TagId, string TagName, EmployeeTagCategory Category, string Color, int Count);
+
+/// <summary>
+/// Employment type breakdown for reports.
+/// </summary>
+public sealed record EmploymentTypeBreakdownDto(EmploymentType Type, int Count);
+
+/// <summary>
+/// Employee status breakdown for reports.
+/// </summary>
+public sealed record StatusBreakdownDto(EmployeeStatus Status, int Count);
+
+// === Bulk Operation Request DTOs ===
+
+/// <summary>
+/// Request body for bulk assigning tags to employees.
+/// </summary>
+public sealed record BulkAssignTagsRequest(List<Guid> EmployeeIds, List<Guid> TagIds);
+
+/// <summary>
+/// Request body for bulk changing employee department.
+/// </summary>
+public sealed record BulkChangeDepartmentRequest(List<Guid> EmployeeIds, Guid NewDepartmentId);
+
+// === Import DTOs ===
+
+/// <summary>
+/// Result of a CSV import operation.
+/// </summary>
+public sealed record ImportResultDto(
+    int TotalRows,
+    int SuccessCount,
+    int FailedCount,
+    List<ImportErrorDto> Errors);
+
+/// <summary>
+/// Error details for a failed import row.
+/// </summary>
+public sealed record ImportErrorDto(int RowNumber, string Message);

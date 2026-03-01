@@ -173,6 +173,45 @@ public sealed class EmployeesByManagerIdSpec : Specification<Employee>
 }
 
 /// <summary>
+/// Get employees by IDs with tracking for bulk mutations.
+/// </summary>
+public sealed class EmployeesByIdsForUpdateSpec : Specification<Employee>
+{
+    public EmployeesByIdsForUpdateSpec(List<Guid> ids)
+    {
+        Query.Where(e => ids.Contains(e.Id))
+             .AsTracking()
+             .TagWith("EmployeesByIdsForUpdate");
+    }
+}
+
+/// <summary>
+/// Get employees for export with department and tag data.
+/// </summary>
+public sealed class EmployeesForExportSpec : Specification<Employee>
+{
+    public EmployeesForExportSpec(
+        Guid? departmentId = null,
+        EmployeeStatus? status = null,
+        EmploymentType? employmentType = null)
+    {
+        if (departmentId.HasValue)
+            Query.Where(e => e.DepartmentId == departmentId.Value);
+
+        if (status.HasValue)
+            Query.Where(e => e.Status == status.Value);
+
+        if (employmentType.HasValue)
+            Query.Where(e => e.EmploymentType == employmentType.Value);
+
+        Query.Include(e => e.Department!)
+             .Include(e => e.Manager!)
+             .OrderBy(e => e.EmployeeCode)
+             .TagWith("EmployeesForExport");
+    }
+}
+
+/// <summary>
 /// Lightweight search for autocomplete.
 /// </summary>
 public sealed class EmployeeSearchSpec : Specification<Employee>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useDeferredValue, useMemo, useTransition } from 'react'
+import { useState, useEffect, useDeferredValue, useMemo, useTransition, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -10,14 +10,20 @@ import {
   Users,
   UserX,
   UserCheck,
+  Download,
+  Upload,
+  Tags,
+  Building2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useSelection } from '@/hooks/useSelection'
 import {
   Badge,
   Button,
+  Checkbox,
   Card,
   CardContent,
   CardDescription,
@@ -51,7 +57,18 @@ import {
   TableHeader,
   TableRow,
 } from '@uikit'
-import { useEmployeesQuery, useDepartmentsQuery, useDeactivateEmployee, useReactivateEmployee } from '@/portal-app/hr/queries'
+import { BulkActionToolbar } from '@/components/BulkActionToolbar'
+import {
+  useEmployeesQuery,
+  useDepartmentsQuery,
+  useDeactivateEmployee,
+  useReactivateEmployee,
+  useTagsQuery,
+  useBulkAssignTags,
+  useBulkChangeDepartment,
+  useImportEmployees,
+} from '@/portal-app/hr/queries'
+import { exportEmployees } from '@/services/hr'
 import type { GetEmployeesParams } from '@/types/hr'
 import type { EmployeeListDto, EmployeeStatus, EmploymentType } from '@/types/hr'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
@@ -97,6 +114,12 @@ export const EmployeesPage = () => {
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-employee' })
   const [employeeToDeactivate, setEmployeeToDeactivate] = useState<EmployeeListDto | null>(null)
+  const [bulkTagDialogOpen, setBulkTagDialogOpen] = useState(false)
+  const [bulkDeptDialogOpen, setBulkDeptDialogOpen] = useState(false)
+  const [importDialogOpen, setImportDialogOpen] = useState(false)
+  const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set())
+  const [selectedDeptId, setSelectedDeptId] = useState<string>('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setParams(prev => ({ ...prev, page: 1 }))
@@ -112,11 +135,16 @@ export const EmployeesPage = () => {
 
   const { data: employeesResponse, isLoading: loading, error: queryError } = useEmployeesQuery(queryParams)
   const { data: departments } = useDepartmentsQuery()
+  const { data: allTags } = useTagsQuery({ isActive: true })
   const deactivateMutation = useDeactivateEmployee()
   const reactivateMutation = useReactivateEmployee()
+  const bulkAssignTagsMutation = useBulkAssignTags()
+  const bulkChangeDeptMutation = useBulkChangeDepartment()
+  const importMutation = useImportEmployees()
   const error = queryError?.message ?? null
 
   const employees = employeesResponse?.items ?? []
+  const { selectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(employees)
   const { editItem: employeeToEdit, openEdit: openEditEmployee, closeEdit: closeEditEmployee } = useUrlEditDialog<EmployeeListDto>(employees)
   const totalCount = employeesResponse?.totalCount ?? 0
   const totalPages = employeesResponse?.totalPages ?? 1
@@ -187,6 +215,83 @@ export const EmployeesPage = () => {
     }
   }
 
+  const handleBulkAssignTags = useCallback(async () => {
+    if (selectedIds.size === 0 || selectedTagIds.size === 0) return
+    try {
+      await bulkAssignTagsMutation.mutateAsync({
+        employeeIds: Array.from(selectedIds),
+        tagIds: Array.from(selectedTagIds),
+      })
+      toast.success(t('hr.bulk.success'))
+      setBulkTagDialogOpen(false)
+      setSelectedTagIds(new Set())
+      handleSelectNone()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('errors.generic', 'An error occurred'))
+    }
+  }, [selectedIds, selectedTagIds, bulkAssignTagsMutation, t, handleSelectNone])
+
+  const handleBulkChangeDepartment = useCallback(async () => {
+    if (selectedIds.size === 0 || !selectedDeptId) return
+    try {
+      await bulkChangeDeptMutation.mutateAsync({
+        employeeIds: Array.from(selectedIds),
+        newDepartmentId: selectedDeptId,
+      })
+      toast.success(t('hr.bulk.success'))
+      setBulkDeptDialogOpen(false)
+      setSelectedDeptId('')
+      handleSelectNone()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('errors.generic', 'An error occurred'))
+    }
+  }, [selectedIds, selectedDeptId, bulkChangeDeptMutation, t, handleSelectNone])
+
+  const handleExport = useCallback(async () => {
+    try {
+      const blob = await exportEmployees({
+        departmentId: departmentFilter !== 'all' ? departmentFilter : undefined,
+        status: statusFilter !== 'all' ? statusFilter as EmployeeStatus : undefined,
+        employmentType: typeFilter !== 'all' ? typeFilter as EmploymentType : undefined,
+      })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'employees.xlsx'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('errors.generic', 'An error occurred'))
+    }
+  }, [departmentFilter, statusFilter, typeFilter, t])
+
+  const handleImportFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      const result = await importMutation.mutateAsync(file)
+      if (result.failedCount > 0) {
+        toast.warning(t('hr.import.success') + ` (${result.successCount}/${result.totalRows})`)
+      } else {
+        toast.success(t('hr.import.success'))
+      }
+      setImportDialogOpen(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('errors.generic', 'An error occurred'))
+    }
+    // Reset file input
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }, [importMutation, t])
+
+  const handleToggleTagSelection = useCallback((tagId: string) => {
+    setSelectedTagIds(prev => {
+      const next = new Set(prev)
+      if (next.has(tagId)) next.delete(tagId)
+      else next.add(tagId)
+      return next
+    })
+  }, [])
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -195,10 +300,20 @@ export const EmployeesPage = () => {
         description={t('hr.employeesDescription', 'Manage your organization\'s employees')}
         responsive
         action={
-          <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
-            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-            {t('hr.createEmployee')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="cursor-pointer" onClick={() => setImportDialogOpen(true)}>
+              <Upload className="h-4 w-4 mr-2" />
+              {t('hr.import.title')}
+            </Button>
+            <Button variant="outline" size="sm" className="cursor-pointer" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" />
+              {t('hr.export.title')}
+            </Button>
+            <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
+              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+              {t('hr.createEmployee')}
+            </Button>
+          </div>
         }
       />
 
@@ -271,10 +386,29 @@ export const EmployeesPage = () => {
             </div>
           )}
 
+          <BulkActionToolbar selectedCount={selectedIds.size} onClearSelection={handleSelectNone}>
+            <Button variant="outline" size="sm" className="cursor-pointer" onClick={() => setBulkTagDialogOpen(true)}>
+              <Tags className="h-4 w-4 mr-2" />
+              {t('hr.bulk.assignTags')}
+            </Button>
+            <Button variant="outline" size="sm" className="cursor-pointer" onClick={() => setBulkDeptDialogOpen(true)}>
+              <Building2 className="h-4 w-4 mr-2" />
+              {t('hr.bulk.changeDepartment')}
+            </Button>
+          </BulkActionToolbar>
+
           <div className="rounded-xl border border-border/50 overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10">
+                    <Checkbox
+                      checked={isAllSelected}
+                      onCheckedChange={() => isAllSelected ? handleSelectNone() : handleSelectAll()}
+                      className="cursor-pointer"
+                      aria-label={t('labels.selectAll', 'Select all')}
+                    />
+                  </TableHead>
                   <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead>{t('labels.name', 'Name')}</TableHead>
                   <TableHead>{t('hr.employeeCode')}</TableHead>
@@ -290,6 +424,7 @@ export const EmployeesPage = () => {
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
+                      <TableCell><Skeleton className="h-4 w-4" /></TableCell>
                       <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
@@ -303,7 +438,7 @@ export const EmployeesPage = () => {
                   ))
                 ) : employees.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="p-0">
+                    <TableCell colSpan={10} className="p-0">
                       <EmptyState
                         icon={Users}
                         title={t('hr.noEmployeesFound')}
@@ -323,6 +458,14 @@ export const EmployeesPage = () => {
                       className="group cursor-pointer transition-colors hover:bg-muted/50"
                       onClick={() => handleViewEmployee(employee)}
                     >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={selectedIds.has(employee.id)}
+                          onCheckedChange={() => handleToggleSelect(employee.id)}
+                          className="cursor-pointer"
+                          aria-label={t('labels.select', { name: `${employee.firstName} ${employee.lastName}` })}
+                        />
+                      </TableCell>
                       <TableCell className="sticky left-0 z-10 bg-background">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -484,6 +627,119 @@ export const EmployeesPage = () => {
               className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
             >
               {t('hr.deactivateEmployee')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
+
+      {/* Bulk Assign Tags Dialog */}
+      <Credenza open={bulkTagDialogOpen} onOpenChange={setBulkTagDialogOpen}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>{t('hr.bulk.assignTags')}</CredenzaTitle>
+            <CredenzaDescription>
+              {t('hr.bulk.assignTagsDescription', { count: selectedIds.size })}
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaBody>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {allTags?.map(tag => (
+                  <Badge
+                    key={tag.id}
+                    variant="outline"
+                    className={`cursor-pointer transition-colors ${selectedTagIds.has(tag.id) ? 'bg-primary/10 border-primary' : 'hover:bg-muted'}`}
+                    onClick={() => handleToggleTagSelection(tag.id)}
+                  >
+                    <div className="h-2 w-2 rounded-full mr-1.5" style={{ backgroundColor: tag.color }} />
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </CredenzaBody>
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setBulkTagDialogOpen(false)} className="cursor-pointer">
+              {t('labels.cancel', 'Cancel')}
+            </Button>
+            <Button
+              onClick={handleBulkAssignTags}
+              disabled={selectedTagIds.size === 0 || bulkAssignTagsMutation.isPending}
+              className="cursor-pointer"
+            >
+              {t('hr.bulk.assignTags')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
+
+      {/* Bulk Change Department Dialog */}
+      <Credenza open={bulkDeptDialogOpen} onOpenChange={setBulkDeptDialogOpen}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>{t('hr.bulk.changeDepartment')}</CredenzaTitle>
+            <CredenzaDescription>
+              {t('hr.bulk.changeDepartmentDescription', { count: selectedIds.size })}
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaBody>
+            <div className="space-y-4">
+              <Select value={selectedDeptId} onValueChange={setSelectedDeptId}>
+                <SelectTrigger className="w-full cursor-pointer" aria-label={t('hr.selectDepartment')}>
+                  <SelectValue placeholder={t('hr.selectDepartment')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {flatDepartments.map((dept) => (
+                    <SelectItem key={dept.id} value={dept.id} className="cursor-pointer">
+                      {dept.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CredenzaBody>
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setBulkDeptDialogOpen(false)} className="cursor-pointer">
+              {t('labels.cancel', 'Cancel')}
+            </Button>
+            <Button
+              onClick={handleBulkChangeDepartment}
+              disabled={!selectedDeptId || bulkChangeDeptMutation.isPending}
+              className="cursor-pointer"
+            >
+              {t('hr.bulk.changeDepartment')}
+            </Button>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
+
+      {/* Import Dialog */}
+      <Credenza open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>{t('hr.import.title')}</CredenzaTitle>
+            <CredenzaDescription>
+              {t('hr.import.description')}
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaBody>
+            <div className="space-y-4">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,.xlsx"
+                onChange={handleImportFile}
+                className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer"
+                aria-label={t('hr.import.selectFile')}
+              />
+              {importMutation.isPending && (
+                <p className="text-sm text-muted-foreground">{t('hr.import.importing')}</p>
+              )}
+            </div>
+          </CredenzaBody>
+          <CredenzaFooter>
+            <Button variant="outline" onClick={() => setImportDialogOpen(false)} className="cursor-pointer">
+              {t('labels.cancel', 'Cancel')}
             </Button>
           </CredenzaFooter>
         </CredenzaContent>

@@ -3841,6 +3841,50 @@
     "addSubDepartment": "Add Sub-department",
     "sortOrder": "Sort Order",
     "isActive": "Active",
+    "orgChart": {
+      "title": "Org Chart",
+      "description": "Interactive organizational chart",
+      "search": "Search employees or departments...",
+      "export": "Export",
+      "expandAll": "Expand All",
+      "collapseAll": "Collapse All",
+      "zoomIn": "Zoom In",
+      "zoomOut": "Zoom Out",
+      "fitScreen": "Fit to Screen",
+      "employees": "employees",
+      "noData": "No organizational data",
+      "noDataDescription": "Add departments and employees to see the org chart"
+    },
+    "reports": {
+      "title": "HR Reports",
+      "description": "Employee analytics and insights",
+      "headcountByDepartment": "Headcount by Department",
+      "tagDistribution": "Tag Distribution",
+      "employmentTypeBreakdown": "Employment Type",
+      "statusBreakdown": "Employee Status",
+      "totalActiveEmployees": "Active Employees",
+      "totalDepartments": "Departments"
+    },
+    "import": {
+      "title": "Import Employees",
+      "description": "Upload a CSV file to bulk-create employees",
+      "selectFile": "Select CSV File",
+      "importing": "Importing...",
+      "success": "Import completed",
+      "downloadTemplate": "Download Template"
+    },
+    "export": {
+      "title": "Export Employees",
+      "excel": "Export Excel",
+      "csv": "Export CSV"
+    },
+    "bulk": {
+      "assignTags": "Assign Tags",
+      "changeDepartment": "Change Department",
+      "assignTagsDescription": "Select tags to assign to {{count}} employees",
+      "changeDepartmentDescription": "Select department for {{count}} employees",
+      "success": "Bulk operation completed"
+    },
     "tags": {
       "title": "Employee Tags",
       "description": "Manage tags for categorizing employees",

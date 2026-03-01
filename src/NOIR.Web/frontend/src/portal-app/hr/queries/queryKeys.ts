@@ -7,6 +7,7 @@ export const employeeKeys = {
   details: () => [...employeeKeys.all, 'detail'] as const,
   detail: (id: string) => [...employeeKeys.details(), id] as const,
   search: (query: string) => [...employeeKeys.all, 'search', query] as const,
+  orgChart: (departmentId?: string) => [...employeeKeys.all, 'org-chart', departmentId] as const,
 }
 
 export const departmentKeys = {
@@ -24,4 +25,9 @@ export const tagKeys = {
   details: () => [...tagKeys.all, 'detail'] as const,
   detail: (id: string) => [...tagKeys.details(), id] as const,
   employees: (id: string) => [...tagKeys.all, 'employees', id] as const,
+}
+
+export const hrReportKeys = {
+  all: ['hr-reports'] as const,
+  reports: () => [...hrReportKeys.all, 'data'] as const,
 }

@@ -8,9 +8,11 @@ import {
   getTags,
   getTagById,
   getEmployeesByTag,
+  getOrgChart,
+  getHrReports,
 } from '@/services/hr'
 import type { GetEmployeesParams, EmployeeTagCategory } from '@/types/hr'
-import { employeeKeys, departmentKeys, tagKeys } from './queryKeys'
+import { employeeKeys, departmentKeys, tagKeys, hrReportKeys } from './queryKeys'
 
 export const useEmployeesQuery = (params: GetEmployeesParams) =>
   useQuery({
@@ -64,4 +66,16 @@ export const useEmployeesByTagQuery = (tagId: string | undefined, params?: { pag
     queryKey: tagKeys.employees(tagId!),
     queryFn: () => getEmployeesByTag(tagId!, params),
     enabled: !!tagId,
+  })
+
+export const useOrgChartQuery = (departmentId?: string) =>
+  useQuery({
+    queryKey: employeeKeys.orgChart(departmentId),
+    queryFn: () => getOrgChart(departmentId),
+  })
+
+export const useHrReportsQuery = () =>
+  useQuery({
+    queryKey: hrReportKeys.reports(),
+    queryFn: () => getHrReports(),
   })
