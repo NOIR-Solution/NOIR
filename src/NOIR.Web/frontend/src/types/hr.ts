@@ -147,6 +147,44 @@ export interface ReorderDepartmentsRequest {
   items: { departmentId: string; sortOrder: number }[]
 }
 
+// Tag DTOs
+export interface EmployeeTagDto {
+  id: string
+  name: string
+  category: EmployeeTagCategory
+  color: string
+  description?: string | null
+  sortOrder: number
+  isActive: boolean
+  employeeCount: number
+  createdAt: string
+  lastModifiedAt?: string | null
+}
+
+export interface CreateTagRequest {
+  name: string
+  category: EmployeeTagCategory
+  color?: string | null
+  description?: string | null
+  sortOrder?: number
+}
+
+export interface UpdateTagRequest {
+  name: string
+  category: EmployeeTagCategory
+  color?: string | null
+  description?: string | null
+  sortOrder?: number
+}
+
+export interface AssignTagsRequest {
+  tagIds: string[]
+}
+
+export interface RemoveTagsRequest {
+  tagIds: string[]
+}
+
 // Paged result
 export interface EmployeePagedResult {
   items: EmployeeListDto[]

@@ -17,6 +17,13 @@ import type {
   UpdateDepartmentRequest,
   ReorderDepartmentsRequest,
   GetEmployeesParams,
+  EmployeeTagDto,
+  EmployeeTagCategory,
+  CreateTagRequest,
+  UpdateTagRequest,
+  AssignTagsRequest,
+  RemoveTagsRequest,
+  TagBriefDto,
 } from '@/types/hr'
 
 // ─── Employee endpoints ────────────────────────────────────────────────────
@@ -115,4 +122,60 @@ export const reorderDepartments = async (request: ReorderDepartmentsRequest): Pr
     method: 'POST',
     body: JSON.stringify(request),
   })
+}
+
+// ─── Tag endpoints ────────────────────────────────────────────────────────
+
+export const getTags = async (params?: { category?: EmployeeTagCategory; isActive?: boolean }): Promise<EmployeeTagDto[]> => {
+  const queryParams = new URLSearchParams()
+  if (params?.category) queryParams.append('category', params.category)
+  if (params?.isActive != null) queryParams.append('isActive', params.isActive.toString())
+  const query = queryParams.toString()
+  return apiClient<EmployeeTagDto[]>(`/hr/tags${query ? `?${query}` : ''}`)
+}
+
+export const getTagById = async (id: string): Promise<EmployeeTagDto> => {
+  return apiClient<EmployeeTagDto>(`/hr/tags/${id}`)
+}
+
+export const createTag = async (request: CreateTagRequest): Promise<EmployeeTagDto> => {
+  return apiClient<EmployeeTagDto>('/hr/tags', {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+export const updateTag = async (id: string, request: UpdateTagRequest): Promise<EmployeeTagDto> => {
+  return apiClient<EmployeeTagDto>(`/hr/tags/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  })
+}
+
+export const deleteTag = async (id: string): Promise<void> => {
+  await apiClient(`/hr/tags/${id}`, {
+    method: 'DELETE',
+  })
+}
+
+export const assignTagsToEmployee = async (employeeId: string, request: AssignTagsRequest): Promise<TagBriefDto[]> => {
+  return apiClient<TagBriefDto[]>(`/hr/tags/employees/${employeeId}/assign`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+export const removeTagsFromEmployee = async (employeeId: string, request: RemoveTagsRequest): Promise<TagBriefDto[]> => {
+  return apiClient<TagBriefDto[]>(`/hr/tags/employees/${employeeId}/remove`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+  })
+}
+
+export const getEmployeesByTag = async (tagId: string, params?: { page?: number; pageSize?: number }): Promise<EmployeePagedResult> => {
+  const queryParams = new URLSearchParams()
+  if (params?.page != null) queryParams.append('page', params.page.toString())
+  if (params?.pageSize != null) queryParams.append('pageSize', params.pageSize.toString())
+  const query = queryParams.toString()
+  return apiClient<EmployeePagedResult>(`/hr/tags/${tagId}/employees${query ? `?${query}` : ''}`)
 }

@@ -5,9 +5,12 @@ import {
   searchEmployees,
   getDepartments,
   getDepartmentById,
+  getTags,
+  getTagById,
+  getEmployeesByTag,
 } from '@/services/hr'
-import type { GetEmployeesParams } from '@/types/hr'
-import { employeeKeys, departmentKeys } from './queryKeys'
+import type { GetEmployeesParams, EmployeeTagCategory } from '@/types/hr'
+import { employeeKeys, departmentKeys, tagKeys } from './queryKeys'
 
 export const useEmployeesQuery = (params: GetEmployeesParams) =>
   useQuery({
@@ -41,4 +44,24 @@ export const useDepartmentQuery = (id: string | undefined) =>
     queryKey: departmentKeys.detail(id!),
     queryFn: () => getDepartmentById(id!),
     enabled: !!id,
+  })
+
+export const useTagsQuery = (params?: { category?: EmployeeTagCategory; isActive?: boolean }) =>
+  useQuery({
+    queryKey: tagKeys.list(params ?? {}),
+    queryFn: () => getTags(params),
+  })
+
+export const useTagQuery = (id: string | undefined) =>
+  useQuery({
+    queryKey: tagKeys.detail(id!),
+    queryFn: () => getTagById(id!),
+    enabled: !!id,
+  })
+
+export const useEmployeesByTagQuery = (tagId: string | undefined, params?: { page?: number; pageSize?: number }) =>
+  useQuery({
+    queryKey: tagKeys.employees(tagId!),
+    queryFn: () => getEmployeesByTag(tagId!, params),
+    enabled: !!tagId,
   })

@@ -3840,6 +3840,42 @@
     "allTypes": "All Types",
     "addSubDepartment": "Add Sub-department",
     "sortOrder": "Sort Order",
-    "isActive": "Active"
+    "isActive": "Active",
+    "tags": {
+      "title": "Employee Tags",
+      "description": "Manage tags for categorizing employees",
+      "createTag": "Create Tag",
+      "editTag": "Edit Tag",
+      "deleteTag": "Delete Tag",
+      "deleteConfirmation": "Are you sure you want to delete this tag? It will be removed from all employees.",
+      "noTags": "No tags yet",
+      "noTagsDescription": "Create tags to categorize and organize employees",
+      "name": "Tag Name",
+      "namePlaceholder": "Enter tag name",
+      "category": "Category",
+      "color": "Color",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Brief description of this tag",
+      "sortOrder": "Sort Order",
+      "employeeCount": "{{count}} tag(s)",
+      "assignTags": "Assign Tags",
+      "removeTags": "Remove Tags",
+      "manageTags": "Manage Tags",
+      "selectTags": "Select tags to assign",
+      "tagAssigned": "Tags assigned successfully",
+      "tagRemoved": "Tags removed successfully",
+      "tagCreated": "Tag created successfully",
+      "tagUpdated": "Tag updated successfully",
+      "tagDeleted": "Tag deleted successfully",
+      "categories": {
+        "Team": "Team",
+        "Skill": "Skill",
+        "Project": "Project",
+        "Location": "Location",
+        "Seniority": "Seniority",
+        "Employment": "Employment",
+        "Custom": "Custom"
+      }
+    }
   }
 }

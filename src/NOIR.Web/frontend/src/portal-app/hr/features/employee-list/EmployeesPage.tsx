@@ -56,6 +56,7 @@ import type { GetEmployeesParams } from '@/types/hr'
 import type { EmployeeListDto, EmployeeStatus, EmploymentType } from '@/types/hr'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { EmployeeFormDialog } from '../../components/EmployeeFormDialog'
+import { TagChips } from '../../components/TagChips'
 
 const EMPLOYEE_STATUSES: EmployeeStatus[] = ['Active', 'Suspended', 'Resigned', 'Terminated']
 const EMPLOYMENT_TYPES: EmploymentType[] = ['FullTime', 'PartTime', 'Contract', 'Intern']
@@ -280,6 +281,7 @@ export const EmployeesPage = () => {
                   <TableHead>{t('hr.email')}</TableHead>
                   <TableHead>{t('hr.department')}</TableHead>
                   <TableHead>{t('hr.position')}</TableHead>
+                  <TableHead>{t('labels.tags', 'Tags')}</TableHead>
                   <TableHead>{t('hr.status')}</TableHead>
                   <TableHead>{t('hr.employmentType')}</TableHead>
                 </TableRow>
@@ -294,13 +296,14 @@ export const EmployeesPage = () => {
                       <TableCell><Skeleton className="h-4 w-40" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
                       <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
                     </TableRow>
                   ))
                 ) : employees.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="p-0">
+                    <TableCell colSpan={9} className="p-0">
                       <EmptyState
                         icon={Users}
                         title={t('hr.noEmployeesFound')}
@@ -401,6 +404,9 @@ export const EmployeesPage = () => {
                       </TableCell>
                       <TableCell>
                         <span className="text-sm text-muted-foreground">{employee.position || '-'}</span>
+                      </TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <TagChips tags={employee.tags} maxVisible={2} />
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={getEmployeeStatusColor(employee.status)}>

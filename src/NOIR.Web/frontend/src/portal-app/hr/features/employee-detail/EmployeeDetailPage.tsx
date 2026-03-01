@@ -8,6 +8,7 @@ import {
   Mail,
   Pencil,
   Phone,
+  Tags,
   User,
   UserCheck,
   Users,
@@ -17,6 +18,7 @@ import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useUrlTab } from '@/hooks/useUrlTab'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
   Button,
@@ -54,6 +56,8 @@ import {
 } from '@/portal-app/hr/queries'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { EmployeeFormDialog } from '../../components/EmployeeFormDialog'
+import { TagChips } from '../../components/TagChips'
+import { TagSelector } from '../../components/TagSelector'
 
 const getEmployeeStatusColor = (status: string) => {
   switch (status) {
@@ -87,8 +91,12 @@ export const EmployeeDetailPage = () => {
   const reactivateMutation = useReactivateEmployee()
   const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'overview' })
 
+  const { hasPermission } = usePermissions()
+  const canManageTags = hasPermission(Permissions.HrTagsManage)
+
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeactivateDialog, setShowDeactivateDialog] = useState(false)
+  const [showTagSelector, setShowTagSelector] = useState(false)
 
   const handleDeactivateConfirm = async () => {
     if (!employee) return
@@ -280,18 +288,29 @@ export const EmployeeDetailPage = () => {
                       </div>
                     </>
                   )}
-                  {employee.tags.length > 0 && (
+                  {(employee.tags.length > 0 || canManageTags) && (
                     <>
                       <Separator />
                       <div>
-                        <p className="text-xs text-muted-foreground mb-2">{t('labels.tags', 'Tags')}</p>
-                        <div className="flex flex-wrap gap-1">
-                          {employee.tags.map((tag) => (
-                            <Badge key={tag.id} variant="outline" className="text-xs" style={{ borderColor: tag.color, color: tag.color }}>
-                              {tag.name}
-                            </Badge>
-                          ))}
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs text-muted-foreground">{t('labels.tags', 'Tags')}</p>
+                          {canManageTags && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 text-xs cursor-pointer"
+                              onClick={() => setShowTagSelector(true)}
+                            >
+                              <Tags className="h-3.5 w-3.5 mr-1" />
+                              {t('hr.tags.manageTags')}
+                            </Button>
+                          )}
                         </div>
+                        {employee.tags.length > 0 ? (
+                          <TagChips tags={employee.tags} maxVisible={10} size="md" />
+                        ) : (
+                          <p className="text-xs text-muted-foreground">{t('hr.tags.noTags')}</p>
+                        )}
                       </div>
                     </>
                   )}
@@ -496,6 +515,16 @@ export const EmployeeDetailPage = () => {
           </CredenzaFooter>
         </CredenzaContent>
       </Credenza>
+
+      {/* Tag Selector Dialog */}
+      {canManageTags && (
+        <TagSelector
+          open={showTagSelector}
+          onOpenChange={setShowTagSelector}
+          employeeId={employee.id}
+          currentTags={employee.tags}
+        />
+      )}
     </div>
   )
 }

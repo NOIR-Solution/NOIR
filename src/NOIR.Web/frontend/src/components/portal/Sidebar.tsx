@@ -148,6 +148,7 @@ const navSections: NavSection[] = [
     items: [
       { titleKey: 'hr.employees', icon: Users, path: '/portal/hr/employees', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr' },
       { titleKey: 'hr.departments', icon: Building2, path: '/portal/hr/departments', permission: Permissions.HrDepartmentsRead, feature: 'Erp.Hr' },
+      { titleKey: 'hr.tags.title', icon: Tags, path: '/portal/hr/tags', permission: Permissions.HrTagsRead, feature: 'Erp.Hr' },
     ],
   },
   {

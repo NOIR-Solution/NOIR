@@ -335,6 +335,15 @@ public class PermissionsTests
         Permissions.Groups.HrDepartments.Should().Contain(Permissions.HrDepartmentsDelete);
     }
 
+    [Fact]
+    public void Groups_HrTags_ShouldContainAllHrTagPermissions()
+    {
+        // Assert
+        Permissions.Groups.HrTags.Should().HaveCount(2);
+        Permissions.Groups.HrTags.Should().Contain(Permissions.HrTagsRead);
+        Permissions.Groups.HrTags.Should().Contain(Permissions.HrTagsManage);
+    }
+
     #endregion
 
     #region All Permissions Tests
@@ -374,7 +383,8 @@ public class PermissionsTests
             + Permissions.Groups.Dashboard.Count
             + Permissions.Groups.Search.Count
             + Permissions.Groups.HrEmployees.Count
-            + Permissions.Groups.HrDepartments.Count;
+            + Permissions.Groups.HrDepartments.Count
+            + Permissions.Groups.HrTags.Count;
 
         // Assert
         Permissions.All.Should().HaveCount(expectedCount);
@@ -492,6 +502,16 @@ public class PermissionsTests
     {
         // Assert
         foreach (var permission in Permissions.Groups.HrDepartments)
+        {
+            Permissions.All.Should().Contain(permission);
+        }
+    }
+
+    [Fact]
+    public void All_ShouldContainAllHrTagPermissions()
+    {
+        // Assert
+        foreach (var permission in Permissions.Groups.HrTags)
         {
             Permissions.All.Should().Contain(permission);
         }

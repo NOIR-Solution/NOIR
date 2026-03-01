@@ -94,6 +94,12 @@ public interface IApplicationDbContext
     DbSet<WebhookDeliveryLog> WebhookDeliveryLogs { get; }
 
     /// <summary>
+    /// Employee tag assignments DbSet for junction table CRUD.
+    /// EmployeeTagAssignment is a TenantEntity (not AggregateRoot), so IRepository is not applicable.
+    /// </summary>
+    DbSet<EmployeeTagAssignment> EmployeeTagAssignments { get; }
+
+    /// <summary>
     /// Attaches an entity to the context for tracking.
     EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
 

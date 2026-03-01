@@ -8,6 +8,11 @@ import {
   updateDepartment,
   deleteDepartment,
   reorderDepartments,
+  createTag,
+  updateTag,
+  deleteTag,
+  assignTagsToEmployee,
+  removeTagsFromEmployee,
 } from '@/services/hr'
 import type {
   CreateEmployeeRequest,
@@ -16,8 +21,12 @@ import type {
   CreateDepartmentRequest,
   UpdateDepartmentRequest,
   ReorderDepartmentsRequest,
+  CreateTagRequest,
+  UpdateTagRequest,
+  AssignTagsRequest,
+  RemoveTagsRequest,
 } from '@/types/hr'
-import { employeeKeys, departmentKeys } from './queryKeys'
+import { employeeKeys, departmentKeys, tagKeys } from './queryKeys'
 
 export const useCreateEmployee = () => {
   const queryClient = useQueryClient()
@@ -95,6 +104,62 @@ export const useReorderDepartments = () => {
     mutationFn: (request: ReorderDepartmentsRequest) => reorderDepartments(request),
     onError: () => {
       queryClient.invalidateQueries({ queryKey: departmentKeys.all })
+    },
+  })
+}
+
+// ─── Tag mutations ────────────────────────────────────────────────────────
+
+export const useCreateTag = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CreateTagRequest) => createTag(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tagKeys.all })
+    },
+  })
+}
+
+export const useUpdateTag = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateTagRequest }) => updateTag(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tagKeys.all })
+    },
+  })
+}
+
+export const useDeleteTag = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => deleteTag(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tagKeys.all })
+    },
+  })
+}
+
+export const useAssignTags = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ employeeId, data }: { employeeId: string; data: AssignTagsRequest }) =>
+      assignTagsToEmployee(employeeId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: employeeKeys.all })
+      queryClient.invalidateQueries({ queryKey: tagKeys.all })
+    },
+  })
+}
+
+export const useRemoveTags = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ employeeId, data }: { employeeId: string; data: RemoveTagsRequest }) =>
+      removeTagsFromEmployee(employeeId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: employeeKeys.all })
+      queryClient.invalidateQueries({ queryKey: tagKeys.all })
     },
   })
 }

@@ -16,3 +16,12 @@ export const departmentKeys = {
   details: () => [...departmentKeys.all, 'detail'] as const,
   detail: (id: string) => [...departmentKeys.details(), id] as const,
 }
+
+export const tagKeys = {
+  all: ['hr-tags'] as const,
+  lists: () => [...tagKeys.all, 'list'] as const,
+  list: (filters: Record<string, unknown>) => [...tagKeys.lists(), filters] as const,
+  details: () => [...tagKeys.all, 'detail'] as const,
+  detail: (id: string) => [...tagKeys.details(), id] as const,
+  employees: (id: string) => [...tagKeys.all, 'employees', id] as const,
+}

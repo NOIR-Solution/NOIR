@@ -13,5 +13,6 @@ public sealed class HrModuleDefinition : IModuleDefinition, ISingletonService
     [
         new(ModuleNames.Erp.Hr + ".Employees", "modules.erp.hr.employees", "modules.erp.hr.employees.description"),
         new(ModuleNames.Erp.Hr + ".Departments", "modules.erp.hr.departments", "modules.erp.hr.departments.description"),
+        new(ModuleNames.Erp.Hr + ".Tags", "modules.erp.hr.tags", "modules.erp.hr.tags.description"),
     ];
 }

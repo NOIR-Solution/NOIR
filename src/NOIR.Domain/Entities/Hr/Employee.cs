@@ -25,6 +25,7 @@ public class Employee : TenantAggregateRoot<Guid>
     public virtual Department? Department { get; private set; }
     public virtual Employee? Manager { get; private set; }
     public virtual ICollection<Employee> DirectReports { get; private set; } = new List<Employee>();
+    public virtual ICollection<EmployeeTagAssignment> TagAssignments { get; private set; } = new List<EmployeeTagAssignment>();
 
     // Computed
     public string FullName => $"{FirstName} {LastName}";

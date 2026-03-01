@@ -3840,6 +3840,42 @@
     "allTypes": "Tất cả loại",
     "addSubDepartment": "Thêm phòng ban con",
     "sortOrder": "Thứ tự",
-    "isActive": "Hoạt động"
+    "isActive": "Hoạt động",
+    "tags": {
+      "title": "Nhãn Nhân viên",
+      "description": "Quản lý nhãn phân loại nhân viên",
+      "createTag": "Tạo nhãn",
+      "editTag": "Sửa nhãn",
+      "deleteTag": "Xoá nhãn",
+      "deleteConfirmation": "Bạn có chắc muốn xoá nhãn này? Nhãn sẽ bị gỡ khỏi tất cả nhân viên.",
+      "noTags": "Chưa có nhãn",
+      "noTagsDescription": "Tạo nhãn để phân loại và tổ chức nhân viên",
+      "name": "Tên nhãn",
+      "namePlaceholder": "Nhập tên nhãn",
+      "category": "Danh mục",
+      "color": "Màu sắc",
+      "descriptionLabel": "Mô tả",
+      "descriptionPlaceholder": "Mô tả ngắn gọn về nhãn này",
+      "sortOrder": "Thứ tự sắp xếp",
+      "employeeCount": "{{count}} nhãn",
+      "assignTags": "Gán nhãn",
+      "removeTags": "Gỡ nhãn",
+      "manageTags": "Quản lý nhãn",
+      "selectTags": "Chọn nhãn để gán",
+      "tagAssigned": "Gán nhãn thành công",
+      "tagRemoved": "Gỡ nhãn thành công",
+      "tagCreated": "Tạo nhãn thành công",
+      "tagUpdated": "Cập nhật nhãn thành công",
+      "tagDeleted": "Xoá nhãn thành công",
+      "categories": {
+        "Team": "Đội nhóm",
+        "Skill": "Kỹ năng",
+        "Project": "Dự án",
+        "Location": "Địa điểm",
+        "Seniority": "Thâm niên",
+        "Employment": "Hình thức",
+        "Custom": "Tuỳ chỉnh"
+      }
+    }
   }
 }

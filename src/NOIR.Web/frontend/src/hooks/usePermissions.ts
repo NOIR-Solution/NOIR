@@ -263,6 +263,9 @@ export const Permissions = {
   HrDepartmentsCreate: 'hr-departments:create',
   HrDepartmentsUpdate: 'hr-departments:update',
   HrDepartmentsDelete: 'hr-departments:delete',
+  // HR - Tags
+  HrTagsRead: 'hr-tags:read',
+  HrTagsManage: 'hr-tags:manage',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

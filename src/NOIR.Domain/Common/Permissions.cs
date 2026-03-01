@@ -190,6 +190,10 @@ public static class Permissions
     public const string HrDepartmentsUpdate = "hr-departments:update";
     public const string HrDepartmentsDelete = "hr-departments:delete";
 
+    // HR Tags
+    public const string HrTagsRead = "hr-tags:read";
+    public const string HrTagsManage = "hr-tags:manage";
+
     // Search
     public const string SearchGlobal = "search:global";
 
@@ -289,6 +293,9 @@ public static class Permissions
         public static readonly IReadOnlyList<string> HrDepartments =
             [HrDepartmentsRead, HrDepartmentsCreate, HrDepartmentsUpdate, HrDepartmentsDelete];
 
+        public static readonly IReadOnlyList<string> HrTags =
+            [HrTagsRead, HrTagsManage];
+
         public static readonly IReadOnlyList<string> Dashboard =
             [DashboardRead];
 
@@ -339,6 +346,7 @@ public static class Permissions
         // ── HR ────────────────────────────────────────────────────────
         HrEmployeesRead, HrEmployeesCreate, HrEmployeesUpdate, HrEmployeesDelete,
         HrDepartmentsRead, HrDepartmentsCreate, HrDepartmentsUpdate, HrDepartmentsDelete,
+        HrTagsRead, HrTagsManage,
 
         // ── Content ────────────────────────────────────────────────────
         BlogPostsRead, BlogPostsCreate, BlogPostsUpdate, BlogPostsDelete, BlogPostsPublish,
@@ -451,7 +459,8 @@ public static class Permissions
         WebhooksRead, WebhooksManage, WebhooksTest,
         // HR within tenant
         HrEmployeesRead, HrEmployeesCreate, HrEmployeesUpdate, HrEmployeesDelete,
-        HrDepartmentsRead, HrDepartmentsCreate, HrDepartmentsUpdate, HrDepartmentsDelete
+        HrDepartmentsRead, HrDepartmentsCreate, HrDepartmentsUpdate, HrDepartmentsDelete,
+        HrTagsRead, HrTagsManage
     ];
 
     /// <summary>
@@ -619,7 +628,9 @@ public static class Permissions
             HrDepartmentsRead,
             HrDepartmentsCreate,
             HrDepartmentsUpdate,
-            HrDepartmentsDelete
+            HrDepartmentsDelete,
+            HrTagsRead,
+            HrTagsManage
         };
 
         /// <summary>

@@ -37,6 +37,6 @@ public class ReactivateEmployeeCommandHandler
             employee.Manager != null ? $"{employee.Manager.FirstName} {employee.Manager.LastName}" : null,
             employee.UserId, employee.UserId != null,
             employee.JoinDate, employee.EndDate, employee.Status, employee.EmploymentType,
-            employee.Notes, [], employee.CreatedAt, employee.ModifiedAt));
+            employee.Notes, [], [], employee.CreatedAt, employee.ModifiedAt));
     }
 }

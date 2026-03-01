@@ -135,6 +135,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     // HR entities
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<Department> Departments => Set<Department>();
+    public DbSet<EmployeeTag> EmployeeTags => Set<EmployeeTag>();
+    public DbSet<EmployeeTagAssignment> EmployeeTagAssignments => Set<EmployeeTagAssignment>();
 
     /// <summary>
     /// Configures global type conventions.

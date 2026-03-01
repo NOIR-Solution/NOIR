@@ -437,7 +437,7 @@ public static class BlogEndpoints
 
         // Create tag
         group.MapPost("/", async (
-            CreateTagRequest request,
+            NOIR.Application.Features.Blog.DTOs.CreateTagRequest request,
             [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {
@@ -463,7 +463,7 @@ public static class BlogEndpoints
         // Update tag
         group.MapPut("/{id:guid}", async (
             Guid id,
-            UpdateTagRequest request,
+            NOIR.Application.Features.Blog.DTOs.UpdateTagRequest request,
             [FromServices] ICurrentUser currentUser,
             IMessageBus bus) =>
         {

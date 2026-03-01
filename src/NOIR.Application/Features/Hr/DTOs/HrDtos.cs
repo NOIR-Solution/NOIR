@@ -24,6 +24,7 @@ public sealed record EmployeeDto(
     EmploymentType EmploymentType,
     string? Notes,
     IReadOnlyList<DirectReportDto> DirectReports,
+    IReadOnlyList<TagBriefDto> Tags,
     DateTimeOffset CreatedAt,
     DateTimeOffset? LastModifiedAt);
 
@@ -180,3 +181,61 @@ public sealed record ReorderDepartmentsRequest(
 public sealed record ReorderItem(
     Guid Id,
     int SortOrder);
+
+// === Tag DTOs ===
+
+/// <summary>
+/// Full employee tag details.
+/// </summary>
+public sealed record EmployeeTagDto(
+    Guid Id,
+    string Name,
+    EmployeeTagCategory Category,
+    string Color,
+    string? Description,
+    int SortOrder,
+    bool IsActive,
+    int EmployeeCount,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? LastModifiedAt);
+
+/// <summary>
+/// Lightweight tag for employee list views.
+/// </summary>
+public sealed record TagBriefDto(
+    Guid Id,
+    string Name,
+    EmployeeTagCategory Category,
+    string Color);
+
+/// <summary>
+/// Request body for creating a tag.
+/// </summary>
+public sealed record CreateEmployeeTagRequest(
+    string Name,
+    EmployeeTagCategory Category,
+    string? Color = null,
+    string? Description = null,
+    int SortOrder = 0);
+
+/// <summary>
+/// Request body for updating a tag.
+/// </summary>
+public sealed record UpdateEmployeeTagRequest(
+    string Name,
+    EmployeeTagCategory Category,
+    string? Color = null,
+    string? Description = null,
+    int SortOrder = 0);
+
+/// <summary>
+/// Request body for assigning tags to an employee.
+/// </summary>
+public sealed record AssignTagsRequest(
+    List<Guid> TagIds);
+
+/// <summary>
+/// Request body for removing tags from an employee.
+/// </summary>
+public sealed record RemoveTagsRequest(
+    List<Guid> TagIds);

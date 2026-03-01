@@ -115,5 +115,5 @@ public class UpdateEmployeeCommandHandler
             e.DepartmentId, departmentName, e.Position,
             e.ManagerId, e.Manager != null ? $"{e.Manager.FirstName} {e.Manager.LastName}" : null,
             e.UserId, e.UserId != null, e.JoinDate, e.EndDate, e.Status, e.EmploymentType, e.Notes,
-            [], e.CreatedAt, e.ModifiedAt);
+            [], [], e.CreatedAt, e.ModifiedAt);
 }
