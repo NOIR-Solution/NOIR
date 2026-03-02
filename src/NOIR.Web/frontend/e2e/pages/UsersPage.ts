@@ -58,6 +58,12 @@ export class UsersPage {
   }
 
   async expectUserInList(email: string) {
-    await expect(this.page.getByRole('row', { name: new RegExp(email, 'i') })).toBeVisible();
+    // Search for the user first to ensure they appear in the visible page
+    const searchInput = this.searchInput;
+    if (await searchInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await searchInput.fill(email);
+      await this.page.waitForTimeout(500); // debounce
+    }
+    await expect(this.page.getByRole('row', { name: new RegExp(email, 'i') })).toBeVisible({ timeout: 10_000 });
   }
 }

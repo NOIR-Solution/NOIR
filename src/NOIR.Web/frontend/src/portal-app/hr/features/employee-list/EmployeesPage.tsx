@@ -198,7 +198,7 @@ export const EmployeesPage = () => {
   const handleDeactivateConfirm = async () => {
     if (!employeeToDeactivate) return
     try {
-      await deactivateMutation.mutateAsync({ id: employeeToDeactivate.id, status: 'Suspended' })
+      await deactivateMutation.mutateAsync({ id: employeeToDeactivate.id, status: 'Resigned' })
       toast.success(t('hr.employeeDeactivated', 'Employee deactivated'))
       setEmployeeToDeactivate(null)
     } catch (err) {

@@ -351,23 +351,25 @@ test.describe('HR Departments & Tags @regression', () => {
         await waitForTagsPage(page);
         await expect(page.getByText(tag.name)).toBeVisible({ timeout: 10_000 });
 
-        // Edit button has aria-label = "Edit Tag" (from t('hr.tags.editTag'))
-        // It's always visible (not opacity-0) — just find it near the tag name
-        const tagCard = page.locator('div').filter({ hasText: tag.name }).first();
-        const editBtn = tagCard.getByRole('button', { name: /edit tag/i })
-          .or(tagCard.getByRole('button', { name: /edit/i }));
-
-        if (await editBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-          await editBtn.click();
-        } else {
-          await editBtn.click({ force: true });
-        }
+        // Edit button has aria-label = "Edit Tag" (non-unique across multiple tags)
+        // Delete button has aria-label = "Delete Tag {tag.name}" (unique per tag)
+        // Find the tag row by locating the container that has the unique delete button,
+        // then click the sibling Edit button within the same flex group
+        const deleteBtn = page.getByRole('button', { name: new RegExp(`delete tag ${tag.name}`, 'i') });
+        await expect(deleteBtn).toBeVisible({ timeout: 5_000 });
+        // The edit and delete buttons are siblings in the same flex container
+        // Navigate up to the parent container and find the edit button within it
+        const buttonGroup = page.locator('div').filter({
+          has: page.getByRole('button', { name: new RegExp(`delete tag ${tag.name}`, 'i') }),
+        }).last();
+        const editBtn = buttonGroup.getByRole('button', { name: /edit tag/i }).first();
+        await editBtn.click();
 
         // Wait for dialog
-        await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 10_000 });
+        await expect(page.locator('[role="dialog"]').first()).toBeVisible({ timeout: 10_000 });
 
         // Update name
-        const nameInput = page.locator('[role="dialog"]').getByLabel(/tag name/i).first();
+        const nameInput = page.locator('[role="dialog"]').first().getByLabel(/tag name/i).first();
         await nameInput.clear();
         await nameInput.fill(`${tag.name} Updated`);
 
@@ -375,7 +377,7 @@ test.describe('HR Departments & Tags @regression', () => {
           (resp: any) => resp.url().includes('/api/hr/tags') && resp.request().method() === 'PUT',
           { timeout: 15_000 },
         );
-        await page.locator('[role="dialog"]').getByRole('button', { name: /save/i }).click();
+        await page.locator('[role="dialog"]').first().getByRole('button', { name: /save/i }).click();
         await updateResponsePromise;
         await expectToast(page, /updated|success/i);
       } finally {

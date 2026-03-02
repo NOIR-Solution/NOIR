@@ -7,11 +7,17 @@
 - **Comprehensive test suite**: 80+ new unit tests (CRM, PM, HR, Dashboard, Blog, Media), 20 integration tests
 - **Playwright E2E tests**: Full E2E suite with page objects, auth fixtures, 14 test modules
 - **Wiki sync improvements**: Graceful handling of uninitialized wiki, workflow_dispatch trigger
+- **EmployeeTagRepository**: Production repository implementation (previously only in test infra)
 
 ### Fixed
 - State machine guards in CRM Lead handlers (Win/Lose/Reopen) and PM ChangeTaskStatus
 - PM ReorderTask handler and validator for float-based sort ordering
 - Missing SQL semicolons in EmployeeCodeGenerator and ProjectCodeGenerator
+- CI integration tests OOM: replaced Testcontainers with GitHub Actions SQL Server service container
+- Dropdown menu event propagation: added `stopPropagation()` on delete/action items across 5 pages
+- TagChips null safety: guard against undefined `tags` prop
+- Employee deactivation status: `Suspended` → `Resigned` (correct domain value)
+- E2E tests: hardened selectors, improved page objects, removed debug spec
 
 ### Changed
 - Test count: 11,341 → 12,663 (2,971 domain + 8,535 application + 45 architecture + 1,112 integration)

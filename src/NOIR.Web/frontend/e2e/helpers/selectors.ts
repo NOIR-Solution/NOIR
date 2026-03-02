@@ -29,12 +29,15 @@ export const TABLE_SKELETON = '[data-testid="table-skeleton"]';
  * Waits for the dialog to appear before clicking.
  */
 export async function confirmDelete(page: Page) {
-  const dialog = page.locator(CONFIRM_DIALOG);
-  await expect(dialog).toBeVisible();
-  // Use dispatchEvent to bypass Credenza footer overlay intercept issues
-  const btn = dialog.getByRole('button', { name: /confirm|yes|delete|ok/i });
+  // Wait for a dialog with a destructive action button to be visible
+  // Credenza (Radix Dialog) renders role="dialog" with data-state="open"
+  // Use page.waitForSelector for reliability
+  await page.waitForSelector('[role="dialog"]:visible', { timeout: 5_000 });
+  await page.waitForTimeout(300); // let dialog animation settle
+  const btn = page.locator('[role="dialog"]').last()
+    .getByRole('button', { name: /confirm|yes|delete|ok/i }).first();
   await btn.waitFor({ state: 'visible', timeout: 5_000 });
-  await btn.dispatchEvent('click');
+  await btn.click();
 }
 
 /**

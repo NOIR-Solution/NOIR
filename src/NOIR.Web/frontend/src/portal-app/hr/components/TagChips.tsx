@@ -12,10 +12,11 @@ interface TagChipsProps {
 
 export const TagChips = ({ tags, maxVisible = 3, onRemove, size = 'sm' }: TagChipsProps) => {
   const { t } = useTranslation('common')
-  const visibleTags = tags.slice(0, maxVisible)
-  const hiddenCount = tags.length - maxVisible
+  const safeTags = tags ?? []
+  const visibleTags = safeTags.slice(0, maxVisible)
+  const hiddenCount = safeTags.length - maxVisible
 
-  if (tags.length === 0) return null
+  if (safeTags.length === 0) return null
 
   return (
     <div className="flex flex-wrap gap-1 items-center">
@@ -55,7 +56,7 @@ export const TagChips = ({ tags, maxVisible = 3, onRemove, size = 'sm' }: TagChi
           </TooltipTrigger>
           <TooltipContent>
             <div className="space-y-1">
-              {tags.slice(maxVisible).map((tag) => (
+              {safeTags.slice(maxVisible).map((tag) => (
                 <div key={tag.id} className="flex items-center gap-1.5">
                   <span
                     className="inline-block h-2 w-2 rounded-full flex-shrink-0"

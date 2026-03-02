@@ -180,7 +180,7 @@ export const BlogTagsPage = () => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-destructive cursor-pointer"
-                              onClick={() => setTagToDelete(tag)}
+                              onClick={(e) => { e.stopPropagation(); setTagToDelete(tag); }}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               {t('labels.delete', 'Delete')}

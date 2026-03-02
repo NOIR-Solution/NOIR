@@ -220,7 +220,7 @@ export const ProductAttributesPage = () => {
                             {canDeleteAttributes && (
                               <DropdownMenuItem
                                 className="text-destructive cursor-pointer"
-                                onClick={() => setAttributeToDelete(attribute)}
+                                onClick={(e) => { e.stopPropagation(); setAttributeToDelete(attribute); }}
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 {t('labels.delete', 'Delete')}

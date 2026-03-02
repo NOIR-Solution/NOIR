@@ -16,9 +16,9 @@ export class ProductsPage {
     ).first();
     this.productTable = page.getByRole('table');
     this.productRows = page.getByRole('table').getByRole('row');
-    this.statusFilter = page.getByRole('combobox', { name: /status/i }).or(
-      page.getByRole('button', { name: /status|filter/i }),
-    );
+    // Use only the combobox — the page also has clickable status-card buttons with
+    // aria-label containing "status" which would cause strict-mode violations
+    this.statusFilter = page.getByRole('combobox', { name: /filter by status/i }).first();
   }
 
   async goto() {

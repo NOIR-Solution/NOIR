@@ -526,14 +526,14 @@ const ReviewTableRow = ({
         <DropdownMenuContent align="start">
           <DropdownMenuItem
             className="cursor-pointer"
-            onClick={() => onViewDetail(review.id)}
+            onClick={(e) => { e.stopPropagation(); onViewDetail(review.id); }}
           >
             <Eye className="h-4 w-4 mr-2" />
             {t('reviews.viewDetails', 'View Details')}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="cursor-pointer"
-            onClick={() => onRespond(review.id)}
+            onClick={(e) => { e.stopPropagation(); onRespond(review.id); }}
           >
             <MessageSquare className="h-4 w-4 mr-2" />
             {t('reviews.respond', 'Respond')}
@@ -543,14 +543,14 @@ const ReviewTableRow = ({
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="cursor-pointer text-green-600"
-                onClick={() => onApprove(review.id)}
+                onClick={(e) => { e.stopPropagation(); onApprove(review.id); }}
               >
                 <CheckCircle2 className="h-4 w-4 mr-2" />
                 {t('reviews.approve', 'Approve')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer text-destructive"
-                onClick={() => onReject(review.id)}
+                onClick={(e) => { e.stopPropagation(); onReject(review.id); }}
               >
                 <XCircle className="h-4 w-4 mr-2" />
                 {t('reviews.reject', 'Reject')}

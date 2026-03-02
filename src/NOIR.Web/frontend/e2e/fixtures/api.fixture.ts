@@ -162,8 +162,15 @@ export class ApiHelper {
     body?: string;
     status?: string;
   }) {
+    // Backend CreatePostRequest requires title and slug (camelCase, no body/status fields)
+    const slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const res = await this.request.post(`${API_URL}/api/blog/posts`, {
-      data: { body: '<p>E2E test content</p>', status: 'Draft', ...data },
+      data: {
+        title: data.title,
+        slug,
+        contentHtml: data.body ?? '<p>E2E test content</p>',
+        allowIndexing: false,
+      },
     });
     const text = await res.text();
     return text ? JSON.parse(text) : {};

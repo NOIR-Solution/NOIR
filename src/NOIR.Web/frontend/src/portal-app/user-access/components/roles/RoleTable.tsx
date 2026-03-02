@@ -105,7 +105,7 @@ export const RoleTable = ({ roles, onEdit, onDelete, onPermissions, loading }: R
                       <>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => onDelete(role)}
+                          onClick={(e) => { e.stopPropagation(); onDelete(role); }}
                           className="text-destructive focus:text-destructive cursor-pointer"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />

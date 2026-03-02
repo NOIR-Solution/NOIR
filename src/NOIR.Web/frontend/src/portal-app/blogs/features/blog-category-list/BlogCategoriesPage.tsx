@@ -239,7 +239,7 @@ export const BlogCategoriesPage = () => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-destructive cursor-pointer"
-                              onClick={() => setCategoryToDelete(category)}
+                              onClick={(e) => { e.stopPropagation(); setCategoryToDelete(category); }}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               {t('labels.delete', 'Delete')}
