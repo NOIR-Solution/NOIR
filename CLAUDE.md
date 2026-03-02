@@ -208,6 +208,8 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 
 **Card shadows**: `shadow-sm hover:shadow-lg transition-all duration-300`.
 
+**Mermaid node labels**: Use `<br/>` for line breaks, NEVER `\n`. GitHub renders node text as HTML — `\n` shows as literal text. Wrong: `["Title\nSubtitle"]`. Right: `["Title<br/>Subtitle"]`.
+
 ### Validation
 
 **Stack**: react-hook-form + Zod + `mode: 'onBlur'`. FluentValidation rules must match Zod schemas.
