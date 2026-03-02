@@ -37,6 +37,7 @@ export class ApiHelper {
         sku: data.sku,
         basePrice: data.price ?? 100_000,
         status: data.status ?? 'Draft',
+        currency: 'VND', // Required by backend validator (ISO 4217, length 3)
       },
     });
     const text = await res.text();

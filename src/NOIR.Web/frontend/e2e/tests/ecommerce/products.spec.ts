@@ -119,12 +119,14 @@ test.describe('E-commerce Products @regression', () => {
     trackCleanup(async () => { await api.deleteProduct(created.id); });
 
     // Navigate directly to the product edit page using the created product ID
-    await page.goto(`/portal/ecommerce/products/${created.id}`);
+    // Use /edit suffix — the /products/{id} route renders in View mode with disabled inputs
+    await page.goto(`/portal/ecommerce/products/${created.id}/edit`);
     await page.waitForLoadState('networkidle');
 
     // Update the product name
     const updatedName = `E2E Updated Product ${Date.now()}`;
-    const nameInput = page.getByLabel(/name/i).first();
+    const nameInput = page.getByLabel(/product name/i).or(page.getByLabel(/name/i)).first();
+    await expect(nameInput).toBeEnabled({ timeout: 10_000 });
     await nameInput.clear();
     await nameInput.fill(updatedName);
 
@@ -197,6 +199,14 @@ test.describe('E-commerce Products @regression', () => {
     await page.goto('/portal/ecommerce/categories');
     await page.waitForLoadState('networkidle');
 
+    // Switch to List/Table view — the default is Tree view which has no <tr> rows for Playwright
+    // The ViewModeToggle renders buttons with aria-label "Table view" and "Tree view"
+    const listViewBtn = page.getByRole('button', { name: /^list$|table view/i });
+    if (await listViewBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await listViewBtn.click();
+      await page.waitForTimeout(500); // Allow view transition
+    }
+
     // Create category
     await page.getByRole('button', { name: /create|add|new/i }).click();
 
@@ -267,8 +277,9 @@ test.describe('E-commerce Products @regression', () => {
     const product = await api.createProduct(testProduct({ status: 'Draft' }));
     trackCleanup(async () => { await api.deleteProduct(product.id); });
 
-    // Navigate to the product edit page
-    await page.goto(`/portal/ecommerce/products/${product.id}`);
+    // Navigate to the product edit page using /edit suffix
+    // The /products/{id} route renders in View mode — inputs are disabled
+    await page.goto(`/portal/ecommerce/products/${product.id}/edit`);
     await page.waitForLoadState('networkidle');
 
     // Change status from Draft to Active — the product page shows a "Publish" button for draft products
@@ -426,16 +437,16 @@ test.describe('E-commerce Products @nightly', () => {
 
     // Create brand
     await page.getByRole('button', { name: /create|add|new/i }).first().click();
-    await expect(
-      page.locator('[role="dialog"]').or(page.getByLabel(/name/i)).first(),
-    ).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5_000 });
 
-    await page.getByLabel(/name/i).first().fill(brandName);
-    await page.getByRole('button', { name: /save|create|submit/i }).click();
-    await expect(page.locator(TOAST_SUCCESS)).toBeVisible({ timeout: 10_000 });
+    await page.locator('[role="dialog"]').getByLabel(/name/i).first().fill(brandName);
+    await page.locator('[role="dialog"]').getByRole('button', { name: /save|create|submit/i }).click();
+    // Use .first() — multiple toasts may stack across create/edit/delete actions
+    await expect(page.locator(TOAST_SUCCESS).first()).toBeVisible({ timeout: 10_000 });
 
-    // Verify brand in list
-    await expect(page.getByText(brandName)).toBeVisible({ timeout: 5_000 });
+    // Verify brand in list (wait for dialog to close first)
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText(brandName).first()).toBeVisible({ timeout: 5_000 });
 
     // Edit brand — the row has "Actions for {name}" dropdown button
     const updatedBrandName = `E2E Brand Updated ${Date.now()}`;
@@ -447,13 +458,17 @@ test.describe('E-commerce Products @nightly', () => {
     if (await brandEditItem.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await brandEditItem.click();
     }
+    // Wait for edit dialog to appear before filling
+    await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5_000 });
     const nameInput = page.locator('[role="dialog"]').getByLabel(/name/i).first();
     await nameInput.clear();
     await nameInput.fill(updatedBrandName);
     await page.locator('[role="dialog"]').getByRole('button', { name: /save|update/i }).click();
-    await expect(page.locator(TOAST_SUCCESS)).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator(TOAST_SUCCESS).first()).toBeVisible({ timeout: 10_000 });
 
-    // Delete brand — the row has "Actions for {name}" dropdown button
+    // Delete brand — wait for dialog to close, then find the updated row
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText(updatedBrandName).first()).toBeVisible({ timeout: 5_000 });
     await page.getByRole('row', { name: new RegExp(updatedBrandName, 'i') })
       .getByRole('button')
       .first()
@@ -463,7 +478,7 @@ test.describe('E-commerce Products @nightly', () => {
       await brandDeleteItem.click();
     }
     await confirmDelete(page);
-    await expect(page.locator(TOAST_SUCCESS)).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator(TOAST_SUCCESS).first()).toBeVisible({ timeout: 10_000 });
 
     await expect(page.getByText(updatedBrandName)).not.toBeVisible({ timeout: 5_000 });
   });

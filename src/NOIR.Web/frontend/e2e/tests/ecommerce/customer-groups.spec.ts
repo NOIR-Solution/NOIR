@@ -39,20 +39,23 @@ test.describe('E-commerce Customer Groups @regression', () => {
     // Create
     await page.getByRole('button', { name: /create|add|new/i }).click();
 
-    await page.getByLabel(/name/i).first().fill(data.name);
-    const descInput = page.getByLabel(/description/i);
+    // Wait for the create dialog before filling
+    await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5_000 });
+    await page.locator('[role="dialog"]').getByLabel(/name/i).first().fill(data.name);
+    const descInput = page.locator('[role="dialog"]').getByLabel(/description/i);
     if (await descInput.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await descInput.fill(data.description);
     }
 
-    await page.getByRole('button', { name: /save|create|submit/i }).click();
-    await expect(page.locator(TOAST_SUCCESS)).toBeVisible({ timeout: 10_000 });
+    await page.locator('[role="dialog"]').getByRole('button', { name: /save|create|submit/i }).click();
+    // Use .first() — multiple toasts may stack (create + edit) by the time delete fires
+    await expect(page.locator(TOAST_SUCCESS).first()).toBeVisible({ timeout: 10_000 });
 
-    // Verify in list
-    await page.waitForLoadState('networkidle');
+    // Wait for dialog to close, then verify in list
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
     await expect(page.getByText(data.name).first()).toBeVisible({ timeout: 5_000 });
 
-    // Edit — the row has "Actions for {name}" dropdown button
+    // Edit — open dropdown menu for the created group row
     const updatedName = `${data.name} Updated`;
     await page.getByRole('row', { name: new RegExp(data.name, 'i') })
       .getByRole('button')
@@ -63,16 +66,19 @@ test.describe('E-commerce Customer Groups @regression', () => {
       await editMenuItem.click();
     }
 
-    const nameInput = page.getByLabel(/name/i).first();
+    // Wait for edit dialog before filling
+    await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5_000 });
+    const nameInput = page.locator('[role="dialog"]').getByLabel(/name/i).first();
     await nameInput.clear();
     await nameInput.fill(updatedName);
-    await page.getByRole('button', { name: /save|update|submit/i }).click();
-    await expect(page.locator(TOAST_SUCCESS)).toBeVisible({ timeout: 10_000 });
+    await page.locator('[role="dialog"]').getByRole('button', { name: /save|update|submit/i }).click();
+    await expect(page.locator(TOAST_SUCCESS).first()).toBeVisible({ timeout: 10_000 });
 
-    // Verify updated name
+    // Wait for dialog to close, then verify updated name
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5_000 });
     await expect(page.getByText(updatedName).first()).toBeVisible({ timeout: 5_000 });
 
-    // Delete — the row has "Actions for {name}" dropdown button
+    // Delete — open dropdown menu for the updated group row
     await page.getByRole('row', { name: new RegExp(updatedName, 'i') })
       .getByRole('button')
       .first()
@@ -82,7 +88,8 @@ test.describe('E-commerce Customer Groups @regression', () => {
       await deleteMenuItem2.click();
     }
     await confirmDelete(page);
-    await expect(page.locator(TOAST_SUCCESS)).toBeVisible({ timeout: 10_000 });
+    // Use .first() because at this point both "created" and "updated" toasts may be stacked
+    await expect(page.locator(TOAST_SUCCESS).first()).toBeVisible({ timeout: 10_000 });
 
     // Verify removed
     await expect(page.getByText(updatedName)).not.toBeVisible({ timeout: 5_000 });
