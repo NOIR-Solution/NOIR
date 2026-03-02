@@ -88,7 +88,22 @@ jobs:
     name: Integration Tests
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: Test@12345!
+          MSSQL_MEMORY_LIMIT_MB: 512
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Test@12345!' -C -Q 'SELECT 1' -b || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Test@12345!' -Q 'SELECT 1' -b"
+          --health-interval 15s
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 20s
     steps:
       - uses: actions/checkout@v4
 
@@ -104,9 +119,6 @@ jobs:
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
 
-      - name: Pull SQL Server image
-        run: docker pull mcr.microsoft.com/mssql/server:2022-latest
-
       - name: Run Integration Tests
         run: >
           dotnet test tests/NOIR.IntegrationTests
@@ -115,7 +127,7 @@ jobs:
           --logger "trx;LogFileName=Integration.trx"
           --blame-hang-timeout 3min
         env:
-          TESTCONTAINERS_RYUK_DISABLED: false
+          NOIR_TEST_SQL_CONNECTION: "Server=localhost;User Id=sa;Password=Test@12345!;TrustServerCertificate=True"
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
