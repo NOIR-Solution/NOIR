@@ -196,6 +196,8 @@ coverage*.cobertura.xml
 coverage-merged/
 lcov.info
 coverlet/
+# Frontend Vitest coverage output
+src/NOIR.Web/frontend/coverage/
 
 # NCrunch
 _NCrunch_*
