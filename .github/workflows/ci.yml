@@ -88,6 +88,7 @@ jobs:
     name: Integration Tests
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -103,15 +104,17 @@ jobs:
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
 
+      - name: Pull SQL Server image
+        run: docker pull mcr.microsoft.com/mssql/server:2022-latest
+
       - name: Run Integration Tests
         run: >
           dotnet test tests/NOIR.IntegrationTests
           --configuration Release
-          --verbosity minimal
+          --verbosity normal
           --logger "trx;LogFileName=Integration.trx"
-          --collect:"XPlat Code Coverage"
+          --blame-hang-timeout 3min
         env:
-          # Testcontainers will pull mcr.microsoft.com/mssql/server
           TESTCONTAINERS_RYUK_DISABLED: false
 
       - name: Upload test results

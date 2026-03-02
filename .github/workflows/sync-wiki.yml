@@ -1,10 +1,9 @@
 name: Sync Docs to Wiki
 
 # Prerequisites:
-# 1. Initialize the wiki manually: Go to repo Settings → Wiki → enable,
-#    then create at least one page via the GitHub UI (e.g., "Home").
+# 1. Initialize the wiki manually: Go to repo → Wiki tab → Create the first page.
 # 2. GITHUB_TOKEN has wiki push access by default for public repos.
-#    For private repos, use a PAT with `repo` scope in secrets.WIKI_TOKEN.
+#    For private/org repos, create a PAT with `repo` scope and add as secrets.WIKI_TOKEN.
 
 on:
   push:
@@ -15,6 +14,7 @@ on:
       - 'SETUP.md'
       - 'CONTRIBUTING.md'
       - 'CHANGELOG.md'
+  workflow_dispatch: # Allow manual trigger
 
 permissions:
   contents: write
@@ -27,13 +27,24 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Checkout wiki
+        id: wiki-checkout
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}.wiki
           path: wiki
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.WIKI_TOKEN || secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Check wiki availability
+        if: steps.wiki-checkout.outcome == 'failure'
+        run: |
+          echo "::warning::Wiki is not initialized. Please create the first wiki page manually:"
+          echo "::warning::Go to https://github.com/${{ github.repository }}/wiki → Create the first page"
+          echo "::warning::For org repos, you may also need to add a WIKI_TOKEN secret with repo scope"
+          exit 0
 
       - name: Sync docs to wiki
+        if: steps.wiki-checkout.outcome == 'success'
         run: |
           # Clean wiki (except .git)
           find wiki -mindepth 1 -not -path 'wiki/.git*' -delete
@@ -41,131 +52,131 @@ jobs:
           # Copy docs/ content to wiki root
           cp -r docs/* wiki/
 
-          # Copy root-level docs
-          cp README.md wiki/
-          cp SETUP.md wiki/
-          cp CONTRIBUTING.md wiki/
-          cp CHANGELOG.md wiki/
+          # Copy root-level docs (skip missing files)
+          for f in README.md SETUP.md CONTRIBUTING.md CHANGELOG.md; do
+            [ -f "$f" ] && cp "$f" wiki/
+          done
 
           # Rename docs/README.md to avoid conflict with root README
           mv wiki/README.md wiki/Documentation-Overview.md 2>/dev/null || true
 
           # Generate _Sidebar.md for wiki navigation
-          cat > wiki/_Sidebar.md << 'EOF'
-# NOIR Wiki
+          cat > wiki/_Sidebar.md << 'SIDEBAR'
+          # NOIR Wiki
 
-**[Home](Home)**
+          **[Home](Home)**
 
----
+          ---
 
-## Getting Started
-- [README](README)
-- [Setup Guide](SETUP)
-- [Contributing](CONTRIBUTING)
-- [Changelog](CHANGELOG)
+          ## Getting Started
+          - [README](README)
+          - [Setup Guide](SETUP)
+          - [Contributing](CONTRIBUTING)
+          - [Changelog](CHANGELOG)
 
-## Core Documentation
-- [Documentation Index](DOCUMENTATION_INDEX)
-- [Knowledge Base](KNOWLEDGE_BASE)
-- [Project Index](PROJECT_INDEX)
-- [Feature Catalog](FEATURE_CATALOG)
-- [Tech Stack](TECH_STACK)
-- [API Index](API_INDEX)
-- [Architecture](ARCHITECTURE)
+          ## Core Documentation
+          - [Documentation Index](DOCUMENTATION_INDEX)
+          - [Knowledge Base](KNOWLEDGE_BASE)
+          - [Project Index](PROJECT_INDEX)
+          - [Feature Catalog](FEATURE_CATALOG)
+          - [Tech Stack](TECH_STACK)
+          - [API Index](API_INDEX)
+          - [Architecture](ARCHITECTURE)
 
-## Backend
-- [Backend Overview](backend/README)
-- **Patterns**
-  - [Repository & Specification](backend/patterns/repository-specification)
-  - [DI Auto-Registration](backend/patterns/di-auto-registration)
-  - [Entity Configuration](backend/patterns/entity-configuration)
-  - [Audit Logging](backend/patterns/hierarchical-audit-logging)
-  - [Before-State Resolver](backend/patterns/before-state-resolver)
-  - [Bulk Operations](backend/patterns/bulk-operations)
-  - [JSON Enum Serialization](backend/patterns/json-enum-serialization)
-  - [JWT Refresh Token](backend/patterns/jwt-refresh-token)
-  - [Technical Checklist](backend/patterns/technical-checklist)
-  - [Inventory Receipt](backend/patterns/inventory-receipt-pattern)
-  - [Attribute Inheritance](backend/patterns/attribute-category-inheritance)
-- **Architecture**
-  - [Multi-Tenancy](backend/architecture/tenant-id-interceptor)
-  - [Diagrams](architecture/diagrams)
-- **Research**
-  - [Cache Busting](backend/research/cache-busting-best-practices)
-  - [Role Permission System](backend/research/role-permission-system-research)
-  - [SEO Best Practices](backend/research/seo-meta-and-hint-text-best-practices)
-  - [Validation Unification](backend/research/validation-unification-plan)
-  - [Vietnam Shipping](backend/research/vietnam-shipping-integration-2026)
+          ## Backend
+          - [Backend Overview](backend/README)
+          - **Patterns**
+            - [Repository & Specification](backend/patterns/repository-specification)
+            - [DI Auto-Registration](backend/patterns/di-auto-registration)
+            - [Entity Configuration](backend/patterns/entity-configuration)
+            - [Audit Logging](backend/patterns/hierarchical-audit-logging)
+            - [Before-State Resolver](backend/patterns/before-state-resolver)
+            - [Bulk Operations](backend/patterns/bulk-operations)
+            - [JSON Enum Serialization](backend/patterns/json-enum-serialization)
+            - [JWT Refresh Token](backend/patterns/jwt-refresh-token)
+            - [Technical Checklist](backend/patterns/technical-checklist)
+            - [Inventory Receipt](backend/patterns/inventory-receipt-pattern)
+            - [Attribute Inheritance](backend/patterns/attribute-category-inheritance)
+          - **Architecture**
+            - [Multi-Tenancy](backend/architecture/tenant-id-interceptor)
+            - [Diagrams](architecture/diagrams)
+          - **Research**
+            - [Cache Busting](backend/research/cache-busting-best-practices)
+            - [Role Permission System](backend/research/role-permission-system-research)
+            - [SEO Best Practices](backend/research/seo-meta-and-hint-text-best-practices)
+            - [Validation Unification](backend/research/validation-unification-plan)
+            - [Vietnam Shipping](backend/research/vietnam-shipping-integration-2026)
 
-## Frontend
-- [Frontend Overview](frontend/README)
-- [Architecture](frontend/architecture)
-- [API Types](frontend/api-types)
-- [Localization](frontend/localization-guide)
-- [Color Schema](frontend/COLOR_SCHEMA_GUIDE)
-- [Design Standards](frontend/design-standards)
-- [Storybook Coverage](frontend/audit-storybook-coverage)
-- **Patterns**
-  - [Form Resolver Types](frontend/patterns/form-resolver-type-assertions)
+          ## Frontend
+          - [Frontend Overview](frontend/README)
+          - [Architecture](frontend/architecture)
+          - [API Types](frontend/api-types)
+          - [Localization](frontend/localization-guide)
+          - [Color Schema](frontend/COLOR_SCHEMA_GUIDE)
+          - [Design Standards](frontend/design-standards)
+          - [Storybook Coverage](frontend/audit-storybook-coverage)
+          - **Patterns**
+            - [Form Resolver Types](frontend/patterns/form-resolver-type-assertions)
 
-## Testing
-- [Testing Guide](testing/README)
+          ## Testing
+          - [Testing Guide](testing/README)
 
-## Architecture Decisions
-- [ADR 001: Tech Stack](decisions/001-tech-stack)
-- [ADR 002: Frontend UI](decisions/002-frontend-ui-stack)
-- [ADR 003: Vertical Slice CQRS](decisions/003-vertical-slice-cqrs)
+          ## Architecture Decisions
+          - [ADR 001: Tech Stack](decisions/001-tech-stack)
+          - [ADR 002: Frontend UI](decisions/002-frontend-ui-stack)
+          - [ADR 003: Vertical Slice CQRS](decisions/003-vertical-slice-cqrs)
 
-## Roadmap & Designs
-- [Product Roadmap](roadmap/README)
-- **Designs**
-  - [Admin Portal Plan](designs/admin-portal-enhancement-v28-feb)
-  - [Admin Portal Design](designs/admin-portal-enhancement-v28-feb-design)
-  - [Admin Portal Workflow](designs/admin-portal-workflow)
-  - [Accounting](designs/module-accounting)
-  - [Calendar](designs/module-calendar)
-  - [Chat](designs/module-chat)
-  - [CRM](designs/module-crm)
-  - [Documents](designs/module-document)
-  - [Helpdesk](designs/module-helpdesk)
-  - [HR](designs/module-hr)
-  - [Marketplace](designs/module-marketplace)
-  - [Project Management](designs/module-pm)
-  - [Subscriptions](designs/module-subscription)
-EOF
+          ## Roadmap & Designs
+          - [Product Roadmap](roadmap/README)
+          - **Designs**
+            - [Admin Portal Plan](designs/admin-portal-enhancement-v28-feb)
+            - [Admin Portal Design](designs/admin-portal-enhancement-v28-feb-design)
+            - [Admin Portal Workflow](designs/admin-portal-workflow)
+            - [Accounting](designs/module-accounting)
+            - [Calendar](designs/module-calendar)
+            - [Chat](designs/module-chat)
+            - [CRM](designs/module-crm)
+            - [Documents](designs/module-document)
+            - [Helpdesk](designs/module-helpdesk)
+            - [HR](designs/module-hr)
+            - [Marketplace](designs/module-marketplace)
+            - [Project Management](designs/module-pm)
+            - [Subscriptions](designs/module-subscription)
+          SIDEBAR
 
           # Generate Home.md (wiki landing page)
-          cat > wiki/Home.md << 'EOF'
-# NOIR - Enterprise SaaS Foundation
+          cat > wiki/Home.md << 'HOME'
+          # NOIR - Enterprise SaaS Foundation
 
-Welcome to the NOIR Wiki — auto-synced from the [`docs/`](https://github.com/NOIR-Solution/NOIR/tree/main/docs) directory.
+          Welcome to the NOIR Wiki — auto-synced from the [`docs/`](https://github.com/NOIR-Solution/NOIR/tree/main/docs) directory.
 
-## Quick Navigation
+          ## Quick Navigation
 
-| I Want To... | Go To |
-|--------------|-------|
-| Understand the codebase | [Knowledge Base](KNOWLEDGE_BASE) |
-| Set up development environment | [Setup Guide](SETUP) |
-| Navigate project structure | [Project Index](PROJECT_INDEX) |
-| Find a feature | [Feature Catalog](FEATURE_CATALOG) |
-| Learn backend patterns | [Backend Overview](backend/README) |
-| Learn frontend patterns | [Frontend Overview](frontend/README) |
-| See the API | [API Index](API_INDEX) |
-| View architecture diagrams | [Diagrams](architecture/diagrams) |
-| See the product roadmap | [Roadmap](roadmap/README) |
+          | I Want To... | Go To |
+          |--------------|-------|
+          | Understand the codebase | [Knowledge Base](KNOWLEDGE_BASE) |
+          | Set up development environment | [Setup Guide](SETUP) |
+          | Navigate project structure | [Project Index](PROJECT_INDEX) |
+          | Find a feature | [Feature Catalog](FEATURE_CATALOG) |
+          | Learn backend patterns | [Backend Overview](backend/README) |
+          | Learn frontend patterns | [Frontend Overview](frontend/README) |
+          | See the API | [API Index](API_INDEX) |
+          | View architecture diagrams | [Diagrams](architecture/diagrams) |
+          | See the product roadmap | [Roadmap](roadmap/README) |
 
-## About
+          ## About
 
-NOIR is a production-ready .NET 10 + React 19 SaaS foundation with multi-tenancy, e-commerce, and clean architecture. **100% AI-coded** using Claude Code.
+          NOIR is a production-ready .NET 10 + React 19 SaaS foundation with multi-tenancy, e-commerce, and clean architecture. **100% AI-coded** using Claude Code.
 
-- **11,341+ tests** (unit, integration, architecture)
-- **98 UIKit components** with Storybook
-- **35 feature modules** with tenant-level feature management
+          - **12,663+ tests** (unit, integration, architecture)
+          - **98 UIKit components** with Storybook
+          - **39 feature modules** with tenant-level feature management
 
-> **Note:** This wiki is auto-generated from the `docs/` folder. To edit, submit a PR to the main repository.
-EOF
+          > **Note:** This wiki is auto-generated from the `docs/` folder. To edit, submit a PR to the main repository.
+          HOME
 
       - name: Push to wiki
+        if: steps.wiki-checkout.outcome == 'success'
         working-directory: wiki
         run: |
           git config user.name "github-actions[bot]"
