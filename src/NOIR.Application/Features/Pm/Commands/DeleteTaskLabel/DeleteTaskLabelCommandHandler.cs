@@ -4,13 +4,19 @@ public class DeleteTaskLabelCommandHandler
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteTaskLabelCommandHandler(
         IApplicationDbContext dbContext,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _dbContext = dbContext;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Pm.DTOs.TaskLabelDto>> Handle(
@@ -30,6 +36,13 @@ public class DeleteTaskLabelCommandHandler
         var dto = new Features.Pm.DTOs.TaskLabelDto(label.Id, label.Name, label.Color);
         _dbContext.TaskLabels.Remove(label);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "TaskLabel",
+            entityId: command.LabelId,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(dto);
     }

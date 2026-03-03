@@ -17,6 +17,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useSelection } from '@/hooks/useSelection'
@@ -133,7 +135,7 @@ export const EmployeesPage = () => {
     employmentType: typeFilter !== 'all' ? typeFilter as EmploymentType : undefined,
   }), [params, deferredSearch, departmentFilter, statusFilter, typeFilter])
 
-  const { data: employeesResponse, isLoading: loading, error: queryError } = useEmployeesQuery(queryParams)
+  const { data: employeesResponse, isLoading: loading, error: queryError, refetch } = useEmployeesQuery(queryParams)
   const { data: departments } = useDepartmentsQuery()
   const { data: allTags } = useTagsQuery({ isActive: true })
   const deactivateMutation = useDeactivateEmployee()
@@ -145,6 +147,15 @@ export const EmployeesPage = () => {
 
   const employees = employeesResponse?.items ?? []
   const { selectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(employees)
+
+  const handleCollectionUpdate = useCallback(() => {
+    if (selectedIds.size === 0) refetch()
+  }, [selectedIds.size, refetch])
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Employee',
+    onCollectionUpdate: handleCollectionUpdate,
+  })
   const { editItem: employeeToEdit, openEdit: openEditEmployee, closeEdit: closeEditEmployee } = useUrlEditDialog<EmployeeListDto>(employees)
   const totalCount = employeesResponse?.totalCount ?? 0
   const totalPages = employeesResponse?.totalPages ?? 1
@@ -294,6 +305,7 @@ export const EmployeesPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Users}
         title={t('hr.employees')}

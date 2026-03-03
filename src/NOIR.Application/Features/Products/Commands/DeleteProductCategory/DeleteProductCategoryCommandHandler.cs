@@ -8,15 +8,21 @@ public class DeleteProductCategoryCommandHandler
     private readonly IRepository<ProductCategory, Guid> _categoryRepository;
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteProductCategoryCommandHandler(
         IRepository<ProductCategory, Guid> categoryRepository,
         IRepository<Product, Guid> productRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _categoryRepository = categoryRepository;
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(
@@ -55,6 +61,13 @@ public class DeleteProductCategoryCommandHandler
         category.MarkAsDeleted();
         _categoryRepository.Remove(category);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "ProductCategory",
+            entityId: category.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(true);
     }

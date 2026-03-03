@@ -9,15 +9,21 @@ public class DuplicateProductCommandHandler
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IRepository<ProductCategory, Guid> _categoryRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DuplicateProductCommandHandler(
         IRepository<Product, Guid> productRepository,
         IRepository<ProductCategory, Guid> categoryRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ProductDto>> Handle(
@@ -128,6 +134,13 @@ public class DuplicateProductCommandHandler
 
         await _productRepository.AddAsync(duplicate, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Product",
+            entityId: duplicate.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         // Get category info for DTO
         string? categoryName = null;

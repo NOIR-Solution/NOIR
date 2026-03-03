@@ -8,15 +8,18 @@ public class ApproveReviewCommandHandler
     private readonly IRepository<ProductReview, Guid> _reviewRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IReviewAggregationService _aggregationService;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public ApproveReviewCommandHandler(
         IRepository<ProductReview, Guid> reviewRepository,
         IUnitOfWork unitOfWork,
-        IReviewAggregationService aggregationService)
+        IReviewAggregationService aggregationService,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _reviewRepository = reviewRepository;
         _unitOfWork = unitOfWork;
         _aggregationService = aggregationService;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ReviewDto>> Handle(
@@ -37,6 +40,13 @@ public class ApproveReviewCommandHandler
 
         // Recalculate product rating after approval
         await _aggregationService.RecalculateProductRatingAsync(review.ProductId, cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Review",
+            entityId: review.Id,
+            operation: EntityOperation.Updated,
+            tenantId: review.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(ReviewMapper.ToDto(review));
     }

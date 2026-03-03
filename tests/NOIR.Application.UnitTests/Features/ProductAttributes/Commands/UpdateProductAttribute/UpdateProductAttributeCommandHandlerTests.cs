@@ -13,6 +13,8 @@ public class UpdateProductAttributeCommandHandlerTests
 
     private readonly Mock<IRepository<ProductAttribute, Guid>> _attributeRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateProductAttributeCommandHandler _handler;
 
     public UpdateProductAttributeCommandHandlerTests()
@@ -22,7 +24,9 @@ public class UpdateProductAttributeCommandHandlerTests
 
         _handler = new UpdateProductAttributeCommandHandler(
             _attributeRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ProductAttribute CreateTestAttribute(

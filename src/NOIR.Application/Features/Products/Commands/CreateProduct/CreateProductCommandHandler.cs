@@ -10,19 +10,22 @@ public class CreateProductCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
     private readonly IInventoryMovementLogger _movementLogger;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateProductCommandHandler(
         IRepository<Product, Guid> productRepository,
         IRepository<ProductCategory, Guid> categoryRepository,
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser,
-        IInventoryMovementLogger movementLogger)
+        IInventoryMovementLogger movementLogger,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
         _movementLogger = movementLogger;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ProductDto>> Handle(
@@ -176,6 +179,13 @@ public class CreateProductCommandHandler
                 userId: command.UserId,
                 cancellationToken: cancellationToken);
         }
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Product",
+            entityId: product.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(ProductMapper.ToDto(product, categoryName, categorySlug, variantDtos, imageDtos));
     }

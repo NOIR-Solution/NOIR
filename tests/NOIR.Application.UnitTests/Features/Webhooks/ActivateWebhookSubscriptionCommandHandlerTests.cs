@@ -15,6 +15,7 @@ public class ActivateWebhookSubscriptionCommandHandlerTests
 
     private readonly Mock<IRepository<WebhookSubscription, Guid>> _repositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly ActivateWebhookSubscriptionCommandHandler _handler;
 
     public ActivateWebhookSubscriptionCommandHandlerTests()
@@ -24,7 +25,8 @@ public class ActivateWebhookSubscriptionCommandHandlerTests
 
         _handler = new ActivateWebhookSubscriptionCommandHandler(
             _repositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static WebhookSubscription CreateDeactivatedSubscription()

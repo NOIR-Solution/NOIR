@@ -11,6 +11,7 @@ public class UpdatePipelineCommandHandlerTests
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdatePipelineCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -31,7 +32,8 @@ public class UpdatePipelineCommandHandlerTests
             _leadRepoMock.Object,
             _unitOfWorkMock.Object,
             _currentUserMock.Object,
-            _dbContextMock.Object);
+            _dbContextMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

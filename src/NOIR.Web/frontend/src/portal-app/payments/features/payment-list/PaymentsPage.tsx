@@ -9,6 +9,8 @@ import {
   Search,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import {
   Badge,
   Button,
@@ -82,8 +84,13 @@ export const PaymentsPage = () => {
     paymentMethod: methodFilter !== 'all' ? methodFilter as PaymentMethod : undefined,
   }), [params, deferredSearch, statusFilter, methodFilter])
 
-  const { data: paymentsResponse, isLoading: loading, error: queryError } = usePaymentsQuery(queryParams)
+  const { data: paymentsResponse, isLoading: loading, error: queryError, refetch } = usePaymentsQuery(queryParams)
   const error = queryError?.message ?? null
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'PaymentTransaction',
+    onCollectionUpdate: refetch,
+  })
 
   const payments = paymentsResponse?.items ?? []
   const totalCount = paymentsResponse?.totalCount ?? 0
@@ -121,6 +128,7 @@ export const PaymentsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={CreditCard}
         title={t('payments.title')}

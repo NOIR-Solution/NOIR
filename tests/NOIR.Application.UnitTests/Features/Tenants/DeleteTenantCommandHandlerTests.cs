@@ -12,6 +12,7 @@ public class DeleteTenantCommandHandlerTests
 
     private readonly Mock<IMultiTenantStore<Tenant>> _tenantStoreMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteTenantCommandHandler _handler;
 
     public DeleteTenantCommandHandlerTests()
@@ -26,7 +27,8 @@ public class DeleteTenantCommandHandlerTests
 
         _handler = new DeleteTenantCommandHandler(
             _tenantStoreMock.Object,
-            _localizationServiceMock.Object);
+            _localizationServiceMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Tenant CreateTestTenant(

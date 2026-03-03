@@ -8,15 +8,18 @@ public class AddCustomerAddressCommandHandler
     private readonly IRepository<Domain.Entities.Customer.Customer, Guid> _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public AddCustomerAddressCommandHandler(
         IRepository<Domain.Entities.Customer.Customer, Guid> customerRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<CustomerAddressDto>> Handle(
@@ -57,6 +60,13 @@ public class AddCustomerAddressCommandHandler
 
         customer.Addresses.Add(address);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Customer",
+            entityId: customer.Id,
+            operation: EntityOperation.Updated,
+            tenantId: customer.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(CustomerMapper.ToAddressDto(address));
     }

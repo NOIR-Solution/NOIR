@@ -11,6 +11,7 @@ public class RejectReviewCommandHandlerTests
     private readonly Mock<IRepository<ProductReview, Guid>> _reviewRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IReviewAggregationService> _aggregationServiceMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly RejectReviewCommandHandler _handler;
 
     public RejectReviewCommandHandlerTests()
@@ -22,7 +23,8 @@ public class RejectReviewCommandHandlerTests
         _handler = new RejectReviewCommandHandler(
             _reviewRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _aggregationServiceMock.Object);
+            _aggregationServiceMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ProductReview CreateTestReview(

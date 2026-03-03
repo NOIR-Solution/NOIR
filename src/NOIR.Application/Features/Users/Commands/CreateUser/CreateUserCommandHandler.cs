@@ -12,19 +12,22 @@ public class CreateUserCommandHandler
     private readonly ILocalizationService _localization;
     private readonly IWelcomeEmailService _welcomeEmailService;
     private readonly ILogger<CreateUserCommandHandler> _logger;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateUserCommandHandler(
         IUserIdentityService userIdentityService,
         ICurrentUser currentUser,
         ILocalizationService localization,
         IWelcomeEmailService welcomeEmailService,
-        ILogger<CreateUserCommandHandler> logger)
+        ILogger<CreateUserCommandHandler> logger,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _userIdentityService = userIdentityService;
         _currentUser = currentUser;
         _localization = localization;
         _welcomeEmailService = welcomeEmailService;
         _logger = logger;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<UserDto>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
@@ -106,6 +109,16 @@ public class CreateUserCommandHandler
             false, // LockoutEnabled - new users are not locked
             null, // LockoutEnd
             roles);
+
+        if (Guid.TryParse(userId, out var userGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "User",
+                entityId: userGuid,
+                operation: EntityOperation.Created,
+                tenantId: _currentUser.TenantId!,
+                ct: cancellationToken);
+        }
 
         return Result.Success(userDto);
     }

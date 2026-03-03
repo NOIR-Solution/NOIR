@@ -7,13 +7,16 @@ public class CompleteOrderCommandHandler
 {
     private readonly IRepository<Order, Guid> _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CompleteOrderCommandHandler(
         IRepository<Order, Guid> orderRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<OrderDto>> Handle(
@@ -40,6 +43,13 @@ public class CompleteOrderCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Order",
+            entityId: order.Id,
+            operation: EntityOperation.Updated,
+            tenantId: order.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(OrderMapper.ToDto(order));
     }

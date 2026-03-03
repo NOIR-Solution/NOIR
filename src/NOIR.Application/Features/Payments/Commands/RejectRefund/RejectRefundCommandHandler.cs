@@ -8,15 +8,18 @@ public class RejectRefundCommandHandler
     private readonly IRepository<Refund, Guid> _refundRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPaymentHubContext _paymentHubContext;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public RejectRefundCommandHandler(
         IRepository<Refund, Guid> refundRepository,
         IUnitOfWork unitOfWork,
-        IPaymentHubContext paymentHubContext)
+        IPaymentHubContext paymentHubContext,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _refundRepository = refundRepository;
         _unitOfWork = unitOfWork;
         _paymentHubContext = paymentHubContext;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<RefundDto>> Handle(
@@ -67,6 +70,13 @@ public class RejectRefundCommandHandler
             refund.Amount,
             rejectionReason,
             cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "PaymentTransaction",
+            entityId: refund.PaymentTransactionId,
+            operation: EntityOperation.Updated,
+            tenantId: refund.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(MapToDto(refund));
     }

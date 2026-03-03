@@ -11,6 +11,7 @@ public class CreateLeadCommandHandlerTests
     private readonly Mock<IRepository<Pipeline, Guid>> _pipelineRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateLeadCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -34,7 +35,8 @@ public class CreateLeadCommandHandlerTests
             _contactRepoMock.Object,
             _pipelineRepoMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private CrmContact CreateTestContact() =>

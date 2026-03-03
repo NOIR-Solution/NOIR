@@ -9,6 +9,7 @@ public class CreatePipelineCommandHandlerTests
     private readonly Mock<IRepository<Pipeline, Guid>> _pipelineRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreatePipelineCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -28,7 +29,8 @@ public class CreatePipelineCommandHandlerTests
         _handler = new CreatePipelineCommandHandler(
             _pipelineRepoMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

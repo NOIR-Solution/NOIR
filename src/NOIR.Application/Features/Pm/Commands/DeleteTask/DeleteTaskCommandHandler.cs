@@ -4,13 +4,19 @@ public class DeleteTaskCommandHandler
 {
     private readonly IRepository<ProjectTask, Guid> _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteTaskCommandHandler(
         IRepository<ProjectTask, Guid> taskRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Pm.DTOs.TaskDto>> Handle(
@@ -28,6 +34,13 @@ public class DeleteTaskCommandHandler
         var dto = MapToDto(task);
         _taskRepository.Remove(task);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "ProjectTask",
+            entityId: command.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(dto);
     }

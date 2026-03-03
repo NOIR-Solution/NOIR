@@ -7,13 +7,16 @@ public class AddAdminResponseCommandHandler
 {
     private readonly IRepository<ProductReview, Guid> _reviewRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public AddAdminResponseCommandHandler(
         IRepository<ProductReview, Guid> reviewRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _reviewRepository = reviewRepository;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ReviewDto>> Handle(
@@ -31,6 +34,13 @@ public class AddAdminResponseCommandHandler
 
         review.AddAdminResponse(command.Response);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Review",
+            entityId: review.Id,
+            operation: EntityOperation.Updated,
+            tenantId: review.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(ReviewMapper.ToDto(review));
     }

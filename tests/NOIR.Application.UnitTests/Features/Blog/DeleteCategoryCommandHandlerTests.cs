@@ -14,6 +14,8 @@ public class DeleteCategoryCommandHandlerTests
     private readonly Mock<IRepository<PostCategory, Guid>> _categoryRepositoryMock;
     private readonly Mock<IRepository<Post, Guid>> _postRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteCategoryCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -27,7 +29,9 @@ public class DeleteCategoryCommandHandlerTests
         _handler = new DeleteCategoryCommandHandler(
             _categoryRepositoryMock.Object,
             _postRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static DeleteCategoryCommand CreateTestCommand(

@@ -11,13 +11,16 @@ public class CancelInventoryReceiptCommandHandler
 {
     private readonly IRepository<InventoryReceipt, Guid> _receiptRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CancelInventoryReceiptCommandHandler(
         IRepository<InventoryReceipt, Guid> receiptRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _receiptRepository = receiptRepository;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<InventoryReceiptDto>> Handle(
@@ -44,6 +47,13 @@ public class CancelInventoryReceiptCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "InventoryReceipt",
+            entityId: receipt.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: receipt.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(InventoryReceiptMapper.ToDto(receipt));
     }

@@ -7,6 +7,8 @@ public class DeleteTaskLabelCommandHandlerTests
 {
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteTaskLabelCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -20,7 +22,9 @@ public class DeleteTaskLabelCommandHandlerTests
 
         _handler = new DeleteTaskLabelCommandHandler(
             _dbContextMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

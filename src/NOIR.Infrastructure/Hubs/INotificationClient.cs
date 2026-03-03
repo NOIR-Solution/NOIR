@@ -27,4 +27,14 @@ public interface INotificationClient
     /// Notifies clients that the server has recovered from a restart.
     /// </summary>
     Task ReceiveServerRecovery();
+
+    /// <summary>
+    /// Notifies clients subscribed to a specific entity instance that it was updated.
+    /// </summary>
+    Task EntityUpdated(EntityUpdateSignal signal);
+
+    /// <summary>
+    /// Notifies clients subscribed to an entity list that the collection changed.
+    /// </summary>
+    Task EntityCollectionUpdated(EntityUpdateSignal signal);
 }

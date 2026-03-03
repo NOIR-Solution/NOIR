@@ -14,6 +14,8 @@ public class DeletePostCommandHandlerTests
     private readonly Mock<IRepository<Post, Guid>> _postRepositoryMock;
     private readonly Mock<IRepository<PostTag, Guid>> _tagRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeletePostCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -28,7 +30,9 @@ public class DeletePostCommandHandlerTests
         _handler = new DeletePostCommandHandler(
             _postRepositoryMock.Object,
             _tagRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static DeletePostCommand CreateTestCommand(

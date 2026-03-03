@@ -21,6 +21,10 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import { useUrlTab } from '@/hooks/useUrlTab'
 import {
   Badge,
@@ -142,7 +146,14 @@ export const PaymentDetailPage = () => {
   const [rejectRefundId, setRejectRefundId] = useState<string | null>(null)
   const [rejectReason, setRejectReason] = useState('')
 
-  const { data: details, isLoading, error: queryError } = usePaymentDetailsQuery(id)
+  const { data: details, isLoading, error: queryError, refetch } = usePaymentDetailsQuery(id)
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'PaymentTransaction',
+    entityId: id,
+    onAutoReload: refetch,
+    onNavigateAway: () => navigate('/portal/ecommerce/payments'),
+  })
   const { data: timeline } = usePaymentTimelineQuery(id)
   const refreshMutation = useRefreshPaymentMutation()
   const codConfirmMutation = useConfirmCodCollectionMutation()
@@ -287,6 +298,9 @@ export const PaymentDetailPage = () => {
 
   return (
     <div className="py-6 space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/ecommerce/payments')} />
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button

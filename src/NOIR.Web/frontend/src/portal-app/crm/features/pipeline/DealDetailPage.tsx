@@ -1,5 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import {
   ArrowLeft,
   Building2,
@@ -44,8 +48,15 @@ export const DealDetailPage = () => {
 
   const canManage = hasPermission(Permissions.CrmLeadsManage)
 
-  const { data: lead, isLoading, error: queryError } = useLeadQuery(id)
+  const { data: lead, isLoading, error: queryError, refetch } = useLeadQuery(id)
   const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'overview' })
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Lead',
+    entityId: id,
+    onAutoReload: refetch,
+    onNavigateAway: () => navigate('/portal/crm/pipeline'),
+  })
 
   if (isLoading) {
     return (
@@ -78,6 +89,10 @@ export const DealDetailPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/crm/pipeline')} />
+
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"

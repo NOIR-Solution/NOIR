@@ -13,6 +13,7 @@ public class CreatePaymentCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
     private readonly IOptions<PaymentSettings> _paymentSettings;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreatePaymentCommandHandler(
         IRepository<PaymentTransaction, Guid> paymentRepository,
@@ -22,7 +23,8 @@ public class CreatePaymentCommandHandler
         IPaymentOperationLogger operationLogger,
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser,
-        IOptions<PaymentSettings> paymentSettings)
+        IOptions<PaymentSettings> paymentSettings,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _paymentRepository = paymentRepository;
         _gatewayRepository = gatewayRepository;
@@ -32,6 +34,7 @@ public class CreatePaymentCommandHandler
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
         _paymentSettings = paymentSettings;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<PaymentTransactionDto>> Handle(
@@ -100,6 +103,14 @@ public class CreatePaymentCommandHandler
             payment.MarkAsCodPending();
             await _paymentRepository.AddAsync(payment, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "PaymentTransaction",
+                entityId: payment.Id,
+                operation: EntityOperation.Created,
+                tenantId: _currentUser.TenantId!,
+                ct: cancellationToken);
+
             return Result.Success(MapToDto(payment));
         }
 
@@ -182,6 +193,13 @@ public class CreatePaymentCommandHandler
 
         await _paymentRepository.AddAsync(payment, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "PaymentTransaction",
+            entityId: payment.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(MapToDto(payment));
     }

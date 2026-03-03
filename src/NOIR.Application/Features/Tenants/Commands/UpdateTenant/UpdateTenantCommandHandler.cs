@@ -9,13 +9,16 @@ public class UpdateTenantCommandHandler
 {
     private readonly IMultiTenantStore<Tenant> _tenantStore;
     private readonly ILocalizationService _localization;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateTenantCommandHandler(
         IMultiTenantStore<Tenant> tenantStore,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _tenantStore = tenantStore;
         _localization = localization;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<TenantDto>> Handle(UpdateTenantCommand command, CancellationToken cancellationToken)
@@ -78,6 +81,16 @@ public class UpdateTenantCommandHandler
                 Error.Internal(
                     _localization["auth.tenants.updateFailed"],
                     ErrorCodes.System.InternalError));
+        }
+
+        if (Guid.TryParse(updatedTenant.Id, out var tenantGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "Tenant",
+                entityId: tenantGuid,
+                operation: EntityOperation.Updated,
+                tenantId: updatedTenant.Id,
+                ct: cancellationToken);
         }
 
         return Result.Success(MapToDto(updatedTenant));

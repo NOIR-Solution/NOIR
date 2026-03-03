@@ -14,17 +14,20 @@ public class ConfirmInventoryReceiptCommandHandler
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IInventoryMovementLogger _movementLogger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public ConfirmInventoryReceiptCommandHandler(
         IRepository<InventoryReceipt, Guid> receiptRepository,
         IRepository<Product, Guid> productRepository,
         IInventoryMovementLogger movementLogger,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _receiptRepository = receiptRepository;
         _productRepository = productRepository;
         _movementLogger = movementLogger;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<InventoryReceiptDto>> Handle(
@@ -101,6 +104,13 @@ public class ConfirmInventoryReceiptCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "InventoryReceipt",
+            entityId: receipt.Id,
+            operation: EntityOperation.Updated,
+            tenantId: receipt.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(InventoryReceiptMapper.ToDto(receipt));
     }

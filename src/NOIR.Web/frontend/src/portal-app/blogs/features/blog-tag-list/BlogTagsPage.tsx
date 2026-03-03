@@ -2,6 +2,8 @@ import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Tag, Plus, Pencil, Trash2, EllipsisVertical } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import {
@@ -50,6 +52,11 @@ export const BlogTagsPage = () => {
   const deleteMutation = useDeleteBlogTagMutation()
   const error = queryError?.message ?? null
 
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'PostTag',
+    onCollectionUpdate: refresh,
+  })
+
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
       await deleteMutation.mutateAsync(id)
@@ -66,6 +73,7 @@ export const BlogTagsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Tag}
         title={t('blogTags.title', 'Tags')}

@@ -15,6 +15,8 @@ public class AddProductVariantCommandHandlerTests
     private readonly Mock<IRepository<Product, Guid>> _productRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IInventoryMovementLogger> _movementLoggerMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly AddProductVariantCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -29,7 +31,9 @@ public class AddProductVariantCommandHandlerTests
         _handler = new AddProductVariantCommandHandler(
             _productRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _movementLoggerMock.Object);
+            _movementLoggerMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static AddProductVariantCommand CreateTestCommand(

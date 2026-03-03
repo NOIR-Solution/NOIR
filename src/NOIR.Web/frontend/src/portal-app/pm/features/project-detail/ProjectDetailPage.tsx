@@ -1,6 +1,10 @@
 import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useUrlTab } from '@/hooks/useUrlTab'
 import { usePageContext } from '@/hooks/usePageContext'
@@ -38,7 +42,15 @@ export const ProjectDetailPage = () => {
   const { activeTab, handleTabChange, isPending } = useUrlTab({ defaultTab: 'board' })
   usePageContext('ProjectDetailPage')
 
-  const { data: project, isLoading } = useProjectQuery(id)
+  const navigate = useNavigate()
+  const { data: project, isLoading, refetch } = useProjectQuery(id)
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Project',
+    entityId: id,
+    onAutoReload: refetch,
+    onNavigateAway: () => navigate('/portal/projects'),
+  })
 
   const [taskDialogOpen, setTaskDialogOpen] = useState(false)
   const [defaultColumnId, setDefaultColumnId] = useState<string>('')
@@ -68,6 +80,10 @@ export const ProjectDetailPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/projects')} />
+
       {/* Breadcrumb */}
       <nav className="text-sm text-muted-foreground">
         <ViewTransitionLink to="/portal/projects" className="hover:text-foreground transition-colors">

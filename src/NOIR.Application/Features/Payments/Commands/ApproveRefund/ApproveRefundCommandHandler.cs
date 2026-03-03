@@ -9,17 +9,20 @@ public class ApproveRefundCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPaymentHubContext _paymentHubContext;
     private readonly IPaymentService _paymentService;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public ApproveRefundCommandHandler(
         IRepository<Refund, Guid> refundRepository,
         IUnitOfWork unitOfWork,
         IPaymentHubContext paymentHubContext,
-        IPaymentService paymentService)
+        IPaymentService paymentService,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _refundRepository = refundRepository;
         _unitOfWork = unitOfWork;
         _paymentHubContext = paymentHubContext;
         _paymentService = paymentService;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<RefundDto>> Handle(
@@ -78,6 +81,13 @@ public class ApproveRefundCommandHandler
             new RefundByIdSpec(refund.Id), cancellationToken);
 
         var dto = MapToDto(updatedRefund ?? refund);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "PaymentTransaction",
+            entityId: refund.PaymentTransactionId,
+            operation: EntityOperation.Updated,
+            tenantId: refund.TenantId!,
+            ct: cancellationToken);
 
         // Return success with the updated DTO - the refund status (Completed/Failed)
         // reflects the gateway result. The approval itself succeeded; gateway failure

@@ -80,4 +80,40 @@ public class NotificationHub : Hub<INotificationClient>
                 Context.ConnectionId, roleName);
         }
     }
+
+    /// <summary>
+    /// Subscribes to entity list updates for a given entity type (e.g., "Product").
+    /// </summary>
+    public async Task JoinEntityList(string entityType, string tenantId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"entity_list_{entityType}_{tenantId}");
+        _logger.LogDebug("Connection {ConnectionId} joined list group for {EntityType}",
+            Context.ConnectionId, entityType);
+    }
+
+    /// <summary>
+    /// Unsubscribes from entity list updates.
+    /// </summary>
+    public async Task LeaveEntityList(string entityType, string tenantId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"entity_list_{entityType}_{tenantId}");
+    }
+
+    /// <summary>
+    /// Subscribes to updates for a specific entity instance.
+    /// </summary>
+    public async Task JoinEntity(string entityType, string entityId, string tenantId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"entity_{entityType}_{entityId}_{tenantId}");
+        _logger.LogDebug("Connection {ConnectionId} joined instance group for {EntityType} {EntityId}",
+            Context.ConnectionId, entityType, entityId);
+    }
+
+    /// <summary>
+    /// Unsubscribes from a specific entity instance updates.
+    /// </summary>
+    public async Task LeaveEntity(string entityType, string entityId, string tenantId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"entity_{entityType}_{entityId}_{tenantId}");
+    }
 }

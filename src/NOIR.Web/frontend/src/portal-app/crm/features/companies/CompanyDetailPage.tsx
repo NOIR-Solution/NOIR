@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import {
   ArrowLeft,
   Building2,
@@ -40,9 +44,16 @@ export const CompanyDetailPage = () => {
 
   const canUpdate = hasPermission(Permissions.CrmCompaniesUpdate)
 
-  const { data: company, isLoading, error: queryError } = useCompanyQuery(id)
+  const { data: company, isLoading, error: queryError, refetch } = useCompanyQuery(id)
   const { data: contactsResponse } = useContactsQuery({ companyId: id, pageSize: 50 })
   const contacts = contactsResponse?.items ?? []
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'CrmCompany',
+    entityId: id,
+    onAutoReload: refetch,
+    onNavigateAway: () => navigate('/portal/crm/companies'),
+  })
 
   const [showEditDialog, setShowEditDialog] = useState(false)
 
@@ -67,6 +78,10 @@ export const CompanyDetailPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/crm/companies')} />
+
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"

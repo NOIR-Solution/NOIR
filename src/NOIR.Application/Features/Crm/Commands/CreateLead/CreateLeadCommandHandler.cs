@@ -7,19 +7,22 @@ public class CreateLeadCommandHandler
     private readonly IRepository<Pipeline, Guid> _pipelineRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateLeadCommandHandler(
         IRepository<Lead, Guid> leadRepository,
         IRepository<CrmContact, Guid> contactRepository,
         IRepository<Pipeline, Guid> pipelineRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _leadRepository = leadRepository;
         _contactRepository = contactRepository;
         _pipelineRepository = pipelineRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Crm.DTOs.LeadDto>> Handle(
@@ -72,6 +75,13 @@ public class CreateLeadCommandHandler
 
         await _leadRepository.AddAsync(lead, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "CrmLead",
+            entityId: lead.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(lead, contact, pipeline, firstStage));
     }

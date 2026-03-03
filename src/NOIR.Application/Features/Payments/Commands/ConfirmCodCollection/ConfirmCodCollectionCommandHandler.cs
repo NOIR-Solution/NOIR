@@ -10,19 +10,22 @@ public class ConfirmCodCollectionCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPaymentHubContext _paymentHubContext;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public ConfirmCodCollectionCommandHandler(
         IRepository<PaymentTransaction, Guid> paymentRepository,
         IRepository<Order, Guid> orderRepository,
         IUnitOfWork unitOfWork,
         IPaymentHubContext paymentHubContext,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _paymentRepository = paymentRepository;
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
         _paymentHubContext = paymentHubContext;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<PaymentTransactionDto>> Handle(
@@ -104,6 +107,13 @@ public class ConfirmCodCollectionCommandHandler
                 payment.Currency,
                 cancellationToken);
         }
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "PaymentTransaction",
+            entityId: payment.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(MapToDto(payment));
     }

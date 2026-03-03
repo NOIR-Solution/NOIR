@@ -10,6 +10,8 @@ public class UpdateRoleCommandHandlerTests
 
     private readonly Mock<IRoleIdentityService> _roleIdentityServiceMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateRoleCommandHandler _handler;
 
     public UpdateRoleCommandHandlerTests()
@@ -24,7 +26,9 @@ public class UpdateRoleCommandHandlerTests
 
         _handler = new UpdateRoleCommandHandler(
             _roleIdentityServiceMock.Object,
-            _localizationServiceMock.Object);
+            _localizationServiceMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static RoleIdentityDto CreateTestRoleDto(

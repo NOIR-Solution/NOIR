@@ -15,6 +15,7 @@ public class RejectRefundCommandHandlerTests
     private readonly Mock<IRepository<Refund, Guid>> _refundRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IPaymentHubContext> _paymentHubContextMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly RejectRefundCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -44,7 +45,8 @@ public class RejectRefundCommandHandlerTests
         _handler = new RejectRefundCommandHandler(
             _refundRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _paymentHubContextMock.Object);
+            _paymentHubContextMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static RejectRefundCommand CreateTestCommand(

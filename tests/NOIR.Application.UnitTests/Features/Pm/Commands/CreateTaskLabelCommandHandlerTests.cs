@@ -8,6 +8,7 @@ public class CreateTaskLabelCommandHandlerTests
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateTaskLabelCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -24,7 +25,8 @@ public class CreateTaskLabelCommandHandlerTests
         _handler = new CreateTaskLabelCommandHandler(
             _dbContextMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

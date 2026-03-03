@@ -8,6 +8,7 @@ public class CreateActivityCommandHandlerTests
     private readonly Mock<IRepository<CrmActivity, Guid>> _activityRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateActivityCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -27,7 +28,8 @@ public class CreateActivityCommandHandlerTests
         _handler = new CreateActivityCommandHandler(
             _activityRepoMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

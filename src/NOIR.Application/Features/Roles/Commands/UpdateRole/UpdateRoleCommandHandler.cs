@@ -7,13 +7,19 @@ public class UpdateRoleCommandHandler
 {
     private readonly IRoleIdentityService _roleIdentityService;
     private readonly ILocalizationService _localization;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateRoleCommandHandler(
         IRoleIdentityService roleIdentityService,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _roleIdentityService = roleIdentityService;
         _localization = localization;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<RoleDto>> Handle(UpdateRoleCommand command, CancellationToken cancellationToken)
@@ -116,6 +122,16 @@ public class UpdateRoleCommandHandler
             userCount,
             permissions,
             effectivePermissions);
+
+        if (Guid.TryParse(command.RoleId, out var roleGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "Role",
+                entityId: roleGuid,
+                operation: EntityOperation.Updated,
+                tenantId: _currentUser.TenantId!,
+                ct: cancellationToken);
+        }
 
         return Result.Success(roleDto);
     }

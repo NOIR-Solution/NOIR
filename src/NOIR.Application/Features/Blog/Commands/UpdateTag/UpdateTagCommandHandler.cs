@@ -9,15 +9,18 @@ public class UpdateTagCommandHandler
     private readonly IRepository<PostTag, Guid> _tagRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateTagCommandHandler(
         IRepository<PostTag, Guid> tagRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _tagRepository = tagRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<PostTagDto>> Handle(
@@ -56,6 +59,13 @@ public class UpdateTagCommandHandler
             command.Color);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "BlogTag",
+            entityId: tag.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(tag));
     }

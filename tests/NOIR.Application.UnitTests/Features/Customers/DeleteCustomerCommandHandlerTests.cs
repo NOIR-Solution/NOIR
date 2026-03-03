@@ -10,6 +10,7 @@ public class DeleteCustomerCommandHandlerTests
 
     private readonly Mock<IRepository<Customer, Guid>> _customerRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteCustomerCommandHandler _handler;
 
     public DeleteCustomerCommandHandlerTests()
@@ -19,7 +20,8 @@ public class DeleteCustomerCommandHandlerTests
 
         _handler = new DeleteCustomerCommandHandler(
             _customerRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Customer CreateTestCustomer(

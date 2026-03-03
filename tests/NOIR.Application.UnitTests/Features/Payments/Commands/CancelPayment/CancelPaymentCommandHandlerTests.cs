@@ -15,6 +15,7 @@ public class CancelPaymentCommandHandlerTests
     private readonly Mock<IRepository<PaymentTransaction, Guid>> _paymentRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IPaymentHubContext> _paymentHubContextMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CancelPaymentCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -53,7 +54,8 @@ public class CancelPaymentCommandHandlerTests
         _handler = new CancelPaymentCommandHandler(
             _paymentRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _paymentHubContextMock.Object);
+            _paymentHubContextMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CancelPaymentCommand CreateTestCommand(

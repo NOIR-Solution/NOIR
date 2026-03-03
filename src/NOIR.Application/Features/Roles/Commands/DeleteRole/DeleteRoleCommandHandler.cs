@@ -8,13 +8,19 @@ public class DeleteRoleCommandHandler
 {
     private readonly IRoleIdentityService _roleIdentityService;
     private readonly ILocalizationService _localization;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteRoleCommandHandler(
         IRoleIdentityService roleIdentityService,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _roleIdentityService = roleIdentityService;
         _localization = localization;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(DeleteRoleCommand command, CancellationToken cancellationToken)
@@ -52,6 +58,16 @@ public class DeleteRoleCommandHandler
         {
             return Result.Failure<bool>(
                 Error.ValidationErrors(result.Errors!, ErrorCodes.Validation.General));
+        }
+
+        if (Guid.TryParse(command.RoleId, out var roleGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "Role",
+                entityId: roleGuid,
+                operation: EntityOperation.Deleted,
+                tenantId: _currentUser.TenantId!,
+                ct: cancellationToken);
         }
 
         return Result.Success(true);

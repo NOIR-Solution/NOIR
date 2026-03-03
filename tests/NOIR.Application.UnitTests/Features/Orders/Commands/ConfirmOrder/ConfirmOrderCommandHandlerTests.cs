@@ -14,6 +14,7 @@ public class ConfirmOrderCommandHandlerTests
 
     private readonly Mock<IRepository<Order, Guid>> _orderRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly ConfirmOrderCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -25,7 +26,8 @@ public class ConfirmOrderCommandHandlerTests
 
         _handler = new ConfirmOrderCommandHandler(
             _orderRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ConfirmOrderCommand CreateTestCommand(Guid? orderId = null)

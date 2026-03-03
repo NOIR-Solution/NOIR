@@ -18,6 +18,7 @@ public class RecordManualPaymentCommandHandlerTests
     private readonly Mock<IPaymentOperationLogger> _operationLoggerMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly RecordManualPaymentCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -53,7 +54,8 @@ public class RecordManualPaymentCommandHandlerTests
             _paymentServiceMock.Object,
             _operationLoggerMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static RecordManualPaymentCommand CreateTestCommand(

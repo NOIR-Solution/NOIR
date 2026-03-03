@@ -12,19 +12,22 @@ public class CreatePostCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
     private readonly IContentAnalyzer _contentAnalyzer;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreatePostCommandHandler(
         IRepository<Post, Guid> postRepository,
         IRepository<PostTag, Guid> tagRepository,
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser,
-        IContentAnalyzer contentAnalyzer)
+        IContentAnalyzer contentAnalyzer,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _postRepository = postRepository;
         _tagRepository = tagRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
         _contentAnalyzer = contentAnalyzer;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<PostDto>> Handle(
@@ -104,6 +107,13 @@ public class CreatePostCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "BlogPost",
+            entityId: post.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         // Return DTO (use command.FeaturedImageUrl since FeaturedImage isn't loaded)
         return Result.Success(MapToDto(post, command.FeaturedImageUrl, null, null, null, []));

@@ -7,19 +7,22 @@ public class UpdatePipelineCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
     private readonly IApplicationDbContext _dbContext;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdatePipelineCommandHandler(
         IRepository<Pipeline, Guid> pipelineRepository,
         IRepository<Lead, Guid> leadRepository,
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser,
-        IApplicationDbContext dbContext)
+        IApplicationDbContext dbContext,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _pipelineRepository = pipelineRepository;
         _leadRepository = leadRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
         _dbContext = dbContext;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Crm.DTOs.PipelineDto>> Handle(
@@ -92,6 +95,13 @@ public class UpdatePipelineCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Pipeline",
+            entityId: pipeline.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(pipeline));
     }

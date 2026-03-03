@@ -7,13 +7,16 @@ public class ActivatePromotionCommandHandler
 {
     private readonly IRepository<Domain.Entities.Promotion.Promotion, Guid> _repository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public ActivatePromotionCommandHandler(
         IRepository<Domain.Entities.Promotion.Promotion, Guid> repository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<PromotionDto>> Handle(
@@ -40,6 +43,13 @@ public class ActivatePromotionCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Promotion",
+            entityId: promotion.Id,
+            operation: EntityOperation.Updated,
+            tenantId: promotion.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(PromotionMapper.ToDto(promotion));
     }

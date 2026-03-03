@@ -5,15 +5,18 @@ public class CreateTagCommandHandler
     private readonly IRepository<EmployeeTag, Guid> _tagRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateTagCommandHandler(
         IRepository<EmployeeTag, Guid> tagRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _tagRepository = tagRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<EmployeeTagDto>> Handle(
@@ -41,6 +44,13 @@ public class CreateTagCommandHandler
 
         await _tagRepository.AddAsync(tag, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "EmployeeTag",
+            entityId: tag.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(new EmployeeTagDto(
             tag.Id, tag.Name, tag.Category, tag.Color, tag.Description,

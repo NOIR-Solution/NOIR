@@ -13,6 +13,8 @@ public class RemoveProductAttributeValueCommandHandlerTests
 
     private readonly Mock<IRepository<ProductAttribute, Guid>> _attributeRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly RemoveProductAttributeValueCommandHandler _handler;
 
     public RemoveProductAttributeValueCommandHandlerTests()
@@ -22,7 +24,9 @@ public class RemoveProductAttributeValueCommandHandlerTests
 
         _handler = new RemoveProductAttributeValueCommandHandler(
             _attributeRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ProductAttribute CreateTestAttributeWithValues(

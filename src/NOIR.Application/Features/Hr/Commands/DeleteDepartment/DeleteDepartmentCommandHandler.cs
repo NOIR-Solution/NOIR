@@ -5,15 +5,21 @@ public class DeleteDepartmentCommandHandler
     private readonly IRepository<Department, Guid> _departmentRepository;
     private readonly IRepository<Employee, Guid> _employeeRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteDepartmentCommandHandler(
         IRepository<Department, Guid> departmentRepository,
         IRepository<Employee, Guid> employeeRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _departmentRepository = departmentRepository;
         _employeeRepository = employeeRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(
@@ -48,6 +54,13 @@ public class DeleteDepartmentCommandHandler
 
         _departmentRepository.Remove(department);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Department",
+            entityId: command.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(true);
     }

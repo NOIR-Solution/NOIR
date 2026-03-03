@@ -4,13 +4,19 @@ public class UpdateContactCommandHandler
 {
     private readonly IRepository<CrmContact, Guid> _contactRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateContactCommandHandler(
         IRepository<CrmContact, Guid> contactRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _contactRepository = contactRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Crm.DTOs.ContactDto>> Handle(
@@ -48,6 +54,13 @@ public class UpdateContactCommandHandler
             command.Notes);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "CrmContact",
+            entityId: contact.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(contact));
     }

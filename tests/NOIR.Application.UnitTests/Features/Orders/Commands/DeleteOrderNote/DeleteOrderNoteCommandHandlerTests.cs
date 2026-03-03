@@ -12,6 +12,7 @@ public class DeleteOrderNoteCommandHandlerTests
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteOrderNoteCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -23,7 +24,8 @@ public class DeleteOrderNoteCommandHandlerTests
 
         _handler = new DeleteOrderNoteCommandHandler(
             _dbContextMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static OrderNote CreateTestNote(Guid orderId, string content = "Test note")

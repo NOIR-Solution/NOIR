@@ -5,15 +5,21 @@ public class DeleteContactCommandHandler
     private readonly IRepository<CrmContact, Guid> _contactRepository;
     private readonly IRepository<Lead, Guid> _leadRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteContactCommandHandler(
         IRepository<CrmContact, Guid> contactRepository,
         IRepository<Lead, Guid> leadRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _contactRepository = contactRepository;
         _leadRepository = leadRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Crm.DTOs.ContactDto>> Handle(
@@ -41,6 +47,13 @@ public class DeleteContactCommandHandler
         var dto = MapToDto(contact);
         _contactRepository.Remove(contact);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "CrmContact",
+            entityId: command.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(dto);
     }

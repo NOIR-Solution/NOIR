@@ -10,6 +10,7 @@ public class VoteReviewCommandHandlerTests
 
     private readonly Mock<IRepository<ProductReview, Guid>> _reviewRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly VoteReviewCommandHandler _handler;
 
     public VoteReviewCommandHandlerTests()
@@ -19,7 +20,8 @@ public class VoteReviewCommandHandlerTests
 
         _handler = new VoteReviewCommandHandler(
             _reviewRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ProductReview CreateTestReview(

@@ -9,6 +9,7 @@ public class CreateTaskCommandHandler
     private readonly ITaskNumberGenerator _taskNumberGenerator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateTaskCommandHandler(
         IRepository<ProjectTask, Guid> taskRepository,
@@ -17,7 +18,8 @@ public class CreateTaskCommandHandler
         IApplicationDbContext dbContext,
         ITaskNumberGenerator taskNumberGenerator,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _taskRepository = taskRepository;
         _projectRepository = projectRepository;
@@ -26,6 +28,7 @@ public class CreateTaskCommandHandler
         _taskNumberGenerator = taskNumberGenerator;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Pm.DTOs.TaskDto>> Handle(
@@ -82,6 +85,13 @@ public class CreateTaskCommandHandler
 
         await _taskRepository.AddAsync(task, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "ProjectTask",
+            entityId: task.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         // Reload with navigation properties
         var reloadSpec = new Specifications.TaskByIdSpec(task.Id);

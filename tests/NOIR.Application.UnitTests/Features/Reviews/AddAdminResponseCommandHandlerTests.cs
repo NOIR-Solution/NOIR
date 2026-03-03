@@ -10,6 +10,7 @@ public class AddAdminResponseCommandHandlerTests
 
     private readonly Mock<IRepository<ProductReview, Guid>> _reviewRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly AddAdminResponseCommandHandler _handler;
 
     public AddAdminResponseCommandHandlerTests()
@@ -19,7 +20,8 @@ public class AddAdminResponseCommandHandlerTests
 
         _handler = new AddAdminResponseCommandHandler(
             _reviewRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ProductReview CreateTestReview(

@@ -8,15 +8,18 @@ public class CreateWebhookSubscriptionCommandHandler
     private readonly IRepository<WebhookSubscription, Guid> _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateWebhookSubscriptionCommandHandler(
         IRepository<WebhookSubscription, Guid> repository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<WebhookSubscriptionDto>> Handle(
@@ -44,6 +47,13 @@ public class CreateWebhookSubscriptionCommandHandler
 
         await _repository.AddAsync(subscription, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "WebhookSubscription",
+            entityId: subscription.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(WebhookMapper.ToDto(subscription));
     }

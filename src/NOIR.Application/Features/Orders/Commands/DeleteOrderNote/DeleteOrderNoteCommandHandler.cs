@@ -7,13 +7,16 @@ public class DeleteOrderNoteCommandHandler
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteOrderNoteCommandHandler(
         IApplicationDbContext dbContext,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _dbContext = dbContext;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<OrderNoteDto>> Handle(
@@ -34,6 +37,13 @@ public class DeleteOrderNoteCommandHandler
 
         _dbContext.OrderNotes.Remove(note);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Order",
+            entityId: command.OrderId,
+            operation: EntityOperation.Updated,
+            tenantId: note.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(OrderMapper.ToDto(note));
     }

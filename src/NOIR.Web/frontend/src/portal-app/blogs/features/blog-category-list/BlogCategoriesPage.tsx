@@ -31,6 +31,8 @@ import {
 } from '@uikit'
 
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 
@@ -70,6 +72,11 @@ export const BlogCategoriesPage = () => {
   const reorderMutation = useReorderBlogCategoriesMutation()
   const error = queryError?.message ?? null
 
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'PostCategory',
+    onCollectionUpdate: refresh,
+  })
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value)
   }
@@ -103,6 +110,7 @@ export const BlogCategoriesPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={FolderTree}
         title={t('blogCategories.title', 'Categories')}

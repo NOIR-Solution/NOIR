@@ -11,13 +11,19 @@ public class CreateRoleCommandHandler
 {
     private readonly IRoleIdentityService _roleIdentityService;
     private readonly ILocalizationService _localization;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateRoleCommandHandler(
         IRoleIdentityService roleIdentityService,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _roleIdentityService = roleIdentityService;
         _localization = localization;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<RoleDto>> Handle(CreateRoleCommand command, CancellationToken cancellationToken)
@@ -123,6 +129,16 @@ public class CreateRoleCommandHandler
             0, // New role has no users
             permissions,
             effectivePermissions);
+
+        if (Guid.TryParse(role.Id, out var roleGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "Role",
+                entityId: roleGuid,
+                operation: EntityOperation.Created,
+                tenantId: _currentUser.TenantId!,
+                ct: cancellationToken);
+        }
 
         return Result.Success(roleDto);
     }

@@ -12,6 +12,7 @@ public class AddTaskCommentCommandHandlerTests
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly AddTaskCommentCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -38,7 +39,8 @@ public class AddTaskCommentCommandHandlerTests
             _employeeRepoMock.Object,
             _dbContextMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Employee CreateTestEmployee() =>

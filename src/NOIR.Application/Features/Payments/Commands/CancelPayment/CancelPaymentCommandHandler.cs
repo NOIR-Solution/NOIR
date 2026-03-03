@@ -8,15 +8,18 @@ public class CancelPaymentCommandHandler
     private readonly IRepository<PaymentTransaction, Guid> _paymentRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPaymentHubContext _paymentHubContext;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CancelPaymentCommandHandler(
         IRepository<PaymentTransaction, Guid> paymentRepository,
         IUnitOfWork unitOfWork,
-        IPaymentHubContext paymentHubContext)
+        IPaymentHubContext paymentHubContext,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _paymentRepository = paymentRepository;
         _unitOfWork = unitOfWork;
         _paymentHubContext = paymentHubContext;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<PaymentTransactionDto>> Handle(
@@ -72,6 +75,13 @@ public class CancelPaymentCommandHandler
                 payment.Status.ToString(),
                 cancellationToken);
         }
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "PaymentTransaction",
+            entityId: payment.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: payment.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(MapToDto(payment));
     }

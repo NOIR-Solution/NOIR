@@ -11,6 +11,7 @@ public class CreateBrandCommandHandlerTests
     private readonly Mock<IRepository<Brand, Guid>> _brandRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateBrandCommandHandler _handler;
 
     public CreateBrandCommandHandlerTests()
@@ -24,7 +25,8 @@ public class CreateBrandCommandHandlerTests
         _handler = new CreateBrandCommandHandler(
             _brandRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CreateBrandCommand CreateValidCommand(

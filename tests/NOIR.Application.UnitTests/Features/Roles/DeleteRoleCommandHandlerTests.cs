@@ -10,6 +10,8 @@ public class DeleteRoleCommandHandlerTests
 
     private readonly Mock<IRoleIdentityService> _roleIdentityServiceMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteRoleCommandHandler _handler;
 
     public DeleteRoleCommandHandlerTests()
@@ -24,7 +26,9 @@ public class DeleteRoleCommandHandlerTests
 
         _handler = new DeleteRoleCommandHandler(
             _roleIdentityServiceMock.Object,
-            _localizationServiceMock.Object);
+            _localizationServiceMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static RoleIdentityDto CreateTestRoleDto(

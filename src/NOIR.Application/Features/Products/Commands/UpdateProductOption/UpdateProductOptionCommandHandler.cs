@@ -7,13 +7,19 @@ public class UpdateProductOptionCommandHandler
 {
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateProductOptionCommandHandler(
         IRepository<Product, Guid> productRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ProductOptionDto>> Handle(
@@ -50,6 +56,13 @@ public class UpdateProductOptionCommandHandler
         option.Update(command.Name, command.DisplayName, command.SortOrder);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Product",
+            entityId: product.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(ProductMapper.ToDto(option));
     }

@@ -4,13 +4,19 @@ public class MoveTaskCommandHandler
 {
     private readonly IRepository<ProjectTask, Guid> _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public MoveTaskCommandHandler(
         IRepository<ProjectTask, Guid> taskRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Pm.DTOs.TaskDto>> Handle(
@@ -27,6 +33,13 @@ public class MoveTaskCommandHandler
 
         task.MoveToColumn(command.ColumnId, command.SortOrder);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "ProjectTask",
+            entityId: task.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         // Reload with navigation properties
         var reloadSpec = new Specifications.TaskByIdSpec(task.Id);

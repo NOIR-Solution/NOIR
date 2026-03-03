@@ -11,6 +11,7 @@ public class CreatePromotionCommandHandlerTests
     private readonly Mock<IRepository<Promotion, Guid>> _promotionRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreatePromotionCommandHandler _handler;
 
     public CreatePromotionCommandHandlerTests()
@@ -24,7 +25,8 @@ public class CreatePromotionCommandHandlerTests
         _handler = new CreatePromotionCommandHandler(
             _promotionRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CreatePromotionCommand CreateValidCommand(

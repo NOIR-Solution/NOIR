@@ -5,15 +5,21 @@ public class DeletePipelineCommandHandler
     private readonly IRepository<Pipeline, Guid> _pipelineRepository;
     private readonly IRepository<Lead, Guid> _leadRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeletePipelineCommandHandler(
         IRepository<Pipeline, Guid> pipelineRepository,
         IRepository<Lead, Guid> leadRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _pipelineRepository = pipelineRepository;
         _leadRepository = leadRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Crm.DTOs.PipelineDto>> Handle(
@@ -48,6 +54,13 @@ public class DeletePipelineCommandHandler
         var dto = MapToDto(pipeline);
         _pipelineRepository.Remove(pipeline);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Pipeline",
+            entityId: command.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(dto);
     }

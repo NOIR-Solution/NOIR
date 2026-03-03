@@ -8,15 +8,18 @@ public class CreateBrandCommandHandler
     private readonly IRepository<Brand, Guid> _brandRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateBrandCommandHandler(
         IRepository<Brand, Guid> brandRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _brandRepository = brandRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<BrandDto>> Handle(
@@ -53,6 +56,13 @@ public class CreateBrandCommandHandler
 
         await _brandRepository.AddAsync(brand, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Brand",
+            entityId: brand.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(BrandMapper.ToDto(brand));
     }

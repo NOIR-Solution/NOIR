@@ -1,7 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import { Editor } from '@tinymce/tinymce-react'
 import type { Editor as TinyMCEEditor } from 'tinymce'
 import { z } from 'zod'
@@ -132,6 +136,27 @@ export const EmailTemplateEditPage = () => {
 
   // Track unsaved changes
   const [hasChanges, setHasChanges] = useState(false)
+
+  const refreshTemplate = useCallback(() => {
+    if (id) {
+      getEmailTemplate(id).then((data) => {
+        setTemplate(data)
+        setSubject(data.subject)
+        setHtmlBody(data.htmlBody)
+        setPlainTextBody(data.plainTextBody || '')
+        setDescription(data.description || '')
+        setHasChanges(false)
+      }).catch(() => {})
+    }
+  }, [id])
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'EmailTemplate',
+    entityId: id,
+    isDirty: hasChanges,
+    onAutoReload: refreshTemplate,
+    onNavigateAway: () => navigate(settingsBackUrl),
+  })
 
   // Validation errors
   const [errors, setErrors] = useState<EmailTemplateFormErrors>({})
@@ -417,6 +442,10 @@ export const EmailTemplateEditPage = () => {
 
   return (
     <div className="py-6 space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate(settingsBackUrl)} />
+
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">

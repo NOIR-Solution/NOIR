@@ -10,6 +10,8 @@ public class DeactivateEmployeeCommandHandlerTests
     private readonly Mock<IRepository<Employee, Guid>> _employeeRepositoryMock;
     private readonly Mock<IRepository<Department, Guid>> _departmentRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeactivateEmployeeCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -25,7 +27,9 @@ public class DeactivateEmployeeCommandHandlerTests
         _handler = new DeactivateEmployeeCommandHandler(
             _employeeRepositoryMock.Object,
             _departmentRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Employee CreateTestEmployee(Guid? departmentId = null) =>

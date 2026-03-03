@@ -7,13 +7,19 @@ public class SetPrimaryProductImageCommandHandler
 {
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public SetPrimaryProductImageCommandHandler(
         IRepository<Product, Guid> productRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ProductDto>> Handle(
@@ -42,6 +48,13 @@ public class SetPrimaryProductImageCommandHandler
         product.SetPrimaryImage(command.ImageId);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Product",
+            entityId: product.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         // Use navigation property already loaded by spec
         return Result.Success(ProductMapper.ToDtoWithCollections(

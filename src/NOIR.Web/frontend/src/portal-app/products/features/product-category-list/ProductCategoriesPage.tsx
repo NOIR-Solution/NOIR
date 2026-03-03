@@ -2,6 +2,8 @@ import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, EllipsisVertical, List, GitBranch, Tags } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -78,6 +80,11 @@ export const ProductCategoriesPage = () => {
   const reorderMutation = useReorderProductCategories()
   const error = queryError?.message ?? null
 
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'ProductCategory',
+    onCollectionUpdate: refresh,
+  })
+
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
       await deleteMutation.mutateAsync(id)
@@ -107,6 +114,7 @@ export const ProductCategoriesPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={FolderTree}
         title={t('categories.title', 'Product Categories')}

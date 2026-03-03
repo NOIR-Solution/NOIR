@@ -47,6 +47,10 @@ import {
   Truck,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -319,6 +323,13 @@ export const ProductFormPage = () => {
   const { data: product, isLoading: productLoading, refetch: refreshProduct } = useProductQuery(id)
   const { data: categories = [] } = useProductCategoriesQuery()
   const { data: brands = [] } = useActiveBrandsQuery()
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Product',
+    entityId: id,
+    onAutoReload: refreshProduct,
+    onNavigateAway: () => navigate('/portal/ecommerce/products'),
+  })
 
   const [isSaving, setIsSaving] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
@@ -837,6 +848,9 @@ export const ProductFormPage = () => {
 
   return (
     <div className="py-6 space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/ecommerce/products')} />
       {/* Page Header with Glassmorphism */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">

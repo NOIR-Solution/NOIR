@@ -7,19 +7,22 @@ public class CreateEmployeeCommandHandler
     private readonly IEmployeeCodeGenerator _codeGenerator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateEmployeeCommandHandler(
         IRepository<Employee, Guid> employeeRepository,
         IRepository<Department, Guid> departmentRepository,
         IEmployeeCodeGenerator codeGenerator,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _employeeRepository = employeeRepository;
         _departmentRepository = departmentRepository;
         _codeGenerator = codeGenerator;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Hr.DTOs.EmployeeDto>> Handle(
@@ -91,6 +94,13 @@ public class CreateEmployeeCommandHandler
 
         await _employeeRepository.AddAsync(employee, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Employee",
+            entityId: employee.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(employee, department.Name));
     }

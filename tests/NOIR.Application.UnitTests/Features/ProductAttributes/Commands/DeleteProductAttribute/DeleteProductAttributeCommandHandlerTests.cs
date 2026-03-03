@@ -14,6 +14,8 @@ public class DeleteProductAttributeCommandHandlerTests
     private readonly Mock<IRepository<ProductAttribute, Guid>> _attributeRepositoryMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteProductAttributeCommandHandler _handler;
 
     public DeleteProductAttributeCommandHandlerTests()
@@ -25,7 +27,9 @@ public class DeleteProductAttributeCommandHandlerTests
         _handler = new DeleteProductAttributeCommandHandler(
             _attributeRepositoryMock.Object,
             _dbContextMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ProductAttribute CreateTestAttribute(

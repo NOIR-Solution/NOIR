@@ -16,6 +16,7 @@ public class CreateWebhookSubscriptionCommandHandlerTests
     private readonly Mock<IRepository<WebhookSubscription, Guid>> _repositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateWebhookSubscriptionCommandHandler _handler;
 
     public CreateWebhookSubscriptionCommandHandlerTests()
@@ -29,7 +30,8 @@ public class CreateWebhookSubscriptionCommandHandlerTests
         _handler = new CreateWebhookSubscriptionCommandHandler(
             _repositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CreateWebhookSubscriptionCommand CreateValidCommand(

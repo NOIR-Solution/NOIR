@@ -8,15 +8,18 @@ public class UpdateProductCategoryCommandHandler
     private readonly IRepository<ProductCategory, Guid> _categoryRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateProductCategoryCommandHandler(
         IRepository<ProductCategory, Guid> categoryRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ProductCategoryDto>> Handle(
@@ -80,6 +83,13 @@ public class UpdateProductCategoryCommandHandler
         category.SetSortOrder(command.SortOrder);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "ProductCategory",
+            entityId: category.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(ProductMapper.ToDto(category, parentName));
     }

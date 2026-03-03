@@ -18,6 +18,7 @@ public class ReturnOrderCommandHandlerTests
     private readonly Mock<IRepository<Product, Guid>> _productRepositoryMock;
     private readonly Mock<IInventoryMovementLogger> _movementLoggerMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly ReturnOrderCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -33,7 +34,8 @@ public class ReturnOrderCommandHandlerTests
             _orderRepositoryMock.Object,
             _productRepositoryMock.Object,
             _movementLoggerMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ReturnOrderCommand CreateTestCommand(

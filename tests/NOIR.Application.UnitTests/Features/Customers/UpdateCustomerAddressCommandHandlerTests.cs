@@ -10,6 +10,7 @@ public class UpdateCustomerAddressCommandHandlerTests
 
     private readonly Mock<IRepository<Customer, Guid>> _customerRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateCustomerAddressCommandHandler _handler;
 
     public UpdateCustomerAddressCommandHandlerTests()
@@ -19,7 +20,8 @@ public class UpdateCustomerAddressCommandHandlerTests
 
         _handler = new UpdateCustomerAddressCommandHandler(
             _customerRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Customer CreateTestCustomerWithAddress(out Guid addressId)

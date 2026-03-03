@@ -9,15 +9,21 @@ public class DeleteCategoryCommandHandler
     private readonly IRepository<PostCategory, Guid> _categoryRepository;
     private readonly IRepository<Post, Guid> _postRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteCategoryCommandHandler(
         IRepository<PostCategory, Guid> categoryRepository,
         IRepository<Post, Guid> postRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _categoryRepository = categoryRepository;
         _postRepository = postRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(
@@ -55,6 +61,13 @@ public class DeleteCategoryCommandHandler
         // Soft delete the category (handled by interceptor)
         _categoryRepository.Remove(category);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "BlogCategory",
+            entityId: category.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(true);
     }

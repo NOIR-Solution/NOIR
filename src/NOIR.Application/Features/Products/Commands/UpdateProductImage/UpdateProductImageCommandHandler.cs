@@ -7,13 +7,19 @@ public class UpdateProductImageCommandHandler
 {
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateProductImageCommandHandler(
         IRepository<Product, Guid> productRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ProductDto>> Handle(
@@ -43,6 +49,13 @@ public class UpdateProductImageCommandHandler
         image.SetSortOrder(command.SortOrder);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Product",
+            entityId: product.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(ProductMapper.ToDtoWithCollections(
             product,

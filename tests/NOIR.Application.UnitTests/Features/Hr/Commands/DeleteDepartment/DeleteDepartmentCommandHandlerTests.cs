@@ -9,6 +9,8 @@ public class DeleteDepartmentCommandHandlerTests
     private readonly Mock<IRepository<Department, Guid>> _departmentRepositoryMock;
     private readonly Mock<IRepository<Employee, Guid>> _employeeRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteDepartmentCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -24,7 +26,9 @@ public class DeleteDepartmentCommandHandlerTests
         _handler = new DeleteDepartmentCommandHandler(
             _departmentRepositoryMock.Object,
             _employeeRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

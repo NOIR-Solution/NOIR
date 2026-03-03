@@ -4,13 +4,19 @@ public class UpdateTaskLabelCommandHandler
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateTaskLabelCommandHandler(
         IApplicationDbContext dbContext,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _dbContext = dbContext;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Pm.DTOs.TaskLabelDto>> Handle(
@@ -42,6 +48,13 @@ public class UpdateTaskLabelCommandHandler
 
         label.Update(command.Name, command.Color);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "TaskLabel",
+            entityId: label.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(new Features.Pm.DTOs.TaskLabelDto(label.Id, label.Name, label.Color));
     }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useDeferredValue, useMemo, useTransition } from 'react'
+import { useState, useEffect, useDeferredValue, useMemo, useTransition, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -14,6 +14,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { useSelection } from '@/hooks/useSelection'
 import { BulkActionToolbar } from '@/components/BulkActionToolbar'
@@ -97,7 +99,7 @@ export const OrdersPage = () => {
     status: statusFilter !== 'all' ? statusFilter as OrderStatus : undefined,
   }), [params, deferredSearch, statusFilter])
 
-  const { data: ordersResponse, isLoading: loading, error: queryError } = useOrdersQuery(queryParams)
+  const { data: ordersResponse, isLoading: loading, error: queryError, refetch } = useOrdersQuery(queryParams)
   const error = queryError?.message ?? null
 
   const orders = ordersResponse?.items ?? []
@@ -106,6 +108,15 @@ export const OrdersPage = () => {
   const currentPage = params.page ?? 1
 
   const { selectedIds, setSelectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(orders)
+
+  const handleCollectionUpdate = useCallback(() => {
+    if (selectedIds.size === 0) refetch()
+  }, [selectedIds.size, refetch])
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Order',
+    onCollectionUpdate: handleCollectionUpdate,
+  })
 
   // Bulk mutation hooks
   const bulkConfirmMutation = useBulkConfirmOrders()
@@ -189,6 +200,7 @@ export const OrdersPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={ShoppingCart}
         title={t('orders.title', 'Orders')}

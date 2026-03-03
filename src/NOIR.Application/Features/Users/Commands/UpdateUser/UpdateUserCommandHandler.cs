@@ -8,13 +8,19 @@ public class UpdateUserCommandHandler
 {
     private readonly IUserIdentityService _userIdentityService;
     private readonly ILocalizationService _localization;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateUserCommandHandler(
         IUserIdentityService userIdentityService,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _userIdentityService = userIdentityService;
         _localization = localization;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<UserDto>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
@@ -71,6 +77,16 @@ public class UpdateUserCommandHandler
             !updatedUser.IsActive, // LockoutEnabled - inverse of IsActive
             updatedUser.IsActive ? null : DateTimeOffset.MaxValue, // LockoutEnd
             roles);
+
+        if (Guid.TryParse(command.TargetUserId, out var userGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "User",
+                entityId: userGuid,
+                operation: EntityOperation.Updated,
+                tenantId: _currentUser.TenantId!,
+                ct: cancellationToken);
+        }
 
         return Result.Success(userDto);
     }

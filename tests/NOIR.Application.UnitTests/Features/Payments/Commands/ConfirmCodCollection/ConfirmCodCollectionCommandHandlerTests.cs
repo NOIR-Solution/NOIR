@@ -17,6 +17,7 @@ public class ConfirmCodCollectionCommandHandlerTests
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IPaymentHubContext> _paymentHubContextMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly ConfirmCodCollectionCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -53,7 +54,8 @@ public class ConfirmCodCollectionCommandHandlerTests
             _orderRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _paymentHubContextMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ConfirmCodCollectionCommand CreateTestCommand(

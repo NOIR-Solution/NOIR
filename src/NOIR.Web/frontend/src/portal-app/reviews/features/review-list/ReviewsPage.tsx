@@ -12,6 +12,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlTab } from '@/hooks/useUrlTab'
 import { useSelection } from '@/hooks/useSelection'
 import { BulkActionToolbar } from '@/components/BulkActionToolbar'
@@ -123,6 +125,7 @@ export const ReviewsPage = () => {
     data: reviewsResponse,
     isLoading: loading,
     error: queryError,
+    refetch,
   } = useReviewsQuery(queryParams)
   const error = queryError?.message ?? null
 
@@ -132,6 +135,15 @@ export const ReviewsPage = () => {
   const currentPage = params.page ?? 1
 
   const { selectedIds, setSelectedIds, handleSelectAll: selectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(reviews)
+
+  const handleCollectionUpdate = useCallback(() => {
+    if (selectedIds.size === 0) refetch()
+  }, [selectedIds.size, refetch])
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Review',
+    onCollectionUpdate: handleCollectionUpdate,
+  })
 
   // Mutations
   const approveMutation = useApproveReview()
@@ -233,6 +245,7 @@ export const ReviewsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Star}
         title={t('reviews.title', 'Reviews')}

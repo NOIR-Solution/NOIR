@@ -9,15 +9,21 @@ public class DeletePostCommandHandler
     private readonly IRepository<Post, Guid> _postRepository;
     private readonly IRepository<PostTag, Guid> _tagRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeletePostCommandHandler(
         IRepository<Post, Guid> postRepository,
         IRepository<PostTag, Guid> tagRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _postRepository = postRepository;
         _tagRepository = tagRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(
@@ -54,6 +60,13 @@ public class DeletePostCommandHandler
         // Soft delete the post (handled by interceptor)
         _postRepository.Remove(post);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "BlogPost",
+            entityId: post.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(true);
     }

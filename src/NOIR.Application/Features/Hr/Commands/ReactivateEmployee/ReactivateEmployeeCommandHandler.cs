@@ -4,13 +4,19 @@ public class ReactivateEmployeeCommandHandler
 {
     private readonly IRepository<Employee, Guid> _employeeRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public ReactivateEmployeeCommandHandler(
         IRepository<Employee, Guid> employeeRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _employeeRepository = employeeRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Hr.DTOs.EmployeeDto>> Handle(
@@ -27,6 +33,13 @@ public class ReactivateEmployeeCommandHandler
 
         employee.Reactivate();
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Employee",
+            entityId: employee.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         var departmentName = employee.Department?.Name ?? "";
         return Result.Success(new Features.Hr.DTOs.EmployeeDto(

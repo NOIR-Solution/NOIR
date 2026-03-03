@@ -5,15 +5,18 @@ public class CreateCompanyCommandHandler
     private readonly IRepository<CrmCompany, Guid> _companyRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateCompanyCommandHandler(
         IRepository<CrmCompany, Guid> companyRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _companyRepository = companyRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Crm.DTOs.CompanyDto>> Handle(
@@ -44,6 +47,13 @@ public class CreateCompanyCommandHandler
 
         await _companyRepository.AddAsync(company, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "CrmCompany",
+            entityId: company.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(company));
     }

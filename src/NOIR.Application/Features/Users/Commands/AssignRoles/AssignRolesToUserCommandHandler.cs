@@ -10,17 +10,23 @@ public class AssignRolesToUserCommandHandler
     private readonly IRoleIdentityService _roleIdentityService;
     private readonly ILocalizationService _localization;
     private readonly IPermissionCacheInvalidator _cacheInvalidator;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public AssignRolesToUserCommandHandler(
         IUserIdentityService userIdentityService,
         IRoleIdentityService roleIdentityService,
         ILocalizationService localization,
-        IPermissionCacheInvalidator cacheInvalidator)
+        IPermissionCacheInvalidator cacheInvalidator,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _userIdentityService = userIdentityService;
         _roleIdentityService = roleIdentityService;
         _localization = localization;
         _cacheInvalidator = cacheInvalidator;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<UserDto>> Handle(AssignRolesToUserCommand command, CancellationToken cancellationToken)
@@ -83,6 +89,16 @@ public class AssignRolesToUserCommandHandler
             !user.IsActive, // LockoutEnabled - inverse of IsActive
             user.IsActive ? null : DateTimeOffset.MaxValue, // LockoutEnd
             updatedRoles);
+
+        if (Guid.TryParse(command.TargetUserId, out var userGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "User",
+                entityId: userGuid,
+                operation: EntityOperation.Updated,
+                tenantId: _currentUser.TenantId!,
+                ct: cancellationToken);
+        }
 
         return Result.Success(userDto);
     }

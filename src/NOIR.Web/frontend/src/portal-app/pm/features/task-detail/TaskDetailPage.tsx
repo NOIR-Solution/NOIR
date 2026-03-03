@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { toast } from 'sonner'
 import {
@@ -59,12 +63,20 @@ export const TaskDetailPage = () => {
   const { formatDate, formatRelativeTime } = useRegionalSettings()
   usePageContext('TaskDetailPage')
 
-  const { data: task, isLoading } = useTaskQuery(id)
+  const navigate = useNavigate()
+  const { data: task, isLoading, refetch } = useTaskQuery(id)
   const updateTaskMutation = useUpdateTask()
   const changeStatusMutation = useChangeTaskStatus()
   const addCommentMutation = useAddComment()
   const deleteCommentMutation = useDeleteComment()
   const deleteTaskMutation = useDeleteTask()
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'ProjectTask',
+    entityId: id,
+    onAutoReload: refetch,
+    onNavigateAway: () => navigate('/portal/projects'),
+  })
 
   const [commentText, setCommentText] = useState('')
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
@@ -162,6 +174,10 @@ export const TaskDetailPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/projects')} />
+
       {/* Breadcrumb */}
       <nav className="text-sm text-muted-foreground">
         <ViewTransitionLink to="/portal/projects" className="hover:text-foreground transition-colors">

@@ -5,15 +5,18 @@ public class UpdateDepartmentCommandHandler
     private readonly IRepository<Department, Guid> _departmentRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateDepartmentCommandHandler(
         IRepository<Department, Guid> departmentRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _departmentRepository = departmentRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Hr.DTOs.DepartmentDto>> Handle(
@@ -77,6 +80,13 @@ public class UpdateDepartmentCommandHandler
             command.ParentDepartmentId);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Department",
+            entityId: department.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(new Features.Hr.DTOs.DepartmentDto(
             department.Id, department.Name, department.Code, department.Description,

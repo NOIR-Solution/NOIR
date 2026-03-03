@@ -18,6 +18,7 @@ public class UpdateCustomerGroupCommandHandlerTests
 {
     private readonly Mock<IRepository<CustomerGroup, Guid>> _repositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateCustomerGroupCommandHandler _handler;
 
     public UpdateCustomerGroupCommandHandlerTests()
@@ -27,7 +28,8 @@ public class UpdateCustomerGroupCommandHandlerTests
 
         _handler = new UpdateCustomerGroupCommandHandler(
             _repositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CustomerGroup CreateTestGroup(

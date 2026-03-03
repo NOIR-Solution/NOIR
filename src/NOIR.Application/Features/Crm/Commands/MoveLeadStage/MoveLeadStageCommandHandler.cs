@@ -4,13 +4,19 @@ public class MoveLeadStageCommandHandler
 {
     private readonly IRepository<Lead, Guid> _leadRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public MoveLeadStageCommandHandler(
         IRepository<Lead, Guid> leadRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _leadRepository = leadRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Crm.DTOs.LeadDto>> Handle(
@@ -34,6 +40,13 @@ public class MoveLeadStageCommandHandler
 
         lead.MoveToStage(command.NewStageId, command.NewSortOrder);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "CrmLead",
+            entityId: lead.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(lead));
     }

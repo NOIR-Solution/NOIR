@@ -10,17 +10,20 @@ public class CancelOrderCommandHandler
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IInventoryMovementLogger _movementLogger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CancelOrderCommandHandler(
         IRepository<Order, Guid> orderRepository,
         IRepository<Product, Guid> productRepository,
         IInventoryMovementLogger movementLogger,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
         _movementLogger = movementLogger;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<OrderDto>> Handle(
@@ -71,6 +74,13 @@ public class CancelOrderCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Order",
+            entityId: order.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: order.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(OrderMapper.ToDto(order));
     }

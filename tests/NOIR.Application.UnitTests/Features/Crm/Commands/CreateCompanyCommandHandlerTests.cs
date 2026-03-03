@@ -9,6 +9,7 @@ public class CreateCompanyCommandHandlerTests
     private readonly Mock<IRepository<CrmCompany, Guid>> _companyRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateCompanyCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -28,7 +29,8 @@ public class CreateCompanyCommandHandlerTests
         _handler = new CreateCompanyCommandHandler(
             _companyRepoMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

@@ -7,19 +7,22 @@ public class AddTaskCommentCommandHandler
     private readonly IApplicationDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public AddTaskCommentCommandHandler(
         IRepository<ProjectTask, Guid> taskRepository,
         IRepository<Employee, Guid> employeeRepository,
         IApplicationDbContext dbContext,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _taskRepository = taskRepository;
         _employeeRepository = employeeRepository;
         _dbContext = dbContext;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Pm.DTOs.TaskCommentDto>> Handle(
@@ -51,6 +54,13 @@ public class AddTaskCommentCommandHandler
         var comment = TaskComment.Create(command.TaskId, author.Id, command.Content, _currentUser.TenantId);
         _dbContext.TaskComments.Add(comment);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "ProjectTask",
+            entityId: command.TaskId,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(new Features.Pm.DTOs.TaskCommentDto(
             comment.Id, author.Id,

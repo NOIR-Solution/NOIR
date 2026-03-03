@@ -9,6 +9,8 @@ public class DeleteCompanyCommandHandlerTests
     private readonly Mock<IRepository<CrmCompany, Guid>> _companyRepoMock;
     private readonly Mock<IRepository<CrmContact, Guid>> _contactRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteCompanyCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -24,7 +26,9 @@ public class DeleteCompanyCommandHandlerTests
         _handler = new DeleteCompanyCommandHandler(
             _companyRepoMock.Object,
             _contactRepoMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

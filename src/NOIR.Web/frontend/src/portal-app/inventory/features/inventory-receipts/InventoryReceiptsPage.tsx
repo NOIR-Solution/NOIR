@@ -11,6 +11,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -88,10 +90,15 @@ export const InventoryReceiptsPage = () => {
     status: statusFilter !== 'all' ? statusFilter as InventoryReceiptStatus : undefined,
   }), [params, deferredSearch, typeFilter, statusFilter])
 
-  const { data: receiptsResponse, isLoading: loading, error: queryError } = useInventoryReceiptsQuery(queryParams)
+  const { data: receiptsResponse, isLoading: loading, error: queryError, refetch } = useInventoryReceiptsQuery(queryParams)
   const confirmMutation = useConfirmInventoryReceiptMutation()
   const cancelMutation = useCancelInventoryReceiptMutation()
   const error = queryError?.message ?? null
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'InventoryReceipt',
+    onCollectionUpdate: refetch,
+  })
 
   const receipts = receiptsResponse?.items ?? []
   const totalCount = receiptsResponse?.totalCount ?? 0
@@ -159,6 +166,7 @@ export const InventoryReceiptsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Warehouse}
         title={t('inventory.title', 'Inventory')}

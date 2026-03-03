@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { FolderKanban, Plus, Search, X } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -47,11 +49,16 @@ export const ProjectsPage = () => {
   const pageSize = 12
   const deferredSearch = useDeferredValue(search)
 
-  const { data, isLoading } = useProjectsQuery({
+  const { data, isLoading, refetch } = useProjectsQuery({
     page,
     pageSize,
     search: deferredSearch || undefined,
     status: (statusFilter || undefined) as ProjectStatus | undefined,
+  })
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Project',
+    onCollectionUpdate: refetch,
   })
 
   const handleProjectClick = (project: ProjectListDto) => {
@@ -60,6 +67,7 @@ export const ProjectsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>

@@ -10,13 +10,16 @@ public class DeleteTenantCommandHandler
 {
     private readonly IMultiTenantStore<Tenant> _tenantStore;
     private readonly ILocalizationService _localization;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteTenantCommandHandler(
         IMultiTenantStore<Tenant> tenantStore,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _tenantStore = tenantStore;
         _localization = localization;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(DeleteTenantCommand command, CancellationToken cancellationToken)
@@ -51,6 +54,16 @@ public class DeleteTenantCommandHandler
                 Error.Internal(
                     _localization["auth.tenants.deleteFailed"],
                     ErrorCodes.System.InternalError));
+        }
+
+        if (Guid.TryParse(deletedTenant.Id, out var tenantGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "Tenant",
+                entityId: tenantGuid,
+                operation: EntityOperation.Deleted,
+                tenantId: deletedTenant.Id,
+                ct: cancellationToken);
         }
 
         return Result.Success(true);

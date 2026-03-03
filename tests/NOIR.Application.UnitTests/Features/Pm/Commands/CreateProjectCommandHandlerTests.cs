@@ -14,6 +14,7 @@ public class CreateProjectCommandHandlerTests
     private readonly Mock<IProjectCodeGenerator> _projectCodeGeneratorMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateProjectCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -52,7 +53,8 @@ public class CreateProjectCommandHandlerTests
             _dbContextMock.Object,
             _projectCodeGeneratorMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Employee CreateTestEmployee() =>

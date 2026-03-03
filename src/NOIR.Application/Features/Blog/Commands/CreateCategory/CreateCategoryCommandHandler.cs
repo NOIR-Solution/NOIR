@@ -9,15 +9,18 @@ public class CreateCategoryCommandHandler
     private readonly IRepository<PostCategory, Guid> _categoryRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateCategoryCommandHandler(
         IRepository<PostCategory, Guid> categoryRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<PostCategoryDto>> Handle(
@@ -71,6 +74,13 @@ public class CreateCategoryCommandHandler
 
         await _categoryRepository.AddAsync(category, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "BlogCategory",
+            entityId: category.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(category, parentName));
     }

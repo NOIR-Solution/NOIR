@@ -13,6 +13,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -81,8 +83,13 @@ export const CompaniesPage = () => {
     search: deferredSearch || undefined,
   }), [params, deferredSearch])
 
-  const { data: companiesResponse, isLoading: loading, error: queryError } = useCompaniesQuery(queryParams)
+  const { data: companiesResponse, isLoading: loading, error: queryError, refetch } = useCompaniesQuery(queryParams)
   const error = queryError?.message ?? null
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'CrmCompany',
+    onCollectionUpdate: refetch,
+  })
 
   const companies = companiesResponse?.items ?? []
   const { editItem: companyToEdit, openEdit, closeEdit } = useUrlEditDialog<CompanyListDto>(companies)
@@ -113,6 +120,7 @@ export const CompaniesPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t('crm.companies.title')}</h1>

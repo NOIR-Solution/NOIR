@@ -16,6 +16,7 @@ public class UpdateProductCommandHandlerTests
     private readonly Mock<IRepository<ProductCategory, Guid>> _categoryRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateProductCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -34,7 +35,8 @@ public class UpdateProductCommandHandlerTests
             _productRepositoryMock.Object,
             _categoryRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static UpdateProductCommand CreateTestCommand(

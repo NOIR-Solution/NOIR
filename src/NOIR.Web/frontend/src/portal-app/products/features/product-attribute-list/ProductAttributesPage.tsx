@@ -2,6 +2,8 @@ import { useState, useDeferredValue, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Check, EllipsisVertical, Filter, List, Loader2, Minus, Pencil, Plus, Search, Tags, Trash2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -67,6 +69,11 @@ export const ProductAttributesPage = () => {
   const deleteMutation = useDeleteProductAttributeMutation()
   const error = queryError?.message ?? null
 
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'ProductAttribute',
+    onCollectionUpdate: refresh,
+  })
+
   const attributes = attributesResponse?.items ?? []
   const { editItem: attributeToEdit, openEdit: openEditAttribute, closeEdit: closeEditAttribute } = useUrlEditDialog<ProductAttributeListItem>(attributes)
 
@@ -89,6 +96,7 @@ export const ProductAttributesPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Tags}
         title={t('productAttributes.title', 'Product Attributes')}

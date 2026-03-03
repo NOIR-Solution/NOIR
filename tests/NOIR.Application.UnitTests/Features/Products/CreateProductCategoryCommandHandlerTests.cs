@@ -15,6 +15,7 @@ public class CreateProductCategoryCommandHandlerTests
     private readonly Mock<IRepository<ProductCategory, Guid>> _categoryRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateProductCategoryCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -31,7 +32,8 @@ public class CreateProductCategoryCommandHandlerTests
         _handler = new CreateProductCategoryCommandHandler(
             _categoryRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CreateProductCategoryCommand CreateTestCommand(

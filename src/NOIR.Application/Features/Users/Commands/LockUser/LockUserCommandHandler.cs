@@ -8,15 +8,18 @@ public class LockUserCommandHandler
     private readonly IUserIdentityService _userIdentityService;
     private readonly ICurrentUser _currentUser;
     private readonly ILocalizationService _localization;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public LockUserCommandHandler(
         IUserIdentityService userIdentityService,
         ICurrentUser currentUser,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _userIdentityService = userIdentityService;
         _currentUser = currentUser;
         _localization = localization;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(LockUserCommand command, CancellationToken cancellationToken)
@@ -48,6 +51,16 @@ public class LockUserCommandHandler
         {
             return Result.Failure<bool>(
                 Error.ValidationErrors(result.Errors!, ErrorCodes.Validation.General));
+        }
+
+        if (Guid.TryParse(command.TargetUserId, out var userGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "User",
+                entityId: userGuid,
+                operation: EntityOperation.Updated,
+                tenantId: _currentUser.TenantId!,
+                ct: cancellationToken);
         }
 
         return Result.Success(true);

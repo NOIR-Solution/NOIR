@@ -8,15 +8,18 @@ public class CreateCustomerCommandHandler
     private readonly IRepository<Domain.Entities.Customer.Customer, Guid> _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateCustomerCommandHandler(
         IRepository<Domain.Entities.Customer.Customer, Guid> customerRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<CustomerDto>> Handle(
@@ -56,6 +59,13 @@ public class CreateCustomerCommandHandler
 
         await _customerRepository.AddAsync(customer, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Customer",
+            entityId: customer.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(CustomerMapper.ToDto(customer));
     }

@@ -8,6 +8,8 @@ public class MoveLeadStageCommandHandlerTests
 {
     private readonly Mock<IRepository<Lead, Guid>> _leadRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly MoveLeadStageCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -21,7 +23,9 @@ public class MoveLeadStageCommandHandlerTests
 
         _handler = new MoveLeadStageCommandHandler(
             _leadRepoMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private Lead CreateActiveLead() =>

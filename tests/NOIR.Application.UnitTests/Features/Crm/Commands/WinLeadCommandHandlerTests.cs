@@ -11,6 +11,7 @@ public class WinLeadCommandHandlerTests
     private readonly Mock<IRepository<Customer, Guid>> _customerRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly WinLeadCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -34,7 +35,8 @@ public class WinLeadCommandHandlerTests
             _contactRepoMock.Object,
             _customerRepoMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private Lead CreateActiveLead() =>

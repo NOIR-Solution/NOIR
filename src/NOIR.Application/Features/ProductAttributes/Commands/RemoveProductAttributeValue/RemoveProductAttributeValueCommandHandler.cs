@@ -7,13 +7,19 @@ public class RemoveProductAttributeValueCommandHandler
 {
     private readonly IRepository<ProductAttribute, Guid> _attributeRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public RemoveProductAttributeValueCommandHandler(
         IRepository<ProductAttribute, Guid> attributeRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _attributeRepository = attributeRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(
@@ -42,6 +48,13 @@ public class RemoveProductAttributeValueCommandHandler
             // Remove the value (domain validates existence)
             attribute.RemoveValue(command.ValueId);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "ProductAttribute",
+                entityId: attribute.Id,
+                operation: EntityOperation.Updated,
+                tenantId: _currentUser.TenantId!,
+                cancellationToken);
 
             return Result.Success(true);
         }

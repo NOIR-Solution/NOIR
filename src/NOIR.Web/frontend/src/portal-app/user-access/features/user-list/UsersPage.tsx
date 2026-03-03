@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Search, Users, Plus } from 'lucide-react'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import {
@@ -51,6 +53,11 @@ export const UsersPage = () => {
   const lockMutation = useLockUserMutation()
   const unlockMutation = useUnlockUserMutation()
   const error = queryError?.message ?? null
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'User',
+    onCollectionUpdate: refresh,
+  })
 
   const setPage = (page: number) => startFilterTransition(() =>
     setParams((prev) => ({ ...prev, page }))
@@ -107,6 +114,7 @@ export const UsersPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Users}
         title={t('users.title', 'Users')}

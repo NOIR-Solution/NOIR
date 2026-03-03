@@ -9,15 +9,18 @@ public class DeleteUserCommandHandler
     private readonly IUserIdentityService _userIdentityService;
     private readonly ICurrentUser _currentUser;
     private readonly ILocalizationService _localization;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteUserCommandHandler(
         IUserIdentityService userIdentityService,
         ICurrentUser currentUser,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _userIdentityService = userIdentityService;
         _currentUser = currentUser;
         _localization = localization;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
@@ -52,6 +55,16 @@ public class DeleteUserCommandHandler
         {
             return Result.Failure<bool>(
                 Error.ValidationErrors(result.Errors!, ErrorCodes.Validation.General));
+        }
+
+        if (Guid.TryParse(command.TargetUserId, out var userGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "User",
+                entityId: userGuid,
+                operation: EntityOperation.Deleted,
+                tenantId: _currentUser.TenantId!,
+                ct: cancellationToken);
         }
 
         return Result.Success(true);

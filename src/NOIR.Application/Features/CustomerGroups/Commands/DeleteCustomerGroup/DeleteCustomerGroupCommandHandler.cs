@@ -8,15 +8,18 @@ public class DeleteCustomerGroupCommandHandler
     private readonly IRepository<CustomerGroup, Guid> _groupRepository;
     private readonly IApplicationDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteCustomerGroupCommandHandler(
         IRepository<CustomerGroup, Guid> groupRepository,
         IApplicationDbContext dbContext,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _groupRepository = groupRepository;
         _dbContext = dbContext;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(
@@ -48,6 +51,13 @@ public class DeleteCustomerGroupCommandHandler
         _groupRepository.Remove(group);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "CustomerGroup",
+            entityId: group.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: group.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(true);
     }

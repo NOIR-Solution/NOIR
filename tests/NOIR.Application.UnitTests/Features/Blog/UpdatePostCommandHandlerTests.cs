@@ -20,6 +20,7 @@ public class UpdatePostCommandHandlerTests
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly Mock<IContentAnalyzer> _contentAnalyzerMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdatePostCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -48,7 +49,8 @@ public class UpdatePostCommandHandlerTests
             _categoryRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _currentUserMock.Object,
-            _contentAnalyzerMock.Object);
+            _contentAnalyzerMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static UpdatePostCommand CreateTestCommand(

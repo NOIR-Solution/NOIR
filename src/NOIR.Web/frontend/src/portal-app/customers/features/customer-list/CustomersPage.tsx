@@ -1,4 +1,4 @@
-import { useState, useEffect, useDeferredValue, useMemo, useTransition } from 'react'
+import { useState, useEffect, useDeferredValue, useMemo, useTransition, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -17,6 +17,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -106,7 +108,7 @@ export const CustomersPage = () => {
     tier: tierFilter !== 'all' ? tierFilter as CustomerTier : undefined,
   }), [params, deferredSearch, segmentFilter, tierFilter])
 
-  const { data: customersResponse, isLoading: loading, error: queryError } = useCustomersQuery(queryParams)
+  const { data: customersResponse, isLoading: loading, error: queryError, refetch } = useCustomersQuery(queryParams)
   const { data: stats } = useCustomerStatsQuery()
   const error = queryError?.message ?? null
 
@@ -117,6 +119,15 @@ export const CustomersPage = () => {
   const currentPage = params.page ?? 1
 
   const { selectedIds, setSelectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(customers)
+
+  const handleCollectionUpdate = useCallback(() => {
+    if (selectedIds.size === 0) refetch()
+  }, [selectedIds.size, refetch])
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Customer',
+    onCollectionUpdate: handleCollectionUpdate,
+  })
 
   // Bulk mutation hooks
   const bulkActivateMutation = useBulkActivateCustomers()
@@ -230,6 +241,7 @@ export const CustomersPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Users}
         title={t('customers.title', 'Customers')}

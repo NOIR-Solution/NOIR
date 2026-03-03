@@ -8,15 +8,18 @@ public class CreateCustomerGroupCommandHandler
     private readonly IRepository<CustomerGroup, Guid> _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateCustomerGroupCommandHandler(
         IRepository<CustomerGroup, Guid> repository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<CustomerGroupDto>> Handle(
@@ -39,6 +42,13 @@ public class CreateCustomerGroupCommandHandler
 
         await _repository.AddAsync(group, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "CustomerGroup",
+            entityId: group.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(CustomerGroupMapper.ToDto(group));
     }

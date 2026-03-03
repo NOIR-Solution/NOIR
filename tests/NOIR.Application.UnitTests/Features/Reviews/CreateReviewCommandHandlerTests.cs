@@ -14,6 +14,7 @@ public class CreateReviewCommandHandlerTests
     private readonly Mock<IRepository<Order, Guid>> _orderRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateReviewCommandHandler _handler;
 
     public CreateReviewCommandHandlerTests()
@@ -30,7 +31,8 @@ public class CreateReviewCommandHandlerTests
             _reviewRepositoryMock.Object,
             _orderRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CreateReviewCommand CreateValidCommand(

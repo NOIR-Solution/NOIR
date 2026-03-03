@@ -18,6 +18,7 @@ public class DeleteCustomerGroupCommandHandlerTests
     private readonly Mock<IRepository<CustomerGroup, Guid>> _groupRepositoryMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteCustomerGroupCommandHandler _handler;
 
     public DeleteCustomerGroupCommandHandlerTests()
@@ -29,7 +30,8 @@ public class DeleteCustomerGroupCommandHandlerTests
         _handler = new DeleteCustomerGroupCommandHandler(
             _groupRepositoryMock.Object,
             _dbContextMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CustomerGroup CreateTestGroup()

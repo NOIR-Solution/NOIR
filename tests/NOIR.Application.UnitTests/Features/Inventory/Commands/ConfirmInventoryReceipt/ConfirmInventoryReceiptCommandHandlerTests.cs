@@ -19,6 +19,7 @@ public class ConfirmInventoryReceiptCommandHandlerTests
     private readonly Mock<IRepository<Product, Guid>> _productRepositoryMock;
     private readonly Mock<IInventoryMovementLogger> _movementLoggerMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly ConfirmInventoryReceiptCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -34,7 +35,8 @@ public class ConfirmInventoryReceiptCommandHandlerTests
             _receiptRepositoryMock.Object,
             _productRepositoryMock.Object,
             _movementLoggerMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static InventoryReceipt CreateDraftReceipt(

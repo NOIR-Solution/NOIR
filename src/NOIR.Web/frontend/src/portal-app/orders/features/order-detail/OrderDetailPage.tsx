@@ -16,6 +16,10 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -147,7 +151,14 @@ export const OrderDetailPage = () => {
   const canWriteOrders = hasPermission(Permissions.OrdersWrite)
   const canManageOrders = hasPermission(Permissions.OrdersManage)
 
-  const { data: order, isLoading, error: queryError } = useOrderQuery(id)
+  const { data: order, isLoading, error: queryError, refetch } = useOrderQuery(id)
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Order',
+    entityId: id,
+    onAutoReload: refetch,
+    onNavigateAway: () => navigate('/portal/ecommerce/orders'),
+  })
 
   const confirmMutation = useConfirmOrderMutation()
   const shipMutation = useShipOrderMutation()
@@ -339,6 +350,9 @@ export const OrderDetailPage = () => {
 
   return (
     <div className="py-6 space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/ecommerce/orders')} />
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/portal/ecommerce/orders')} className="cursor-pointer" aria-label={t('orders.backToOrders', 'Back to Orders')}>

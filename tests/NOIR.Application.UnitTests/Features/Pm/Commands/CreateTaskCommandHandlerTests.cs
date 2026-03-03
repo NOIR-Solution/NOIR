@@ -15,6 +15,7 @@ public class CreateTaskCommandHandlerTests
     private readonly Mock<ITaskNumberGenerator> _taskNumberGenMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateTaskCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -47,7 +48,8 @@ public class CreateTaskCommandHandlerTests
             _dbContextMock.Object,
             _taskNumberGenMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Employee CreateTestEmployee() =>

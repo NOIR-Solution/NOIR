@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { FileText, ArrowLeft, Save, Upload, X, Image as ImageIcon, Loader2, Calendar, Info } from 'lucide-react'
@@ -33,6 +33,10 @@ import 'tinymce/plugins/wordcount'
 /* eslint-enable import/no-unresolved */
 
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import {
   Badge,
   Button,
@@ -136,6 +140,38 @@ export const BlogPostEditPage = () => {
       featuredImageUrl: '',
       featuredImageAlt: '',
     },
+  })
+
+  const { isDirty } = form.formState
+
+  const refreshPost = useCallback(() => {
+    if (id) {
+      getPostById(id).then((data) => {
+        setPost(data)
+        form.reset({
+          title: data.title,
+          slug: data.slug,
+          excerpt: data.excerpt || '',
+          categoryId: data.categoryId || '',
+          tagIds: data.tags?.map((tg) => tg.id) || [],
+          metaTitle: data.metaTitle || '',
+          metaDescription: data.metaDescription || '',
+          canonicalUrl: data.canonicalUrl || '',
+          allowIndexing: data.allowIndexing,
+          featuredImageId: data.featuredImageId || '',
+          featuredImageUrl: data.featuredImageUrl || '',
+          featuredImageAlt: data.featuredImageAlt || '',
+        })
+        setContentHtml(data.contentHtml || '')
+      }).catch(() => {})
+    }
+  }, [id, form])
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'BlogPost',
+    entityId: id,
+    isDirty,
+    onAutoReload: refreshPost,
+    onNavigateAway: () => navigate('/portal/blog/posts'),
   })
 
   // Load post data if editing
@@ -328,6 +364,9 @@ export const BlogPostEditPage = () => {
 
   return (
     <div className="py-6 space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/blog/posts')} />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

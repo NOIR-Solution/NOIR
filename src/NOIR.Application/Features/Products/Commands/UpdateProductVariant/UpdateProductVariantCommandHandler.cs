@@ -8,15 +8,21 @@ public class UpdateProductVariantCommandHandler
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IInventoryMovementLogger _movementLogger;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateProductVariantCommandHandler(
         IRepository<Product, Guid> productRepository,
         IUnitOfWork unitOfWork,
-        IInventoryMovementLogger movementLogger)
+        IInventoryMovementLogger movementLogger,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
         _movementLogger = movementLogger;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ProductDto>> Handle(
@@ -72,6 +78,13 @@ public class UpdateProductVariantCommandHandler
                 userId: command.UserId,
                 cancellationToken: cancellationToken);
         }
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Product",
+            entityId: product.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(ProductMapper.ToDtoWithCollections(
             product,

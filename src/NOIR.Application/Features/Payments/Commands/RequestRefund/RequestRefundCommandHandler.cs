@@ -11,6 +11,7 @@ public class RequestRefundCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
     private readonly IOptions<PaymentSettings> _paymentSettings;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public RequestRefundCommandHandler(
         IRepository<Refund, Guid> refundRepository,
@@ -18,7 +19,8 @@ public class RequestRefundCommandHandler
         IPaymentService paymentService,
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser,
-        IOptions<PaymentSettings> paymentSettings)
+        IOptions<PaymentSettings> paymentSettings,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _refundRepository = refundRepository;
         _paymentRepository = paymentRepository;
@@ -26,6 +28,7 @@ public class RequestRefundCommandHandler
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
         _paymentSettings = paymentSettings;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<RefundDto>> Handle(
@@ -100,6 +103,13 @@ public class RequestRefundCommandHandler
 
         await _refundRepository.AddAsync(refund, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "PaymentTransaction",
+            entityId: payment.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            ct: cancellationToken);
 
         // If auto-approved, process the refund through the gateway
         if (refund.Status == RefundStatus.Approved)

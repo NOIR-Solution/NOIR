@@ -1,7 +1,9 @@
-import { useState, useDeferredValue, useMemo, useTransition } from 'react'
+import { useState, useDeferredValue, useMemo, useTransition, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ImageIcon, Plus, Trash2, Loader2, LayoutGrid, List as ListIcon } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useSelection } from '@/hooks/useSelection'
 import { useMediaFiles, useDeleteMediaFile, useRenameMediaFile, useBulkDeleteMediaFiles } from '@/hooks/useMediaFiles'
@@ -76,10 +78,19 @@ export const MediaLibraryPage = () => {
     pageSize: DEFAULT_PAGE_SIZE,
   }), [deferredSearch, fileTypeFilter, folderFilter, sortBy, sortOrder, currentPage])
 
-  const { data, isLoading, isPlaceholderData } = useMediaFiles(queryParams)
+  const { data, isLoading, isPlaceholderData, refetch } = useMediaFiles(queryParams)
 
   // Selection
   const { selectedIds, setSelectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(data?.items)
+
+  const handleCollectionUpdate = useCallback(() => {
+    if (selectedIds.size === 0) refetch()
+  }, [selectedIds.size, refetch])
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'MediaFile',
+    onCollectionUpdate: handleCollectionUpdate,
+  })
 
   // Mutations
   const deleteMutation = useDeleteMediaFile()
@@ -164,6 +175,7 @@ export const MediaLibraryPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={ImageIcon}
         title={t('media.title', 'Media Library')}

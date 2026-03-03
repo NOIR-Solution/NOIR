@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import {
   ArrowLeft,
   Building2,
@@ -86,13 +90,20 @@ export const EmployeeDetailPage = () => {
   const { formatDateTime } = useRegionalSettings()
   usePageContext('Employees')
 
-  const { data: employee, isLoading, error: queryError } = useEmployeeQuery(id)
+  const { data: employee, isLoading, error: queryError, refetch } = useEmployeeQuery(id)
   const deactivateMutation = useDeactivateEmployee()
   const reactivateMutation = useReactivateEmployee()
   const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'overview' })
 
   const { hasPermission } = usePermissions()
   const canManageTags = hasPermission(Permissions.HrTagsManage)
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Employee',
+    entityId: id,
+    onAutoReload: refetch,
+    onNavigateAway: () => navigate('/portal/hr/employees'),
+  })
 
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeactivateDialog, setShowDeactivateDialog] = useState(false)
@@ -169,6 +180,10 @@ export const EmployeeDetailPage = () => {
 
   return (
     <div className="py-6 space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/hr/employees')} />
+
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/portal/hr/employees')} className="cursor-pointer" aria-label={t('hr.backToEmployees', 'Back to Employees')}>

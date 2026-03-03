@@ -1,4 +1,4 @@
-import { useState, useDeferredValue, useMemo, useTransition } from 'react'
+import { useState, useDeferredValue, useMemo, useTransition, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, FileText, Plus, Pencil, Trash2, Send, EyeOff, EllipsisVertical, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -42,6 +42,8 @@ import {
 } from '@uikit'
 
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { useSelection } from '@/hooks/useSelection'
 import { BulkActionToolbar } from '@/components/BulkActionToolbar'
@@ -80,13 +82,22 @@ export const BlogPostsPage = () => {
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
 
   const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
-  const { data, isLoading: loading, error: queryError } = useBlogPostsQuery(queryParams)
+  const { data, isLoading: loading, error: queryError, refetch } = useBlogPostsQuery(queryParams)
   const { data: categories = [] } = useBlogCategoriesQuery({})
   const deleteMutation = useDeleteBlogPostMutation()
   const error = queryError?.message ?? null
 
   const posts = data?.items ?? []
   const { selectedIds, setSelectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(posts)
+
+  const handleCollectionUpdate = useCallback(() => {
+    if (selectedIds.size === 0) refetch()
+  }, [selectedIds.size, refetch])
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Post',
+    onCollectionUpdate: handleCollectionUpdate,
+  })
 
   // Bulk mutation hooks
   const bulkPublishMutation = useBulkPublishPosts()
@@ -194,6 +205,7 @@ export const BlogPostsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={FileText}
         title={t('blog.posts')}

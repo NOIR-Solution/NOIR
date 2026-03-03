@@ -9,6 +9,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -43,8 +45,13 @@ export const TagsPage = () => {
 
   const { hasPermission } = usePermissions()
   const canManage = hasPermission(Permissions.HrTagsManage)
-  const { data: tags, isLoading } = useTagsQuery()
+  const { data: tags, isLoading, refetch } = useTagsQuery()
   const deleteMutation = useDeleteTag()
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'EmployeeTag',
+    onCollectionUpdate: refetch,
+  })
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-employee-tag' })
 
@@ -77,6 +84,7 @@ export const TagsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Tags}
         title={t('hr.tags.title')}

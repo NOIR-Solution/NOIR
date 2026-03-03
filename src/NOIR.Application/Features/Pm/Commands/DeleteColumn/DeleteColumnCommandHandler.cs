@@ -5,15 +5,21 @@ public class DeleteColumnCommandHandler
     private readonly IApplicationDbContext _dbContext;
     private readonly IRepository<ProjectTask, Guid> _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteColumnCommandHandler(
         IApplicationDbContext dbContext,
         IRepository<ProjectTask, Guid> taskRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _dbContext = dbContext;
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Pm.DTOs.ProjectColumnDto>> Handle(
@@ -64,6 +70,13 @@ public class DeleteColumnCommandHandler
 
         _dbContext.ProjectColumns.Remove(column);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "ProjectColumn",
+            entityId: command.ColumnId,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(dto);
     }

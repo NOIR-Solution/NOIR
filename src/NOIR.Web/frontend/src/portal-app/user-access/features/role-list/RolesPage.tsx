@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Search, Shield, Plus } from 'lucide-react'
 import { Button } from '@uikit'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import {
@@ -40,6 +42,11 @@ export const RolesPage = () => {
   const deleteMutation = useDeleteRoleMutation()
   const error = queryError?.message ?? null
 
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Role',
+    onCollectionUpdate: refresh,
+  })
+
   const setPage = (page: number) => startPaginationTransition(() =>
     setParams((prev) => ({ ...prev, page }))
   )
@@ -71,6 +78,7 @@ export const RolesPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Shield}
         title={t('roles.title', 'Roles')}

@@ -5,15 +5,18 @@ public class CreateActivityCommandHandler
     private readonly IRepository<CrmActivity, Guid> _activityRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateActivityCommandHandler(
         IRepository<CrmActivity, Guid> activityRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _activityRepository = activityRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Crm.DTOs.ActivityDto>> Handle(
@@ -45,6 +48,13 @@ public class CreateActivityCommandHandler
 
         await _activityRepository.AddAsync(activity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "CrmActivity",
+            entityId: activity.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(activity));
     }

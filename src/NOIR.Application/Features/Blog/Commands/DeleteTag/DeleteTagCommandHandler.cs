@@ -9,15 +9,21 @@ public class DeleteTagCommandHandler
     private readonly IRepository<PostTag, Guid> _tagRepository;
     private readonly IRepository<Post, Guid> _postRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteTagCommandHandler(
         IRepository<PostTag, Guid> tagRepository,
         IRepository<Post, Guid> postRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _tagRepository = tagRepository;
         _postRepository = postRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(
@@ -50,6 +56,13 @@ public class DeleteTagCommandHandler
         // Soft delete the tag (handled by interceptor)
         _tagRepository.Remove(tag);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "BlogTag",
+            entityId: tag.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(true);
     }

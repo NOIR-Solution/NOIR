@@ -7,6 +7,8 @@ public class UpdateLeadCommandHandlerTests
 {
     private readonly Mock<IRepository<Lead, Guid>> _leadRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateLeadCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -20,7 +22,9 @@ public class UpdateLeadCommandHandlerTests
 
         _handler = new UpdateLeadCommandHandler(
             _leadRepoMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

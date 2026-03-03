@@ -9,13 +9,16 @@ public class CreateTenantCommandHandler
 {
     private readonly IMultiTenantStore<Tenant> _tenantStore;
     private readonly ILocalizationService _localization;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateTenantCommandHandler(
         IMultiTenantStore<Tenant> tenantStore,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _tenantStore = tenantStore;
         _localization = localization;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<TenantDto>> Handle(CreateTenantCommand command, CancellationToken cancellationToken)
@@ -59,6 +62,16 @@ public class CreateTenantCommandHandler
                 Error.Internal(
                     _localization["auth.tenants.createFailed"],
                     ErrorCodes.System.InternalError));
+        }
+
+        if (Guid.TryParse(tenant.Id, out var tenantGuid))
+        {
+            await _entityUpdateHub.PublishEntityUpdatedAsync(
+                entityType: "Tenant",
+                entityId: tenantGuid,
+                operation: EntityOperation.Created,
+                tenantId: tenant.Id,
+                ct: cancellationToken);
         }
 
         return Result.Success(MapToDto(tenant));

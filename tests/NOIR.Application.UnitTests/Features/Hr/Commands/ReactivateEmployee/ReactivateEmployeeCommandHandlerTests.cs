@@ -9,6 +9,8 @@ public class ReactivateEmployeeCommandHandlerTests
 {
     private readonly Mock<IRepository<Employee, Guid>> _employeeRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly ReactivateEmployeeCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -22,7 +24,9 @@ public class ReactivateEmployeeCommandHandlerTests
 
         _handler = new ReactivateEmployeeCommandHandler(
             _employeeRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

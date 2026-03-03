@@ -1,8 +1,10 @@
-import { useState, useDeferredValue, useMemo, useTransition } from 'react'
+import { useState, useDeferredValue, useMemo, useTransition, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { getPaginationRange } from '@/lib/utils/pagination'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import {
   Search,
   Package,
@@ -113,7 +115,7 @@ export const ProductsPage = () => {
   const isSearchStale = searchInput !== deferredSearch
   const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
 
-  const { data, isLoading: loading, isPlaceholderData, error: queryError } = useProductsQuery(queryParams)
+  const { data, isLoading: loading, isPlaceholderData, error: queryError, refetch } = useProductsQuery(queryParams)
   const { data: stats = { total: 0, active: 0, draft: 0, archived: 0, outOfStock: 0, lowStock: 0 } } = useProductStatsQuery()
   const { data: categories = [] } = useProductCategoriesQuery()
   const { data: brands = [] } = useActiveBrandsQuery()
@@ -175,6 +177,15 @@ export const ProductsPage = () => {
     { value: 'grid', label: t('labels.grid', 'Grid'), icon: LayoutGrid, ariaLabel: t('labels.gridView', 'Grid view') },
   ], [t])
   const { selectedIds, setSelectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(data?.items)
+
+  const handleCollectionUpdate = useCallback(() => {
+    if (selectedIds.size === 0) refetch()
+  }, [selectedIds.size, refetch])
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Product',
+    onCollectionUpdate: handleCollectionUpdate,
+  })
 
   // Transition for bulk operations
   const [isBulkPending, startBulkTransition] = useTransition()
@@ -339,6 +350,7 @@ export const ProductsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Package}
         title={t('products.title', 'Products')}

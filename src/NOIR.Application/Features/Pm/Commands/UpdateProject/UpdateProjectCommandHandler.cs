@@ -4,13 +4,19 @@ public class UpdateProjectCommandHandler
 {
     private readonly IRepository<Project, Guid> _projectRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateProjectCommandHandler(
         IRepository<Project, Guid> projectRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Pm.DTOs.ProjectDto>> Handle(
@@ -52,6 +58,13 @@ public class UpdateProjectCommandHandler
             command.Visibility ?? project.Visibility);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Project",
+            entityId: project.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         // Reload with navigation properties
         var reloadSpec = new Specifications.ProjectByIdSpec(project.Id);

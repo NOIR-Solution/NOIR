@@ -13,6 +13,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -89,8 +91,13 @@ export const ContactsPage = () => {
     source: sourceFilter !== 'all' ? sourceFilter as ContactSource : undefined,
   }), [params, deferredSearch, sourceFilter])
 
-  const { data: contactsResponse, isLoading: loading, error: queryError } = useContactsQuery(queryParams)
+  const { data: contactsResponse, isLoading: loading, error: queryError, refetch } = useContactsQuery(queryParams)
   const error = queryError?.message ?? null
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'CrmContact',
+    onCollectionUpdate: refetch,
+  })
 
   const contacts = contactsResponse?.items ?? []
   const { editItem: contactToEdit, openEdit, closeEdit } = useUrlEditDialog<ContactListDto>(contacts)
@@ -140,6 +147,7 @@ export const ContactsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t('crm.contacts.title')}</h1>

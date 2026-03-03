@@ -11,6 +11,7 @@ public class CreateCustomerCommandHandlerTests
     private readonly Mock<IRepository<Customer, Guid>> _customerRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateCustomerCommandHandler _handler;
 
     public CreateCustomerCommandHandlerTests()
@@ -24,7 +25,8 @@ public class CreateCustomerCommandHandlerTests
         _handler = new CreateCustomerCommandHandler(
             _customerRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CreateCustomerCommand CreateValidCommand(

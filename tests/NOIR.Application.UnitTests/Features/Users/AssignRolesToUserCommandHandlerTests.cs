@@ -12,6 +12,8 @@ public class AssignRolesToUserCommandHandlerTests
     private readonly Mock<IRoleIdentityService> _roleIdentityServiceMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
     private readonly Mock<IPermissionCacheInvalidator> _cacheInvalidatorMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly AssignRolesToUserCommandHandler _handler;
 
     public AssignRolesToUserCommandHandlerTests()
@@ -30,7 +32,9 @@ public class AssignRolesToUserCommandHandlerTests
             _userIdentityServiceMock.Object,
             _roleIdentityServiceMock.Object,
             _localizationServiceMock.Object,
-            _cacheInvalidatorMock.Object);
+            _cacheInvalidatorMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static UserIdentityDto CreateTestUserDto(

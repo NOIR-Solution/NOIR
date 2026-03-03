@@ -15,6 +15,8 @@ public class DuplicateProductCommandHandlerTests
     private readonly Mock<IRepository<Product, Guid>> _productRepositoryMock;
     private readonly Mock<IRepository<ProductCategory, Guid>> _categoryRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DuplicateProductCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -28,7 +30,9 @@ public class DuplicateProductCommandHandlerTests
         _handler = new DuplicateProductCommandHandler(
             _productRepositoryMock.Object,
             _categoryRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static DuplicateProductCommand CreateTestCommand(

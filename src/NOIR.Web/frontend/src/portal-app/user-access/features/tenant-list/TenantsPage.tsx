@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { Search, Building, Plus } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import {
   Button,
@@ -38,6 +40,11 @@ export const TenantsPage = () => {
   const { data, isLoading: loading, error: queryError, refetch: refresh } = useTenantsQuery(queryParams)
   const deleteMutation = useDeleteTenantMutation()
   const error = queryError?.message ?? null
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Tenant',
+    onCollectionUpdate: refresh,
+  })
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-tenant' })
 
@@ -105,6 +112,7 @@ export const TenantsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Building}
         title={t('tenants.title')}

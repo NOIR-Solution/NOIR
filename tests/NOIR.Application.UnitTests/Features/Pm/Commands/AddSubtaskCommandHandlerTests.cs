@@ -11,6 +11,7 @@ public class AddSubtaskCommandHandlerTests
     private readonly Mock<ITaskNumberGenerator> _taskNumberGeneratorMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly AddSubtaskCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -37,7 +38,8 @@ public class AddSubtaskCommandHandlerTests
             _projectRepoMock.Object,
             _taskNumberGeneratorMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

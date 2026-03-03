@@ -7,6 +7,7 @@ public class UpdateEmployeeCommandHandler
     private readonly IEmployeeHierarchyService _hierarchyService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     private const int MaxHierarchyDepth = 20;
 
@@ -15,13 +16,15 @@ public class UpdateEmployeeCommandHandler
         IRepository<Department, Guid> departmentRepository,
         IEmployeeHierarchyService hierarchyService,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _employeeRepository = employeeRepository;
         _departmentRepository = departmentRepository;
         _hierarchyService = hierarchyService;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Hr.DTOs.EmployeeDto>> Handle(
@@ -105,6 +108,13 @@ public class UpdateEmployeeCommandHandler
         employee.UpdateManager(command.ManagerId);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Employee",
+            entityId: employee.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(employee, department.Name));
     }

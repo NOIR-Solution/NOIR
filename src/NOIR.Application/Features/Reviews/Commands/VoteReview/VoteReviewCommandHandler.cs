@@ -7,13 +7,16 @@ public class VoteReviewCommandHandler
 {
     private readonly IRepository<ProductReview, Guid> _reviewRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public VoteReviewCommandHandler(
         IRepository<ProductReview, Guid> reviewRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _reviewRepository = reviewRepository;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result> Handle(
@@ -35,6 +38,13 @@ public class VoteReviewCommandHandler
             review.VoteNotHelpful();
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Review",
+            entityId: review.Id,
+            operation: EntityOperation.Updated,
+            tenantId: review.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success();
     }

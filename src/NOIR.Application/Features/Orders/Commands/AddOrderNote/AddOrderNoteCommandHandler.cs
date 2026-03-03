@@ -9,17 +9,20 @@ public class AddOrderNoteCommandHandler
     private readonly IApplicationDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserIdentityService _userIdentityService;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public AddOrderNoteCommandHandler(
         IRepository<Order, Guid> orderRepository,
         IApplicationDbContext dbContext,
         IUnitOfWork unitOfWork,
-        IUserIdentityService userIdentityService)
+        IUserIdentityService userIdentityService,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _orderRepository = orderRepository;
         _dbContext = dbContext;
         _unitOfWork = unitOfWork;
         _userIdentityService = userIdentityService;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<OrderNoteDto>> Handle(
@@ -56,6 +59,13 @@ public class AddOrderNoteCommandHandler
 
         await _dbContext.OrderNotes.AddAsync(note, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Order",
+            entityId: order.Id,
+            operation: EntityOperation.Updated,
+            tenantId: order.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(OrderMapper.ToDto(note));
     }

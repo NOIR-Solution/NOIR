@@ -16,6 +16,7 @@ public class ApproveRefundCommandHandlerTests
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IPaymentHubContext> _paymentHubContextMock;
     private readonly Mock<IPaymentService> _paymentServiceMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly ApproveRefundCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -51,7 +52,8 @@ public class ApproveRefundCommandHandlerTests
             _refundRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _paymentHubContextMock.Object,
-            _paymentServiceMock.Object);
+            _paymentServiceMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static ApproveRefundCommand CreateTestCommand(

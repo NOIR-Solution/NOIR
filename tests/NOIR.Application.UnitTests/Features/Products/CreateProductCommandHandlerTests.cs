@@ -17,6 +17,7 @@ public class CreateProductCommandHandlerTests
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly Mock<IInventoryMovementLogger> _movementLoggerMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateProductCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -37,7 +38,8 @@ public class CreateProductCommandHandlerTests
             _categoryRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _currentUserMock.Object,
-            _movementLoggerMock.Object);
+            _movementLoggerMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CreateProductCommand CreateTestCommand(

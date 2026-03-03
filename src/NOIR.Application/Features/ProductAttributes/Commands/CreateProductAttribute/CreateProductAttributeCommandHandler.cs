@@ -8,15 +8,18 @@ public class CreateProductAttributeCommandHandler
     private readonly IRepository<ProductAttribute, Guid> _attributeRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateProductAttributeCommandHandler(
         IRepository<ProductAttribute, Guid> attributeRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _attributeRepository = attributeRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ProductAttributeDto>> Handle(
@@ -70,6 +73,13 @@ public class CreateProductAttributeCommandHandler
 
         await _attributeRepository.AddAsync(attribute, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "ProductAttribute",
+            entityId: attribute.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(ProductAttributeMapper.ToDto(attribute));
     }

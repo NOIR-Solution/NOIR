@@ -10,6 +10,8 @@ public class UpdateUserCommandHandlerTests
 
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateUserCommandHandler _handler;
 
     public UpdateUserCommandHandlerTests()
@@ -24,7 +26,9 @@ public class UpdateUserCommandHandlerTests
 
         _handler = new UpdateUserCommandHandler(
             _userIdentityServiceMock.Object,
-            _localizationServiceMock.Object);
+            _localizationServiceMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static UserIdentityDto CreateTestUserDto(

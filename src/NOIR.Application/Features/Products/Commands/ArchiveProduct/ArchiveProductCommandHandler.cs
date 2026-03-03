@@ -8,15 +8,21 @@ public class ArchiveProductCommandHandler
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IRepository<ProductCategory, Guid> _categoryRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public ArchiveProductCommandHandler(
         IRepository<Product, Guid> productRepository,
         IRepository<ProductCategory, Guid> categoryRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<ProductDto>> Handle(
@@ -37,6 +43,13 @@ public class ArchiveProductCommandHandler
         product.Archive();
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Product",
+            entityId: product.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         // Get category info for DTO
         string? categoryName = null;

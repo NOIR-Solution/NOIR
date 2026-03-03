@@ -13,6 +13,7 @@ public class UpdatePostCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
     private readonly IContentAnalyzer _contentAnalyzer;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdatePostCommandHandler(
         IRepository<Post, Guid> postRepository,
@@ -20,7 +21,8 @@ public class UpdatePostCommandHandler
         IRepository<PostCategory, Guid> categoryRepository,
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser,
-        IContentAnalyzer contentAnalyzer)
+        IContentAnalyzer contentAnalyzer,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _postRepository = postRepository;
         _tagRepository = tagRepository;
@@ -28,6 +30,7 @@ public class UpdatePostCommandHandler
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
         _contentAnalyzer = contentAnalyzer;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<PostDto>> Handle(
@@ -94,6 +97,13 @@ public class UpdatePostCommandHandler
         await UpdateTagAssignmentsAsync(post, command.TagIds ?? [], tenantId, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "BlogPost",
+            entityId: post.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         // Get category name and slug for DTO
         string? categoryName = null;

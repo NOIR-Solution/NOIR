@@ -5,15 +5,21 @@ public class DeleteTagCommandHandler
     private readonly IRepository<EmployeeTag, Guid> _tagRepository;
     private readonly IApplicationDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteTagCommandHandler(
         IRepository<EmployeeTag, Guid> tagRepository,
         IApplicationDbContext dbContext,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _tagRepository = tagRepository;
         _dbContext = dbContext;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(
@@ -41,6 +47,13 @@ public class DeleteTagCommandHandler
         // Soft-delete the tag
         _tagRepository.Remove(tag);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "EmployeeTag",
+            entityId: command.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(true);
     }

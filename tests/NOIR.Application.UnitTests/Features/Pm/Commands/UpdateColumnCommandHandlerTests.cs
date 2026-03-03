@@ -7,6 +7,8 @@ public class UpdateColumnCommandHandlerTests
 {
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateColumnCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -20,7 +22,9 @@ public class UpdateColumnCommandHandlerTests
 
         _handler = new UpdateColumnCommandHandler(
             _dbContextMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

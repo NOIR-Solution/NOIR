@@ -20,6 +20,10 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import { useUrlTab } from '@/hooks/useUrlTab'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -82,8 +86,15 @@ export const CustomerDetailPage = () => {
   const canDelete = hasPermission(Permissions.CustomersDelete)
   const canManage = hasPermission(Permissions.CustomersManage)
 
-  const { data: customer, isLoading, error: queryError } = useCustomerQuery(id)
+  const { data: customer, isLoading, error: queryError, refetch } = useCustomerQuery(id)
   const updateSegmentMutation = useUpdateCustomerSegmentMutation()
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Customer',
+    entityId: id,
+    onAutoReload: refetch,
+    onNavigateAway: () => navigate('/portal/ecommerce/customers'),
+  })
   const { activeTab, handleTabChange, isPending: isTabPending } = useUrlTab({ defaultTab: 'orders' })
 
   // Orders pagination
@@ -216,6 +227,9 @@ export const CustomerDetailPage = () => {
 
   return (
     <div className="py-6 space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate('/portal/ecommerce/customers')} />
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/portal/ecommerce/customers')} className="cursor-pointer" aria-label={t('customers.backToCustomers', 'Back to Customers')}>

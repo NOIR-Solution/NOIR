@@ -7,13 +7,16 @@ public class DeleteCustomerCommandHandler
 {
     private readonly IRepository<Domain.Entities.Customer.Customer, Guid> _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteCustomerCommandHandler(
         IRepository<Domain.Entities.Customer.Customer, Guid> customerRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<CustomerDto>> Handle(
@@ -32,6 +35,13 @@ public class DeleteCustomerCommandHandler
         var dto = CustomerMapper.ToDto(customer);
         _customerRepository.Remove(customer);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Customer",
+            entityId: customer.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: customer.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(dto);
     }

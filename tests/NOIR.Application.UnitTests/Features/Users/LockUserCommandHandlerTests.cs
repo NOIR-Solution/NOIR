@@ -11,6 +11,7 @@ public class LockUserCommandHandlerTests
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly LockUserCommandHandler _handler;
 
     public LockUserCommandHandlerTests()
@@ -27,7 +28,8 @@ public class LockUserCommandHandlerTests
         _handler = new LockUserCommandHandler(
             _userIdentityServiceMock.Object,
             _currentUserMock.Object,
-            _localizationServiceMock.Object);
+            _localizationServiceMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static UserIdentityDto CreateTestUserDto(

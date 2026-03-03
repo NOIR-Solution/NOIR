@@ -2,6 +2,8 @@ import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, UsersRound, Plus, Eye, Trash2, EllipsisVertical, Loader2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -68,6 +70,11 @@ export const CustomerGroupsPage = () => {
   const deleteMutation = useDeleteCustomerGroupMutation()
   const error = queryError?.message ?? null
 
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'CustomerGroup',
+    onCollectionUpdate: refresh,
+  })
+
   const groups = groupsResponse?.items ?? []
   const { editItem: groupToEdit, openEdit: openEditGroup, closeEdit: closeEditGroup } = useUrlEditDialog<CustomerGroupListItem>(groups)
   const totalCount = groupsResponse?.totalCount ?? 0
@@ -99,6 +106,7 @@ export const CustomerGroupsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={UsersRound}
         title={t('customerGroups.title', 'Customer Groups')}

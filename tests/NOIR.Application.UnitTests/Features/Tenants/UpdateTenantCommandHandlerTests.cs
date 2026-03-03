@@ -13,6 +13,7 @@ public class UpdateTenantCommandHandlerTests
 
     private readonly Mock<IMultiTenantStore<Tenant>> _tenantStoreMock;
     private readonly Mock<ILocalizationService> _localizationServiceMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateTenantCommandHandler _handler;
 
     public UpdateTenantCommandHandlerTests()
@@ -27,7 +28,8 @@ public class UpdateTenantCommandHandlerTests
 
         _handler = new UpdateTenantCommandHandler(
             _tenantStoreMock.Object,
-            _localizationServiceMock.Object);
+            _localizationServiceMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Tenant CreateTestTenant(

@@ -15,6 +15,7 @@ public class CancelInventoryReceiptCommandHandlerTests
 
     private readonly Mock<IRepository<InventoryReceipt, Guid>> _receiptRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CancelInventoryReceiptCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -26,7 +27,8 @@ public class CancelInventoryReceiptCommandHandlerTests
 
         _handler = new CancelInventoryReceiptCommandHandler(
             _receiptRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static InventoryReceipt CreateDraftReceipt(

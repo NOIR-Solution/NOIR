@@ -10,6 +10,7 @@ public class DeletePromotionCommandHandlerTests
 
     private readonly Mock<IRepository<Promotion, Guid>> _promotionRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeletePromotionCommandHandler _handler;
 
     public DeletePromotionCommandHandlerTests()
@@ -19,7 +20,8 @@ public class DeletePromotionCommandHandlerTests
 
         _handler = new DeletePromotionCommandHandler(
             _promotionRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Promotion CreateTestPromotion(

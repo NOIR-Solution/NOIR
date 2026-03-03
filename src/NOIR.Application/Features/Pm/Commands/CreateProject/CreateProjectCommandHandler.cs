@@ -8,6 +8,7 @@ public class CreateProjectCommandHandler
     private readonly IProjectCodeGenerator _projectCodeGenerator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public CreateProjectCommandHandler(
         IRepository<Project, Guid> projectRepository,
@@ -15,7 +16,8 @@ public class CreateProjectCommandHandler
         IApplicationDbContext dbContext,
         IProjectCodeGenerator projectCodeGenerator,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _projectRepository = projectRepository;
         _employeeRepository = employeeRepository;
@@ -23,6 +25,7 @@ public class CreateProjectCommandHandler
         _projectCodeGenerator = projectCodeGenerator;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Pm.DTOs.ProjectDto>> Handle(
@@ -89,6 +92,13 @@ public class CreateProjectCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Project",
+            entityId: project.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         // Reload to get navigation properties
         var reloadSpec = new Specifications.ProjectByIdSpec(project.Id);

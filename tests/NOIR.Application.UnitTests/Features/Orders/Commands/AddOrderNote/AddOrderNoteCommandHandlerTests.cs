@@ -15,6 +15,7 @@ public class AddOrderNoteCommandHandlerTests
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IUserIdentityService> _userIdentityServiceMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly AddOrderNoteCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -32,7 +33,8 @@ public class AddOrderNoteCommandHandlerTests
             _orderRepositoryMock.Object,
             _dbContextMock.Object,
             _unitOfWorkMock.Object,
-            _userIdentityServiceMock.Object);
+            _userIdentityServiceMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Order CreateTestOrder(

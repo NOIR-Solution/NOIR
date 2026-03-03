@@ -10,6 +10,7 @@ public class CreateTagCommandHandlerTests
     private readonly Mock<IRepository<EmployeeTag, Guid>> _tagRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateTagCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -25,7 +26,8 @@ public class CreateTagCommandHandlerTests
         _handler = new CreateTagCommandHandler(
             _tagRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CreateTagCommand CreateValidCommand(

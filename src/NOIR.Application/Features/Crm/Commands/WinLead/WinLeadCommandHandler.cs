@@ -7,19 +7,22 @@ public class WinLeadCommandHandler
     private readonly IRepository<Domain.Entities.Customer.Customer, Guid> _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public WinLeadCommandHandler(
         IRepository<Lead, Guid> leadRepository,
         IRepository<CrmContact, Guid> contactRepository,
         IRepository<Domain.Entities.Customer.Customer, Guid> customerRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _leadRepository = leadRepository;
         _contactRepository = contactRepository;
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<Features.Crm.DTOs.LeadDto>> Handle(
@@ -74,6 +77,13 @@ public class WinLeadCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "CrmLead",
+            entityId: lead.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(MapToDto(lead));
     }

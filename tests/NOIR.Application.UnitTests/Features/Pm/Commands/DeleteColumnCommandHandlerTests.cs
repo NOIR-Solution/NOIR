@@ -9,6 +9,8 @@ public class DeleteColumnCommandHandlerTests
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly Mock<IRepository<ProjectTask, Guid>> _taskRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteColumnCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -24,7 +26,9 @@ public class DeleteColumnCommandHandlerTests
         _handler = new DeleteColumnCommandHandler(
             _dbContextMock.Object,
             _taskRepoMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

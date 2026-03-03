@@ -1,8 +1,12 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { EntityConflictDialog } from '@/components/EntityConflictDialog'
+import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import { FileText, ArrowLeft, RotateCcw, Save, Info, Loader2 } from 'lucide-react'
 import { Editor } from '@tinymce/tinymce-react'
 import type { Editor as TinyMCEEditor } from 'tinymce'
@@ -220,6 +224,20 @@ export const LegalPageEditPage = () => {
     }
   }
 
+  const refreshPage = useCallback(() => {
+    if (id) {
+      getLegalPageById(id).then((data) => {
+        setPage(data)
+        setTitle(data.title)
+        setHtmlContent(data.htmlContent)
+        setMetaTitle(data.metaTitle || '')
+        setMetaDescription(data.metaDescription || '')
+        setCanonicalUrl(data.canonicalUrl || '')
+        setAllowIndexing(data.allowIndexing)
+      }).catch(() => {})
+    }
+  }, [id])
+
   // Check if form has changes
   const hasChanges = page && (
     title !== page.title ||
@@ -229,6 +247,14 @@ export const LegalPageEditPage = () => {
     (canonicalUrl || '') !== (page.canonicalUrl || '') ||
     allowIndexing !== page.allowIndexing
   )
+
+  const { conflictSignal, deletedSignal, dismissConflict, reloadAndRestart, isReconnecting } = useEntityUpdateSignal({
+    entityType: 'LegalPage',
+    entityId: id,
+    isDirty: !!hasChanges,
+    onAutoReload: refreshPage,
+    onNavigateAway: () => navigate(settingsBackUrl),
+  })
 
   if (loading) {
     return (
@@ -279,6 +305,10 @@ export const LegalPageEditPage = () => {
 
   return (
     <div className="py-6 space-y-6">
+      <OfflineBanner visible={isReconnecting} />
+      <EntityConflictDialog signal={conflictSignal} onContinueEditing={dismissConflict} onReloadAndRestart={reloadAndRestart} />
+      <EntityDeletedDialog signal={deletedSignal} onGoBack={() => navigate(settingsBackUrl)} />
+
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

@@ -14,6 +14,7 @@ public class DeleteWebhookSubscriptionCommandHandlerTests
 
     private readonly Mock<IRepository<WebhookSubscription, Guid>> _repositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteWebhookSubscriptionCommandHandler _handler;
 
     public DeleteWebhookSubscriptionCommandHandlerTests()
@@ -23,7 +24,8 @@ public class DeleteWebhookSubscriptionCommandHandlerTests
 
         _handler = new DeleteWebhookSubscriptionCommandHandler(
             _repositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static WebhookSubscription CreateTestSubscription(

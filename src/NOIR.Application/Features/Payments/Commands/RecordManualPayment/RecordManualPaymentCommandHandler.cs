@@ -12,6 +12,7 @@ public class RecordManualPaymentCommandHandler
     private readonly IPaymentOperationLogger _operationLogger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public RecordManualPaymentCommandHandler(
         IRepository<Order, Guid> orderRepository,
@@ -20,7 +21,8 @@ public class RecordManualPaymentCommandHandler
         IPaymentService paymentService,
         IPaymentOperationLogger operationLogger,
         IUnitOfWork unitOfWork,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _orderRepository = orderRepository;
         _paymentRepository = paymentRepository;
@@ -29,6 +31,7 @@ public class RecordManualPaymentCommandHandler
         _operationLogger = operationLogger;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<PaymentTransactionDto>> Handle(
@@ -136,6 +139,13 @@ public class RecordManualPaymentCommandHandler
             cancellationToken: cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "PaymentTransaction",
+            entityId: payment.Id,
+            operation: EntityOperation.Created,
+            tenantId: _currentUser.TenantId!,
+            ct: cancellationToken);
 
         return Result.Success(MapToDto(payment));
     }

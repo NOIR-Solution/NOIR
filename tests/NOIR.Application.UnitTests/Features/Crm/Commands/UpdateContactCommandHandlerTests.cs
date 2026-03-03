@@ -9,6 +9,8 @@ public class UpdateContactCommandHandlerTests
 {
     private readonly Mock<IRepository<CrmContact, Guid>> _contactRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateContactCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -22,7 +24,9 @@ public class UpdateContactCommandHandlerTests
 
         _handler = new UpdateContactCommandHandler(
             _contactRepoMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

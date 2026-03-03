@@ -2,6 +2,8 @@ import { useState, useDeferredValue, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Search, Award, Plus, Eye, Trash2, EllipsisVertical, Globe, ExternalLink, Loader2 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -69,6 +71,11 @@ export const BrandsPage = () => {
   const deleteMutation = useDeleteBrandMutation()
   const error = queryError?.message ?? null
 
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Brand',
+    onCollectionUpdate: refresh,
+  })
+
   const brands = brandsResponse?.items ?? []
   const { editItem: brandToEdit, openEdit: openEditBrand, closeEdit: closeEditBrand } = useUrlEditDialog<BrandListItem>(brands)
   const totalCount = brandsResponse?.totalCount ?? 0
@@ -100,6 +107,7 @@ export const BrandsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Award}
         title={t('brands.title', 'Brands')}

@@ -13,6 +13,7 @@ public class CreateUserCommandHandlerTests
     private readonly Mock<ILocalizationService> _localizationServiceMock;
     private readonly Mock<IWelcomeEmailService> _welcomeEmailServiceMock;
     private readonly Mock<ILogger<CreateUserCommandHandler>> _loggerMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateUserCommandHandler _handler;
     private const string TestTenantId = "test-tenant-id";
 
@@ -37,7 +38,8 @@ public class CreateUserCommandHandlerTests
             _currentUserMock.Object,
             _localizationServiceMock.Object,
             _welcomeEmailServiceMock.Object,
-            _loggerMock.Object);
+            _loggerMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static UserIdentityDto CreateTestUserDto(

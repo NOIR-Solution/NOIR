@@ -7,13 +7,19 @@ public class UpdateBrandCommandHandler
 {
     private readonly IRepository<Brand, Guid> _brandRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public UpdateBrandCommandHandler(
         IRepository<Brand, Guid> brandRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _brandRepository = brandRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<BrandDto>> Handle(
@@ -51,6 +57,13 @@ public class UpdateBrandCommandHandler
         brand.SetSortOrder(command.SortOrder);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "Brand",
+            entityId: brand.Id,
+            operation: EntityOperation.Updated,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(BrandMapper.ToDto(brand));
     }

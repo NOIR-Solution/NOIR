@@ -8,6 +8,8 @@ public class UpdateProjectCommandHandlerTests
 {
     private readonly Mock<IRepository<Project, Guid>> _projectRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly UpdateProjectCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -21,7 +23,9 @@ public class UpdateProjectCommandHandlerTests
 
         _handler = new UpdateProjectCommandHandler(
             _projectRepoMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

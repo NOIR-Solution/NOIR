@@ -11,6 +11,8 @@ import {
   Trash2,
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
@@ -133,6 +135,11 @@ export const PromotionsPage = () => {
   const deactivateMutation = useDeactivatePromotionMutation()
   const error = queryError?.message ?? null
 
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Promotion',
+    onCollectionUpdate: refresh,
+  })
+
   const promotions = promotionsResponse?.items ?? []
   const { editItem: promotionToEdit, openEdit: openEditPromotion, closeEdit: closeEditPromotion } = useUrlEditDialog<PromotionDto>(promotions)
   const totalCount = promotionsResponse?.totalCount ?? 0
@@ -186,6 +193,7 @@ export const PromotionsPage = () => {
 
   return (
     <div className="space-y-6">
+      <OfflineBanner visible={isReconnecting} />
       <PageHeader
         icon={Percent}
         title={t('promotions.title', 'Promotions')}

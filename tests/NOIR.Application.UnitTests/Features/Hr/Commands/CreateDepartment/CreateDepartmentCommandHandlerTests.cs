@@ -10,6 +10,7 @@ public class CreateDepartmentCommandHandlerTests
     private readonly Mock<IRepository<Department, Guid>> _departmentRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CreateDepartmentCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -26,7 +27,8 @@ public class CreateDepartmentCommandHandlerTests
         _handler = new CreateDepartmentCommandHandler(
             _departmentRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]

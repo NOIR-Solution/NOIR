@@ -9,15 +9,21 @@ public class DeleteProductAttributeCommandHandler
     private readonly IRepository<ProductAttribute, Guid> _attributeRepository;
     private readonly IApplicationDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEntityUpdateHubContext _entityUpdateHub;
 
     public DeleteProductAttributeCommandHandler(
         IRepository<ProductAttribute, Guid> attributeRepository,
         IApplicationDbContext dbContext,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
+        IEntityUpdateHubContext entityUpdateHub)
     {
         _attributeRepository = attributeRepository;
         _dbContext = dbContext;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
+        _entityUpdateHub = entityUpdateHub;
     }
 
     public async Task<Result<bool>> Handle(
@@ -76,6 +82,13 @@ public class DeleteProductAttributeCommandHandler
         // Soft delete via repository (handled by interceptor)
         _attributeRepository.Remove(attribute);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _entityUpdateHub.PublishEntityUpdatedAsync(
+            entityType: "ProductAttribute",
+            entityId: attribute.Id,
+            operation: EntityOperation.Deleted,
+            tenantId: _currentUser.TenantId!,
+            cancellationToken);
 
         return Result.Success(true);
     }

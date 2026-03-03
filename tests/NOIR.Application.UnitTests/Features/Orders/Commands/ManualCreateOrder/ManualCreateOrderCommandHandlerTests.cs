@@ -21,6 +21,7 @@ public class ManualCreateOrderCommandHandlerTests
     private readonly Mock<IOrderNumberGenerator> _orderNumberGeneratorMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ICurrentUser> _currentUserMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly ManualCreateOrderCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -58,7 +59,8 @@ public class ManualCreateOrderCommandHandlerTests
             _movementLoggerMock.Object,
             _orderNumberGeneratorMock.Object,
             _unitOfWorkMock.Object,
-            _currentUserMock.Object);
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static Product CreateTestProduct(

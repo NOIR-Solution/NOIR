@@ -16,6 +16,7 @@ public class CancelOrderCommandHandlerTests
     private readonly Mock<IRepository<Product, Guid>> _productRepositoryMock;
     private readonly Mock<IInventoryMovementLogger> _movementLoggerMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly CancelOrderCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -31,7 +32,8 @@ public class CancelOrderCommandHandlerTests
             _orderRepositoryMock.Object,
             _productRepositoryMock.Object,
             _movementLoggerMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static CancelOrderCommand CreateTestCommand(Guid? orderId = null, string? reason = null)

@@ -14,6 +14,7 @@ public class DeliverOrderCommandHandlerTests
 
     private readonly Mock<IRepository<Order, Guid>> _orderRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeliverOrderCommandHandler _handler;
 
     private const string TestTenantId = "test-tenant";
@@ -25,7 +26,8 @@ public class DeliverOrderCommandHandlerTests
 
         _handler = new DeliverOrderCommandHandler(
             _orderRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     private static DeliverOrderCommand CreateTestCommand(Guid? orderId = null)

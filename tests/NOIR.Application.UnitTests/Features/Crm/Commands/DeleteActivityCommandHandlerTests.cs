@@ -7,6 +7,8 @@ public class DeleteActivityCommandHandlerTests
 {
     private readonly Mock<IRepository<CrmActivity, Guid>> _activityRepoMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ICurrentUser> _currentUserMock = new();
+    private readonly Mock<IEntityUpdateHubContext> _entityUpdateHubMock = new();
     private readonly DeleteActivityCommandHandler _handler;
 
     private const string TestTenantId = "tenant-123";
@@ -20,7 +22,9 @@ public class DeleteActivityCommandHandlerTests
 
         _handler = new DeleteActivityCommandHandler(
             _activityRepoMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _currentUserMock.Object,
+            _entityUpdateHubMock.Object);
     }
 
     [Fact]
