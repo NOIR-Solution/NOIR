@@ -95,7 +95,13 @@ test.describe('Admin Roles @regression', () => {
     await expect(updatedRow).toBeVisible({ timeout: 10_000 });
     await updatedRow.getByRole('button').first().click();
     await page.getByRole('menuitem', { name: /delete/i }).click();
+    // Set up response watcher BEFORE clicking confirm (response may arrive quickly)
+    const deleteResponsePromise = page.waitForResponse(
+      resp => resp.url().includes('/api/roles') && resp.request().method() === 'DELETE',
+      { timeout: 10_000 },
+    ).catch(() => undefined);
     await confirmDelete(page);
+    await deleteResponsePromise; // Ensure API response completes before checking toast
     await expectToast(page, /deleted|removed|success|th\u00e0nh c\u00f4ng/i);
 
     // Verify role no longer in list

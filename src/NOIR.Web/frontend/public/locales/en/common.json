@@ -4176,5 +4176,22 @@
     "manager": "Manager",
     "member": "Member",
     "viewer": "Viewer"
+  },
+  "entityUpdate": {
+    "conflict": {
+      "title": "Record Updated",
+      "description": "This record was updated while you were editing. Your unsaved changes may no longer be accurate.",
+      "continueEditing": "Continue Editing",
+      "reloadAndRestart": "Reload & Start Over"
+    },
+    "deleted": {
+      "title": "Record Deleted",
+      "description": "This record no longer exists. You will be returned to the list.",
+      "goBack": "Go Back"
+    },
+    "offline": {
+      "banner": "You were offline — this page may show outdated data"
+    },
+    "autoReloaded": "This record was just updated"
   }
 }

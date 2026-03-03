@@ -4176,5 +4176,22 @@
     "manager": "Quản lý",
     "member": "Thành viên",
     "viewer": "Người xem"
+  },
+  "entityUpdate": {
+    "conflict": {
+      "title": "Bản ghi đã được cập nhật",
+      "description": "Bản ghi này đã được cập nhật trong khi bạn đang chỉnh sửa. Các thay đổi chưa lưu của bạn có thể không còn chính xác.",
+      "continueEditing": "Tiếp tục chỉnh sửa",
+      "reloadAndRestart": "Tải lại & Bắt đầu lại"
+    },
+    "deleted": {
+      "title": "Bản ghi đã bị xóa",
+      "description": "Bản ghi này không còn tồn tại. Bạn sẽ được đưa trở lại danh sách.",
+      "goBack": "Quay lại"
+    },
+    "offline": {
+      "banner": "Bạn đã mất kết nối — trang này có thể hiển thị dữ liệu cũ"
+    },
+    "autoReloaded": "Bản ghi này vừa được cập nhật"
   }
 }
