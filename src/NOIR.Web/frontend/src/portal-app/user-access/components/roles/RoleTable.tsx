@@ -93,11 +93,11 @@ export const RoleTable = ({ roles, onEdit, onDelete, onPermissions, loading }: R
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
-                    <DropdownMenuItem onClick={() => onPermissions(role)} className="cursor-pointer">
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onPermissions(role); }} className="cursor-pointer">
                       <Key className="mr-2 h-4 w-4" />
                       {t('roles.managePermissions', 'Manage Permissions')}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEdit(role)} className="cursor-pointer">
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(role); }} className="cursor-pointer">
                       <Edit className="mr-2 h-4 w-4" />
                       {t('buttons.edit', 'Edit')}
                     </DropdownMenuItem>

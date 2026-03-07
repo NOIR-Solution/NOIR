@@ -984,8 +984,10 @@
       "hierarchyLevel": "Hierarchy Level",
       "isSystem": "System Role"
     },
+    "createError": "Failed to create role",
     "deleteError": "Failed to delete role",
-    "updateError": "Failed to update role"
+    "updateError": "Failed to update role",
+    "namePattern": "Role name must start with a letter and contain only letters, numbers, hyphens, or underscores (no spaces)."
   },
   "users": {
     "title": "Users",

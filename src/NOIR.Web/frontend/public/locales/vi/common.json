@@ -984,8 +984,10 @@
       "hierarchyLevel": "Cấp độ phân cấp",
       "isSystem": "Vai trò Hệ thống"
     },
+    "createError": "Tạo vai trò thất bại",
     "deleteError": "Xóa vai trò thất bại",
-    "updateError": "Cập nhật vai trò thất bại"
+    "updateError": "Cập nhật vai trò thất bại",
+    "namePattern": "Tên vai trò phải bắt đầu bằng chữ cái và chỉ chứa chữ cái, số, dấu gạch ngang hoặc gạch dưới (không có khoảng trắng)."
   },
   "users": {
     "title": "Người dùng",

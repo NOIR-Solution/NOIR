@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Loader2, Shield } from 'lucide-react'
+import { AlertTriangle, Loader2, Shield } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
+  Alert,
+  AlertDescription,
   Button,
   ColorPicker,
   Credenza,
@@ -37,7 +39,10 @@ import type { RoleListItem } from '@/types'
 
 const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
-    name: z.string().min(2, t('validation.minLength', { count: 2 })).max(50, t('validation.maxLength', { count: 50 })),
+    name: z.string()
+      .min(2, t('validation.minLength', { count: 2 }))
+      .max(50, t('validation.maxLength', { count: 50 }))
+      .regex(/^[a-zA-Z][a-zA-Z0-9_-]*$/, t('roles.namePattern')),
     description: z.string().max(500, t('validation.maxLength', { count: 500 })).optional(),
     parentRoleId: z.string().optional(),
     color: z.string().optional(),
@@ -58,6 +63,7 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const [existingRoles, setExistingRoles] = useState<RoleListItem[]>([])
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
     // TypeScript cannot infer resolver types from dynamic schema factories
@@ -76,6 +82,7 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
 
   useEffect(() => {
     if (role) {
+      setApiError(null)
       form.reset({
         name: role.name,
         description: role.description || '',
@@ -89,6 +96,7 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
 
   useEffect(() => {
     if (open) {
+      setApiError(null)
       // Fetch existing roles for parent selection (exclude current role)
       getRoles({ pageSize: 100 })
         .then(result => setExistingRoles(result.items.filter((r: RoleListItem) => r.id !== role?.id)))
@@ -100,6 +108,7 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
     if (!role) return
 
     setLoading(true)
+    setApiError(null)
     try {
       await updateRole({
         roleId: role.id,
@@ -116,10 +125,20 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
       onOpenChange(false)
       onSuccess()
     } catch (err) {
-      const message = err instanceof ApiError
-        ? err.message
-        : t('roles.updateError', 'Failed to update role')
-      toast.error(message)
+      if (err instanceof ApiError) {
+        const fieldErrors = err.response?.errors
+        if (fieldErrors) {
+          Object.entries(fieldErrors).forEach(([field, messages]) => {
+            const fieldName = field.charAt(0).toLowerCase() + field.slice(1)
+            if (fieldName in form.getValues()) {
+              form.setError(fieldName as keyof FormValues, { message: messages[0] })
+            }
+          })
+        }
+        setApiError(err.message)
+      } else {
+        setApiError(t('roles.updateError', 'Failed to update role'))
+      }
     } finally {
       setLoading(false)
     }
@@ -145,6 +164,12 @@ export const EditRoleDialog = ({ role, open, onOpenChange, onSuccess }: EditRole
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              {apiError && (
+                <Alert variant="destructive" className="border-destructive/30">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>{apiError}</AlertDescription>
+                </Alert>
+              )}
               <FormField
                 control={form.control}
                 name="name"
