@@ -52,10 +52,11 @@ public class TaskNumberGenerator : ITaskNumberGenerator, IScopedService
                     VALUES (NEWID(), NULL, {0}, 1)
                 OUTPUT INSERTED.CurrentValue;";
 
-        var result = tenantId != null
-            ? await _dbContext.Database.SqlQueryRaw<int>(sql, prefix, tenantId).FirstAsync(cancellationToken)
-            : await _dbContext.Database.SqlQueryRaw<int>(sql, prefix).FirstAsync(cancellationToken);
+        // Use ToListAsync() instead of FirstAsync() to avoid EF Core non-composable SQL error
+        var results = tenantId != null
+            ? await _dbContext.Database.SqlQueryRaw<int>(sql, prefix, tenantId).ToListAsync(cancellationToken)
+            : await _dbContext.Database.SqlQueryRaw<int>(sql, prefix).ToListAsync(cancellationToken);
 
-        return result;
+        return results.First();
     }
 }
