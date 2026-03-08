@@ -178,7 +178,7 @@ export const CustomerGroupDialog = ({ open, onOpenChange, group, onSuccess }: Cu
                   control={form.control}
                   name="isActive"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 space-y-0">
                       <div className="space-y-0.5">
                         <FormLabel>{t('labels.active', 'Active')}</FormLabel>
                         <FormDescription className="text-xs">

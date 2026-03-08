@@ -1116,7 +1116,7 @@
     "cancelOrderTitle": "Cancel Order",
     "cancelOrderDescription": "Are you sure you want to cancel this order? This action cannot be undone.",
     "reasonOptional": "Reason (optional)",
-    "cancelReasonPlaceholder": "Enter cancellation reason...",
+    "cancelReasonPlaceholder": "Enter reason for cancellation...",
     "returnOrderTitle": "Return Order",
     "returnOrderDescription": "Process a return for this order. Inventory will be restocked.",
     "returnReasonLabel": "Reason",
@@ -1223,8 +1223,7 @@
     "bulkCancelFailed": "Failed to cancel orders",
     "bulkCancelConfirmTitle": "Cancel {{count}} orders",
     "bulkCancelConfirmDescription": "Are you sure you want to cancel {{count}} orders? This action cannot be undone.",
-    "cancelReason": "Cancellation reason (optional)",
-    "cancelReasonPlaceholder": "Enter reason for cancellation..."
+    "cancelReason": "Cancellation reason (optional)"
   },
   "reviews": {
     "title": "Reviews",
@@ -2006,6 +2005,8 @@
     "slug": "Slug",
     "sortOrder": "Sort Order",
     "websiteUrl": "Website URL",
+    "collapse": "Collapse",
+    "expand": "Expand",
     "save": "Save",
     "cancel": "Cancel",
     "breadcrumb": "Breadcrumb",
@@ -2042,6 +2043,7 @@
     "gridView": "Grid view",
     "pending": "Pending",
     "add": "Add",
+    "addChild": "Add Child",
     "create": "Create",
     "update": "Update",
     "edit": "Edit",
@@ -3924,7 +3926,14 @@
         "Employment": "Employment",
         "Custom": "Custom"
       }
-    }
+    },
+    "searchDepartments": "Search departments...",
+    "departmentCount": "{{count}} departments total",
+    "useDragToReorderOnly": "To change a department's parent, use the Edit form",
+    "subDepartments": "Sub-depts",
+    "departmentHasEmployees": "Has {{count}} employee(s)",
+    "departmentHasChildren": "Has {{count}} sub-department(s)",
+    "reassignFirst": "Reassign or remove them first"
   },
   "crm": {
     "contacts": {

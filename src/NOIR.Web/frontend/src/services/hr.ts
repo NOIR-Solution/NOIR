@@ -125,7 +125,7 @@ export const deleteDepartment = async (id: string): Promise<void> => {
 
 export const reorderDepartments = async (request: ReorderDepartmentsRequest): Promise<void> => {
   await apiClient('/hr/departments/reorder', {
-    method: 'POST',
+    method: 'PUT',
     body: JSON.stringify(request),
   })
 }

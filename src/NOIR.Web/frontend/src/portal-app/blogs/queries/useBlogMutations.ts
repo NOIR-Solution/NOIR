@@ -1,8 +1,29 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deletePost, deleteCategory, deleteTag, reorderBlogCategories, bulkPublishPosts, bulkUnpublishPosts, bulkDeletePosts } from '@/services/blog'
+import { createCategory, updateCategory, deletePost, deleteCategory, deleteTag, reorderBlogCategories, bulkPublishPosts, bulkUnpublishPosts, bulkDeletePosts } from '@/services/blog'
 import type { ReorderBlogCategoriesRequest } from '@/services/blog'
+import type { CreateCategoryRequest, UpdateCategoryRequest } from '@/types/blog'
 import { blogPostKeys, blogCategoryKeys, blogTagKeys } from './queryKeys'
 import { optimisticListDelete, optimisticArrayDelete } from '@/hooks/useOptimisticMutation'
+
+export const useCreateBlogCategory = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (request: CreateCategoryRequest) => createCategory(request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: blogCategoryKeys.all })
+    },
+  })
+}
+
+export const useUpdateBlogCategory = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, request }: { id: string; request: UpdateCategoryRequest }) => updateCategory(id, request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: blogCategoryKeys.all })
+    },
+  })
+}
 
 export const useDeleteBlogPostMutation = () => {
   const queryClient = useQueryClient()

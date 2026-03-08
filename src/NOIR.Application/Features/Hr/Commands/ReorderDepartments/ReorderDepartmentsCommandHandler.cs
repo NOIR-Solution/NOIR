@@ -24,6 +24,7 @@ public class ReorderDepartmentsCommandHandler
             if (department is not null)
             {
                 department.SetSortOrder(item.SortOrder);
+                department.SetParentDepartment(item.ParentDepartmentId);
             }
         }
 

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FolderTree, Loader2, Pencil } from 'lucide-react'
+import { FolderTree, Loader2 } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -29,9 +29,8 @@ import {
 } from '@uikit'
 
 import { toast } from 'sonner'
-import { createCategory, updateCategory, getCategories } from '@/services/blog'
-import { ApiError } from '@/services/apiClient'
-import type { PostCategoryListItem, CreateCategoryRequest } from '@/types'
+import { useCreateBlogCategory, useUpdateBlogCategory, useBlogCategoriesQuery } from '@/portal-app/blogs/queries'
+import type { PostCategoryListItem } from '@/types'
 
 const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -51,18 +50,24 @@ interface BlogCategoryDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   category?: PostCategoryListItem | null
+  parentId?: string | null
   onSuccess: () => void
 }
 
-export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: BlogCategoryDialogProps) => {
+export const BlogCategoryDialog = ({ open, onOpenChange, category, parentId, onSuccess }: BlogCategoryDialogProps) => {
   const { t } = useTranslation('common')
-  const [loading, setLoading] = useState(false)
-  const [existingCategories, setExistingCategories] = useState<PostCategoryListItem[]>([])
   const isEdit = !!category
 
+  const createMutation = useCreateBlogCategory()
+  const updateMutation = useUpdateBlogCategory()
+  const isPending = createMutation.isPending || updateMutation.isPending
+
+  const { data: allCategories = [] } = useBlogCategoriesQuery()
+  const existingCategories = category
+    ? allCategories.filter(c => c.id !== category.id && c.parentId !== category.id)
+    : allCategories
+
   const form = useForm<FormValues>({
-    // TypeScript cannot infer resolver types from dynamic schema factories
-    // Using 'as unknown as Resolver<T>' for type-safe assertion
     resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
     defaultValues: {
@@ -75,40 +80,21 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
   })
 
   useEffect(() => {
-    if (open) {
-      // Fetch existing categories for parent selection
-      getCategories({ topLevelOnly: false })
-        .then(result => {
-          // Filter out the current category and its children to prevent circular references
-          const filtered = category
-            ? result.filter(c => c.id !== category.id && c.parentId !== category.id)
-            : result
-          setExistingCategories(filtered)
-        })
-        .catch(() => setExistingCategories([]))
-
-      // Reset form with category data if editing
-      if (category) {
-        form.reset({
-          name: category.name,
-          slug: category.slug,
-          description: category.description || '',
-          sortOrder: category.sortOrder,
-          parentId: category.parentId || '',
-        })
-      } else {
-        form.reset({
-          name: '',
-          slug: '',
-          description: '',
-          sortOrder: 0,
-          parentId: '',
-        })
-      }
+    if (!open) return
+    if (category) {
+      form.reset({
+        name: category.name,
+        slug: category.slug,
+        description: category.description || '',
+        sortOrder: category.sortOrder,
+        parentId: category.parentId || '',
+      })
+    } else {
+      form.reset({ name: '', slug: '', description: '', sortOrder: 0, parentId: parentId || '' })
     }
-  }, [open, category, form])
+  }, [open, category, parentId, form])
 
-  // Auto-generate slug from name
+  // Auto-generate slug from name (create mode only)
   const watchName = form.watch('name')
   useEffect(() => {
     if (!isEdit && watchName) {
@@ -122,34 +108,27 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
   }, [watchName, isEdit, form])
 
   const onSubmit = async (values: FormValues) => {
-    setLoading(true)
-    try {
-      const request: CreateCategoryRequest = {
-        name: values.name,
-        slug: values.slug,
-        description: values.description || undefined,
-        sortOrder: values.sortOrder,
-        parentId: values.parentId || undefined,
-      }
+    const request = {
+      name: values.name,
+      slug: values.slug,
+      description: values.description || undefined,
+      sortOrder: values.sortOrder,
+      parentId: values.parentId || undefined,
+    }
 
+    try {
       if (isEdit && category) {
-        await updateCategory(category.id, request)
+        await updateMutation.mutateAsync({ id: category.id, request })
         toast.success(t('blog.categoryUpdated'))
       } else {
-        await createCategory(request)
+        await createMutation.mutateAsync(request)
         toast.success(t('blog.categoryCreated'))
       }
-
       form.reset()
       onOpenChange(false)
       onSuccess()
-    } catch (err) {
-      const message = err instanceof ApiError
-        ? err.message
-        : isEdit ? t('blog.failedToUpdateCategory') : t('blog.failedToCreateCategory')
-      toast.error(message)
-    } finally {
-      setLoading(false)
+    } catch {
+      toast.error(isEdit ? t('blog.failedToUpdateCategory') : t('blog.failedToCreateCategory'))
     }
   }
 
@@ -158,83 +137,32 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
       <CredenzaContent className="sm:max-w-[500px]">
         <CredenzaHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              {isEdit ? (
-                <Pencil className="h-5 w-5 text-primary" />
-              ) : (
-                <FolderTree className="h-5 w-5 text-primary" />
-              )}
+            <div className="p-2 bg-primary/10 rounded-xl border border-primary/20">
+              <FolderTree className="h-5 w-5 text-primary" />
             </div>
             <div>
               <CredenzaTitle>
                 {isEdit ? t('blog.editCategory') : t('blog.createNewCategory')}
               </CredenzaTitle>
               <CredenzaDescription>
-                {isEdit
-                  ? t('blog.editCategoryDescription')
-                  : t('blog.createCategoryDescription')}
+                {isEdit ? t('blog.editCategoryDescription') : t('blog.createCategoryDescription')}
               </CredenzaDescription>
             </div>
           </div>
         </CredenzaHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <CredenzaBody className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('blog.categoryName')}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t('blog.categoryNamePlaceholder')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('labels.slug')}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t('blog.categorySlugPlaceholder')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('blog.descriptionOptional')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t('blog.categoryDescription')}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CredenzaBody>
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="sortOrder"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('labels.sortOrder')}</FormLabel>
+                      <FormLabel>{t('blog.categoryName')}</FormLabel>
                       <FormControl>
-                        <Input type="number" min="0" {...field} />
+                        <Input placeholder={t('blog.categoryNamePlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -243,44 +171,86 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, onSuccess }: 
 
                 <FormField
                   control={form.control}
-                  name="parentId"
+                  name="slug"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('blog.parentCategory')}</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
-                        value={field.value || '__none__'}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="cursor-pointer" aria-label={t('blog.selectParentCategoryOptional', 'Select parent category (optional)')}>
-                            <SelectValue placeholder={t('blog.selectParentOptional')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="__none__" className="cursor-pointer">{t('blog.noParent')}</SelectItem>
-                          {existingCategories.map((cat) => (
-                            <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
-                              {cat.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>{t('labels.slug')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t('blog.categorySlugPlaceholder')} {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('blog.descriptionOptional')}</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder={t('blog.categoryDescription')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="sortOrder"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('labels.sortOrder')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="parentId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('blog.parentCategory')}</FormLabel>
+                        <Select
+                          onValueChange={(value) => field.onChange(value === '__none__' ? '' : value)}
+                          value={field.value || '__none__'}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="cursor-pointer" aria-label={t('blog.selectParentCategoryOptional', 'Select parent category (optional)')}>
+                              <SelectValue placeholder={t('blog.selectParentOptional')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="__none__" className="cursor-pointer">{t('blog.noParent')}</SelectItem>
+                            {existingCategories.map((cat) => (
+                              <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
+                                {cat.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </CredenzaBody>
 
             <CredenzaFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
-                {t('buttons.cancel')}
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending} className="cursor-pointer">
+                {t('labels.cancel', 'Cancel')}
               </Button>
-              <Button type="submit" disabled={loading} className="cursor-pointer">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading
-                  ? t('buttons.saving')
-                  : (isEdit ? t('buttons.update') : t('buttons.create'))}
+              <Button type="submit" disabled={isPending} className="cursor-pointer">
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isEdit ? t('labels.update', 'Update') : t('labels.create', 'Create')}
               </Button>
             </CredenzaFooter>
           </form>

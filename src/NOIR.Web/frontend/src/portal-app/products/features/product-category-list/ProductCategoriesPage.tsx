@@ -1,4 +1,5 @@
 import { useState, useDeferredValue, useMemo } from 'react'
+import { useVirtualTableRows } from '@/hooks/useVirtualTableRows'
 import { useTranslation } from 'react-i18next'
 import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, EllipsisVertical, List, GitBranch, Tags } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
@@ -65,6 +66,7 @@ export const ProductCategoriesPage = () => {
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-product-category' })
+  const [parentIdForCreate, setParentIdForCreate] = useState<string | null>(null)
   const [categoryToDelete, setCategoryToDelete] = useState<ProductCategoryListItem | null>(null)
   const [categoryToManageAttributes, setCategoryToManageAttributes] = useState<ProductCategoryListItem | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
@@ -79,6 +81,9 @@ export const ProductCategoriesPage = () => {
   const deleteMutation = useDeleteProductCategory()
   const reorderMutation = useReorderProductCategories()
   const error = queryError?.message ?? null
+
+  const { scrollRef, height, shouldVirtualize, virtualItems, topPad, bottomPad } =
+    useVirtualTableRows(categories)
 
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'ProductCategory',
@@ -122,7 +127,7 @@ export const ProductCategoriesPage = () => {
         responsive
         action={
           canCreateCategories && (
-            <Button className="group transition-all duration-300" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('categories.newCategory', 'New Category')}
             </Button>
@@ -167,23 +172,29 @@ export const ProductCategoriesPage = () => {
           {viewMode === 'tree' ? (
             <div className="rounded-xl border border-border/50 p-4">
               <CategoryTreeView
+                maxHeight="100%"
                 categories={treeCategories}
                 loading={loading}
                 onEdit={(cat) => openEditCategory(cat as ProductCategoryListItem)}
                 onDelete={(cat) => setCategoryToDelete(cat as ProductCategoryListItem)}
+                onAddChild={canCreateCategories ? (cat) => { setParentIdForCreate((cat as ProductCategoryListItem).id); openCreate() } : undefined}
                 canEdit={canUpdateCategories}
                 canDelete={canDeleteCategories}
                 itemCountLabel={t('labels.products', 'products')}
                 emptyMessage={t('categories.noCategoriesFound', 'No categories found')}
                 emptyDescription={t('categories.noCategoriesDescription', 'Get started by creating your first category to organize products.')}
-                onCreateClick={canCreateCategories ? () => openCreate() : undefined}
+                onCreateClick={canCreateCategories ? () => { setParentIdForCreate(null); openCreate() } : undefined}
                 onReorder={canUpdateCategories ? handleReorder : undefined}
               />
             </div>
           ) : (
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
+          <div
+            ref={scrollRef}
+            className="rounded-xl border border-border/50 overflow-auto"
+            style={{ height }}
+          >
+  <Table>
+              <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
                 <TableRow>
                   <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
                   <TableHead className="w-[40%]">{t('labels.name', 'Name')}</TableHead>
@@ -227,96 +238,104 @@ export const ProductCategoriesPage = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  categories.map((category) => (
-                    <TableRow
-                      key={category.id}
-                      className={`group transition-colors hover:bg-muted/50${canUpdateCategories ? ' cursor-pointer' : ''}`}
-                      onClick={canUpdateCategories ? (e) => {
-                        if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
-                        openEditCategory(category)
-                      } : undefined}
-                    >
-                      <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: category.name, defaultValue: `Actions for ${category.name}` })}
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start">
-                            {canUpdateCategories && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => openEditCategory(category)}
+                  <>
+                    {topPad > 0 && (
+                      <TableRow><TableCell colSpan={6} className="p-0 border-0" style={{ height: topPad }} /></TableRow>
+                    )}
+                    {(shouldVirtualize ? virtualItems.map(vr => categories[vr.index]) : categories).map((category) => (
+                      <TableRow
+                        key={category.id}
+                        className={`group transition-colors hover:bg-muted/50${canUpdateCategories ? ' cursor-pointer' : ''}`}
+                        onClick={canUpdateCategories ? (e) => {
+                          if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
+                          openEditCategory(category)
+                        } : undefined}
+                      >
+                        <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                                aria-label={t('labels.actionsFor', { name: category.name, defaultValue: `Actions for ${category.name}` })}
                               >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                            )}
-                            {canUpdateCategories && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setCategoryToManageAttributes(category)}
-                              >
-                                <Tags className="h-4 w-4 mr-2" />
-                                {t('categoryAttributes.manageAttributes', 'Manage Attributes')}
-                              </DropdownMenuItem>
-                            )}
-                            {canDeleteCategories && (
-                              <DropdownMenuItem
-                                className="text-destructive cursor-pointer"
-                                onClick={() => setCategoryToDelete(category)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('labels.delete', 'Delete')}
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <FolderTree className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">{category.name}</span>
-                        </div>
-                        {category.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-1 mt-1 ml-6">
-                            {category.description}
-                          </p>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
-                          {category.slug}
-                        </code>
-                      </TableCell>
-                      <TableCell>
-                        {category.parentName ? (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <ChevronRight className="h-3 w-3" />
-                            {category.parentName}
+                                <EllipsisVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              {canUpdateCategories && (
+                                <DropdownMenuItem
+                                  className="cursor-pointer"
+                                  onClick={() => openEditCategory(category)}
+                                >
+                                  <Pencil className="h-4 w-4 mr-2" />
+                                  {t('labels.edit', 'Edit')}
+                                </DropdownMenuItem>
+                              )}
+                              {canUpdateCategories && (
+                                <DropdownMenuItem
+                                  className="cursor-pointer"
+                                  onClick={() => setCategoryToManageAttributes(category)}
+                                >
+                                  <Tags className="h-4 w-4 mr-2" />
+                                  {t('categoryAttributes.manageAttributes', 'Manage Attributes')}
+                                </DropdownMenuItem>
+                              )}
+                              {canDeleteCategories && (
+                                <DropdownMenuItem
+                                  className="text-destructive cursor-pointer"
+                                  onClick={() => setCategoryToDelete(category)}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  {t('labels.delete', 'Delete')}
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <FolderTree className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium">{category.name}</span>
                           </div>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{category.productCount}</Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {category.childCount > 0 ? (
-                          <Badge variant="outline">{category.childCount}</Badge>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))
+                          {category.description && (
+                            <p className="text-sm text-muted-foreground line-clamp-1 mt-1 ml-6">
+                              {category.description}
+                            </p>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
+                            {category.slug}
+                          </code>
+                        </TableCell>
+                        <TableCell>
+                          {category.parentName ? (
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                              <ChevronRight className="h-3 w-3" />
+                              {category.parentName}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="secondary">{category.productCount}</Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {category.childCount > 0 ? (
+                            <Badge variant="outline">{category.childCount}</Badge>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {bottomPad > 0 && (
+                      <TableRow><TableCell colSpan={6} className="p-0 border-0" style={{ height: bottomPad }} /></TableRow>
+                    )}
+                  </>
                 )}
               </TableBody>
             </Table>
@@ -332,10 +351,12 @@ export const ProductCategoriesPage = () => {
           if (!open) {
             if (isCreateOpen) onCreateOpenChange(false)
             if (categoryToEdit) closeEditCategory()
+            setParentIdForCreate(null)
           }
         }}
         category={categoryToEdit}
         categories={categories}
+        parentId={!categoryToEdit ? parentIdForCreate : null}
         onSuccess={refresh}
       />
 

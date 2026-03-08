@@ -80,6 +80,17 @@ public class Department : TenantAggregateRoot<Guid>
     }
 
     /// <summary>
+    /// Moves this department to a different parent (or root if null).
+    /// Used by drag-and-drop reordering. No-op if parent hasn't changed.
+    /// </summary>
+    public void SetParentDepartment(Guid? parentDepartmentId)
+    {
+        if (ParentDepartmentId == parentDepartmentId) return;
+        ParentDepartmentId = parentDepartmentId;
+        AddDomainEvent(new Events.Hr.DepartmentUpdatedEvent(Id));
+    }
+
+    /// <summary>
     /// Deactivates the department.
     /// </summary>
     public void Deactivate()

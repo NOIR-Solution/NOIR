@@ -177,10 +177,12 @@ public sealed record ReorderDepartmentsRequest(
 
 /// <summary>
 /// Single item in a reorder operation.
+/// ParentDepartmentId is optional — only provided when a drag-drop reparents the item.
 /// </summary>
 public sealed record ReorderItem(
     Guid Id,
-    int SortOrder);
+    int SortOrder,
+    Guid? ParentDepartmentId = null);
 
 // === Tag DTOs ===
 

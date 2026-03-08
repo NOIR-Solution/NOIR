@@ -32,7 +32,7 @@ import {
   useCreateDepartment,
   useUpdateDepartment,
 } from '@/portal-app/hr/queries'
-import { useDepartmentsQuery, useEmployeeSearchQuery } from '@/portal-app/hr/queries'
+import { useDepartmentQuery, useDepartmentsQuery, useEmployeeSearchQuery } from '@/portal-app/hr/queries'
 import type { DepartmentDto, DepartmentTreeNodeDto } from '@/types/hr'
 
 const createDepartmentSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
@@ -65,7 +65,8 @@ export const DepartmentFormDialog = ({ open, onOpenChange, department, parentDep
   const deferredManagerSearch = useDeferredValue(managerSearch)
   const { data: managerResults } = useEmployeeSearchQuery(deferredManagerSearch)
 
-  const fullDepartment = department && 'description' in department ? department as DepartmentDto : null
+  const { data: fetchedDepartment } = useDepartmentQuery(isEditing ? department?.id : undefined)
+  const fullDepartment = fetchedDepartment ?? null
 
   const form = useForm<DepartmentFormData>({
     resolver: zodResolver(createDepartmentSchema(t)) as unknown as Resolver<DepartmentFormData>,
@@ -80,30 +81,29 @@ export const DepartmentFormDialog = ({ open, onOpenChange, department, parentDep
   })
 
   useEffect(() => {
-    if (open) {
-      if (fullDepartment) {
-        form.reset({
-          name: fullDepartment.name,
-          code: fullDepartment.code,
-          description: fullDepartment.description || '',
-          parentDepartmentId: fullDepartment.parentDepartmentId || '',
-          managerId: fullDepartment.managerId || '',
-        })
-        if (fullDepartment.managerName) {
-          setManagerSearch(fullDepartment.managerName)
-        }
-      } else {
-        form.reset({
-          name: '',
-          code: '',
-          description: '',
-          parentDepartmentId: parentDepartmentId || '',
-          managerId: '',
-        })
-        setManagerSearch('')
+    if (!open) return
+    if (isEditing && fullDepartment) {
+      form.reset({
+        name: fullDepartment.name,
+        code: fullDepartment.code,
+        description: fullDepartment.description || '',
+        parentDepartmentId: fullDepartment.parentDepartmentId || '',
+        managerId: fullDepartment.managerId || '',
+      })
+      if (fullDepartment.managerName) {
+        setManagerSearch(fullDepartment.managerName)
       }
+    } else if (!isEditing) {
+      form.reset({
+        name: '',
+        code: '',
+        description: '',
+        parentDepartmentId: parentDepartmentId || '',
+        managerId: '',
+      })
+      setManagerSearch('')
     }
-  }, [open, fullDepartment, parentDepartmentId, form])
+  }, [open, isEditing, fullDepartment, parentDepartmentId, form])
 
   const onSubmit = async (data: DepartmentFormData) => {
     try {
@@ -172,7 +172,7 @@ export const DepartmentFormDialog = ({ open, onOpenChange, department, parentDep
         </CredenzaHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CredenzaBody>
+            <CredenzaBody className="pb-2">
               <div className="space-y-4">
                 <FormField
                   control={form.control}

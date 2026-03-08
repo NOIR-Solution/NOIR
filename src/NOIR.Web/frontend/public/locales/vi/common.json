@@ -1223,8 +1223,7 @@
     "bulkCancelFailed": "Hủy đơn hàng thất bại",
     "bulkCancelConfirmTitle": "Hủy {{count}} đơn hàng",
     "bulkCancelConfirmDescription": "Bạn có chắc chắn muốn hủy {{count}} đơn hàng? Hành động này không thể hoàn tác.",
-    "cancelReason": "Lý do hủy (tùy chọn)",
-    "cancelReasonPlaceholder": "Nhập lý do hủy..."
+    "cancelReason": "Lý do hủy (tùy chọn)"
   },
   "reviews": {
     "title": "Đánh giá",
@@ -2006,6 +2005,8 @@
     "slug": "Đường dẫn",
     "sortOrder": "Thứ tự sắp xếp",
     "websiteUrl": "URL Website",
+    "collapse": "Thu gọn",
+    "expand": "Mở rộng",
     "save": "Lưu",
     "cancel": "Hủy",
     "breadcrumb": "Đường dẫn",
@@ -2042,6 +2043,7 @@
     "gridView": "Xem dạng lưới",
     "pending": "Đang chờ",
     "add": "Thêm",
+    "addChild": "Thêm mục con",
     "create": "Tạo mới",
     "update": "Cập nhật",
     "edit": "Sửa",
@@ -3924,7 +3926,14 @@
         "Employment": "Hình thức",
         "Custom": "Tuỳ chỉnh"
       }
-    }
+    },
+    "searchDepartments": "Tìm kiếm phòng ban...",
+    "departmentCount": "{{count}} phòng ban",
+    "useDragToReorderOnly": "Để thay đổi phòng ban cha, hãy dùng form Chỉnh sửa",
+    "subDepartments": "Phòng con",
+    "departmentHasEmployees": "Có {{count}} nhân viên",
+    "departmentHasChildren": "Có {{count}} phòng ban con",
+    "reassignFirst": "Hãy di chuyển hoặc xóa chúng trước"
   },
   "crm": {
     "contacts": {

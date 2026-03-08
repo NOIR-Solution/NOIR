@@ -5,9 +5,10 @@
  * expand/collapse, drag-drop reordering/reparenting, and inline actions.
  *
  * Built on @headless-tree for accessible, keyboard-navigable tree interactions.
+ * Uses @tanstack/react-virtual for virtualized rendering of large lists.
  * Used by both ProductCategoriesPage and BlogCategoriesPage.
  */
-import { useMemo, useCallback, useRef } from 'react'
+import { useMemo, useCallback, useRef, useState, useLayoutEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTree } from '@headless-tree/react'
 import {
@@ -17,7 +18,10 @@ import {
   expandAllFeature,
   removeItemsFromParents,
   insertItemsAtTarget,
+  type ItemInstance,
+  type DragTarget,
 } from '@headless-tree/core'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   ChevronRight,
   ChevronDown,
@@ -25,6 +29,7 @@ import {
   FoldVertical,
   FolderTree,
   Pencil,
+  Plus,
   Trash2,
   MoreHorizontal,
   GripVertical,
@@ -35,6 +40,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../dropdown-menu/DropdownMenu'
 import { cn } from '@/lib/utils'
@@ -65,6 +71,7 @@ interface CategoryTreeViewProps<T extends TreeCategory> {
   loading?: boolean
   onEdit?: (category: T) => void
   onDelete?: (category: T) => void
+  onAddChild?: (category: T) => void
   canEdit?: boolean
   canDelete?: boolean
   itemCountLabel?: string // "products" or "posts"
@@ -72,6 +79,8 @@ interface CategoryTreeViewProps<T extends TreeCategory> {
   emptyDescription?: string
   onCreateClick?: () => void
   onReorder?: (items: ReorderItem[]) => void
+  /** Height of the virtual scroll container. Accepts px number or CSS string (default: fills remaining viewport). Applied when items > VIRTUALIZE_THRESHOLD. */
+  maxHeight?: number | string
 }
 
 // Internal tree data item
@@ -80,6 +89,16 @@ interface TreeDataItem<T extends TreeCategory> {
   children: string[]
   category: T | null
 }
+
+// Virtualize when visible item count exceeds this threshold
+const VIRTUALIZE_THRESHOLD = 40
+// Estimated row height in px (actual height measured dynamically)
+const ROW_ESTIMATED_HEIGHT = 44
+// Default scroll container height when virtualizing
+// PageHeader (~80px) + CardHeader with search (~130px) + page padding (~48px) + toolbar (~52px) + buffer (~16px) = ~326px
+const DEFAULT_MAX_HEIGHT = 'calc(100vh - 326px)'
+// Delay (ms) before auto-expanding a collapsed folder on drag hover
+const OPEN_ON_DROP_DELAY = 600
 
 // Build a flat data map for headless-tree from categories
 const buildDataMap = <T extends TreeCategory>(categories: T[]): Record<string, TreeDataItem<T>> => {
@@ -135,14 +154,12 @@ const computeReorderItems = <T extends TreeCategory>(
   return items
 }
 
-// Delay (ms) before auto-expanding a collapsed folder on drag hover
-const OPEN_ON_DROP_DELAY = 600
-
 export const CategoryTreeView = <T extends TreeCategory>({
   categories,
   loading = false,
   onEdit,
   onDelete,
+  onAddChild,
   canEdit = true,
   canDelete = true,
   itemCountLabel = 'items',
@@ -150,12 +167,48 @@ export const CategoryTreeView = <T extends TreeCategory>({
   emptyDescription = 'Get started by creating your first category.',
   onCreateClick,
   onReorder,
+  maxHeight = DEFAULT_MAX_HEIGHT,
 }: CategoryTreeViewProps<T>) => {
   const { t } = useTranslation('common')
   const dataMapRef = useRef<Record<string, TreeDataItem<T>>>(buildDataMap(categories))
   const treeRef = useRef<ReturnType<typeof useTree<TreeDataItem<T>>> | null>(null)
   const onReorderRef = useRef(onReorder)
   onReorderRef.current = onReorder
+
+  // Fill-parent mode: measure exact available height via toolbar position in viewport.
+  // This avoids relying on the h-full chain (which breaks through AnimatedOutlet/Suspense).
+  // Runs after every render so sidebar toggles, breadcrumb changes, etc. are captured.
+  // getBoundingClientRect on one element is ~0.1ms — negligible even during drag.
+  // Bottom constant: space-y-2 (8) + tree-wrapper p-4 (16) + Card py-6 (24) + main p-6 (24) = 72px
+  const fillParent = maxHeight === '100%'
+  const toolbarRef = useRef<HTMLDivElement>(null)
+  const virtualHeightRef = useRef(400)
+  const [virtualHeight, setVirtualHeight] = useState(400)
+  useLayoutEffect(() => {
+    if (!fillParent || !toolbarRef.current) return
+    const bottom = toolbarRef.current.getBoundingClientRect().bottom
+    const available = Math.max(100, Math.floor(window.innerHeight - bottom - 72))
+    if (Math.abs(available - virtualHeightRef.current) > 2) {
+      virtualHeightRef.current = available
+      setVirtualHeight(available)
+    }
+  })
+  // Resize listener: the no-deps effect above covers render-triggered updates (sidebar toggle etc.)
+  // but a plain browser resize doesn't trigger a re-render, so we need an explicit listener.
+  useLayoutEffect(() => {
+    if (!fillParent) return
+    const handleResize = () => {
+      if (!toolbarRef.current) return
+      const bottom = toolbarRef.current.getBoundingClientRect().bottom
+      const available = Math.max(100, Math.floor(window.innerHeight - bottom - 72))
+      if (Math.abs(available - virtualHeightRef.current) > 2) {
+        virtualHeightRef.current = available
+        setVirtualHeight(available)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [fillParent])
   // Skip server-data rebuilds briefly after a drop to prevent flicker
   const dropTimestampRef = useRef(0)
 
@@ -165,15 +218,12 @@ export const CategoryTreeView = <T extends TreeCategory>({
   const handleDrop = useMemo(() => {
     if (!onReorder) return undefined
     return async (
-      items: import('@headless-tree/core').ItemInstance<TreeDataItem<T>>[],
-      target: import('@headless-tree/core').DragTarget<TreeDataItem<T>>,
+      items: ItemInstance<TreeDataItem<T>>[],
+      target: DragTarget<TreeDataItem<T>>,
     ) => {
       const changedParentIds = new Set<string>()
-      // Update dataMapRef.current immediately in the callback so that
-      // insertItemsAtTarget reads the already-updated children (with the
-      // dragged item removed) and doesn't duplicate it.
       const applyChanges = (
-        item: import('@headless-tree/core').ItemInstance<TreeDataItem<T>>,
+        item: ItemInstance<TreeDataItem<T>>,
         newChildren: string[],
       ) => {
         const parentId = item.getId()
@@ -186,7 +236,6 @@ export const CategoryTreeView = <T extends TreeCategory>({
       await removeItemsFromParents(items, applyChanges)
       await insertItemsAtTarget(items.map(i => i.getId()), target, applyChanges)
 
-      // Single rebuild + single API call
       dropTimestampRef.current = Date.now()
       treeRef.current?.rebuildTree()
       const reorderItems = computeReorderItems(dataMapRef.current, changedParentIds)
@@ -202,11 +251,11 @@ export const CategoryTreeView = <T extends TreeCategory>({
   const tree = useTree<TreeDataItem<T>>({
     rootItemId: 'root',
     getItemName: (item) => item.getItemData().name,
-    isItemFolder: () => true, // All categories can accept children
+    isItemFolder: () => true,
     indent: 24,
     canReorder: canDrag,
     canDrag: () => canDrag,
-    seperateDragHandle: canDrag,
+    seperateDragHandle: false,
     openOnDropDelay: OPEN_ON_DROP_DELAY,
     dataLoader: {
       getItem: (id) => dataMapRef.current[id],
@@ -217,7 +266,7 @@ export const CategoryTreeView = <T extends TreeCategory>({
   })
   treeRef.current = tree
 
-  // Track dragged item IDs for ghost styling
+  // Snapshot dragged item IDs — read from dnd state only once per render
   const dndState = tree.getState().dnd
   const draggedIds = useMemo(() => {
     if (!dndState?.draggedItems) return new Set<string>()
@@ -238,13 +287,25 @@ export const CategoryTreeView = <T extends TreeCategory>({
     }
   }
 
-  const expandAll = useCallback(() => {
-    tree.expandAll()
-  }, [tree])
+  const expandAll = useCallback(() => tree.expandAll(), [tree])
+  const collapseAll = useCallback(() => tree.collapseAll(), [tree])
 
-  const collapseAll = useCallback(() => {
-    tree.collapseAll()
-  }, [tree])
+  // Get flat visible items (headless-tree only includes expanded items)
+  const treeItems = tree.getItems()
+  // Base virtualization on total category count (stable), not visible items count.
+  // Using treeItems.length would flip between virtual/standard modes as items expand/collapse,
+  // causing full DOM rebuilds during interaction and perceived lag.
+  const shouldVirtualize = categories.length > VIRTUALIZE_THRESHOLD
+
+  // Virtual scroll container ref (only used when virtualizing)
+  const scrollParentRef = useRef<HTMLDivElement>(null)
+  const rowVirtualizer = useVirtualizer({
+    count: shouldVirtualize ? treeItems.length : 0,
+    getScrollElement: () => scrollParentRef.current,
+    estimateSize: () => ROW_ESTIMATED_HEIGHT,
+    overscan: 8,
+    getItemKey: (index) => treeItems[index]?.getId() ?? index,
+  })
 
   if (loading) {
     return (
@@ -278,12 +339,165 @@ export const CategoryTreeView = <T extends TreeCategory>({
     )
   }
 
-  const treeItems = tree.getItems()
+  // Renders a single tree row (shared between virtual and non-virtual paths)
+  const renderTreeItem = (item: ItemInstance<TreeDataItem<T>>) => {
+    const data = item.getItemData()
+    const category = data.category
+    if (!category) return null
+
+    const meta = item.getItemMeta()
+    const hasChildren = data.children.length > 0
+    const isExpanded = item.isExpanded()
+    const isBeingDragged = draggedIds.has(item.getId())
+    const isDropTarget = item.isDragTarget()
+    const isDirectDropTarget = item.isUnorderedDragTarget()
+
+    return (
+      <div
+        {...item.getProps()}
+        key={item.getId()}
+        className={cn(
+          'group flex items-center gap-2 py-2 px-3 rounded-lg',
+          'transition-colors duration-150',
+          'hover:bg-muted/50',
+          canDrag && 'cursor-grab active:cursor-grabbing',
+          isBeingDragged && 'opacity-40 scale-[0.98]',
+          isDirectDropTarget && !isBeingDragged && [
+            'bg-primary/5 ring-2 ring-primary/40 ring-offset-1 ring-offset-background',
+            'shadow-[0_0_12px_-3px] shadow-primary/20',
+          ],
+          isDropTarget && !isDirectDropTarget && !isBeingDragged && 'bg-accent/30',
+          !isBeingDragged && !isDropTarget && item.isFocused() && 'bg-muted/30',
+        )}
+        style={{ paddingLeft: `${meta.level * 24 + 12}px` }}
+      >
+        {/* Expand/Collapse Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            'h-6 w-6 p-0 cursor-pointer shrink-0',
+            'transition-transform duration-200',
+            isExpanded && 'text-foreground',
+            !hasChildren && 'invisible'
+          )}
+          onClick={(e) => {
+            e.stopPropagation()
+            if (isExpanded) item.collapse()
+            else item.expand()
+          }}
+          aria-label={isExpanded ? t('nav.collapse', 'Collapse') : t('nav.expand', 'Expand')}
+        >
+          {isExpanded ? (
+            <ChevronDown className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          )}
+        </Button>
+
+        {/* Drag Handle (visual indicator only — the whole row is draggable) */}
+        {canDrag ? (
+          <div className="flex items-center shrink-0 pointer-events-none">
+            <GripVertical className={cn(
+              'h-4 w-4 text-muted-foreground/40 shrink-0',
+              'transition-opacity duration-150',
+              'opacity-0 group-hover:opacity-70',
+              isDragging && 'opacity-50',
+            )} />
+          </div>
+        ) : (
+          <div className="w-4 shrink-0" />
+        )}
+
+        {/* Icon */}
+        <FolderTree className={cn(
+          'h-4 w-4 text-muted-foreground shrink-0 transition-colors duration-200',
+          isDirectDropTarget && !isBeingDragged && 'text-primary',
+        )} />
+
+        {/* Name & Description */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium truncate">{category.name}</span>
+            <code className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded hidden sm:inline">
+              {category.slug}
+            </code>
+          </div>
+          {category.description && (
+            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+              {category.description}
+            </p>
+          )}
+        </div>
+
+        {/* Badges */}
+        <div className="flex items-center gap-2 shrink-0">
+          {category.itemCount !== undefined && category.itemCount > 0 && (
+            <Badge variant="secondary" className="text-xs">
+              {category.itemCount} {itemCountLabel}
+            </Badge>
+          )}
+          {hasChildren && (
+            <Badge variant="outline" className="text-xs">
+              {data.children.length} {t('labels.children', 'children')}
+            </Badge>
+          )}
+        </div>
+
+        {/* Actions */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0"
+              aria-label={t('labels.actionsFor', { name: category.name })}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            {canEdit && onEdit && (
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => onEdit(category)}
+              >
+                <Pencil className="h-4 w-4 mr-2" />
+                {t('labels.edit', 'Edit')}
+              </DropdownMenuItem>
+            )}
+            {onAddChild && (
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => onAddChild(category)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t('labels.addChild', 'Add Child')}
+              </DropdownMenuItem>
+            )}
+            {canDelete && onDelete && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive cursor-pointer"
+                  onClick={() => onDelete(category)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t('labels.delete', 'Delete')}
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-2">
       {/* Toolbar */}
-      <div className="flex items-center justify-end pb-2 border-b border-border/50">
+      <div ref={toolbarRef} className="flex items-center justify-end pb-2 border-b border-border/50">
         <div className="flex items-center gap-1 p-1 rounded-lg bg-muted">
           <Button
             variant="ghost"
@@ -306,193 +520,106 @@ export const CategoryTreeView = <T extends TreeCategory>({
         </div>
       </div>
 
-      {/* Tree */}
-      <div
-        {...tree.getContainerProps('Category Tree')}
-        className="space-y-0.5 relative"
-      >
-        {treeItems.map((item) => {
-          const data = item.getItemData()
-          const category = data.category
-          if (!category) return null // Skip virtual root
-
-          const meta = item.getItemMeta()
-          const hasChildren = data.children.length > 0
-          const isExpanded = item.isExpanded()
-          const isBeingDragged = draggedIds.has(item.getId())
-          const isDropTarget = item.isDragTarget()
-          const isDirectDropTarget = item.isUnorderedDragTarget()
-
-          return (
-            <div
-              {...item.getProps()}
-              key={item.getId()}
-              className={cn(
-                'group flex items-center gap-2 py-2 px-3 rounded-lg',
-                'transition-all duration-200 ease-out',
-                'hover:bg-muted/50',
-                // Ghost state: the item being dragged
-                isBeingDragged && 'opacity-40 scale-[0.98]',
-                // Drop target: this item will become the new parent
-                isDirectDropTarget && !isBeingDragged && [
-                  'bg-primary/5 ring-2 ring-primary/40 ring-offset-1 ring-offset-background',
-                  'shadow-[0_0_12px_-3px] shadow-primary/20',
-                ],
-                // Broader drop target (between children of this item)
-                isDropTarget && !isDirectDropTarget && !isBeingDragged && 'bg-accent/30',
-                // Focused state (keyboard nav)
-                !isBeingDragged && !isDropTarget && item.isFocused() && 'bg-muted/30',
-              )}
-              style={{ paddingLeft: `${meta.level * 24 + 12}px` }}
-            >
-              {/* Expand/Collapse Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  'h-6 w-6 p-0 cursor-pointer shrink-0',
-                  'transition-transform duration-200',
-                  isExpanded && 'text-foreground',
-                  !hasChildren && 'invisible'
-                )}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  if (isExpanded) {
-                    item.collapse()
-                  } else {
-                    item.expand()
-                  }
-                }}
-                aria-label={isExpanded ? t('nav.collapse', 'Collapse') : t('nav.expand', 'Expand')}
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </Button>
-
-              {/* Drag Handle */}
-              {canDrag ? (
+      {shouldVirtualize ? (
+        /* ── Virtualized path: explicit-height scroll container ── */
+        <div
+          ref={scrollParentRef}
+          className="overflow-auto rounded-lg"
+          style={{ height: fillParent ? virtualHeight : maxHeight }}
+        >
+          <div
+            {...tree.getContainerProps('Category Tree')}
+            style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+              const item = treeItems[virtualItem.index]
+              if (!item) return null
+              return (
                 <div
-                  {...item.getDragHandleProps()}
-                  className="flex items-center shrink-0"
-                >
-                  <GripVertical className={cn(
-                    'h-4 w-4 text-muted-foreground/40 shrink-0',
-                    'transition-all duration-150',
-                    'opacity-0 group-hover:opacity-100',
-                    'hover:text-muted-foreground cursor-grab active:cursor-grabbing',
-                    isDragging && 'opacity-50',
-                  )} />
-                </div>
-              ) : (
-                <div className="w-4 shrink-0" />
-              )}
-
-              {/* Icon */}
-              <FolderTree className={cn(
-                'h-4 w-4 text-muted-foreground shrink-0 transition-colors duration-200',
-                isDirectDropTarget && !isBeingDragged && 'text-primary',
-              )} />
-
-              {/* Name & Description */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium truncate">{category.name}</span>
-                  <code className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded hidden sm:inline">
-                    {category.slug}
-                  </code>
-                </div>
-                {category.description && (
-                  <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-                    {category.description}
-                  </p>
-                )}
-              </div>
-
-              {/* Badges */}
-              <div className="flex items-center gap-2 shrink-0">
-                {category.itemCount !== undefined && category.itemCount > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    {category.itemCount} {itemCountLabel}
-                  </Badge>
-                )}
-                {hasChildren && (
-                  <Badge variant="outline" className="text-xs">
-                    {data.children.length} {t('labels.children', 'children')}
-                  </Badge>
-                )}
-              </div>
-
-              {/* Actions */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0"
-                    aria-label={t('labels.actionsFor', { name: category.name })}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                  {canEdit && onEdit && (
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={() => onEdit(category)}
-                    >
-                      <Pencil className="h-4 w-4 mr-2" />
-                      {t('labels.edit', 'Edit')}
-                    </DropdownMenuItem>
-                  )}
-                  {canDelete && onDelete && (
-                    <DropdownMenuItem
-                      className="text-destructive cursor-pointer"
-                      onClick={() => onDelete(category)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      {t('labels.delete', 'Delete')}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )
-        })}
-
-        {/* Drag indicator line with dot marker */}
-        {canDrag && (
-          <>
-            <div
-              style={tree.getDragLineStyle()}
-              className={cn(
-                'absolute h-[2px] bg-primary rounded-full pointer-events-none',
-                'transition-[top,left,width] duration-150 ease-out',
-                isDragging ? 'opacity-100' : 'opacity-0',
-              )}
-            />
-            {/* Dot at the start of the drag line */}
-            {isDragging && tree.getDragLineData() && (() => {
-              const lineStyle = tree.getDragLineStyle()
-              return lineStyle.top ? (
-                <div
-                  className="absolute pointer-events-none"
+                  key={item.getId()}
+                  data-index={virtualItem.index}
+                  ref={rowVirtualizer.measureElement}
                   style={{
-                    top: lineStyle.top,
-                    left: lineStyle.left,
-                    transform: 'translate(-3px, -3px)',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    transform: `translateY(${virtualItem.start}px)`,
                   }}
                 >
-                  <div className="h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
+                  {renderTreeItem(item)}
                 </div>
-              ) : null
-            })()}
-          </>
-        )}
-      </div>
+              )
+            })}
+
+            {/* Drag indicator line */}
+            {canDrag && (
+              <>
+                <div
+                  style={tree.getDragLineStyle()}
+                  className={cn(
+                    'absolute h-[2px] bg-primary rounded-full pointer-events-none',
+                    'transition-[top,left,width] duration-150 ease-out',
+                    isDragging ? 'opacity-100' : 'opacity-0',
+                  )}
+                />
+                {isDragging && tree.getDragLineData() && (() => {
+                  const lineStyle = tree.getDragLineStyle()
+                  return lineStyle.top ? (
+                    <div
+                      className="absolute pointer-events-none"
+                      style={{
+                        top: lineStyle.top,
+                        left: lineStyle.left,
+                        transform: 'translate(-3px, -3px)',
+                      }}
+                    >
+                      <div className="h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
+                    </div>
+                  ) : null
+                })()}
+              </>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* ── Standard path: auto-height, no virtualization ── */
+        <div
+          {...tree.getContainerProps('Category Tree')}
+          className="space-y-0.5 relative"
+        >
+          {treeItems.map((item) => renderTreeItem(item))}
+
+          {/* Drag indicator line */}
+          {canDrag && (
+            <>
+              <div
+                style={tree.getDragLineStyle()}
+                className={cn(
+                  'absolute h-[2px] bg-primary rounded-full pointer-events-none',
+                  'transition-[top,left,width] duration-150 ease-out',
+                  isDragging ? 'opacity-100' : 'opacity-0',
+                )}
+              />
+              {isDragging && tree.getDragLineData() && (() => {
+                const lineStyle = tree.getDragLineStyle()
+                return lineStyle.top ? (
+                  <div
+                    className="absolute pointer-events-none"
+                    style={{
+                      top: lineStyle.top,
+                      left: lineStyle.left,
+                      transform: 'translate(-3px, -3px)',
+                    }}
+                  >
+                    <div className="h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
+                  </div>
+                ) : null
+              })()}
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

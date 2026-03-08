@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -28,15 +28,10 @@ import {
   Textarea,
 } from '@uikit'
 
-import {
-  createProductCategory,
-  updateProductCategory,
-} from '@/services/products'
-import { useProductCategoriesQuery } from '@/portal-app/products/queries'
+import { useCreateProductCategory, useUpdateProductCategory, useProductCategoriesQuery } from '@/portal-app/products/queries'
 import type { ProductCategoryListItem } from '@/types/product'
 import { toast } from 'sonner'
 import { FolderTree, Loader2 } from 'lucide-react'
-import { ApiError } from '@/services/apiClient'
 import { generateSlug } from '@/lib/utils/slug'
 
 const createCategorySchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
@@ -59,6 +54,7 @@ interface ProductCategoryDialogProps {
   onOpenChange: (open: boolean) => void
   category: ProductCategoryListItem | null
   categories?: ProductCategoryListItem[]  // Optional - will use hook if not provided
+  parentId?: string | null
   onSuccess: () => void
 }
 
@@ -67,11 +63,15 @@ export const ProductCategoryDialog = ({
   onOpenChange,
   category,
   categories: categoriesProp,
+  parentId,
   onSuccess,
 }: ProductCategoryDialogProps) => {
   const { t } = useTranslation('common')
   const isEditing = !!category
-  const [isSaving, setIsSaving] = useState(false)
+
+  const createMutation = useCreateProductCategory()
+  const updateMutation = useUpdateProductCategory()
+  const isSaving = createMutation.isPending || updateMutation.isPending
 
   // Fetch fresh categories when dialog opens - this fixes CAT-013 where newly created
   // categories weren't appearing in parent dropdown after page reload
@@ -131,10 +131,10 @@ export const ProductCategoryDialog = ({
         metaDescription: '',
         imageUrl: '',
         sortOrder: 0,
-        parentId: null,
+        parentId: parentId || null,
       })
     }
-  }, [category, form, open])
+  }, [category, parentId, form, open])
 
   const handleNameChange = (name: string) => {
     form.setValue('name', name)
@@ -144,28 +144,19 @@ export const ProductCategoryDialog = ({
   }
 
   const onSubmit = async (data: CategoryFormData) => {
-    setIsSaving(true)
+    const request = { ...data, parentId: data.parentId || null }
     try {
       if (isEditing && category) {
-        await updateProductCategory(category.id, {
-          ...data,
-          parentId: data.parentId || null,
-        })
+        await updateMutation.mutateAsync({ id: category.id, request })
         toast.success(t('categories.updateSuccess', 'Category updated successfully'))
       } else {
-        await createProductCategory({
-          ...data,
-          parentId: data.parentId || null,
-        })
+        await createMutation.mutateAsync(request)
         toast.success(t('categories.createSuccess', 'Category created successfully'))
       }
       onOpenChange(false)
       onSuccess()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : t('categories.saveFailed', 'Failed to save category')
-      toast.error(message)
-    } finally {
-      setIsSaving(false)
+      toast.error(err instanceof Error ? err.message : t('categories.saveFailed', 'Failed to save category'))
     }
   }
 

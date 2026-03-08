@@ -138,7 +138,7 @@ public static class DepartmentEndpoints
             IMessageBus bus) =>
         {
             var command = new ReorderDepartmentsCommand(
-                request.Items.Select(i => new ReorderItem(i.Id, i.SortOrder)).ToList())
+                request.Items.Select(i => new ReorderItem(i.Id, i.SortOrder, i.ParentDepartmentId)).ToList())
             {
                 UserId = currentUser.UserId
             };

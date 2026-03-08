@@ -785,6 +785,215 @@ export const productKeys = {
 | **Platform Settings** | — | tabs | — |
 | **Personal Settings** | — | section nav | — |
 
+## CategoryTreeView — Virtual Scroll & Drag-and-Drop
+
+`CategoryTreeView` (`src/uikit/category-tree-view/`) uses `@headless-tree/react` + `@tanstack/react-virtual` for large hierarchical lists.
+
+### Virtualization threshold
+
+```tsx
+const VIRTUALIZE_THRESHOLD = 40
+// Use categories.length (STABLE), NOT treeItems.length (volatile during expand/collapse)
+const shouldVirtualize = categories.length > VIRTUALIZE_THRESHOLD
+```
+
+`treeItems.length` fluctuates as nodes expand/collapse — this would flip between virtual/standard paths mid-interaction causing full DOM rebuilds and lag.
+
+### Container layout (virtual path)
+
+The scroll container and tree container MUST be **separate elements**:
+
+```tsx
+{/* Scroll container — outer, has fixed height */}
+<div ref={scrollParentRef} className="overflow-auto" style={{ height: virtualHeight }}>
+  {/* Tree container — inner, getContainerProps here, NOT on scroll container */}
+  <div
+    {...tree.getContainerProps('Category Tree')}
+    style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}
+  >
+    {/* virtual items, drag line */}
+  </div>
+</div>
+```
+
+**Why they must be separate**: headless-tree calculates drag-line position as `item.getBoundingClientRect().top - treeContainer.getBoundingClientRect().top`. When the user scrolls, the inner container's viewport top changes (it moves up), keeping this calculation correct. If `getContainerProps` is on the scroll container instead, `container.viewport.top` stays fixed and drag-line position is wrong by `scrollTop` pixels.
+
+### Viewport height measurement (`fillParent` mode)
+
+`AnimatedOutlet` wraps all pages in `div.vt-main-content` with no explicit height, so `h-full` on the page resolves to `auto`. Instead of relying on CSS height chains, measure the available space with JS:
+
+```tsx
+const fillParent = maxHeight === '100%'
+const toolbarRef = useRef<HTMLDivElement>(null)
+const virtualHeightRef = useRef(400)
+const [virtualHeight, setVirtualHeight] = useState(400)
+
+useLayoutEffect(() => {
+  if (!fillParent || !toolbarRef.current) return
+  const bottom = toolbarRef.current.getBoundingClientRect().bottom
+  // 72 = space-y-2 gap (8) + tree-wrapper p-4 (16) + Card py-6 (24) + main p-6 (24)
+  const available = Math.max(100, Math.floor(window.innerHeight - bottom - 72))
+  if (Math.abs(available - virtualHeightRef.current) > 2) {
+    virtualHeightRef.current = available
+    setVirtualHeight(available)
+  }
+}) // no deps — runs after every render; ~0.1ms; guard prevents cascading re-renders
+```
+
+Pass `maxHeight="100%"` from the page to activate this mode. The toolbar ref is placed on the element just above the scroll container.
+
+### Drag-and-drop: use `seperateDragHandle: false`
+
+headless-tree uses **HTML5 drag events** (`draggable`, `onDragStart`, `onDragOver`, `onDrop`).
+
+```tsx
+// ✅ CORRECT — entire row is draggable
+seperateDragHandle: false,
+```
+
+```tsx
+// ❌ WRONG — only the tiny grip icon is draggable; users cannot discover it
+seperateDragHandle: true,  // + getDragHandleProps() on grip div
+```
+
+With `seperateDragHandle: false`, `item.getProps()` includes `draggable: true` on the row itself. The grip icon becomes a **visual-only indicator** (`pointer-events-none`):
+
+```tsx
+// Row: canDrag && 'cursor-grab active:cursor-grabbing' added to className
+// Grip div: pointer-events-none, no getDragHandleProps()
+<div className="flex items-center shrink-0 pointer-events-none">
+  <GripVertical className="opacity-0 group-hover:opacity-70" />
+</div>
+```
+
+### Performance during drag
+
+Use `transition-colors duration-150` on tree rows, **not** `transition-all`:
+
+```tsx
+// ✅ Fast — only color transitions, avoids GPU compositing overhead on 15 visible items
+'transition-colors duration-150'
+
+// ❌ Slow — animates ring, shadow, transform on every drag event → visible lag
+'transition-all duration-200 ease-out'
+```
+
+### Page integration
+
+Pages using `CategoryTreeView` in tree mode must use `space-y-6` layout (no flex height chain):
+
+```tsx
+// ✅ Simple layout — CategoryTreeView handles its own height internally
+<div className="space-y-6">
+  <PageHeader ... />
+  <Card ...>
+    <CardContent ...>
+      <div className="rounded-xl border border-border/50 p-4">
+        <CategoryTreeView maxHeight="100%" categories={...} onReorder={handleReorder} />
+      </div>
+    </CardContent>
+  </Card>
+</div>
+```
+
+Never use `h-full flex flex-col` on the page wrapper or `flex-1 min-h-0` on Card/CardContent — these depend on the `h-full` chain which `AnimatedOutlet` breaks.
+
+### Resize handling
+
+`CategoryTreeView` uses **two** `useLayoutEffect` calls for height:
+
+1. **No-deps** (runs every render) — captures sidebar toggles, breadcrumb changes, any React state update that affects layout
+2. **`[fillParent]`-dep with resize listener** — captures raw browser window resize which doesn't trigger a React re-render
+
+```tsx
+// Dedicated resize listener — plain window resize doesn't trigger a re-render
+useLayoutEffect(() => {
+  if (!fillParent) return
+  const handleResize = () => { /* same measurement logic */ }
+  window.addEventListener('resize', handleResize)
+  return () => window.removeEventListener('resize', handleResize)
+}, [fillParent])
+```
+
+---
+
+## Table Virtualization — `useVirtualTableRows`
+
+For non-paginated flat list pages (DepartmentsPage, BlogCategoriesPage, ProductCategoriesPage) where the TABLE mode could have hundreds of rows.
+
+**Hook**: `src/hooks/useVirtualTableRows.ts`
+
+### Pattern overview
+
+Uses the **spacer-row technique** — keeps normal `<table>` layout (no `display:block` on `<tbody>`), so column widths stay consistent between header and body automatically:
+
+```tsx
+const { scrollRef, height, shouldVirtualize, virtualItems, topPad, bottomPad } =
+  useVirtualTableRows(items)
+
+// Scroll container: fixed height, overflows
+<div ref={scrollRef} className="rounded-xl border border-border/50 overflow-auto" style={{ height }}>
+  <Table>
+    {/* Sticky header — always visible while scrolling */}
+    <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
+      <TableRow>...</TableRow>
+    </TableHeader>
+    <TableBody>
+      {/* Top spacer pushes visible items to correct scroll position */}
+      {topPad > 0 && (
+        <TableRow><TableCell colSpan={N} className="p-0 border-0" style={{ height: topPad }} /></TableRow>
+      )}
+      {(shouldVirtualize ? virtualItems.map(vr => items[vr.index]) : items).map(item => (
+        <TableRow key={item.id}>...</TableRow>
+      ))}
+      {/* Bottom spacer reserves space for non-rendered rows */}
+      {bottomPad > 0 && (
+        <TableRow><TableCell colSpan={N} className="p-0 border-0" style={{ height: bottomPad }} /></TableRow>
+      )}
+    </TableBody>
+  </Table>
+</div>
+```
+
+### Critical: callback ref, not `useRef`
+
+The table div only renders when `viewMode === 'table'` (default is `'tree'`). Using a plain `useRef` causes `useLayoutEffect(fn, [])` to fire at mount with `ref.current = null`, and height measurement never runs.
+
+**Fix**: use a **callback ref** so measurement fires when the element actually attaches:
+
+```ts
+// ✅ Callback ref — fires when element mounts, even in conditional renders
+const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
+const scrollRef = useCallback((el: HTMLDivElement | null) => setScrollEl(el), [])
+
+useLayoutEffect(() => {
+  if (!scrollEl) return
+  const measure = () => {
+    const { top } = scrollEl.getBoundingClientRect()
+    setHeight(Math.max(200, Math.floor(window.innerHeight - top - BOTTOM_GAP)))
+  }
+  measure()
+  window.addEventListener('resize', measure)
+  return () => window.removeEventListener('resize', measure)
+}, [scrollEl]) // re-runs when element mounts/unmounts
+```
+
+```ts
+// ❌ useRef — useLayoutEffect(fn, []) fires at initial mount when element is not yet in DOM
+const scrollRef = useRef<HTMLDivElement>(null)  // null at mount → height stays 400px forever
+useLayoutEffect(() => { /* never measures */ }, [])
+```
+
+### Bottom gap constant
+
+`BOTTOM_GAP = 48` = CardContent `p-6` bottom (24px) + main `p-6` bottom (24px).
+
+Compare with tree's `72` = `space-y-2` (8) + `tree-wrapper p-4` (16) + `Card py-6` (24) + `main p-6` (24). Tree has extra inner wrapper padding; table does not.
+
+### When NOT to virtualize
+
+All other list pages in NOIR use **server-side pagination** (`page/pageSize` + `<Pagination>` component) — they already limit DOM nodes and do NOT need `useVirtualTableRows`. Only apply to pages that load ALL items at once (currently: the three category pages).
+
 ## Code Quality
 
 - Run `pnpm run lint` before committing

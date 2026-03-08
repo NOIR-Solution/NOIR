@@ -144,7 +144,7 @@ export interface UpdateDepartmentRequest {
 }
 
 export interface ReorderDepartmentsRequest {
-  items: { departmentId: string; sortOrder: number }[]
+  items: { id: string; parentDepartmentId: string | null; sortOrder: number }[]
 }
 
 // Tag DTOs

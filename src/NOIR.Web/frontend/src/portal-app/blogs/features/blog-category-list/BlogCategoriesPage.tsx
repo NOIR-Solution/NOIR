@@ -1,4 +1,5 @@
 import { useState, useDeferredValue, useMemo } from 'react'
+import { useVirtualTableRows } from '@/hooks/useVirtualTableRows'
 import { useTranslation } from 'react-i18next'
 import { Search, FolderTree, Plus, Pencil, Trash2, List, GitBranch, EllipsisVertical } from 'lucide-react'
 import {
@@ -58,6 +59,7 @@ export const BlogCategoriesPage = () => {
   const deferredSearch = useDeferredValue(searchInput)
   const isSearchStale = searchInput !== deferredSearch
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-blog-category' })
+  const [parentIdForCreate, setParentIdForCreate] = useState<string | null>(null)
   const [categoryToDelete, setCategoryToDelete] = useState<PostCategoryListItem | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
   const viewModeOptions: ViewModeOption<'table' | 'tree'>[] = useMemo(() => [
@@ -105,6 +107,9 @@ export const BlogCategoriesPage = () => {
     refresh()
   }
 
+  const { scrollRef, height, shouldVirtualize, virtualItems, topPad, bottomPad } =
+    useVirtualTableRows(data)
+
   // Map categories to tree format
   const treeCategories = data.map(toTreeCategory)
 
@@ -115,8 +120,9 @@ export const BlogCategoriesPage = () => {
         icon={FolderTree}
         title={t('blogCategories.title', 'Categories')}
         description={t('blogCategories.description', 'Organize your blog posts')}
+        responsive
         action={
-          <Button className="group transition-all duration-300" onClick={() => openCreate()}>
+          <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
             <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
             {t('blogCategories.newCategory', 'New Category')}
           </Button>
@@ -160,23 +166,29 @@ export const BlogCategoriesPage = () => {
           {viewMode === 'tree' ? (
             <div className="rounded-xl border border-border/50 p-4">
               <CategoryTreeView
+                maxHeight="100%"
                 categories={treeCategories}
                 loading={loading}
                 onEdit={(cat) => openEditCategory(cat as PostCategoryListItem)}
                 onDelete={(cat) => setCategoryToDelete(cat as PostCategoryListItem)}
+                onAddChild={(cat) => { setParentIdForCreate((cat as PostCategoryListItem).id); openCreate() }}
                 canEdit={true}
                 canDelete={true}
                 itemCountLabel={t('labels.posts', 'posts')}
                 emptyMessage={t('blogCategories.noCategoriesFound', 'No categories found')}
                 emptyDescription={t('blogCategories.noCategoriesDescription', 'Get started by creating your first category to organize your blog posts.')}
-                onCreateClick={() => openCreate()}
+                onCreateClick={() => { setParentIdForCreate(null); openCreate() }}
                 onReorder={handleReorder}
               />
             </div>
           ) : (
-          <div className="rounded-xl border border-border/50 overflow-hidden">
+          <div
+            ref={scrollRef}
+            className="rounded-xl border border-border/50 overflow-auto"
+            style={{ height }}
+          >
             <Table>
-              <TableHeader>
+              <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
                 <TableRow>
                   <TableHead className="w-10 sticky left-0 z-10 bg-background" />
                   <TableHead className="w-[30%]">{t('labels.name', 'Name')}</TableHead>
@@ -216,61 +228,69 @@ export const BlogCategoriesPage = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((category) => (
-                    <TableRow
-                      key={category.id}
-                      className="group cursor-pointer transition-colors hover:bg-muted/50"
-                      onClick={(e) => {
-                        if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
-                        openEditCategory(category)
-                      }}
-                    >
-                      <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0"
-                              aria-label={t('labels.actionsFor', { name: category.name, defaultValue: `Actions for ${category.name}` })}
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start">
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={() => openEditCategory(category)}
-                            >
-                              <Pencil className="h-4 w-4 mr-2" />
-                              {t('labels.edit', 'Edit')}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive cursor-pointer"
-                              onClick={(e) => { e.stopPropagation(); setCategoryToDelete(category); }}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              {t('labels.delete', 'Delete')}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                      <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell>
-                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{category.slug}</code>
-                      </TableCell>
-                      <TableCell>{category.parentName || '-'}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{category.postCount}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {category.childCount > 0 && (
-                          <Badge variant="outline">{category.childCount}</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>{category.sortOrder}</TableCell>
-                    </TableRow>
-                  ))
+                  <>
+                    {topPad > 0 && (
+                      <TableRow><TableCell colSpan={7} className="p-0 border-0" style={{ height: topPad }} /></TableRow>
+                    )}
+                    {(shouldVirtualize ? virtualItems.map(vr => data[vr.index]) : data).map((category) => (
+                      <TableRow
+                        key={category.id}
+                        className="group cursor-pointer transition-colors hover:bg-muted/50"
+                        onClick={(e) => {
+                          if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
+                          openEditCategory(category)
+                        }}
+                      >
+                        <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="cursor-pointer h-9 w-9 p-0"
+                                aria-label={t('labels.actionsFor', { name: category.name, defaultValue: `Actions for ${category.name}` })}
+                              >
+                                <EllipsisVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => openEditCategory(category)}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                {t('labels.edit', 'Edit')}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive cursor-pointer"
+                                onClick={(e) => { e.stopPropagation(); setCategoryToDelete(category); }}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {t('labels.delete', 'Delete')}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                        <TableCell className="font-medium">{category.name}</TableCell>
+                        <TableCell>
+                          <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{category.slug}</code>
+                        </TableCell>
+                        <TableCell>{category.parentName || '-'}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{category.postCount}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          {category.childCount > 0 && (
+                            <Badge variant="outline">{category.childCount}</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>{category.sortOrder}</TableCell>
+                      </TableRow>
+                    ))}
+                    {bottomPad > 0 && (
+                      <TableRow><TableCell colSpan={7} className="p-0 border-0" style={{ height: bottomPad }} /></TableRow>
+                    )}
+                  </>
                 )}
               </TableBody>
             </Table>
@@ -286,9 +306,11 @@ export const BlogCategoriesPage = () => {
           if (!open) {
             if (isCreateOpen) onCreateOpenChange(false)
             if (categoryToEdit) closeEditCategory()
+            setParentIdForCreate(null)
           }
         }}
         category={categoryToEdit}
+        parentId={!categoryToEdit ? parentIdForCreate : null}
         onSuccess={handleDialogSuccess}
       />
 
