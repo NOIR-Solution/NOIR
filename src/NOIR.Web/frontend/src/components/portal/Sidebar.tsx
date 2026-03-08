@@ -108,10 +108,13 @@ interface NavSection {
 // 3. Orders - Daily order processing & fulfillment
 // 4. Customers - Customer management & engagement
 // 5. Catalog - Product management (periodic setup)
-// 6. Content - Blog & content creation (periodic)
-// 7. Users & Access - Who does what (admin)
-// 8. Settings - System configuration (admin)
-// 9. System - Monitoring and admin tools (admin)
+// 6. Human Resource - Staff & org management
+// 7. Project Management - Projects & tasks
+// 8. CRM - Sales pipeline & relationships
+// 9. Content - Blog & content creation (periodic)
+// 10. Users & Access - Who does what (admin)
+// 11. Settings - System configuration (admin)
+// 12. System - Monitoring and admin tools (admin)
 const navSections: NavSection[] = [
   {
     // Primary - Dashboard (no section label)
@@ -147,6 +150,17 @@ const navSections: NavSection[] = [
     ],
   },
   {
+    // Catalog - Product management
+    labelKey: 'nav.catalog',
+    items: [
+      { titleKey: 'ecommerce.products', icon: Package, path: '/portal/ecommerce/products', permission: Permissions.ProductsRead, feature: 'Ecommerce.Products' },
+      { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead, feature: 'Ecommerce.Categories' },
+      { titleKey: 'ecommerce.brands', icon: Award, path: '/portal/ecommerce/brands', permission: Permissions.BrandsRead, feature: 'Ecommerce.Brands' },
+      { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead, feature: 'Ecommerce.Attributes' },
+      { titleKey: 'media.title', icon: Image, path: '/portal/media', permission: Permissions.MediaRead },
+    ],
+  },
+  {
     // HR - Human Resources
     labelKey: 'nav.hr',
     items: [
@@ -158,15 +172,6 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    // CRM - Customer Relationship Management
-    labelKey: 'nav.crm',
-    items: [
-      { titleKey: 'crm.contacts.title', icon: Contact, path: '/portal/crm/contacts', permission: Permissions.CrmContactsRead, feature: 'Erp.Crm' },
-      { titleKey: 'crm.companies.title', icon: Building2, path: '/portal/crm/companies', permission: Permissions.CrmCompaniesRead, feature: 'Erp.Crm' },
-      { titleKey: 'crm.pipeline.title', icon: Kanban, path: '/portal/crm/pipeline', permission: Permissions.CrmLeadsRead, feature: 'Erp.Crm' },
-    ],
-  },
-  {
     // PM - Project Management
     labelKey: 'nav.projectManagement',
     items: [
@@ -174,14 +179,12 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    // Catalog - Product management
-    labelKey: 'nav.catalog',
+    // CRM - Customer Relationship Management
+    labelKey: 'nav.crm',
     items: [
-      { titleKey: 'ecommerce.products', icon: Package, path: '/portal/ecommerce/products', permission: Permissions.ProductsRead, feature: 'Ecommerce.Products' },
-      { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead, feature: 'Ecommerce.Categories' },
-      { titleKey: 'ecommerce.brands', icon: Award, path: '/portal/ecommerce/brands', permission: Permissions.BrandsRead, feature: 'Ecommerce.Brands' },
-      { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead, feature: 'Ecommerce.Attributes' },
-      { titleKey: 'media.title', icon: Image, path: '/portal/media', permission: Permissions.MediaRead },
+      { titleKey: 'crm.contacts.title', icon: Contact, path: '/portal/crm/contacts', permission: Permissions.CrmContactsRead, feature: 'Erp.Crm' },
+      { titleKey: 'crm.companies.title', icon: Building2, path: '/portal/crm/companies', permission: Permissions.CrmCompaniesRead, feature: 'Erp.Crm' },
+      { titleKey: 'crm.pipeline.title', icon: Kanban, path: '/portal/crm/pipeline', permission: Permissions.CrmLeadsRead, feature: 'Erp.Crm' },
     ],
   },
   {
