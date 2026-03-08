@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-03-01
-**Version:** 3.2
+**Last Updated:** 2026-03-08
+**Version:** 3.3
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -26,7 +26,38 @@ A comprehensive cross-referenced guide to the NOIR codebase, patterns, and archi
 
 ## Recent Fixes & Improvements
 
-**Last Session:** 2026-02-27
+**Last Session:** 2026-03-08
+
+### Feature Additions (2026-03-01 → 2026-03-08)
+
+**Real-Time Entity Update Signals (SignalR)**
+- 145 command handlers publish `EntityUpdateSignal` (EntityType, EntityId, Operation) via `IEntityUpdateHubContext` after `SaveChangesAsync`.
+- Group naming: `entity_list_{EntityType}_{tenantId}` for lists, `entity_{EntityType}_{id}_{tenantId}` for instance watchers.
+- Frontend: `useEntityUpdateSignal` hook joins/leaves SignalR groups; list pages auto-refresh, edit pages show conflict dialog.
+- Suppression: Bulk ops, imports, background jobs don't fire signals.
+- **Docs:** [signalr-real-time.md](backend/patterns/signalr-real-time.md)
+
+**HR Module (3 Phases)**
+- Phase 1: Employee + Department entities, auto-code EMP-, recursive CTE org chart, `DeleteBehavior.Restrict` for self-ref FKs.
+- Phase 2: EmployeeTag (7 categories), EmployeeTagAssignment junction, computed EmployeeCount.
+- Phase 3: Org Chart (d3-org-chart), Bulk Ops, CSV Import, Excel Export, HR Reports.
+- **Docs:** [code-generation.md](backend/patterns/code-generation.md) | [excel-import-export.md](backend/patterns/excel-import-export.md)
+
+**CRM Module**
+- 6 entities: CrmContact, CrmCompany, Lead, Pipeline, PipelineStage, CrmActivity.
+- Kanban board (@dnd-kit, float-based SortOrder), Won/Lost virtual columns.
+- WinLead → auto-create Customer. Delete guards (contact blocked if active leads).
+- **Docs:** [lead-pipeline-state-machine.md](backend/patterns/lead-pipeline-state-machine.md)
+
+**PM Module**
+- Project (PRJ-), ProjectColumn, ProjectTask, Label, Comment, Attachment.
+- Kanban board, task list, subtasks.
+
+**E2E Test Suite**
+- 194 passed, 0 failed, 16 graceful skips. Playwright-based.
+
+**Frontend Unit Tests**
+- 143 unit tests + 674 Storybook browser tests. Vitest 4.0 + @testing-library/react.
 
 ### Feature Additions (2026-02-23 → 2026-02-27)
 
@@ -2327,6 +2358,15 @@ dotnet test --collect:"XPlat Code Coverage"
 | Before State Resolver | `docs/backend/patterns/before-state-resolver.md` | Audit before-state pattern |
 | JSON Enum Serialization | `docs/backend/patterns/json-enum-serialization.md` | Enum string serialization |
 | Technical Checklist | `docs/backend/patterns/technical-checklist.md` | Implementation checklist |
+| SignalR Real-Time | `docs/backend/patterns/signalr-real-time.md` | Entity update signals, hubs, groups |
+| Webhook System | `docs/backend/patterns/webhook-system.md` | Outbound webhooks, events, retry |
+| Order Lifecycle | `docs/backend/patterns/order-lifecycle.md` | Order state machine, 10 commands |
+| Lead Pipeline | `docs/backend/patterns/lead-pipeline-state-machine.md` | CRM lead states, Kanban, customer conversion |
+| Code Generation | `docs/backend/patterns/code-generation.md` | Auto-codes (EMP-, PRJ-, TSK-) |
+| Caching Strategy | `docs/backend/patterns/caching-strategy.md` | FusionCache, invalidation, multi-tenant |
+| Middleware & Interceptors | `docs/backend/patterns/middleware-interceptors.md` | HTTP, Wolverine, EF Core pipelines |
+| SSE & Background Jobs | `docs/backend/patterns/sse-background-jobs.md` | SSE events, job progress, deploy recovery |
+| Excel Import/Export | `docs/backend/patterns/excel-import-export.md` | ClosedXML, CSV, row-level errors |
 
 ### Research Documents
 
@@ -2353,6 +2393,9 @@ dotnet test --collect:"XPlat Code Coverage"
 | API Types | `docs/frontend/api-types.md` | Type generation |
 | Localization | `docs/frontend/localization-guide.md` | i18n setup |
 | Color Schema | `docs/frontend/COLOR_SCHEMA_GUIDE.md` | Color guidelines |
+| Design Standards | `docs/frontend/design-standards.md` | UI design standards |
+| Storybook Audit | `docs/frontend/audit-storybook-coverage.md` | Component coverage audit |
+| Hooks Reference | `docs/frontend/hooks-reference.md` | 38 custom hooks guide |
 
 ### Architecture Decisions
 
@@ -2418,4 +2461,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-03-01 | Total Tests: 11,974 | Backend: ~2,191 C# | Frontend: ~750 TS/TSX | Tests: ~879 files | UIKit: 98 dirs, 97 stories | Hooks: 35 | API Services: 40 | Pages: 56 | Feature Modules: 39 | Endpoints: 52 groups | EF Configs: 85 | Repos: 44*
+*Updated: 2026-03-08 | Total Tests: 12,685 | Backend: ~2,191 C# | Frontend: ~750 TS/TSX | Tests: ~900+ files | UIKit: 98 dirs, 97 stories | Hooks: 38 | API Services: 40 | Pages: 56 | Feature Modules: 39 | Endpoints: 52 groups | EF Configs: 85 | Repos: 44*

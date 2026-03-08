@@ -1,7 +1,7 @@
 # NOIR API Documentation
 
-**Last Updated:** 2026-02-08
-**Version:** 2.0
+**Last Updated:** 2026-03-08
+**Version:** 3.0
 **Base URL (Dev):** `http://localhost:4000/api`
 
 A comprehensive guide to all REST API endpoints in the NOIR platform.
@@ -40,6 +40,28 @@ A comprehensive guide to all REST API endpoints in the NOIR platform.
 | [Tenant Settings](#tenant-settings-api) | 8 | ✅ | Tenant Admin |
 | [Filter Analytics](#filter-analytics-api) | 2 | Mixed | Admin (read) / Public (write) |
 | [Developer Logs](#developer-logs-api) | 1 | ✅ | Dev only |
+
+| [Customers](#customers-api) | 7+ | ✅ | `customers:*` |
+| [Customer Groups](#customer-groups-api) | 5+ | ✅ | `customergroups:*` |
+| [Inventory](#inventory-api) | 7+ | ✅ | `inventory:*` |
+| [Reviews](#reviews-api) | 5+ | ✅ | `reviews:*` |
+| [Wishlists](#wishlists-api) | 4+ | ✅ | User-scoped |
+| [Promotions](#promotions-api) | 5+ | ✅ | `promotions:*` |
+| [Webhooks](#webhooks-api) | 7 | ✅ | `webhooks:*` |
+| [HR - Employees](#hr-employees-api) | 12+ | ✅ | `hr.employees:*` |
+| [HR - Departments](#hr-departments-api) | 6+ | ✅ | `hr.departments:*` |
+| [CRM - Contacts](#crm-contacts-api) | 5+ | ✅ | `crm.contacts:*` |
+| [CRM - Companies](#crm-companies-api) | 5+ | ✅ | `crm.companies:*` |
+| [CRM - Leads](#crm-leads-api) | 8+ | ✅ | `crm.leads:*` |
+| [CRM - Pipelines](#crm-pipelines-api) | 5+ | ✅ | `crm.pipelines:*` |
+| [CRM - Activities](#crm-activities-api) | 5+ | ✅ | `crm.activities:*` |
+| [PM - Projects](#pm-projects-api) | 6+ | ✅ | `pm.projects:*` |
+| [PM - Tasks](#pm-tasks-api) | 8+ | ✅ | `pm.tasks:*` |
+| [Dashboard](#dashboard-api) | 2 | ✅ | Authenticated |
+| [Feature Management](#feature-management-api) | 4+ | ✅ | Platform Admin |
+| [Reports](#reports-api) | 4+ | ✅ | `reports:*` |
+| [Search](#search-api) | 1 | ✅ | Authenticated |
+| [SSE](#sse-api) | 1 | ✅ | Authenticated |
 
 **API Documentation UI:** `http://localhost:4000/api/docs` (Scalar)
 
@@ -1697,4 +1719,309 @@ NOIR uses URL path versioning:
 
 ---
 
-*Last Updated: 2026-02-08 | Total Endpoints: 160+ across 30 groups | Supports: OpenAPI 3.0*
+## Customers API
+
+**Base Path:** `/api/customers`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/customers` | List customers (paged, filterable) | ✅ |
+| GET | `/customers/{id}` | Get customer detail | ✅ |
+| POST | `/customers` | Create customer | ✅ |
+| PUT | `/customers/{id}` | Update customer | ✅ |
+| DELETE | `/customers/{id}` | Delete customer (soft) | ✅ |
+| GET | `/customers/export` | Export customers to Excel | ✅ |
+| POST | `/customers/import` | Import customers from CSV | ✅ |
+| POST | `/customers/bulk/delete` | Bulk delete customers | ✅ |
+
+---
+
+## Customer Groups API
+
+**Base Path:** `/api/customer-groups`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/customer-groups` | List customer groups | ✅ |
+| GET | `/customer-groups/{id}` | Get group detail | ✅ |
+| POST | `/customer-groups` | Create customer group | ✅ |
+| PUT | `/customer-groups/{id}` | Update customer group | ✅ |
+| DELETE | `/customer-groups/{id}` | Delete customer group | ✅ |
+
+---
+
+## Inventory API
+
+**Base Path:** `/api/inventory`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/inventory/receipts` | List inventory receipts (paged) | ✅ |
+| GET | `/inventory/receipts/{id}` | Get receipt detail | ✅ |
+| POST | `/inventory/receipts` | Create receipt (Draft) | ✅ |
+| PUT | `/inventory/receipts/{id}` | Update receipt | ✅ |
+| POST | `/inventory/receipts/{id}/confirm` | Confirm receipt (applies stock) | ✅ |
+| POST | `/inventory/receipts/{id}/cancel` | Cancel receipt | ✅ |
+| DELETE | `/inventory/receipts/{id}` | Delete draft receipt | ✅ |
+
+**Receipt Types:** StockIn (RCV-) for receiving, StockOut (SHP-) for shipping.
+
+---
+
+## Reviews API
+
+**Base Path:** `/api/reviews`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/reviews` | List reviews (paged) | ✅ |
+| GET | `/reviews/{id}` | Get review detail | ✅ |
+| POST | `/reviews/{id}/approve` | Approve review | ✅ |
+| POST | `/reviews/{id}/reject` | Reject review | ✅ |
+| DELETE | `/reviews/{id}` | Delete review | ✅ |
+
+---
+
+## Wishlists API
+
+**Base Path:** `/api/wishlists`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/wishlists` | Get user wishlist | ✅ User |
+| POST | `/wishlists` | Add to wishlist | ✅ User |
+| DELETE | `/wishlists/{productId}` | Remove from wishlist | ✅ User |
+
+---
+
+## Promotions API
+
+**Base Path:** `/api/promotions`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/promotions` | List promotions (paged) | ✅ |
+| GET | `/promotions/{id}` | Get promotion detail | ✅ |
+| POST | `/promotions` | Create promotion | ✅ |
+| PUT | `/promotions/{id}` | Update promotion | ✅ |
+| DELETE | `/promotions/{id}` | Delete promotion | ✅ |
+
+---
+
+## Webhooks API
+
+**Base Path:** `/api/webhooks`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/webhooks` | List webhook subscriptions | ✅ |
+| GET | `/webhooks/{id}` | Get webhook detail | ✅ |
+| POST | `/webhooks` | Create webhook subscription | ✅ |
+| PUT | `/webhooks/{id}` | Update webhook | ✅ |
+| DELETE | `/webhooks/{id}` | Delete webhook | ✅ |
+| POST | `/webhooks/{id}/test` | Send test webhook | ✅ |
+| POST | `/webhooks/{id}/rotate-secret` | Rotate signing secret | ✅ |
+
+---
+
+## HR Employees API
+
+**Base Path:** `/api/hr/employees`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/hr/employees` | List employees (paged) | ✅ |
+| GET | `/hr/employees/{id}` | Get employee detail | ✅ |
+| POST | `/hr/employees` | Create employee (auto-code EMP-) | ✅ |
+| PUT | `/hr/employees/{id}` | Update employee | ✅ |
+| POST | `/hr/employees/{id}/deactivate` | Deactivate employee | ✅ |
+| POST | `/hr/employees/{id}/reactivate` | Reactivate employee | ✅ |
+| POST | `/hr/employees/bulk/assign-tags` | Bulk assign tags | ✅ |
+| POST | `/hr/employees/bulk/change-department` | Bulk change department | ✅ |
+| POST | `/hr/employees/import` | Import employees (CSV) | ✅ |
+| GET | `/hr/employees/export` | Export employees (Excel/CSV) | ✅ |
+| GET | `/hr/employees/org-chart` | Get org chart hierarchy | ✅ |
+| GET | `/hr/reports` | Get HR reports (headcount, stats) | ✅ |
+
+---
+
+## HR Departments API
+
+**Base Path:** `/api/hr/departments`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/hr/departments` | List departments (hierarchical) | ✅ |
+| GET | `/hr/departments/{id}` | Get department detail | ✅ |
+| POST | `/hr/departments` | Create department | ✅ |
+| PUT | `/hr/departments/{id}` | Update department | ✅ |
+| DELETE | `/hr/departments/{id}` | Delete department | ✅ |
+
+---
+
+## CRM Contacts API
+
+**Base Path:** `/api/crm/contacts`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/crm/contacts` | List contacts (paged) | ✅ |
+| GET | `/crm/contacts/{id}` | Get contact detail | ✅ |
+| POST | `/crm/contacts` | Create contact | ✅ |
+| PUT | `/crm/contacts/{id}` | Update contact | ✅ |
+| DELETE | `/crm/contacts/{id}` | Delete contact | ✅ |
+
+---
+
+## CRM Companies API
+
+**Base Path:** `/api/crm/companies`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/crm/companies` | List companies (paged) | ✅ |
+| GET | `/crm/companies/{id}` | Get company detail | ✅ |
+| POST | `/crm/companies` | Create company | ✅ |
+| PUT | `/crm/companies/{id}` | Update company | ✅ |
+| DELETE | `/crm/companies/{id}` | Delete company | ✅ |
+
+---
+
+## CRM Leads API
+
+**Base Path:** `/api/crm/leads`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/crm/leads` | List leads (paged) | ✅ |
+| GET | `/crm/leads/{id}` | Get lead detail | ✅ |
+| POST | `/crm/leads` | Create lead | ✅ |
+| PUT | `/crm/leads/{id}` | Update lead | ✅ |
+| DELETE | `/crm/leads/{id}` | Delete lead | ✅ |
+| POST | `/crm/leads/{id}/win` | Mark lead as won → creates Customer | ✅ |
+| POST | `/crm/leads/{id}/lose` | Mark lead as lost | ✅ |
+| POST | `/crm/leads/{id}/reopen` | Reopen closed lead | ✅ |
+| PUT | `/crm/leads/{id}/move` | Move lead to stage (Kanban drag) | ✅ |
+
+---
+
+## CRM Pipelines API
+
+**Base Path:** `/api/crm/pipelines`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/crm/pipelines` | List pipelines | ✅ |
+| GET | `/crm/pipelines/{id}` | Get pipeline with stages | ✅ |
+| POST | `/crm/pipelines` | Create pipeline | ✅ |
+| PUT | `/crm/pipelines/{id}` | Update pipeline & stages | ✅ |
+| DELETE | `/crm/pipelines/{id}` | Delete pipeline | ✅ |
+
+---
+
+## CRM Activities API
+
+**Base Path:** `/api/crm/activities`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/crm/activities` | List activities (paged) | ✅ |
+| GET | `/crm/activities/{id}` | Get activity detail | ✅ |
+| POST | `/crm/activities` | Create activity | ✅ |
+| PUT | `/crm/activities/{id}` | Update activity | ✅ |
+| DELETE | `/crm/activities/{id}` | Delete activity | ✅ |
+
+---
+
+## PM Projects API
+
+**Base Path:** `/api/pm/projects`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/pm/projects` | List projects (paged) | ✅ |
+| GET | `/pm/projects/{id}` | Get project detail (with columns & tasks) | ✅ |
+| POST | `/pm/projects` | Create project (auto-code PRJ-) | ✅ |
+| PUT | `/pm/projects/{id}` | Update project | ✅ |
+| DELETE | `/pm/projects/{id}` | Delete project | ✅ |
+
+---
+
+## PM Tasks API
+
+**Base Path:** `/api/pm/tasks`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/pm/tasks` | List tasks (paged, filterable) | ✅ |
+| GET | `/pm/tasks/{id}` | Get task detail | ✅ |
+| POST | `/pm/tasks` | Create task | ✅ |
+| PUT | `/pm/tasks/{id}` | Update task | ✅ |
+| DELETE | `/pm/tasks/{id}` | Delete task | ✅ |
+| POST | `/pm/tasks/{id}/complete` | Complete task | ✅ |
+| PUT | `/pm/tasks/{id}/move` | Move task to column (Kanban drag) | ✅ |
+
+---
+
+## Dashboard API
+
+**Base Path:** `/api/dashboard`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/dashboard` | Get dashboard metrics (feature-gated widgets) | ✅ |
+| GET | `/dashboard/widgets` | Get available widget groups | ✅ |
+
+**Widget Groups:** Core (users, activity), E-commerce (revenue, orders, products), Blog (posts, comments), Inventory (stock, receipts).
+
+---
+
+## Feature Management API
+
+**Base Path:** `/api/features`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/features/modules` | List all modules with availability | ✅ Platform Admin |
+| PUT | `/features/modules/{name}/availability` | Set platform availability | ✅ Platform Admin |
+| GET | `/features/tenant-modules` | List tenant module states | ✅ Tenant Admin |
+| PUT | `/features/tenant-modules/{name}/enabled` | Enable/disable for tenant | ✅ Tenant Admin |
+
+**Two-layer override:** Platform `IsAvailable` + Tenant `IsEnabled` → `IsEffective`.
+
+---
+
+## Reports API
+
+**Base Path:** `/api/reports`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/reports/revenue` | Revenue analytics (date range) | ✅ |
+| GET | `/reports/orders` | Order analytics | ✅ |
+| GET | `/reports/inventory` | Inventory analytics | ✅ |
+| GET | `/reports/products` | Product performance | ✅ |
+
+---
+
+## Search API
+
+**Base Path:** `/api/search`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/search` | Global search across entities | ✅ |
+
+---
+
+## SSE API
+
+**Base Path:** `/api/sse`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/sse/events` | Server-Sent Events stream (job progress, deploy recovery) | ✅ |
+
+---
+
+*Last Updated: 2026-03-08 | Total Endpoints: 280+ across 52 groups | Supports: OpenAPI 3.0*

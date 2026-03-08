@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-03-02
+**Last Updated:** 2026-03-08
 
 ---
 
@@ -50,6 +50,15 @@
 | Technical Checklist | [technical-checklist.md](backend/patterns/technical-checklist.md) |
 | Inventory Receipt Pattern | [inventory-receipt-pattern.md](backend/patterns/inventory-receipt-pattern.md) |
 | Attribute-Category Inheritance | [attribute-category-inheritance.md](backend/patterns/attribute-category-inheritance.md) |
+| SignalR Real-Time Signals | [signalr-real-time.md](backend/patterns/signalr-real-time.md) |
+| Webhook System | [webhook-system.md](backend/patterns/webhook-system.md) |
+| Order Lifecycle State Machine | [order-lifecycle.md](backend/patterns/order-lifecycle.md) |
+| Lead Pipeline State Machine | [lead-pipeline-state-machine.md](backend/patterns/lead-pipeline-state-machine.md) |
+| Code Generation (Auto-Codes) | [code-generation.md](backend/patterns/code-generation.md) |
+| Caching Strategy | [caching-strategy.md](backend/patterns/caching-strategy.md) |
+| Middleware & Interceptors | [middleware-interceptors.md](backend/patterns/middleware-interceptors.md) |
+| SSE & Background Jobs | [sse-background-jobs.md](backend/patterns/sse-background-jobs.md) |
+| Excel Import/Export | [excel-import-export.md](backend/patterns/excel-import-export.md) |
 
 ### Architecture (`backend/architecture/`, `architecture/`)
 
@@ -83,6 +92,7 @@
 | [COLOR_SCHEMA_GUIDE.md](frontend/COLOR_SCHEMA_GUIDE.md) | Color system |
 | [audit-storybook-coverage.md](frontend/audit-storybook-coverage.md) | Storybook coverage audit |
 | [design-standards.md](frontend/design-standards.md) | Design standards and guidelines |
+| [hooks-reference.md](frontend/hooks-reference.md) | 38 custom React hooks reference |
 
 ### Patterns (`frontend/patterns/`)
 
@@ -102,10 +112,10 @@
 
 ### Test Coverage Summary (2026-03-01)
 
-**Backend Tests:** 11,974 tests across 4 test projects
-- 2,963 Domain unit tests
-- 8,163 Application unit tests
-- 803 Integration tests
+**Backend Tests:** 12,685 tests across 4 test projects
+- 2,971 Domain unit tests
+- 8,557 Application unit tests
+- 1,112 Integration tests
 - 45 Architecture tests
 
 ---
@@ -156,16 +166,16 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 45 |
-| **Backend Patterns** | 11 |
+| **Total Docs** | 56 |
+| **Backend Patterns** | 20 |
 | **Backend Architecture** | 2 |
 | **Backend Research** | 5 |
-| **Frontend Guides** | 8 |
+| **Frontend Guides** | 9 |
 | **Testing Docs** | 1 |
 | **ADRs** | 3 |
 | **Module Designs** | 4 |
-| **Backend Tests** | 11,974 |
+| **Backend Tests** | 12,685 |
 
 ---
 
-**Version:** 4.0 (Updated 2026-03-01 — Removed obsolete design docs, updated test counts, accurate file inventory)
+**Version:** 5.0 (Updated 2026-03-08 — Added 9 backend pattern docs, frontend hooks reference, updated all indexes, test counts)

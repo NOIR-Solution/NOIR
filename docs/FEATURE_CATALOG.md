@@ -2,7 +2,7 @@
 
 > **Complete reference of all features, commands, queries, and endpoints in the NOIR platform.**
 
-**Last Updated:** 2026-02-27
+**Last Updated:** 2026-03-08
 
 ---
 
@@ -39,6 +39,11 @@
 - [Tenant Settings](#tenant-settings) ⭐
 - [Platform Settings](#platform-settings) ⭐
 - [Developer Tools](#developer-tools)
+- [HR Module](#hr-module) ⭐ **NEW**
+- [CRM Module](#crm-module) ⭐ **NEW**
+- [Project Management Module](#project-management-module) ⭐ **NEW**
+- [Real-Time & Communication](#real-time--communication) ⭐ **NEW**
+- [Global Search](#global-search) ⭐ **NEW**
 - [Feature Matrix](#feature-matrix)
 
 ---
@@ -3855,6 +3860,195 @@ The Tenant Settings portal page (`/portal/settings`) is organized into tabs:
 
 ---
 
+## HR Module
+
+**Location:** `Features/Hr/`
+**Module:** `Erp.Hr` (toggleable)
+**Permissions:** 4 employee + 4 department = 8 total
+
+### Employee Management
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreateEmployeeCommand` | Create employee (auto-code EMP-) |
+| **Command** | `UpdateEmployeeCommand` | Update employee details |
+| **Command** | `DeactivateEmployeeCommand` | Deactivate with cascade (reassign subordinates) |
+| **Command** | `ReactivateEmployeeCommand` | Reactivate employee |
+| **Command** | `BulkAssignTagsCommand` | Bulk assign tags to employees |
+| **Command** | `BulkChangeDepartmentCommand` | Bulk change department |
+| **Command** | `ImportEmployeesCommand` | Import from CSV (row-level errors) |
+| **Query** | `GetEmployeeByIdQuery` | Employee detail with tags |
+| **Query** | `GetEmployeesQuery` | Paged list with filters |
+| **Query** | `ExportEmployeesQuery` | Export to Excel/CSV |
+| **Query** | `GetOrgChartQuery` | Hierarchical org chart data |
+| **Query** | `GetHrReportsQuery` | HR analytics (headcount, department, status) |
+
+### Department Management
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreateDepartmentCommand` | Create department (tree structure) |
+| **Command** | `UpdateDepartmentCommand` | Update department |
+| **Command** | `DeleteDepartmentCommand` | Delete department |
+| **Query** | `GetDepartmentsQuery` | Hierarchical department list |
+| **Query** | `GetDepartmentByIdQuery` | Department detail |
+
+### Employee Tags
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreateEmployeeTagCommand` | Create tag (7 categories) |
+| **Command** | `UpdateEmployeeTagCommand` | Update tag |
+| **Command** | `DeleteEmployeeTagCommand` | Delete tag |
+| **Query** | `GetEmployeeTagsQuery` | List tags |
+
+**Key Patterns:**
+- SequenceCounter-based code generation (EMP-001)
+- Recursive CTE for org chart hierarchy
+- Self-referencing FK with `DeleteBehavior.Restrict`
+- d3-org-chart on frontend
+
+---
+
+## CRM Module
+
+**Location:** `Features/Crm/`
+**Module:** `Erp.Crm` (toggleable)
+**Permissions:** 17 total (4 per entity + CrmLeadsManage + CrmPipelineManage)
+
+### CRM Contacts
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreateCrmContactCommand` | Create contact |
+| **Command** | `UpdateCrmContactCommand` | Update contact |
+| **Command** | `DeleteCrmContactCommand` | Delete (blocked if active leads) |
+| **Query** | `GetCrmContactsQuery` | Paged contact list |
+| **Query** | `GetCrmContactByIdQuery` | Contact detail |
+
+### CRM Companies
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreateCrmCompanyCommand` | Create company |
+| **Command** | `UpdateCrmCompanyCommand` | Update company |
+| **Command** | `DeleteCrmCompanyCommand` | Delete (blocked if has contacts) |
+| **Query** | `GetCrmCompaniesQuery` | Paged company list |
+| **Query** | `GetCrmCompanyByIdQuery` | Company detail |
+
+### CRM Leads & Pipeline
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreateLeadCommand` | Create lead in pipeline |
+| **Command** | `UpdateLeadCommand` | Update lead |
+| **Command** | `DeleteLeadCommand` | Delete lead |
+| **Command** | `MoveLeadCommand` | Move to stage (Kanban drag, float SortOrder) |
+| **Command** | `WinLeadCommand` | Win lead → auto-create Customer |
+| **Command** | `LoseLeadCommand` | Mark lead as lost |
+| **Command** | `ReopenLeadCommand` | Reopen closed lead |
+| **Query** | `GetLeadsQuery` | Paged lead list |
+| **Query** | `GetLeadByIdQuery` | Lead detail |
+| **Query** | `GetCrmDashboardQuery` | CRM dashboard metrics |
+
+### CRM Pipelines
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreatePipelineCommand` | Create pipeline |
+| **Command** | `UpdatePipelineCommand` | Update pipeline & stages |
+| **Command** | `DeletePipelineCommand` | Delete (blocked if default or active leads) |
+| **Query** | `GetPipelinesQuery` | List pipelines |
+| **Query** | `GetPipelineByIdQuery` | Pipeline with stages |
+
+### CRM Activities
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreateCrmActivityCommand` | Create activity (call, email, meeting, note) |
+| **Command** | `UpdateCrmActivityCommand` | Update activity |
+| **Command** | `DeleteCrmActivityCommand` | Delete activity |
+| **Query** | `GetCrmActivitiesQuery` | Paged activity list |
+
+**Key Patterns:**
+- @dnd-kit Kanban board with float-based SortOrder
+- Won/Lost as virtual columns
+- Lead → Customer auto-conversion on Win
+- Delete guards (contact blocked if active leads)
+
+---
+
+## Project Management Module
+
+**Location:** `Features/Pm/`
+**Module:** `Erp.Pm` (toggleable)
+
+### Projects
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreateProjectCommand` | Create project (auto-code PRJ-) |
+| **Command** | `UpdateProjectCommand` | Update project |
+| **Command** | `DeleteProjectCommand` | Delete project |
+| **Query** | `GetProjectsQuery` | Paged project list |
+| **Query** | `GetProjectByIdQuery` | Project with columns & tasks |
+
+### Tasks
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Command** | `CreateProjectTaskCommand` | Create task |
+| **Command** | `UpdateProjectTaskCommand` | Update task |
+| **Command** | `DeleteProjectTaskCommand` | Delete task |
+| **Command** | `MoveProjectTaskCommand` | Move task (Kanban drag) |
+| **Command** | `CompleteProjectTaskCommand` | Complete task |
+| **Query** | `GetProjectTasksQuery` | Paged task list |
+| **Query** | `GetProjectTaskByIdQuery` | Task detail with subtasks |
+
+**Key Patterns:**
+- SequenceCounter-based code generation (PRJ-001, TSK-001)
+- Kanban board with @dnd-kit
+- Subtask hierarchy
+
+---
+
+## Real-Time & Communication
+
+### SignalR Entity Update Signals
+
+**145 command handlers** publish `EntityUpdateSignal` after mutations via `IEntityUpdateHubContext`.
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `EntityUpdateSignal` | `Application/Common/Models/` | Signal record (EntityType, EntityId, Operation) |
+| `IEntityUpdateHubContext` | `Application/Common/Interfaces/` | Publishing interface |
+| `NotificationHub` | `Infrastructure/Hubs/` | Hub with JoinEntity/LeaveEntity methods |
+| `useEntityUpdateSignal` | `frontend/src/hooks/` | Frontend hook for real-time subscriptions |
+
+**Group naming:** `entity_list_{EntityType}_{tenantId}` | `entity_{EntityType}_{id}_{tenantId}`
+
+### Server-Sent Events (SSE)
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `ISseEventPublisher` | `Application/Common/Interfaces/` | Event publishing |
+| `SseEventPublisher` | `Infrastructure/Sse/` | Channel-based implementation |
+| `useSse` / `useJobProgress` | `frontend/src/hooks/` | Frontend consumers |
+
+**Docs:** [SignalR Pattern](backend/patterns/signalr-real-time.md) | [SSE Pattern](backend/patterns/sse-background-jobs.md)
+
+---
+
+## Global Search
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Query** | `GlobalSearchQuery` | Search across all entities |
+
+**Frontend:** Enhanced Command Palette (Cmd+K) with content search results.
+
+---
+
 ## See Also
 
 - [PROJECT_INDEX.md](PROJECT_INDEX.md) - Project structure and navigation
@@ -3865,13 +4059,22 @@ The Tenant Settings portal page (`/portal/settings`) is organized into tabs:
 
 ---
 
-**Last Updated:** 2026-02-27
-**Version:** 3.0
+**Last Updated:** 2026-03-08
+**Version:** 4.0
 **Maintainer:** NOIR Team
 
 ---
 
 ## Changelog
+
+### Version 4.0 (2026-03-08)
+- Added **HR Module** feature section (12+ commands/queries — employees, departments, tags, org chart, import/export, reports)
+- Added **CRM Module** feature section (20+ commands/queries — contacts, companies, leads, pipelines, activities, Kanban)
+- Added **PM Module** feature section (12+ commands/queries — projects, tasks, Kanban, subtasks)
+- Added **Real-Time & Communication** section (SignalR entity signals, SSE, job progress)
+- Added **Global Search** section
+- Updated totals: 280+ endpoints across 52 groups
+- Updated to Version 4.0
 
 ### Version 3.0 (2026-02-27)
 - Added **Customers** feature section (8 commands, 4 queries — CRUD, addresses, loyalty points, order history, stats)

@@ -2,7 +2,7 @@
 
 > **Complete reference of technologies, libraries, and frameworks used in NOIR.**
 
-**Last Updated:** 2026-02-23
+**Last Updated:** 2026-03-08
 
 ---
 
@@ -307,13 +307,16 @@ public static partial class UserMapper
 | **SignalR** | 10.0 | WebSocket messaging | [SignalR](https://learn.microsoft.com/aspnet/core/signalr/) |
 
 **Hubs:**
-- `NotificationHub` - Push notifications
-- `DeveloperLogHub` - Real-time log streaming
+- `NotificationHub` - Push notifications + entity update signals
+- `LogStreamHub` - Real-time log streaming
 - `PaymentHub` - Real-time payment status updates
+
+**Entity Update Signals:** 145 command handlers publish `EntityUpdateSignal` via `IEntityUpdateHubContext` after mutations. Frontend hooks (`useEntityUpdateSignal`) subscribe to SignalR groups for real-time list refresh and conflict detection.
 
 **Configuration:**
 - `src/NOIR.Infrastructure/Hubs/`
 - `src/NOIR.Web/Program.cs` - Hub mapping
+- **Docs:** [SignalR Real-Time](backend/patterns/signalr-real-time.md)
 
 ---
 
@@ -441,7 +444,7 @@ public class CustomerService : ICustomerService, IScopedService { }
 | Technology | Version | Purpose | Docs |
 |------------|---------|---------|------|
 | **Axios** | 1.7 | HTTP client | [Axios](https://axios-http.com/) |
-| **TanStack Query** | - | Server state (optional) | - |
+| **TanStack Query** | 5.0 | Server state, caching, optimistic mutations | [TanStack Query](https://tanstack.com/query/) |
 
 **Features:**
 - **Interceptors** - JWT injection, error handling
@@ -539,6 +542,25 @@ const form = useForm<FormData>({
 | **date-fns** | 4.0 | Date formatting |
 | **sonner** | 1.0 | Toast notifications |
 | **@tippyjs/react** | 4.0 | Tooltips |
+| **@dnd-kit/core** | 6.0 | Drag-and-drop (Kanban, reorder) |
+| **d3-org-chart** | 3.0 | Org chart visualization (HR) |
+| **ClosedXML** | 0.104 | Excel import/export (.xlsx) |
+| **vite-plugin-pwa** | 1.0 | Progressive Web App support |
+
+---
+
+### Frontend Testing
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| **Vitest** | 4.0 | Unit test framework |
+| **@testing-library/react** | 16.0 | React component testing |
+| **@testing-library/jest-dom** | 6.0 | DOM matchers |
+| **MSW** | 2.0 | API mocking |
+| **Playwright** | - | Storybook browser tests |
+
+**Test Stats:** 143 unit tests + 674 Storybook browser tests
+**Config:** `vitest.config.ts` (standalone, not merged with vite.config.ts)
 
 ---
 
@@ -593,8 +615,8 @@ const form = useForm<FormData>({
 | **NSubstitute** | 5.0 | Mocking | [NSubstitute](https://nsubstitute.github.io/) |
 
 **Test Projects:**
-- `NOIR.Domain.UnitTests` - 2,586 tests
-- `NOIR.Application.UnitTests` - 7,483 tests
+- `NOIR.Domain.UnitTests` - 2,971 tests
+- `NOIR.Application.UnitTests` - 8,557 tests
 
 ---
 
@@ -611,7 +633,7 @@ const form = useForm<FormData>({
 - **Cleanup** - Automatic after each test
 
 **Test Project:**
-- `NOIR.IntegrationTests` - 788 tests
+- `NOIR.IntegrationTests` - 1,112 tests
 
 ---
 
@@ -627,7 +649,7 @@ const form = useForm<FormData>({
 - Circular references
 
 **Test Project:**
-- `NOIR.ArchitectureTests` - 32 tests
+- `NOIR.ArchitectureTests` - 45 tests
 
 ---
 
@@ -656,7 +678,7 @@ const form = useForm<FormData>({
 |------|---------|---------|
 | **Storybook** | 10.2 | Interactive component catalog |
 
-**Storybook** provides an isolated development environment for 92 UI components in `src/uikit/` with 91 stories. Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
+**Storybook** provides an isolated development environment for 98 UI components in `src/uikit/` with 97 stories (674 browser tests verified via Playwright). Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
 
 ### Package Management
 
@@ -745,5 +767,5 @@ const form = useForm<FormData>({
 
 ---
 
-**Last Updated:** 2026-02-23
+**Last Updated:** 2026-03-08
 **Maintainer:** NOIR Team
