@@ -6,6 +6,7 @@ public class AddSubtaskCommandHandler
 
     private readonly IRepository<ProjectTask, Guid> _taskRepository;
     private readonly IRepository<Project, Guid> _projectRepository;
+    private readonly IApplicationDbContext _dbContext;
     private readonly ITaskNumberGenerator _taskNumberGenerator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUser _currentUser;
@@ -14,6 +15,7 @@ public class AddSubtaskCommandHandler
     public AddSubtaskCommandHandler(
         IRepository<ProjectTask, Guid> taskRepository,
         IRepository<Project, Guid> projectRepository,
+        IApplicationDbContext dbContext,
         ITaskNumberGenerator taskNumberGenerator,
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser,
@@ -21,6 +23,7 @@ public class AddSubtaskCommandHandler
     {
         _taskRepository = taskRepository;
         _projectRepository = projectRepository;
+        _dbContext = dbContext;
         _taskNumberGenerator = taskNumberGenerator;
         _unitOfWork = unitOfWork;
         _currentUser = currentUser;
@@ -72,6 +75,18 @@ public class AddSubtaskCommandHandler
         var taskNumber = await _taskNumberGenerator.GenerateNextAsync(
             project.Slug.ToUpperInvariant(), tenantId, cancellationToken);
 
+        // Assign sort order: place subtask at the end of the parent's column
+        double sortOrder = 0;
+        if (parentTask.ColumnId.HasValue)
+        {
+            var maxSortOrder = await _dbContext.ProjectTasks
+                .Where(t => t.ColumnId == parentTask.ColumnId && !t.IsArchived)
+                .TagWith("AddSubtask_MaxSortOrder")
+                .Select(t => (double?)t.SortOrder)
+                .MaxAsync(cancellationToken);
+            sortOrder = (maxSortOrder ?? 0) + 1;
+        }
+
         var subtask = ProjectTask.Create(
             parentTask.ProjectId,
             taskNumber,
@@ -81,7 +96,8 @@ public class AddSubtaskCommandHandler
             command.Priority,
             command.AssigneeId,
             parentTaskId: command.ParentTaskId,
-            columnId: parentTask.ColumnId);
+            columnId: parentTask.ColumnId,
+            sortOrder: sortOrder);
 
         await _taskRepository.AddAsync(subtask, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -106,7 +122,7 @@ public class AddSubtaskCommandHandler
             t.AssigneeId, t.Assignee != null ? $"{t.Assignee.FirstName} {t.Assignee.LastName}" : null,
             t.ReporterId, t.Reporter != null ? $"{t.Reporter.FirstName} {t.Reporter.LastName}" : null,
             t.DueDate, t.EstimatedHours, t.ActualHours,
-            t.ParentTaskId, t.ParentTask?.TaskNumber,
+            t.ParentTaskId, t.ParentTask?.TaskNumber, t.ParentTask?.Title,
             t.ColumnId, t.Column?.Name,
             t.CompletedAt,
             t.TaskLabels.Select(tl => new Features.Pm.DTOs.TaskLabelBriefDto(

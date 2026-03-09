@@ -12,6 +12,5 @@ public sealed class PmModuleDefinition : IModuleDefinition, ISingletonService
     public IReadOnlyList<FeatureDefinition> Features =>
     [
         new(ModuleNames.Erp.Pm + ".Projects", "modules.erp.pm.projects", "modules.erp.pm.projects.description"),
-        new(ModuleNames.Erp.Pm + ".Tasks", "modules.erp.pm.tasks", "modules.erp.pm.tasks.description"),
     ];
 }

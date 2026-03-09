@@ -1,33 +1,43 @@
-import { useState } from 'react'
+import { useState, useDeferredValue } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { UserPlus, Trash2, Loader2 } from 'lucide-react'
+import { UserPlus, Loader2, Crown, Shield, Eye, Users, Search, X, Check } from 'lucide-react'
 import {
   Button,
-  Badge,
+  Avatar,
   Credenza,
   CredenzaContent,
-  CredenzaDescription,
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaBody,
+  CredenzaDescription,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
   Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from '@uikit'
-import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { useAddMember, useRemoveMember, useChangeMemberRole } from '@/portal-app/pm/queries'
+import { useEmployeeSearchQuery } from '@/portal-app/hr/queries'
 import type { ProjectMemberDto, ProjectMemberRole } from '@/types/pm'
+import type { EmployeeSearchDto } from '@/types/hr'
 
-const roleColorMap: Record<ProjectMemberRole, 'purple' | 'blue' | 'green' | 'gray'> = {
-  Owner: 'purple',
-  Manager: 'blue',
-  Member: 'green',
-  Viewer: 'gray',
+const roleIconMap: Record<ProjectMemberRole, React.ElementType> = {
+  Owner: Crown,
+  Manager: Shield,
+  Member: Users,
+  Viewer: Eye,
+}
+
+const roleColorClass: Record<ProjectMemberRole, string> = {
+  Owner: 'text-amber-500',
+  Manager: 'text-blue-500',
+  Member: 'text-green-500',
+  Viewer: 'text-muted-foreground',
 }
 
 interface MembersManagerProps {
@@ -41,20 +51,42 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
   const removeMemberMutation = useRemoveMember()
   const changeMemberRoleMutation = useChangeMemberRole()
 
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
-  const [newEmployeeId, setNewEmployeeId] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeSearchDto | null>(null)
   const [newRole, setNewRole] = useState<ProjectMemberRole>('Member')
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
 
+  const deferredQuery = useDeferredValue(searchInput)
+  const { data: searchResults, isFetching: isSearching } = useEmployeeSearchQuery(deferredQuery)
+
+  const confirmRemoveMember = members.find(m => m.id === confirmRemoveId)
+
+  // Filter out already-added members
+  const filteredResults = (searchResults ?? []).filter(
+    (emp) => !members.some((m) => m.employeeId === emp.id)
+  )
+
+  const handleSelectEmployee = (emp: EmployeeSearchDto) => {
+    setSelectedEmployee(emp)
+    setSearchInput(emp.fullName)
+    setSearchOpen(false)
+  }
+
+  const handleClearSelection = () => {
+    setSelectedEmployee(null)
+    setSearchInput('')
+  }
+
   const handleAddMember = () => {
-    if (!newEmployeeId.trim()) return
+    if (!selectedEmployee) return
     addMemberMutation.mutate(
-      { projectId, request: { employeeId: newEmployeeId, role: newRole } },
+      { projectId, request: { employeeId: selectedEmployee.id, role: newRole } },
       {
         onSuccess: () => {
           toast.success(t('pm.addMember'))
-          setAddDialogOpen(false)
-          setNewEmployeeId('')
+          setSelectedEmployee(null)
+          setSearchInput('')
           setNewRole('Member')
         },
         onError: (err) => {
@@ -92,115 +124,210 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">{t('pm.members')}</h3>
+      {/* Header */}
+      <div className="flex items-center gap-2 pb-1 border-b border-border/40">
+        <Users className="h-4 w-4 text-muted-foreground" />
+        <span className="text-sm font-semibold">{t('pm.members', { defaultValue: 'Members' })}</span>
+        <span className="ml-auto text-xs bg-muted text-muted-foreground rounded-full px-2 py-0.5 font-medium">
+          {members.length}
+        </span>
+      </div>
+
+      {/* Add member row */}
+      <div className="flex gap-2">
+        {/* Employee search picker */}
+        <Popover open={searchOpen} onOpenChange={setSearchOpen}>
+          <PopoverTrigger asChild>
+            <div
+              className="flex-1 flex items-center gap-1.5 h-8 rounded-md border border-input bg-background px-2.5 text-sm cursor-text hover:border-ring/50 transition-colors"
+              onClick={() => { if (!selectedEmployee) setSearchOpen(true) }}
+            >
+              <Search className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+              {selectedEmployee ? (
+                <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                  <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-semibold text-primary flex-shrink-0">
+                    {selectedEmployee.fullName.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="truncate text-sm">{selectedEmployee.fullName}</span>
+                  <span className="text-xs text-muted-foreground flex-shrink-0">{selectedEmployee.employeeCode}</span>
+                </div>
+              ) : (
+                <Input
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value)
+                    setSearchOpen(true)
+                    setSelectedEmployee(null)
+                  }}
+                  onFocus={() => setSearchOpen(true)}
+                  placeholder={t('pm.searchMemberPlaceholder', { defaultValue: 'Search by name, email or code…' })}
+                  className="flex-1 h-auto border-0 bg-transparent px-0 py-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60"
+                />
+              )}
+              {selectedEmployee && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleClearSelection() }}
+                  className="h-4 w-4 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0 cursor-pointer"
+                  aria-label={t('buttons.clear', { defaultValue: 'Clear' })}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+          </PopoverTrigger>
+          <PopoverContent
+            className="p-0 w-[320px]"
+            align="start"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
+            {/* Search input inside popover for keyboard nav */}
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40">
+              <Search className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+              <Input
+                value={searchInput}
+                onChange={(e) => { setSearchInput(e.target.value); setSelectedEmployee(null) }}
+                placeholder={t('pm.searchMemberPlaceholder', { defaultValue: 'Search by name, email or code…' })}
+                className="h-7 flex-1 border-0 bg-transparent px-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+                autoFocus
+              />
+              {isSearching && <Loader2 className="h-3.5 w-3.5 text-muted-foreground animate-spin flex-shrink-0" />}
+            </div>
+
+            {/* Results */}
+            <div className="max-h-60 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+              {deferredQuery.length < 2 ? (
+                <p className="text-xs text-muted-foreground text-center py-5 px-3">
+                  {t('pm.typeToSearch', { defaultValue: 'Type at least 2 characters to search…' })}
+                </p>
+              ) : filteredResults.length === 0 && !isSearching ? (
+                <p className="text-xs text-muted-foreground text-center py-5 px-3">
+                  {t('pm.noEmployeesFound', { defaultValue: 'No employees found' })}
+                </p>
+              ) : (
+                <div className="p-1">
+                  {filteredResults.map((emp) => (
+                    <EmployeeResultRow
+                      key={emp.id}
+                      emp={emp}
+                      isSelected={selectedEmployee?.id === emp.id}
+                      onSelect={handleSelectEmployee}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        {/* Role selector */}
+        <Select value={newRole} onValueChange={(v) => setNewRole(v as ProjectMemberRole)}>
+          <SelectTrigger className="w-28 h-8 text-xs cursor-pointer flex-shrink-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Manager" className="cursor-pointer text-xs">{t('memberRoles.manager')}</SelectItem>
+            <SelectItem value="Member" className="cursor-pointer text-xs">{t('memberRoles.member')}</SelectItem>
+            <SelectItem value="Viewer" className="cursor-pointer text-xs">{t('memberRoles.viewer')}</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Add button */}
         <Button
-          variant="outline"
           size="sm"
-          className="cursor-pointer"
-          onClick={() => setAddDialogOpen(true)}
+          className="cursor-pointer h-8 px-3 gap-1.5 flex-shrink-0"
+          onClick={handleAddMember}
+          disabled={!selectedEmployee || addMemberMutation.isPending}
+          aria-label={t('pm.addMember')}
         >
-          <UserPlus className="h-4 w-4 mr-2" />
-          {t('pm.addMember')}
+          {addMemberMutation.isPending
+            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            : <UserPlus className="h-3.5 w-3.5" />
+          }
+          <span className="hidden sm:inline">{t('pm.addMember')}</span>
         </Button>
       </div>
 
-      <div className="space-y-2">
-        {members.map((member) => (
-          <div key={member.id} className="flex items-center justify-between p-3 rounded-lg border">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                {member.employeeName.charAt(0).toUpperCase()}
+      {/* Member list */}
+      <div className="space-y-1">
+        {members.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            {t('pm.noMembers', { defaultValue: 'No members yet' })}
+          </p>
+        )}
+        {members.map((member) => {
+          const RoleIcon = roleIconMap[member.role]
+          return (
+            <div
+              key={member.id}
+              className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-muted/40 transition-colors group"
+            >
+              {/* Avatar */}
+              <Avatar
+                src={member.avatarUrl ?? undefined}
+                alt={member.employeeName}
+                fallback={member.employeeName}
+                size="sm"
+                className="h-8 w-8 flex-shrink-0 text-xs"
+              />
+
+              {/* Name + role icon */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-medium truncate">{member.employeeName}</span>
+                  <RoleIcon className={`h-3 w-3 flex-shrink-0 ${roleColorClass[member.role]}`} />
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium">{member.employeeName}</p>
-                <Badge variant="outline" className={getStatusBadgeClasses(roleColorMap[member.role])}>
-                  {t(`memberRoles.${member.role.toLowerCase()}`)}
-                </Badge>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {member.role !== 'Owner' && (
-                <>
+
+              {/* Role selector or owner label */}
+              {member.role === 'Owner' ? (
+                <span className="text-xs text-amber-500 font-medium flex-shrink-0">
+                  {t('memberRoles.owner', { defaultValue: 'Owner' })}
+                </span>
+              ) : (
+                <div className="flex items-center gap-1 flex-shrink-0">
                   <Select
                     value={member.role}
                     onValueChange={(value) => handleRoleChange(member.id, value as ProjectMemberRole)}
                   >
-                    <SelectTrigger className="w-28 h-8 text-xs cursor-pointer" aria-label={`${t('pm.memberRole')} - ${member.employeeName}`}>
+                    <SelectTrigger
+                      className="w-24 h-7 text-xs cursor-pointer border-transparent bg-transparent hover:bg-muted hover:border-border transition-colors"
+                      aria-label={`${t('pm.memberRole')} - ${member.employeeName}`}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Manager" className="cursor-pointer">{t('memberRoles.manager')}</SelectItem>
-                      <SelectItem value="Member" className="cursor-pointer">{t('memberRoles.member')}</SelectItem>
-                      <SelectItem value="Viewer" className="cursor-pointer">{t('memberRoles.viewer')}</SelectItem>
+                      <SelectItem value="Manager" className="cursor-pointer text-xs">{t('memberRoles.manager')}</SelectItem>
+                      <SelectItem value="Member" className="cursor-pointer text-xs">{t('memberRoles.member')}</SelectItem>
+                      <SelectItem value="Viewer" className="cursor-pointer text-xs">{t('memberRoles.viewer')}</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-red-500 cursor-pointer"
+                  <button
+                    className="opacity-0 group-hover:opacity-100 h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer flex-shrink-0"
                     onClick={() => setConfirmRemoveId(member.id)}
                     aria-label={`${t('pm.removeMember')} ${member.employeeName}`}
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </>
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
               )}
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
-
-      {/* Add member dialog */}
-      <Credenza open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-        <CredenzaContent>
-          <CredenzaHeader>
-            <CredenzaTitle>{t('pm.addMember')}</CredenzaTitle>
-            <CredenzaDescription>{t('pm.addMember')}</CredenzaDescription>
-          </CredenzaHeader>
-          <CredenzaBody className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">{t('pm.assignee')}</label>
-              <Input
-                value={newEmployeeId}
-                onChange={(e) => setNewEmployeeId(e.target.value)}
-                placeholder={t('pm.assignee')}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">{t('pm.memberRole')}</label>
-              <Select value={newRole} onValueChange={(v) => setNewRole(v as ProjectMemberRole)}>
-                <SelectTrigger className="mt-1 cursor-pointer">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Manager" className="cursor-pointer">{t('memberRoles.manager')}</SelectItem>
-                  <SelectItem value="Member" className="cursor-pointer">{t('memberRoles.member')}</SelectItem>
-                  <SelectItem value="Viewer" className="cursor-pointer">{t('memberRoles.viewer')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CredenzaBody>
-          <CredenzaFooter>
-            <Button variant="outline" onClick={() => setAddDialogOpen(false)} className="cursor-pointer">{t('buttons.cancel')}</Button>
-            <Button onClick={handleAddMember} disabled={addMemberMutation.isPending} className="cursor-pointer">
-              {addMemberMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('pm.addMember')}
-            </Button>
-          </CredenzaFooter>
-        </CredenzaContent>
-      </Credenza>
 
       {/* Remove confirmation dialog */}
       <Credenza open={!!confirmRemoveId} onOpenChange={(open) => !open && setConfirmRemoveId(null)}>
         <CredenzaContent className="border-destructive/30">
           <CredenzaHeader>
             <CredenzaTitle>{t('pm.removeMember')}</CredenzaTitle>
-            <CredenzaDescription>{t('pm.removeMember')}</CredenzaDescription>
+            <CredenzaDescription>
+              {confirmRemoveMember?.employeeName}
+            </CredenzaDescription>
           </CredenzaHeader>
           <CredenzaFooter>
-            <Button variant="outline" onClick={() => setConfirmRemoveId(null)} className="cursor-pointer">{t('buttons.cancel')}</Button>
+            <Button variant="outline" onClick={() => setConfirmRemoveId(null)} className="cursor-pointer">
+              {t('buttons.cancel')}
+            </Button>
             <Button
               variant="destructive"
               className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
@@ -216,3 +343,37 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
     </div>
   )
 }
+
+// ── Employee result row ──────────────────────────────────────────────────────
+
+interface EmployeeResultRowProps {
+  emp: EmployeeSearchDto
+  isSelected: boolean
+  onSelect: (emp: EmployeeSearchDto) => void
+}
+
+const EmployeeResultRow = ({ emp, isSelected, onSelect }: EmployeeResultRowProps) => (
+  <button
+    type="button"
+    onClick={() => onSelect(emp)}
+    className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer text-left"
+  >
+    {/* Avatar */}
+    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary flex-shrink-0">
+      {emp.fullName.charAt(0).toUpperCase()}
+    </div>
+    {/* Info */}
+    <div className="flex-1 min-w-0">
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm font-medium truncate">{emp.fullName}</span>
+        <span className="text-xs text-muted-foreground font-mono flex-shrink-0">{emp.employeeCode}</span>
+      </div>
+      {(emp.position || emp.departmentName) && (
+        <span className="text-xs text-muted-foreground truncate block">
+          {[emp.position, emp.departmentName].filter(Boolean).join(' · ')}
+        </span>
+      )}
+    </div>
+    {isSelected && <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />}
+  </button>
+)

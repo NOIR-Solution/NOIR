@@ -14,6 +14,7 @@ import {
   CredenzaHeader,
   CredenzaTitle,
   CredenzaBody,
+  DatePicker,
   Form,
   FormControl,
   FormField,
@@ -29,7 +30,22 @@ import {
   SelectValue,
 } from '@uikit'
 import { useCreateProject, useUpdateProject } from '@/portal-app/pm/queries'
-import type { ProjectDto, ProjectVisibility } from '@/types/pm'
+import type { ProjectDto, ProjectVisibility, ProjectStatus } from '@/types/pm'
+
+const PROJECT_COLORS = [
+  '#6366f1', // indigo (default)
+  '#8b5cf6', // violet
+  '#ec4899', // pink
+  '#ef4444', // red
+  '#f97316', // orange
+  '#eab308', // yellow
+  '#22c55e', // green
+  '#14b8a6', // teal
+  '#06b6d4', // cyan
+  '#3b82f6', // blue
+  '#64748b', // slate
+  '#78716c', // stone
+]
 
 const createProjectSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -42,6 +58,7 @@ const createProjectSchema = (t: (key: string, options?: Record<string, unknown>)
     currency: z.string().max(3).optional().or(z.literal('')),
     color: z.string().optional().or(z.literal('')),
     visibility: z.enum(['Private', 'Internal', 'Public']).default('Private'),
+    status: z.enum(['Active', 'Completed', 'OnHold', 'Archived']).optional(),
   })
 
 type ProjectFormData = z.infer<ReturnType<typeof createProjectSchema>>
@@ -70,8 +87,9 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
       dueDate: '',
       budget: 0,
       currency: '',
-      color: '',
+      color: '#6366f1',
       visibility: 'Private' as ProjectVisibility,
+      status: 'Active' as ProjectStatus,
     },
   })
 
@@ -86,8 +104,9 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
           dueDate: project.dueDate?.split('T')[0] ?? '',
           budget: project.budget ?? 0,
           currency: project.currency ?? '',
-          color: project.color ?? '',
+          color: project.color ?? '#6366f1',
           visibility: project.visibility,
+          status: project.status ?? 'Active',
         })
       } else {
         form.reset({
@@ -98,8 +117,9 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
           dueDate: '',
           budget: 0,
           currency: '',
-          color: '',
+          color: '#6366f1',
           visibility: 'Private',
+          status: 'Active',
         })
       }
     }
@@ -116,6 +136,7 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
       currency: data.currency || undefined,
       color: data.color || undefined,
       visibility: data.visibility,
+      ...(isEdit && data.status ? { status: data.status } : {}),
     }
 
     if (isEdit && project) {
@@ -150,7 +171,10 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
         <CredenzaHeader>
           <CredenzaTitle>{isEdit ? t('pm.editProject') : t('pm.createProject')}</CredenzaTitle>
           <CredenzaDescription>
-            {isEdit ? t('pm.editProject') : t('pm.createProject')}
+            {isEdit
+              ? t('pm.editProjectDescription', { defaultValue: 'Update your project settings and details' })
+              : t('pm.createProjectDescription', { defaultValue: 'Fill in the details to create a new project' })
+            }
           </CredenzaDescription>
         </CredenzaHeader>
         <Form {...form}>
@@ -169,6 +193,33 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
                   </FormItem>
                 )}
               />
+
+              {isEdit && (
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('pm.status')}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value ?? 'Active'}>
+                        <FormControl>
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Active" className="cursor-pointer">{t('statuses.active', { defaultValue: 'Active' })}</SelectItem>
+                          <SelectItem value="Completed" className="cursor-pointer">{t('statuses.completed', { defaultValue: 'Completed' })}</SelectItem>
+                          <SelectItem value="OnHold" className="cursor-pointer">{t('statuses.onHold', { defaultValue: 'On Hold' })}</SelectItem>
+                          <SelectItem value="Archived" className="cursor-pointer">{t('statuses.archived', { defaultValue: 'Archived' })}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               <FormField
                 control={form.control}
                 name="description"
@@ -182,6 +233,7 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
                   </FormItem>
                 )}
               />
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -190,7 +242,11 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
                     <FormItem>
                       <FormLabel>{t('pm.startDate')}</FormLabel>
                       <FormControl>
-                        <Input {...field} type="date" />
+                        <DatePicker
+                          value={field.value ? new Date(field.value) : undefined}
+                          onChange={(date) => field.onChange(date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` : '')}
+                          placeholder={t('pm.startDate')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -203,13 +259,18 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
                     <FormItem>
                       <FormLabel>{t('pm.dueDate')}</FormLabel>
                       <FormControl>
-                        <Input {...field} type="date" />
+                        <DatePicker
+                          value={field.value ? new Date(field.value) : undefined}
+                          onChange={(date) => field.onChange(date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` : '')}
+                          placeholder={t('pm.dueDate')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -238,43 +299,76 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
                   )}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="color"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('pm.color')}</FormLabel>
+
+              <FormField
+                control={form.control}
+                name="visibility"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('pm.visibility')}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <Input {...field} type="color" className="h-10 cursor-pointer" />
+                        <SelectTrigger className="cursor-pointer">
+                          <SelectValue />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="visibility"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('pm.visibility')}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="cursor-pointer">
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Private" className="cursor-pointer">{t('pm.visibilityPrivate', { defaultValue: 'Private' })}</SelectItem>
-                          <SelectItem value="Internal" className="cursor-pointer">{t('pm.visibilityInternal', { defaultValue: 'Internal' })}</SelectItem>
-                          <SelectItem value="Public" className="cursor-pointer">{t('pm.visibilityPublic', { defaultValue: 'Public' })}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      <SelectContent>
+                        <SelectItem value="Private" className="cursor-pointer">{t('pm.visibilityPrivate', { defaultValue: 'Private' })}</SelectItem>
+                        <SelectItem value="Internal" className="cursor-pointer">{t('pm.visibilityInternal', { defaultValue: 'Internal' })}</SelectItem>
+                        <SelectItem value="Public" className="cursor-pointer">{t('pm.visibilityPublic', { defaultValue: 'Public' })}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('pm.color')}</FormLabel>
+                    <FormControl>
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap gap-2">
+                          {PROJECT_COLORS.map((color) => (
+                            <button
+                              key={color}
+                              type="button"
+                              className={`h-7 w-7 rounded-full cursor-pointer transition-all border-2 ${
+                                field.value === color
+                                  ? 'border-foreground scale-110 shadow-md'
+                                  : 'border-transparent hover:border-muted-foreground/50 hover:scale-105'
+                              }`}
+                              style={{ backgroundColor: color }}
+                              onClick={() => field.onChange(color)}
+                              aria-label={color}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={field.value || '#6366f1'}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            className="h-8 w-8 rounded cursor-pointer border border-input bg-transparent p-0.5"
+                          />
+                          <input
+                            type="text"
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            placeholder="#6366f1"
+                            maxLength={7}
+                            className="flex-1 text-sm bg-background border border-input rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-ring font-mono"
+                          />
+                        </div>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CredenzaBody>
             <CredenzaFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">

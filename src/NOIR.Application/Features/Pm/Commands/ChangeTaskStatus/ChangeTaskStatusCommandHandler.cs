@@ -68,7 +68,7 @@ public class ChangeTaskStatusCommandHandler
             t.AssigneeId, t.Assignee != null ? $"{t.Assignee.FirstName} {t.Assignee.LastName}" : null,
             t.ReporterId, t.Reporter != null ? $"{t.Reporter.FirstName} {t.Reporter.LastName}" : null,
             t.DueDate, t.EstimatedHours, t.ActualHours,
-            t.ParentTaskId, t.ParentTask?.TaskNumber,
+            t.ParentTaskId, t.ParentTask?.TaskNumber, t.ParentTask?.Title,
             t.ColumnId, t.Column?.Name,
             t.CompletedAt,
             t.TaskLabels.Select(tl => new Features.Pm.DTOs.TaskLabelBriefDto(

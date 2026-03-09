@@ -31,6 +31,23 @@ public sealed class ProjectByIdForUpdateSpec : Specification<Project>
 }
 
 /// <summary>
+/// Get project by ProjectCode with members and columns for detail view (read-only).
+/// </summary>
+public sealed class ProjectByCodeSpec : Specification<Project>
+{
+    public ProjectByCodeSpec(string code)
+    {
+        Query.Where(p => p.ProjectCode == code)
+             .Include(p => p.Owner!)
+             .Include("Members.Employee")
+             .Include(p => p.Columns)
+             .Include(p => p.Tasks)
+             .AsSplitQuery()
+             .TagWith("ProjectByCode");
+    }
+}
+
+/// <summary>
 /// Find project by slug for uniqueness check.
 /// </summary>
 public sealed class ProjectBySlugSpec : Specification<Project>

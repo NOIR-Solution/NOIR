@@ -3,10 +3,13 @@ import {
   BarChart3,
   Award,
   Box,
+  Briefcase,
   CreditCard,
   FileText,
+  FolderKanban,
   FolderTree,
   Heart,
+  Image,
   Layers,
   Mail,
   Package,
@@ -20,13 +23,14 @@ import {
   Tag,
   Tags,
   UserCheck,
+  Users,
   UsersRound,
   Warehouse,
   Webhook,
   type LucideIcon,
 } from 'lucide-react'
 
-import type { ModuleDto } from '@/types'
+import type { FeatureDto, ModuleDto } from '@/types'
 
 /** Map of Lucide icon name (from backend) → React component */
 export const iconMap: Record<string, LucideIcon> = {
@@ -34,10 +38,13 @@ export const iconMap: Record<string, LucideIcon> = {
   BarChart3,
   Award,
   Box,
+  Briefcase,
   CreditCard,
   FileText,
+  FolderKanban,
   FolderTree,
   Heart,
+  Image,
   Layers,
   Mail,
   Package,
@@ -51,6 +58,7 @@ export const iconMap: Record<string, LucideIcon> = {
   Tag,
   Tags,
   UserCheck,
+  Users,
   UsersRound,
   Warehouse,
   Webhook,
@@ -69,6 +77,8 @@ export interface ModuleItem {
   linkedModules?: string[]
   /** Override backend icon name (e.g. 'Settings' instead of module's own icon) */
   iconOverride?: string
+  /** Expand module.features as individual rows instead of showing the parent module as one row */
+  showFeatures?: boolean
 }
 
 export interface SidebarGroup {
@@ -123,6 +133,28 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       { name: 'Ecommerce.Categories', titleKey: 'ecommerce.categories' },
       { name: 'Ecommerce.Brands', titleKey: 'ecommerce.brands' },
       { name: 'Ecommerce.Attributes', titleKey: 'ecommerce.attributes' },
+      { name: 'Platform.Media', titleKey: 'media.title', descKey: 'modules.platform.media.description' },
+    ],
+  },
+  {
+    key: 'hr',
+    labelKey: 'featureManagement.categories.hr',
+    modules: [
+      { name: 'Erp.Hr', titleKey: 'modules.erp.hr', descKey: 'modules.erp.hr.description', showFeatures: true },
+    ],
+  },
+  {
+    key: 'projectManagement',
+    labelKey: 'featureManagement.categories.projectManagement',
+    modules: [
+      { name: 'Erp.Pm', titleKey: 'modules.erp.pm', descKey: 'modules.erp.pm.description', showFeatures: true },
+    ],
+  },
+  {
+    key: 'crm',
+    labelKey: 'featureManagement.categories.crm',
+    modules: [
+      { name: 'Erp.Crm', titleKey: 'modules.erp.crm', descKey: 'modules.erp.crm.description', showFeatures: true },
     ],
   },
   {
@@ -164,6 +196,8 @@ export interface ResolvedItem {
   linkedModules: ModuleDto[]
   /** Icon name override */
   iconOverride?: string
+  /** Sub-features to show as individual rows (from module.features when showFeatures=true) */
+  features: FeatureDto[]
 }
 
 export interface ResolvedGroup {
@@ -198,6 +232,7 @@ export const buildSidebarGroups = (modules: ModuleDto[]): ResolvedGroup[] => {
             .map(name => moduleMap.get(name))
             .filter((m): m is ModuleDto => !!m),
           iconOverride: item.iconOverride,
+          features: item.showFeatures ? (module.features ?? []) : [],
         })
         return acc
       }, []),

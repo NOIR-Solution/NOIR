@@ -126,19 +126,58 @@ public sealed class TasksByColumnSpec : Specification<ProjectTask>
 }
 
 /// <summary>
-/// Get all tasks for a project for Kanban board (all columns).
+/// Get all tasks for a project for Kanban board (all columns). Excludes archived tasks.
 /// </summary>
 public sealed class TasksForKanbanSpec : Specification<ProjectTask>
 {
     public TasksForKanbanSpec(Guid projectId)
     {
-        Query.Where(t => t.ProjectId == projectId)
+        Query.Where(t => t.ProjectId == projectId && !t.IsArchived)
              .Include(t => t.Assignee!)
              .Include(t => t.SubTasks)
              .Include(t => t.Comments)
+             .Include(t => t.ParentTask!)
              .Include("TaskLabels.Label")
              .OrderBy(t => t.SortOrder)
              .AsSplitQuery()
              .TagWith("TasksForKanban");
+    }
+}
+
+/// <summary>
+/// Get all archived tasks for a project (trash bin view).
+/// </summary>
+public sealed class ArchivedTasksByProjectSpec : Specification<ProjectTask>
+{
+    public ArchivedTasksByProjectSpec(Guid projectId)
+    {
+        Query.Where(t => t.ProjectId == projectId && t.IsArchived)
+             .Include(t => t.Assignee!)
+             .Include(t => t.SubTasks)
+             .Include(t => t.Comments)
+             .Include(t => t.ParentTask!)
+             .Include("TaskLabels.Label")
+             .OrderByDescending(t => t.ArchivedAt)
+             .AsSplitQuery()
+             .AsTracking()
+             .TagWith("ArchivedTasksByProject");
+    }
+}
+
+/// <summary>
+/// Get archived tasks for a project (read-only, for listing).
+/// </summary>
+public sealed class ArchivedTasksByProjectReadSpec : Specification<ProjectTask>
+{
+    public ArchivedTasksByProjectReadSpec(Guid projectId)
+    {
+        Query.Where(t => t.ProjectId == projectId && t.IsArchived)
+             .Include(t => t.Assignee!)
+             .Include(t => t.SubTasks)
+             .Include(t => t.Comments)
+             .Include("TaskLabels.Label")
+             .OrderByDescending(t => t.ArchivedAt)
+             .AsSplitQuery()
+             .TagWith("ArchivedTasksByProjectRead");
     }
 }

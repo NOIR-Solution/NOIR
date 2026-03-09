@@ -20,6 +20,7 @@ public sealed record TaskDto(
     decimal? ActualHours,
     Guid? ParentTaskId,
     string? ParentTaskNumber,
+    string? ParentTaskTitle,
     Guid? ColumnId,
     string? ColumnName,
     DateTimeOffset? CompletedAt,
@@ -29,7 +30,8 @@ public sealed record TaskDto(
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt,
     string? ProjectName = null,
-    string? AssigneeAvatarUrl = null);
+    string? AssigneeAvatarUrl = null,
+    string? ProjectCode = null);
 
 /// <summary>
 /// Kanban card for board view.
@@ -47,7 +49,9 @@ public sealed record TaskCardDto(
     int SubtaskCount,
     int CompletedSubtaskCount,
     List<TaskLabelBriefDto> Labels,
-    double SortOrder);
+    double SortOrder,
+    Guid? ParentTaskId = null,
+    string? ParentTaskNumber = null);
 
 /// <summary>
 /// Subtask brief info nested in TaskDto.
@@ -191,6 +195,23 @@ public sealed record UpdateTaskCommentRequest(string Content);
 /// Request body for reordering a task within its column.
 /// </summary>
 public sealed record ReorderTaskRequest(double SortOrder);
+
+/// <summary>
+/// Archived task card for the trash bin view.
+/// </summary>
+public sealed record ArchivedTaskCardDto(
+    Guid Id,
+    string TaskNumber,
+    string Title,
+    ProjectTaskStatus Status,
+    TaskPriority Priority,
+    string? AssigneeName,
+    string? AssigneeAvatarUrl,
+    DateTimeOffset? ArchivedAt,
+    int SubtaskCount,
+    List<TaskLabelBriefDto> Labels,
+    Guid? ParentTaskId,
+    string? ParentTaskNumber);
 
 /// <summary>
 /// Request body for adding a subtask to a task.

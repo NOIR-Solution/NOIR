@@ -3,6 +3,10 @@ using NOIR.Application.Features.Pm.Commands.UpdateTask;
 using NOIR.Application.Features.Pm.Commands.MoveTask;
 using NOIR.Application.Features.Pm.Commands.ChangeTaskStatus;
 using NOIR.Application.Features.Pm.Commands.DeleteTask;
+using NOIR.Application.Features.Pm.Commands.ArchiveTask;
+using NOIR.Application.Features.Pm.Commands.RestoreTask;
+using NOIR.Application.Features.Pm.Commands.PermanentDeleteTask;
+using NOIR.Application.Features.Pm.Commands.EmptyProjectTrash;
 using NOIR.Application.Features.Pm.Commands.AddTaskComment;
 using NOIR.Application.Features.Pm.Commands.UpdateTaskComment;
 using NOIR.Application.Features.Pm.Commands.DeleteTaskComment;
@@ -12,6 +16,7 @@ using NOIR.Application.Features.Pm.Commands.ReorderTask;
 using NOIR.Application.Features.Pm.Commands.AddSubtask;
 using NOIR.Application.Features.Pm.Queries.GetTasks;
 using NOIR.Application.Features.Pm.Queries.GetTaskById;
+using NOIR.Application.Features.Pm.Queries.GetArchivedTasks;
 using NOIR.Application.Features.Pm.Queries.SearchTasks;
 using NOIR.Application.Features.Pm.DTOs;
 
@@ -207,9 +212,81 @@ public static class TaskEndpoints
         })
         .RequireAuthorization(Permissions.PmTasksDelete)
         .WithName("DeleteTask")
-        .WithSummary("Delete a task")
+        .WithSummary("Delete a task (soft delete)")
         .Produces<TaskDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        group.MapPost("/{id:guid}/archive", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new ArchiveTaskCommand(id) { AuditUserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<Guid>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PmTasksUpdate)
+        .WithName("ArchiveTask")
+        .WithSummary("Archive a task (moves to trash bin)")
+        .Produces<Guid>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        group.MapPost("/{id:guid}/restore", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new RestoreTaskCommand(id) { AuditUserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<Guid>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PmTasksUpdate)
+        .WithName("RestoreTask")
+        .WithSummary("Restore a task from the archive")
+        .Produces<Guid>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        group.MapDelete("/{id:guid}/permanent", async (
+            Guid id,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new PermanentDeleteTaskCommand(id) { AuditUserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<Guid>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PmTasksDelete)
+        .WithName("PermanentDeleteTask")
+        .WithSummary("Permanently delete an archived task")
+        .Produces<Guid>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        group.MapGet("/archived", async (
+            [FromQuery] Guid projectId,
+            IMessageBus bus) =>
+        {
+            var query = new GetArchivedTasksQuery(projectId);
+            var result = await bus.InvokeAsync<Result<List<ArchivedTaskCardDto>>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PmTasksRead)
+        .WithName("GetArchivedTasks")
+        .WithSummary("Get all archived (trashed) tasks for a project")
+        .Produces<List<ArchivedTaskCardDto>>(StatusCodes.Status200OK);
+
+        group.MapDelete("/archived", async (
+            [FromQuery] Guid projectId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new EmptyProjectTrashCommand(projectId) { AuditUserId = currentUser.UserId };
+            var result = await bus.InvokeAsync<Result<int>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PmTasksDelete)
+        .WithName("EmptyProjectTrash")
+        .WithSummary("Permanently delete all archived tasks for a project")
+        .Produces<int>(StatusCodes.Status200OK);
 
         // ── Comments ────────────────────────────────────────────────
 

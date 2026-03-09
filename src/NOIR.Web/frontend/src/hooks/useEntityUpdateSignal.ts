@@ -78,6 +78,16 @@ export const useEntityUpdateSignal = (options: UseEntityUpdateSignalOptions): Us
     const token = getAccessToken()
     if (!token) return
 
+    // Custom logger: suppress transient "stopped during negotiation" noise from
+    // React StrictMode's double-effect invocation. Real errors still surface.
+    const hubLogger: signalR.ILogger = {
+      log: (level: signalR.LogLevel, message: string) => {
+        if (message.includes('stopped during negotiation')) return
+        if (level === signalR.LogLevel.Error) console.error(`[SignalR] ${message}`)
+        else if (level === signalR.LogLevel.Warning) console.warn(`[SignalR] ${message}`)
+      },
+    }
+
     const connection = new signalR.HubConnectionBuilder()
       .withUrl('/hubs/notifications', {
         accessTokenFactory: () => getAccessToken() || '',
@@ -88,7 +98,7 @@ export const useEntityUpdateSignal = (options: UseEntityUpdateSignalOptions): Us
           return Math.min(Math.pow(2, retryContext.previousRetryCount) * 1000, 30000)
         },
       })
-      .configureLogging(signalR.LogLevel.Warning)
+      .configureLogging(hubLogger)
       .build()
 
     connectionRef.current = connection

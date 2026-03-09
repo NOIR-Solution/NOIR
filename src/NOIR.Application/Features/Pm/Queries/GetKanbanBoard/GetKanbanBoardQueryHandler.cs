@@ -58,7 +58,8 @@ public class GetKanbanBoardQueryHandler
                 t.SubTasks.Count(s => s.Status == ProjectTaskStatus.Done),
                 t.TaskLabels.Select(tl => new Features.Pm.DTOs.TaskLabelBriefDto(
                     tl.Label!.Id, tl.Label.Name, tl.Label.Color)).ToList(),
-                t.SortOrder)).ToList();
+                t.SortOrder,
+                t.ParentTaskId, t.ParentTask?.TaskNumber)).ToList();
 
             return new Features.Pm.DTOs.KanbanColumnDto(
                 col.Id, col.Name, col.SortOrder, col.Color, col.WipLimit, taskCards);

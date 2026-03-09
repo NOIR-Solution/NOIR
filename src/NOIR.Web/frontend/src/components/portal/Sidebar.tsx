@@ -157,34 +157,34 @@ const navSections: NavSection[] = [
       { titleKey: 'ecommerce.categories', icon: Layers, path: '/portal/ecommerce/categories', permission: Permissions.ProductCategoriesRead, feature: 'Ecommerce.Categories' },
       { titleKey: 'ecommerce.brands', icon: Award, path: '/portal/ecommerce/brands', permission: Permissions.BrandsRead, feature: 'Ecommerce.Brands' },
       { titleKey: 'ecommerce.attributes', icon: Tags, path: '/portal/ecommerce/attributes', permission: Permissions.AttributesRead, feature: 'Ecommerce.Attributes' },
-      { titleKey: 'media.title', icon: Image, path: '/portal/media', permission: Permissions.MediaRead },
+      { titleKey: 'media.title', icon: Image, path: '/portal/media', permission: Permissions.MediaRead, feature: 'Platform.Media' },
     ],
   },
   {
     // HR - Human Resources
     labelKey: 'nav.hr',
     items: [
-      { titleKey: 'hr.employees', icon: Users, path: '/portal/hr/employees', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr' },
-      { titleKey: 'hr.departments', icon: Building2, path: '/portal/hr/departments', permission: Permissions.HrDepartmentsRead, feature: 'Erp.Hr' },
-      { titleKey: 'hr.tags.title', icon: Tags, path: '/portal/hr/tags', permission: Permissions.HrTagsRead, feature: 'Erp.Hr' },
-      { titleKey: 'hr.orgChart.title', icon: GitBranch, path: '/portal/hr/org-chart', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr' },
-      { titleKey: 'hr.reports.title', icon: BarChart3, path: '/portal/hr/reports', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr' },
+      { titleKey: 'hr.employees', icon: Users, path: '/portal/hr/employees', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr.Employees' },
+      { titleKey: 'hr.departments', icon: Building2, path: '/portal/hr/departments', permission: Permissions.HrDepartmentsRead, feature: 'Erp.Hr.Departments' },
+      { titleKey: 'hr.tags.title', icon: Tags, path: '/portal/hr/tags', permission: Permissions.HrTagsRead, feature: 'Erp.Hr.Tags' },
+      { titleKey: 'hr.orgChart.title', icon: GitBranch, path: '/portal/hr/org-chart', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr.OrgChart' },
+      { titleKey: 'hr.reports.title', icon: BarChart3, path: '/portal/hr/reports', permission: Permissions.HrEmployeesRead, feature: 'Erp.Hr.Reports' },
     ],
   },
   {
     // PM - Project Management
     labelKey: 'nav.projectManagement',
     items: [
-      { titleKey: 'pm.projects', icon: FolderKanban, path: '/portal/projects', permission: Permissions.PmProjectsRead, feature: 'Erp.Pm' },
+      { titleKey: 'pm.projects', icon: FolderKanban, path: '/portal/projects', permission: Permissions.PmProjectsRead, feature: 'Erp.Pm.Projects' },
     ],
   },
   {
     // CRM - Customer Relationship Management
     labelKey: 'nav.crm',
     items: [
-      { titleKey: 'crm.contacts.title', icon: Contact, path: '/portal/crm/contacts', permission: Permissions.CrmContactsRead, feature: 'Erp.Crm' },
-      { titleKey: 'crm.companies.title', icon: Building2, path: '/portal/crm/companies', permission: Permissions.CrmCompaniesRead, feature: 'Erp.Crm' },
-      { titleKey: 'crm.pipeline.title', icon: Kanban, path: '/portal/crm/pipeline', permission: Permissions.CrmLeadsRead, feature: 'Erp.Crm' },
+      { titleKey: 'crm.contacts.title', icon: Contact, path: '/portal/crm/contacts', permission: Permissions.CrmContactsRead, feature: 'Erp.Crm.Contacts' },
+      { titleKey: 'crm.companies.title', icon: Building2, path: '/portal/crm/companies', permission: Permissions.CrmCompaniesRead, feature: 'Erp.Crm.Companies' },
+      { titleKey: 'crm.pipeline.title', icon: Kanban, path: '/portal/crm/pipeline', permission: Permissions.CrmLeadsRead, feature: 'Erp.Crm.Pipeline' },
     ],
   },
   {

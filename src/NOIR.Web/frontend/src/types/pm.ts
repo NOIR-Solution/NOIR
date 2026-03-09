@@ -12,6 +12,7 @@ export interface ProjectListDto {
   id: string
   name: string
   slug: string
+  projectCode: string
   status: ProjectStatus
   startDate: string | null
   endDate: string | null
@@ -44,6 +45,7 @@ export interface ProjectDto {
   visibility: ProjectVisibility
   members: ProjectMemberDto[]
   columns: ProjectColumnDto[]
+  projectCode: string
   createdAt: string
   modifiedAt: string | null
 }
@@ -81,6 +83,8 @@ export interface TaskCardDto {
   completedSubtaskCount: number
   labels: TaskLabelBriefDto[]
   sortOrder: number
+  parentTaskId: string | null
+  parentTaskNumber: string | null
 }
 
 export interface TaskDto {
@@ -100,14 +104,36 @@ export interface TaskDto {
   actualHours: number | null
   parentTaskId: string | null
   parentTaskNumber: string | null
+  parentTaskTitle: string | null
   columnId: string | null
   columnName: string | null
   completedAt: string | null
+  isArchived: boolean
+  archivedAt: string | null
   labels: TaskLabelBriefDto[]
   subtasks: SubtaskDto[]
   comments: TaskCommentDto[]
   createdAt: string
   modifiedAt: string | null
+  projectName: string | null
+  assigneeAvatarUrl: string | null
+  projectCode: string | null
+}
+
+export interface ArchivedTaskCardDto {
+  id: string
+  taskNumber: string
+  dueDate: string | null
+  title: string
+  status: ProjectTaskStatus
+  priority: TaskPriority
+  assigneeName: string | null
+  assigneeAvatarUrl: string | null
+  archivedAt: string | null
+  subtaskCount: number
+  labels: TaskLabelBriefDto[]
+  parentTaskId: string | null
+  parentTaskNumber: string | null
 }
 
 export interface SubtaskDto {

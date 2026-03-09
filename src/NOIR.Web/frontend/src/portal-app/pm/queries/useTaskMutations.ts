@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createTask, updateTask, moveTask, deleteTask, changeTaskStatus } from '@/services/pm'
+import { createTask, updateTask, moveTask, deleteTask, changeTaskStatus, archiveTask, restoreTask, permanentDeleteTask, emptyProjectTrash } from '@/services/pm'
 import type { CreateTaskRequest, UpdateTaskRequest, MoveTaskRequest } from '@/types/pm'
 import { pmBoardKeys, pmTaskKeys, pmProjectKeys } from './queryKeys'
 
@@ -54,6 +54,49 @@ export const useChangeTaskStatus = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(pmTaskKeys.detail(data.id), data)
       queryClient.invalidateQueries({ queryKey: pmBoardKeys.all })
+    },
+  })
+}
+
+export const useArchiveTask = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => archiveTask(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: pmBoardKeys.all })
+      queryClient.invalidateQueries({ queryKey: pmTaskKeys.all })
+    },
+  })
+}
+
+export const useRestoreTask = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => restoreTask(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: pmBoardKeys.all })
+      queryClient.invalidateQueries({ queryKey: pmTaskKeys.all })
+    },
+  })
+}
+
+export const usePermanentDeleteTask = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => permanentDeleteTask(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: pmTaskKeys.all })
+      queryClient.invalidateQueries({ queryKey: pmBoardKeys.all })
+    },
+  })
+}
+
+export const useEmptyProjectTrash = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (projectId: string) => emptyProjectTrash(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: pmTaskKeys.all })
     },
   })
 }

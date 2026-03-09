@@ -36,7 +36,8 @@ public class GetTasksQueryHandler
             0, // Completed subtask count
             t.TaskLabels.Select(tl => new Features.Pm.DTOs.TaskLabelBriefDto(
                 tl.Label!.Id, tl.Label.Name, tl.Label.Color)).ToList(),
-            t.SortOrder)).ToList();
+            t.SortOrder,
+            t.ParentTaskId, t.ParentTask?.TaskNumber)).ToList();
 
         return Result.Success(PagedResult<Features.Pm.DTOs.TaskCardDto>.Create(
             items, totalCount, query.Page - 1, query.PageSize));

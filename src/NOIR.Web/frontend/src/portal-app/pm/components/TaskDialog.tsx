@@ -14,6 +14,7 @@ import {
   CredenzaHeader,
   CredenzaTitle,
   CredenzaBody,
+  DatePicker,
   Form,
   FormControl,
   FormField,
@@ -28,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@uikit'
-import { useCreateTask } from '@/portal-app/pm/queries'
+import { useCreateTask, useProjectLabelsQuery, useAddLabelToTask } from '@/portal-app/pm/queries'
 import type { ProjectColumnDto, ProjectMemberDto } from '@/types/pm'
 
 const createTaskSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
@@ -40,6 +41,8 @@ const createTaskSchema = (t: (key: string, options?: Record<string, unknown>) =>
     dueDate: z.string().optional().or(z.literal('')),
     estimatedHours: z.coerce.number().min(0).optional().or(z.literal(0)),
     columnId: z.string().optional().or(z.literal('')),
+    labelIds: z.array(z.string()).default([]),
+    parentTaskId: z.string().optional().or(z.literal('')),
   })
 
 type TaskFormData = z.infer<ReturnType<typeof createTaskSchema>>
@@ -51,11 +54,23 @@ interface TaskDialogProps {
   columns: ProjectColumnDto[]
   members: ProjectMemberDto[]
   defaultColumnId?: string
+  parentTaskId?: string
 }
 
-export const TaskDialog = ({ open, onOpenChange, projectId, columns, members, defaultColumnId }: TaskDialogProps) => {
+export const TaskDialog = ({
+  open,
+  onOpenChange,
+  projectId,
+  columns,
+  members,
+  defaultColumnId,
+  parentTaskId,
+}: TaskDialogProps) => {
   const { t } = useTranslation('common')
   const createMutation = useCreateTask()
+  const addLabelMutation = useAddLabelToTask()
+  const { data: labelsData } = useProjectLabelsQuery(projectId)
+  const availableLabels = labelsData ?? []
 
   const form = useForm<TaskFormData>({
     resolver: zodResolver(createTaskSchema(t)) as unknown as Resolver<TaskFormData>,
@@ -68,6 +83,8 @@ export const TaskDialog = ({ open, onOpenChange, projectId, columns, members, de
       dueDate: '',
       estimatedHours: 0,
       columnId: defaultColumnId ?? '',
+      labelIds: [],
+      parentTaskId: parentTaskId ?? '',
     },
   })
 
@@ -81,13 +98,15 @@ export const TaskDialog = ({ open, onOpenChange, projectId, columns, members, de
         dueDate: '',
         estimatedHours: 0,
         columnId: defaultColumnId ?? columns[0]?.id ?? '',
+        labelIds: [],
+        parentTaskId: parentTaskId ?? '',
       })
     }
-  }, [open, form, defaultColumnId, columns])
+  }, [open, form, defaultColumnId, columns, parentTaskId])
 
   const onSubmit = async (data: TaskFormData) => {
-    createMutation.mutate(
-      {
+    try {
+      const createdTask = await createMutation.mutateAsync({
         projectId,
         title: data.title,
         description: data.description || undefined,
@@ -96,25 +115,34 @@ export const TaskDialog = ({ open, onOpenChange, projectId, columns, members, de
         dueDate: data.dueDate || undefined,
         estimatedHours: data.estimatedHours || undefined,
         columnId: data.columnId || undefined,
-      },
-      {
-        onSuccess: () => {
-          toast.success(t('pm.createTask'))
-          onOpenChange(false)
-        },
-        onError: (err) => {
-          toast.error(err instanceof Error ? err.message : t('errors.unknown'))
-        },
-      },
-    )
+        parentTaskId: data.parentTaskId || undefined,
+      })
+
+      if (data.labelIds.length > 0 && createdTask?.id) {
+        await Promise.all(
+          data.labelIds.map((labelId) =>
+            addLabelMutation.mutateAsync({ taskId: createdTask.id, labelId }),
+          ),
+        )
+      }
+
+      toast.success(t('pm.createTask'))
+      onOpenChange(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('errors.unknown'))
+    }
   }
+
+  const isSubmitting = createMutation.isPending || addLabelMutation.isPending
 
   return (
     <Credenza open={open} onOpenChange={onOpenChange}>
       <CredenzaContent>
         <CredenzaHeader>
           <CredenzaTitle>{t('pm.createTask')}</CredenzaTitle>
-          <CredenzaDescription>{t('pm.createTask')}</CredenzaDescription>
+          <CredenzaDescription>
+            {t('pm.createTaskDescription', { defaultValue: 'Add a new task to this project' })}
+          </CredenzaDescription>
         </CredenzaHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -132,6 +160,7 @@ export const TaskDialog = ({ open, onOpenChange, projectId, columns, members, de
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="description"
@@ -145,6 +174,7 @@ export const TaskDialog = ({ open, onOpenChange, projectId, columns, members, de
                   </FormItem>
                 )}
               />
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -194,6 +224,7 @@ export const TaskDialog = ({ open, onOpenChange, projectId, columns, members, de
                   )}
                 />
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -226,13 +257,65 @@ export const TaskDialog = ({ open, onOpenChange, projectId, columns, members, de
                     <FormItem>
                       <FormLabel>{t('pm.dueDate')}</FormLabel>
                       <FormControl>
-                        <Input {...field} type="date" />
+                        <DatePicker
+                          value={field.value ? new Date(field.value) : undefined}
+                          onChange={(date) => field.onChange(date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` : '')}
+                          placeholder={t('pm.dueDate')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="labelIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('pm.labels')}</FormLabel>
+                    <FormControl>
+                      <div className="space-y-1">
+                        {availableLabels.length > 0 ? (
+                          <div className="flex flex-wrap gap-1.5">
+                            {availableLabels.map((label) => {
+                              const isSelected = field.value.includes(label.id)
+                              return (
+                                <button
+                                  key={label.id}
+                                  type="button"
+                                  onClick={() => {
+                                    field.onChange(
+                                      isSelected
+                                        ? field.value.filter((id: string) => id !== label.id)
+                                        : [...field.value, label.id],
+                                    )
+                                  }}
+                                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border cursor-pointer transition-all ${
+                                    isSelected ? 'ring-2 ring-offset-1 shadow-sm scale-105' : 'opacity-70 hover:opacity-100'
+                                  }`}
+                                  style={{
+                                    backgroundColor: `${label.color}20`,
+                                    borderColor: isSelected ? label.color : `${label.color}40`,
+                                    color: label.color,
+                                  }}
+                                >
+                                  {label.name}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">{t('pm.noLabels', { defaultValue: 'No labels yet' })}</p>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="estimatedHours"
@@ -246,13 +329,32 @@ export const TaskDialog = ({ open, onOpenChange, projectId, columns, members, de
                   </FormItem>
                 )}
               />
+
+              {!parentTaskId && (
+                <FormField
+                  control={form.control}
+                  name="parentTaskId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('pm.parentTask')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t('pm.parentTaskPlaceholder', { defaultValue: 'Parent task ID (optional)' })}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </CredenzaBody>
             <CredenzaFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
                 {t('buttons.cancel')}
               </Button>
-              <Button type="submit" disabled={createMutation.isPending} className="cursor-pointer">
-                {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button type="submit" disabled={isSubmitting} className="cursor-pointer">
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('buttons.create')}
               </Button>
             </CredenzaFooter>

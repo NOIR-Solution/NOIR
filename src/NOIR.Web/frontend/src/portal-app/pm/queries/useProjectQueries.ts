@@ -1,5 +1,5 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { getProjects, getProjectById } from '@/services/pm'
+import { getProjects, getProjectById, getProjectByCode } from '@/services/pm'
 import type { GetProjectsParams } from '@/types/pm'
 import { pmProjectKeys } from './queryKeys'
 
@@ -15,4 +15,11 @@ export const useProjectQuery = (id: string | undefined) =>
     queryKey: pmProjectKeys.detail(id!),
     queryFn: () => getProjectById(id!),
     enabled: !!id,
+  })
+
+export const useProjectByCodeQuery = (code: string | undefined) =>
+  useQuery({
+    queryKey: pmProjectKeys.detail(`code:${code}`),
+    queryFn: () => getProjectByCode(code!),
+    enabled: !!code,
   })

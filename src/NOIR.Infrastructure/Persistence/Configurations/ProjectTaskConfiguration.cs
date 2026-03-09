@@ -97,6 +97,9 @@ public class ProjectTaskConfiguration : IEntityTypeConfiguration<ProjectTask>
         builder.Property(e => e.DeletedBy).HasMaxLength(DatabaseConstants.UserIdMaxLength);
         builder.Property(e => e.IsDeleted).HasDefaultValue(false);
 
+        // Archive
+        builder.Property(e => e.IsArchived).HasDefaultValue(false);
+
         // Soft delete query filter
         builder.HasQueryFilter("SoftDelete", e => !e.IsDeleted);
     }

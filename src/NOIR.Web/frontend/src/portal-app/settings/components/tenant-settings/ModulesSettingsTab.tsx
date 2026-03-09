@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Box } from 'lucide-react'
@@ -23,6 +23,7 @@ export interface ModulesSettingsTabProps {
  * ModulesSettingsTab - Shows tenant-configurable modules grouped by sidebar sections.
  * Module names use the same localization keys as sidebar nav items for 100% consistency.
  * Core modules and platform-only modules (Tenants, Developer Logs) are hidden.
+ * Modules with showFeatures=true expand to show individual sub-feature rows.
  */
 export const ModulesSettingsTab = ({ canEdit }: ModulesSettingsTabProps) => {
   const { t } = useTranslation('common')
@@ -37,7 +38,7 @@ export const ModulesSettingsTab = ({ canEdit }: ModulesSettingsTabProps) => {
     [catalog],
   )
 
-  /** Toggle one or more modules sequentially to avoid optimistic update race conditions. */
+  /** Toggle one or more modules/features sequentially to avoid optimistic update race conditions. */
   const handleToggleNames = async (names: string[], isEnabled: boolean) => {
     let failCount = 0
     for (const name of names) {
@@ -59,8 +60,16 @@ export const ModulesSettingsTab = ({ canEdit }: ModulesSettingsTabProps) => {
   const handleToggle = (item: ResolvedItem, isEnabled: boolean) =>
     handleToggleNames(getItemModules(item).map(m => m.name), isEnabled)
 
-  const handleGroupToggle = (items: ResolvedItem[], isEnabled: boolean) =>
-    handleToggleNames(items.flatMap(item => getItemModules(item).map(m => m.name)), isEnabled)
+  const handleGroupToggle = (items: ResolvedItem[], isEnabled: boolean) => {
+    const names = items.flatMap(item => {
+      if (item.features.length > 0) {
+        // Toggle parent module + all sub-features together
+        return [item.module.name, ...item.features.map(f => f.name)]
+      }
+      return getItemModules(item).map(m => m.name)
+    })
+    return handleToggleNames(names, isEnabled)
+  }
 
   if (isLoading) {
     return (
@@ -115,10 +124,15 @@ export const ModulesSettingsTab = ({ canEdit }: ModulesSettingsTabProps) => {
         // Hide entire group if all modules are unavailable
         if (availableItems.length === 0) return null
 
-        // Group-level tri-state: all on → checked, all off → unchecked, mixed → indeterminate
-        const itemStates = availableItems.map((item) =>
-          getItemModules(item).every(m => features?.[m.name]?.isEnabled ?? m.defaultEnabled),
-        )
+        // Group-level tri-state: check sub-features for items with features, module state otherwise
+        const itemStates = availableItems.map((item) => {
+          if (item.features.length > 0) {
+            const availableFeatures = item.features.filter(f => features?.[f.name]?.isAvailable !== false)
+            if (availableFeatures.length === 0) return true
+            return availableFeatures.every(f => features?.[f.name]?.isEnabled ?? f.defaultEnabled)
+          }
+          return getItemModules(item).every(m => features?.[m.name]?.isEnabled ?? m.defaultEnabled)
+        })
         const groupCheckState = computeCheckState(itemStates)
         const groupLabel = t(group.labelKey)
 
@@ -139,9 +153,53 @@ export const ModulesSettingsTab = ({ canEdit }: ModulesSettingsTabProps) => {
             <CardContent className="space-y-0 px-4">
               {availableItems.map((item) => {
                 const { module, titleKey, descKey, iconOverride } = item
+                const Icon = iconMap[iconOverride ?? module.icon] ?? Box
+
+                // Module has sub-features — render each feature as an individual row
+                if (item.features.length > 0) {
+                  const availableFeatures = item.features.filter(
+                    f => features?.[f.name]?.isAvailable !== false,
+                  )
+                  return (
+                    <Fragment key={module.name}>
+                      {availableFeatures.map((feature) => {
+                        const isFeatureEnabled = features?.[feature.name]?.isEnabled ?? feature.defaultEnabled
+                        const featureName = t(feature.displayNameKey)
+                        return (
+                          <div
+                            key={feature.name}
+                            className="flex items-center justify-between py-2 px-2 -mx-2 rounded-lg transition-colors hover:bg-muted/50"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted/80 text-muted-foreground">
+                                <Icon className="h-4 w-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <span className="font-medium text-sm leading-none">
+                                  {featureName}
+                                </span>
+                                <p className="text-xs text-muted-foreground leading-snug mt-0.5">
+                                  {t(feature.descriptionKey)}
+                                </p>
+                              </div>
+                            </div>
+                            <Switch
+                              checked={isFeatureEnabled}
+                              disabled={!canEdit || toggleMutation.isPending}
+                              onCheckedChange={(checked) => handleToggleNames([feature.name], checked)}
+                              className="cursor-pointer shrink-0 ml-4"
+                              aria-label={t('featureManagement.toggleModule', { module: featureName })}
+                            />
+                          </div>
+                        )
+                      })}
+                    </Fragment>
+                  )
+                }
+
+                // Regular module row (no sub-features)
                 const allModules = getItemModules(item)
                 const isEnabled = allModules.every(m => features?.[m.name]?.isEnabled ?? m.defaultEnabled)
-                const Icon = iconMap[iconOverride ?? module.icon] ?? Box
                 const displayName = t(titleKey)
 
                 return (

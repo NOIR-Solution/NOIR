@@ -204,6 +204,8 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 
 **Dialog focus ring clipping**: NEVER wrap form inputs in `overflow-hidden`, `ScrollArea`, or `overflow-y-auto`. Let dialogs grow naturally.
 
+**Dialog footer spacing**: `CredenzaFooter` has `mt-4` built-in. Do NOT add `space-y-4` to `<form>` just to get footer spacing — it's already handled. If using raw `DialogFooter` (not Credenza), wrap the `<form>` with `className="space-y-4"` or add `mt-4` to the footer manually.
+
 **Gradient text**: MUST include `text-transparent` with `bg-clip-text`.
 
 **Card shadows**: `shadow-sm hover:shadow-lg transition-all duration-300`.

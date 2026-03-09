@@ -57,6 +57,18 @@ public class CreateTaskCommandHandler
             columnId = firstColumn?.Id;
         }
 
+        // Assign sort order: place new task at the end of its column
+        double sortOrder = 0;
+        if (columnId.HasValue)
+        {
+            var maxSortOrder = await _dbContext.ProjectTasks
+                .Where(t => t.ColumnId == columnId && !t.IsArchived)
+                .TagWith("CreateTask_MaxSortOrder")
+                .Select(t => (double?)t.SortOrder)
+                .MaxAsync(cancellationToken);
+            sortOrder = (maxSortOrder ?? 0) + 1;
+        }
+
         // Find reporter (current user's employee record)
         Guid? reporterId = null;
         if (_currentUser.UserId is not null)
@@ -81,7 +93,8 @@ public class CreateTaskCommandHandler
             command.DueDate,
             command.EstimatedHours,
             command.ParentTaskId,
-            columnId);
+            columnId,
+            sortOrder);
 
         await _taskRepository.AddAsync(task, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -106,7 +119,7 @@ public class CreateTaskCommandHandler
             t.AssigneeId, t.Assignee != null ? $"{t.Assignee.FirstName} {t.Assignee.LastName}" : null,
             t.ReporterId, t.Reporter != null ? $"{t.Reporter.FirstName} {t.Reporter.LastName}" : null,
             t.DueDate, t.EstimatedHours, t.ActualHours,
-            t.ParentTaskId, t.ParentTask?.TaskNumber,
+            t.ParentTaskId, t.ParentTask?.TaskNumber, t.ParentTask?.Title,
             t.ColumnId, t.Column?.Name,
             t.CompletedAt,
             t.TaskLabels.Select(tl => new Features.Pm.DTOs.TaskLabelBriefDto(

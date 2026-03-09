@@ -10,6 +10,7 @@ import type {
   ProjectMemberRole,
   KanbanBoardDto,
   TaskDto,
+  ArchivedTaskCardDto,
   CreateTaskRequest,
   UpdateTaskRequest,
   MoveTaskRequest,
@@ -38,6 +39,10 @@ export const getProjects = async (params: GetProjectsParams = {}): Promise<Proje
 
 export const getProjectById = async (id: string): Promise<ProjectDto> => {
   return apiClient<ProjectDto>(`/pm/projects/${id}`)
+}
+
+export const getProjectByCode = async (code: string): Promise<ProjectDto> => {
+  return apiClient<ProjectDto>(`/pm/projects/code/${code}`)
 }
 
 export const createProject = async (request: CreateProjectRequest): Promise<ProjectDto> => {
@@ -129,9 +134,29 @@ export const deleteTask = async (id: string): Promise<void> => {
 
 export const changeTaskStatus = async (id: string, status: string): Promise<TaskDto> => {
   return apiClient<TaskDto>(`/pm/tasks/${id}/status`, {
-    method: 'PUT',
+    method: 'POST',
     body: JSON.stringify({ status }),
   })
+}
+
+export const archiveTask = async (id: string): Promise<string> => {
+  return apiClient<string>(`/pm/tasks/${id}/archive`, { method: 'POST' })
+}
+
+export const restoreTask = async (id: string): Promise<string> => {
+  return apiClient<string>(`/pm/tasks/${id}/restore`, { method: 'POST' })
+}
+
+export const permanentDeleteTask = async (id: string): Promise<string> => {
+  return apiClient<string>(`/pm/tasks/${id}/permanent`, { method: 'DELETE' })
+}
+
+export const getArchivedTasks = async (projectId: string): Promise<ArchivedTaskCardDto[]> => {
+  return apiClient<ArchivedTaskCardDto[]>(`/pm/tasks/archived?projectId=${projectId}`)
+}
+
+export const emptyProjectTrash = async (projectId: string): Promise<number> => {
+  return apiClient<number>(`/pm/tasks/archived?projectId=${projectId}`, { method: 'DELETE' })
 }
 
 // ─── Comment endpoints ──────────────────────────────────────────────────────

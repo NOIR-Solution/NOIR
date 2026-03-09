@@ -47,6 +47,7 @@ public static class ModuleNames
         public const string Tenants = "Platform.Tenants";
         public const string EmailTemplates = "Platform.EmailTemplates";
         public const string LegalPages = "Platform.LegalPages";
+        public const string Media = "Platform.Media";
     }
 
     public static class Analytics
@@ -71,6 +72,20 @@ public static class ModuleNames
             public const string Employees = Hr + ".Employees";
             public const string Departments = Hr + ".Departments";
             public const string Tags = Hr + ".Tags";
+            public const string OrgChart = Hr + ".OrgChart";
+            public const string Reports = Hr + ".Reports";
+        }
+
+        public static class CrmSub
+        {
+            public const string Contacts = Crm + ".Contacts";
+            public const string Companies = Crm + ".Companies";
+            public const string Pipeline = Crm + ".Pipeline";
+        }
+
+        public static class PmSub
+        {
+            public const string Projects = Pm + ".Projects";
         }
     }
 

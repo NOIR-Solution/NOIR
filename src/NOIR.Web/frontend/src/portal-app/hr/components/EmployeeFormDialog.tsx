@@ -15,6 +15,7 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
+  DatePicker,
   Form,
   FormControl,
   FormField,
@@ -358,7 +359,12 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: 
                       <FormItem>
                         <FormLabel>{t('hr.joinDate')}</FormLabel>
                         <FormControl>
-                          <Input {...field} type="date" className="cursor-pointer" disabled={isEditing} />
+                          <DatePicker
+                            value={field.value ? new Date(field.value) : undefined}
+                            onChange={(date) => field.onChange(date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` : '')}
+                            placeholder={t('hr.joinDate')}
+                            disabled={isEditing}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

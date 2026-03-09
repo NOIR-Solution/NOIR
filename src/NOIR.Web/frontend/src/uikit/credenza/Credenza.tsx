@@ -159,6 +159,8 @@ const CredenzaFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEle
 
   // Both paths use the same layout: reversed column on mobile (primary action on top), row on desktop.
   // DialogFooter already has this. DrawerFooter uses flex-col (not reversed), so we override it.
+  // mt-4 ensures consistent separation from the last form field regardless of whether the
+  // wrapping <form> uses space-y-4 (mt-4 on child wins over parent space-y in CSS specificity).
   if (isMobile) {
     return (
       <DrawerFooter
@@ -168,7 +170,7 @@ const CredenzaFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEle
     )
   }
 
-  return <DialogFooter className={className} {...props} />
+  return <DialogFooter className={cn('mt-4', className)} {...props} />
 }
 
 export {

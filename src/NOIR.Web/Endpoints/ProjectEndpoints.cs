@@ -16,6 +16,7 @@ using NOIR.Application.Features.Pm.Commands.DeleteColumn;
 using NOIR.Application.Features.Pm.Queries.GetProjects;
 using NOIR.Application.Features.Pm.Queries.SearchProjects;
 using NOIR.Application.Features.Pm.Queries.GetProjectById;
+using NOIR.Application.Features.Pm.Queries.GetProjectByCode;
 using NOIR.Application.Features.Pm.Queries.GetProjectMembers;
 using NOIR.Application.Features.Pm.Queries.GetProjectLabels;
 using NOIR.Application.Features.Pm.Queries.GetKanbanBoard;
@@ -64,6 +65,18 @@ public static class ProjectEndpoints
         .WithName("SearchProjects")
         .WithSummary("Search projects for autocomplete")
         .Produces<List<ProjectSearchDto>>(StatusCodes.Status200OK);
+
+        group.MapGet("/code/{code}", async (string code, IMessageBus bus) =>
+        {
+            var query = new GetProjectByCodeQuery(code);
+            var result = await bus.InvokeAsync<Result<ProjectDto>>(query);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.PmProjectsRead)
+        .WithName("GetProjectByCode")
+        .WithSummary("Get project by project code (e.g. TEST-PROJECT-IVZXMJ)")
+        .Produces<ProjectDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         group.MapGet("/{id:guid}", async (Guid id, IMessageBus bus) =>
         {

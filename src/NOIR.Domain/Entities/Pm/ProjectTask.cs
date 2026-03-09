@@ -21,6 +21,8 @@ public class ProjectTask : TenantAggregateRoot<Guid>
     public Guid? ColumnId { get; private set; }
     public double SortOrder { get; private set; }
     public DateTimeOffset? CompletedAt { get; private set; }
+    public bool IsArchived { get; private set; }
+    public DateTimeOffset? ArchivedAt { get; private set; }
 
     // Navigation properties
     public virtual Project? Project { get; private set; }
@@ -170,5 +172,23 @@ public class ProjectTask : TenantAggregateRoot<Guid>
         }
 
         Status = ProjectTaskStatus.Cancelled;
+    }
+
+    /// <summary>
+    /// Moves the task to the archive (trash bin). Can be restored later.
+    /// </summary>
+    public void Archive()
+    {
+        IsArchived = true;
+        ArchivedAt = DateTimeOffset.UtcNow;
+    }
+
+    /// <summary>
+    /// Restores the task from the archive.
+    /// </summary>
+    public void Restore()
+    {
+        IsArchived = false;
+        ArchivedAt = null;
     }
 }
