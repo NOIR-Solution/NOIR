@@ -1,5 +1,6 @@
 export * from './common'
 export * from './alert'
+export * from './data-table'
 export * from './alert-dialog'
 export * from './avatar'
 export * from './badge'

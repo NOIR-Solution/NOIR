@@ -1,58 +1,70 @@
-import { useState, useDeferredValue, useMemo, useTransition } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Shield, Plus } from 'lucide-react'
-import { Button } from '@uikit'
+import { Shield, Plus, Key, Edit, Trash2 } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef, RowSelectionState, SortingState } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import {
+  Badge,
+  Button,
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-  Input,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  EmptyState,
   PageHeader,
-  Pagination,
 } from '@uikit'
 
-import { RoleTable } from '../../components/roles/RoleTable'
 import { CreateRoleDialog } from '../../components/roles/CreateRoleDialog'
 import { EditRoleDialog } from '../../components/roles/EditRoleDialog'
 import { DeleteRoleDialog } from '../../components/roles/DeleteRoleDialog'
 import { PermissionsDialog } from '../../components/roles/PermissionsDialog'
-import { useRolesQuery, useDeleteRoleMutation, type RolesParams } from '@/portal-app/user-access/queries'
+import { useRolesQuery, useDeleteRoleMutation } from '@/portal-app/user-access/queries'
 import type { RoleListItem } from '@/types'
+
+const ch = createColumnHelper<RoleListItem>()
 
 export const RolesPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Roles')
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-  const [isPaginationPending, startPaginationTransition] = useTransition()
-  const [params, setParams] = useState<RolesParams>({ page: 1, pageSize: 10 })
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-role' })
+  const [roleToDelete, setRoleToDelete] = useState<RoleListItem | null>(null)
+  const [roleForPermissions, setRoleForPermissions] = useState<RoleListItem | null>(null)
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
-  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
-  const { data, isLoading: loading, error: queryError, refetch: refresh } = useRolesQuery(queryParams)
+  const {
+    params,
+    searchInput,
+    setSearchInput,
+    isSearchStale,
+    isFilterPending,
+    setSorting,
+    setPage,
+    setPageSize,
+  } = useTableParams({ defaultPageSize: 10 })
+
+  const { data, isLoading, error: queryError, refetch: refresh } = useRolesQuery(params)
+  const { editItem: roleToEdit, openEdit: openEditRole, closeEdit: closeEditRole } = useUrlEditDialog<RoleListItem>(data?.items)
   const deleteMutation = useDeleteRoleMutation()
-  const error = queryError?.message ?? null
 
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'Role',
     onCollectionUpdate: refresh,
   })
-
-  const setPage = (page: number) => startPaginationTransition(() =>
-    setParams((prev) => ({ ...prev, page }))
-  )
-  const { editItem: roleToEdit, openEdit: openEditRole, closeEdit: closeEditRole } = useUrlEditDialog<RoleListItem>(data?.items)
-  const [roleToDelete, setRoleToDelete] = useState<RoleListItem | null>(null)
-  const [roleForPermissions, setRoleForPermissions] = useState<RoleListItem | null>(null)
 
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
@@ -64,16 +76,116 @@ export const RolesPage = () => {
     }
   }
 
-  const handleEditClick = (role: RoleListItem) => {
-    openEditRole(role)
-  }
+  const columns = useMemo((): ColumnDef<RoleListItem, unknown>[] => [
+    ch.accessor('name', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('roles.columns.name', 'Name')} />,
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+            style={{ backgroundColor: row.original.color || '#6b7280' }}
+          >
+            <Shield className="h-4 w-4 text-white" />
+          </div>
+          <div>
+            <p className="font-medium">{row.original.name}</p>
+            {row.original.parentRoleId && (
+              <p className="text-xs text-muted-foreground">{t('roles.inheritsFrom', 'Inherits permissions')}</p>
+            )}
+          </div>
+        </div>
+      ),
+    }) as ColumnDef<RoleListItem, unknown>,
+    ch.accessor('description', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('roles.columns.description', 'Description')} />,
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground line-clamp-2">{getValue() || '-'}</span>
+      ),
+    }) as ColumnDef<RoleListItem, unknown>,
+    ch.accessor('permissionCount', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('roles.columns.permissions', 'Permissions')} />,
+      enableSorting: false,
+      meta: { align: 'center' },
+      size: 120,
+      cell: ({ getValue }) => (
+        <div className="flex items-center justify-center gap-1">
+          <Key className="h-4 w-4 text-muted-foreground" />
+          <span>{getValue()}</span>
+        </div>
+      ),
+    }) as ColumnDef<RoleListItem, unknown>,
+    ch.accessor('userCount', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('roles.columns.users', 'Users')} />,
+      enableSorting: false,
+      meta: { align: 'center' },
+      size: 90,
+      cell: ({ getValue }) => <span>{getValue()}</span>,
+    }) as ColumnDef<RoleListItem, unknown>,
+    ch.accessor('isSystemRole', {
+      id: 'type',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('roles.columns.type', 'Type')} />,
+      enableSorting: false,
+      meta: { align: 'center' },
+      size: 100,
+      cell: ({ getValue }) => getValue() ? (
+        <Badge variant="secondary">{t('roles.system', 'System')}</Badge>
+      ) : (
+        <Badge variant="outline">{t('roles.custom', 'Custom')}</Badge>
+      ),
+    }) as ColumnDef<RoleListItem, unknown>,
+    createActionsColumn<RoleListItem>((role) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => setRoleForPermissions(role)}>
+          <Key className="mr-2 h-4 w-4" />
+          {t('roles.managePermissions', 'Manage Permissions')}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => openEditRole(role)}>
+          <Edit className="mr-2 h-4 w-4" />
+          {t('buttons.edit', 'Edit')}
+        </DropdownMenuItem>
+        {!role.isSystemRole && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive cursor-pointer"
+              onClick={() => setRoleToDelete(role)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {t('buttons.delete', 'Delete')}
+            </DropdownMenuItem>
+          </>
+        )}
+      </>
+    )),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t])
 
-  const handleDeleteClick = (role: RoleListItem) => {
-    setRoleToDelete(role)
-  }
+  const tableData = useMemo(() => data?.items ?? [], [data?.items])
 
-  const handlePermissionsClick = (role: RoleListItem) => {
-    setRoleForPermissions(role)
+  const table = useServerTable({
+    data: tableData,
+    columns,
+    rowCount: data?.totalCount ?? 0,
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: params.sorting as SortingState,
+      rowSelection,
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function'
+        ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize })
+        : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.id,
+  })
+
+  if (queryError) {
+    console.error(queryError)
   }
 
   return (
@@ -93,54 +205,32 @@ export const RolesPage = () => {
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4">
-          <div className="space-y-3">
-            <div>
-              <CardTitle className="text-lg">{t('roles.listTitle', 'All Roles')}</CardTitle>
-              <CardDescription>
-                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
-              </CardDescription>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('roles.searchPlaceholder', 'Search roles...')}
-                  value={searchInput}
-                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
-                  className="pl-9 h-9"
-                  aria-label={t('roles.searchRoles', 'Search roles')}
-                />
-              </div>
-            </div>
-          </div>
+          <CardTitle className="text-lg">{t('roles.listTitle', 'All Roles')}</CardTitle>
         </CardHeader>
-        <CardContent className={(isSearchStale || isPaginationPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
-          {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
-              {error}
-            </div>
-          )}
-
-          <RoleTable
-            roles={data?.items || []}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-            onPermissions={handlePermissionsClick}
-            loading={loading}
+        <CardContent className="space-y-4">
+          <DataTableToolbar
+            table={table}
+            searchInput={searchInput}
+            onSearchChange={setSearchInput}
+            searchPlaceholder={t('roles.searchPlaceholder', 'Search roles...')}
+            isSearchStale={isSearchStale}
           />
 
-          {/* Pagination */}
-          {data && data.totalPages > 1 && (
-            <Pagination
-              currentPage={data.pageNumber}
-              totalPages={data.totalPages}
-              totalItems={data.totalCount}
-              pageSize={params.pageSize || 10}
-              onPageChange={setPage}
-              showPageSizeSelector={false}
-              className="mt-4"
-            />
-          )}
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale || isFilterPending}
+            onRowClick={openEditRole}
+            emptyState={
+              <EmptyState
+                icon={Shield}
+                title={t('roles.noRoles', 'No roles found')}
+                description={t('roles.noRolesDescription', 'Create a new role to get started.')}
+              />
+            }
+          />
+
+          <DataTablePagination table={table} showPageSizeSelector={false} />
         </CardContent>
       </Card>
 

@@ -1,34 +1,29 @@
-import { useState, useDeferredValue, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Tag, Plus, Pencil, Trash2, EllipsisVertical } from 'lucide-react'
+import { Tag, Plus, Pencil, Trash2 } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import {
   Badge,
   Button,
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   ColorPopover,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   PageHeader,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from '@uikit'
 
 import { useBlogTagsQuery, useDeleteBlogTagMutation } from '@/portal-app/blogs/queries'
@@ -36,21 +31,20 @@ import { BlogTagDialog } from '../../components/blog-tags/BlogTagDialog'
 import { DeleteBlogTagDialog } from '../../components/blog-tags/DeleteBlogTagDialog'
 import type { PostTagListItem } from '@/types'
 
+const ch = createColumnHelper<PostTagListItem>()
+
 export const BlogTagsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Tags')
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-tag' })
   const [tagToDelete, setTagToDelete] = useState<PostTagListItem | null>(null)
 
-  const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
-  const { data = [], isLoading: loading, error: queryError, refetch: refresh } = useBlogTagsQuery(queryParams)
+  const { params, searchInput, setSearchInput, isSearchStale } = useTableParams({ defaultPageSize: 1000 })
+  const queryParams = useMemo(() => ({ search: params.search }), [params.search])
+  const { data = [], isLoading, error: queryError, refetch: refresh } = useBlogTagsQuery(queryParams)
   const { editItem: tagToEdit, openEdit: openEditTag, closeEdit: closeEditTag } = useUrlEditDialog<PostTagListItem>(data)
   const deleteMutation = useDeleteBlogTagMutation()
-  const error = queryError?.message ?? null
 
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'PostTag',
@@ -67,8 +61,67 @@ export const BlogTagsPage = () => {
     }
   }
 
-  const handleDialogSuccess = () => {
-    refresh()
+  const columns = useMemo((): ColumnDef<PostTagListItem, unknown>[] => [
+    ch.accessor('name', {
+      header: t('labels.name', 'Name'),
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2.5">
+          {row.original.color ? (
+            <ColorPopover color={row.original.color} />
+          ) : (
+            <div className="w-4 h-4 rounded-full bg-muted border border-border shrink-0" />
+          )}
+          <span className="font-medium">{row.original.name}</span>
+        </div>
+      ),
+    }) as ColumnDef<PostTagListItem, unknown>,
+    ch.accessor('slug', {
+      header: t('labels.slug', 'Slug'),
+      cell: ({ getValue }) => (
+        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{getValue()}</code>
+      ),
+    }) as ColumnDef<PostTagListItem, unknown>,
+    ch.accessor('postCount', {
+      header: t('blogTags.posts', 'Posts'),
+      enableSorting: false,
+      meta: { align: 'center' },
+      size: 80,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<PostTagListItem, unknown>,
+    createActionsColumn<PostTagListItem>((tag) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => openEditTag(tag)}>
+          <Pencil className="h-4 w-4 mr-2" />
+          {t('labels.edit', 'Edit')}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive cursor-pointer"
+          onClick={() => setTagToDelete(tag)}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          {t('labels.delete', 'Delete')}
+        </DropdownMenuItem>
+      </>
+    )),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t])
+
+  const tableData = useMemo(() => data, [data])
+
+  const table = useServerTable({
+    data: tableData,
+    columns,
+    rowCount: data.length,
+    state: {
+      pagination: { pageIndex: 0, pageSize: 1000 },
+      sorting: [],
+    },
+    onPaginationChange: () => {},
+    getRowId: (row) => row.id,
+  })
+
+  if (queryError) {
+    console.error(queryError)
   }
 
   return (
@@ -88,140 +141,35 @@ export const BlogTagsPage = () => {
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4">
-          <div className="space-y-3">
-            <div>
-              <CardTitle className="text-lg">{t('blogTags.allTags', 'All Tags')}</CardTitle>
-              <CardDescription>
-                {data ? t('blogTags.totalCount', { count: data.length, defaultValue: `${data.length} tags` }) : ''}
-              </CardDescription>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('blogTags.searchPlaceholder', 'Search tags...')}
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="pl-9 h-9"
-                  aria-label={t('blogTags.searchTags', 'Search tags')}
-                />
-              </div>
-            </div>
-          </div>
+          <CardTitle className="text-lg">{t('blogTags.allTags', 'All Tags')}</CardTitle>
         </CardHeader>
-        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
-          {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
-              {error}
-            </div>
-          )}
+        <CardContent className="space-y-4">
+          <DataTableToolbar
+            table={table}
+            searchInput={searchInput}
+            onSearchChange={setSearchInput}
+            searchPlaceholder={t('blogTags.searchPlaceholder', 'Search tags...')}
+            isSearchStale={isSearchStale}
+            showColumnToggle={false}
+          />
 
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background" />
-                  <TableHead className="w-[35%]">{t('labels.name', 'Name')}</TableHead>
-                  <TableHead>{t('labels.slug', 'Slug')}</TableHead>
-                  <TableHead className="text-center">{t('blogTags.posts', 'Posts')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Skeleton className="h-4 w-4 rounded-full" />
-                          <Skeleton className="h-4 w-28" />
-                        </div>
-                      </TableCell>
-                      <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : data.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="p-0">
-                      <EmptyState
-                        icon={Tag}
-                        title={t('blogTags.noTagsFound', 'No tags found')}
-                        description={t('blogTags.noTagsDescription', 'Get started by creating your first tag to label and organize your content.')}
-                        action={{
-                          label: t('blogTags.newTag', 'New Tag'),
-                          onClick: () => openCreate(),
-                        }}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  data.map((tag) => (
-                    <TableRow
-                      key={tag.id}
-                      className="group cursor-pointer transition-colors hover:bg-muted/50"
-                      onClick={(e) => {
-                        if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
-                        openEditTag(tag)
-                      }}
-                    >
-                      <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: tag.name, defaultValue: `Actions for ${tag.name}` })}
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start">
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={() => openEditTag(tag)}
-                            >
-                              <Pencil className="h-4 w-4 mr-2" />
-                              {t('labels.edit', 'Edit')}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive cursor-pointer"
-                              onClick={(e) => { e.stopPropagation(); setTagToDelete(tag); }}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              {t('labels.delete', 'Delete')}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2.5">
-                          {tag.color ? (
-                            <ColorPopover color={tag.color} />
-                          ) : (
-                            <div className="w-4 h-4 rounded-full bg-muted border border-border shrink-0" />
-                          )}
-                          <span className="font-medium">{tag.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{tag.slug}</code>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{tag.postCount}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale}
+            onRowClick={openEditTag}
+            emptyState={
+              <EmptyState
+                icon={Tag}
+                title={t('blogTags.noTagsFound', 'No tags found')}
+                description={t('blogTags.noTagsDescription', 'Get started by creating your first tag to label and organize your content.')}
+                action={{ label: t('blogTags.newTag', 'New Tag'), onClick: () => openCreate() }}
+              />
+            }
+          />
         </CardContent>
       </Card>
 
-      {/* Create/Edit Tag Dialog */}
       <BlogTagDialog
         open={isCreateOpen || !!tagToEdit}
         onOpenChange={(open) => {
@@ -231,10 +179,9 @@ export const BlogTagsPage = () => {
           }
         }}
         tag={tagToEdit}
-        onSuccess={handleDialogSuccess}
+        onSuccess={() => refresh()}
       />
 
-      {/* Delete Confirmation Dialog */}
       <DeleteBlogTagDialog
         tag={tagToDelete}
         open={!!tagToDelete}

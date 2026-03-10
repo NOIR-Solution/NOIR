@@ -1,64 +1,42 @@
-import { useState, useEffect, useDeferredValue, useMemo, useTransition, useCallback } from 'react'
+import { useState, useMemo, useTransition, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  CheckCircle2,
-  EllipsisVertical,
-  Eye,
-  MessageSquare,
-  Search,
-  ShieldCheck,
-  Star,
-  XCircle,
-} from 'lucide-react'
+import { CheckCircle2, Eye, MessageSquare, ShieldCheck, Star, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef, RowSelectionState, SortingState } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlTab } from '@/hooks/useUrlTab'
-import { useSelection } from '@/hooks/useSelection'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable, useSelectedIds } from '@/hooks/useServerTable'
+import { createSelectColumn, createActionsColumn } from '@/lib/table/columnHelpers'
 import { BulkActionToolbar } from '@/components/BulkActionToolbar'
 import {
   Badge,
   Button,
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-  Checkbox,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   PageHeader,
-  Pagination,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Tabs,
   TabsList,
   TabsTrigger,
 } from '@uikit'
-import { useReviewsQuery } from '@/portal-app/reviews/queries'
-import {
-  useApproveReview,
-  useRejectReview,
-  useBulkApprove,
-  useBulkReject,
-} from '@/portal-app/reviews/queries'
-import type { GetReviewsParams } from '@/services/reviews'
+import { useReviewsQuery, useApproveReview, useRejectReview, useBulkApprove, useBulkReject } from '@/portal-app/reviews/queries'
 import type { ReviewDto, ReviewStatus } from '@/types/review'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { ReviewDetailDialog } from '@/portal-app/reviews/components/ReviewDetailDialog'
@@ -73,77 +51,50 @@ const RATING_OPTIONS = [1, 2, 3, 4, 5]
 const StarRating = ({ rating }: { rating: number }) => (
   <div className="flex items-center gap-0.5">
     {[1, 2, 3, 4, 5].map((star) => (
-      <Star
-        key={star}
-        className={`h-3.5 w-3.5 ${
-          star <= rating
-            ? 'fill-yellow-400 text-yellow-400'
-            : 'fill-muted text-muted-foreground/30'
-        }`}
-      />
+      <Star key={star} className={`h-3.5 w-3.5 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'fill-muted text-muted-foreground/30'}`} />
     ))}
   </div>
 )
+
+const ch = createColumnHelper<ReviewDto>()
 
 export const ReviewsPage = () => {
   const { t } = useTranslation('common')
   const { formatDateTime } = useRegionalSettings()
   usePageContext('Reviews')
 
-  // Search state
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-
-  // Filter state
+  // Tab (status) state
   const { activeTab, handleTabChange: setUrlTab, isPending: isTabPending } = useUrlTab({ defaultTab: 'all' })
+
+  // Rating filter
   const [ratingFilter, setRatingFilter] = useState<string>('all')
   const [isFilterPending, startFilterTransition] = useTransition()
-  const [params, setParams] = useState<GetReviewsParams>({ page: 1, pageSize: 20 })
+
+  // Table params (search, pagination, sorting)
+  const { params, searchInput, setSearchInput, isSearchStale, setSorting, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
+
+  // Row selection
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   // Dialog state
   const [detailReviewId, setDetailReviewId] = useState<string | undefined>()
   const [rejectReviewId, setRejectReviewId] = useState<string | undefined>()
   const [responseReviewId, setResponseReviewId] = useState<string | undefined>()
 
-  // Reset page on search change
-  useEffect(() => {
-    setParams((prev) => ({ ...prev, page: 1 }))
-  }, [deferredSearch])
-
-  const queryParams = useMemo(
-    () => ({
-      ...params,
-      search: deferredSearch || undefined,
-      status: activeTab !== 'all' ? (activeTab as ReviewStatus) : undefined,
-      rating: ratingFilter !== 'all' ? Number(ratingFilter) : undefined,
-    }),
-    [params, deferredSearch, activeTab, ratingFilter],
-  )
+  // Query params
+  const queryParams = useMemo(() => ({
+    ...params,
+    status: activeTab !== 'all' ? activeTab as ReviewStatus : undefined,
+    rating: ratingFilter !== 'all' ? Number(ratingFilter) : undefined,
+  }), [params, activeTab, ratingFilter])
 
   const {
-    data: reviewsResponse,
-    isLoading: loading,
-    error: queryError,
+    data,
+    isLoading,
     refetch,
   } = useReviewsQuery(queryParams)
-  const error = queryError?.message ?? null
 
-  const reviews = reviewsResponse?.items ?? []
-  const totalCount = reviewsResponse?.totalCount ?? 0
-  const totalPages = reviewsResponse?.totalPages ?? 1
-  const currentPage = params.page ?? 1
-
-  const { selectedIds, setSelectedIds, handleSelectAll: selectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(reviews)
-
-  const handleCollectionUpdate = useCallback(() => {
-    if (selectedIds.size === 0) refetch()
-  }, [selectedIds.size, refetch])
-
-  const { isReconnecting } = useEntityUpdateSignal({
-    entityType: 'Review',
-    onCollectionUpdate: handleCollectionUpdate,
-  })
+  const tableData = useMemo(() => data?.items ?? [], [data?.items])
 
   // Mutations
   const approveMutation = useApproveReview()
@@ -151,38 +102,7 @@ export const ReviewsPage = () => {
   const bulkApproveMutation = useBulkApprove()
   const bulkRejectMutation = useBulkReject()
 
-  // Handlers
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value)
-  }
-
-  const handleTabChange = (value: string) => {
-    setUrlTab(value)
-    setParams((prev) => ({ ...prev, page: 1 }))
-    handleSelectNone()
-  }
-
-  const handleRatingFilter = (value: string) => {
-    startFilterTransition(() => {
-      setRatingFilter(value)
-      setParams((prev) => ({ ...prev, page: 1 }))
-    })
-  }
-
-  const handlePageChange = (page: number) => {
-    startFilterTransition(() => {
-      setParams((prev) => ({ ...prev, page }))
-    })
-  }
-
-  const handleSelectAllToggle = useCallback(() => {
-    if (isAllSelected) {
-      handleSelectNone()
-    } else {
-      selectAll()
-    }
-  }, [isAllSelected, handleSelectNone, selectAll])
-
+  // Handlers that don't depend on table
   const handleApprove = async (id: string) => {
     try {
       await approveMutation.mutateAsync(id)
@@ -203,45 +123,157 @@ export const ReviewsPage = () => {
     }
   }
 
+  const handleAdminResponseSubmit = () => {
+    setResponseReviewId(undefined)
+  }
+
+  const handleRatingFilter = (value: string) => {
+    startFilterTransition(() => {
+      setRatingFilter(value)
+      setPage(1)
+    })
+  }
+
+  // Columns
+  const columns = useMemo((): ColumnDef<ReviewDto, unknown>[] => [
+    createSelectColumn<ReviewDto>(),
+    ch.accessor('productName', {
+      header: t('reviews.product', 'Product'),
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="font-medium text-sm truncate max-w-[180px] block">{getValue() || '-'}</span>,
+    }) as ColumnDef<ReviewDto, unknown>,
+    ch.accessor('userName', {
+      header: t('reviews.customer', 'Customer'),
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm">{row.original.userName || '-'}</span>
+          {row.original.isVerifiedPurchase && (
+            <ShieldCheck className="h-3.5 w-3.5 text-blue-500" aria-label={t('reviews.verifiedPurchase', 'Verified purchase')} />
+          )}
+        </div>
+      ),
+    }) as ColumnDef<ReviewDto, unknown>,
+    ch.accessor('rating', {
+      header: t('reviews.rating', 'Rating'),
+      enableSorting: false,
+      size: 110,
+      cell: ({ getValue }) => <StarRating rating={getValue()} />,
+    }) as ColumnDef<ReviewDto, unknown>,
+    ch.accessor('title', {
+      header: t('reviews.reviewTitle', 'Title'),
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm truncate max-w-[200px] block">{getValue() || '-'}</span>,
+    }) as ColumnDef<ReviewDto, unknown>,
+    ch.accessor('status', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
+      enableSorting: false,
+      size: 110,
+      cell: ({ getValue }) => (
+        <Badge variant="outline" className={getReviewStatusColor(getValue())}>
+          {t(`reviews.status.${getValue().toLowerCase()}`, getValue())}
+        </Badge>
+      ),
+    }) as ColumnDef<ReviewDto, unknown>,
+    ch.accessor('createdAt', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.date', 'Date')} />,
+      enableSorting: false,
+      size: 150,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{formatDateTime(getValue())}</span>,
+    }) as ColumnDef<ReviewDto, unknown>,
+    createActionsColumn<ReviewDto>((review) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => setDetailReviewId(review.id)}>
+          <Eye className="h-4 w-4 mr-2" />
+          {t('reviews.viewDetails', 'View Details')}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => setResponseReviewId(review.id)}>
+          <MessageSquare className="h-4 w-4 mr-2" />
+          {t('reviews.respond', 'Respond')}
+        </DropdownMenuItem>
+        {review.status === 'Pending' && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer text-green-600" onClick={() => handleApprove(review.id)}>
+              <CheckCircle2 className="h-4 w-4 mr-2" />
+              {t('reviews.approve', 'Approve')}
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer text-destructive" onClick={() => setRejectReviewId(review.id)}>
+              <XCircle className="h-4 w-4 mr-2" />
+              {t('reviews.reject', 'Reject')}
+            </DropdownMenuItem>
+          </>
+        )}
+      </>
+    )),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, formatDateTime])
+
+  // Table instance
+  const table = useServerTable({
+    data: tableData,
+    columns,
+    rowCount: data?.totalCount ?? 0,
+    enableRowSelection: true,
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: params.sorting as SortingState,
+      rowSelection,
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function'
+        ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize })
+        : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.id,
+  })
+
+  // Derived selection state (after table)
+  const selectedIds = useSelectedIds(rowSelection)
+  const selectedCount = selectedIds.length
+
+  // Handlers that depend on table
+  const handleTabChange = (value: string) => {
+    setUrlTab(value)
+    setPage(1)
+    table.resetRowSelection()
+  }
+
   const handleBulkApprove = async () => {
-    if (selectedIds.size === 0) return
+    if (selectedCount === 0) return
     try {
-      await bulkApproveMutation.mutateAsync(Array.from(selectedIds))
-      toast.success(
-        t('reviews.bulkApproveSuccess', {
-          count: selectedIds.size,
-          defaultValue: `${selectedIds.size} reviews approved`,
-        }),
-      )
-      setSelectedIds(new Set())
+      await bulkApproveMutation.mutateAsync(selectedIds)
+      toast.success(t('reviews.bulkApproveSuccess', { count: selectedCount, defaultValue: `${selectedCount} reviews approved` }))
+      table.resetRowSelection()
     } catch {
       toast.error(t('reviews.bulkApproveFailed', 'Failed to approve selected reviews'))
     }
   }
 
   const handleBulkReject = async (reason?: string) => {
-    if (selectedIds.size === 0) return
+    if (selectedCount === 0) return
     try {
-      await bulkRejectMutation.mutateAsync({
-        reviewIds: Array.from(selectedIds),
-        reason,
-      })
-      toast.success(
-        t('reviews.bulkRejectSuccess', {
-          count: selectedIds.size,
-          defaultValue: `${selectedIds.size} reviews rejected`,
-        }),
-      )
-      setSelectedIds(new Set())
+      await bulkRejectMutation.mutateAsync({ reviewIds: selectedIds, reason })
+      toast.success(t('reviews.bulkRejectSuccess', { count: selectedCount, defaultValue: `${selectedCount} reviews rejected` }))
+      table.resetRowSelection()
       setRejectReviewId(undefined)
     } catch {
       toast.error(t('reviews.bulkRejectFailed', 'Failed to reject selected reviews'))
     }
   }
 
-  const handleAdminResponseSubmit = () => {
-    setResponseReviewId(undefined)
-  }
+  const handleCollectionUpdate = useCallback(() => {
+    if (selectedCount === 0) refetch()
+  }, [selectedCount, refetch])
+
+  const { isReconnecting } = useEntityUpdateSignal({
+    entityType: 'Review',
+    onCollectionUpdate: handleCollectionUpdate,
+  })
 
   return (
     <div className="space-y-6">
@@ -270,184 +302,78 @@ export const ReviewsPage = () => {
               </TabsList>
             </Tabs>
 
-            <div className="space-y-3">
-              <div>
-                <CardTitle className="text-lg">{t('reviews.allReviews', 'All Reviews')}</CardTitle>
-                <CardDescription>
-                  {t('labels.showingCountOfTotal', { count: reviews.length, total: totalCount })}
-                </CardDescription>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {/* Search */}
-                <div className="relative flex-1 min-w-[200px]">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder={t('reviews.searchPlaceholder', 'Search reviews...')}
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    className="pl-9 h-9"
-                    aria-label={t('reviews.searchReviews', 'Search reviews')}
-                  />
-                </div>
-                {/* Rating Filter */}
-                <Select value={ratingFilter} onValueChange={handleRatingFilter}>
-                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('reviews.filterByRating', 'Filter rating')}>
-                    <SelectValue placeholder={t('reviews.filterByRating', 'Filter rating')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" className="cursor-pointer">
-                      {t('reviews.allRatings', 'All ratings')}
-                    </SelectItem>
-                    {RATING_OPTIONS.map((rating) => (
-                      <SelectItem
-                        key={rating}
-                        value={rating.toString()}
-                        className="cursor-pointer"
-                      >
-                        {rating} {rating === 1
-                          ? t('reviews.star', 'star')
-                          : t('reviews.stars', 'stars')}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Bulk Actions Toolbar */}
-            <BulkActionToolbar selectedCount={selectedIds.size} onClearSelection={handleSelectNone}>
-              <Button
-                variant="outline"
-                size="sm"
-                className="cursor-pointer text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950/30"
-                onClick={handleBulkApprove}
-                disabled={bulkApproveMutation.isPending}
-              >
-                <CheckCircle2 className="h-4 w-4 mr-1" />
-                {t('reviews.approveSelected', 'Approve selected')}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
-                onClick={() => setRejectReviewId('bulk')}
-                disabled={bulkRejectMutation.isPending}
-              >
-                <XCircle className="h-4 w-4 mr-1" />
-                {t('reviews.rejectSelected', 'Reject selected')}
-              </Button>
-            </BulkActionToolbar>
+            <CardTitle className="text-lg">{t('reviews.allReviews', 'All Reviews')}</CardTitle>
           </div>
         </CardHeader>
-        <CardContent
-          className={
-            isSearchStale || isFilterPending || isTabPending
-              ? 'opacity-70 transition-opacity duration-200'
-              : 'transition-opacity duration-200'
-          }
-        >
-          {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">{error}</div>
-          )}
+        <CardContent className="space-y-3">
+          <DataTableToolbar
+            table={table}
+            searchInput={searchInput}
+            onSearchChange={setSearchInput}
+            searchPlaceholder={t('reviews.searchPlaceholder', 'Search reviews...')}
+            isSearchStale={isSearchStale || isFilterPending || isTabPending}
+            showColumnToggle={false}
+            filterSlot={
+              <Select value={ratingFilter} onValueChange={handleRatingFilter}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('reviews.filterByRating', 'Filter rating')}>
+                  <SelectValue placeholder={t('reviews.filterByRating', 'Filter rating')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="cursor-pointer">
+                    {t('reviews.allRatings', 'All ratings')}
+                  </SelectItem>
+                  {RATING_OPTIONS.map((rating) => (
+                    <SelectItem key={rating} value={rating.toString()} className="cursor-pointer">
+                      {rating} {rating === 1 ? t('reviews.star', 'star') : t('reviews.stars', 'stars')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            }
+          />
 
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
-                  <TableHead className="w-12">
-                    <Checkbox
-                      checked={isAllSelected}
-                      onCheckedChange={handleSelectAllToggle}
-                      aria-label={t('reviews.selectAll', 'Select all reviews')}
-                      className="cursor-pointer"
-                    />
-                  </TableHead>
-                  <TableHead>{t('reviews.product', 'Product')}</TableHead>
-                  <TableHead>{t('reviews.customer', 'Customer')}</TableHead>
-                  <TableHead>{t('reviews.rating', 'Rating')}</TableHead>
-                  <TableHead>{t('reviews.reviewTitle', 'Title')}</TableHead>
-                  <TableHead>{t('labels.status', 'Status')}</TableHead>
-                  <TableHead>{t('labels.date', 'Date')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background">
-                        <Skeleton className="h-8 w-24" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-4" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-28" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-24" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-20" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-32" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-5 w-20 rounded-full" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-28" />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : reviews.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="p-0">
-                      <EmptyState
-                        icon={Star}
-                        title={t('reviews.noReviewsFound', 'No reviews found')}
-                        description={t(
-                          'reviews.noReviewsDescription',
-                          'Reviews will appear here when customers submit them.',
-                        )}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  reviews.map((review) => (
-                    <ReviewTableRow
-                      key={review.id}
-                      review={review}
-                      isSelected={selectedIds.has(review.id)}
-                      selectionActive={selectedIds.size > 0}
-                      onToggleSelect={handleToggleSelect}
-                      onViewDetail={setDetailReviewId}
-                      onApprove={handleApprove}
-                      onReject={setRejectReviewId}
-                      onRespond={setResponseReviewId}
-                      formatDateTime={formatDateTime}
-                      t={t}
-                    />
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <BulkActionToolbar
+            selectedCount={selectedCount}
+            onClearSelection={() => table.resetRowSelection()}
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              className="cursor-pointer text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950/30"
+              onClick={handleBulkApprove}
+              disabled={bulkApproveMutation.isPending}
+            >
+              <CheckCircle2 className="h-4 w-4 mr-1" />
+              {t('reviews.approveSelected', 'Approve selected')}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+              onClick={() => setRejectReviewId('bulk')}
+              disabled={bulkRejectMutation.isPending}
+            >
+              <XCircle className="h-4 w-4 mr-1" />
+              {t('reviews.rejectSelected', 'Reject selected')}
+            </Button>
+          </BulkActionToolbar>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCount}
-              pageSize={params.pageSize || 20}
-              onPageChange={handlePageChange}
-              showPageSizeSelector={false}
-              className="mt-4"
-            />
-          )}
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale || isFilterPending || isTabPending}
+            onRowClick={selectedCount === 0 ? (review) => setDetailReviewId(review.id) : undefined}
+            emptyState={
+              <EmptyState
+                icon={Star}
+                title={t('reviews.noReviewsFound', 'No reviews found')}
+                description={t('reviews.noReviewsDescription', 'Reviews will appear here when customers submit them.')}
+                className="border-0 rounded-none px-4 py-12"
+              />
+            }
+          />
+
+          <DataTablePagination table={table} />
         </CardContent>
       </Card>
 
@@ -476,7 +402,7 @@ export const ReviewsPage = () => {
           }
         }}
         isBulk={rejectReviewId === 'bulk'}
-        count={rejectReviewId === 'bulk' ? selectedIds.size : undefined}
+        count={rejectReviewId === 'bulk' ? selectedCount : undefined}
       />
 
       <AdminResponseDialog
@@ -490,133 +416,5 @@ export const ReviewsPage = () => {
     </div>
   )
 }
-
-// Extracted row component
-interface ReviewTableRowProps {
-  review: ReviewDto
-  isSelected: boolean
-  selectionActive: boolean
-  onToggleSelect: (id: string) => void
-  onViewDetail: (id: string) => void
-  onApprove: (id: string) => void
-  onReject: (id: string) => void
-  onRespond: (id: string) => void
-  formatDateTime: (date: Date | string) => string
-  t: ReturnType<typeof useTranslation<'common'>>['t']
-}
-
-const ReviewTableRow = ({
-  review,
-  isSelected,
-  selectionActive,
-  onToggleSelect,
-  onViewDetail,
-  onApprove,
-  onReject,
-  onRespond,
-  formatDateTime,
-  t,
-}: ReviewTableRowProps) => (
-  <TableRow
-    className={`group transition-colors hover:bg-muted/50 ${!selectionActive ? 'cursor-pointer' : ''}`}
-    onClick={() => { if (!selectionActive) onViewDetail(review.id) }}
-  >
-    <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-            aria-label={t('labels.actionsFor', {
-              name: review.title || review.id,
-              defaultValue: `Actions for ${review.title || review.id}`,
-            })}
-          >
-            <EllipsisVertical className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={(e) => { e.stopPropagation(); onViewDetail(review.id); }}
-          >
-            <Eye className="h-4 w-4 mr-2" />
-            {t('reviews.viewDetails', 'View Details')}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={(e) => { e.stopPropagation(); onRespond(review.id); }}
-          >
-            <MessageSquare className="h-4 w-4 mr-2" />
-            {t('reviews.respond', 'Respond')}
-          </DropdownMenuItem>
-          {review.status === 'Pending' && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="cursor-pointer text-green-600"
-                onClick={(e) => { e.stopPropagation(); onApprove(review.id); }}
-              >
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                {t('reviews.approve', 'Approve')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer text-destructive"
-                onClick={(e) => { e.stopPropagation(); onReject(review.id); }}
-              >
-                <XCircle className="h-4 w-4 mr-2" />
-                {t('reviews.reject', 'Reject')}
-              </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </TableCell>
-    <TableCell onClick={(e) => e.stopPropagation()}>
-      <Checkbox
-        checked={isSelected}
-        onCheckedChange={() => onToggleSelect(review.id)}
-        aria-label={t('reviews.selectReview', {
-          title: review.title || review.id,
-          defaultValue: `Select review ${review.title || review.id}`,
-        })}
-        className="cursor-pointer"
-      />
-    </TableCell>
-    <TableCell>
-      <div className="flex flex-col">
-        <span className="font-medium text-sm truncate max-w-[180px]">
-          {review.productName || '-'}
-        </span>
-      </div>
-    </TableCell>
-    <TableCell>
-      <div className="flex items-center gap-1.5">
-        <span className="text-sm">{review.userName || '-'}</span>
-        {review.isVerifiedPurchase && (
-          <ShieldCheck
-            className="h-3.5 w-3.5 text-blue-500"
-            aria-label={t('reviews.verifiedPurchase', 'Verified purchase')}
-          />
-        )}
-      </div>
-    </TableCell>
-    <TableCell>
-      <StarRating rating={review.rating} />
-    </TableCell>
-    <TableCell>
-      <span className="text-sm truncate max-w-[200px] block">{review.title || '-'}</span>
-    </TableCell>
-    <TableCell>
-      <Badge variant="outline" className={getReviewStatusColor(review.status)}>
-        {t(`reviews.status.${review.status.toLowerCase()}`, review.status)}
-      </Badge>
-    </TableCell>
-    <TableCell>
-      <span className="text-sm text-muted-foreground">{formatDateTime(review.createdAt)}</span>
-    </TableCell>
-  </TableRow>
-)
 
 export default ReviewsPage

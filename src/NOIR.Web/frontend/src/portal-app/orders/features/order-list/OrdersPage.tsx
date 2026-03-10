@@ -1,33 +1,32 @@
-import { useState, useEffect, useDeferredValue, useMemo, useTransition, useCallback } from 'react'
+import { useState, useMemo, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
-  Calendar,
   CheckCircle2,
   Eye,
   Loader2,
-  MoreHorizontal,
   Plus,
-  Search,
   ShoppingCart,
   XCircle,
 } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef, RowSelectionState, SortingState } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable, useSelectedIds } from '@/hooks/useServerTable'
+import { createSelectColumn, createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
-import { useSelection } from '@/hooks/useSelection'
 import { BulkActionToolbar } from '@/components/BulkActionToolbar'
 import {
   Badge,
   Button,
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-  Checkbox,
   Credenza,
   CredenzaBody,
   CredenzaContent,
@@ -35,38 +34,31 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   PageHeader,
-  Pagination,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Textarea,
 } from '@uikit'
 import { useOrdersQuery, useBulkConfirmOrders, useBulkCancelOrders } from '@/portal-app/orders/queries'
 import { ExportDropdownMenu } from '@/components/ExportDropdownMenu'
 import { exportOrders } from '@/services/orders'
-import type { GetOrdersParams } from '@/services/orders'
 import type { OrderStatus, OrderSummaryDto } from '@/types/order'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { formatCurrency } from '@/lib/utils/currency'
 import { getOrderStatusColor, ORDER_STATUSES } from '@/portal-app/orders/utils/orderStatus'
 
 const CANCELLABLE_STATUSES: OrderStatus[] = ['Pending', 'Confirmed', 'Processing']
+
+const ch = createColumnHelper<OrderSummaryDto>()
 
 export const OrdersPage = () => {
   const { t } = useTranslation('common')
@@ -76,81 +68,141 @@ export const OrdersPage = () => {
   const canManageOrders = hasPermission(Permissions.OrdersManage)
   usePageContext('Orders')
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
   const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [isFilterPending, startFilterTransition] = useTransition()
-  const [params, setParams] = useState<GetOrdersParams>({ page: 1, pageSize: 20 })
-
-  // Bulk action state
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [showBulkCancelConfirm, setShowBulkCancelConfirm] = useState(false)
   const [cancelReason, setCancelReason] = useState('')
   const [isBulkPending, startBulkTransition] = useTransition()
+  const [isFilterPending, startFilterTransition] = useTransition()
 
-  // Reset page to 1 when deferred search settles
-  useEffect(() => {
-    setParams(prev => ({ ...prev, page: 1 }))
-  }, [deferredSearch])
+  const {
+    params,
+    searchInput,
+    setSearchInput,
+    isSearchStale,
+    setSorting,
+    setPage,
+    setPageSize,
+  } = useTableParams({ defaultPageSize: 20 })
 
   const queryParams = useMemo(() => ({
     ...params,
-    customerEmail: deferredSearch || undefined,
+    customerEmail: params.search,
+    search: undefined,
     status: statusFilter !== 'all' ? statusFilter as OrderStatus : undefined,
-  }), [params, deferredSearch, statusFilter])
+  }), [params, statusFilter])
 
-  const { data: ordersResponse, isLoading: loading, error: queryError, refetch } = useOrdersQuery(queryParams)
-  const error = queryError?.message ?? null
+  const { data, isLoading, error: queryError, refetch: refresh } = useOrdersQuery(queryParams)
 
-  const orders = ordersResponse?.items ?? []
-  const totalCount = ordersResponse?.totalCount ?? 0
-  const totalPages = ordersResponse?.totalPages ?? 1
-  const currentPage = params.page ?? 1
-
-  const { selectedIds, setSelectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(orders)
-
-  const handleCollectionUpdate = useCallback(() => {
-    if (selectedIds.size === 0) refetch()
-  }, [selectedIds.size, refetch])
+  const orders = data?.items ?? []
 
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'Order',
-    onCollectionUpdate: handleCollectionUpdate,
+    onCollectionUpdate: refresh,
   })
 
-  // Bulk mutation hooks
   const bulkConfirmMutation = useBulkConfirmOrders()
   const bulkCancelMutation = useBulkCancelOrders()
 
-  // Computed counts
-  const selectedPendingCount = orders.filter(o => selectedIds.has(o.id) && o.status === 'Pending').length
-  const selectedCancellableCount = orders.filter(o => selectedIds.has(o.id) && CANCELLABLE_STATUSES.includes(o.status)).length
+  const handleStatusFilter = (value: string) => startFilterTransition(() => { setStatusFilter(value); setPage(1) })
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value)
-  }
+  const selectedIds = useSelectedIds(rowSelection)
+  const selectedCount = selectedIds.length
 
-  const handleStatusFilter = (value: string) => {
-    startFilterTransition(() => {
-      setStatusFilter(value)
-      setParams((prev) => ({ ...prev, page: 1 }))
-    })
-  }
+  const selectedPendingCount = useMemo(
+    () => orders.filter(o => rowSelection[o.id] && o.status === 'Pending').length,
+    [orders, rowSelection]
+  )
+  const selectedCancellableCount = useMemo(
+    () => orders.filter(o => rowSelection[o.id] && CANCELLABLE_STATUSES.includes(o.status)).length,
+    [orders, rowSelection]
+  )
 
-  const handlePageChange = (page: number) => {
-    startFilterTransition(() => {
-      setParams((prev) => ({ ...prev, page }))
-    })
-  }
+  const columns = useMemo((): ColumnDef<OrderSummaryDto, unknown>[] => [
+    ...(canManageOrders ? [createSelectColumn<OrderSummaryDto>()] : []),
+    ch.accessor('orderNumber', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('orders.orderNumber', 'Order #')} />,
+      cell: ({ getValue }) => <span className="font-mono font-medium text-sm">{getValue()}</span>,
+      size: 140,
+    }) as ColumnDef<OrderSummaryDto, unknown>,
+    ch.accessor('customerName', {
+      id: 'customer',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.customer', 'Customer')} />,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex flex-col">
+          <span className="font-medium text-sm">{row.original.customerName || '-'}</span>
+          <span className="text-xs text-muted-foreground">{row.original.customerEmail}</span>
+        </div>
+      ),
+    }) as ColumnDef<OrderSummaryDto, unknown>,
+    ch.accessor('status', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
+      enableSorting: false,
+      size: 130,
+      cell: ({ getValue }) => (
+        <Badge variant="outline" className={getOrderStatusColor(getValue())}>
+          {t(`orders.status.${getValue().toLowerCase()}`, getValue())}
+        </Badge>
+      ),
+    }) as ColumnDef<OrderSummaryDto, unknown>,
+    ch.accessor('itemCount', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('orders.items', 'Items')} />,
+      enableSorting: false,
+      meta: { align: 'center' },
+      size: 80,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<OrderSummaryDto, unknown>,
+    ch.accessor('grandTotal', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('orders.total', 'Total')} />,
+      enableSorting: false,
+      meta: { align: 'right' },
+      cell: ({ row }) => (
+        <span className="font-medium">{formatCurrency(row.original.grandTotal, row.original.currency)}</span>
+      ),
+    }) as ColumnDef<OrderSummaryDto, unknown>,
+    ch.accessor('createdAt', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.date', 'Date')} />,
+      enableSorting: false,
+      size: 160,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{formatDateTime(getValue())}</span>,
+    }) as ColumnDef<OrderSummaryDto, unknown>,
+    createActionsColumn<OrderSummaryDto>((order) => (
+      <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(`/portal/ecommerce/orders/${order.id}`)}>
+        <Eye className="h-4 w-4 mr-2" />
+        {t('labels.viewDetails', 'View Details')}
+      </DropdownMenuItem>
+    )),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, canManageOrders, formatDateTime])
 
-  const handleViewOrder = (order: OrderSummaryDto) => {
-    navigate(`/portal/ecommerce/orders/${order.id}`)
-  }
+  const tableData = useMemo(() => data?.items ?? [], [data?.items])
 
-  // Bulk action handlers
+  const table = useServerTable({
+    data: tableData,
+    columns,
+    rowCount: data?.totalCount ?? 0,
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: params.sorting as SortingState,
+      rowSelection,
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function'
+        ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize })
+        : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: canManageOrders,
+    getRowId: (row) => row.id,
+  })
+
   const onBulkConfirm = () => {
-    if (selectedIds.size === 0) return
-    const pendingIds = orders.filter(o => selectedIds.has(o.id) && o.status === 'Pending').map(o => o.id)
+    if (selectedCount === 0) return
+    const pendingIds = orders.filter(o => rowSelection[o.id] && o.status === 'Pending').map(o => o.id)
     if (pendingIds.length === 0) {
       toast.warning(t('orders.noPendingOrdersSelected', 'No pending orders selected'))
       return
@@ -166,12 +218,12 @@ export const OrdersPage = () => {
       } catch (err) {
         toast.error(err instanceof Error ? err.message : t('orders.bulkConfirmFailed', 'Failed to confirm orders'))
       }
-      setSelectedIds(new Set())
+      table.resetRowSelection()
     })
   }
 
   const onBulkCancel = () => {
-    if (selectedIds.size === 0) return
+    if (selectedCount === 0) return
     if (selectedCancellableCount === 0) {
       toast.warning(t('orders.noCancellableOrdersSelected', 'No cancellable orders selected'))
       return
@@ -180,7 +232,7 @@ export const OrdersPage = () => {
   }
 
   const handleBulkCancelConfirm = () => {
-    const cancellableIds = orders.filter(o => selectedIds.has(o.id) && CANCELLABLE_STATUSES.includes(o.status)).map(o => o.id)
+    const cancellableIds = orders.filter(o => rowSelection[o.id] && CANCELLABLE_STATUSES.includes(o.status)).map(o => o.id)
     startBulkTransition(async () => {
       try {
         const result = await bulkCancelMutation.mutateAsync({ ids: cancellableIds, reason: cancelReason || undefined })
@@ -192,10 +244,14 @@ export const OrdersPage = () => {
       } catch (err) {
         toast.error(err instanceof Error ? err.message : t('orders.bulkCancelFailed', 'Failed to cancel orders'))
       }
-      setSelectedIds(new Set())
+      table.resetRowSelection()
       setShowBulkCancelConfirm(false)
       setCancelReason('')
     })
+  }
+
+  if (queryError) {
+    console.error(queryError)
   }
 
   return (
@@ -224,26 +280,16 @@ export const OrdersPage = () => {
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4">
-          <div className="space-y-3">
-            <div>
-              <CardTitle className="text-lg">{t('orders.allOrders', 'All Orders')}</CardTitle>
-              <CardDescription>
-                {t('labels.showingCountOfTotal', { count: orders.length, total: totalCount })}
-              </CardDescription>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('orders.searchPlaceholder', 'Search by email...')}
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  className="pl-9 h-9"
-                  aria-label={t('orders.searchOrders', 'Search orders')}
-                />
-              </div>
-              {/* Status Filter */}
+          <CardTitle className="text-lg">{t('orders.allOrders', 'All Orders')}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <DataTableToolbar
+            table={table}
+            searchInput={searchInput}
+            onSearchChange={setSearchInput}
+            searchPlaceholder={t('orders.searchPlaceholder', 'Search by email...')}
+            isSearchStale={isSearchStale}
+            filterSlot={
               <Select value={statusFilter} onValueChange={handleStatusFilter}>
                 <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('orders.filterByStatus', 'Filter by status')}>
                   <SelectValue placeholder={t('orders.filterByStatus', 'Filter status')} />
@@ -257,19 +303,11 @@ export const OrdersPage = () => {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
-          {error && (
-            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
-              {error}
-            </div>
-          )}
+            }
+          />
 
-          {/* Bulk Action Toolbar */}
           {canManageOrders && (
-            <BulkActionToolbar selectedCount={selectedIds.size} onClearSelection={handleSelectNone}>
+            <BulkActionToolbar selectedCount={selectedCount} onClearSelection={() => table.resetRowSelection()}>
               {selectedPendingCount > 0 && (
                 <Button
                   variant="outline"
@@ -297,147 +335,24 @@ export const OrdersPage = () => {
             </BulkActionToolbar>
           )}
 
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
-                  {canManageOrders && (
-                    <TableHead className="w-[40px]">
-                      <Checkbox
-                        checked={isAllSelected}
-                        onCheckedChange={(checked) => {
-                          if (checked) handleSelectAll()
-                          else handleSelectNone()
-                        }}
-                        aria-label={t('labels.selectAll', 'Select all')}
-                        className="cursor-pointer"
-                      />
-                    </TableHead>
-                  )}
-                  <TableHead>{t('orders.orderNumber', 'Order #')}</TableHead>
-                  <TableHead>{t('labels.customer', 'Customer')}</TableHead>
-                  <TableHead>{t('labels.status', 'Status')}</TableHead>
-                  <TableHead className="text-center">{t('orders.items', 'Items')}</TableHead>
-                  <TableHead className="text-right">{t('orders.total', 'Total')}</TableHead>
-                  <TableHead>
-                    <Calendar className="h-4 w-4 inline mr-1" />
-                    {t('labels.date', 'Date')}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      {canManageOrders && <TableCell><Skeleton className="h-4 w-4 rounded" /></TableCell>}
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-4 w-24 ml-auto" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : orders.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={canManageOrders ? 8 : 7} className="p-0">
-                      <EmptyState
-                        icon={ShoppingCart}
-                        title={t('orders.noOrdersFound', 'No orders found')}
-                        description={t('orders.noOrdersDescription', 'Orders will appear here when customers place them.')}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  orders.map((order) => (
-                    <TableRow
-                      key={order.id}
-                      className={`group transition-colors hover:bg-muted/50 ${selectedIds.size === 0 ? 'cursor-pointer' : ''} ${selectedIds.has(order.id) ? 'bg-primary/5' : ''}`}
-                      onClick={() => { if (selectedIds.size === 0) handleViewOrder(order) }}
-                    >
-                      <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: order.orderNumber, defaultValue: `Actions for ${order.orderNumber}` })}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="cursor-pointer" onClick={() => handleViewOrder(order)}>
-                              <Eye className="h-4 w-4 mr-2" />
-                              {t('labels.viewDetails')}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                      {canManageOrders && (
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Checkbox
-                            checked={selectedIds.has(order.id)}
-                            onCheckedChange={() => handleToggleSelect(order.id)}
-                            aria-label={t('labels.selectItem', { name: order.orderNumber, defaultValue: `Select ${order.orderNumber}` })}
-                            className="cursor-pointer"
-                          />
-                        </TableCell>
-                      )}
-                      <TableCell>
-                        <span className="font-mono font-medium text-sm">{order.orderNumber}</span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="font-medium text-sm">{order.customerName || '-'}</span>
-                          <span className="text-xs text-muted-foreground">{order.customerEmail}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={getOrderStatusColor(order.status)}>
-                          {t(`orders.status.${order.status.toLowerCase()}`, order.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{order.itemCount}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <span className="font-medium">
-                          {formatCurrency(order.grandTotal, order.currency)}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {formatDateTime(order.createdAt)}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale || isFilterPending}
+            onRowClick={selectedCount === 0 ? (order) => navigate(`/portal/ecommerce/orders/${order.id}`) : undefined}
+            emptyState={
+              <EmptyState
+                icon={ShoppingCart}
+                title={t('orders.noOrdersFound', 'No orders found')}
+                description={t('orders.noOrdersDescription', 'Orders will appear here when customers place them.')}
+              />
+            }
+          />
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCount}
-              pageSize={params.pageSize || 20}
-              onPageChange={handlePageChange}
-              showPageSizeSelector={false}
-              className="mt-4"
-            />
-          )}
+          <DataTablePagination table={table} showPageSizeSelector={false} />
         </CardContent>
       </Card>
 
-      {/* Bulk Cancel Confirmation Dialog */}
       <Credenza open={showBulkCancelConfirm} onOpenChange={setShowBulkCancelConfirm}>
         <CredenzaContent className="border-destructive/30">
           <CredenzaHeader>
