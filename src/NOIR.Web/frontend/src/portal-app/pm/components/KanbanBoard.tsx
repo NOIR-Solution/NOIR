@@ -28,10 +28,10 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { toast } from 'sonner'
-import { Plus, Kanban, Search, X, ArrowDown, Minus, ArrowUp, AlertTriangle, Loader2, MoreHorizontal, Pencil, Trash2, UserCheck, UserX } from 'lucide-react'
+import { Plus, Kanban, Search, X, ArrowDown, Minus, ArrowUp, AlertTriangle, Loader2, MoreHorizontal, Pencil, Trash2, UserCheck, UserX, ChevronDown, Layers } from 'lucide-react'
 import {
-  Avatar, Button, EmptyState, Skeleton,
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
+  Avatar, Button, EmptyState, Skeleton, Input,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuCheckboxItem,
   Credenza, CredenzaContent, CredenzaHeader, CredenzaTitle, CredenzaDescription, CredenzaFooter, CredenzaBody,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
   Tooltip, TooltipContent, TooltipTrigger,
@@ -128,13 +128,13 @@ const DraggableMemberPill = ({
       {...listeners}
       {...attributes}
       style={{ opacity: isDragging ? 0.4 : 1, touchAction: 'none' }}
-      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium leading-[1.1] border cursor-grab active:cursor-grabbing transition-all select-none ${
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium border cursor-grab active:cursor-grabbing transition-all select-none ${
         active ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border hover:bg-muted'
       }`}
       title={`${member.employeeName} — drag to assign`}
       onClick={(e) => { e.stopPropagation(); onFilter() }}
     >
-      <Avatar src={member.avatarUrl ?? undefined} alt={member.employeeName} fallback={member.employeeName} size="sm" className="h-4 w-4 text-[8px]" />
+      <Avatar src={member.avatarUrl ?? undefined} alt={member.employeeName} fallback={member.employeeName} size="sm" className="h-5 w-5 text-[9px]" />
       {firstName}
     </div>
   )
@@ -653,18 +653,19 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
   return (
     <div className="space-y-3">
       {/* ── Filter bar ── */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[200px]">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <input
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Search input */}
+        <div className="relative min-w-[220px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
             value={boardSearch}
             onChange={(e) => setFilter('board-search', e.target.value)}
             placeholder={t('pm.searchTasks', { defaultValue: 'Search tasks...' })}
-            className="w-full pl-8 pr-8 py-1.5 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+            className="pl-9 pr-8 h-9 rounded-full text-sm"
           />
           {boardSearch && (
             <button
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
               onClick={() => setFilter('board-search', '')}
               aria-label={t('buttons.clear', { defaultValue: 'Clear' })}
             >
@@ -673,47 +674,89 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
           )}
         </div>
 
-        {/* Task type filter */}
-        <div className="flex gap-1">
-          {([
-            { key: 'all', label: t('pm.filterAll', { defaultValue: 'All' }) },
-            { key: 'tasks', label: t('pm.filterTasks', { defaultValue: 'Tasks' }) },
-            { key: 'subtasks', label: t('pm.filterSubtasks', { defaultValue: 'Subtasks' }) },
-          ] as const).map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => setFilter('board-task-type', key === 'all' ? '' : key)}
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium leading-[1.1] border cursor-pointer transition-all ${
-                boardTaskType === key ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border hover:bg-muted'
-              }`}
-            >
-              {label}
+        {/* Task type dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className={`inline-flex items-center gap-1.5 rounded-full px-3 h-9 text-sm font-medium border cursor-pointer transition-all ${
+              boardTaskType ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/15' : 'bg-background border-border hover:bg-muted'
+            }`}>
+              <Layers className="h-3.5 w-3.5" />
+              {boardTaskType === 'tasks'
+                ? t('pm.filterTasks', { defaultValue: 'Tasks' })
+                : boardTaskType === 'subtasks'
+                  ? t('pm.filterSubtasks', { defaultValue: 'Subtasks' })
+                  : t('pm.filterAll', { defaultValue: 'All' })}
+              <ChevronDown className="h-3.5 w-3.5 opacity-60" />
             </button>
-          ))}
-        </div>
-
-        <div className="flex flex-wrap gap-1.5">
-          {(['Low', 'Medium', 'High', 'Urgent'] as const).map(p => {
-            const active = boardPriorities.includes(p)
-            const icons = { Low: ArrowDown, Medium: Minus, High: ArrowUp, Urgent: AlertTriangle }
-            const Icon = icons[p]
-            return (
-              <button
-                key={p}
-                onClick={() => {
-                  const next = active ? boardPriorities.filter(x => x !== p) : [...boardPriorities, p]
-                  setFilter('board-priorities', next.join(','))
-                }}
-                className={(() => {
-                  const c = { Low: { a: 'bg-slate-500 text-white border-slate-500', i: 'hover:bg-slate-50 hover:border-slate-300 hover:text-slate-600' }, Medium: { a: 'bg-blue-500 text-white border-blue-500', i: 'hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600' }, High: { a: 'bg-orange-500 text-white border-orange-500', i: 'hover:bg-orange-50 hover:border-orange-300 hover:text-orange-600' }, Urgent: { a: 'bg-red-500 text-white border-red-500', i: 'hover:bg-red-50 hover:border-red-300 hover:text-red-600' } }[p]
-                  return `inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium leading-[1.1] border cursor-pointer transition-all ${active ? c.a : `bg-background border-border text-foreground ${c.i}`}`
-                })()}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-40">
+            {([
+              { key: '', label: t('pm.filterAll', { defaultValue: 'All' }) },
+              { key: 'tasks', label: t('pm.filterTasks', { defaultValue: 'Tasks only' }) },
+              { key: 'subtasks', label: t('pm.filterSubtasks', { defaultValue: 'Subtasks only' }) },
+            ] as const).map(({ key, label }) => (
+              <DropdownMenuItem
+                key={key}
+                onClick={() => setFilter('board-task-type', key)}
+                className={`cursor-pointer ${boardTaskType === key ? 'bg-primary/10 text-primary font-medium' : ''}`}
               >
-                <Icon className="h-3 w-3" />{p}
-              </button>
-            )
-          })}
-        </div>
+                {label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Priority multi-select dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className={`inline-flex items-center gap-1.5 rounded-full px-3 h-9 text-sm font-medium border cursor-pointer transition-all ${
+              boardPriorities.length > 0 ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/15' : 'bg-background border-border hover:bg-muted'
+            }`}>
+              <AlertTriangle className="h-3.5 w-3.5" />
+              {t('pm.priority', { defaultValue: 'Priority' })}
+              {boardPriorities.length > 0 && (
+                <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] font-bold leading-none bg-primary text-primary-foreground">
+                  {boardPriorities.length}
+                </span>
+              )}
+              <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-44">
+            {(['Low', 'Medium', 'High', 'Urgent'] as const).map(p => {
+              const icons = { Low: ArrowDown, Medium: Minus, High: ArrowUp, Urgent: AlertTriangle }
+              const colors = { Low: 'text-slate-500', Medium: 'text-blue-500', High: 'text-orange-500', Urgent: 'text-red-500' }
+              const Icon = icons[p]
+              return (
+                <DropdownMenuCheckboxItem
+                  key={p}
+                  checked={boardPriorities.includes(p)}
+                  onCheckedChange={(checked) => {
+                    const next = checked ? [...boardPriorities, p] : boardPriorities.filter(x => x !== p)
+                    setFilter('board-priorities', next.join(','))
+                  }}
+                  onSelect={(e) => e.preventDefault()}
+                  className="cursor-pointer"
+                >
+                  <Icon className={`h-3.5 w-3.5 mr-1.5 ${colors[p]}`} />
+                  {p}
+                </DropdownMenuCheckboxItem>
+              )
+            })}
+            {boardPriorities.length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setFilter('board-priorities', '')}
+                  className="cursor-pointer text-muted-foreground text-xs"
+                >
+                  <X className="h-3 w-3 mr-1.5" />
+                  {t('buttons.clearFilters', { defaultValue: 'Clear' })}
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {members && members.length > 0 && (
           <div className="flex flex-wrap gap-1.5 items-center">
@@ -725,14 +768,14 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
                   : [...boardAssignees, '__unassigned__']
                 setFilter('board-assignees', next.join(','))
               }}
-              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium leading-[1.1] border cursor-pointer transition-all ${
+              className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium border cursor-pointer transition-all ${
                 boardAssignees.includes('__unassigned__')
                   ? 'bg-slate-600 text-white border-slate-600'
                   : 'bg-background border-border hover:bg-muted'
               }`}
               title={t('pm.filterNoAssignee', { defaultValue: 'No assignee' })}
             >
-              <UserX className="h-3 w-3" />
+              <UserX className="h-3.5 w-3.5" />
             </button>
             {members.map(member => {
               const firstName = member.employeeName.split(' ')[0]

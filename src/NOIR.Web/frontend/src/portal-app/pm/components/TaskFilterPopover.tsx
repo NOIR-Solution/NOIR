@@ -308,7 +308,7 @@ export const TaskFilterPopover = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium border cursor-pointer transition-all ${
+          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium border cursor-pointer transition-all ${
             activeCount > 0
               ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/15'
               : 'bg-background border-border text-foreground hover:bg-muted'
