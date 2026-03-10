@@ -78,7 +78,7 @@ public class TenantSettingSeeder : ISeeder
         {
             TenantSetting.CreatePlatformDefault("branding:company_name", "NOIR Fashion", "string", "Company display name", "branding"),
             TenantSetting.CreatePlatformDefault("branding:primary_color", "#1F2937", "string", "Primary brand color (hex)", "branding"),
-            TenantSetting.CreatePlatformDefault("branding:secondary_color", "#6366F1", "string", "Secondary brand color (hex)", "branding"),
+            TenantSetting.CreatePlatformDefault("branding:secondary_color", "#2563EB", "string", "Secondary brand color (hex)", "branding"),
             TenantSetting.CreatePlatformDefault("branding:accent_color", "#F59E0B", "string", "Accent color (hex)", "branding"),
             TenantSetting.CreatePlatformDefault("branding:dark_mode_default", "false", "bool", "Whether dark mode is enabled by default", "branding"),
         };

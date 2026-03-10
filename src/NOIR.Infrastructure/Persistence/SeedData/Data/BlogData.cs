@@ -38,7 +38,7 @@ public static class BlogData
         new("Xu h\u01b0\u1edbng", "xu-huong", "#8B5CF6"),
         new("So s\u00e1nh", "so-sanh", "#EC4899"),
         new("M\u1eb9o hay", "meo-hay", "#14B8A6"),
-        new("Tin t\u1ee9c", "tin-tuc", "#6366F1")
+        new("Tin t\u1ee9c", "tin-tuc", "#2563EB")
     ];
 
     public static PostDef[] GetPosts() =>

@@ -213,7 +213,7 @@ export const BrandingSettingsTab = ({ canEdit }: BrandingSettingsTabProps) => {
               )}
             </div>
             <ColorPicker
-              value={secondaryColor || '#6366F1'}
+              value={secondaryColor || '#2563EB'}
               onChange={setSecondaryColor}
               showCustomInput={canEdit}
             />

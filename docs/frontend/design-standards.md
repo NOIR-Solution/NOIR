@@ -4,6 +4,31 @@
 
 > Gold Standard: Payment Provider Settings (`PaymentGatewaysTab.tsx` + `GatewayCard.tsx`)
 
+## Brand Color Palette
+
+**Reference**: Full brand kit at `brand/noir-brandkit.html` (open locally in browser).
+
+### Primary: Sapphire Blue
+| Role | Hex | OKLCH | Tailwind |
+|------|-----|-------|----------|
+| Primary (light) | `#2563EB` | `oklch(0.55 0.245 263)` | `bg-primary` / `text-primary` |
+| Primary (dark) | `#3B82F6` | `oklch(0.65 0.22 263)` | auto via `.dark` theme |
+| Press/Active | `#1D4ED8` | — | — |
+| Deeper | `#1E40AF` | — | — |
+
+### Accent: Amber Gold
+| Role | Hex | OKLCH | Tailwind |
+|------|-----|-------|----------|
+| Amber accent | `#F59E0B` | `oklch(0.72 0.17 80)` | `bg-highlight` / `text-highlight` |
+| Amber 200 | `#FDE68A` | `oklch(0.87 0.13 80)` | — (used for `::selection`) |
+
+### Usage Rules
+- **Primary (Sapphire)**: Buttons, links, focus rings, sidebar active, orbital logo — all interactive elements
+- **Accent (Amber)**: Text selection (`::selection`), brand gradients (`.brand-gradient`), decorative highlights. NOT for buttons or primary actions
+- **Never** mix amber into the orbital logo — keep all 3 circles sapphire blue
+- **Brand gradient**: `linear-gradient(135deg, #FDE68A, #F59E0B, #2563EB, #1E40AF)` — amber to sapphire, for decorative text or hero sections. Use `.brand-gradient` CSS class for text gradient.
+- **Brandkit file**: `brand/noir-brandkit.html` is the source of truth for all brand assets, color swatches, typography, logo variants, and usage guidelines
+
 ## Orbital Logo Mark
 
 NOIR's logo is 3 concentric offset SVG circles animated with CSS. Always use the pre-built SVG — never recreate it.
@@ -27,7 +52,7 @@ NOIR's logo is 3 concentric offset SVG circles animated with CSS. Always use the
 | Footer mini logo | 22px | `currentColor` | `orbital-animated text-primary flex-shrink-0` |
 | Auth right panel (dark bg) | 80px | `white` w/ `strokeOpacity="0.9"` | `orbital-animated mx-auto` |
 | Sidebar (portal) | 32px | `currentColor` | `orbital-animated text-sidebar-primary` |
-| Favicon (`public/favicon.svg`) | — | `#6366F1` hardcoded | *(CSS vars unavailable in favicon context)* |
+| Favicon (`public/favicon.svg`) | — | `#2563EB` hardcoded | *(CSS vars unavailable in favicon context)* |
 
 ### Animation
 Defined in `src/index.css` as `.orbital-animated`:

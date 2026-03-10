@@ -507,7 +507,7 @@ Update role.
 {
   "name": "Senior Editor",
   "description": "Updated description",
-  "color": "#6366F1"
+  "color": "#2563EB"
 }
 ```
 

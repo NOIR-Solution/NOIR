@@ -42,6 +42,8 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-info: var(--info);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -57,8 +59,8 @@
 }
 
 /*
- * Color Scheme: Deep Indigo (OKLCH)
- * - Indigo primary: Trust, professionalism, depth
+ * Color Scheme: Sapphire Blue (OKLCH)
+ * - Blue primary: Trust, professionalism, technical precision
  * - Warm-tinted neutrals: Approachable, modern feel
  * - Semantic colors: Success (green), Warning (amber), Destructive (red), Info (cyan)
  * - WCAG AA compliant contrast ratios throughout
@@ -68,41 +70,44 @@
 :root {
   --radius: 0.625rem;
   /* Backgrounds & surfaces */
-  --background: oklch(0.985 0.002 250);
+  --background: oklch(0.985 0.002 263);
   --foreground: oklch(0.205 0.015 260);
   --card: oklch(1.0 0 0);
   --card-foreground: oklch(0.205 0.015 260);
   --popover: oklch(1.0 0 0);
   --popover-foreground: oklch(0.205 0.015 260);
-  /* Deep indigo primary */
-  --primary: oklch(0.55 0.18 265);
+  /* Sapphire blue primary — #2563EB */
+  --primary: oklch(0.55 0.245 263);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0.002 250);
+  --secondary: oklch(0.97 0.002 263);
   --secondary-foreground: oklch(0.205 0.015 260);
-  --muted: oklch(0.97 0.002 250);
+  --muted: oklch(0.97 0.002 263);
   /* Darkened for WCAG AA compliance (4.5:1 contrast on white background) */
   --muted-foreground: oklch(0.48 0.01 260);
-  --accent: oklch(0.97 0.002 250);
+  --accent: oklch(0.97 0.002 263);
   --accent-foreground: oklch(0.205 0.015 260);
-  /* Semantic colors */
-  --destructive: oklch(0.55 0.22 25);
+  /* Semantic colors — matches brandkit hex values */
+  --destructive: oklch(0.64 0.24 25);       /* #EF4444 */
   --destructive-foreground: oklch(0.985 0 0);
-  --success: oklch(0.65 0.18 155);
-  --warning: oklch(0.75 0.15 75);
-  --info: oklch(0.70 0.12 220);
+  --success: oklch(0.72 0.19 150);          /* #22C55E */
+  --warning: oklch(0.75 0.16 75);           /* #F59E0B */
+  --info: oklch(0.72 0.17 255);             /* #60A5FA */
+  /* Amber brand accent — secondary highlight, decorative use */
+  --highlight: oklch(0.72 0.17 80);
+  --highlight-foreground: oklch(0.15 0 0);
   /* Borders & inputs */
-  --border: oklch(0.922 0.004 250);
-  --input: oklch(0.922 0.004 250);
-  --ring: oklch(0.55 0.18 265);
-  /* Sidebar - uses deeper indigo for consistency */
-  --sidebar: oklch(0.985 0.002 250);
+  --border: oklch(0.922 0.004 263);
+  --input: oklch(0.922 0.004 263);
+  --ring: oklch(0.55 0.245 263);
+  /* Sidebar - uses deeper blue for consistency */
+  --sidebar: oklch(0.985 0.002 263);
   --sidebar-foreground: oklch(0.205 0.015 260);
-  --sidebar-primary: oklch(0.55 0.18 265);
+  --sidebar-primary: oklch(0.55 0.245 263);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0.002 250);
+  --sidebar-accent: oklch(0.97 0.002 263);
   --sidebar-accent-foreground: oklch(0.205 0.015 260);
-  --sidebar-border: oklch(0.922 0.004 250);
-  --sidebar-ring: oklch(0.55 0.18 265);
+  --sidebar-border: oklch(0.922 0.004 263);
+  --sidebar-ring: oklch(0.55 0.245 263);
 }
 
 /* Dark theme variables */
@@ -114,8 +119,8 @@
   --card-foreground: oklch(0.93 0.005 260);
   --popover: oklch(0.195 0.014 260);
   --popover-foreground: oklch(0.93 0.005 260);
-  /* Lighter indigo for dark backgrounds */
-  --primary: oklch(0.65 0.18 265);
+  /* Lighter blue for dark backgrounds */
+  --primary: oklch(0.65 0.22 263);
   --primary-foreground: oklch(0.145 0.014 260);
   --secondary: oklch(0.25 0.014 260);
   --secondary-foreground: oklch(0.93 0.005 260);
@@ -123,25 +128,28 @@
   --muted-foreground: oklch(0.65 0.005 260);
   --accent: oklch(0.25 0.014 260);
   --accent-foreground: oklch(0.93 0.005 260);
-  /* Semantic colors (lighter for dark mode) */
-  --destructive: oklch(0.65 0.22 25);
+  /* Semantic colors (lighter for dark mode) — brandkit-aligned */
+  --destructive: oklch(0.71 0.24 25);       /* lighter #EF4444 */
   --destructive-foreground: oklch(0.985 0 0);
-  --success: oklch(0.72 0.18 155);
-  --warning: oklch(0.80 0.15 75);
-  --info: oklch(0.75 0.12 220);
+  --success: oklch(0.79 0.19 150);          /* lighter #22C55E */
+  --warning: oklch(0.82 0.14 75);           /* lighter #F59E0B */
+  --info: oklch(0.79 0.15 255);             /* lighter #60A5FA */
+  /* Amber brand accent — brighter for dark backgrounds */
+  --highlight: oklch(0.80 0.17 80);
+  --highlight-foreground: oklch(0.15 0 0);
   /* Borders & inputs — raised from 10%/15% for Nachos-level dark contrast */
   --border: oklch(1 0 0 / 14%);
   --input: oklch(1 0 0 / 18%);
-  --ring: oklch(0.65 0.18 265);
+  --ring: oklch(0.65 0.22 263);
   /* Sidebar */
   --sidebar: oklch(0.195 0.014 260);
   --sidebar-foreground: oklch(0.93 0.005 260);
-  --sidebar-primary: oklch(0.65 0.18 265);
+  --sidebar-primary: oklch(0.65 0.22 263);
   --sidebar-primary-foreground: oklch(0.145 0.014 260);
   --sidebar-accent: oklch(0.25 0.014 260);
   --sidebar-accent-foreground: oklch(0.93 0.005 260);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.65 0.18 265);
+  --sidebar-ring: oklch(0.65 0.22 263);
 }
 
 /*
@@ -157,8 +165,8 @@
   --card-foreground: oklch(0 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0 0 0);
-  /* High contrast indigo - darker for maximum contrast */
-  --primary: oklch(0.35 0.25 265);
+  /* High contrast blue - darker for maximum contrast */
+  --primary: oklch(0.35 0.25 263);
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0 0);
   --secondary-foreground: oklch(0 0 0);
@@ -166,18 +174,21 @@
   --muted-foreground: oklch(0.25 0 0);
   --accent: oklch(0.95 0 0);
   --accent-foreground: oklch(0 0 0);
-  --destructive: oklch(0.45 0.3 25);
+  --destructive: oklch(0.45 0.30 25);
   --destructive-foreground: oklch(1 0 0);
-  --success: oklch(0.45 0.22 155);
-  --warning: oklch(0.55 0.2 75);
-  --info: oklch(0.50 0.18 220);
+  --success: oklch(0.45 0.24 150);
+  --warning: oklch(0.55 0.22 75);
+  --info: oklch(0.50 0.20 255);
+  /* Amber brand accent — high contrast */
+  --highlight: oklch(0.50 0.22 80);
+  --highlight-foreground: oklch(1 0 0);
   --border: oklch(0 0 0);
   --input: oklch(0 0 0);
   --ring: oklch(0 0 0);
   /* Sidebar - high contrast */
   --sidebar: oklch(0.98 0 0);
   --sidebar-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0.35 0.25 265);
+  --sidebar-primary: oklch(0.35 0.25 263);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.95 0 0);
   --sidebar-accent-foreground: oklch(0 0 0);
@@ -207,7 +218,12 @@
     scrollbar-width: thin;
   }
   html {
-    font-size: 15px; /* Base font size: bumped from 14px for better readability */
+    font-size: 93.75%; /* 15/16 = 0.9375 of browser default — respects user preferences */
+  }
+  /* Text selection — Amber 200 background from brand palette */
+  ::selection {
+    background: oklch(0.87 0.13 80);
+    color: oklch(0.15 0 0);
   }
   body {
     @apply bg-background text-foreground;
@@ -216,7 +232,7 @@
 }
 
 /*
- * Typography Scale (15px root)
+ * Typography Scale (93.75% root = 15px at default 16px browser setting)
  * --text-xs:   0.75rem  (11.25px) - labels, captions
  * --text-sm:   0.8125rem (12.2px) - table cells, secondary
  * --text-base: 0.875rem (13.1px) - body text
@@ -225,7 +241,7 @@
  * --text-2xl:  1.5rem   (22.5px) - KPI values
  * --text-3xl:  2rem     (30px) - hero numbers
  *
- * Note: With 15px root, all text is ~7% larger than the previous 14px base.
+ * Note: Uses % instead of px to respect browser user preferences for accessibility.
  */
 
 /* Hide scrollbar but keep scrollable — used for Kanban board pan */
@@ -430,6 +446,14 @@
 .orbital-animated circle:nth-child(3) {
   transform-origin: 55px 55px;
   animation: orbital-spin 5s linear infinite;
+}
+
+/* Brand gradient — amber to sapphire (matches brandkit) */
+.brand-gradient {
+  background: linear-gradient(135deg, oklch(0.83 0.16 80), var(--highlight), var(--primary), oklch(0.40 0.20 263));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Respect user's motion preferences (accessibility) */

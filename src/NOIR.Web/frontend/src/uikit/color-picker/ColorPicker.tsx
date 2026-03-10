@@ -53,7 +53,7 @@ const defaultColors = [
   '#6B7280', // gray
   '#14B8A6', // teal
   '#84CC16', // lime
-  '#6366F1', // indigo
+  '#2563EB', // sapphire blue
 ];
 
 const ColorPicker: React.FC<ColorPickerProps> = ({
