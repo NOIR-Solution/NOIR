@@ -54,6 +54,7 @@
 
 ::view-transition-old(main-content) {
   animation: none;
+  display: none; /* Hide old snapshot immediately — prevents overlap flash */
 }
 
 ::view-transition-new(main-content) {
