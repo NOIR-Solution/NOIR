@@ -85,6 +85,9 @@ export interface TaskCardDto {
   sortOrder: number
   parentTaskId: string | null
   parentTaskNumber: string | null
+  reporterName: string | null
+  reporterAvatarUrl: string | null
+  completedAt: string | null
 }
 
 export interface TaskDto {
@@ -143,6 +146,7 @@ export interface SubtaskDto {
   status: ProjectTaskStatus
   priority: TaskPriority
   assigneeName: string | null
+  columnName: string | null
 }
 
 export interface TaskCommentDto {

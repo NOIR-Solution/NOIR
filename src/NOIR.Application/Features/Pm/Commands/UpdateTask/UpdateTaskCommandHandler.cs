@@ -70,7 +70,8 @@ public class UpdateTaskCommandHandler
                 tl.Label!.Id, tl.Label.Name, tl.Label.Color)).ToList(),
             t.SubTasks.Select(s => new Features.Pm.DTOs.SubtaskDto(
                 s.Id, s.TaskNumber, s.Title, s.Status, s.Priority,
-                s.Assignee != null ? $"{s.Assignee.FirstName} {s.Assignee.LastName}" : null)).ToList(),
+                s.Assignee != null ? $"{s.Assignee.FirstName} {s.Assignee.LastName}" : null,
+                s.Column?.Name)).ToList(),
             t.Comments.OrderByDescending(c => c.CreatedAt).Select(c => new Features.Pm.DTOs.TaskCommentDto(
                 c.Id, c.AuthorId,
                 c.Author != null ? $"{c.Author.FirstName} {c.Author.LastName}" : string.Empty,

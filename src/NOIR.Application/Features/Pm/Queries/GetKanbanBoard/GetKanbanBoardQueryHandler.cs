@@ -59,7 +59,10 @@ public class GetKanbanBoardQueryHandler
                 t.TaskLabels.Select(tl => new Features.Pm.DTOs.TaskLabelBriefDto(
                     tl.Label!.Id, tl.Label.Name, tl.Label.Color)).ToList(),
                 t.SortOrder,
-                t.ParentTaskId, t.ParentTask?.TaskNumber)).ToList();
+                t.ParentTaskId, t.ParentTask?.TaskNumber,
+                ReporterName: t.Reporter != null ? $"{t.Reporter.FirstName} {t.Reporter.LastName}" : null,
+                ReporterAvatarUrl: t.Reporter?.AvatarUrl,
+                CompletedAt: t.CompletedAt)).ToList();
 
             return new Features.Pm.DTOs.KanbanColumnDto(
                 col.Id, col.Name, col.SortOrder, col.Color, col.WipLimit, taskCards);

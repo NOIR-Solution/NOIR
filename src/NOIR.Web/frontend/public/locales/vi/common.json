@@ -4289,7 +4289,16 @@
     "filterDueToday": "Hôm nay",
     "filterDueNext7": "7 ngày tới",
     "filterDueNext30": "30 ngày tới",
-    "noLabelsYet": "Dự án này chưa có nhãn"
+    "filterSpecificDate": "Ngày cụ thể / khoảng thời gian",
+    "filterDateFrom": "Từ ngày",
+    "filterDateTo": "Đến ngày (tùy chọn)",
+    "filterReporters": "Người báo cáo",
+    "filterNoReporter": "Không có người báo cáo",
+    "filterCompletion": "Hoàn thành",
+    "filterCompleted": "Đã đánh dấu hoàn thành",
+    "filterNotCompleted": "Chưa hoàn thành",
+    "noLabelsYet": "Dự án này chưa có nhãn",
+    "shareProject": "Chia sẻ dự án"
   },
   "statuses": {
     "todo": "Cần làm",

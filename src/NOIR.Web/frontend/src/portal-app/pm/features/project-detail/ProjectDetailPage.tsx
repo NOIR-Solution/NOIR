@@ -289,6 +289,7 @@ export const ProjectDetailPage = () => {
         taskId={listDetailTaskId}
         open={!!listDetailTaskId}
         onOpenChange={(open) => { if (!open) setListDetailTaskId(null) }}
+        onNavigateToTask={(taskId) => setListDetailTaskId(taskId)}
       />
 
       {/* Archived task detail modal */}
@@ -296,6 +297,7 @@ export const ProjectDetailPage = () => {
         taskId={archivedDetailTaskId}
         open={!!archivedDetailTaskId}
         onOpenChange={(open) => { if (!open) setArchivedDetailTaskId(null) }}
+        onNavigateToTask={(taskId) => setArchivedDetailTaskId(taskId)}
       />
 
       {/* Task create dialog */}
@@ -319,10 +321,7 @@ export const ProjectDetailPage = () => {
       <Credenza open={membersDialogOpen} onOpenChange={setMembersDialogOpen}>
         <CredenzaContent>
           <CredenzaHeader>
-            <CredenzaTitle className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              {t('pm.members', { defaultValue: 'Members' })}
-            </CredenzaTitle>
+            <CredenzaTitle>{t('pm.shareProject', { defaultValue: 'Share project' })}</CredenzaTitle>
             <CredenzaDescription>{project.name}</CredenzaDescription>
           </CredenzaHeader>
           <CredenzaBody>

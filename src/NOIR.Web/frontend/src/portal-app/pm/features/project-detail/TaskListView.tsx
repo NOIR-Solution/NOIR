@@ -34,7 +34,7 @@ import {
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { useKanbanBoardQuery } from '@/portal-app/pm/queries'
 import type { ProjectTaskStatus, TaskCardDto, TaskPriority, TaskLabelBriefDto, ProjectMemberDto } from '@/types/pm'
-import { TaskFilterPopover, matchDueDate, type DueDateFilter } from '@/portal-app/pm/components/TaskFilterPopover'
+import { TaskFilterPopover, matchDueDate, matchCompletion, type DueDateFilter, type CompletionFilter } from '@/portal-app/pm/components/TaskFilterPopover'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -303,16 +303,28 @@ export const TaskListView = ({ projectId, members = [], onTaskClick }: TaskListV
     () => searchParams.get('list-assignees')?.split(',').filter(Boolean) ?? [],
     [searchParams],
   )
+  const listReporters = useMemo(
+    () => searchParams.get('list-reporters')?.split(',').filter(Boolean) ?? [],
+    [searchParams],
+  )
   const listLabels = useMemo(
     () => searchParams.get('list-labels')?.split(',').filter(Boolean) ?? [],
     [searchParams],
   )
   const listDue = (searchParams.get('list-due') ?? '') as DueDateFilter
+  const listDueStart = searchParams.get('list-due-start') ?? ''
+  const listDueEnd = searchParams.get('list-due-end') ?? ''
+  const listCompletion = (searchParams.get('list-completion') ?? '') as CompletionFilter
   const sortField = searchParams.get('list-sort') ?? 'taskNumber'
   const sortDir = (searchParams.get('list-dir') ?? 'asc') as 'asc' | 'desc'
   const groupBy = searchParams.get('list-group') ?? 'none'
 
-  const advancedFilterCount = listAssignees.length + listLabels.length + (listDue ? 1 : 0)
+  const advancedFilterCount =
+    listAssignees.length +
+    listReporters.length +
+    listLabels.length +
+    (listDue ? 1 : 0) +
+    (listCompletion ? 1 : 0)
   const hasActiveFilters =
     Boolean(listSearch) ||
     listStatuses.length > 0 ||
@@ -355,8 +367,12 @@ export const TaskListView = ({ projectId, members = [], onTaskClick }: TaskListV
         next.delete('list-status')
         next.delete('list-priority')
         next.delete('list-assignees')
+        next.delete('list-reporters')
         next.delete('list-labels')
         next.delete('list-due')
+        next.delete('list-due-start')
+        next.delete('list-due-end')
+        next.delete('list-completion')
         return next
       },
       { replace: true },
@@ -419,14 +435,20 @@ export const TaskListView = ({ projectId, members = [], onTaskClick }: TaskListV
         (listAssignees.includes('__unassigned__') && !task.assigneeName) ||
         (task.assigneeName != null &&
           listAssignees.some(a => a !== '__unassigned__' && task.assigneeName!.toLowerCase().includes(a.toLowerCase())))
+      const matchReporter =
+        listReporters.length === 0 ||
+        (listReporters.includes('__no-reporter__') && !task.reporterName) ||
+        (task.reporterName != null &&
+          listReporters.some(r => r !== '__no-reporter__' && task.reporterName!.toLowerCase().includes(r.toLowerCase())))
       const matchLabel =
         listLabels.length === 0 ||
         (listLabels.includes('__no-label__') && task.labels.length === 0) ||
         task.labels.some(l => listLabels.includes(l.id))
-      const matchDue = matchDueDate(task.dueDate, listDue)
-      return matchSearch && matchStatus && matchPriority && matchAssignee && matchLabel && matchDue
+      const matchDue = matchDueDate(task.dueDate, listDue, listDueStart || undefined, listDueEnd || undefined)
+      const matchComp = matchCompletion(task.completedAt, listCompletion)
+      return matchSearch && matchStatus && matchPriority && matchAssignee && matchReporter && matchLabel && matchDue && matchComp
     })
-  }, [tasks, listSearch, listStatuses, listPriorities, listAssignees, listLabels, listDue])
+  }, [tasks, listSearch, listStatuses, listPriorities, listAssignees, listReporters, listLabels, listDue, listDueStart, listDueEnd, listCompletion])
 
   // ── Sorting ──
   const sortedTasks = useMemo(() => {
@@ -584,19 +606,29 @@ export const TaskListView = ({ projectId, members = [], onTaskClick }: TaskListV
           })}
         </div>
 
-        {/* Advanced filters: Assignees + Labels + Due Date */}
+        {/* Advanced filters */}
         <TaskFilterPopover
+          showCompletion
           showAssignees
+          showReporters
           showLabels
           showDueDate
           members={members}
           availableLabels={availableLabels}
           selectedAssignees={listAssignees}
-          selectedLabels={listLabels}
-          selectedDueDate={listDue}
           onAssigneesChange={(v) => setFilter('list-assignees', v.join(','))}
+          selectedReporters={listReporters}
+          onReportersChange={(v) => setFilter('list-reporters', v.join(','))}
+          selectedLabels={listLabels}
           onLabelsChange={(v) => setFilter('list-labels', v.join(','))}
+          selectedDueDate={listDue}
           onDueDateChange={(v) => setFilter('list-due', v)}
+          dueDateSpecificStart={listDueStart}
+          onDueDateSpecificStartChange={(v) => setFilter('list-due-start', v)}
+          dueDateSpecificEnd={listDueEnd}
+          onDueDateSpecificEndChange={(v) => setFilter('list-due-end', v)}
+          completionFilter={listCompletion}
+          onCompletionChange={(v) => setFilter('list-completion', v)}
           onClearAll={clearAllFilters}
           activeCount={advancedFilterCount}
         />

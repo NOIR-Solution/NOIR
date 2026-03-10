@@ -10,6 +10,10 @@ export const useCreateTask = () => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: pmBoardKeys.board(variables.projectId) })
       queryClient.invalidateQueries({ queryKey: pmProjectKeys.all })
+      // Invalidate parent task detail if this is a subtask
+      if (variables.parentTaskId) {
+        queryClient.invalidateQueries({ queryKey: pmTaskKeys.all })
+      }
     },
   })
 }
@@ -20,6 +24,8 @@ export const useUpdateTask = () => {
     mutationFn: ({ id, request }: { id: string; request: UpdateTaskRequest }) => updateTask(id, request),
     onSuccess: (data) => {
       queryClient.setQueryData(pmTaskKeys.detail(data.id), data)
+      // Invalidate all task details (parent task may show this as subtask)
+      queryClient.invalidateQueries({ queryKey: pmTaskKeys.all })
       queryClient.invalidateQueries({ queryKey: pmBoardKeys.all })
     },
   })
@@ -53,6 +59,8 @@ export const useChangeTaskStatus = () => {
     mutationFn: ({ id, status }: { id: string; status: string }) => changeTaskStatus(id, status),
     onSuccess: (data) => {
       queryClient.setQueryData(pmTaskKeys.detail(data.id), data)
+      // Invalidate all task details (parent task may show this as subtask)
+      queryClient.invalidateQueries({ queryKey: pmTaskKeys.all })
       queryClient.invalidateQueries({ queryKey: pmBoardKeys.all })
     },
   })

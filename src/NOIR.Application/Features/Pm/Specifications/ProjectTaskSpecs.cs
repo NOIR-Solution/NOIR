@@ -14,6 +14,7 @@ public sealed class TaskByIdSpec : Specification<ProjectTask>
              .Include(t => t.Reporter!)
              .Include(t => t.ParentTask!)
              .Include(t => t.SubTasks)
+             .Include("SubTasks.Column")
              .Include("Comments.Author")
              .Include("TaskLabels.Label")
              .AsSplitQuery()
@@ -134,6 +135,7 @@ public sealed class TasksForKanbanSpec : Specification<ProjectTask>
     {
         Query.Where(t => t.ProjectId == projectId && !t.IsArchived)
              .Include(t => t.Assignee!)
+             .Include(t => t.Reporter!)
              .Include(t => t.SubTasks)
              .Include(t => t.Comments)
              .Include(t => t.ParentTask!)

@@ -4295,7 +4295,16 @@
     "filterDueToday": "Due today",
     "filterDueNext7": "Next 7 days",
     "filterDueNext30": "Next 30 days",
-    "noLabelsYet": "No labels on this project yet"
+    "filterSpecificDate": "Specific date / range",
+    "filterDateFrom": "From",
+    "filterDateTo": "To (optional)",
+    "filterReporters": "Reporters",
+    "filterNoReporter": "No reporter",
+    "filterCompletion": "Completion",
+    "filterCompleted": "Marked as complete",
+    "filterNotCompleted": "Not marked as complete",
+    "noLabelsYet": "No labels on this project yet",
+    "shareProject": "Share project"
   },
   "statuses": {
     "todo": "To Do",

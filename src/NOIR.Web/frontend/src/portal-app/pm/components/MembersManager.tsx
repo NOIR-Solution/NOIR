@@ -1,4 +1,4 @@
-import { useState, useDeferredValue } from 'react'
+import { useState, useDeferredValue, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { UserPlus, Loader2, Crown, Shield, Eye, Users, Search, X, Check } from 'lucide-react'
@@ -17,9 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
   Input,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
 } from '@uikit'
 import { useAddMember, useRemoveMember, useChangeMemberRole } from '@/portal-app/pm/queries'
 import { useEmployeeSearchQuery } from '@/portal-app/hr/queries'
@@ -52,13 +49,25 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
   const changeMemberRoleMutation = useChangeMemberRole()
 
   const [searchInput, setSearchInput] = useState('')
-  const [searchOpen, setSearchOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeSearchDto | null>(null)
   const [newRole, setNewRole] = useState<ProjectMemberRole>('Member')
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
+  const searchContainerRef = useRef<HTMLDivElement>(null)
 
   const deferredQuery = useDeferredValue(searchInput)
   const { data: searchResults, isFetching: isSearching } = useEmployeeSearchQuery(deferredQuery)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const confirmRemoveMember = members.find(m => m.id === confirmRemoveId)
 
@@ -70,12 +79,13 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
   const handleSelectEmployee = (emp: EmployeeSearchDto) => {
     setSelectedEmployee(emp)
     setSearchInput(emp.fullName)
-    setSearchOpen(false)
+    setDropdownOpen(false)
   }
 
   const handleClearSelection = () => {
     setSelectedEmployee(null)
     setSearchInput('')
+    setDropdownOpen(false)
   }
 
   const handleAddMember = () => {
@@ -87,6 +97,7 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
           toast.success(t('pm.addMember'))
           setSelectedEmployee(null)
           setSearchInput('')
+          setDropdownOpen(false)
           setNewRole('Member')
         },
         onError: (err) => {
@@ -124,104 +135,78 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center gap-2 pb-1 border-b border-border/40">
-        <Users className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm font-semibold">{t('pm.members', { defaultValue: 'Members' })}</span>
-        <span className="ml-auto text-xs bg-muted text-muted-foreground rounded-full px-2 py-0.5 font-medium">
-          {members.length}
-        </span>
-      </div>
-
       {/* Add member row */}
       <div className="flex gap-2">
-        {/* Employee search picker */}
-        <Popover open={searchOpen} onOpenChange={setSearchOpen}>
-          <PopoverTrigger asChild>
-            <div
-              className="flex-1 flex items-center gap-1.5 h-8 rounded-md border border-input bg-background px-2.5 text-sm cursor-text hover:border-ring/50 transition-colors"
-              onClick={() => { if (!selectedEmployee) setSearchOpen(true) }}
-            >
-              <Search className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-              {selectedEmployee ? (
-                <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                  <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-semibold text-primary flex-shrink-0">
-                    {selectedEmployee.fullName.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="truncate text-sm">{selectedEmployee.fullName}</span>
-                  <span className="text-xs text-muted-foreground flex-shrink-0">{selectedEmployee.employeeCode}</span>
+        {/* Employee search — inline combobox, no popover portal */}
+        <div ref={searchContainerRef} className="relative flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 h-9 rounded-md border border-input bg-background px-2.5 text-sm transition-colors focus-within:ring-1 focus-within:ring-ring focus-within:border-ring">
+            {isSearching
+              ? <Loader2 className="h-3.5 w-3.5 text-muted-foreground animate-spin flex-shrink-0" />
+              : <Search className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+            }
+            {selectedEmployee ? (
+              <>
+                <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-semibold text-primary flex-shrink-0">
+                  {selectedEmployee.fullName.charAt(0).toUpperCase()}
                 </div>
-              ) : (
-                <Input
-                  value={searchInput}
-                  onChange={(e) => {
-                    setSearchInput(e.target.value)
-                    setSearchOpen(true)
-                    setSelectedEmployee(null)
-                  }}
-                  onFocus={() => setSearchOpen(true)}
-                  placeholder={t('pm.searchMemberPlaceholder', { defaultValue: 'Search by name, email or code…' })}
-                  className="flex-1 h-auto border-0 bg-transparent px-0 py-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60"
-                />
-              )}
-              {selectedEmployee && (
+                <span className="flex-1 truncate text-sm">{selectedEmployee.fullName}</span>
+                <span className="text-xs text-muted-foreground flex-shrink-0 font-mono">{selectedEmployee.employeeCode}</span>
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleClearSelection() }}
-                  className="h-4 w-4 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0 cursor-pointer"
+                  type="button"
+                  onClick={handleClearSelection}
+                  className="ml-1 h-5 w-5 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex-shrink-0 cursor-pointer"
                   aria-label={t('buttons.clear', { defaultValue: 'Clear' })}
                 >
                   <X className="h-3 w-3" />
                 </button>
-              )}
-            </div>
-          </PopoverTrigger>
-          <PopoverContent
-            className="p-0 w-[320px]"
-            align="start"
-            onOpenAutoFocus={(e) => e.preventDefault()}
-          >
-            {/* Search input inside popover for keyboard nav */}
-            <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40">
-              <Search className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+              </>
+            ) : (
               <Input
                 value={searchInput}
-                onChange={(e) => { setSearchInput(e.target.value); setSelectedEmployee(null) }}
+                onChange={(e) => {
+                  setSearchInput(e.target.value)
+                  setSelectedEmployee(null)
+                  setDropdownOpen(true)
+                }}
+                onFocus={() => setDropdownOpen(true)}
                 placeholder={t('pm.searchMemberPlaceholder', { defaultValue: 'Search by name, email or code…' })}
-                className="h-7 flex-1 border-0 bg-transparent px-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
-                autoFocus
+                className="flex-1 h-auto border-0 bg-transparent px-0 py-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60"
               />
-              {isSearching && <Loader2 className="h-3.5 w-3.5 text-muted-foreground animate-spin flex-shrink-0" />}
-            </div>
+            )}
+          </div>
 
-            {/* Results */}
-            <div className="max-h-60 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-              {deferredQuery.length < 2 ? (
-                <p className="text-xs text-muted-foreground text-center py-5 px-3">
-                  {t('pm.typeToSearch', { defaultValue: 'Type at least 2 characters to search…' })}
-                </p>
-              ) : filteredResults.length === 0 && !isSearching ? (
-                <p className="text-xs text-muted-foreground text-center py-5 px-3">
-                  {t('pm.noEmployeesFound', { defaultValue: 'No employees found' })}
-                </p>
-              ) : (
-                <div className="p-1">
-                  {filteredResults.map((emp) => (
-                    <EmployeeResultRow
-                      key={emp.id}
-                      emp={emp}
-                      isSelected={selectedEmployee?.id === emp.id}
-                      onSelect={handleSelectEmployee}
-                    />
-                  ))}
-                </div>
-              )}
+          {/* Inline dropdown — no portal, stays within dialog flow */}
+          {dropdownOpen && !selectedEmployee && (
+            <div className="absolute left-0 right-0 top-full mt-1 z-50 rounded-md border border-border bg-popover shadow-md overflow-hidden">
+              <div className="max-h-52 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                {deferredQuery.length < 2 ? (
+                  <p className="text-xs text-muted-foreground text-center py-4 px-3">
+                    {t('pm.typeToSearch', { defaultValue: 'Type at least 2 characters to search…' })}
+                  </p>
+                ) : filteredResults.length === 0 && !isSearching ? (
+                  <p className="text-xs text-muted-foreground text-center py-4 px-3">
+                    {t('pm.noEmployeesFound', { defaultValue: 'No employees found' })}
+                  </p>
+                ) : (
+                  <div className="p-1">
+                    {filteredResults.map((emp) => (
+                      <EmployeeResultRow
+                        key={emp.id}
+                        emp={emp}
+                        isSelected={false}
+                        onSelect={handleSelectEmployee}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </PopoverContent>
-        </Popover>
+          )}
+        </div>
 
         {/* Role selector */}
         <Select value={newRole} onValueChange={(v) => setNewRole(v as ProjectMemberRole)}>
-          <SelectTrigger className="w-28 h-8 text-xs cursor-pointer flex-shrink-0">
+          <SelectTrigger className="w-28 h-9 text-xs cursor-pointer flex-shrink-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -234,7 +219,7 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
         {/* Add button */}
         <Button
           size="sm"
-          className="cursor-pointer h-8 px-3 gap-1.5 flex-shrink-0"
+          className="cursor-pointer h-9 px-3 gap-1.5 flex-shrink-0"
           onClick={handleAddMember}
           disabled={!selectedEmployee || addMemberMutation.isPending}
           aria-label={t('pm.addMember')}
@@ -247,8 +232,18 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
         </Button>
       </div>
 
+      {/* Trello-style section label */}
+      <div className="flex items-center gap-2 pt-1 border-t border-border/40">
+        <span className="text-sm font-semibold text-primary">
+          {t('pm.projectMembers', { defaultValue: 'Project members' })}
+        </span>
+        <span className="text-xs bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-medium leading-[1.1]">
+          {members.length}
+        </span>
+      </div>
+
       {/* Member list */}
-      <div className="space-y-1">
+      <div className="space-y-0.5">
         {members.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">
             {t('pm.noMembers', { defaultValue: 'No members yet' })}
@@ -270,7 +265,7 @@ export const MembersManager = ({ projectId, members }: MembersManagerProps) => {
                 className="h-8 w-8 flex-shrink-0 text-xs"
               />
 
-              {/* Name + role icon */}
+              {/* Name + subtitle (Trello pattern: name bold, code + role muted below) */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm font-medium truncate">{member.employeeName}</span>

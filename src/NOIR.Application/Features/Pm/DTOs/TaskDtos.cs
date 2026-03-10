@@ -51,7 +51,10 @@ public sealed record TaskCardDto(
     List<TaskLabelBriefDto> Labels,
     double SortOrder,
     Guid? ParentTaskId = null,
-    string? ParentTaskNumber = null);
+    string? ParentTaskNumber = null,
+    string? ReporterName = null,
+    string? ReporterAvatarUrl = null,
+    DateTimeOffset? CompletedAt = null);
 
 /// <summary>
 /// Subtask brief info nested in TaskDto.
@@ -62,7 +65,8 @@ public sealed record SubtaskDto(
     string Title,
     ProjectTaskStatus Status,
     TaskPriority Priority,
-    string? AssigneeName);
+    string? AssigneeName,
+    string? ColumnName = null);
 
 /// <summary>
 /// Task comment detail.
