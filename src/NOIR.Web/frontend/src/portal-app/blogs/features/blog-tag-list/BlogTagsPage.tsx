@@ -62,6 +62,21 @@ export const BlogTagsPage = () => {
   }
 
   const columns = useMemo((): ColumnDef<PostTagListItem, unknown>[] => [
+    createActionsColumn<PostTagListItem>((tag) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => openEditTag(tag)}>
+          <Pencil className="h-4 w-4 mr-2" />
+          {t('labels.edit', 'Edit')}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive cursor-pointer"
+          onClick={() => setTagToDelete(tag)}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          {t('labels.delete', 'Delete')}
+        </DropdownMenuItem>
+      </>
+    )),
     ch.accessor('name', {
       header: t('labels.name', 'Name'),
       cell: ({ row }) => (
@@ -88,21 +103,6 @@ export const BlogTagsPage = () => {
       size: 80,
       cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
     }) as ColumnDef<PostTagListItem, unknown>,
-    createActionsColumn<PostTagListItem>((tag) => (
-      <>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => openEditTag(tag)}>
-          <Pencil className="h-4 w-4 mr-2" />
-          {t('labels.edit', 'Edit')}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="text-destructive cursor-pointer"
-          onClick={() => setTagToDelete(tag)}
-        >
-          <Trash2 className="h-4 w-4 mr-2" />
-          {t('labels.delete', 'Delete')}
-        </DropdownMenuItem>
-      </>
-    )),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t])
 

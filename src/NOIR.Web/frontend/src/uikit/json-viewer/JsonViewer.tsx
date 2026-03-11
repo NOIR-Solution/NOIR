@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../dialog/Dialog'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../tooltip/Tooltip'
 
 interface JsonViewerProps {
   data: unknown
@@ -291,29 +292,39 @@ export const JsonViewer = ({
       <div className={cn('relative group', className)}>
         {/* Action buttons */}
         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={handleCopy}
-            title={t('buttons.copyToClipboard', 'Copy to clipboard')}
-          >
-            {copied ? (
-              <Check className="h-3.5 w-3.5 text-green-500" />
-            ) : (
-              <Copy className="h-3.5 w-3.5" />
-            )}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 cursor-pointer"
+                onClick={handleCopy}
+                aria-label={t('buttons.copyToClipboard', 'Copy to clipboard')}
+              >
+                {copied ? (
+                  <Check className="h-3.5 w-3.5 text-green-500" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">{t('buttons.copyToClipboard', 'Copy to clipboard')}</TooltipContent>
+          </Tooltip>
           {allowFullscreen && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={() => setIsFullscreen(true)}
-              title={t('buttons.viewFullscreen', 'View fullscreen')}
-            >
-              <Maximize2 className="h-3.5 w-3.5" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 cursor-pointer"
+                  onClick={() => setIsFullscreen(true)}
+                  aria-label={t('buttons.viewFullscreen', 'View fullscreen')}
+                >
+                  <Maximize2 className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">{t('buttons.viewFullscreen', 'View fullscreen')}</TooltipContent>
+            </Tooltip>
           )}
         </div>
         <JsonContent expanded={defaultExpanded} depth={maxDepth} height={maxHeight} />
@@ -323,21 +334,27 @@ export const JsonViewer = ({
       <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
         <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
           <DialogHeader className="flex-shrink-0">
-            <DialogTitle className="flex items-center justify-between">
-              <span>{title || t('json.jsonData', 'JSON Data')}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={handleCopy}
-              >
-                {copied ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
-            </DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>{title || t('json.jsonData', 'JSON Data')}</DialogTitle>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 cursor-pointer"
+                    onClick={handleCopy}
+                    aria-label={t('buttons.copyToClipboard', 'Copy to clipboard')}
+                  >
+                    {copied ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">{t('buttons.copyToClipboard', 'Copy to clipboard')}</TooltipContent>
+              </Tooltip>
+            </div>
           </DialogHeader>
           <div className="flex-1 overflow-hidden">
             <JsonContent expanded={true} depth={10} height="calc(90vh - 120px)" />

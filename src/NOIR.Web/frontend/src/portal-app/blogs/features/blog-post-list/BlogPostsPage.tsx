@@ -187,6 +187,23 @@ export const BlogPostsPage = () => {
   }
 
   const columns = useMemo((): ColumnDef<PostListItem, unknown>[] => [
+    createActionsColumn<PostListItem>((post) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <ViewTransitionLink to={`/portal/blog/posts/${post.id}/edit`}>
+            <Pencil className="h-4 w-4 mr-2" />
+            {t('buttons.edit')}
+          </ViewTransitionLink>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive cursor-pointer"
+          onClick={() => setPostToDelete(post)}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          {t('buttons.delete')}
+        </DropdownMenuItem>
+      </>
+    )),
     createSelectColumn<PostListItem>(),
     ch.accessor('title', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('blog.titleColumn', 'Title')} />,
@@ -233,33 +250,17 @@ export const BlogPostsPage = () => {
     ch.accessor('viewCount', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('blog.views', 'Views')} />,
       enableSorting: false,
-      meta: { align: 'center' },
+      meta: { align: 'center', label: t('blog.views', 'Views') },
       size: 80,
       cell: ({ getValue }) => getValue().toLocaleString(),
     }) as ColumnDef<PostListItem, unknown>,
     ch.accessor('createdAt', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.created')} />,
       enableSorting: false,
+      meta: { label: t('labels.created') },
       size: 130,
       cell: ({ getValue }) => formatDistanceToNow(new Date(getValue()), { addSuffix: true }),
     }) as ColumnDef<PostListItem, unknown>,
-    createActionsColumn<PostListItem>((post) => (
-      <>
-        <DropdownMenuItem className="cursor-pointer" asChild>
-          <ViewTransitionLink to={`/portal/blog/posts/${post.id}/edit`}>
-            <Pencil className="h-4 w-4 mr-2" />
-            {t('buttons.edit')}
-          </ViewTransitionLink>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="text-destructive cursor-pointer"
-          onClick={() => setPostToDelete(post)}
-        >
-          <Trash2 className="h-4 w-4 mr-2" />
-          {t('buttons.delete')}
-        </DropdownMenuItem>
-      </>
-    )),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t])
 
@@ -268,6 +269,7 @@ export const BlogPostsPage = () => {
     columns,
     rowCount: data?.totalCount ?? 0,
     enableRowSelection: true,
+    columnVisibilityStorageKey: 'blog-posts',
     state: {
       pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
       sorting: params.sorting as SortingState,
@@ -335,6 +337,7 @@ export const BlogPostsPage = () => {
             onSearchChange={setSearchInput}
             searchPlaceholder={t('blog.searchPlaceholder')}
             isSearchStale={isSearchStale}
+            onResetColumnVisibility={table.resetColumnVisibility}
             filterSlot={
               <>
                 <Select value={statusFilter} onValueChange={handleStatusChange}>

@@ -1,5 +1,5 @@
 import type { Table, RowData } from '@tanstack/react-table'
-import { Search, SlidersHorizontal, X } from 'lucide-react'
+import { RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button } from '../button/Button'
@@ -28,6 +28,8 @@ interface DataTableToolbarProps<TData extends RowData> {
   onResetFilters?: () => void
   /** Custom filter controls injected between search and column toggle */
   filterSlot?: React.ReactNode
+  /** Callback to reset column visibility to default (show all) */
+  onResetColumnVisibility?: () => void
   /** Extra controls injected at the right side (e.g., Create button, Export) */
   actionSlot?: React.ReactNode
   className?: string
@@ -46,11 +48,13 @@ export const DataTableToolbar = <TData extends RowData>({
   showColumnToggle = true,
   hasActiveFilters = false,
   onResetFilters,
+  onResetColumnVisibility,
   filterSlot,
   actionSlot,
   className,
 }: DataTableToolbarProps<TData>) => {
   const { t } = useTranslation('common')
+  const hasHiddenColumns = showColumnToggle && table.getAllColumns().some((col) => col.getCanHide() && !col.getIsVisible())
 
   return (
     <div className={cn('flex flex-col gap-3 sm:flex-row sm:items-center', className)}>
@@ -115,11 +119,25 @@ export const DataTableToolbar = <TData extends RowData>({
                     onCheckedChange={(value) => col.toggleVisibility(!!value)}
                     onSelect={(e) => e.preventDefault()}
                   >
-                    {typeof col.columnDef.header === 'string'
-                      ? col.columnDef.header
-                      : col.id}
+                    {col.columnDef.meta?.label
+                      ?? (typeof col.columnDef.header === 'string' ? col.columnDef.header : col.id)}
                   </DropdownMenuCheckboxItem>
                 ))}
+              {hasHiddenColumns && onResetColumnVisibility && (
+                <>
+                  <DropdownMenuSeparator />
+                  <button
+                    type="button"
+                    className="flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    onClick={() => {
+                      onResetColumnVisibility()
+                    }}
+                  >
+                    <RotateCcw className="mr-2 h-3.5 w-3.5" />
+                    {t('labels.resetToDefault', 'Reset to default')}
+                  </button>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )}

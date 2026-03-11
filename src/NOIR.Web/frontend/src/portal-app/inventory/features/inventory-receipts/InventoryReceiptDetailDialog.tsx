@@ -2,11 +2,13 @@ import { useTranslation } from 'react-i18next'
 import { Package } from 'lucide-react'
 import {
   Badge,
+  Button,
   Credenza,
   CredenzaBody,
   CredenzaContent,
   CredenzaDescription,
   CredenzaHeader,
+  CredenzaFooter,
   CredenzaTitle,
   EmptyState,
   Separator,
@@ -211,6 +213,11 @@ export const InventoryReceiptDetailDialog = ({
             />
           )}
         </CredenzaBody>
+        <CredenzaFooter>
+          <Button variant="outline" className="cursor-pointer" onClick={() => onOpenChange(false)}>
+            {t('buttons.close', 'Close')}
+          </Button>
+        </CredenzaFooter>
       </CredenzaContent>
     </Credenza>
   )

@@ -959,6 +959,10 @@
     "system": "Hệ thống",
     "userCount": "{{count}} người dùng",
     "systemRoleReadOnly": "Không thể thay đổi quyền hạn của vai trò hệ thống.",
+    "custom": "Tùy chỉnh",
+    "filterByType": "Lọc theo loại",
+    "noRoles": "Không tìm thấy vai trò",
+    "noRolesDescription": "Tạo vai trò mới để bắt đầu.",
     "columns": {
       "name": "Tên",
       "description": "Mô tả",
@@ -1982,6 +1986,8 @@
     "password": "Mật khẩu",
     "confirmPassword": "Xác nhận Mật khẩu",
     "openMenu": "Mở menu",
+    "toggleColumns": "Bật/tắt cột",
+    "columns": "Cột",
     "permissions": "quyền hạn",
     "andMore": "+ {{count}} thêm...",
     "more": "thêm",
@@ -2104,6 +2110,9 @@
       "orders": "Đơn hàng",
       "customers": "Khách hàng",
       "catalog": "Danh mục sản phẩm",
+      "humanresources": "Nhân sự",
+      "projectmanagement": "Quản lý Dự án",
+      "crm": "CRM",
       "content": "Nội dung",
       "usersaccess": "Người dùng & Truy cập",
       "tenantmanagement": "Quản lý Tenant",
@@ -2269,6 +2278,88 @@
       "features": {
         "read": "Xem Tính năng",
         "update": "Cập nhật Tính năng"
+      },
+      "media": {
+        "read": "Xem Phương tiện",
+        "create": "Tải lên Phương tiện",
+        "update": "Sửa Phương tiện",
+        "delete": "Xóa Phương tiện",
+        "manage": "Quản lý Phương tiện"
+      },
+      "hr-employees": {
+        "read": "Xem Nhân viên",
+        "create": "Tạo Nhân viên",
+        "update": "Cập nhật Nhân viên",
+        "delete": "Xóa Nhân viên"
+      },
+      "hr-departments": {
+        "read": "Xem Phòng ban",
+        "create": "Tạo Phòng ban",
+        "update": "Cập nhật Phòng ban",
+        "delete": "Xóa Phòng ban"
+      },
+      "hr-tags": {
+        "read": "Xem Thẻ Nhân viên",
+        "manage": "Quản lý Thẻ Nhân viên"
+      },
+      "pm-projects": {
+        "read": "Xem Dự án",
+        "create": "Tạo Dự án",
+        "update": "Cập nhật Dự án",
+        "delete": "Xóa Dự án"
+      },
+      "pm-tasks": {
+        "read": "Xem Công việc",
+        "create": "Tạo Công việc",
+        "update": "Cập nhật Công việc",
+        "delete": "Xóa Công việc",
+        "manage": "Quản lý Công việc"
+      },
+      "pm-members": {
+        "manage": "Quản lý Thành viên"
+      },
+      "crm-contacts": {
+        "read": "Xem Liên hệ",
+        "create": "Tạo Liên hệ",
+        "update": "Cập nhật Liên hệ",
+        "delete": "Xóa Liên hệ"
+      },
+      "crm-companies": {
+        "read": "Xem Công ty",
+        "create": "Tạo Công ty",
+        "update": "Cập nhật Công ty",
+        "delete": "Xóa Công ty"
+      },
+      "crm-leads": {
+        "read": "Xem Khách tiềm năng",
+        "create": "Tạo Khách tiềm năng",
+        "update": "Cập nhật Khách tiềm năng",
+        "manage": "Quản lý Khách tiềm năng"
+      },
+      "crm-pipeline": {
+        "manage": "Quản lý Pipeline"
+      },
+      "crm-activities": {
+        "read": "Xem Hoạt động",
+        "create": "Tạo Hoạt động",
+        "update": "Cập nhật Hoạt động",
+        "delete": "Xóa Hoạt động"
+      },
+      "webhooks": {
+        "read": "Xem Webhook",
+        "manage": "Quản lý Webhook",
+        "test": "Thử Webhook"
+      },
+      "api-keys": {
+        "read": "Xem API Key",
+        "create": "Tạo API Key",
+        "delete": "Thu hồi API Key"
+      },
+      "dashboard": {
+        "read": "Xem Bảng điều khiển"
+      },
+      "search": {
+        "global": "Tìm kiếm Toàn cục"
       }
     },
     "descriptions": {
@@ -2429,6 +2520,88 @@
       "features": {
         "read": "Xem cài đặt tính năng",
         "update": "Bật hoặc tắt các tính năng"
+      },
+      "media": {
+        "read": "Xem tệp và thư viện phương tiện",
+        "create": "Tải lên tệp phương tiện mới",
+        "update": "Đổi tên và sửa tệp phương tiện",
+        "delete": "Xóa tệp phương tiện",
+        "manage": "Toàn quyền quản lý thư viện phương tiện"
+      },
+      "hr-employees": {
+        "read": "Xem hồ sơ nhân viên",
+        "create": "Tạo nhân viên mới",
+        "update": "Sửa thông tin nhân viên",
+        "delete": "Xóa hồ sơ nhân viên"
+      },
+      "hr-departments": {
+        "read": "Xem cơ cấu phòng ban",
+        "create": "Tạo phòng ban mới",
+        "update": "Sửa thông tin phòng ban",
+        "delete": "Xóa phòng ban"
+      },
+      "hr-tags": {
+        "read": "Xem danh mục thẻ nhân viên",
+        "manage": "Tạo và quản lý thẻ nhân viên"
+      },
+      "pm-projects": {
+        "read": "Xem chi tiết dự án",
+        "create": "Tạo dự án mới",
+        "update": "Sửa cài đặt dự án",
+        "delete": "Xóa dự án"
+      },
+      "pm-tasks": {
+        "read": "Xem công việc dự án",
+        "create": "Tạo công việc mới",
+        "update": "Sửa chi tiết công việc",
+        "delete": "Xóa công việc",
+        "manage": "Toàn quyền quản lý công việc"
+      },
+      "pm-members": {
+        "manage": "Thêm và xóa thành viên dự án"
+      },
+      "crm-contacts": {
+        "read": "Xem liên hệ CRM",
+        "create": "Tạo liên hệ mới",
+        "update": "Sửa thông tin liên hệ",
+        "delete": "Xóa liên hệ"
+      },
+      "crm-companies": {
+        "read": "Xem công ty CRM",
+        "create": "Tạo công ty mới",
+        "update": "Sửa thông tin công ty",
+        "delete": "Xóa công ty"
+      },
+      "crm-leads": {
+        "read": "Xem khách tiềm năng",
+        "create": "Tạo khách tiềm năng mới",
+        "update": "Sửa thông tin khách tiềm năng",
+        "manage": "Toàn quyền quản lý khách tiềm năng và pipeline"
+      },
+      "crm-pipeline": {
+        "manage": "Cấu hình các giai đoạn pipeline bán hàng"
+      },
+      "crm-activities": {
+        "read": "Xem hoạt động CRM",
+        "create": "Ghi nhận hoạt động mới",
+        "update": "Sửa bản ghi hoạt động",
+        "delete": "Xóa bản ghi hoạt động"
+      },
+      "webhooks": {
+        "read": "Xem đăng ký webhook",
+        "manage": "Tạo và quản lý đăng ký webhook",
+        "test": "Gửi sự kiện webhook thử nghiệm"
+      },
+      "api-keys": {
+        "read": "Xem danh sách và chi tiết API key",
+        "create": "Tạo API key mới",
+        "delete": "Thu hồi và xóa API key"
+      },
+      "dashboard": {
+        "read": "Xem bảng điều khiển và widget"
+      },
+      "search": {
+        "global": "Tìm kiếm trên tất cả thực thể"
       }
     }
   },
@@ -4388,5 +4561,63 @@
       "banner": "Bạn đã mất kết nối — trang này có thể hiển thị dữ liệu cũ"
     },
     "autoReloaded": "Bản ghi này vừa được cập nhật"
+  },
+  "apiKeys": {
+    "title": "Khóa API",
+    "description": "Quản lý khóa API để truy cập lập trình vào nền tảng",
+    "create": "Tạo Khóa API",
+    "creating": "Đang tạo...",
+    "createTitle": "Tạo Khóa API Mới",
+    "createDescription": "Tạo khóa API mới với quyền hạn cụ thể cho tích hợp bên ngoài",
+    "name": "Tên",
+    "namePlaceholder": "VD: Tích hợp Shopify, Pipeline CI/CD",
+    "descriptionLabel": "Mô tả",
+    "descriptionPlaceholder": "Khóa API này dùng để làm gì?",
+    "permissions": "Quyền hạn",
+    "permissionsCount": "quyền",
+    "expiresAt": "Ngày hết hạn",
+    "expiresAtHint": "Để trống nếu khóa không bao giờ hết hạn",
+    "expires": "Hết hạn",
+    "apiKey": "Khóa API",
+    "apiSecret": "Mã bí mật API",
+    "copyKey": "Sao chép khóa API",
+    "copySecret": "Sao chép mã bí mật",
+    "copiedToClipboard": "Đã sao chép vào clipboard",
+    "showSecret": "Hiển thị mã bí mật",
+    "hideSecret": "Ẩn mã bí mật",
+    "keyCreated": "Đã Tạo Khóa API",
+    "keyCreatedDescription": "Khóa API mới đã được tạo. Sao chép mã bí mật ngay — nó sẽ không được hiển thị lại.",
+    "secretWarning": "Lưu trữ mã bí mật này một cách an toàn. Nó sẽ không được hiển thị lại sau khi bạn đóng hộp thoại này.",
+    "done": "Xong",
+    "lastUsed": "Sử dụng lần cuối",
+    "neverUsed": "Chưa sử dụng",
+    "noKeysFound": "Chưa có khóa API",
+    "noKeysDescription": "Tạo khóa API đầu tiên để cho phép truy cập lập trình vào nền tảng.",
+    "rotate": "Xoay",
+    "rotateTitle": "Xoay Mã Bí Mật Khóa API",
+    "rotateDescription": "Tạo mã bí mật mới cho khóa API này. Mã bí mật cũ sẽ bị vô hiệu hóa ngay lập tức.",
+    "rotateWarning": "Mã bí mật hiện tại sẽ ngừng hoạt động ngay lập tức. Hãy đảm bảo cập nhật tất cả các hệ thống sử dụng khóa này trước khi xoay.",
+    "rotating": "Đang xoay...",
+    "rotateSuccess": "Đã xoay mã bí mật khóa API thành công",
+    "rotateError": "Không thể xoay mã bí mật khóa API",
+    "newSecretTitle": "Đã Tạo Mã Bí Mật Mới",
+    "revoke": "Thu hồi",
+    "revokeTitle": "Thu Hồi Khóa API",
+    "revokeDescription": "Thu hồi vĩnh viễn khóa API này. Nó sẽ ngừng hoạt động ngay lập tức.",
+    "revokeWarning": "Hành động này không thể hoàn tác. Khóa API sẽ bị vô hiệu hóa vĩnh viễn và mọi hệ thống sử dụng nó sẽ mất quyền truy cập.",
+    "revokeReasonLabel": "Lý do (tùy chọn)",
+    "revokeReasonPlaceholder": "Tại sao bạn thu hồi khóa này?",
+    "revoking": "Đang thu hồi...",
+    "revokeSuccess": "Đã thu hồi khóa API thành công",
+    "revokeError": "Không thể thu hồi khóa API",
+    "revokedReason": "Lý do thu hồi",
+    "createSuccess": "Đã tạo khóa API thành công",
+    "createError": "Không thể tạo khóa API",
+    "statuses": {
+      "active": "Hoạt động",
+      "expired": "Hết hạn",
+      "revoked": "Đã thu hồi",
+      "inactive": "Không hoạt động"
+    }
   }
 }

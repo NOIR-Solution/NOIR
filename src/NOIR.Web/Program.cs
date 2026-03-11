@@ -246,12 +246,27 @@ builder.Services.AddOptions<CookieSettings>()
 // Register JwtCookieEvents for reading JWT from cookies
 builder.Services.AddScoped<JwtCookieEvents>();
 
-// Configure JWT Authentication with cookie support
+// Configure JWT + API Key dual authentication
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()!;
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    // Policy scheme dynamically selects JWT or API Key based on request headers
+    options.DefaultAuthenticateScheme = "Smart";
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddPolicyScheme("Smart", "JWT or API Key", options =>
+{
+    options.ForwardDefaultSelector = context =>
+    {
+        // If API Key headers are present and no JWT, use API Key scheme
+        if (context.Request.Headers.ContainsKey(NOIR.Web.Authentication.ApiKeyAuthenticationHandler.ApiKeyHeaderName) &&
+            context.Request.Headers.ContainsKey(NOIR.Web.Authentication.ApiKeyAuthenticationHandler.ApiSecretHeaderName) &&
+            !context.Request.Headers.ContainsKey("Authorization"))
+        {
+            return NOIR.Web.Authentication.ApiKeyAuthenticationHandler.SchemeName;
+        }
+        return JwtBearerDefaults.AuthenticationScheme;
+    };
 })
 .AddJwtBearer(options =>
 {
@@ -269,56 +284,133 @@ builder.Services.AddAuthentication(options =>
 
     // Use custom events to support reading JWT from cookies
     options.EventsType = typeof(JwtCookieEvents);
-});
+})
+.AddScheme<NOIR.Web.Authentication.ApiKeyAuthenticationOptions, NOIR.Web.Authentication.ApiKeyAuthenticationHandler>(
+    NOIR.Web.Authentication.ApiKeyAuthenticationHandler.SchemeName, _ => { });
 
 builder.Services.AddAuthorization();
 
 // Add API documentation
 builder.Services.AddOpenApi(options =>
 {
-    // Add FluentValidation schema transformer to enrich Scalar docs with validation rules
+    // Schema transformer: enrich OpenAPI schemas with FluentValidation constraints
     options.AddSchemaTransformer<NOIR.Web.OpenApi.FluentValidationSchemaTransformer>();
+
+    // Operation transformer: auto-add 401/403/422/429 responses based on endpoint metadata
+    options.AddOperationTransformer<NOIR.Web.OpenApi.EndpointMetadataTransformer>();
+
+    // Document transformer: add JWT security scheme, tag ordering, contact/license info
+    options.AddDocumentTransformer<NOIR.Web.OpenApi.SecuritySchemeDocumentTransformer>();
 
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
         document.Info.Title = "NOIR API";
         document.Info.Version = "v1";
         document.Info.Description = """
-            Enterprise-ready .NET SaaS API with JWT authentication.
+            Enterprise-ready .NET SaaS API with JWT authentication, API key support, and multi-tenancy.
 
             ## Authentication
 
-            NOIR supports two authentication methods:
+            NOIR supports three authentication methods. Choose based on your use case:
+
+            | Method | Best For | Header |
+            |--------|----------|--------|
+            | **JWT Bearer** | API clients, SPAs, mobile apps | `Authorization: Bearer <token>` |
+            | **API Key + Secret** | External integrations, CI/CD, automation | `X-API-Key` + `X-API-Secret` |
+            | **HttpOnly Cookie** | Browser-based web apps | Automatic (set by server) |
+
+            ---
 
             ### 1. JWT Bearer Token (API Clients)
-            Include the JWT token in the Authorization header:
+
+            **Step 1 — Obtain a token** by calling [`POST /api/auth/login`](#v1/tag/authentication):
+            ```json
+            POST /api/auth/login
+            Content-Type: application/json
+            X-Tenant-Id: default
+
+            {
+              "email": "admin@noir.local",
+              "password": "123qwe"
+            }
             ```
-            Authorization: Bearer <your-jwt-token>
+            The response includes `accessToken` (60-min TTL) and `refreshToken` (30-day TTL).
+
+            **Step 2 — Use the token** in subsequent requests:
+            ```
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+            X-Tenant-Id: default
             ```
 
-            ### 2. HttpOnly Cookie (Browser Clients)
-            For browser-based applications, use cookie authentication:
-            1. Call `POST /api/auth/login?useCookies=true` with credentials
+            **Step 3 — Refresh** when the access token expires via [`POST /api/auth/refresh`](#v1/tag/authentication):
+            ```json
+            POST /api/auth/refresh
+            Content-Type: application/json
+
+            {
+              "accessToken": "<expired-token>",
+              "refreshToken": "<refresh-token>"
+            }
+            ```
+
+            **Step 4 — Verify** your identity with [`GET /api/auth/me`](#v1/tag/authentication):
+            ```
+            GET /api/auth/me
+            Authorization: Bearer <token>
+            ```
+
+            ---
+
+            ### 2. API Key + API Secret (External Integrations)
+
+            For external systems, automation scripts, CI/CD pipelines, and third-party integrations.
+            No login flow required — just include two headers:
+            ```
+            X-API-Key: noir_key_xxxxxxxx
+            X-API-Secret: noir_secret_xxxxxxxx
+            ```
+
+            **How to create API keys:**
+            1. Log in to the NOIR portal at `/portal/settings?section=api-keys`
+            2. Click **Create API Key** — provide a name, select permissions, set optional expiration
+            3. Copy the API Key and API Secret (secret is shown **only once**)
+
+            **Key features:**
+            - Resolves user identity and tenant automatically — **no `X-Tenant-Id` header needed**
+            - Each key has scoped permissions (subset of the creating user's permissions)
+            - Keys can be rotated (new secret, same key ID) or revoked instantly
+            - Tracks last used timestamp and IP for audit visibility
+
+            ---
+
+            ### 3. HttpOnly Cookie (Browser Clients)
+
+            For browser-based applications (the NOIR portal uses this method):
+            1. Call [`POST /api/auth/login?useCookies=true`](#v1/tag/authentication) with credentials
             2. The response sets HttpOnly cookies automatically
-            3. All subsequent requests include cookies automatically
+            3. All subsequent requests include cookies automatically — no manual header management
 
             **Login Page:** Visit `/login` to authenticate via the web interface.
 
             ## Multi-Tenancy
 
-            Include the tenant ID in requests using the header:
+            NOIR is a multi-tenant platform. Include the tenant identifier in requests:
             ```
-            X-Tenant-Id: <tenant-id>
+            X-Tenant-Id: default
             ```
+            > **Note:** API Key authentication resolves the tenant automatically. This header is only needed for JWT/Cookie auth.
 
             ## Default Credentials
 
-            For development: `admin@noir.local` / `123qwe`
+            | Account | Email | Password |
+            |---------|-------|----------|
+            | Platform Admin | `platform@noir.local` | `123qwe` |
+            | Tenant Admin | `admin@noir.local` | `123qwe` |
 
             ## Validation
 
             All request schemas include validation constraints from FluentValidation.
-            Look for `minLength`, `maxLength`, `pattern`, and `required` properties.
+            Look for `minLength`, `maxLength`, `pattern`, `required`, `minimum`, and `maximum` properties on schema fields.
             """;
 
         return Task.CompletedTask;
@@ -419,13 +511,177 @@ app.UseOutputCache();
 // API Documentation (available in all environments for now, can restrict later)
 // Route: /api/docs for Scalar UI, /api/openapi/v1.json for OpenAPI spec
 app.MapOpenApi("/api/openapi/{documentName}.json");
+
+// Inject custom navigation script into Scalar HTML (handles #v1/tag/... anchor links in description)
+app.Use(async (context, next) =>
+{
+    if (!context.Request.Path.StartsWithSegments("/api/docs") || context.Request.Path.Value?.EndsWith(".js") == true)
+    {
+        await next();
+        return;
+    }
+
+    var originalBody = context.Response.Body;
+    using var buffer = new MemoryStream();
+    context.Response.Body = buffer;
+
+    await next();
+
+    buffer.Seek(0, SeekOrigin.Begin);
+    var html = await new StreamReader(buffer).ReadToEndAsync();
+    html = html.Replace("</body>", "<script src=\"/scalar-nav.js\"></script>\n</body>");
+
+    context.Response.Body = originalBody;
+    context.Response.ContentLength = null;
+    await context.Response.WriteAsync(html);
+});
+
 app.MapScalarApiReference("/api/docs", options =>
 {
     options
         .WithTitle("NOIR API")
-        .WithTheme(ScalarTheme.DeepSpace)
+        .WithTheme(ScalarTheme.None)
+        .WithFavicon("/favicon.svg")
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-        .WithOpenApiRoutePattern("/api/openapi/{documentName}.json");
+        .WithOpenApiRoutePattern("/api/openapi/{documentName}.json")
+        .DisableDefaultFonts()
+        .ForceDarkMode()
+        .WithCustomCss("""
+            /* ================================================================
+             * NOIR Brand Theme for Scalar API Reference
+             *
+             * Brand palette:
+             *   Primary:  Sapphire Blue #2563EB / #60A5FA / #93C5FD
+             *   Accent:   Amber Gold    #F59E0B / #FFCB6B / #FCD34D
+             *   Surfaces: Blue-tinted   #080810 → #0E0E1A → #131320 → #1A1A2E
+             *   Borders:                #282846 (subtle) / #363660 (visible)
+             *   Text:                   #F2F2F8 / #A8A8C0 / #6E6E90 / #48485E
+             * ================================================================ */
+
+            /* --- Dark mode (forced) ---------------------------------------- */
+            .dark-mode,
+            :root {
+                /* Text hierarchy */
+                --scalar-color-1: #F2F2F8;
+                --scalar-color-2: #A8A8C0;
+                --scalar-color-3: #6E6E90;
+
+                /* Accent — Sapphire Blue */
+                --scalar-color-accent: #60A5FA;
+
+                /* Surfaces — blue-tinted darks */
+                --scalar-background-1: #080810;
+                --scalar-background-2: #0E0E1A;
+                --scalar-background-3: #131320;
+                --scalar-background-accent: rgba(37, 99, 235, 0.08);
+
+                /* Borders */
+                --scalar-border-color: #282846;
+
+                /* Buttons */
+                --scalar-button-1: #2563EB;
+                --scalar-button-1-hover: #1D4ED8;
+                --scalar-button-1-color: #F2F2F8;
+
+                /* Shadows */
+                --scalar-shadow-1: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+                --scalar-shadow-2: 0 0 0 0.5px #282846, 0 12px 24px rgba(0, 0, 0, 0.4);
+
+                /* Scrollbar */
+                --scalar-scrollbar-color: rgba(168, 168, 192, 0.15);
+                --scalar-scrollbar-color-active: rgba(168, 168, 192, 0.3);
+            }
+
+            /* --- Sidebar --------------------------------------------------- */
+            .dark-mode .sidebar,
+            .sidebar {
+                --scalar-sidebar-background-1: #0E0E1A;
+                --scalar-sidebar-border-color: #282846;
+                --scalar-sidebar-color-1: #F2F2F8;
+                --scalar-sidebar-color-2: #A8A8C0;
+                --scalar-sidebar-color-active: #60A5FA;
+                --scalar-sidebar-item-hover-background: #1A1A2E;
+                --scalar-sidebar-item-active-background: rgba(37, 99, 235, 0.12);
+                --scalar-sidebar-search-background: #131320;
+                --scalar-sidebar-search-border-color: #282846;
+                --scalar-sidebar-search-color: #6E6E90;
+            }
+
+            /* --- Typography ------------------------------------------------ */
+            :root {
+                --scalar-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                --scalar-font-code: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Code', ui-monospace, monospace;
+            }
+
+            /* --- Code blocks — NOIR branded syntax theme ------------------- */
+            .dark-mode pre,
+            pre {
+                background: #0E0E1A !important;
+                border: 1px solid #282846;
+                border-radius: 8px;
+            }
+
+            /* Inline code in markdown descriptions */
+            .introduction-description .markdown code:not(pre code),
+            .markdown code:not(pre code) {
+                background: rgba(37, 99, 235, 0.1);
+                color: #93C5FD;
+                padding: 0.15em 0.4em;
+                border-radius: 4px;
+                font-size: 0.875em;
+                border: 1px solid rgba(37, 99, 235, 0.15);
+            }
+
+            /* --- Links in API description ---------------------------------- */
+            .introduction-description .markdown a {
+                color: #60A5FA;
+                text-decoration: none;
+                border-bottom: 1px solid rgba(96, 165, 250, 0.3);
+                transition: all 0.15s ease;
+            }
+            .introduction-description .markdown a:hover {
+                color: #93C5FD;
+                border-bottom-color: #60A5FA;
+            }
+
+            /* --- Tables in description ------------------------------------- */
+            .introduction-description .markdown table {
+                border-color: #282846;
+            }
+            .introduction-description .markdown th {
+                background: #131320;
+                color: #F2F2F8;
+                border-color: #282846;
+            }
+            .introduction-description .markdown td {
+                border-color: #282846;
+            }
+
+            /* --- HTTP method badges (sidebar + content) -------------------- */
+            .scalar-api-reference [data-method="post"],
+            .endpoint .post {
+                color: #60A5FA;
+            }
+            .scalar-api-reference [data-method="get"],
+            .endpoint .get {
+                color: #A5D6A7;
+            }
+            .scalar-api-reference [data-method="put"],
+            .endpoint .put {
+                color: #FFCB6B;
+            }
+            .scalar-api-reference [data-method="delete"],
+            .endpoint .delete {
+                color: #FF9CAC;
+            }
+
+            /* --- Accent hover glow ---------------------------------------- */
+            .scalar-api-reference button:focus-visible,
+            .scalar-api-reference a:focus-visible {
+                outline: 2px solid rgba(96, 165, 250, 0.5);
+                outline-offset: 2px;
+            }
+            """);
     // Use empty servers array so Scalar uses the current request URL (works with Vite proxy on 3000 or direct on 4000)
     options.Servers = [];
 });
@@ -453,6 +709,7 @@ app.UseMiddleware<HttpRequestAuditMiddleware>();
 
 // Map API Endpoints
 app.MapAuthEndpoints();
+app.MapApiKeyEndpoints();
 app.MapFileEndpoints();
 app.MapMediaEndpoints();
 app.MapRoleEndpoints();

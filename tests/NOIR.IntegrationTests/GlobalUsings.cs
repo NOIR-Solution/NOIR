@@ -107,6 +107,9 @@ global using NOIR.Application.Features.Permissions.Commands.RemoveFromRole;
 global using NOIR.Application.Features.Permissions.Queries.GetRolePermissions;
 global using NOIR.Application.Features.Permissions.Queries.GetUserPermissions;
 
+// NOIR Application - API Keys
+global using NOIR.Application.Features.ApiKeys.DTOs;
+
 // NOIR Application - Products
 global using NOIR.Application.Features.Products.Commands.CreateProduct;
 global using NOIR.Application.Features.Products.Commands.UpdateProduct;

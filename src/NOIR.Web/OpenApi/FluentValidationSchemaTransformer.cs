@@ -101,10 +101,10 @@ public sealed class FluentValidationSchemaTransformer : IOpenApiSchemaTransforme
 
                 case "comparison":
                     if (rule.Parameters?.TryGetValue("comparison", out var comparison) == true &&
-                        rule.Parameters?.TryGetValue("valueToCompare", out var compareVal) == true)
+                        rule.Parameters?.TryGetValue("valueToCompare", out var compareVal) == true &&
+                        TryConvertToDecimal(compareVal, out var value))
                     {
                         var comparisonType = comparison.ToString();
-                        var value = Convert.ToDecimal(compareVal);
 
                         // In JSON Schema 2020-12 / OpenAPI 3.1, exclusiveMinimum/Maximum are the boundary values
                         // not boolean flags. We use Minimum/Maximum for inclusive boundaries.
@@ -127,16 +127,34 @@ public sealed class FluentValidationSchemaTransformer : IOpenApiSchemaTransforme
                     break;
 
                 case "between":
-                    if (rule.Parameters?.TryGetValue("from", out var from) == true)
-                        schema.Minimum = Convert.ToDecimal(from).ToString(System.Globalization.CultureInfo.InvariantCulture);
-                    if (rule.Parameters?.TryGetValue("to", out var to) == true)
-                        schema.Maximum = Convert.ToDecimal(to).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    if (rule.Parameters?.TryGetValue("from", out var from) == true &&
+                        TryConvertToDecimal(from, out var fromVal))
+                        schema.Minimum = fromVal.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    if (rule.Parameters?.TryGetValue("to", out var to) == true &&
+                        TryConvertToDecimal(to, out var toVal))
+                        schema.Maximum = toVal.ToString(System.Globalization.CultureInfo.InvariantCulture);
                     break;
 
                 case "creditCard":
                     schema.Format = "credit-card";
                     break;
             }
+        }
+    }
+
+    private static bool TryConvertToDecimal(object value, out decimal result)
+    {
+        try
+        {
+            result = Convert.ToDecimal(value, System.Globalization.CultureInfo.InvariantCulture);
+            return true;
+        }
+        catch
+        {
+            // valueToCompare may be a property expression (e.g. GreaterThan(x => x.OtherField))
+            // which is not a numeric literal — skip these rules
+            result = 0;
+            return false;
         }
     }
 

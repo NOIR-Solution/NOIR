@@ -287,6 +287,10 @@ export const Permissions = {
   PmTasksManage: 'pm-tasks:manage',
   // PM - Members
   PmMembersManage: 'pm-members:manage',
+  // API Keys
+  ApiKeysRead: 'api-keys:read',
+  ApiKeysCreate: 'api-keys:create',
+  ApiKeysDelete: 'api-keys:delete',
 } as const
 
 export type PermissionKey = (typeof Permissions)[keyof typeof Permissions]

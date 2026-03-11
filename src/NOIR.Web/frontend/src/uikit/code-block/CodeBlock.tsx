@@ -12,6 +12,7 @@ import { Copy, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '../button/Button'
 import { Skeleton } from '../skeleton/Skeleton'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../tooltip/Tooltip'
 
 export interface CodeBlockProps {
   /** The code string to highlight */
@@ -81,9 +82,12 @@ const getHighlighter = async (): Promise<HighlighterCore> => {
 
   if (highlighterPromise) return highlighterPromise
 
-  highlighterPromise = import('shiki').then(async ({ createHighlighter }) => {
+  highlighterPromise = Promise.all([
+    import('shiki'),
+    import('@/lib/shiki-theme'),
+  ]).then(async ([{ createHighlighter }, { noirDark, noirLight }]) => {
     const instance = await createHighlighter({
-      themes: ['github-dark', 'github-light'],
+      themes: [noirDark, noirLight],
       langs: [],
     })
     highlighterInstance = instance
@@ -110,8 +114,8 @@ const ensureLanguage = async (highlighter: HighlighterCore, lang: string): Promi
 // Theme detection
 // ---------------------------------------------------------------------------
 
-const detectTheme = (): 'github-dark' | 'github-light' => {
-  return document.documentElement.classList.contains('dark') ? 'github-dark' : 'github-light'
+const detectTheme = (): 'noir-dark' | 'noir-light' => {
+  return document.documentElement.classList.contains('dark') ? 'noir-dark' : 'noir-light'
 }
 
 // ---------------------------------------------------------------------------
@@ -231,19 +235,24 @@ export const CodeBlock = ({
       <div className={cn('relative group', className)}>
         {showCopyButton && (
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={handleCopy}
-              title={t('buttons.copyToClipboard', 'Copy to clipboard')}
-            >
-              {copied ? (
-                <Check className="h-3.5 w-3.5 text-green-500" />
-              ) : (
-                <Copy className="h-3.5 w-3.5" />
-              )}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 cursor-pointer"
+                  onClick={handleCopy}
+                  aria-label={t('buttons.copyToClipboard', 'Copy to clipboard')}
+                >
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5 text-green-500" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">{t('buttons.copyToClipboard', 'Copy to clipboard')}</TooltipContent>
+            </Tooltip>
           </div>
         )}
         <pre className="rounded-lg border bg-muted/50 p-4 overflow-x-auto text-sm font-mono">
@@ -265,19 +274,24 @@ export const CodeBlock = ({
     >
       {showCopyButton && (
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 bg-background/80 backdrop-blur-sm hover:bg-background"
-            onClick={handleCopy}
-            title={t('buttons.copyToClipboard', 'Copy to clipboard')}
-          >
-            {copied ? (
-              <Check className="h-3.5 w-3.5 text-green-500" />
-            ) : (
-              <Copy className="h-3.5 w-3.5" />
-            )}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 bg-background/80 backdrop-blur-sm hover:bg-background cursor-pointer"
+                onClick={handleCopy}
+                aria-label={t('buttons.copyToClipboard', 'Copy to clipboard')}
+              >
+                {copied ? (
+                  <Check className="h-3.5 w-3.5 text-green-500" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">{t('buttons.copyToClipboard', 'Copy to clipboard')}</TooltipContent>
+          </Tooltip>
         </div>
       )}
       <div

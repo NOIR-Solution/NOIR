@@ -959,6 +959,10 @@
     "system": "System",
     "userCount": "{{count}} users",
     "systemRoleReadOnly": "System role permissions cannot be modified.",
+    "custom": "Custom",
+    "filterByType": "Filter by type",
+    "noRoles": "No roles found",
+    "noRolesDescription": "Create a new role to get started.",
     "columns": {
       "name": "Name",
       "description": "Description",
@@ -1982,6 +1986,8 @@
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "openMenu": "Open menu",
+    "toggleColumns": "Toggle columns",
+    "columns": "Columns",
     "permissions": "permissions",
     "andMore": "+ {{count}} more...",
     "more": "more",
@@ -2104,8 +2110,8 @@
       "orders": "Orders",
       "customers": "Customers",
       "catalog": "Catalog",
-      "hr": "Human Resources",
-      "projectManagement": "Project Management",
+      "humanresources": "Human Resources",
+      "projectmanagement": "Project Management",
       "crm": "CRM",
       "content": "Content",
       "usersaccess": "Users & Access",
@@ -2272,6 +2278,88 @@
       "features": {
         "read": "View Features",
         "update": "Update Features"
+      },
+      "media": {
+        "read": "View Media",
+        "create": "Upload Media",
+        "update": "Edit Media",
+        "delete": "Delete Media",
+        "manage": "Manage Media"
+      },
+      "hr-employees": {
+        "read": "View Employees",
+        "create": "Create Employees",
+        "update": "Update Employees",
+        "delete": "Delete Employees"
+      },
+      "hr-departments": {
+        "read": "View Departments",
+        "create": "Create Departments",
+        "update": "Update Departments",
+        "delete": "Delete Departments"
+      },
+      "hr-tags": {
+        "read": "View Employee Tags",
+        "manage": "Manage Employee Tags"
+      },
+      "pm-projects": {
+        "read": "View Projects",
+        "create": "Create Projects",
+        "update": "Update Projects",
+        "delete": "Delete Projects"
+      },
+      "pm-tasks": {
+        "read": "View Tasks",
+        "create": "Create Tasks",
+        "update": "Update Tasks",
+        "delete": "Delete Tasks",
+        "manage": "Manage Tasks"
+      },
+      "pm-members": {
+        "manage": "Manage Members"
+      },
+      "crm-contacts": {
+        "read": "View Contacts",
+        "create": "Create Contacts",
+        "update": "Update Contacts",
+        "delete": "Delete Contacts"
+      },
+      "crm-companies": {
+        "read": "View Companies",
+        "create": "Create Companies",
+        "update": "Update Companies",
+        "delete": "Delete Companies"
+      },
+      "crm-leads": {
+        "read": "View Leads",
+        "create": "Create Leads",
+        "update": "Update Leads",
+        "manage": "Manage Leads"
+      },
+      "crm-pipeline": {
+        "manage": "Manage Pipeline"
+      },
+      "crm-activities": {
+        "read": "View Activities",
+        "create": "Create Activities",
+        "update": "Update Activities",
+        "delete": "Delete Activities"
+      },
+      "webhooks": {
+        "read": "View Webhooks",
+        "manage": "Manage Webhooks",
+        "test": "Test Webhooks"
+      },
+      "api-keys": {
+        "read": "View API Keys",
+        "create": "Create API Keys",
+        "delete": "Revoke API Keys"
+      },
+      "dashboard": {
+        "read": "View Dashboard"
+      },
+      "search": {
+        "global": "Global Search"
       }
     },
     "descriptions": {
@@ -2432,6 +2520,88 @@
       "features": {
         "read": "View feature module settings",
         "update": "Enable or disable feature modules"
+      },
+      "media": {
+        "read": "View media files and library",
+        "create": "Upload new media files",
+        "update": "Rename and edit media files",
+        "delete": "Delete media files",
+        "manage": "Full media library access"
+      },
+      "hr-employees": {
+        "read": "View employee profiles",
+        "create": "Create new employees",
+        "update": "Edit employee information",
+        "delete": "Delete employee records"
+      },
+      "hr-departments": {
+        "read": "View department structure",
+        "create": "Create new departments",
+        "update": "Edit department information",
+        "delete": "Delete departments"
+      },
+      "hr-tags": {
+        "read": "View employee tag categories",
+        "manage": "Create and manage employee tags"
+      },
+      "pm-projects": {
+        "read": "View project details",
+        "create": "Create new projects",
+        "update": "Edit project settings",
+        "delete": "Delete projects"
+      },
+      "pm-tasks": {
+        "read": "View project tasks",
+        "create": "Create new tasks",
+        "update": "Edit task details",
+        "delete": "Delete tasks",
+        "manage": "Full task management access"
+      },
+      "pm-members": {
+        "manage": "Add and remove project members"
+      },
+      "crm-contacts": {
+        "read": "View CRM contacts",
+        "create": "Create new contacts",
+        "update": "Edit contact information",
+        "delete": "Delete contacts"
+      },
+      "crm-companies": {
+        "read": "View CRM companies",
+        "create": "Create new companies",
+        "update": "Edit company information",
+        "delete": "Delete companies"
+      },
+      "crm-leads": {
+        "read": "View sales leads",
+        "create": "Create new leads",
+        "update": "Edit lead information",
+        "manage": "Full lead management including pipeline"
+      },
+      "crm-pipeline": {
+        "manage": "Configure sales pipeline stages"
+      },
+      "crm-activities": {
+        "read": "View CRM activities",
+        "create": "Log new activities",
+        "update": "Edit activity records",
+        "delete": "Delete activity records"
+      },
+      "webhooks": {
+        "read": "View webhook subscriptions",
+        "manage": "Create and manage webhook subscriptions",
+        "test": "Send test webhook events"
+      },
+      "api-keys": {
+        "read": "View API key list and details",
+        "create": "Create new API keys",
+        "delete": "Revoke and delete API keys"
+      },
+      "dashboard": {
+        "read": "View dashboard and widgets"
+      },
+      "search": {
+        "global": "Search across all entities"
       }
     }
   },
@@ -4394,5 +4564,63 @@
       "banner": "You were offline — this page may show outdated data"
     },
     "autoReloaded": "This record was just updated"
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "description": "Manage your API keys for programmatic access to the platform",
+    "create": "Create API Key",
+    "creating": "Creating...",
+    "createTitle": "Create New API Key",
+    "createDescription": "Generate a new API key with scoped permissions for external integrations",
+    "name": "Name",
+    "namePlaceholder": "e.g., Shopify Integration, CI/CD Pipeline",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "What is this API key used for?",
+    "permissions": "Permissions",
+    "permissionsCount": "permissions",
+    "expiresAt": "Expiration Date",
+    "expiresAtHint": "Leave empty for a key that never expires",
+    "expires": "Expires",
+    "apiKey": "API Key",
+    "apiSecret": "API Secret",
+    "copyKey": "Copy API Key",
+    "copySecret": "Copy Secret",
+    "copiedToClipboard": "Copied to clipboard",
+    "showSecret": "Show secret",
+    "hideSecret": "Hide secret",
+    "keyCreated": "API Key Created",
+    "keyCreatedDescription": "Your new API key has been created. Copy the secret now — it won't be shown again.",
+    "secretWarning": "Store this secret securely. It will not be displayed again after you close this dialog.",
+    "done": "Done",
+    "lastUsed": "Last used",
+    "neverUsed": "Never used",
+    "noKeysFound": "No API keys yet",
+    "noKeysDescription": "Create your first API key to enable programmatic access to the platform.",
+    "rotate": "Rotate",
+    "rotateTitle": "Rotate API Key Secret",
+    "rotateDescription": "Generate a new secret for this API key. The old secret will be invalidated immediately.",
+    "rotateWarning": "The current secret will stop working immediately. Make sure to update all systems using this key before rotating.",
+    "rotating": "Rotating...",
+    "rotateSuccess": "API key secret rotated successfully",
+    "rotateError": "Failed to rotate API key secret",
+    "newSecretTitle": "New Secret Generated",
+    "revoke": "Revoke",
+    "revokeTitle": "Revoke API Key",
+    "revokeDescription": "Permanently revoke this API key. It will immediately stop working.",
+    "revokeWarning": "This action cannot be undone. The API key will be permanently deactivated and any systems using it will lose access.",
+    "revokeReasonLabel": "Reason (optional)",
+    "revokeReasonPlaceholder": "Why are you revoking this key?",
+    "revoking": "Revoking...",
+    "revokeSuccess": "API key revoked successfully",
+    "revokeError": "Failed to revoke API key",
+    "revokedReason": "Revoked reason",
+    "createSuccess": "API key created successfully",
+    "createError": "Failed to create API key",
+    "statuses": {
+      "active": "Active",
+      "expired": "Expired",
+      "revoked": "Revoked",
+      "inactive": "Inactive"
+    }
   }
 }

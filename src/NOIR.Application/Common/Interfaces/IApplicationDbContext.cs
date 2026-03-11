@@ -175,6 +175,11 @@ public interface IApplicationDbContext
     DbSet<ProjectTaskLabel> ProjectTaskLabels { get; }
 
     /// <summary>
+    /// API keys DbSet for auth middleware lookups by KeyIdentifier.
+    /// </summary>
+    DbSet<Domain.Entities.ApiKey> ApiKeys { get; }
+
+    /// <summary>
     /// Attaches an entity to the context for tracking.
     EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
 

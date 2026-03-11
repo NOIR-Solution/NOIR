@@ -32,6 +32,20 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
             return;
         }
 
+        // For API Key auth, permissions are already in claims (key-scoped)
+        var authMethod = context.User.FindFirst("auth_method")?.Value;
+        if (authMethod == "api_key")
+        {
+            var claimPermissions = context.User.FindAll(Permissions.ClaimType)
+                .Select(c => c.Value);
+            if (claimPermissions.Contains(requirement.Permission))
+            {
+                context.Succeed(requirement);
+            }
+            return;
+        }
+
+        // For JWT auth, resolve permissions from user→roles (cached)
         var permissions = await GetUserPermissionsAsync(userId);
 
         if (permissions.Contains(requirement.Permission))

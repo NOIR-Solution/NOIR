@@ -1,15 +1,16 @@
 import { useTranslation } from 'react-i18next'
-import { Shield, User, Paintbrush, Settings } from 'lucide-react'
+import { Shield, User, Paintbrush, Settings, Key } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PageHeader } from '@uikit'
 import { ChangePasswordForm } from '../../components/personal-settings/ChangePasswordForm'
 import { ProfileForm } from '../../components/personal-settings/ProfileForm'
 import { SessionManagement } from '../../components/personal-settings/SessionManagement'
 import { AppearanceSettings } from '../../components/personal-settings/AppearanceSettings'
+import { ApiKeysTab } from '../../components/personal-settings/ApiKeysTab'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useUrlTab } from '@/hooks/useUrlTab'
 
-type SettingsSection = 'profile' | 'security' | 'appearance'
+type SettingsSection = 'profile' | 'security' | 'appearance' | 'api-keys'
 
 interface NavItem {
   id: SettingsSection
@@ -21,6 +22,7 @@ const navItems: NavItem[] = [
   { id: 'profile', icon: User, labelKey: 'profile.personalInfo' },
   { id: 'security', icon: Shield, labelKey: 'profile.security' },
   { id: 'appearance', icon: Paintbrush, labelKey: 'profile.appearance' },
+  { id: 'api-keys', icon: Key, labelKey: 'profile.apiKeys' },
 ]
 
 export const PersonalSettingsPage = () => {
@@ -77,6 +79,7 @@ export const PersonalSettingsPage = () => {
             </div>
           )}
           {activeSection === 'appearance' && <AppearanceSettings />}
+          {activeSection === 'api-keys' && <ApiKeysTab />}
         </main>
       </div>
     </div>

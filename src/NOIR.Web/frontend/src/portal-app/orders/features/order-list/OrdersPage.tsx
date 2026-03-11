@@ -119,9 +119,16 @@ export const OrdersPage = () => {
   )
 
   const columns = useMemo((): ColumnDef<OrderSummaryDto, unknown>[] => [
+    createActionsColumn<OrderSummaryDto>((order) => (
+      <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(`/portal/ecommerce/orders/${order.id}`)}>
+        <Eye className="h-4 w-4 mr-2" />
+        {t('labels.viewDetails', 'View Details')}
+      </DropdownMenuItem>
+    )),
     ...(canManageOrders ? [createSelectColumn<OrderSummaryDto>()] : []),
     ch.accessor('orderNumber', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('orders.orderNumber', 'Order #')} />,
+      meta: { label: t('orders.orderNumber', 'Order #') },
       cell: ({ getValue }) => <span className="font-mono font-medium text-sm">{getValue()}</span>,
       size: 140,
     }) as ColumnDef<OrderSummaryDto, unknown>,
@@ -129,6 +136,7 @@ export const OrdersPage = () => {
       id: 'customer',
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.customer', 'Customer')} />,
       enableSorting: false,
+      meta: { label: t('labels.customer', 'Customer') },
       cell: ({ row }) => (
         <div className="flex flex-col">
           <span className="font-medium text-sm">{row.original.customerName || '-'}</span>
@@ -149,14 +157,14 @@ export const OrdersPage = () => {
     ch.accessor('itemCount', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('orders.items', 'Items')} />,
       enableSorting: false,
-      meta: { align: 'center' },
+      meta: { align: 'center', label: t('orders.items', 'Items') },
       size: 80,
       cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
     }) as ColumnDef<OrderSummaryDto, unknown>,
     ch.accessor('grandTotal', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('orders.total', 'Total')} />,
       enableSorting: false,
-      meta: { align: 'right' },
+      meta: { align: 'right', label: t('orders.total', 'Total') },
       cell: ({ row }) => (
         <span className="font-medium">{formatCurrency(row.original.grandTotal, row.original.currency)}</span>
       ),
@@ -164,15 +172,10 @@ export const OrdersPage = () => {
     ch.accessor('createdAt', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.date', 'Date')} />,
       enableSorting: false,
+      meta: { label: t('labels.date', 'Date') },
       size: 160,
       cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{formatDateTime(getValue())}</span>,
     }) as ColumnDef<OrderSummaryDto, unknown>,
-    createActionsColumn<OrderSummaryDto>((order) => (
-      <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(`/portal/ecommerce/orders/${order.id}`)}>
-        <Eye className="h-4 w-4 mr-2" />
-        {t('labels.viewDetails', 'View Details')}
-      </DropdownMenuItem>
-    )),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, canManageOrders, formatDateTime])
 
@@ -182,6 +185,7 @@ export const OrdersPage = () => {
     data: tableData,
     columns,
     rowCount: data?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'orders',
     state: {
       pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
       sorting: params.sorting as SortingState,
@@ -289,6 +293,7 @@ export const OrdersPage = () => {
             onSearchChange={setSearchInput}
             searchPlaceholder={t('orders.searchPlaceholder', 'Search by email...')}
             isSearchStale={isSearchStale}
+            onResetColumnVisibility={table.resetColumnVisibility}
             filterSlot={
               <Select value={statusFilter} onValueChange={handleStatusFilter}>
                 <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('orders.filterByStatus', 'Filter by status')}>

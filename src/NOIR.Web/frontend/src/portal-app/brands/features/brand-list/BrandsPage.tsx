@@ -92,6 +92,26 @@ export const BrandsPage = () => {
   }
 
   const columns = useMemo((): ColumnDef<BrandListItem, unknown>[] => [
+    createActionsColumn<BrandListItem>((brand) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => openEditBrand(brand)}>
+          <Eye className="h-4 w-4 mr-2" />
+          {canUpdateBrands ? t('labels.edit', 'Edit') : t('labels.viewDetails', 'View Details')}
+        </DropdownMenuItem>
+        {canDeleteBrands && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive cursor-pointer"
+              onClick={() => setBrandToDelete(brand)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('labels.delete', 'Delete')}
+            </DropdownMenuItem>
+          </>
+        )}
+      </>
+    )),
     ch.accessor('logoUrl', {
       id: 'logo',
       header: t('labels.logo', 'Logo'),
@@ -141,7 +161,7 @@ export const BrandsPage = () => {
     ch.accessor('productCount', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('brands.products', 'Products')} />,
       enableSorting: false,
-      meta: { align: 'center' },
+      meta: { align: 'center', label: t('brands.products', 'Products') },
       size: 90,
       cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
     }) as ColumnDef<BrandListItem, unknown>,
@@ -170,26 +190,6 @@ export const BrandsPage = () => {
         }
       },
     }) as ColumnDef<BrandListItem, unknown>,
-    createActionsColumn<BrandListItem>((brand) => (
-      <>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => openEditBrand(brand)}>
-          <Eye className="h-4 w-4 mr-2" />
-          {canUpdateBrands ? t('labels.edit', 'Edit') : t('labels.viewDetails', 'View Details')}
-        </DropdownMenuItem>
-        {canDeleteBrands && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive cursor-pointer"
-              onClick={() => setBrandToDelete(brand)}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {t('labels.delete', 'Delete')}
-            </DropdownMenuItem>
-          </>
-        )}
-      </>
-    )),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, canUpdateBrands, canDeleteBrands])
 
@@ -199,6 +199,7 @@ export const BrandsPage = () => {
     data: tableData,
     columns,
     rowCount: data?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'brands',
     state: {
       pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
       sorting: params.sorting as SortingState,
@@ -246,6 +247,7 @@ export const BrandsPage = () => {
             onSearchChange={setSearchInput}
             searchPlaceholder={t('brands.searchPlaceholder', 'Search brands...')}
             isSearchStale={isSearchStale}
+            onResetColumnVisibility={table.resetColumnVisibility}
           />
 
           <DataTable

@@ -79,14 +79,15 @@
 19. **All tests must pass** - `dotnet test src/NOIR.sln` after any change. Never leave failing tests.
 20. **New features need tests** - Unit tests in `tests/NOIR.Application.UnitTests`, domain tests in `tests/NOIR.Domain.UnitTests`, integration tests in `tests/NOIR.IntegrationTests`.
 21. **New repositories need DI verification test** - Create `{Entity}Repository.cs` in `Infrastructure/Persistence/Repositories/` AND a test verifying DI registration.
+22. **100% API endpoint integration test coverage** - Every endpoint MUST have integration tests in `tests/NOIR.IntegrationTests/Endpoints/{Feature}EndpointsTests.cs`. Required test cases per endpoint: (a) happy path, (b) unauthenticated → 401, (c) invalid input → 400/404. New features MUST include integration tests before merging. Pattern: `[Collection("Integration")] + IClassFixture<CustomWebApplicationFactory>`.
 
 ### Database Migrations
 
-22. **Always specify --context** - `--context ApplicationDbContext` (→ `Migrations/App`) or `--context TenantStoreDbContext` (→ `Migrations/Tenant`). See Quick Reference.
+23. **Always specify --context** - `--context ApplicationDbContext` (→ `Migrations/App`) or `--context TenantStoreDbContext` (→ `Migrations/Tenant`). See Quick Reference.
 
 ### Pre-Push
 
-23. **Run frontend build before push** - `cd src/NOIR.Web/frontend && pnpm run build`. CI runs strict mode. Pre-push hook at `.git/hooks/pre-push`.
+24. **Run frontend build before push** - `cd src/NOIR.Web/frontend && pnpm run build`. CI runs strict mode. Pre-push hook at `.git/hooks/pre-push`.
 
 ---
 
@@ -206,9 +207,15 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 
 **Dialog footer spacing**: `CredenzaFooter` has `mt-4` built-in. Do NOT add `space-y-4` to `<form>` just to get footer spacing — it's already handled. If using raw `DialogFooter` (not Credenza), wrap the `<form>` with `className="space-y-4"` or add `mt-4` to the footer manually.
 
+**Dialog close convention**: No built-in X button. Every dialog MUST have `CredenzaFooter`/`DialogFooter` with Close/Cancel button. Users close via footer button, click-outside, or ESC. See `.claude/rules/dialog-header-spacing.md`.
+
+**No native `title=` tooltips**: Use Radix `<Tooltip>` from `@uikit` instead of HTML `title` attribute. Add `aria-label` for accessibility.
+
 **Gradient text**: MUST include `text-transparent` with `bg-clip-text`.
 
 **Card shadows**: `shadow-sm hover:shadow-lg transition-all duration-300`.
+
+**Radix Checkbox bulk operations**: 60+ Radix Checkboxes changing state simultaneously causes "Maximum update depth exceeded" (Radix Presence `setNode` in ref callback). Use `LightCheckbox` from `PermissionPicker.tsx` pattern — a plain `<button role="checkbox">` with conditional icon, no Radix Presence.
 
 **Mermaid node labels**: Use `<br/>` for line breaks, NEVER `\n`. GitHub renders node text as HTML — `\n` shows as literal text. Wrong: `["Title\nSubtitle"]`. Right: `["Title<br/>Subtitle"]`.
 

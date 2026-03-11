@@ -121,27 +121,37 @@ export const LogEntryRow = ({
 
         {/* Action buttons - always visible */}
         <div className="flex-shrink-0 flex items-center gap-1">
-          <button
-            onClick={handleCopy}
-            className="p-1 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground hover:text-foreground"
-            title={t('developerLogs.copyEntryAsJson')}
-          >
-            {copied ? (
-              <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
-            ) : (
-              <Copy className="h-3 w-3" />
-            )}
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onViewDetail()
-            }}
-            className="p-1 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground hover:text-foreground"
-            title={t('developerLogs.viewFullDetails')}
-          >
-            <Maximize2 className="h-3 w-3" />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleCopy}
+                className="p-1 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground hover:text-foreground cursor-pointer"
+                aria-label={t('developerLogs.copyEntryAsJson')}
+              >
+                {copied ? (
+                  <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">{t('developerLogs.copyEntryAsJson')}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onViewDetail()
+                }}
+                className="p-1 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground hover:text-foreground cursor-pointer"
+                aria-label={t('developerLogs.viewFullDetails')}
+              >
+                <Maximize2 className="h-3 w-3" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">{t('developerLogs.viewFullDetails')}</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 

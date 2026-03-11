@@ -8,7 +8,7 @@
  * - Dual auth support: cookies for server pages + localStorage for API calls
  *
  * Security Note: Tokens are stored in localStorage. Mitigated by CSP headers,
- * short token TTL (15 min), and refresh token rotation on the backend.
+ * access token TTL (60 min), and refresh token rotation on the backend.
  *
  * Authentication Strategy:
  * - Login/refresh use useCookies=true to set HTTP-only cookies (for /api/docs, /hangfire)
@@ -127,18 +127,60 @@ export class ApiError extends Error {
 }
 
 /**
- * Try to refresh the access token using stored refresh token
+ * Prevent concurrent refresh attempts (race condition when multiple 401s fire simultaneously)
+ */
+let refreshPromise: Promise<boolean> | null = null
+
+/**
+ * Try to refresh the access token using stored refresh token.
+ *
+ * Strategy:
+ * 1. Uses localStorage tokens if available (primary)
+ * 2. Falls back to cookie-only refresh if localStorage is empty (e.g., cleared by browser)
+ * 3. Deduplicates concurrent refresh attempts (multiple 401s in parallel)
+ * 4. Retries once on network failure before giving up
+ *
  * @returns true if refresh succeeded, false otherwise
  */
 const tryRefreshToken = async (): Promise<boolean> => {
-  const refreshTokenValue = getRefreshToken()
-  const accessTokenValue = getAccessToken()
-  if (!refreshTokenValue || !accessTokenValue) {
-    return false
+  // Deduplicate: if a refresh is already in flight, wait for it
+  if (refreshPromise) {
+    return refreshPromise
   }
 
+  refreshPromise = performRefresh()
   try {
-    // Use useCookies=true to also refresh the HTTP-only cookies (for /api/docs, /hangfire)
+    return await refreshPromise
+  } finally {
+    refreshPromise = null
+  }
+}
+
+const performRefresh = async (): Promise<boolean> => {
+  const refreshTokenValue = getRefreshToken()
+  const accessTokenValue = getAccessToken()
+
+  // If we have no refresh token in localStorage, we can still try cookie-based refresh
+  // The backend reads the refresh token from the noir.refresh cookie as well
+  if (!refreshTokenValue && !accessTokenValue) {
+    // No localStorage tokens at all — try cookie-only refresh as last resort
+    return attemptCookieOnlyRefresh()
+  }
+
+  // Primary path: refresh with localStorage tokens
+  const success = await attemptRefresh(accessTokenValue, refreshTokenValue)
+  if (success) return true
+
+  // Retry once after a short delay (network blip recovery)
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  return attemptRefresh(accessTokenValue, refreshTokenValue)
+}
+
+const attemptRefresh = async (
+  accessToken: string | null,
+  refreshToken: string | null
+): Promise<boolean> => {
+  try {
     const response = await fetch(`${API_BASE}/auth/refresh?useCookies=true`, {
       method: 'POST',
       credentials: 'include', // Send and receive cookies
@@ -146,7 +188,45 @@ const tryRefreshToken = async (): Promise<boolean> => {
         'Content-Type': 'application/json',
         'Accept-Language': i18n.language,
       },
-      body: JSON.stringify({ accessToken: accessTokenValue, refreshToken: refreshTokenValue }),
+      body: JSON.stringify({
+        accessToken: accessToken ?? '',
+        refreshToken: refreshToken ?? '',
+      }),
+    })
+
+    if (!response.ok) {
+      return false
+    }
+
+    const data: AuthResponse = await response.json()
+    storeTokens({
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      expiresAt: data.expiresAt,
+    })
+
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Last-resort refresh using only cookies (no localStorage tokens).
+ * This handles the case where localStorage was cleared but HTTP-only cookies survive.
+ */
+const attemptCookieOnlyRefresh = async (): Promise<boolean> => {
+  try {
+    // Send request with credentials (cookies) but empty body tokens
+    // The backend's JwtCookieEvents reads tokens from cookies if headers are missing
+    const response = await fetch(`${API_BASE}/auth/refresh?useCookies=true`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept-Language': i18n.language,
+      },
+      body: JSON.stringify({ accessToken: '', refreshToken: '' }),
     })
 
     if (!response.ok) {
@@ -205,8 +285,8 @@ export const apiClient = async <T>(
     headers,
   })
 
-  // Auto-refresh on 401 (one retry only)
-  if (response.status === 401 && token) {
+  // Auto-refresh on 401 — try refresh even without localStorage token (cookies may work)
+  if (response.status === 401) {
     const refreshed = await tryRefreshToken()
     if (refreshed) {
       // Retry with new token

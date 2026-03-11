@@ -51,6 +51,7 @@ global using NOIR.Domain.Events.Promotion;
 global using NOIR.Domain.Events.Hr;
 global using NOIR.Domain.Events.Crm;
 global using NOIR.Domain.Events.Pm;
+global using NOIR.Domain.Events.ApiKey;
 global using NOIR.Domain.Specifications;
 global using NOIR.Domain.ValueObjects;
 

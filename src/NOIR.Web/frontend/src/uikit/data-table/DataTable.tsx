@@ -70,18 +70,24 @@ export const DataTable = <TData extends RowData>({
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent">
-              {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  className={cn(header.column.columnDef.meta?.headerClassName)}
-                  style={{ width: `var(--col-${header.column.id}-size)` }}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const isSticky = header.column.columnDef.meta?.sticky === 'left'
+                return (
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className={cn(
+                      header.column.columnDef.meta?.headerClassName,
+                      isSticky && 'sticky left-0 z-10 bg-background',
+                    )}
+                    style={{ width: `var(--col-${header.column.id}-size)` }}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                )
+              })}
             </TableRow>
           ))}
         </TableHeader>
@@ -132,19 +138,23 @@ export const DataTable = <TData extends RowData>({
                 }
                 className={cn(onRowClick && 'cursor-pointer')}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className={cn(
-                      cell.column.columnDef.meta?.cellClassName,
-                      cell.column.columnDef.meta?.align === 'center' && 'text-center',
-                      cell.column.columnDef.meta?.align === 'right' && 'text-right',
-                    )}
-                    style={{ width: `var(--col-${cell.column.id}-size)` }}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const isSticky = cell.column.columnDef.meta?.sticky === 'left'
+                  return (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        cell.column.columnDef.meta?.cellClassName,
+                        cell.column.columnDef.meta?.align === 'center' && 'text-center',
+                        cell.column.columnDef.meta?.align === 'right' && 'text-right',
+                        isSticky && 'sticky left-0 z-10 bg-background',
+                      )}
+                      style={{ width: `var(--col-${cell.column.id}-size)` }}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  )
+                })}
               </TableRow>
             ))
           )}

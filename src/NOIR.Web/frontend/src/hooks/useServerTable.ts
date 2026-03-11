@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,6 +12,28 @@ import {
 
 type ColumnVisibilityState = Record<string, boolean>
 type ColumnOrderState = string[]
+
+const STORAGE_PREFIX = 'noir:col-vis:'
+
+const readStorage = (key: string): ColumnVisibilityState => {
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + key)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
+const writeStorage = (key: string, state: ColumnVisibilityState) => {
+  try {
+    const hasHidden = Object.values(state).some((v) => v === false)
+    if (hasHidden) {
+      localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(state))
+    } else {
+      localStorage.removeItem(STORAGE_PREFIX + key)
+    }
+  } catch { /* quota exceeded — silently ignore */ }
+}
 
 interface UseServerTableOptions<TData extends RowData> {
   data: TData[]
@@ -34,6 +56,8 @@ interface UseServerTableOptions<TData extends RowData> {
   /** Must provide getRowId for stable selection across pages */
   getRowId?: TableOptions<TData>['getRowId']
   meta?: Record<string, unknown>
+  /** localStorage key for persisting column visibility (e.g. 'customers', 'orders') */
+  columnVisibilityStorageKey?: string
 }
 
 /**
@@ -56,7 +80,31 @@ export const useServerTable = <TData extends RowData>({
   enableRowSelection = false,
   getRowId,
   meta,
+  columnVisibilityStorageKey,
 }: UseServerTableOptions<TData>) => {
+  // Manage column visibility internally when caller doesn't provide it
+  const [internalColumnVisibility, setInternalColumnVisibility] = useState<ColumnVisibilityState>(
+    () => (columnVisibilityStorageKey ? readStorage(columnVisibilityStorageKey) : {}),
+  )
+  const resolvedColumnVisibility = state.columnVisibility ?? internalColumnVisibility
+  const resolvedOnColumnVisibilityChange = onColumnVisibilityChange ?? setInternalColumnVisibility
+
+  // Persist to localStorage when internal state changes
+  const storageKeyRef = useRef(columnVisibilityStorageKey)
+  storageKeyRef.current = columnVisibilityStorageKey
+  useEffect(() => {
+    if (storageKeyRef.current && !onColumnVisibilityChange) {
+      writeStorage(storageKeyRef.current, internalColumnVisibility)
+    }
+  }, [internalColumnVisibility, onColumnVisibilityChange])
+
+  const resetColumnVisibility = useCallback(() => {
+    setInternalColumnVisibility({})
+    if (columnVisibilityStorageKey) {
+      localStorage.removeItem(STORAGE_PREFIX + columnVisibilityStorageKey)
+    }
+  }, [columnVisibilityStorageKey])
+
   const table = useReactTable({
     data,
     columns,
@@ -84,20 +132,20 @@ export const useServerTable = <TData extends RowData>({
       pagination: state.pagination,
       sorting: state.sorting ?? [],
       rowSelection: state.rowSelection ?? {},
-      columnVisibility: state.columnVisibility ?? {},
+      columnVisibility: resolvedColumnVisibility,
       columnOrder: state.columnOrder ?? [],
     },
 
     onPaginationChange,
     onSortingChange,
     onRowSelectionChange,
-    onColumnVisibilityChange,
+    onColumnVisibilityChange: resolvedOnColumnVisibilityChange,
     onColumnOrderChange,
 
     meta: meta as TableOptions<TData>['meta'],
   })
 
-  return table
+  return useMemo(() => Object.assign(table, { resetColumnVisibility }), [table, resetColumnVisibility])
 }
 
 /**

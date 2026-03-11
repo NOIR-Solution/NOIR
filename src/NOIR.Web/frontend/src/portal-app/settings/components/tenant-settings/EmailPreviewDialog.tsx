@@ -7,6 +7,7 @@ import {
   CredenzaBody,
   CredenzaContent,
   CredenzaDescription,
+  CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
 } from '@uikit'
@@ -90,12 +91,12 @@ export const EmailPreviewDialog = ({ open, onOpenChange, preview, loading }: Ema
             </div>
           )}
 
-          <div className="flex justify-end pt-4 border-t border-border">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              {t('buttons.close')}
-            </Button>
-          </div>
         </CredenzaBody>
+        <CredenzaFooter>
+          <Button variant="outline" className="cursor-pointer" onClick={() => onOpenChange(false)}>
+            {t('buttons.close')}
+          </Button>
+        </CredenzaFooter>
       </CredenzaContent>
     </Credenza>
   )

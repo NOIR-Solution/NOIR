@@ -237,6 +237,11 @@ public static class Permissions
     // PM - Members
     public const string PmMembersManage = "pm-members:manage";
 
+    // API Keys
+    public const string ApiKeysRead = "api-keys:read";
+    public const string ApiKeysCreate = "api-keys:create";
+    public const string ApiKeysDelete = "api-keys:delete";
+
     // Search
     public const string SearchGlobal = "search:global";
 
@@ -368,6 +373,9 @@ public static class Permissions
 
         public static readonly IReadOnlyList<string> Search =
             [SearchGlobal];
+
+        public static readonly IReadOnlyList<string> ApiKeys =
+            [ApiKeysRead, ApiKeysCreate, ApiKeysDelete];
     }
 
     /// <summary>
@@ -445,6 +453,7 @@ public static class Permissions
         EmailTemplatesRead, EmailTemplatesUpdate,
         LegalPagesRead, LegalPagesUpdate,
         WebhooksRead, WebhooksManage, WebhooksTest,
+        ApiKeysRead, ApiKeysCreate, ApiKeysDelete,
 
         // ── System ─────────────────────────────────────────────────────
         SystemAdmin, SystemAuditLogs, SystemSettings, HangfireDashboard,
@@ -536,6 +545,8 @@ public static class Permissions
         PaymentRefundsRead, PaymentRefundsManage, PaymentWebhooksRead,
         // Webhooks within tenant
         WebhooksRead, WebhooksManage, WebhooksTest,
+        // API Keys within tenant
+        ApiKeysRead, ApiKeysCreate, ApiKeysDelete,
         // HR within tenant
         HrEmployeesRead, HrEmployeesCreate, HrEmployeesUpdate, HrEmployeesDelete,
         HrDepartmentsRead, HrDepartmentsCreate, HrDepartmentsUpdate, HrDepartmentsDelete,
@@ -709,6 +720,10 @@ public static class Permissions
             WebhooksRead,
             WebhooksManage,
             WebhooksTest,
+            // API Keys within tenant
+            ApiKeysRead,
+            ApiKeysCreate,
+            ApiKeysDelete,
             // HR within tenant
             HrEmployeesRead,
             HrEmployeesCreate,

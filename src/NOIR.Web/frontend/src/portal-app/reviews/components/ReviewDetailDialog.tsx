@@ -15,6 +15,7 @@ import {
   Credenza,
   CredenzaBody,
   CredenzaContent,
+  CredenzaFooter,
   CredenzaDescription,
   CredenzaHeader,
   CredenzaTitle,
@@ -272,6 +273,11 @@ export const ReviewDetailDialog = ({
             />
           )}
         </CredenzaBody>
+        <CredenzaFooter>
+          <Button variant="outline" className="cursor-pointer" onClick={() => onOpenChange(false)}>
+            {t('buttons.close', 'Close')}
+          </Button>
+        </CredenzaFooter>
       </CredenzaContent>
     </Credenza>
   )

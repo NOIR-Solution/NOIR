@@ -136,6 +136,31 @@ export const ReviewsPage = () => {
 
   // Columns
   const columns = useMemo((): ColumnDef<ReviewDto, unknown>[] => [
+    createActionsColumn<ReviewDto>((review) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => setDetailReviewId(review.id)}>
+          <Eye className="h-4 w-4 mr-2" />
+          {t('reviews.viewDetails', 'View Details')}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => setResponseReviewId(review.id)}>
+          <MessageSquare className="h-4 w-4 mr-2" />
+          {t('reviews.respond', 'Respond')}
+        </DropdownMenuItem>
+        {review.status === 'Pending' && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer text-green-600" onClick={() => handleApprove(review.id)}>
+              <CheckCircle2 className="h-4 w-4 mr-2" />
+              {t('reviews.approve', 'Approve')}
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer text-destructive" onClick={() => setRejectReviewId(review.id)}>
+              <XCircle className="h-4 w-4 mr-2" />
+              {t('reviews.reject', 'Reject')}
+            </DropdownMenuItem>
+          </>
+        )}
+      </>
+    )),
     createSelectColumn<ReviewDto>(),
     ch.accessor('productName', {
       header: t('reviews.product', 'Product'),
@@ -181,31 +206,6 @@ export const ReviewsPage = () => {
       size: 150,
       cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{formatDateTime(getValue())}</span>,
     }) as ColumnDef<ReviewDto, unknown>,
-    createActionsColumn<ReviewDto>((review) => (
-      <>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setDetailReviewId(review.id)}>
-          <Eye className="h-4 w-4 mr-2" />
-          {t('reviews.viewDetails', 'View Details')}
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setResponseReviewId(review.id)}>
-          <MessageSquare className="h-4 w-4 mr-2" />
-          {t('reviews.respond', 'Respond')}
-        </DropdownMenuItem>
-        {review.status === 'Pending' && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-green-600" onClick={() => handleApprove(review.id)}>
-              <CheckCircle2 className="h-4 w-4 mr-2" />
-              {t('reviews.approve', 'Approve')}
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer text-destructive" onClick={() => setRejectReviewId(review.id)}>
-              <XCircle className="h-4 w-4 mr-2" />
-              {t('reviews.reject', 'Reject')}
-            </DropdownMenuItem>
-          </>
-        )}
-      </>
-    )),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, formatDateTime])
 

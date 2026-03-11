@@ -129,74 +129,6 @@ export const PromotionsPage = () => {
   }
 
   const columns = useMemo((): ColumnDef<PromotionDto, unknown>[] => [
-    ch.accessor('name', {
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.name', 'Name')} />,
-      cell: ({ row }) => (
-        <div>
-          <span className="font-medium">{row.original.name}</span>
-          {row.original.description && (
-            <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{row.original.description}</p>
-          )}
-        </div>
-      ),
-    }) as ColumnDef<PromotionDto, unknown>,
-    ch.accessor('code', {
-      header: t('promotions.code', 'Code'),
-      enableSorting: false,
-      cell: ({ getValue }) => (
-        <code className="text-sm bg-muted px-1.5 py-0.5 rounded font-mono">{getValue()}</code>
-      ),
-    }) as ColumnDef<PromotionDto, unknown>,
-    ch.accessor('promotionType', {
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.type.label', 'Type')} />,
-      enableSorting: false,
-      cell: ({ getValue }) => (
-        <Badge variant="outline">{t(`promotions.type.${getValue().toLowerCase()}`, getValue())}</Badge>
-      ),
-    }) as ColumnDef<PromotionDto, unknown>,
-    ch.accessor('discountValue', {
-      id: 'discount',
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.discount', 'Discount')} />,
-      enableSorting: false,
-      cell: ({ row }) => (
-        <span className="font-medium text-sm">{formatDiscountValue(row.original, t as unknown as (...args: unknown[]) => string)}</span>
-      ),
-    }) as ColumnDef<PromotionDto, unknown>,
-    ch.accessor('status', {
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
-      enableSorting: false,
-      size: 120,
-      cell: ({ getValue }) => (
-        <Badge variant="outline" className={getStatusBadgeClasses(statusBadgeColors[getValue()])}>
-          {t(`promotions.status.${getValue().toLowerCase()}`, getValue())}
-        </Badge>
-      ),
-    }) as ColumnDef<PromotionDto, unknown>,
-    ch.accessor('startDate', {
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.startDate', 'Start Date')} />,
-      enableSorting: false,
-      size: 150,
-      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{formatDateTime(getValue())}</span>,
-    }) as ColumnDef<PromotionDto, unknown>,
-    ch.accessor('endDate', {
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.endDate', 'End Date')} />,
-      enableSorting: false,
-      size: 150,
-      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{formatDateTime(getValue())}</span>,
-    }) as ColumnDef<PromotionDto, unknown>,
-    ch.accessor('currentUsageCount', {
-      id: 'usage',
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.usage', 'Usage')} />,
-      enableSorting: false,
-      meta: { align: 'center' },
-      size: 90,
-      cell: ({ row }) => (
-        <Badge variant="secondary">
-          {row.original.currentUsageCount}
-          {row.original.usageLimitTotal != null ? `/${row.original.usageLimitTotal}` : ''}
-        </Badge>
-      ),
-    }) as ColumnDef<PromotionDto, unknown>,
     createActionsColumn<PromotionDto>((promotion) => (
       <>
         <DropdownMenuItem className="cursor-pointer" onClick={() => openEditPromotion(promotion)}>
@@ -229,6 +161,78 @@ export const PromotionsPage = () => {
         )}
       </>
     )),
+    ch.accessor('name', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.name', 'Name')} />,
+      cell: ({ row }) => (
+        <div>
+          <span className="font-medium">{row.original.name}</span>
+          {row.original.description && (
+            <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{row.original.description}</p>
+          )}
+        </div>
+      ),
+    }) as ColumnDef<PromotionDto, unknown>,
+    ch.accessor('code', {
+      header: t('promotions.code', 'Code'),
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        <code className="text-sm bg-muted px-1.5 py-0.5 rounded font-mono">{getValue()}</code>
+      ),
+    }) as ColumnDef<PromotionDto, unknown>,
+    ch.accessor('promotionType', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.type.label', 'Type')} />,
+      enableSorting: false,
+      meta: { label: t('promotions.type.label', 'Type') },
+      cell: ({ getValue }) => (
+        <Badge variant="outline">{t(`promotions.type.${getValue().toLowerCase()}`, getValue())}</Badge>
+      ),
+    }) as ColumnDef<PromotionDto, unknown>,
+    ch.accessor('discountValue', {
+      id: 'discount',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.discount', 'Discount')} />,
+      enableSorting: false,
+      meta: { label: t('promotions.discount', 'Discount') },
+      cell: ({ row }) => (
+        <span className="font-medium text-sm">{formatDiscountValue(row.original, t as unknown as (...args: unknown[]) => string)}</span>
+      ),
+    }) as ColumnDef<PromotionDto, unknown>,
+    ch.accessor('status', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
+      enableSorting: false,
+      size: 120,
+      cell: ({ getValue }) => (
+        <Badge variant="outline" className={getStatusBadgeClasses(statusBadgeColors[getValue()])}>
+          {t(`promotions.status.${getValue().toLowerCase()}`, getValue())}
+        </Badge>
+      ),
+    }) as ColumnDef<PromotionDto, unknown>,
+    ch.accessor('startDate', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.startDate', 'Start Date')} />,
+      enableSorting: false,
+      meta: { label: t('promotions.startDate', 'Start Date') },
+      size: 150,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{formatDateTime(getValue())}</span>,
+    }) as ColumnDef<PromotionDto, unknown>,
+    ch.accessor('endDate', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.endDate', 'End Date')} />,
+      enableSorting: false,
+      meta: { label: t('promotions.endDate', 'End Date') },
+      size: 150,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{formatDateTime(getValue())}</span>,
+    }) as ColumnDef<PromotionDto, unknown>,
+    ch.accessor('currentUsageCount', {
+      id: 'usage',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.usage', 'Usage')} />,
+      enableSorting: false,
+      meta: { align: 'center', label: t('promotions.usage', 'Usage') },
+      size: 90,
+      cell: ({ row }) => (
+        <Badge variant="secondary">
+          {row.original.currentUsageCount}
+          {row.original.usageLimitTotal != null ? `/${row.original.usageLimitTotal}` : ''}
+        </Badge>
+      ),
+    }) as ColumnDef<PromotionDto, unknown>,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, canWrite, canDelete, formatDateTime])
 
@@ -238,6 +242,7 @@ export const PromotionsPage = () => {
     data: tableData,
     columns,
     rowCount: data?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'promotions',
     state: {
       pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
       sorting: params.sorting as SortingState,
@@ -285,6 +290,7 @@ export const PromotionsPage = () => {
             onSearchChange={setSearchInput}
             searchPlaceholder={t('promotions.searchPlaceholder', 'Search promotions...')}
             isSearchStale={isSearchStale}
+            onResetColumnVisibility={table.resetColumnVisibility}
             filterSlot={
               <>
                 <Select value={statusFilter} onValueChange={handleStatusFilter}>

@@ -392,7 +392,8 @@ public class PermissionsTests
             + Permissions.Groups.CrmActivities.Count
             + Permissions.Groups.PmProjects.Count
             + Permissions.Groups.PmTasks.Count
-            + Permissions.Groups.PmMembers.Count;
+            + Permissions.Groups.PmMembers.Count
+            + Permissions.Groups.ApiKeys.Count;
 
         // Assert
         Permissions.All.Should().HaveCount(expectedCount);

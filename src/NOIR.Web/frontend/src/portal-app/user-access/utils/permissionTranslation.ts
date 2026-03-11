@@ -2,7 +2,8 @@ import type { TFunction } from 'i18next'
 import {
   BarChart3, ShoppingCart, UserCheck, Package, FileText,
   Users, Building2, Settings as SettingsIcon, Activity,
-  SlidersHorizontal, type LucideIcon,
+  SlidersHorizontal, Briefcase, Contact, FolderKanban,
+  type LucideIcon,
 } from 'lucide-react'
 
 /** Category display order matching sidebar navigation sections. */
@@ -11,12 +12,15 @@ const CATEGORY_SORT_ORDER: Record<string, number> = {
   'Orders': 2,
   'Customers': 3,
   'Catalog': 4,
-  'Content': 5,
-  'Users & Access': 6,
-  'Tenant Management': 7,
-  'Settings': 8,
-  'System': 9,
-  'Platform': 10,
+  'Human Resources': 5,
+  'Project Management': 6,
+  'CRM': 7,
+  'Content': 8,
+  'Users & Access': 9,
+  'Tenant Management': 10,
+  'Settings': 11,
+  'System': 12,
+  'Platform': 13,
 }
 
 /** Category icons matching sidebar navigation. */
@@ -25,6 +29,9 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   'Orders': ShoppingCart,
   'Customers': UserCheck,
   'Catalog': Package,
+  'Human Resources': Briefcase,
+  'Project Management': FolderKanban,
+  'CRM': Contact,
   'Content': FileText,
   'Users & Access': Users,
   'Tenant Management': Building2,

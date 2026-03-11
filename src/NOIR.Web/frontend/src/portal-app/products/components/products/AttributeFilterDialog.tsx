@@ -12,7 +12,6 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaTrigger,
 } from '@uikit'
 import { cn } from '@/lib/utils'
 import type { ProductAttribute } from '@/types/productAttribute'
@@ -30,6 +29,11 @@ export const AttributeFilterDialog = ({
 }: AttributeFilterDialogProps) => {
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
+
+  // Track applied count locally so button text updates immediately (not deferred by useTransition)
+  const [appliedCount, setAppliedCount] = useState(() =>
+    activeFilters ? Object.values(activeFilters).reduce((sum, arr) => sum + arr.length, 0) : 0,
+  )
 
   // Draft selections — only applied when user clicks "Apply"
   const [draft, setDraft] = useState<Record<string, Set<string>>>({})
@@ -68,6 +72,7 @@ export const AttributeFilterDialog = ({
   const totalSelected = Object.values(draft).reduce((sum, set) => sum + set.size, 0)
 
   const handleApply = () => {
+    setAppliedCount(totalSelected)
     if (totalSelected === 0) {
       onApply(undefined)
     } else {
@@ -86,34 +91,30 @@ export const AttributeFilterDialog = ({
     setDraft({})
   }
 
-  // Count of currently active API filters (for the trigger button)
-  const activeCount = activeFilters
-    ? Object.values(activeFilters).reduce((sum, arr) => sum + arr.length, 0)
-    : 0
-
   return (
-    <Credenza open={open} onOpenChange={setOpen}>
-      <CredenzaTrigger asChild>
-        <Button
-          variant="outline"
-          className="w-full sm:w-auto h-9 cursor-pointer transition-all duration-200 hover:border-primary/50"
-        >
-          <Filter className="h-4 w-4 mr-2" />
-          {activeCount > 0
-            ? `${t('products.filterByAttribute', 'Filter by Attribute')}: ${activeCount} ${t('labels.selected', 'selected')}`
-            : t('products.filterByAttribute', 'Filter by Attribute')}
-          {activeCount > 0 && (
-            <X
-              className="h-3 w-3 ml-2 hover:text-destructive cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation()
-                onApply(undefined)
-              }}
-            />
-          )}
-        </Button>
-      </CredenzaTrigger>
-      <CredenzaContent className="sm:max-w-lg">
+    <>
+      <Button
+        variant="outline"
+        className="w-full sm:w-auto h-9 cursor-pointer transition-all duration-200 hover:border-primary/50"
+        onClick={() => setOpen(true)}
+      >
+        <Filter className="h-4 w-4 mr-2" />
+        {appliedCount > 0
+          ? `${t('products.filterByAttribute', 'Filter by Attribute')}: ${appliedCount} ${t('labels.selected', 'selected')}`
+          : t('products.filterByAttribute', 'Filter by Attribute')}
+        {appliedCount > 0 && (
+          <X
+            className="h-3 w-3 ml-2 hover:text-destructive cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation()
+              setAppliedCount(0)
+              onApply(undefined)
+            }}
+          />
+        )}
+      </Button>
+      <Credenza open={open} onOpenChange={setOpen}>
+        <CredenzaContent className="sm:max-w-lg">
         <CredenzaHeader>
           <CredenzaTitle>{t('products.filterByAttribute', 'Filter by Attribute')}</CredenzaTitle>
           <CredenzaDescription>
@@ -219,5 +220,6 @@ export const AttributeFilterDialog = ({
         </CredenzaFooter>
       </CredenzaContent>
     </Credenza>
+    </>
   )
 }

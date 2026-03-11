@@ -40,6 +40,12 @@ const STATUS_COLOR: Record<InvoiceRow['status'], string> = {
 const ch = createColumnHelper<InvoiceRow>()
 
 const getColumns = (): ColumnDef<InvoiceRow, unknown>[] => [
+  createActionsColumn<InvoiceRow>(() => (
+    <>
+      <DropdownMenuItem className="cursor-pointer">View</DropdownMenuItem>
+      <DropdownMenuItem className="cursor-pointer">Edit</DropdownMenuItem>
+    </>
+  )),
   createSelectColumn<InvoiceRow>(),
   ch.accessor('invoice', {
     header: ({ column }) => <DataTableColumnHeader column={column} title="Invoice" />,
@@ -68,12 +74,6 @@ const getColumns = (): ColumnDef<InvoiceRow, unknown>[] => [
     meta: { align: 'right' },
     size: 110,
   }) as ColumnDef<InvoiceRow, unknown>,
-  createActionsColumn<InvoiceRow>(() => (
-    <>
-      <DropdownMenuItem className="cursor-pointer">View</DropdownMenuItem>
-      <DropdownMenuItem className="cursor-pointer">Edit</DropdownMenuItem>
-    </>
-  )),
 ]
 
 // ─── Controlled demo wrapper ────────────────────────────────────────────────────

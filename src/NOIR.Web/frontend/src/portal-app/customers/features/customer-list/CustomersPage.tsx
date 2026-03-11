@@ -139,6 +139,32 @@ export const CustomersPage = () => {
   )
 
   const columns = useMemo((): ColumnDef<CustomerSummaryDto, unknown>[] => [
+    createActionsColumn<CustomerSummaryDto>((customer) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(`/portal/ecommerce/customers/${customer.id}`)}>
+          <Eye className="h-4 w-4 mr-2" />
+          {t('labels.viewDetails', 'View Details')}
+        </DropdownMenuItem>
+        {canUpdate && (
+          <DropdownMenuItem className="cursor-pointer" onClick={() => openEditCustomer(customer)}>
+            <Pencil className="h-4 w-4 mr-2" />
+            {t('labels.edit', 'Edit')}
+          </DropdownMenuItem>
+        )}
+        {canDelete && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive cursor-pointer"
+              onClick={() => setCustomerToDelete(customer)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('labels.delete', 'Delete')}
+            </DropdownMenuItem>
+          </>
+        )}
+      </>
+    )),
     createSelectColumn<CustomerSummaryDto>(),
     ch.accessor('firstName', {
       id: 'name',
@@ -180,49 +206,23 @@ export const CustomersPage = () => {
     ch.accessor('totalOrders', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.ordersLabel', 'Orders')} />,
       enableSorting: false,
-      meta: { align: 'center' },
+      meta: { align: 'center', label: t('customers.ordersLabel', 'Orders') },
       size: 90,
       cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
     }) as ColumnDef<CustomerSummaryDto, unknown>,
     ch.accessor('totalSpent', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.totalSpent', 'Total Spent')} />,
       enableSorting: false,
-      meta: { align: 'right' },
+      meta: { align: 'right', label: t('customers.totalSpent', 'Total Spent') },
       cell: ({ getValue }) => <span className="font-medium text-sm">{formatCurrency(getValue(), 'VND')}</span>,
     }) as ColumnDef<CustomerSummaryDto, unknown>,
     ch.accessor('loyaltyPoints', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.loyaltyPoints', 'Points')} />,
       enableSorting: false,
-      meta: { align: 'center' },
+      meta: { align: 'center', label: t('customers.loyaltyPoints', 'Points') },
       size: 80,
       cell: ({ getValue }) => <Badge variant="secondary">{getValue().toLocaleString()}</Badge>,
     }) as ColumnDef<CustomerSummaryDto, unknown>,
-    createActionsColumn<CustomerSummaryDto>((customer) => (
-      <>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(`/portal/ecommerce/customers/${customer.id}`)}>
-          <Eye className="h-4 w-4 mr-2" />
-          {t('labels.viewDetails', 'View Details')}
-        </DropdownMenuItem>
-        {canUpdate && (
-          <DropdownMenuItem className="cursor-pointer" onClick={() => openEditCustomer(customer)}>
-            <Pencil className="h-4 w-4 mr-2" />
-            {t('labels.edit', 'Edit')}
-          </DropdownMenuItem>
-        )}
-        {canDelete && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive cursor-pointer"
-              onClick={() => setCustomerToDelete(customer)}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {t('labels.delete', 'Delete')}
-            </DropdownMenuItem>
-          </>
-        )}
-      </>
-    )),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, canUpdate, canDelete])
 
@@ -232,6 +232,7 @@ export const CustomersPage = () => {
     data: tableData,
     columns,
     rowCount: data?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'customers',
     state: {
       pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
       sorting: params.sorting as SortingState,
@@ -412,6 +413,7 @@ export const CustomersPage = () => {
             onSearchChange={setSearchInput}
             searchPlaceholder={t('customers.searchPlaceholder', 'Search customers...')}
             isSearchStale={isSearchStale}
+            onResetColumnVisibility={table.resetColumnVisibility}
             filterSlot={
               <>
                 <Select value={segmentFilter} onValueChange={handleSegmentFilter}>

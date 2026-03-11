@@ -171,6 +171,62 @@ public static class PermissionDtoFactory
 
         // ── Search ───────────────────────────────────────────────────────
         [DomainPermissions.SearchGlobal] = ("Global Search", "Search across all entities", "System"),
+
+        // ── Dashboard ────────────────────────────────────────────────────
+        [DomainPermissions.DashboardRead] = ("View Dashboard", "View dashboard and widgets", "System"),
+
+        // ── Human Resources ──────────────────────────────────────────────
+        [DomainPermissions.HrEmployeesRead] = ("View Employees", "View employee profiles", "Human Resources"),
+        [DomainPermissions.HrEmployeesCreate] = ("Create Employees", "Create new employees", "Human Resources"),
+        [DomainPermissions.HrEmployeesUpdate] = ("Update Employees", "Edit employee information", "Human Resources"),
+        [DomainPermissions.HrEmployeesDelete] = ("Delete Employees", "Delete employee records", "Human Resources"),
+        [DomainPermissions.HrDepartmentsRead] = ("View Departments", "View department structure", "Human Resources"),
+        [DomainPermissions.HrDepartmentsCreate] = ("Create Departments", "Create new departments", "Human Resources"),
+        [DomainPermissions.HrDepartmentsUpdate] = ("Update Departments", "Edit department information", "Human Resources"),
+        [DomainPermissions.HrDepartmentsDelete] = ("Delete Departments", "Delete departments", "Human Resources"),
+        [DomainPermissions.HrTagsRead] = ("View Employee Tags", "View employee tag categories", "Human Resources"),
+        [DomainPermissions.HrTagsManage] = ("Manage Employee Tags", "Create and manage employee tags", "Human Resources"),
+
+        // ── CRM ──────────────────────────────────────────────────────────
+        [DomainPermissions.CrmContactsRead] = ("View Contacts", "View CRM contacts", "CRM"),
+        [DomainPermissions.CrmContactsCreate] = ("Create Contacts", "Create new contacts", "CRM"),
+        [DomainPermissions.CrmContactsUpdate] = ("Update Contacts", "Edit contact information", "CRM"),
+        [DomainPermissions.CrmContactsDelete] = ("Delete Contacts", "Delete contacts", "CRM"),
+        [DomainPermissions.CrmCompaniesRead] = ("View Companies", "View CRM companies", "CRM"),
+        [DomainPermissions.CrmCompaniesCreate] = ("Create Companies", "Create new companies", "CRM"),
+        [DomainPermissions.CrmCompaniesUpdate] = ("Update Companies", "Edit company information", "CRM"),
+        [DomainPermissions.CrmCompaniesDelete] = ("Delete Companies", "Delete companies", "CRM"),
+        [DomainPermissions.CrmLeadsRead] = ("View Leads", "View sales leads", "CRM"),
+        [DomainPermissions.CrmLeadsCreate] = ("Create Leads", "Create new leads", "CRM"),
+        [DomainPermissions.CrmLeadsUpdate] = ("Update Leads", "Edit lead information", "CRM"),
+        [DomainPermissions.CrmLeadsManage] = ("Manage Leads", "Full lead management including pipeline", "CRM"),
+        [DomainPermissions.CrmPipelineManage] = ("Manage Pipeline", "Configure sales pipeline stages", "CRM"),
+        [DomainPermissions.CrmActivitiesRead] = ("View Activities", "View CRM activities", "CRM"),
+        [DomainPermissions.CrmActivitiesCreate] = ("Create Activities", "Log new activities", "CRM"),
+        [DomainPermissions.CrmActivitiesUpdate] = ("Update Activities", "Edit activity records", "CRM"),
+        [DomainPermissions.CrmActivitiesDelete] = ("Delete Activities", "Delete activity records", "CRM"),
+
+        // ── Project Management ───────────────────────────────────────────
+        [DomainPermissions.PmProjectsRead] = ("View Projects", "View project details", "Project Management"),
+        [DomainPermissions.PmProjectsCreate] = ("Create Projects", "Create new projects", "Project Management"),
+        [DomainPermissions.PmProjectsUpdate] = ("Update Projects", "Edit project settings", "Project Management"),
+        [DomainPermissions.PmProjectsDelete] = ("Delete Projects", "Delete projects", "Project Management"),
+        [DomainPermissions.PmTasksRead] = ("View Tasks", "View project tasks", "Project Management"),
+        [DomainPermissions.PmTasksCreate] = ("Create Tasks", "Create new tasks", "Project Management"),
+        [DomainPermissions.PmTasksUpdate] = ("Update Tasks", "Edit task details", "Project Management"),
+        [DomainPermissions.PmTasksDelete] = ("Delete Tasks", "Delete tasks", "Project Management"),
+        [DomainPermissions.PmTasksManage] = ("Manage Tasks", "Full task management access", "Project Management"),
+        [DomainPermissions.PmMembersManage] = ("Manage Members", "Add and remove project members", "Project Management"),
+
+        // ── Webhooks ─────────────────────────────────────────────────────
+        [DomainPermissions.WebhooksRead] = ("View Webhooks", "View webhook subscriptions", "Settings"),
+        [DomainPermissions.WebhooksManage] = ("Manage Webhooks", "Create and manage webhook subscriptions", "Settings"),
+        [DomainPermissions.WebhooksTest] = ("Test Webhooks", "Send test webhook events", "Settings"),
+
+        // ── API Keys ─────────────────────────────────────────────────────
+        [DomainPermissions.ApiKeysRead] = ("View API Keys", "View API key list and details", "Settings"),
+        [DomainPermissions.ApiKeysCreate] = ("Create API Keys", "Create new API keys", "Settings"),
+        [DomainPermissions.ApiKeysDelete] = ("Revoke API Keys", "Revoke and delete API keys", "Settings"),
     };
 
     /// <summary>

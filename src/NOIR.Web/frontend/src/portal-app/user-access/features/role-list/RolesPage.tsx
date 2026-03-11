@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Shield, Plus, Key, Edit, Trash2 } from 'lucide-react'
 import { createColumnHelper } from '@tanstack/react-table'
@@ -11,11 +11,13 @@ import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useServerTable } from '@/hooks/useServerTable'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
   Button,
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
   DataTable,
@@ -26,6 +28,11 @@ import {
   DropdownMenuSeparator,
   EmptyState,
   PageHeader,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@uikit'
 
 import { CreateRoleDialog } from '../../components/roles/CreateRoleDialog'
@@ -39,12 +46,20 @@ const ch = createColumnHelper<RoleListItem>()
 
 export const RolesPage = () => {
   const { t } = useTranslation('common')
+  const { hasPermission } = usePermissions()
   usePageContext('Roles')
+
+  const canCreate = hasPermission(Permissions.RolesCreate)
+  const canUpdate = hasPermission(Permissions.RolesUpdate)
+  const canDelete = hasPermission(Permissions.RolesDelete)
+  const canManagePermissions = hasPermission(Permissions.RolesManagePermissions)
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-role' })
   const [roleToDelete, setRoleToDelete] = useState<RoleListItem | null>(null)
   const [roleForPermissions, setRoleForPermissions] = useState<RoleListItem | null>(null)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [typeFilter, setTypeFilter] = useState<string>('all')
+  const [isFilterPendingTransition, startFilterTransition] = useTransition()
 
   const {
     params,
@@ -60,6 +75,10 @@ export const RolesPage = () => {
   const { data, isLoading, error: queryError, refetch: refresh } = useRolesQuery(params)
   const { editItem: roleToEdit, openEdit: openEditRole, closeEdit: closeEditRole } = useUrlEditDialog<RoleListItem>(data?.items)
   const deleteMutation = useDeleteRoleMutation()
+
+  const handleTypeFilter = (value: string) => {
+    startFilterTransition(() => setTypeFilter(value))
+  }
 
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'Role',
@@ -77,6 +96,34 @@ export const RolesPage = () => {
   }
 
   const columns = useMemo((): ColumnDef<RoleListItem, unknown>[] => [
+    createActionsColumn<RoleListItem>((role) => (
+      <>
+        {canManagePermissions && (
+          <DropdownMenuItem className="cursor-pointer" onClick={() => setRoleForPermissions(role)}>
+            <Key className="mr-2 h-4 w-4" />
+            {t('roles.managePermissions', 'Manage Permissions')}
+          </DropdownMenuItem>
+        )}
+        {canUpdate && (
+          <DropdownMenuItem className="cursor-pointer" onClick={() => openEditRole(role)}>
+            <Edit className="mr-2 h-4 w-4" />
+            {t('buttons.edit', 'Edit')}
+          </DropdownMenuItem>
+        )}
+        {canDelete && !role.isSystemRole && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive cursor-pointer"
+              onClick={() => setRoleToDelete(role)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {t('buttons.delete', 'Delete')}
+            </DropdownMenuItem>
+          </>
+        )}
+      </>
+    )),
     ch.accessor('name', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('roles.columns.name', 'Name')} />,
       cell: ({ row }) => (
@@ -134,34 +181,14 @@ export const RolesPage = () => {
         <Badge variant="outline">{t('roles.custom', 'Custom')}</Badge>
       ),
     }) as ColumnDef<RoleListItem, unknown>,
-    createActionsColumn<RoleListItem>((role) => (
-      <>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setRoleForPermissions(role)}>
-          <Key className="mr-2 h-4 w-4" />
-          {t('roles.managePermissions', 'Manage Permissions')}
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => openEditRole(role)}>
-          <Edit className="mr-2 h-4 w-4" />
-          {t('buttons.edit', 'Edit')}
-        </DropdownMenuItem>
-        {!role.isSystemRole && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive cursor-pointer"
-              onClick={() => setRoleToDelete(role)}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              {t('buttons.delete', 'Delete')}
-            </DropdownMenuItem>
-          </>
-        )}
-      </>
-    )),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [t])
+  ], [t, canUpdate, canDelete, canManagePermissions])
 
-  const tableData = useMemo(() => data?.items ?? [], [data?.items])
+  const tableData = useMemo(() => {
+    const items = data?.items ?? []
+    if (typeFilter === 'all') return items
+    return items.filter((r) => typeFilter === 'system' ? r.isSystemRole : !r.isSystemRole)
+  }, [data?.items, typeFilter])
 
   const table = useServerTable({
     data: tableData,
@@ -196,16 +223,23 @@ export const RolesPage = () => {
         title={t('roles.title', 'Roles')}
         description={t('roles.description', 'Manage roles and permissions')}
         action={
-          <Button className="group transition-all duration-300" onClick={() => openCreate()}>
-            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-            {t('roles.newRole', 'New Role')}
-          </Button>
+          canCreate && (
+            <Button className="group transition-all duration-300" onClick={() => openCreate()}>
+              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+              {t('roles.newRole', 'New Role')}
+            </Button>
+          )
         }
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg">{t('roles.listTitle', 'All Roles')}</CardTitle>
+          <div>
+            <CardTitle className="text-lg">{t('roles.listTitle', 'All Roles')}</CardTitle>
+            <CardDescription>
+              {data ? t('labels.showingCountOfTotal', { count: tableData.length, total: data.totalCount }) : ''}
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <DataTableToolbar
@@ -214,13 +248,26 @@ export const RolesPage = () => {
             onSearchChange={setSearchInput}
             searchPlaceholder={t('roles.searchPlaceholder', 'Search roles...')}
             isSearchStale={isSearchStale}
+            showColumnToggle={false}
+            filterSlot={
+              <Select value={typeFilter} onValueChange={handleTypeFilter}>
+                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('roles.filterByType', 'Filter by type')}>
+                  <SelectValue placeholder={t('roles.filterByType', 'Type')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                  <SelectItem value="system" className="cursor-pointer">{t('roles.system', 'System')}</SelectItem>
+                  <SelectItem value="custom" className="cursor-pointer">{t('roles.custom', 'Custom')}</SelectItem>
+                </SelectContent>
+              </Select>
+            }
           />
 
           <DataTable
             table={table}
             isLoading={isLoading}
-            isStale={isSearchStale || isFilterPending}
-            onRowClick={openEditRole}
+            isStale={isSearchStale || isFilterPending || isFilterPendingTransition}
+            onRowClick={canUpdate ? openEditRole : undefined}
             emptyState={
               <EmptyState
                 icon={Shield}
@@ -230,7 +277,7 @@ export const RolesPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} />
         </CardContent>
       </Card>
 

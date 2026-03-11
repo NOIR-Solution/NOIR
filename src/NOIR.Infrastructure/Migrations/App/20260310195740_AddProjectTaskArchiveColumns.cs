@@ -11,18 +11,19 @@ namespace NOIR.Infrastructure.Migrations.App
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<DateTimeOffset>(
-                name: "ArchivedAt",
-                table: "ProjectTasks",
-                type: "datetimeoffset",
-                nullable: true);
+            migrationBuilder.Sql("""
+                IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ProjectTasks') AND name = 'ArchivedAt')
+                BEGIN
+                    ALTER TABLE [ProjectTasks] ADD [ArchivedAt] datetimeoffset NULL;
+                END
+                """);
 
-            migrationBuilder.AddColumn<bool>(
-                name: "IsArchived",
-                table: "ProjectTasks",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
+            migrationBuilder.Sql("""
+                IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ProjectTasks') AND name = 'IsArchived')
+                BEGIN
+                    ALTER TABLE [ProjectTasks] ADD [IsArchived] bit NOT NULL DEFAULT 0;
+                END
+                """);
         }
 
         /// <inheritdoc />

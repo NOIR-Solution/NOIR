@@ -123,6 +123,30 @@ export const TenantsPage = () => {
   }
 
   const columns = useMemo((): ColumnDef<TenantListItem, unknown>[] => [
+    createActionsColumn<TenantListItem>((tenant) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => handleEdit(tenant, 'details')}>
+          <Edit className="mr-2 h-4 w-4" />
+          {t('buttons.edit')}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => handleEdit(tenant, 'modules')}>
+          <Blocks className="mr-2 h-4 w-4" />
+          {t('tenants.tabs.modules')}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => setTenantToResetPassword(tenant)}>
+          <KeyRound className="mr-2 h-4 w-4" />
+          {t('tenants.resetAdminPassword')}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive cursor-pointer"
+          onClick={() => setTenantToDelete(tenant)}
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          {t('buttons.delete')}
+        </DropdownMenuItem>
+      </>
+    )),
     ch.accessor('identifier', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('tenants.table.identifier')} />,
       enableSorting: false,
@@ -149,35 +173,12 @@ export const TenantsPage = () => {
     ch.accessor('createdAt', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.createdAt')} />,
       enableSorting: false,
+      meta: { label: t('labels.createdAt') },
       cell: ({ getValue }) => (
         <span className="text-sm text-muted-foreground">{formatDate(getValue())}</span>
       ),
       size: 140,
     }) as ColumnDef<TenantListItem, unknown>,
-    createActionsColumn<TenantListItem>((tenant) => (
-      <>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => handleEdit(tenant, 'details')}>
-          <Edit className="mr-2 h-4 w-4" />
-          {t('buttons.edit')}
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => handleEdit(tenant, 'modules')}>
-          <Blocks className="mr-2 h-4 w-4" />
-          {t('tenants.tabs.modules')}
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setTenantToResetPassword(tenant)}>
-          <KeyRound className="mr-2 h-4 w-4" />
-          {t('tenants.resetAdminPassword')}
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive cursor-pointer"
-          onClick={() => setTenantToDelete(tenant)}
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          {t('buttons.delete')}
-        </DropdownMenuItem>
-      </>
-    )),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, formatDate])
 
@@ -187,6 +188,7 @@ export const TenantsPage = () => {
     data: tableData,
     columns,
     rowCount: data?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'tenants',
     state: {
       pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
       sorting: params.sorting as SortingState,
@@ -234,6 +236,7 @@ export const TenantsPage = () => {
             onSearchChange={setSearchInput}
             searchPlaceholder={t('tenants.searchPlaceholder')}
             isSearchStale={isSearchStale}
+            onResetColumnVisibility={table.resetColumnVisibility}
           />
 
           <DataTable

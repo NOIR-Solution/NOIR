@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import { getCurrentUser, logout as logoutApi } from '@/services/auth'
+import { isTokenExpired } from '@/services/tokenStorage'
 import { useBroadcastChannel } from '@/hooks/useBroadcastChannel'
 import type { CurrentUser } from '@/types'
 
@@ -49,6 +50,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     checkAuth()
   }, [checkAuth])
+
+  // Proactive token refresh: when user returns to the tab after being away,
+  // silently refresh the token if it's expired or about to expire.
+  // This prevents the jarring "logged out" experience when returning to a stale tab.
+  const lastRefreshRef = useRef(Date.now())
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') return
+      if (!user) return
+
+      // Throttle: don't refresh more than once per 30 seconds
+      const now = Date.now()
+      if (now - lastRefreshRef.current < 30_000) return
+      lastRefreshRef.current = now
+
+      // If access token is expired or about to expire, silently re-check auth
+      // This triggers apiClient's 401 → refresh flow transparently
+      if (isTokenExpired()) {
+        refreshUser()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [user, refreshUser])
 
   // Broadcast logout to other tabs so they redirect to login
   const { postMessage: broadcastAuth } = useBroadcastChannel<AuthBroadcastMessage>(

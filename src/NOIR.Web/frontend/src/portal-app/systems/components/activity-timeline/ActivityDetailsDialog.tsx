@@ -22,12 +22,14 @@ import {
 } from 'lucide-react'
 import {
   Badge,
+  Button,
   Credenza,
   CredenzaContent,
   CredenzaDescription,
   CredenzaHeader,
   CredenzaTitle,
   CredenzaBody,
+  CredenzaFooter,
   DiffViewer,
   EmptyState,
   HttpMethodBadge,
@@ -491,6 +493,11 @@ export const ActivityDetailsDialog = ({
             </Tabs>
           ) : null}
         </CredenzaBody>
+        <CredenzaFooter>
+          <Button variant="outline" className="cursor-pointer" onClick={() => onOpenChange(false)}>
+            {t('buttons.close', 'Close')}
+          </Button>
+        </CredenzaFooter>
       </CredenzaContent>
     </Credenza>
   )

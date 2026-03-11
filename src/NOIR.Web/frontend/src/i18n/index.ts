@@ -93,8 +93,8 @@ i18n
       escapeValue: false,
     },
 
-    // Debug mode (disable in production)
-    debug: import.meta.env.DEV,
+    // Debug mode - disabled to keep console clean
+    debug: false,
   });
 
 export { i18n };
