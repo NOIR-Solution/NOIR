@@ -150,10 +150,11 @@ export const LogoUploadField = ({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
+          aria-disabled={disabled || undefined}
           className={cn(
             'flex items-center gap-3 rounded-lg border-2 border-dashed p-4 transition-all cursor-pointer',
             isDragging && 'border-primary bg-primary/5',
-            disabled && 'cursor-not-allowed opacity-50',
+            disabled && 'cursor-not-allowed opacity-60',
             !isDragging && !disabled && 'hover:border-primary/50 hover:bg-muted/30'
           )}
         >

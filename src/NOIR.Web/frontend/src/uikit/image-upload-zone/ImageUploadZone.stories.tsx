@@ -88,10 +88,11 @@ const ImageUploadZoneDemo = ({
       <div
         onClick={handleSimulateUpload}
         onMouseEnter={() => !disabled && setDragOver(false)}
+        aria-disabled={disabled || undefined}
         className={cn(
           'relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 transition-all duration-200 cursor-pointer',
           dragOver && 'border-primary bg-primary/5 scale-[1.02]',
-          disabled && 'cursor-not-allowed opacity-50',
+          disabled && 'cursor-not-allowed opacity-60',
           !dragOver && !disabled && 'hover:border-primary/50 hover:bg-muted/30'
         )}
       >
@@ -146,7 +147,7 @@ const ImageUploadZoneDemo = ({
                   <p className="text-xs text-destructive mt-0.5">{upload.error}</p>
                 )}
                 {upload.status === 'success' && (
-                  <p className="text-xs text-green-600 mt-0.5">Upload complete</p>
+                  <p className="text-xs text-green-700 mt-0.5">Upload complete</p>
                 )}
               </div>
               <div className="flex items-center gap-2">

@@ -40,7 +40,7 @@ export const WithClassName: Story = {
   args: {
     to: '/portal/products',
     children: 'Styled Link',
-    className: 'text-blue-600 hover:text-blue-800 underline font-medium',
+    className: 'text-blue-700 hover:text-blue-900 underline font-medium',
   },
 }
 
@@ -49,7 +49,7 @@ export const BackDirection: Story = {
     to: '/portal',
     vtDirection: 'back',
     children: 'Go Back',
-    className: 'text-blue-600 hover:text-blue-800 underline',
+    className: 'text-blue-700 hover:text-blue-900 underline',
   },
 }
 

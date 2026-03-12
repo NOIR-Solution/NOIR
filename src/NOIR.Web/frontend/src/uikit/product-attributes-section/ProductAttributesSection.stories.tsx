@@ -225,7 +225,7 @@ const ProductAttributesSectionDemo = ({
                 <CardTitle className="flex items-center gap-2">
                   Product Attributes
                   {showUnsaved && !isViewMode && (
-                    <span className="text-xs font-normal text-amber-500">
+                    <span className="text-xs font-normal text-amber-700">
                       (unsaved changes)
                     </span>
                   )}
@@ -294,7 +294,7 @@ const ProductAttributesSectionDemo = ({
                       onValueChange={(val) => handleChange(field.attributeId, val)}
                       disabled={isViewMode}
                     >
-                      <SelectTrigger className="cursor-pointer">
+                      <SelectTrigger className="cursor-pointer" aria-label={field.name}>
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
                       <SelectContent>

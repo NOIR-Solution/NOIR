@@ -156,7 +156,7 @@ export const ImageUploadZone = ({
                   <p className="text-xs text-destructive mt-0.5">{upload.error}</p>
                 )}
                 {upload.status === 'success' && (
-                  <p className="text-xs text-green-600 mt-0.5">
+                  <p className="text-xs text-green-700 mt-0.5">
                     {t('products.uploadSuccess', 'Upload complete')}
                   </p>
                 )}

@@ -91,7 +91,7 @@ const OrganizationSelectionDemo = ({
         <CardContent className="space-y-4">
           {/* Error Message */}
           {error && (
-            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+            <div className="p-3 rounded-lg bg-destructive/[0.04] border border-destructive/20">
               <p className="text-sm text-destructive font-medium">{error}</p>
             </div>
           )}

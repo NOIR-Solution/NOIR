@@ -95,7 +95,7 @@ const CommandPaletteDemo = ({ withSearch }: { withSearch?: string }) => {
           </div>
 
           {/* Results List */}
-          <div className="max-h-[300px] overflow-y-auto p-2">
+          <div className="max-h-[300px] overflow-y-auto p-2" tabIndex={0} role="region" aria-label="Search results">
             {filteredNav.length === 0 && filteredActions.length === 0 && (
               <div className="py-6 text-center text-sm text-muted-foreground">
                 No results found.
@@ -151,7 +151,7 @@ const CommandPaletteDemo = ({ withSearch }: { withSearch?: string }) => {
               <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono">esc</kbd>
               <span>close</span>
             </span>
-            <span className="ml-auto text-muted-foreground/60">
+            <span className="ml-auto text-muted-foreground">
               &#8984;K to open
             </span>
           </div>

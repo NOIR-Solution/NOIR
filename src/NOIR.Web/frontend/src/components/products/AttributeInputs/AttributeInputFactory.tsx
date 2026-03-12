@@ -1112,7 +1112,7 @@ const FileInput = ({ field, value, onChange, disabled }: InputComponentProps) =>
         disabled && 'opacity-50 cursor-not-allowed hover:border-border hover:bg-transparent'
       )}
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps()} aria-label={t('products.attributes.uploadFile', { name: field.name, defaultValue: `Upload file for ${field.name}` })} />
 
       {hasValue ? (
         <div className="flex items-center gap-3">

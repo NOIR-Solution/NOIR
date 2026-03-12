@@ -30,11 +30,11 @@ type JsonArray = JsonValue[]
 
 // Color classes for different JSON types
 const typeColors = {
-  string: 'text-green-600 dark:text-green-400',
-  number: 'text-blue-600 dark:text-blue-400',
-  boolean: 'text-purple-600 dark:text-purple-400',
+  string: 'text-green-700 dark:text-green-400',
+  number: 'text-blue-700 dark:text-blue-400',
+  boolean: 'text-purple-700 dark:text-purple-400',
   null: 'text-gray-500 dark:text-gray-400',
-  key: 'text-rose-600 dark:text-rose-400',
+  key: 'text-rose-700 dark:text-rose-400',
   bracket: 'text-gray-600 dark:text-gray-400',
 }
 
@@ -260,9 +260,10 @@ export const JsonViewer = ({
             size="icon"
             className="h-7 w-7"
             onClick={handleCopy}
+            aria-label={t('buttons.copyToClipboard', 'Copy to clipboard')}
           >
             {copied ? (
-              <Check className="h-3.5 w-3.5 text-green-500" />
+              <Check className="h-3.5 w-3.5 text-green-600" />
             ) : (
               <Copy className="h-3.5 w-3.5" />
             )}
@@ -302,7 +303,7 @@ export const JsonViewer = ({
                 aria-label={t('buttons.copyToClipboard', 'Copy to clipboard')}
               >
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-green-500" />
+                  <Check className="h-3.5 w-3.5 text-green-600" />
                 ) : (
                   <Copy className="h-3.5 w-3.5" />
                 )}
@@ -346,7 +347,7 @@ export const JsonViewer = ({
                     aria-label={t('buttons.copyToClipboard', 'Copy to clipboard')}
                   >
                     {copied ? (
-                      <Check className="h-4 w-4 text-green-500" />
+                      <Check className="h-4 w-4 text-green-600" />
                     ) : (
                       <Copy className="h-4 w-4" />
                     )}

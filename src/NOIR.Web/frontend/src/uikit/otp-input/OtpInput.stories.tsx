@@ -117,11 +117,11 @@ export const AllStates: Story = {
           <OtpInput value={defaultValue} onChange={setDefaultValue} autoFocus={false} />
         </div>
         <div>
-          <p style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 500, color: 'red' }}>Error State</p>
+          <p style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 500, color: '#b91c1c' }}>Error State</p>
           <OtpInput value={errorValue} onChange={setErrorValue} error autoFocus={false} />
         </div>
         <div>
-          <p style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 500, color: 'gray' }}>Disabled</p>
+          <p style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 500, color: '#646464' }}>Disabled</p>
           <OtpInput value={disabledValue} onChange={setDisabledValue} disabled autoFocus={false} />
         </div>
       </div>

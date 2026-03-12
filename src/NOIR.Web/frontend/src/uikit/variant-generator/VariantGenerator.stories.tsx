@@ -204,8 +204,9 @@ const VariantGeneratorDemo = ({
                 {/* Default values */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Default Price</Label>
+                    <Label htmlFor="default-price">Default Price</Label>
                     <Input
+                      id="default-price"
                       type="number"
                       step="0.01"
                       min="0"
@@ -214,8 +215,9 @@ const VariantGeneratorDemo = ({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Default Stock</Label>
+                    <Label htmlFor="default-stock">Default Stock</Label>
                     <Input
+                      id="default-stock"
                       type="number"
                       step="1"
                       min="0"

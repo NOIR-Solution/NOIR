@@ -331,7 +331,7 @@ export const CommandPalette = () => {
           </div>
 
           {/* Results List */}
-          <Command.List className="max-h-[300px] overflow-y-auto p-2" aria-label={t('commandPalette.searchResults')}>
+          <Command.List className="max-h-[300px] overflow-y-auto p-2" tabIndex={0} role="region" aria-label={t('commandPalette.searchResults')}>
             <Command.Empty className="py-6 text-center text-sm text-muted-foreground">
               {deferredSearch.length >= 2
                 ? isSearching
@@ -542,7 +542,7 @@ export const CommandPalette = () => {
               <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono">esc</kbd>
               <span>{t('commandPalette.hintClose')}</span>
             </span>
-            <span className="ml-auto hidden sm:inline text-muted-foreground/60">
+            <span className="ml-auto hidden sm:inline text-muted-foreground">
               {formatShortcut({ key: 'k', metaKey: true })} {t('commandPalette.hintOpen')}
             </span>
           </div>

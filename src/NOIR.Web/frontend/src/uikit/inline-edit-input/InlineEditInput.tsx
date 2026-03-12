@@ -65,6 +65,7 @@ const InlineEditInput = React.forwardRef<HTMLInputElement, InlineEditInputProps>
     const input = (
       <input
         type={type}
+        aria-label={props['aria-label'] || props.placeholder || 'Inline edit'}
         className={cn(
           'flex h-8 w-full rounded-md border bg-transparent px-2 py-1 text-sm transition-colors',
           'file:border-0 file:bg-transparent file:text-sm file:font-medium',

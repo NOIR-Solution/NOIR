@@ -183,7 +183,7 @@ const OnboardingChecklistDemo = ({
 
         {percentage === 100 && (
           <div className="mt-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-center">
-            <p className="text-sm font-medium text-green-600">
+            <p className="text-sm font-medium text-green-700">
               All done! You&apos;re all set up.
             </p>
           </div>

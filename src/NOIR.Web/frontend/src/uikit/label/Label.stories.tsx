@@ -45,7 +45,7 @@ export const Required: Story = {
 
 export const DisabledState: Story = {
   render: () => (
-    <div data-disabled="true" className="group">
+    <div data-disabled="true" aria-disabled="true" className="group">
       <Label>Disabled Label</Label>
     </div>
   ),

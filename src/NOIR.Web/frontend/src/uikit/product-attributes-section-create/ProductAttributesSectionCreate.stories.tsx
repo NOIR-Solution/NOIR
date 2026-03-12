@@ -297,7 +297,7 @@ const ProductAttributesSectionCreateDemo = ({
                       onValueChange={(val) => handleChange(field.attributeId, val)}
                       disabled={isViewMode}
                     >
-                      <SelectTrigger className="cursor-pointer">
+                      <SelectTrigger className="cursor-pointer" aria-label={field.name}>
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
                       <SelectContent>

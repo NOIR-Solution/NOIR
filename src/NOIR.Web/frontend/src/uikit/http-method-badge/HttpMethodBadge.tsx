@@ -17,20 +17,20 @@ export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'
 export const getHttpMethodStyles = (method: HttpMethod): string => {
   switch (method.toUpperCase()) {
     case 'GET':
-      return 'bg-blue-500 text-white border-transparent hover:bg-blue-600'
+      return 'bg-blue-700 text-white border-transparent hover:bg-blue-800'
     case 'POST':
-      return 'bg-emerald-500 text-white border-transparent hover:bg-emerald-600'
+      return 'bg-emerald-700 text-white border-transparent hover:bg-emerald-800'
     case 'PUT':
-      return 'bg-amber-500 text-white border-transparent hover:bg-amber-600'
+      return 'bg-amber-700 text-white border-transparent hover:bg-amber-800'
     case 'PATCH':
-      return 'bg-teal-500 text-white border-transparent hover:bg-teal-600'
+      return 'bg-teal-700 text-white border-transparent hover:bg-teal-800'
     case 'DELETE':
-      return 'bg-red-500 text-white border-transparent hover:bg-red-600'
+      return 'bg-red-700 text-white border-transparent hover:bg-red-800'
     case 'OPTIONS':
     case 'HEAD':
-      return 'bg-slate-500 text-white border-transparent hover:bg-slate-600'
+      return 'bg-slate-700 text-white border-transparent hover:bg-slate-800'
     default:
-      return 'bg-gray-500 text-white border-transparent hover:bg-gray-600'
+      return 'bg-gray-700 text-white border-transparent hover:bg-gray-800'
   }
 }
 

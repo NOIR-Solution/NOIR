@@ -138,14 +138,20 @@ export const FilePreviewTrigger = ({
   const wrappedTrigger = isImage && showHoverPreview ? (
     <Popover open={hoverOpen} onOpenChange={setHoverOpen}>
       <PopoverTrigger asChild>
-        <div
-          role="button"
-          tabIndex={0}
+        <button
+          type="button"
+          onClick={handleClick}
           onMouseEnter={showPopover}
           onMouseLeave={scheduleClose}
+          className={cn(
+            'cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md transition-all hover:opacity-90 hover:shadow-md flex-shrink-0 overflow-hidden',
+            className,
+          )}
+          style={{ width: widthStyle, height: heightStyle }}
+          aria-label={ariaLabel}
         >
-          {triggerButton}
-        </div>
+          {renderThumbnail()}
+        </button>
       </PopoverTrigger>
       <PopoverContent
         className="w-auto p-0 overflow-hidden rounded-xl shadow-xl border-0"

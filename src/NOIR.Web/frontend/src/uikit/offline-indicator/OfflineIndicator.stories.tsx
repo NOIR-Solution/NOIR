@@ -62,7 +62,7 @@ export const BackOnlineBanner: Story = {
 export const OnlineState: Story = {
   render: () => (
     <div style={{ position: 'relative', height: '200px', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <p style={{ fontSize: '14px', color: '#888' }}>
+      <p style={{ fontSize: '14px', color: '#646464' }}>
         When online, the OfflineIndicator renders nothing (hidden).
       </p>
     </div>

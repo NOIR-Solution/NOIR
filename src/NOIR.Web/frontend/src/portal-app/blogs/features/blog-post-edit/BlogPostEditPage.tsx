@@ -577,7 +577,7 @@ export const BlogPostEditPage = () => {
                       htmlFor="draft"
                       className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent/50 cursor-pointer transition-colors"
                     >
-                      <RadioGroupItem value="draft" id="draft" />
+                      <RadioGroupItem value="draft" id="draft" aria-label={t('blog.saveAsDraft')} />
                       <div className="space-y-0.5">
                         <span className="font-medium text-sm">{t('blog.saveAsDraft')}</span>
                         <p className="text-xs text-muted-foreground">
@@ -590,7 +590,7 @@ export const BlogPostEditPage = () => {
                       htmlFor="publish"
                       className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent/50 cursor-pointer transition-colors"
                     >
-                      <RadioGroupItem value="publish" id="publish" />
+                      <RadioGroupItem value="publish" id="publish" aria-label={t('blog.publishNow')} />
                       <div className="space-y-0.5">
                         <span className="font-medium text-sm">{t('blog.publishNow')}</span>
                         <p className="text-xs text-muted-foreground">
@@ -603,7 +603,7 @@ export const BlogPostEditPage = () => {
                       htmlFor="schedule"
                       className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent/50 cursor-pointer transition-colors"
                     >
-                      <RadioGroupItem value="schedule" id="schedule" />
+                      <RadioGroupItem value="schedule" id="schedule" aria-label={t('blog.schedule')} />
                       <div className="space-y-0.5">
                         <span className="font-medium text-sm">{t('blog.schedule')}</span>
                         <p className="text-xs text-muted-foreground">

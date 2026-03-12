@@ -58,43 +58,43 @@ const movementConfig: Record<
 > = {
   initial: {
     icon: Package,
-    color: 'text-blue-600',
+    color: 'text-blue-700',
     bgColor: 'bg-blue-100 dark:bg-blue-900/30',
     labelKey: 'initial',
   },
   adjustment: {
     icon: History,
-    color: 'text-purple-600',
+    color: 'text-purple-700',
     bgColor: 'bg-purple-100 dark:bg-purple-900/30',
     labelKey: 'adjustment',
   },
   sale: {
     icon: ShoppingCart,
-    color: 'text-orange-600',
+    color: 'text-orange-700',
     bgColor: 'bg-orange-100 dark:bg-orange-900/30',
     labelKey: 'sale',
   },
   restock: {
     icon: TrendingUp,
-    color: 'text-green-600',
+    color: 'text-green-700',
     bgColor: 'bg-green-100 dark:bg-green-900/30',
     labelKey: 'restock',
   },
   return: {
     icon: RotateCcw,
-    color: 'text-teal-600',
+    color: 'text-teal-700',
     bgColor: 'bg-teal-100 dark:bg-teal-900/30',
     labelKey: 'return',
   },
   reserved: {
     icon: Lock,
-    color: 'text-amber-600',
+    color: 'text-amber-700',
     bgColor: 'bg-amber-100 dark:bg-amber-900/30',
     labelKey: 'reserved',
   },
   released: {
     icon: Unlock,
-    color: 'text-cyan-600',
+    color: 'text-cyan-700',
     bgColor: 'bg-cyan-100 dark:bg-cyan-900/30',
     labelKey: 'released',
   },
@@ -188,9 +188,9 @@ export const StockHistoryTimeline = ({
                           className={cn(
                             'font-semibold text-sm',
                             delta > 0
-                              ? 'text-green-600'
+                              ? 'text-green-700'
                               : delta < 0
-                              ? 'text-red-600'
+                              ? 'text-red-700'
                               : 'text-muted-foreground'
                           )}
                         >

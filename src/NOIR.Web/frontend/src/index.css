@@ -87,7 +87,7 @@
   --accent: oklch(0.97 0.002 263);
   --accent-foreground: oklch(0.205 0.015 260);
   /* Semantic colors — matches brandkit hex values */
-  --destructive: oklch(0.64 0.24 25);       /* #EF4444 */
+  --destructive: oklch(0.55 0.24 25);       /* ~#d32f2f — WCAG AA 4.5:1 with white */
   --destructive-foreground: oklch(0.985 0 0);
   --success: oklch(0.72 0.19 150);          /* #22C55E */
   --warning: oklch(0.75 0.16 75);           /* #F59E0B */

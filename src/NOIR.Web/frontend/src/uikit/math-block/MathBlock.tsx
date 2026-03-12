@@ -60,6 +60,9 @@ export const MathBlock = ({ formula, displayMode = false, className }: MathBlock
     return (
       <div
         className={cn('math-block overflow-x-auto', className)}
+        tabIndex={0}
+        role="region"
+        aria-label="Mathematical formula"
         dangerouslySetInnerHTML={{ __html: rendered.html }}
       />
     )

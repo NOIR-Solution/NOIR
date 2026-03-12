@@ -113,10 +113,11 @@ export const ImageUploadField = ({
       {/* Clickable Preview Area */}
       <div
         onClick={handleClick}
+        aria-disabled={disabled || undefined}
         className={cn(
           'relative w-full rounded-lg border-2 border-dashed bg-muted/50 flex items-center justify-center overflow-hidden group',
           aspectClass,
-          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:border-primary/50 hover:bg-muted/70',
+          disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:border-primary/50 hover:bg-muted/70',
           'transition-colors'
         )}
       >
@@ -140,6 +141,7 @@ export const ImageUploadField = ({
                 variant="destructive"
                 onClick={handleRemove}
                 className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                aria-label={t('media.removeImage', 'Remove image')}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

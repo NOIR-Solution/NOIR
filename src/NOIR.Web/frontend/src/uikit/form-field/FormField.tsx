@@ -228,7 +228,7 @@ export const FormError = ({ message }: { message?: string | null }) => {
   if (!message) return null
 
   return (
-    <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive animate-in fade-in-0">
+    <div className="rounded-md bg-destructive/[0.04] p-3 text-sm text-destructive animate-in fade-in-0">
       {message}
     </div>
   )

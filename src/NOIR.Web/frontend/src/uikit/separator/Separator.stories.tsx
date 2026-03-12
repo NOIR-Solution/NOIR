@@ -76,12 +76,12 @@ export const WithText: Story = {
   render: () => (
     <div style={{ maxWidth: 400 }}>
       <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>Section Title</h3>
-      <p style={{ margin: '4px 0 12px', fontSize: '14px', color: '#666' }}>
+      <p style={{ margin: '4px 0 12px', fontSize: '14px', color: '#646464' }}>
         Description of the section above.
       </p>
       <Separator />
       <h3 style={{ marginTop: '12px', fontSize: '16px', fontWeight: 600 }}>Another Section</h3>
-      <p style={{ margin: '4px 0', fontSize: '14px', color: '#666' }}>
+      <p style={{ margin: '4px 0', fontSize: '14px', color: '#646464' }}>
         Description of the section below.
       </p>
     </div>

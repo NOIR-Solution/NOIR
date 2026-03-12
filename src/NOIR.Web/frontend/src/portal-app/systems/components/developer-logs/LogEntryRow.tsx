@@ -169,7 +169,7 @@ export const LogEntryRow = ({
             {entry.exception.message}
           </div>
           {entry.exception.stackTrace && (
-            <pre className="mt-2 text-[10px] text-red-600/80 dark:text-red-400/80 whitespace-pre-wrap overflow-x-auto">
+            <pre className="mt-2 text-[10px] text-red-700 dark:text-red-400 whitespace-pre-wrap overflow-x-auto">
               {entry.exception.stackTrace}
             </pre>
           )}

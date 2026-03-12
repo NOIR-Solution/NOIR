@@ -92,12 +92,12 @@ export const getStrengthColor = (level: PasswordStrength['level']): string => {
 export const getStrengthTextColor = (level: PasswordStrength['level']): string => {
   switch (level) {
     case 'weak':
-      return 'text-red-600'
+      return 'text-red-700'
     case 'fair':
-      return 'text-orange-600'
+      return 'text-orange-700'
     case 'good':
-      return 'text-yellow-600'
+      return 'text-yellow-700'
     case 'strong':
-      return 'text-green-600'
+      return 'text-green-700'
   }
 }

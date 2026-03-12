@@ -105,6 +105,7 @@ const SidebarDemo = ({ initialCollapsed = false }: { initialCollapsed?: boolean 
             'h-8 w-8 inline-flex items-center justify-center rounded-md transition-all text-sidebar-foreground hover:bg-sidebar-accent',
             !isExpanded && 'mx-auto'
           )}
+          aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
         >
           {isExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
@@ -137,6 +138,7 @@ const SidebarDemo = ({ initialCollapsed = false }: { initialCollapsed?: boolean 
                         ? 'bg-gradient-to-r from-sidebar-primary/20 to-sidebar-primary/10 text-sidebar-primary'
                         : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                     )}
+                    aria-label={item.label}
                   >
                     {item.active && (
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-sidebar-primary rounded-r-full" />
@@ -161,6 +163,7 @@ const SidebarDemo = ({ initialCollapsed = false }: { initialCollapsed?: boolean 
               isExpanded ? 'px-3' : 'px-0 justify-center',
               'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
             )}
+            aria-label="Notifications"
           >
             <div className="relative">
               <Bell className={cn('h-5 w-5 flex-shrink-0', isExpanded && 'mr-3')} />
@@ -188,6 +191,7 @@ const SidebarDemo = ({ initialCollapsed = false }: { initialCollapsed?: boolean 
               'w-full flex items-center gap-3 transition-colors cursor-pointer',
               isExpanded ? 'p-2 hover:bg-sidebar-accent rounded-lg' : 'justify-center'
             )}
+            aria-label="User profile"
           >
             <div className="h-10 w-10 rounded-full flex-shrink-0 flex items-center justify-center text-white font-semibold text-sm bg-blue-600">
               JD
@@ -241,7 +245,7 @@ export const Interactive: Story = {
       <SidebarDemo />
       <div style={{ flex: 1, padding: '24px', background: '#fafafa' }}>
         <h1 style={{ fontSize: '24px', fontWeight: 600, marginBottom: '8px' }}>Dashboard</h1>
-        <p style={{ color: '#666' }}>Click the collapse/expand button to toggle the sidebar.</p>
+        <p style={{ color: '#646464' }}>Click the collapse/expand button to toggle the sidebar.</p>
       </div>
     </div>
   ),

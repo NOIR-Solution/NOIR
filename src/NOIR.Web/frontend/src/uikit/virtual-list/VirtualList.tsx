@@ -66,6 +66,9 @@ export const VirtualList = <T,>({
       ref={parentRef}
       className={cn('overflow-auto', className)}
       style={{ height }}
+      tabIndex={0}
+      role="region"
+      aria-label="Scrollable list"
     >
       <div
         style={{

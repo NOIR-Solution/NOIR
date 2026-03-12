@@ -62,27 +62,27 @@ const getStatusCodeStyle = (code: number): string => {
 const getResponseTimeStyle = (ms: number): { className: string; icon: typeof Clock | null; label: string } => {
   if (ms < RESPONSE_TIME_THRESHOLDS.fast) {
     return {
-      className: 'text-green-600 dark:text-green-400',
+      className: 'text-green-700 dark:text-green-400',
       icon: Zap,
       label: 'fast',
     }
   }
   if (ms < RESPONSE_TIME_THRESHOLDS.normal) {
     return {
-      className: 'text-amber-600 dark:text-amber-400',
+      className: 'text-amber-700 dark:text-amber-400',
       icon: Clock,
       label: 'normal',
     }
   }
   if (ms < RESPONSE_TIME_THRESHOLDS.slow) {
     return {
-      className: 'text-orange-600 dark:text-orange-400 font-medium',
+      className: 'text-orange-700 dark:text-orange-400 font-medium',
       icon: Clock,
       label: 'slow',
     }
   }
   return {
-    className: 'text-red-600 dark:text-red-400 font-semibold',
+    className: 'text-red-700 dark:text-red-400 font-semibold',
     icon: AlertTriangle,
     label: 'very slow',
   }
@@ -487,7 +487,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
       return (
         <span
           key={index}
-          className="text-purple-600 dark:text-purple-400 font-mono text-[11px]"
+          className="text-purple-700 dark:text-purple-400 font-mono text-[11px]"
           title={i18n.t('developerLogs.uuid', { ns: 'common' })}
         >
           {segment.content}
@@ -499,7 +499,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
       return (
         <span
           key={index}
-          className="text-cyan-600 dark:text-cyan-400"
+          className="text-cyan-700 dark:text-cyan-400"
         >
           {segment.content}
         </span>
@@ -510,7 +510,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
       return (
         <span
           key={index}
-          className="text-indigo-600 dark:text-indigo-400"
+          className="text-indigo-700 dark:text-indigo-400"
           title={i18n.t('developerLogs.correlationId', { ns: 'common' })}
         >
           {segment.content}
@@ -522,7 +522,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
       return (
         <span
           key={index}
-          className="text-emerald-600 dark:text-emerald-400"
+          className="text-emerald-700 dark:text-emerald-400"
         >
           {segment.content}
         </span>
@@ -533,7 +533,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
       return (
         <span
           key={index}
-          className="text-amber-600 dark:text-amber-400 tabular-nums"
+          className="text-amber-700 dark:text-amber-400 tabular-nums"
         >
           {segment.content}
         </span>
@@ -585,7 +585,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
       return (
         <span
           key={index}
-          className="text-teal-600 dark:text-teal-400 font-medium"
+          className="text-teal-700 dark:text-teal-400 font-medium"
           title={i18n.t('developerLogs.handlerQueryCommand', { ns: 'common' })}
         >
           {segment.content}
@@ -597,7 +597,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
       return (
         <span
           key={index}
-          className="text-green-600 dark:text-green-400 font-medium"
+          className="text-green-700 dark:text-green-400 font-medium"
         >
           {segment.content}
         </span>
@@ -608,7 +608,7 @@ const renderSegment = (segment: FormattedSegment, index: number): React.ReactNod
       return (
         <span
           key={index}
-          className="text-red-600 dark:text-red-400 font-semibold"
+          className="text-red-700 dark:text-red-400 font-semibold"
         >
           {segment.content}
         </span>

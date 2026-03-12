@@ -38,7 +38,7 @@ export const EditableVariantsTable = ({
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={t('products.variants.tableLabel', 'Product variants')}>
       <table className="w-full border-collapse">
         <thead>
           <tr className="border-b bg-muted/50">

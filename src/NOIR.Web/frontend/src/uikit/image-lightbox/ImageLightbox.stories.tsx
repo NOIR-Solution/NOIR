@@ -80,7 +80,7 @@ export const HidePlaceholder: Story = {
       }}
     >
       <ImageLightbox {...args} />
-      <span style={{ color: '#9ca3af', fontSize: 12, fontStyle: 'italic' }}>
+      <span style={{ color: '#6b7280', fontSize: 12, fontStyle: 'italic' }}>
         Component renders nothing when src is empty and showPlaceholder is false
       </span>
     </div>
@@ -102,7 +102,7 @@ export const CustomFallback: Story = {
           background: '#f3f4f6',
           borderRadius: 8,
           fontSize: 12,
-          color: '#9ca3af',
+          color: '#4b5563',
         }}
       >
         N/A

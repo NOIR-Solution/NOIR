@@ -94,7 +94,7 @@ const RequirementItem = ({ met, label }: RequirementItemProps) => {
   return (
     <div className={cn(
       'flex items-center gap-1.5 transition-colors',
-      met ? 'text-green-600' : 'text-muted-foreground'
+      met ? 'text-green-700' : 'text-muted-foreground'
     )}>
       {met ? (
         <Check className="w-3.5 h-3.5 flex-shrink-0" />

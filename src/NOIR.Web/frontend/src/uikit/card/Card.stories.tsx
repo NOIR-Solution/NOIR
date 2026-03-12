@@ -103,7 +103,7 @@ export const FullComposition: Story = {
           Uses all card subcomponents together.
         </CardDescription>
         <CardAction>
-          <span style={{ fontSize: '12px', color: '#888' }}>Action</span>
+          <span style={{ fontSize: '12px', color: '#646464' }}>Action</span>
         </CardAction>
       </CardHeader>
       <CardContent>
@@ -385,9 +385,9 @@ export const StatCards: Story = {
   render: () => {
     const stats = [
       { title: 'Total Customers', value: '1,234', icon: Users, iconBg: 'bg-primary/10 border-primary/20', iconColor: 'text-primary' },
-      { title: 'Active Customers', value: '892', icon: UserCheck, iconBg: 'bg-green-500/10 border-green-500/20', iconColor: 'text-green-500' },
-      { title: 'VIP Customers', value: '56', icon: Crown, iconBg: 'bg-purple-500/10 border-purple-500/20', iconColor: 'text-purple-500' },
-      { title: 'Growth', value: '+12%', icon: TrendingUp, iconBg: 'bg-amber-500/10 border-amber-500/20', iconColor: 'text-amber-500' },
+      { title: 'Active Customers', value: '892', icon: UserCheck, iconBg: 'bg-green-600/10 border-green-600/20', iconColor: 'text-green-600' },
+      { title: 'VIP Customers', value: '56', icon: Crown, iconBg: 'bg-purple-600/10 border-purple-600/20', iconColor: 'text-purple-600' },
+      { title: 'Growth', value: '+12%', icon: TrendingUp, iconBg: 'bg-amber-600/10 border-amber-600/20', iconColor: 'text-amber-600' },
     ]
 
     return (

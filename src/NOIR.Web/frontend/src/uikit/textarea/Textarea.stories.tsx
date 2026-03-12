@@ -75,7 +75,7 @@ export const WithLabel: Story = {
         Bio
       </label>
       <Textarea id="bio" placeholder="Tell us about yourself..." />
-      <span style={{ fontSize: '12px', color: '#666' }}>
+      <span style={{ fontSize: '12px', color: '#646464' }}>
         Maximum 500 characters.
       </span>
     </div>

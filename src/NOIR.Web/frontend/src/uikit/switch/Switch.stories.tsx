@@ -70,28 +70,28 @@ export const SettingsGroup: Story = {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: '14px', fontWeight: 500 }}>Notifications</div>
-          <div style={{ fontSize: '12px', color: '#666' }}>Receive push notifications</div>
+          <div style={{ fontSize: '12px', color: '#646464' }}>Receive push notifications</div>
         </div>
         <Switch defaultChecked aria-label="Notifications" />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: '14px', fontWeight: 500 }}>Dark Mode</div>
-          <div style={{ fontSize: '12px', color: '#666' }}>Toggle dark theme</div>
+          <div style={{ fontSize: '12px', color: '#646464' }}>Toggle dark theme</div>
         </div>
         <Switch aria-label="Dark Mode" />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: '14px', fontWeight: 500 }}>Auto-save</div>
-          <div style={{ fontSize: '12px', color: '#666' }}>Save changes automatically</div>
+          <div style={{ fontSize: '12px', color: '#646464' }}>Save changes automatically</div>
         </div>
         <Switch defaultChecked aria-label="Auto-save" />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <div style={{ fontSize: '14px', fontWeight: 500, opacity: 0.5 }}>Beta Features</div>
-          <div style={{ fontSize: '12px', color: '#666', opacity: 0.5 }}>Not available yet</div>
+          <div style={{ fontSize: '14px', fontWeight: 500, color: '#71717a' }}>Beta Features</div>
+          <div style={{ fontSize: '12px', color: '#71717a' }}>Not available yet</div>
         </div>
         <Switch disabled aria-label="Beta Features" />
       </div>

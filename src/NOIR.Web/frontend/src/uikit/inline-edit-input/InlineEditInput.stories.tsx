@@ -75,7 +75,7 @@ export const Interactive: Story = {
           placeholder="Type and press Enter to save"
         />
         {saved && (
-          <p style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+          <p style={{ marginTop: 8, fontSize: 12, color: '#646464' }}>
             Last saved: {saved}
           </p>
         )}

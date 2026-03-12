@@ -115,7 +115,7 @@ const VariantOptionsSelectorDemo = ({
                 onValueChange={(value) => handleChange(option.name, value)}
                 disabled={disabled}
               >
-                <SelectTrigger className="w-full cursor-pointer">
+                <SelectTrigger className="w-full cursor-pointer" aria-label={option.displayName || option.name}>
                   <SelectValue placeholder={`Select ${option.displayName || option.name}...`} />
                 </SelectTrigger>
                 <SelectContent>

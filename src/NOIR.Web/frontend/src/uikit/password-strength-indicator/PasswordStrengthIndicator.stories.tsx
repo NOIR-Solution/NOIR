@@ -131,7 +131,7 @@ export const Empty: Story = {
       <div style={{ border: '1px dashed #ccc', padding: '8px', borderRadius: '4px', minHeight: '24px' }}>
         <PasswordStrengthIndicator password="" />
       </div>
-      <p style={{ marginTop: '8px', fontSize: '12px', color: '#888' }}>
+      <p style={{ marginTop: '8px', fontSize: '12px', color: '#646464' }}>
         The dashed box above is empty because no password was provided.
       </p>
     </div>

@@ -138,7 +138,7 @@ export const ThumbHashImage = ({
       {/* Error state */}
       {hasError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-          <span className="text-gray-400 text-sm">Failed to load</span>
+          <span className="text-gray-600 text-sm">Failed to load</span>
         </div>
       )}
     </div>
