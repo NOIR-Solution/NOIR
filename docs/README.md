@@ -53,16 +53,14 @@ docs/
 │       ├── validation-unification-plan.md
 │       └── vietnam-shipping-integration-2026.md
 │
-├── frontend/ (8 files)              # React frontend
+├── frontend/ (7 files)              # React frontend
 │   ├── README.md
 │   ├── architecture.md
 │   ├── api-types.md
 │   ├── localization-guide.md
 │   ├── COLOR_SCHEMA_GUIDE.md
-│   ├── audit-storybook-coverage.md
 │   ├── design-standards.md
-│   └── patterns/ (1 file)
-│       └── form-resolver-type-assertions.md
+│   └── hooks-reference.md
 │
 ├── decisions/ (4 files)              # Architecture Decision Records
 │   ├── README.md
@@ -105,7 +103,7 @@ docs/
 - [Localization](frontend/localization-guide.md)
 - [Design Standards](frontend/design-standards.md)
 - [Color Schema](frontend/COLOR_SCHEMA_GUIDE.md)
-- [Storybook Coverage](frontend/audit-storybook-coverage.md)
+- [Hooks Reference](frontend/hooks-reference.md)
 
 ### Research
 

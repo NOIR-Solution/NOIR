@@ -490,7 +490,7 @@ dotnet run --project src/NOIR.Web --environment Development
 ### All Tests
 
 ```bash
-# Run all 11,341+ tests
+# Run all 12,715+ backend tests
 dotnet test src/NOIR.sln
 ```
 

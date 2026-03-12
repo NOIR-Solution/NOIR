@@ -559,7 +559,7 @@ const form = useForm<FormData>({
 | **MSW** | 2.0 | API mocking |
 | **Playwright** | - | Storybook browser tests |
 
-**Test Stats:** 143 unit tests + 674 Storybook browser tests
+**Test Stats:** 154 unit tests + 677 Storybook browser tests
 **Config:** `vitest.config.ts` (standalone, not merged with vite.config.ts)
 
 ---
@@ -678,7 +678,7 @@ const form = useForm<FormData>({
 |------|---------|---------|
 | **Storybook** | 10.2 | Interactive component catalog |
 
-**Storybook** provides an isolated development environment for 98 UI components in `src/uikit/` with 97 stories (674 browser tests verified via Playwright). Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
+**Storybook** provides an isolated development environment for 98 UI components in `src/uikit/` with 98 stories (677 browser tests verified via Playwright). Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
 
 ### Package Management
 

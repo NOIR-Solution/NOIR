@@ -1,7 +1,7 @@
 # NOIR Knowledge Base
 
-**Last Updated:** 2026-03-08
-**Version:** 3.3
+**Last Updated:** 2026-03-12
+**Version:** 3.4
 
 A comprehensive cross-referenced guide to the NOIR codebase, patterns, and architecture.
 
@@ -57,7 +57,7 @@ A comprehensive cross-referenced guide to the NOIR codebase, patterns, and archi
 - 194 passed, 0 failed, 16 graceful skips. Playwright-based.
 
 **Frontend Unit Tests**
-- 143 unit tests + 674 Storybook browser tests. Vitest 4.0 + @testing-library/react.
+- 154 unit tests + 677 Storybook browser tests. Vitest 4.0 + @testing-library/react.
 
 ### Feature Additions (2026-02-23 → 2026-02-27)
 
@@ -2394,8 +2394,7 @@ dotnet test --collect:"XPlat Code Coverage"
 | Localization | `docs/frontend/localization-guide.md` | i18n setup |
 | Color Schema | `docs/frontend/COLOR_SCHEMA_GUIDE.md` | Color guidelines |
 | Design Standards | `docs/frontend/design-standards.md` | UI design standards |
-| Storybook Audit | `docs/frontend/audit-storybook-coverage.md` | Component coverage audit |
-| Hooks Reference | `docs/frontend/hooks-reference.md` | 38 custom hooks guide |
+| Hooks Reference | `docs/frontend/hooks-reference.md` | 50 custom hooks guide |
 
 ### Architecture Decisions
 
@@ -2461,4 +2460,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-03-08 | Total Tests: 12,685 | Backend: ~2,191 C# | Frontend: ~750 TS/TSX | Tests: ~900+ files | UIKit: 98 dirs, 97 stories | Hooks: 38 | API Services: 40 | Pages: 56 | Feature Modules: 39 | Endpoints: 52 groups | EF Configs: 85 | Repos: 44*
+*Updated: 2026-03-12 | Total Tests: 13,546 | Backend: 12,715 | Frontend: 831 | UIKit: 100 dirs, 98 stories | Hooks: 50 | Pages: 56 | Feature Modules: 35 | Endpoints: 53 groups | MCP Tools: 55*

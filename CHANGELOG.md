@@ -1,5 +1,25 @@
 # CLAUDE.md Changelog
 
+## [3.6] - 2026-03-12
+
+### Added
+- **UI/UX audit automation**: Playwright-based system (52 pages, 11 custom rules + axe-core) in `e2e/tests/ui-audit/`
+- **WCAG 2.1 AA compliance**: 182 accessibility violations fixed (contrast, aria, keyboard nav) — 0 fixable issues remain
+- **MCP Server expansion**: 55 tools (was 28), 6 prompts, 7 resources via Streamable HTTP
+- **Rule 31**: UI audit automation command reference
+
+### Changed
+- Test count: 12,663 → 12,715 backend (2,971 domain + 8,557 application + 46 architecture + 1,141 integration) + 831 frontend (154 unit + 677 storybook) = **13,546 total**
+- Module count: 33 → 35 definitions (8 core + 27 toggleable)
+- Hook count: 35 → 50 custom hooks
+- UIKit stories: 97 → 98
+- Darkened `--destructive` CSS variable for WCAG AA white-text contrast
+- Updated all documentation numbers (README, AGENTS.md, CLAUDE.md)
+
+### Removed
+- `docs/frontend/audit-storybook-coverage.md` — superseded by automated UI audit system
+- `docs/frontend/patterns/form-resolver-type-assertions.md` — completed standardization
+
 ## [3.5] - 2026-03-02
 
 ### Added

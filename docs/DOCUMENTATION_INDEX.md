@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-03-08
+**Last Updated:** 2026-03-12
 
 ---
 
@@ -91,15 +91,8 @@
 | [api-types.md](frontend/api-types.md) | Type generation from backend |
 | [localization-guide.md](frontend/localization-guide.md) | i18n management |
 | [COLOR_SCHEMA_GUIDE.md](frontend/COLOR_SCHEMA_GUIDE.md) | Color system |
-| [audit-storybook-coverage.md](frontend/audit-storybook-coverage.md) | Storybook coverage audit |
 | [design-standards.md](frontend/design-standards.md) | Design standards and guidelines |
-| [hooks-reference.md](frontend/hooks-reference.md) | 38 custom React hooks reference |
-
-### Patterns (`frontend/patterns/`)
-
-| Document | Purpose |
-|----------|---------|
-| [form-resolver-type-assertions.md](frontend/patterns/form-resolver-type-assertions.md) | Zod + react-hook-form type assertion pattern |
+| [hooks-reference.md](frontend/hooks-reference.md) | 50 custom React hooks reference |
 
 ---
 
@@ -113,11 +106,15 @@
 
 ### Test Coverage Summary (2026-03-12)
 
-**Backend Tests:** 12,715 tests across 4 test projects
+**Backend Tests:** 12,715 across 4 test projects
 - 2,971 Domain unit tests
 - 8,557 Application unit tests
 - 1,141 Integration tests
 - 46 Architecture tests
+
+**Frontend Tests:** 831 total
+- 154 Vitest unit tests
+- 677 Storybook browser tests (98 UIKit components)
 
 ---
 
@@ -167,16 +164,18 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 57 |
+| **Total Docs** | 55 |
 | **Backend Patterns** | 21 |
 | **Backend Architecture** | 2 |
 | **Backend Research** | 5 |
-| **Frontend Guides** | 9 |
+| **Frontend Guides** | 7 |
 | **Testing Docs** | 1 |
 | **ADRs** | 3 |
 | **Module Designs** | 4 |
-| **Backend Tests** | 12,685 |
+| **Backend Tests** | 12,715 |
+| **Frontend Tests** | 831 (154 unit + 677 Storybook) |
+| **Total Tests** | 13,546 |
 
 ---
 
-**Version:** 5.1 (Updated 2026-03-12 — Added MCP server pattern doc, updated test counts to 12,715 backend / 13,532 total)
+**Version:** 5.2 (Updated 2026-03-12 — Removed 2 obsolete frontend docs, updated all counts)

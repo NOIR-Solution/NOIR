@@ -23,7 +23,7 @@ src/
 dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 
-# Tests (11,341+)
+# Tests (12,715+)
 dotnet test src/NOIR.sln
 
 # Database Migrations (CRITICAL: always specify --context)
@@ -35,7 +35,7 @@ cd src/NOIR.Web/frontend && pnpm install && pnpm run dev
 pnpm run generate:api    # Sync types from backend
 ```
 
-## Critical Rules (Summary — see CLAUDE.md for full 23 rules)
+## Critical Rules (Summary — see CLAUDE.md for full 31 rules)
 
 1. **Specifications for all queries** — Never raw `DbSet` queries. Always `TagWith("MethodName")`.
 2. **IUnitOfWork for persistence** — Repos don't auto-save. Call `SaveChangesAsync()` after mutations.
@@ -44,6 +44,7 @@ pnpm run generate:api    # Sync types from backend
 5. **Soft delete only** — Never hard delete unless explicitly GDPR-required.
 6. **Marker interfaces for DI** — `IScopedService`, `ITransientService`, `ISingletonService`. No `using` statements — use `GlobalUsings.cs`.
 7. **Run tests before committing** — `dotnet test src/NOIR.sln`
+8. **MCP tool naming** — `noir_{domain}_{action}`. Always add `[RequiresModule]` to tool classes.
 
 ## Naming Conventions
 

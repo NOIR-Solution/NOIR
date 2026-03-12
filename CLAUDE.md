@@ -1,6 +1,6 @@
 # NOIR - Claude Code Instructions
 
-> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.5 (2026-03-12).
+> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.6 (2026-03-12).
 
 ## SuperClaude Framework
 
@@ -98,6 +98,10 @@
 29. **Audit commands in MCP tools** — Check whether the command uses `UserId` (Orders, Blog) or `AuditUserId` (CRM, HR, PM, Customers) — they differ by feature.
 30. **OpenAPI + MCP consistency** — When modifying a query/command constructor or adding a new capability, `grep -r "new XxxQuery\|new XxxCommand" src/NOIR.Web/Mcp/` to find affected tools and update them. New features need both OpenAPI tags AND MCP tools (see `.claude/rules/feature-registry-sync.md`).
 
+### UI Audit
+
+31. **UI/UX audit automation** — `cd src/NOIR.Web/frontend/e2e && npx playwright test --project=ui-audit --project=ui-audit-platform`. Crawls 52 pages with 11 custom rules + axe-core. Output in `.ui-audit/` (gitignored). Feed `claude < .ui-audit/prompt.md` for batch fixes.
+
 See `docs/backend/patterns/mcp-server.md` for full guide including prompts, resources, and SDK gotchas.
 
 ---
@@ -110,13 +114,14 @@ dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 dotnet watch --project src/NOIR.Web        # hot reload
 
-# Tests (12,715 backend · 13,532 total)
+# Tests (12,715 backend · 13,546 total)
 dotnet test src/NOIR.sln
 dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
 
 # Frontend
 cd src/NOIR.Web/frontend && pnpm install && pnpm run dev
 pnpm run generate:api                      # Sync types from backend
+cd e2e && npx playwright test --project=ui-audit --project=ui-audit-platform  # UI/UX consistency audit
 
 # Migrations (CRITICAL: always specify --context)
 dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/App
@@ -271,7 +276,7 @@ For TanStack Query hooks, React 19 performance patterns (useDeferredValue, useTr
 
 ## Storybook & UIKit
 
-**97 component stories** in `src/uikit/{component}/`. Config: `.storybook/main.ts` (React + Vite + Tailwind CSS 4).
+**98 component stories** in `src/uikit/{component}/`. Config: `.storybook/main.ts` (React + Vite + Tailwind CSS 4).
 
 ```bash
 cd src/NOIR.Web/frontend && pnpm storybook       # Dev: http://localhost:6006
@@ -304,7 +309,7 @@ cd src/NOIR.Web/frontend && pnpm build-storybook  # Build check
 | **Promotions** | `Features/Promotions/` | Discount codes, percentage/fixed, usage limits, date ranges. | Complete |
 | **Reports** | `Features/Reports/` | Revenue, orders, inventory, product performance analytics. | Complete |
 | **Webhooks** | `Features/Webhooks/` | Outbound webhook subscriptions with event filtering and delivery tracking. | Complete |
-| **Feature Mgmt** | `Application/Modules/` | 33 modules (8 core + 25 toggleable). Platform availability + tenant enable. | Complete |
+| **Feature Mgmt** | `Application/Modules/` | 35 modules (8 core + 27 toggleable). Platform availability + tenant enable. | Complete |
 | **SSE** | `Infrastructure/Sse/` | Server-Sent Events for real-time job progress and operation updates. | Complete |
 
 ---
@@ -342,4 +347,4 @@ Research reports → `docs/backend/research/`.
 
 ---
 
-> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.5 (2026-03-12).
+> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.6 (2026-03-12).
