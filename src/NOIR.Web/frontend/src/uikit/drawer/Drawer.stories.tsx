@@ -70,7 +70,7 @@ export const WithForm: Story = {
         </DrawerHeader>
         <div className="p-4 pb-0">
           <div className="flex items-center justify-center space-x-2">
-            <button className="inline-flex items-center justify-center rounded-full border h-8 w-8 text-sm cursor-pointer">
+            <button className="inline-flex items-center justify-center rounded-full border h-8 w-8 text-sm cursor-pointer" aria-label="Decrease goal">
               -
             </button>
             <div className="flex-1 text-center">
@@ -79,7 +79,7 @@ export const WithForm: Story = {
                 Calories/day
               </div>
             </div>
-            <button className="inline-flex items-center justify-center rounded-full border h-8 w-8 text-sm cursor-pointer">
+            <button className="inline-flex items-center justify-center rounded-full border h-8 w-8 text-sm cursor-pointer" aria-label="Increase goal">
               +
             </button>
           </div>
@@ -252,10 +252,12 @@ export const NestedContent: Story = {
             <div className="flex gap-2">
               <input
                 placeholder="Min"
+                aria-label="Minimum price"
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
               />
               <input
                 placeholder="Max"
+                aria-label="Maximum price"
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
               />
             </div>

@@ -569,7 +569,7 @@ const NotificationSidebarItem = ({ isExpanded, t, onItemClick }: { isExpanded: b
       className={cn(
         'w-full justify-start relative overflow-hidden transition-all duration-200',
         isExpanded ? 'px-3' : 'px-0 justify-center',
-        isActive && 'bg-sidebar-primary/10 text-sidebar-primary font-medium',
+        isActive && 'bg-sidebar-primary/5 text-sidebar-primary font-medium',
         !isActive && 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
       )}
     >
@@ -803,7 +803,7 @@ const SidebarContent = ({
         className={cn(
           'w-full justify-start relative overflow-hidden transition-all duration-200',
           isExpanded ? 'px-3' : 'px-0 justify-center',
-          active && 'bg-sidebar-primary/10 text-sidebar-primary font-medium',
+          active && 'bg-sidebar-primary/5 text-sidebar-primary font-medium',
           !active && 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
         )}
       >
@@ -1045,7 +1045,7 @@ export const MobileSidebarTrigger = ({
         data-active={active}
         className={cn(
           'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
-          active && 'bg-sidebar-primary/10 text-sidebar-primary font-medium',
+          active && 'bg-sidebar-primary/5 text-sidebar-primary font-medium',
           !active && 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
         )}
       >
@@ -1126,7 +1126,7 @@ export const MobileSidebarTrigger = ({
                   asChild
                   className={cn(
                     'w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
-                    notificationActive && 'bg-sidebar-primary/10 text-sidebar-primary font-medium',
+                    notificationActive && 'bg-sidebar-primary/5 text-sidebar-primary font-medium',
                     !notificationActive && 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                   )}
                 >

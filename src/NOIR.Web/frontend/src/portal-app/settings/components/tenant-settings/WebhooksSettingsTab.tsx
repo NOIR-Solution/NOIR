@@ -540,7 +540,7 @@ const DeliveryLogsDialog = ({ open, onOpenChange, webhook }: DeliveryLogsDialogP
               size="sm"
             />
           ) : (
-            <div className="overflow-auto max-h-[400px]">
+            <div className="overflow-auto max-h-[400px]" tabIndex={0} role="region" aria-label={t('webhooks.deliveryLogs')}>
               <Table>
                 <TableHeader>
                   <TableRow>

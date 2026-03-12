@@ -75,6 +75,7 @@ export const Interactive: Story = {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Type a password..."
+          aria-label="Password"
           style={{
             padding: '8px 12px',
             border: '1px solid #ddd',

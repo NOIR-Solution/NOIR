@@ -194,12 +194,12 @@ const BulkVariantEditorDemo = ({
             {/* Bulk action bar */}
             <div className="flex items-end gap-2 p-3 rounded-lg bg-muted/50">
               <div className="space-y-1">
-                <Label className="text-xs">Bulk Action</Label>
+                <Label className="text-xs" htmlFor="bulk-action-select">Bulk Action</Label>
                 <Select
                   value={bulkAction}
                   onValueChange={(v) => setBulkAction(v as BulkAction)}
                 >
-                  <SelectTrigger className="w-[180px] cursor-pointer">
+                  <SelectTrigger id="bulk-action-select" className="w-[180px] cursor-pointer" aria-label="Bulk Action">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -213,12 +213,14 @@ const BulkVariantEditorDemo = ({
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Value</Label>
+                <Label className="text-xs" htmlFor="bulk-action-value">Value</Label>
                 <div className="relative">
                   <Input
+                    id="bulk-action-value"
                     type="number"
                     value={bulkValue}
                     onChange={(e) => setBulkValue(e.target.value)}
+                    aria-label="Bulk action value"
                     className="w-[120px]"
                     placeholder="0"
                   />
@@ -280,6 +282,7 @@ const BulkVariantEditorDemo = ({
                           <Checkbox
                             checked={selectedIds.has(variant.id)}
                             onCheckedChange={() => handleToggleSelect(variant.id)}
+                            aria-label={`Select ${variant.name}`}
                             className="cursor-pointer"
                           />
                         </TableCell>
@@ -288,6 +291,7 @@ const BulkVariantEditorDemo = ({
                           <Input
                             value={variant.sku || ''}
                             onChange={(e) => handleCellChange(variant.id, 'sku', e.target.value)}
+                            aria-label={`SKU for ${variant.name}`}
                             className="h-8"
                           />
                         </TableCell>
@@ -298,6 +302,7 @@ const BulkVariantEditorDemo = ({
                             min="0"
                             value={variant.price}
                             onChange={(e) => handleCellChange(variant.id, 'price', e.target.value)}
+                            aria-label={`Price for ${variant.name}`}
                             className="h-8"
                           />
                         </TableCell>
@@ -310,6 +315,7 @@ const BulkVariantEditorDemo = ({
                             onChange={(e) =>
                               handleCellChange(variant.id, 'stockQuantity', e.target.value)
                             }
+                            aria-label={`Stock for ${variant.name}`}
                             className="h-8"
                           />
                         </TableCell>

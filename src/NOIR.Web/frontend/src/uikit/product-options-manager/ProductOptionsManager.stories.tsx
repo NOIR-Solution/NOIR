@@ -142,7 +142,7 @@ const ProductOptionsManagerDemo = ({
               <div className="flex items-center gap-2 p-3">
                 <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
                 <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-0 h-auto cursor-pointer">
+                  <Button variant="ghost" size="sm" className="p-0 h-auto cursor-pointer" aria-label={`Toggle ${option.displayName || option.name}`}>
                     {expandedOptions.has(option.id) ? (
                       <ChevronDown className="h-4 w-4" />
                     ) : (
@@ -249,6 +249,7 @@ const ProductOptionsManagerDemo = ({
                       }}
                       disabled={disabled}
                       className="flex-1"
+                      aria-label={`New value for ${option.displayName || option.name}`}
                     />
                     <Button
                       variant="secondary"
@@ -256,6 +257,7 @@ const ProductOptionsManagerDemo = ({
                       onClick={() => handleAddValue(option.id)}
                       disabled={disabled || !newValueInputs[option.id]?.trim()}
                       className="cursor-pointer"
+                      aria-label="Add value"
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
@@ -281,6 +283,7 @@ const ProductOptionsManagerDemo = ({
           }}
           disabled={disabled}
           className="flex-1"
+          aria-label="New option name"
         />
         <Button
           variant="secondary"

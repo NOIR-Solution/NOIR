@@ -99,7 +99,7 @@ const SortableHead = ({ field, sortField, sortDir, onSort, children, className }
     >
       <div className="flex items-center gap-1">
         {children}
-        <span className="text-muted-foreground/50">
+        <span className="text-muted-foreground">
           {isActive ? (
             sortDir === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />
           ) : (

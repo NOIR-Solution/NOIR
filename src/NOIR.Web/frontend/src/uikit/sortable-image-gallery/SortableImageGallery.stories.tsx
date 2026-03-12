@@ -140,6 +140,7 @@ const ImageCard = ({
           placeholder="Alt text"
           className="flex-1 text-xs h-8"
           autoFocus
+          aria-label="Image alt text"
         />
         <Button
           size="sm"

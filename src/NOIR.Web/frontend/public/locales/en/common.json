@@ -3798,6 +3798,7 @@
       "signatureValid": "Signature",
       "showData": "Show Data",
       "hideData": "Hide Data",
+      "jsonData": "JSON data",
       "refundNumber": "Refund #",
       "reason": "Reason",
       "requestedBy": "Requested By"

@@ -69,7 +69,8 @@ export const LogEntryRow = ({
               e.stopPropagation()
               onToggleExpand()
             }}
-            className="w-4 flex-shrink-0 p-0.5 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground"
+            aria-label={isExpanded ? 'Collapse log entry' : 'Expand log entry'}
+            className="w-4 flex-shrink-0 p-0.5 hover:bg-muted dark:hover:bg-slate-700 rounded text-muted-foreground cursor-pointer"
           >
             {isExpanded ? (
               <ChevronDown className="h-3 w-3" />
@@ -85,7 +86,7 @@ export const LogEntryRow = ({
         <Tooltip>
           <TooltipTrigger asChild>
             <span className="w-[155px] flex-shrink-0 text-muted-foreground tabular-nums leading-5 cursor-default">
-              <span className="text-muted-foreground/70">
+              <span className="text-muted-foreground">
                 {formatRelativeTime(entry.timestamp)}
               </span>
               <span className="mx-1">·</span>
@@ -110,7 +111,7 @@ export const LogEntryRow = ({
         </Badge>
 
         {/* Source context - fixed width for consistent alignment */}
-        <span className="w-[140px] flex-shrink-0 text-muted-foreground/70 truncate leading-5">
+        <span className="w-[140px] flex-shrink-0 text-muted-foreground truncate leading-5">
           {entry.sourceContext ? `[${entry.sourceContext.split('.').pop()}]` : ''}
         </span>
 
@@ -129,7 +130,7 @@ export const LogEntryRow = ({
                 aria-label={t('developerLogs.copyEntryAsJson')}
               >
                 {copied ? (
-                  <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
+                  <Check className="h-3 w-3 text-green-700 dark:text-green-400" />
                 ) : (
                   <Copy className="h-3 w-3" />
                 )}

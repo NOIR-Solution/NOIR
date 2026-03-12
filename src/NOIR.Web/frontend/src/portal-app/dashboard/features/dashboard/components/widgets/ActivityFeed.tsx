@@ -85,7 +85,7 @@ export const ActivityFeed = ({ items }: ActivityFeedProps) => {
             className="border-0 rounded-none py-6"
           />
         ) : (
-          <div className="max-h-[400px] overflow-y-auto pl-1">
+          <div className="max-h-[400px] overflow-y-auto pl-1" tabIndex={0} role="region" aria-label={t('dashboard.activityFeed')}>
             {items.map((item, i) => {
               const config = OPERATION_CONFIG[item.type] ?? DEFAULT_CONFIG
               const Icon = config.icon
@@ -144,14 +144,14 @@ export const ActivityFeed = ({ items }: ActivityFeedProps) => {
                           {item.userEmail && (
                             <>
                               <span className="truncate max-w-[120px]">{item.userEmail}</span>
-                              <span className="text-muted-foreground/40">·</span>
+                              <span className="text-muted-foreground">·</span>
                             </>
                           )}
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span className="flex items-center gap-1 cursor-default tabular-nums">
                                 <Clock className="h-3 w-3" />
-                                <span className="text-muted-foreground/70">
+                                <span className="text-muted-foreground">
                                   {formatRelativeTime(item.timestamp)}
                                 </span>
                                 <span>·</span>

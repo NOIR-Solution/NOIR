@@ -48,7 +48,7 @@ export const EmailPreviewDialog = ({ open, onOpenChange, preview, loading }: Ema
           )}
 
           {!loading && preview && (
-            <div className="flex-1 overflow-y-auto space-y-4">
+            <div className="flex-1 overflow-y-auto space-y-4" tabIndex={0} role="region" aria-label={t('emailTemplates.emailPreviewTitle')}>
               {/* Subject Line */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">

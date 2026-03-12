@@ -19,24 +19,29 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  args: {},
+  args: {
+    'aria-label': 'Toggle option',
+  },
 }
 
 export const Checked: Story = {
   args: {
     checked: true,
+    'aria-label': 'Toggle option',
   },
 }
 
 export const Unchecked: Story = {
   args: {
     checked: false,
+    'aria-label': 'Toggle option',
   },
 }
 
 export const Disabled: Story = {
   args: {
     disabled: true,
+    'aria-label': 'Toggle option',
   },
 }
 
@@ -44,6 +49,7 @@ export const DisabledChecked: Story = {
   args: {
     disabled: true,
     checked: true,
+    'aria-label': 'Toggle option',
   },
 }
 

@@ -28,7 +28,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { toast } from 'sonner'
-import { Plus, Kanban, X, ArrowDown, Minus, ArrowUp, AlertTriangle, Loader2, MoreHorizontal, Pencil, Trash2, UserCheck, UserX, ChevronDown, Layers, ArrowUpDown, Check, ChevronsUpDown, Archive, Copy, Hand, MousePointer2, Square, CheckSquare } from 'lucide-react'
+import { Plus, Kanban, X, ArrowDown, Minus, ArrowUp, AlertTriangle, Loader2, EllipsisVertical, Pencil, Trash2, UserCheck, UserX, ChevronDown, Layers, ArrowUpDown, Check, ChevronsUpDown, Archive, Copy, Hand, MousePointer2, Square, CheckSquare } from 'lucide-react'
 import {
   Avatar, Button, EmptyState, Skeleton,
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuCheckboxItem,
@@ -878,7 +878,7 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className={`inline-flex items-center gap-1.5 rounded-full px-3 h-9 text-sm font-medium border cursor-pointer transition-all ${
-              boardTaskType ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/15' : 'bg-background border-border hover:bg-muted'
+              boardTaskType ? 'bg-primary/5 text-primary border-primary/30 hover:bg-primary/10' : 'bg-background border-border hover:bg-muted'
             }`}>
               <Layers className="h-3.5 w-3.5" />
               {boardTaskType === 'tasks'
@@ -898,7 +898,7 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
               <DropdownMenuItem
                 key={key}
                 onClick={() => setFilter('board-task-type', key)}
-                className={`cursor-pointer ${boardTaskType === key ? 'bg-primary/10 text-primary font-medium' : ''}`}
+                className={`cursor-pointer ${boardTaskType === key ? 'bg-primary/5 text-primary font-medium' : ''}`}
               >
                 {label}
               </DropdownMenuItem>
@@ -910,7 +910,7 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className={`inline-flex items-center gap-1.5 rounded-full px-3 h-9 text-sm font-medium border cursor-pointer transition-all ${
-              boardPriorities.length > 0 ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/15' : 'bg-background border-border hover:bg-muted'
+              boardPriorities.length > 0 ? 'bg-primary/5 text-primary border-primary/30 hover:bg-primary/10' : 'bg-background border-border hover:bg-muted'
             }`}>
               <AlertTriangle className="h-3.5 w-3.5" />
               {t('pm.priority', { defaultValue: 'Priority' })}
@@ -1313,7 +1313,7 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
                                     onClick={(e) => e.stopPropagation()}
                                     aria-label={t('pm.columnOptions', { defaultValue: 'Column options' })}
                                   >
-                                    <MoreHorizontal className="h-4 w-4" />
+                                    <EllipsisVertical className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                               </TooltipTrigger>
@@ -1331,7 +1331,7 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
                                 className="cursor-pointer gap-2"
                                 onClick={() => setColumnSettingsId(column.id)}
                               >
-                                <MoreHorizontal className="h-3.5 w-3.5" />
+                                <EllipsisVertical className="h-3.5 w-3.5" />
                                 {t('pm.editColumn', { defaultValue: 'Edit column' })}
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
@@ -1443,7 +1443,7 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
                             <div className={`flex flex-col items-center justify-center py-6 text-center border-2 border-dashed rounded-lg transition-all duration-150 ${
                               isCardOver ? 'border-primary/60 bg-primary/5' : 'border-border/50 dark:border-border/60'
                             }`}>
-                              <p className="text-xs text-muted-foreground/50">
+                              <p className="text-xs text-muted-foreground">
                                 {t('pm.dropHere', { defaultValue: 'Drop tasks here' })}
                               </p>
                             </div>
@@ -1500,7 +1500,7 @@ export const KanbanBoard = ({ projectId, members, onCreateTask }: KanbanBoardPro
                             </div>
                           ) : (
                             <button
-                              className="w-full flex items-center gap-1.5 px-1 py-1.5 text-xs text-muted-foreground/70 hover:text-muted-foreground hover:bg-muted/40 rounded-md transition-colors cursor-pointer"
+                              className="w-full flex items-center gap-1.5 px-1 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 rounded-md transition-colors cursor-pointer"
                               onClick={() => setQuickAddColumnId(column.id)}
                             >
                               <Plus className="h-3.5 w-3.5" />

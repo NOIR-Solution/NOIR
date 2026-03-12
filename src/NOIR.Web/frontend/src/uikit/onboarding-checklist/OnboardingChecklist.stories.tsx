@@ -163,7 +163,7 @@ const OnboardingChecklistDemo = ({
         </div>
 
         <div className="mt-3">
-          <Progress value={percentage} className="h-2" />
+          <Progress value={percentage} className="h-2" aria-label={`Setup progress: ${percentage}%`} />
         </div>
       </CardHeader>
 

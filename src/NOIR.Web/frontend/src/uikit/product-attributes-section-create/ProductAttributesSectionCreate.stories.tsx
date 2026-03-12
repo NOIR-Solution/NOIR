@@ -279,7 +279,7 @@ const ProductAttributesSectionCreateDemo = ({
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <button type="button" className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                            <button type="button" className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer" aria-label={`Help for ${field.name}`}>
                               <HelpCircle className="h-4 w-4" />
                             </button>
                           </TooltipTrigger>
@@ -315,6 +315,7 @@ const ProductAttributesSectionCreateDemo = ({
                       onChange={(e) => handleChange(field.attributeId, e.target.value)}
                       placeholder={field.placeholder || ''}
                       disabled={isViewMode}
+                      aria-label={field.name}
                     />
                   )}
                   {field.type === 'TextArea' && (
@@ -324,6 +325,7 @@ const ProductAttributesSectionCreateDemo = ({
                       placeholder={field.placeholder || ''}
                       disabled={isViewMode}
                       rows={3}
+                      aria-label={field.name}
                     />
                   )}
                   {field.type === 'Number' && (
@@ -333,6 +335,7 @@ const ProductAttributesSectionCreateDemo = ({
                       onChange={(e) => handleChange(field.attributeId, e.target.value)}
                       placeholder={field.placeholder || '0'}
                       disabled={isViewMode}
+                      aria-label={field.name}
                     />
                   )}
                   {field.type === 'Boolean' && (
@@ -342,6 +345,7 @@ const ProductAttributesSectionCreateDemo = ({
                         onCheckedChange={(checked) => handleChange(field.attributeId, checked)}
                         disabled={isViewMode}
                         className="cursor-pointer"
+                        aria-label={field.name}
                       />
                       <span className="text-sm text-muted-foreground">
                         {localValues[field.attributeId] ? 'Yes' : 'No'}
@@ -355,6 +359,7 @@ const ProductAttributesSectionCreateDemo = ({
                         value={(localValues[field.attributeId] as string) || '#000000'}
                         onChange={(e) => handleChange(field.attributeId, e.target.value)}
                         disabled={isViewMode}
+                        aria-label={`${field.name} color picker`}
                         className="w-12 h-10 rounded-lg cursor-pointer border-2 border-input hover:border-primary/50 transition-colors [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
                       />
                       <Input
@@ -364,6 +369,7 @@ const ProductAttributesSectionCreateDemo = ({
                         maxLength={7}
                         disabled={isViewMode}
                         className="font-mono uppercase flex-1"
+                        aria-label={`${field.name} hex value`}
                       />
                     </div>
                   )}

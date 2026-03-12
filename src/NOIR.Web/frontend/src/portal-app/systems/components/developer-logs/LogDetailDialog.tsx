@@ -141,7 +141,7 @@ export const LogDetailDialog = ({
                     {entry.exception.message}
                   </div>
                   {entry.exception.stackTrace && (
-                    <pre className="mt-3 p-2 bg-red-100 dark:bg-red-900/50 rounded text-[11px] text-red-600/90 dark:text-red-400/90 whitespace-pre-wrap overflow-x-auto max-h-[300px] overflow-y-auto">
+                    <pre className="mt-3 p-2 bg-red-100 dark:bg-red-900/50 rounded text-[11px] text-red-600/90 dark:text-red-400/90 whitespace-pre-wrap overflow-x-auto max-h-[300px] overflow-y-auto" tabIndex={0} role="region" aria-label={t('developerLogs.exception')}>
                       {entry.exception.stackTrace}
                     </pre>
                   )}

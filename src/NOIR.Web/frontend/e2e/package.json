@@ -21,6 +21,9 @@
     "test:shard:4": "playwright test --shard=4/4",
     "report": "playwright show-report",
     "codegen": "playwright codegen http://localhost:3000",
+    "audit": "playwright test --project=ui-audit --project=ui-audit-platform",
+    "audit:pages": "playwright test --project=ui-audit --project=ui-audit-platform",
+    "audit:storybook": "playwright test --project=ui-audit --grep storybook",
     "install:browsers": "playwright install --with-deps"
   },
   "devDependencies": {

@@ -68,6 +68,40 @@ export default defineConfig({
       dependencies: ['auth-setup'],
     },
 
+    // ─── UI Audit: tenant admin (most pages) ────────────────
+    {
+      name: 'ui-audit',
+      testDir: './tests/ui-audit',
+      testMatch: /audit-runner\.spec\.ts|storybook-audit\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.auth/admin.json',
+        viewport: { width: 1440, height: 900 },
+        screenshot: 'off',
+        video: 'off',
+      },
+      dependencies: ['auth-setup'],
+      workers: 4,
+      timeout: 60_000,
+    },
+
+    // ─── UI Audit: platform admin (elevated pages) ────────
+    {
+      name: 'ui-audit-platform',
+      testDir: './tests/ui-audit',
+      testMatch: /audit-runner-platform\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.auth/platform-admin.json',
+        viewport: { width: 1440, height: 900 },
+        screenshot: 'off',
+        video: 'off',
+      },
+      dependencies: ['auth-setup'],
+      workers: 2,
+      timeout: 60_000,
+    },
+
     // ─── Cross-browser: only in CI nightly ─────────────────
     ...(process.env.NIGHTLY ? [
       {

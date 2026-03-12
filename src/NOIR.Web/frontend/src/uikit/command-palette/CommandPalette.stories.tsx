@@ -86,6 +86,7 @@ const CommandPaletteDemo = ({ withSearch }: { withSearch?: string }) => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Type a command or search..."
+              aria-label="Search commands"
               className="flex h-12 w-full bg-transparent py-3 px-2 text-sm outline-none placeholder:text-muted-foreground"
             />
             <kbd className="inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">

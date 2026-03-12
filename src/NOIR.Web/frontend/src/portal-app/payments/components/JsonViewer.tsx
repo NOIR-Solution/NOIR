@@ -42,6 +42,9 @@ export const JsonViewer = ({ data, maxHeight = '300px' }: JsonViewerProps) => {
         <pre
           className="mt-2 p-3 bg-muted rounded-md text-xs overflow-auto font-mono"
           style={{ maxHeight }}
+          tabIndex={0}
+          role="region"
+          aria-label={t('payments.detail.jsonData', 'JSON data')}
         >
           {formatted}
         </pre>

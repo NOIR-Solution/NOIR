@@ -112,7 +112,7 @@ const SortableHead = ({ field, sortField, sortDir, onSort, children }: SortableH
     >
       <div className="flex items-center gap-1">
         {children}
-        <span className="text-muted-foreground/50">
+        <span className="text-muted-foreground">
           {isActive ? (
             sortDir === 'asc' ? (
               <ChevronUp className="h-3.5 w-3.5" />
@@ -561,7 +561,7 @@ export const TaskListView = ({ projectId, members = [], onTaskClick }: TaskListV
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className={`inline-flex items-center gap-1.5 rounded-full px-3 h-9 text-sm font-medium border cursor-pointer transition-all ${
-              listStatuses.length > 0 ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/15' : 'bg-background border-border hover:bg-muted'
+              listStatuses.length > 0 ? 'bg-primary/5 text-primary border-primary/30 hover:bg-primary/10' : 'bg-background border-border hover:bg-muted'
             }`}>
               <Circle className="h-3.5 w-3.5" />
               {t('pm.status', { defaultValue: 'Status' })}
@@ -620,7 +620,7 @@ export const TaskListView = ({ projectId, members = [], onTaskClick }: TaskListV
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className={`inline-flex items-center gap-1.5 rounded-full px-3 h-9 text-sm font-medium border cursor-pointer transition-all ${
-              listPriorities.length > 0 ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/15' : 'bg-background border-border hover:bg-muted'
+              listPriorities.length > 0 ? 'bg-primary/5 text-primary border-primary/30 hover:bg-primary/10' : 'bg-background border-border hover:bg-muted'
             }`}>
               <AlertTriangle className="h-3.5 w-3.5" />
               {t('pm.priority', { defaultValue: 'Priority' })}
@@ -697,7 +697,7 @@ export const TaskListView = ({ projectId, members = [], onTaskClick }: TaskListV
 
         {/* Group by */}
         <Select value={groupBy} onValueChange={setGroupBy}>
-          <SelectTrigger className="w-[140px] cursor-pointer text-xs h-8">
+          <SelectTrigger className="w-[140px] cursor-pointer text-xs h-8" aria-label={t('pm.groupBy', { defaultValue: 'Group by' })}>
             <Layers className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
             <SelectValue placeholder={t('pm.groupBy', { defaultValue: 'Group by' })} />
           </SelectTrigger>

@@ -276,7 +276,7 @@ export const JsonViewer = ({
   }
 
   const JsonContent = ({ expanded, depth, height }: { expanded: boolean; depth: number; height?: string }) => (
-    <div className="p-3 bg-muted/50 rounded-lg overflow-auto" style={{ maxHeight: height }}>
+    <div className="p-3 bg-muted/50 rounded-lg overflow-auto" style={{ maxHeight: height }} tabIndex={0} role="region" aria-label={title || t('json.jsonData', 'JSON Data')}>
       <JsonNode
         name={rootName}
         value={parsedData as JsonValue}

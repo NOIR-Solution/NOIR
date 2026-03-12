@@ -24,6 +24,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     placeholder: 'Type your message here...',
+    'aria-label': 'Message',
   },
 }
 
@@ -31,6 +32,7 @@ export const WithValue: Story = {
   args: {
     defaultValue:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    'aria-label': 'Message',
   },
 }
 
@@ -38,6 +40,7 @@ export const Disabled: Story = {
   args: {
     placeholder: 'This textarea is disabled',
     disabled: true,
+    'aria-label': 'Disabled textarea',
   },
 }
 
@@ -45,6 +48,7 @@ export const DisabledWithValue: Story = {
   args: {
     defaultValue: 'This content cannot be edited.',
     disabled: true,
+    'aria-label': 'Disabled textarea',
   },
 }
 
@@ -52,6 +56,7 @@ export const CustomRows: Story = {
   args: {
     placeholder: 'Textarea with 8 rows',
     rows: 8,
+    'aria-label': 'Large textarea',
   },
 }
 
@@ -59,6 +64,7 @@ export const SmallRows: Story = {
   args: {
     placeholder: 'Textarea with 2 rows',
     rows: 2,
+    'aria-label': 'Small textarea',
   },
 }
 
@@ -80,6 +86,7 @@ export const WithMaxLength: Story = {
   args: {
     placeholder: 'Limited to 100 characters',
     maxLength: 100,
+    'aria-label': 'Limited textarea',
   },
 }
 
@@ -87,6 +94,7 @@ export const ReadOnly: Story = {
   args: {
     defaultValue: 'This is read-only content that cannot be modified by the user.',
     readOnly: true,
+    'aria-label': 'Read-only textarea',
   },
 }
 
@@ -105,8 +113,9 @@ export const FormExample: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: 400 }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <label style={{ fontSize: '14px', fontWeight: 500 }}>Subject</label>
+        <label htmlFor="form-subject" style={{ fontSize: '14px', fontWeight: 500 }}>Subject</label>
         <input
+          id="form-subject"
           type="text"
           placeholder="Enter subject"
           style={{
@@ -118,8 +127,8 @@ export const FormExample: Story = {
         />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <label style={{ fontSize: '14px', fontWeight: 500 }}>Message</label>
-        <Textarea placeholder="Write your message..." rows={6} />
+        <label htmlFor="form-message" style={{ fontSize: '14px', fontWeight: 500 }}>Message</label>
+        <Textarea id="form-message" placeholder="Write your message..." rows={6} />
       </div>
       <button
         style={{

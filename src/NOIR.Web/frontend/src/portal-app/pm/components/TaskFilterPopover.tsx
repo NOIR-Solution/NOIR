@@ -310,7 +310,7 @@ export const TaskFilterPopover = ({
         <button
           className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium border cursor-pointer transition-all ${
             activeCount > 0
-              ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/15'
+              ? 'bg-primary/5 text-primary border-primary/30 hover:bg-primary/10'
               : 'bg-background border-border text-foreground hover:bg-muted'
           }`}
         >
@@ -537,7 +537,7 @@ export const TaskFilterPopover = ({
           {/* Empty state */}
           {!hasAnySection && (
             <div className="p-4 text-center">
-              <Filter className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+              <Filter className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
               <p className="text-xs text-muted-foreground">{t('pm.noFiltersAvailable', { defaultValue: 'No filters available' })}</p>
             </div>
           )}

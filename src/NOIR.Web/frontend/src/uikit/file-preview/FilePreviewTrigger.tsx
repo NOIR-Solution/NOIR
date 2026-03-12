@@ -139,6 +139,8 @@ export const FilePreviewTrigger = ({
     <Popover open={hoverOpen} onOpenChange={setHoverOpen}>
       <PopoverTrigger asChild>
         <div
+          role="button"
+          tabIndex={0}
           onMouseEnter={showPopover}
           onMouseLeave={scheduleClose}
         >

@@ -44,7 +44,7 @@ export const LOG_LEVELS: LogLevelConfig[] = [
     label: 'DBG',
     icon: Bug,
     bgColor: 'bg-purple-100 dark:bg-purple-900/30',
-    textColor: 'text-purple-600 dark:text-purple-400',
+    textColor: 'text-purple-700 dark:text-purple-400',
     borderColor: 'border-purple-300 dark:border-purple-700',
   },
   {
@@ -52,7 +52,7 @@ export const LOG_LEVELS: LogLevelConfig[] = [
     label: 'INF',
     icon: Info,
     bgColor: 'bg-blue-100 dark:bg-blue-900/30',
-    textColor: 'text-blue-600 dark:text-blue-400',
+    textColor: 'text-blue-700 dark:text-blue-400',
     borderColor: 'border-blue-300 dark:border-blue-700',
   },
   {
@@ -60,7 +60,7 @@ export const LOG_LEVELS: LogLevelConfig[] = [
     label: 'WRN',
     icon: AlertTriangle,
     bgColor: 'bg-amber-100 dark:bg-amber-900/30',
-    textColor: 'text-amber-600 dark:text-amber-400',
+    textColor: 'text-amber-700 dark:text-amber-400',
     borderColor: 'border-amber-300 dark:border-amber-700',
   },
   {

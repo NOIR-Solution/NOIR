@@ -99,7 +99,7 @@ const Pagination: React.FC<PaginationProps> = ({
           <div className="flex items-center gap-2 ml-4">
             <span className="text-sm text-muted-foreground">{t('labels.rowsPerPage', 'Rows per page:')}</span>
             <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
-              <SelectTrigger className="h-8 w-[70px] cursor-pointer">
+              <SelectTrigger className="h-8 w-[70px] cursor-pointer" aria-label={t('labels.rowsPerPage', 'Rows per page')}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

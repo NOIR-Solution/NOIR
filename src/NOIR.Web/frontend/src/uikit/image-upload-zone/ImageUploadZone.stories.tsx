@@ -140,7 +140,7 @@ const ImageUploadZoneDemo = ({
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{upload.name}</p>
                 {upload.status === 'uploading' && (
-                  <Progress value={upload.progress} className="h-1.5 mt-1" />
+                  <Progress value={upload.progress} className="h-1.5 mt-1" aria-label={`Upload progress: ${upload.progress}%`} />
                 )}
                 {upload.status === 'error' && (
                   <p className="text-xs text-destructive mt-0.5">{upload.error}</p>

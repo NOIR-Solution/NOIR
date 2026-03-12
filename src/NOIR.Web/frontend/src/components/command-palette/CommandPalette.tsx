@@ -331,7 +331,7 @@ export const CommandPalette = () => {
           </div>
 
           {/* Results List */}
-          <Command.List className="max-h-[300px] overflow-y-auto p-2">
+          <Command.List className="max-h-[300px] overflow-y-auto p-2" aria-label={t('commandPalette.searchResults')}>
             <Command.Empty className="py-6 text-center text-sm text-muted-foreground">
               {deferredSearch.length >= 2
                 ? isSearching

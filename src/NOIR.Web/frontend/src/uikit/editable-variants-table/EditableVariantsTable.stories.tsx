@@ -82,6 +82,7 @@ const VariantRow = ({
               className={`h-8 text-xs w-32 font-mono${editSkuError ? ' border-destructive' : ''}`}
               placeholder="e.g. SKU-001"
               autoFocus
+              aria-label="SKU"
             />
             {editSkuError && (
               <p className="text-xs text-destructive mt-0.5">{editSkuError}</p>
@@ -113,6 +114,7 @@ const VariantRow = ({
               setDraft((d) => ({ ...d, price: parseFloat(e.target.value) || 0 }))
             }
             className="h-8 text-xs w-24 text-right"
+            aria-label="Price"
           />
         ) : (
           <span className="text-sm">${committed.price.toFixed(2)}</span>
@@ -135,6 +137,7 @@ const VariantRow = ({
             }
             className="h-8 text-xs w-24 text-right"
             placeholder="—"
+            aria-label="Compare price"
           />
         ) : (
           <span className="text-sm text-muted-foreground">
@@ -159,6 +162,7 @@ const VariantRow = ({
             }
             className="h-8 text-xs w-24 text-right"
             placeholder="—"
+            aria-label="Cost price"
           />
         ) : (
           <span className="text-sm text-muted-foreground">
@@ -182,6 +186,7 @@ const VariantRow = ({
               }))
             }
             className="h-8 text-xs w-20 text-right"
+            aria-label="Stock quantity"
           />
         ) : (
           <span

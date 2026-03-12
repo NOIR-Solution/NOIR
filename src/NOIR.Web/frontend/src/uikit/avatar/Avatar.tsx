@@ -50,7 +50,7 @@ const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
           <span
             className={cn(
               'flex h-full w-full items-center justify-center rounded-full',
-              'bg-primary/10 text-primary font-medium'
+              'bg-muted text-primary font-medium'
             )}
           >
             {initials}

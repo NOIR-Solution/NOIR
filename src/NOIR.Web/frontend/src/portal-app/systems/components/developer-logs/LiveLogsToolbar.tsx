@@ -43,6 +43,9 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@uikit'
 
 import { cn } from '@/lib/utils'
@@ -129,27 +132,37 @@ export const LiveLogsToolbar = ({
                 </>
               )}
             </Button>
-            <Button
-              variant={autoScroll ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={onToggleAutoScroll}
-              className="gap-1.5"
-              title={t('developerLogs.autoScroll')}
-            >
-              <ArrowDownToLine className={cn('h-4 w-4', autoScroll && 'text-primary')} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onToggleSortOrder}
-              title={sortOrder === 'newest' ? t('developerLogs.showingNewestFirst') : t('developerLogs.showingOldestFirst')}
-            >
-              {sortOrder === 'newest' ? (
-                <ArrowDown className="h-4 w-4" />
-              ) : (
-                <ArrowUp className="h-4 w-4" />
-              )}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={autoScroll ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={onToggleAutoScroll}
+                  className="gap-1.5"
+                  aria-label={t('developerLogs.autoScroll')}
+                >
+                  <ArrowDownToLine className={cn('h-4 w-4', autoScroll && 'text-primary')} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('developerLogs.autoScroll')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onToggleSortOrder}
+                  aria-label={sortOrder === 'newest' ? t('developerLogs.showingNewestFirst') : t('developerLogs.showingOldestFirst')}
+                >
+                  {sortOrder === 'newest' ? (
+                    <ArrowDown className="h-4 w-4" />
+                  ) : (
+                    <ArrowUp className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{sortOrder === 'newest' ? t('developerLogs.showingNewestFirst') : t('developerLogs.showingOldestFirst')}</TooltipContent>
+            </Tooltip>
           </div>
 
           {/* Server Log Level - controls what logs are generated */}
@@ -158,10 +171,15 @@ export const LiveLogsToolbar = ({
             onValueChange={onLevelChange}
             disabled={isChangingLevel}
           >
-            <SelectTrigger className="cursor-pointer w-[160px] h-8" title={t('developerLogs.serverMinLevelTooltip', 'Server minimum log level - also filters display')} aria-label={t('developerLogs.serverMinLevel', 'Server minimum log level')}>
-              <span className="text-muted-foreground mr-1">{t('developerLogs.minLabel')}</span>
-              <SelectValue />
-            </SelectTrigger>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SelectTrigger className="cursor-pointer w-[160px] h-8" aria-label={t('developerLogs.serverMinLevel', 'Server minimum log level')}>
+                  <span className="text-muted-foreground mr-1">{t('developerLogs.minLabel')}</span>
+                  <SelectValue />
+                </SelectTrigger>
+              </TooltipTrigger>
+              <TooltipContent>{t('developerLogs.serverMinLevelTooltip', 'Server minimum log level - also filters display')}</TooltipContent>
+            </Tooltip>
             <SelectContent>
               {availableLevels.map(level => {
                 const config = getLevelConfig(level as DevLogLevel)
@@ -258,7 +276,8 @@ export const LiveLogsToolbar = ({
               {searchTerm && (
                 <button
                   onClick={() => onSearchTermChange('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                  aria-label={t('labels.clearSearch', 'Clear search')}
                 >
                   <X className="h-4 w-4" />
                 </button>

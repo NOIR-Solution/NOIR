@@ -159,7 +159,7 @@ const ProductSearchTypeahead = ({ onSelect, existingVariantIds, currency }: Prod
       </div>
 
       {isOpen && searchInput.length >= 2 && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-lg max-h-80 overflow-y-auto">
+        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-lg max-h-80 overflow-y-auto" tabIndex={0} role="listbox" aria-label={t('orders.manualCreate.searchProducts')}>
           {items.length === 0 && !isSearchStale ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
               {t('orders.manualCreate.noProducts')}
@@ -341,7 +341,7 @@ const CustomerSearchTypeahead = ({ onSelect, onClear, selectedCustomer }: Custom
       </div>
 
       {isOpen && searchInput.length >= 2 && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-lg max-h-80 overflow-y-auto">
+        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-lg max-h-80 overflow-y-auto" tabIndex={0} role="listbox" aria-label={t('orders.manualCreate.searchCustomer')}>
           {items.length === 0 && !isSearchStale ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
               {t('orders.manualCreate.noCustomersFound')}
@@ -927,7 +927,7 @@ export const ManualCreateOrderPage = () => {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 border rounded-lg border-dashed">
-                  <Plus className="h-8 w-8 text-muted-foreground/40 mb-2" />
+                  <Plus className="h-8 w-8 text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground">
                     {t('orders.manualCreate.searchProducts')}
                   </p>

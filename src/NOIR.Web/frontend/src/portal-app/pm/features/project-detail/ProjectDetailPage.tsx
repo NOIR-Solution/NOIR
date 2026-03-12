@@ -153,7 +153,7 @@ export const ProjectDetailPage = () => {
             >
               {t('pm.projects')}
             </ViewTransitionLink>
-            <span className="text-muted-foreground/50 flex-shrink-0 hidden sm:block">/</span>
+            <span className="text-muted-foreground flex-shrink-0 hidden sm:block">/</span>
             <div
               className="h-6 w-6 rounded-md flex-shrink-0 flex items-center justify-center text-white font-bold text-[11px] select-none shadow-sm"
               style={{ background: `linear-gradient(135deg, ${project.color ?? '#6366f1'} 0%, ${project.color ? project.color + 'cc' : '#4f46e5'} 100%)` }}

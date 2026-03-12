@@ -610,7 +610,7 @@ export const CustomerDetailPage = () => {
                   onValueChange={handleSegmentChange}
                   disabled={updateSegmentMutation.isPending}
                 >
-                  <SelectTrigger className="cursor-pointer">
+                  <SelectTrigger className="cursor-pointer" aria-label={t('customers.segmentManagement', 'Segment Management')}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

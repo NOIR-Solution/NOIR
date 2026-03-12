@@ -206,7 +206,7 @@ const TimelineEntry = ({
                 <TooltipTrigger asChild>
                   <span className="flex items-center gap-1 cursor-default tabular-nums">
                     <Clock className="h-3 w-3" />
-                    <span className="text-muted-foreground/70">
+                    <span className="text-muted-foreground">
                       {formatRelativeTime(entry.timestamp)}
                     </span>
                     <span>·</span>
@@ -218,7 +218,7 @@ const TimelineEntry = ({
                 </TooltipContent>
               </Tooltip>
               {entry.durationMs && (
-                <span className="text-muted-foreground/70">
+                <span className="text-muted-foreground">
                   {entry.durationMs}ms
                 </span>
               )}

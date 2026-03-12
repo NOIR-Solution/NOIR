@@ -129,7 +129,7 @@ export const TestEmailDialog = ({
               {availableVariables.length > 0 && (
                 <div className="space-y-3">
                   <Label>{t('emailTemplates.sampleData')}</Label>
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                  <div className="space-y-2 max-h-64 overflow-y-auto" tabIndex={0} role="region" aria-label={t('emailTemplates.sampleData')}>
                     {availableVariables.map((variable) => (
                       <div key={variable} className="space-y-1">
                         <Label htmlFor={`sample-${variable}`} className="text-xs font-mono">

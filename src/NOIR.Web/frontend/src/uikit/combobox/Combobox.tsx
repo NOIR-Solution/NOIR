@@ -109,6 +109,7 @@ export const Combobox = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-label={selectedOption ? selectedOption.label : placeholder}
           className={cn(
             'w-full justify-between font-normal',
             !value && 'text-muted-foreground',

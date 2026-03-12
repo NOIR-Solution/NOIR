@@ -410,13 +410,13 @@ export const OrderDetailPage = () => {
                           ? `${step.bgColor} ${step.borderColor} ${step.color}`
                           : isCurrent
                             ? `${step.bgColor} ${step.borderColor} ${step.color} animate-pulse ring-4 ring-offset-2 ring-offset-background ring-current/20`
-                            : 'bg-muted border-muted-foreground/20 text-muted-foreground/30'
+                            : 'bg-muted border-muted-foreground/20 text-muted-foreground'
                       }`}
                     >
                       <StepIcon className="h-5 w-5" />
                     </div>
                     <span className={`text-xs text-center font-medium whitespace-nowrap ${
-                      isCompleted || isCurrent ? 'text-foreground' : 'text-muted-foreground/40'
+                      isCompleted || isCurrent ? 'text-foreground' : 'text-muted-foreground'
                     }`}>
                       {t(`orders.status.${step.status.toLowerCase()}`, step.status)}
                     </span>

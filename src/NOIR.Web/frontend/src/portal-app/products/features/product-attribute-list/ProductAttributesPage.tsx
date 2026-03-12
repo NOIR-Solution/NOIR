@@ -263,14 +263,14 @@ export const ProductAttributesPage = () => {
                         {attribute.isFilterable ? (
                           <Check className="h-4 w-4 text-emerald-500 mx-auto" />
                         ) : (
-                          <Minus className="h-4 w-4 text-muted-foreground/40 mx-auto" />
+                          <Minus className="h-4 w-4 text-muted-foreground mx-auto" />
                         )}
                       </TableCell>
                       <TableCell className="text-center">
                         {attribute.isVariantAttribute ? (
                           <Check className="h-4 w-4 text-emerald-500 mx-auto" />
                         ) : (
-                          <Minus className="h-4 w-4 text-muted-foreground/40 mx-auto" />
+                          <Minus className="h-4 w-4 text-muted-foreground mx-auto" />
                         )}
                       </TableCell>
                       <TableCell>

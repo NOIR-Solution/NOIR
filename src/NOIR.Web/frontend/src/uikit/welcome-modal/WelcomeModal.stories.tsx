@@ -16,7 +16,7 @@ interface FeatureCardProps {
 
 const FeatureCard = ({ icon: Icon, title, description }: FeatureCardProps) => (
   <div className="flex items-start gap-3 p-4 rounded-xl bg-muted/50 border border-border/50 transition-all duration-300 hover:bg-muted/70">
-    <div className="p-2 rounded-lg bg-primary/10 text-primary flex-shrink-0">
+    <div className="p-2 rounded-lg bg-primary/15 text-primary flex-shrink-0">
       <Icon className="h-5 w-5" />
     </div>
     <div>
