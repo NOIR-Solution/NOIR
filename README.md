@@ -12,7 +12,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-12%2C791_passing-brightgreen.svg?style=flat-square)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-13%2C532_passing-brightgreen.svg?style=flat-square)](tests/)
 [![AI-Coded](https://img.shields.io/badge/Built_with-Claude_Code-blueviolet?style=flat-square&logo=anthropic)](https://claude.ai/download)
 
 [Features](#features) · [Quick Start](#quick-start) · [Architecture](#architecture) · [Documentation](#documentation) · [Contributing](#contributing)
@@ -25,7 +25,7 @@
 
 NOIR is a production-ready foundation for building multi-tenant SaaS applications. It provides a complete vertical stack — from database to UI — with built-in e-commerce, ERP modules, and enterprise patterns out of the box.
 
-**100% AI-coded.** Every line of code, every test, every document in this repository was written using [Claude Code](https://claude.ai/download). NOIR is a proof that AI-assisted development can produce enterprise-grade software — with clean architecture, 12,791 passing tests, and full-stack functionality — when used effectively.
+**100% AI-coded.** Every line of code, every test, every document in this repository was written using [Claude Code](https://claude.ai/download). NOIR is a proof that AI-assisted development can produce enterprise-grade software — with clean architecture, 13,532 passing tests, and full-stack functionality — when used effectively.
 
 **Use cases:**
 - Multi-tenant B2B/B2C SaaS platforms
@@ -40,7 +40,7 @@ NOIR is a production-ready foundation for building multi-tenant SaaS application
 ```mermaid
 flowchart TB
     FE["🖥️ React 19 Frontend<br/>56 pages · 98 UIKit components · 35 hooks"]
-    WEB["⚡ Web Layer — ASP.NET Core 10<br/>52 endpoint groups · JWT · Multi-tenancy · SignalR + SSE"]
+    WEB["⚡ Web Layer — ASP.NET Core 10<br/>52 endpoint groups · JWT · Multi-tenancy · SignalR + SSE · MCP Server"]
     APP["📋 Application Layer — CQRS via Wolverine<br/>Commands · Queries · Validators · Domain Events · Audit"]
     DOM["🏛️ Domain Layer<br/>Entities · Value Objects · Repository Interfaces · Specifications"]
     INF["🔧 Infrastructure<br/>EF Core 10 · SQL Server 2022 · FusionCache · Hangfire · ClosedXML"]
@@ -63,7 +63,7 @@ NOIR/
 │           ├── src/portal-app/ # Feature modules (56 pages)
 │           ├── src/uikit/      # 98 UI components + Storybook stories
 │           └── src/hooks/      # 35 custom hooks
-├── tests/                     # 12,791 tests
+├── tests/                     # 13,532 tests
 └── docs/                      # Architecture, patterns, module designs
 ```
 
@@ -74,6 +74,7 @@ NOIR/
 - **Repository + Specification** — reusable, composable query objects
 - **Soft Delete** — data safety by default, hard delete only for GDPR
 - **Domain Events** — decoupled cross-cutting reactions to state changes
+- **MCP Server** — 28 AI-callable tools via Model Context Protocol (Streamable HTTP)
 
 ---
 
@@ -90,6 +91,7 @@ NOIR/
 | ⚡ | **Real-Time** | SignalR hubs, SSE for job progress, multi-tab session sync |
 | 📧 | **Email** | Database-driven templates with Mustache interpolation, multi-tenant inheritance |
 | 📱 | **PWA** | Installable on all platforms, offline support, smart caching strategies |
+| 🤖 | **MCP Server** | 28 AI-callable tools + 5 prompts + 5 resources via Model Context Protocol (Streamable HTTP) |
 
 ### 🛒 E-commerce
 
@@ -145,6 +147,7 @@ NOIR/
 | Serilog | Structured logging |
 | FusionCache | Hybrid L1/L2 cache |
 | ClosedXML | Excel import/export |
+| ModelContextProtocol.AspNetCore | MCP server (AI agent integration) |
 
 </td>
 <td width="50%" valign="top">
@@ -176,16 +179,16 @@ See [TECH_STACK.md](docs/TECH_STACK.md) for the complete technology reference.
 
 | Suite | Count | Scope |
 |-------|-------|-------|
-| Domain Unit Tests | 2,963 | Business rules, entity logic |
-| Application Unit Tests | 8,163 | Handlers, validators, DTOs |
-| Integration Tests | 803 | API endpoints with real database |
-| Architecture Tests | 45 | Layer dependency enforcement |
+| Domain Unit Tests | 2,971 | Business rules, entity logic |
+| Application Unit Tests | 8,557 | Handlers, validators, DTOs |
+| Integration Tests | 1,141 | API endpoints with real database |
+| Architecture Tests | 46 | Layer dependency enforcement |
 | Frontend Unit Tests | 143 | Hooks, lib utilities (96% coverage) |
 | Storybook Browser Tests | 674 | 97 UIKit components in Chromium |
-| **Total** | **12,791** | |
+| **Total** | **13,532** | |
 
 ```bash
-dotnet test src/NOIR.sln                                  # Backend (11,974)
+dotnet test src/NOIR.sln                                  # Backend (12,715)
 cd src/NOIR.Web/frontend && pnpm test:coverage            # Frontend unit + coverage
 cd src/NOIR.Web/frontend && pnpm test:storybook           # Storybook browser tests
 ```
@@ -227,6 +230,7 @@ cd src/NOIR.Web/frontend && pnpm install && pnpm run dev
 | Frontend | http://localhost:3000 |
 | API | http://localhost:4000 |
 | API Docs (Scalar) | http://localhost:4000/api/docs |
+| **MCP Server** | **http://localhost:4000/api/mcp** |
 | Storybook | http://localhost:6006 |
 | Hangfire Dashboard | http://localhost:4000/hangfire |
 
@@ -241,6 +245,7 @@ Default credentials: `admin@noir.local` / `123qwe`
 | [Documentation Index](docs/DOCUMENTATION_INDEX.md) | Navigation hub for all docs |
 | [Knowledge Base](docs/KNOWLEDGE_BASE.md) | Deep-dive codebase reference |
 | [Feature Catalog](docs/FEATURE_CATALOG.md) | All features, commands, endpoints |
+| [MCP Server](docs/backend/patterns/mcp-server.md) | AI agent integration — tools, prompts, resources |
 | [Tech Stack](docs/TECH_STACK.md) | Technologies with rationale |
 | [Product Roadmap](docs/roadmap.md) | Now / Next / Later framework |
 

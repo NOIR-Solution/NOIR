@@ -330,7 +330,7 @@ public class GetPostsQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Page.Should().Be(2);
+        result.Value.PageNumber.Should().Be(2);
         result.Value.PageSize.Should().Be(10);
         result.Value.TotalCount.Should().Be(25);
         result.Value.TotalPages.Should().Be(3);

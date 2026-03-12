@@ -19,7 +19,6 @@ using NOIR.Application.Features.Blog.Queries.GetPost;
 using NOIR.Application.Features.Blog.Queries.GetPosts;
 using NOIR.Application.Features.Blog.Queries.GetTags;
 using NOIR.Domain.Enums;
-using BlogPagedResult = NOIR.Application.Features.Blog.Queries.GetPosts.PagedResult<NOIR.Application.Features.Blog.DTOs.PostListDto>;
 
 namespace NOIR.Web.Endpoints;
 
@@ -64,14 +63,14 @@ public static class BlogEndpoints
                 publishedOnly ?? false,
                 page ?? 1,
                 pageSize ?? 20);
-            var result = await bus.InvokeAsync<Result<BlogPagedResult>>(query);
+            var result = await bus.InvokeAsync<Result<PagedResult<PostListDto>>>(query);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.BlogPostsRead)
         .WithName("GetBlogPosts")
         .WithSummary("Get paginated list of blog posts")
         .WithDescription("Returns blog posts with optional filtering by search, status, category, author, and tags.")
-        .Produces<BlogPagedResult>(StatusCodes.Status200OK);
+        .Produces<PagedResult<PostListDto>>(StatusCodes.Status200OK);
 
         // Get post by ID
         group.MapGet("/{id:guid}", async (Guid id, IMessageBus bus) =>

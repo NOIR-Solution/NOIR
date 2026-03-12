@@ -13,7 +13,7 @@ public class SearchProductVariantsQueryHandler
         _productRepository = productRepository;
     }
 
-    public async Task<Result<GetProducts.PagedResult<ProductVariantLookupDto>>> Handle(
+    public async Task<Result<PagedResult<ProductVariantLookupDto>>> Handle(
         SearchProductVariantsQuery query,
         CancellationToken cancellationToken)
     {
@@ -52,11 +52,8 @@ public class SearchProductVariantsQueryHandler
             }))
             .ToList();
 
-        var result = new GetProducts.PagedResult<ProductVariantLookupDto>(
-            items,
-            totalCount,
-            query.Page,
-            query.PageSize);
+        var pageIndex = query.Page - 1;
+        var result = PagedResult<ProductVariantLookupDto>.Create(items, totalCount, pageIndex, query.PageSize);
 
         return Result.Success(result);
     }

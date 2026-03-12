@@ -37,7 +37,7 @@ public class ProductEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonWithEnumsAsync<Application.Features.Products.Queries.GetProducts.PagedResult<ProductListDto>>();
+        var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ProductListDto>>();
         result.Should().NotBeNull();
     }
 
@@ -62,9 +62,9 @@ public class ProductEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonWithEnumsAsync<Application.Features.Products.Queries.GetProducts.PagedResult<ProductListDto>>();
+        var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ProductListDto>>();
         result.Should().NotBeNull();
-        result!.Page.Should().Be(1);
+        result!.PageNumber.Should().Be(1);
         result.Items.Count.Should().BeLessThanOrEqualTo(5);
     }
 

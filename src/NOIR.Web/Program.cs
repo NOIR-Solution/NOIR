@@ -190,6 +190,9 @@ builder.Services.AddHttpClient("WebhookDelivery", client =>
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
 
+// Add MCP (Model Context Protocol) server for AI agent integration
+builder.Services.AddNoirMcpServer();
+
 // Configure Platform settings (for seeding platform admin and default tenant)
 builder.Services.Configure<PlatformSettings>(builder.Configuration.GetSection(PlatformSettings.SectionName));
 
@@ -760,6 +763,12 @@ app.MapDepartmentEndpoints();
 app.MapEmployeeTagEndpoints();
 app.MapProjectEndpoints();
 app.MapTaskEndpoints();
+
+// Map MCP (Model Context Protocol) server for AI agent integration
+// Uses existing auth (JWT + API Key) — AI agents authenticate via X-API-Key + X-API-Secret headers
+app.MapMcp("/api/mcp")
+    .RequireAuthorization()
+    .RequireRateLimiting("fixed");
 
 // Dev-only endpoints for E2E testing (not available in production)
 if (app.Environment.IsDevelopment())

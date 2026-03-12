@@ -1,6 +1,6 @@
 # NOIR - Claude Code Instructions
 
-> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.4 (2026-03-01).
+> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.5 (2026-03-12).
 
 ## SuperClaude Framework
 
@@ -89,6 +89,17 @@
 
 24. **Run frontend build before push** - `cd src/NOIR.Web/frontend && pnpm run build`. CI runs strict mode. Pre-push hook at `.git/hooks/pre-push`.
 
+### MCP Server
+
+25. **MCP tool naming** — `noir_{domain}_{action}` (e.g. `noir_orders_ship`, `noir_crm_leads_win`). Always set explicit `Name` in `[McpServerTool(Name = "...")]` — never rely on method name default.
+26. **Always add `[RequiresModule]` to tool classes** — The filter in `McpServiceRegistration.cs` enforces it automatically; no per-method checks needed.
+27. **Accept strings for GUIDs and enums** — AI clients send strings. Parse with `Guid.Parse(id)` and `Enum.TryParse<T>(value, true, out var e)`.
+28. **`ListToolsResult` is NOT a record** — Cannot use `result with { Tools = ... }`. Mutate `result.Tools` directly; it's a settable `IList<Tool>`.
+29. **Audit commands in MCP tools** — Check whether the command uses `UserId` (Orders, Blog) or `AuditUserId` (CRM, HR, PM, Customers) — they differ by feature.
+30. **OpenAPI + MCP consistency** — When modifying a query/command constructor or adding a new capability, `grep -r "new XxxQuery\|new XxxCommand" src/NOIR.Web/Mcp/` to find affected tools and update them. New features need both OpenAPI tags AND MCP tools (see `.claude/rules/feature-registry-sync.md`).
+
+See `docs/backend/patterns/mcp-server.md` for full guide including prompts, resources, and SDK gotchas.
+
 ---
 
 ## Quick Reference
@@ -99,7 +110,7 @@ dotnet build src/NOIR.sln
 dotnet run --project src/NOIR.Web
 dotnet watch --project src/NOIR.Web        # hot reload
 
-# Tests (11,974)
+# Tests (12,715 backend · 13,532 total)
 dotnet test src/NOIR.sln
 dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
 
@@ -145,6 +156,7 @@ powershell -Command "Start-Process cmd -ArgumentList '/c cd /d src\NOIR.Web\fron
 | **Frontend** | http://localhost:3000 |
 | **Backend API** | http://localhost:4000 |
 | **API Docs** | http://localhost:4000/api/docs |
+| **MCP Server** | http://localhost:4000/api/mcp |
 | **Storybook** | http://localhost:6006 |
 
 Logs: `.backend.log`, `.frontend.log`, `.storybook.log` in project root.
@@ -162,6 +174,7 @@ src/NOIR.Application/     # Features (Command + Handler + Validator co-located),
     └── Common/Interfaces/       # Service abstractions
 src/NOIR.Infrastructure/  # EF Core, Repositories, Service implementations
 src/NOIR.Web/             # Endpoints, Middleware, Program.cs
+    └── Mcp/             # MCP server — Tools/, Resources/, Prompts/, Filters/
     └── frontend/         # React 19 SPA (pnpm)
         ├── src/portal-app/      # Domain-driven feature modules
         ├── src/uikit/           # UI components + stories (@uikit)
@@ -183,6 +196,7 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 | Query | `Get[Entity][Filter]Query` | `GetActiveUsersQuery` |
 | Handler | `[Command]Handler` | `CreateOrderCommandHandler` |
 | Configuration | `[Entity]Configuration` | `CustomerConfiguration` |
+| MCP Tool | `noir_{domain}_{action}` | `noir_orders_ship` |
 
 ---
 
@@ -290,7 +304,7 @@ cd src/NOIR.Web/frontend && pnpm build-storybook  # Build check
 | **Promotions** | `Features/Promotions/` | Discount codes, percentage/fixed, usage limits, date ranges. | Complete |
 | **Reports** | `Features/Reports/` | Revenue, orders, inventory, product performance analytics. | Complete |
 | **Webhooks** | `Features/Webhooks/` | Outbound webhook subscriptions with event filtering and delivery tracking. | Complete |
-| **Feature Mgmt** | `Application/Modules/` | 31 modules (8 core + 23 toggleable). Platform availability + tenant enable. | Complete |
+| **Feature Mgmt** | `Application/Modules/` | 33 modules (8 core + 25 toggleable). Platform availability + tenant enable. | Complete |
 | **SSE** | `Infrastructure/Sse/` | Server-Sent Events for real-time job progress and operation updates. | Complete |
 
 ---
@@ -313,6 +327,7 @@ cd src/NOIR.Web/frontend && pnpm build-storybook  # Build check
 | **Index** | `docs/DOCUMENTATION_INDEX.md` |
 | **Knowledge Base** | `docs/KNOWLEDGE_BASE.md` |
 | **Backend Patterns** | `docs/backend/patterns/` |
+| **MCP Server** | `docs/backend/patterns/mcp-server.md` |
 | **Frontend Guide** | `docs/frontend/` |
 | **Architecture Decisions** | `docs/decisions/` |
 | **Module Designs** | `docs/designs/` (HR, CRM, PM, Calendar) |
@@ -327,4 +342,4 @@ Research reports → `docs/backend/research/`.
 
 ---
 
-> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.4 (2026-03-01).
+> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.5 (2026-03-12).

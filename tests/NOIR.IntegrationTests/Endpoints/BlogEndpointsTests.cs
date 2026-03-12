@@ -1,5 +1,5 @@
 using NOIR.Application.Features.Blog.DTOs;
-using BlogPagedResult = NOIR.Application.Features.Blog.Queries.GetPosts.PagedResult<NOIR.Application.Features.Blog.DTOs.PostListDto>;
+
 
 namespace NOIR.IntegrationTests.Endpoints;
 
@@ -65,7 +65,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonWithEnumsAsync<BlogPagedResult>();
+        var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<PostListDto>>();
         result.Should().NotBeNull();
         result!.Items.Should().NotBeNull();
     }
@@ -91,9 +91,9 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonWithEnumsAsync<BlogPagedResult>();
+        var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<PostListDto>>();
         result.Should().NotBeNull();
-        result!.Page.Should().Be(1);
+        result!.PageNumber.Should().Be(1);
         result.Items.Count.Should().BeLessThanOrEqualTo(5);
     }
 

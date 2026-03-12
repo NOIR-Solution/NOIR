@@ -95,7 +95,7 @@ public class GetProductsQueryHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Items.Should().HaveCount(5);
         result.Value.TotalCount.Should().Be(5);
-        result.Value.Page.Should().Be(1);
+        result.Value.PageNumber.Should().Be(1);
         result.Value.PageSize.Should().Be(20);
     }
 
@@ -125,7 +125,7 @@ public class GetProductsQueryHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Items.Should().HaveCount(5);
         result.Value.TotalCount.Should().Be(10);
-        result.Value.Page.Should().Be(2);
+        result.Value.PageNumber.Should().Be(2);
         result.Value.PageSize.Should().Be(5);
         result.Value.TotalPages.Should().Be(2);
         result.Value.HasPreviousPage.Should().BeTrue();

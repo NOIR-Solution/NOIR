@@ -4,6 +4,7 @@ using NOIR.Application.Features.ProductAttributes.DTOs;
 using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeAssignments;
 using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeFormSchema;
 using NOIR.Application.Features.Products.Commands.AddProductImage;
+using NOIR.Application.Features.Inventory.DTOs;
 using NOIR.Application.Features.Products.Queries.SearchProductVariants;
 using NOIR.Application.Features.Products.Specifications;
 using NOIR.Domain.Entities.Product;
@@ -37,7 +38,6 @@ using NOIR.Application.Features.Products.DTOs;
 using NOIR.Application.Features.Products.Queries.GetProductById;
 using NOIR.Application.Features.Products.Queries.GetProducts;
 using NOIR.Application.Features.Products.Queries.GetProductStats;
-using ProductPagedResult = NOIR.Application.Features.Products.Queries.GetProducts.PagedResult<NOIR.Application.Features.Products.DTOs.ProductListDto>;
 
 namespace NOIR.Web.Endpoints;
 
@@ -96,14 +96,14 @@ public static class ProductEndpoints
                 page ?? 1,
                 pageSize ?? 20,
                 parsedFilters);
-            var result = await bus.InvokeAsync<Result<ProductPagedResult>>(query);
+            var result = await bus.InvokeAsync<Result<PagedResult<ProductListDto>>>(query);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.ProductsRead)
         .WithName("GetProducts")
         .WithSummary("Get paginated list of products")
         .WithDescription("Returns products with optional filtering by search, status, category, brand, price range, stock availability, low stock items, and attribute values. The attributeFilters parameter accepts a JSON string like {\"color\": [\"Red\", \"Blue\"]}.")
-        .Produces<ProductPagedResult>(StatusCodes.Status200OK);
+        .Produces<PagedResult<ProductListDto>>(StatusCodes.Status200OK);
 
         // Get product stats (dashboard)
         group.MapGet("/stats", async (IMessageBus bus) =>
@@ -131,14 +131,14 @@ public static class ProductEndpoints
                 categoryId,
                 page ?? 1,
                 pageSize ?? 20);
-            var result = await bus.InvokeAsync<Result<Application.Features.Products.Queries.GetProducts.PagedResult<ProductVariantLookupDto>>>(query);
+            var result = await bus.InvokeAsync<Result<PagedResult<ProductVariantLookupDto>>>(query);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.ProductsRead)
         .WithName("SearchProductVariants")
         .WithSummary("Search product variants for selection")
         .WithDescription("Search active product variants by name or SKU. Used for manual order creation.")
-        .Produces<Application.Features.Products.Queries.GetProducts.PagedResult<ProductVariantLookupDto>>(StatusCodes.Status200OK);
+        .Produces<PagedResult<ProductVariantLookupDto>>(StatusCodes.Status200OK);
 
         // Get product by ID
         group.MapGet("/{id:guid}", async (Guid id, IMessageBus bus) =>
@@ -558,14 +558,14 @@ public static class ProductEndpoints
                 variantId,
                 page ?? 1,
                 pageSize ?? 20);
-            var result = await bus.InvokeAsync<Result<Application.Features.Products.Queries.GetProducts.PagedResult<Application.Features.Inventory.DTOs.InventoryMovementDto>>>(query);
+            var result = await bus.InvokeAsync<Result<PagedResult<InventoryMovementDto>>>(query);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.ProductsRead)
         .WithName("GetProductVariantStockHistory")
         .WithSummary("Get stock movement history for a product variant")
         .WithDescription("Returns paginated stock movement history including reservations, releases, adjustments, and other inventory changes.")
-        .Produces<Application.Features.Products.Queries.GetProducts.PagedResult<Application.Features.Inventory.DTOs.InventoryMovementDto>>(StatusCodes.Status200OK)
+        .Produces<PagedResult<InventoryMovementDto>>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
 
         // ===== Image Management Endpoints =====

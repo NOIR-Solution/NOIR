@@ -141,7 +141,7 @@ public class SearchProductVariantsQueryHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Items.Should().BeEmpty();
         result.Value.TotalCount.Should().Be(0);
-        result.Value.Page.Should().Be(1);
+        result.Value.PageNumber.Should().Be(1);
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class SearchProductVariantsQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Page.Should().Be(3);
+        result.Value.PageNumber.Should().Be(3);
         result.Value.PageSize.Should().Be(10);
     }
 

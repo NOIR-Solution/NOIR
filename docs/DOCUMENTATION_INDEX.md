@@ -59,6 +59,7 @@
 | Middleware & Interceptors | [middleware-interceptors.md](backend/patterns/middleware-interceptors.md) |
 | SSE & Background Jobs | [sse-background-jobs.md](backend/patterns/sse-background-jobs.md) |
 | Excel Import/Export | [excel-import-export.md](backend/patterns/excel-import-export.md) |
+| **MCP Server (AI Agent Integration)** | [mcp-server.md](backend/patterns/mcp-server.md) |
 
 ### Architecture (`backend/architecture/`, `architecture/`)
 
@@ -110,13 +111,13 @@
 |----------|---------|
 | [README.md](testing/README.md) | Testing overview, conventions, and running tests |
 
-### Test Coverage Summary (2026-03-01)
+### Test Coverage Summary (2026-03-12)
 
-**Backend Tests:** 12,685 tests across 4 test projects
+**Backend Tests:** 12,715 tests across 4 test projects
 - 2,971 Domain unit tests
 - 8,557 Application unit tests
-- 1,112 Integration tests
-- 45 Architecture tests
+- 1,141 Integration tests
+- 46 Architecture tests
 
 ---
 
@@ -166,8 +167,8 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 56 |
-| **Backend Patterns** | 20 |
+| **Total Docs** | 57 |
+| **Backend Patterns** | 21 |
 | **Backend Architecture** | 2 |
 | **Backend Research** | 5 |
 | **Frontend Guides** | 9 |
@@ -178,4 +179,4 @@
 
 ---
 
-**Version:** 5.0 (Updated 2026-03-08 — Added 9 backend pattern docs, frontend hooks reference, updated all indexes, test counts)
+**Version:** 5.1 (Updated 2026-03-12 — Added MCP server pattern doc, updated test counts to 12,715 backend / 13,532 total)

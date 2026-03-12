@@ -2,7 +2,6 @@ using NOIR.Application.Features.Inventory.DTOs;
 using NOIR.Application.Features.Inventory.Mappers;
 using NOIR.Application.Features.Inventory.Specifications;
 using NOIR.Domain.Entities.Product;
-using PagedResult = NOIR.Application.Features.Products.Queries.GetProducts.PagedResult<NOIR.Application.Features.Inventory.DTOs.InventoryMovementDto>;
 
 namespace NOIR.Application.Features.Inventory.Queries.GetStockHistory;
 
@@ -18,7 +17,7 @@ public class GetStockHistoryQueryHandler
         _repository = repository;
     }
 
-    public async Task<Result<PagedResult>> Handle(
+    public async Task<Result<PagedResult<InventoryMovementDto>>> Handle(
         GetStockHistoryQuery query,
         CancellationToken cancellationToken)
     {
@@ -39,11 +38,8 @@ public class GetStockHistoryQueryHandler
 
         var items = movements.Select(InventoryMovementMapper.ToDto).ToList();
 
-        var result = new NOIR.Application.Features.Products.Queries.GetProducts.PagedResult<InventoryMovementDto>(
-            items,
-            totalCount,
-            query.Page,
-            query.PageSize);
+        var pageIndex = query.Page - 1;
+        var result = PagedResult<InventoryMovementDto>.Create(items, totalCount, pageIndex, query.PageSize);
 
         return Result.Success(result);
     }

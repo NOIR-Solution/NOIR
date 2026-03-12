@@ -52,26 +52,9 @@ public class GetProductsQueryHandler
 
         var items = products.Select(ProductMapper.ToListDto).ToList();
 
-        var result = new PagedResult<ProductListDto>(
-            items,
-            totalCount,
-            query.Page,
-            query.PageSize);
+        var pageIndex = query.Page - 1;
+        var result = PagedResult<ProductListDto>.Create(items, totalCount, pageIndex, query.PageSize);
 
         return Result.Success(result);
     }
-}
-
-/// <summary>
-/// Paged result for list queries.
-/// </summary>
-public sealed record PagedResult<T>(
-    List<T> Items,
-    int TotalCount,
-    int Page,
-    int PageSize)
-{
-    public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
-    public bool HasPreviousPage => Page > 1;
-    public bool HasNextPage => Page < TotalPages;
 }

@@ -1,5 +1,5 @@
 using NOIR.Application.Features.Inventory.DTOs;
-using StockHistoryPagedResult = NOIR.Application.Features.Products.Queries.GetProducts.PagedResult<NOIR.Application.Features.Inventory.DTOs.InventoryMovementDto>;
+
 
 namespace NOIR.IntegrationTests.Endpoints;
 
@@ -95,7 +95,7 @@ public class StockHistoryEndpointsTests : IClassFixture<CustomWebApplicationFact
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var result = await response.Content.ReadFromJsonWithEnumsAsync<StockHistoryPagedResult>();
+            var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<InventoryMovementDto>>();
             result.Should().NotBeNull();
             result!.Items.Should().BeEmpty();
             result.TotalCount.Should().Be(0);
@@ -117,9 +117,9 @@ public class StockHistoryEndpointsTests : IClassFixture<CustomWebApplicationFact
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var result = await response.Content.ReadFromJsonWithEnumsAsync<StockHistoryPagedResult>();
+            var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<InventoryMovementDto>>();
             result.Should().NotBeNull();
-            result!.Page.Should().Be(2);
+            result!.PageNumber.Should().Be(2);
             result.PageSize.Should().Be(10);
         }
     }

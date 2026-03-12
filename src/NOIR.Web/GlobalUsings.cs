@@ -93,12 +93,16 @@ global using NOIR.Infrastructure.Logging;
 global using NOIR.Infrastructure.Persistence;
 global using NOIR.Infrastructure.Storage;
 
+// MCP (Model Context Protocol)
+global using ModelContextProtocol.AspNetCore;
+
 // NOIR Web
 global using NOIR.Web.Endpoints;
 global using NOIR.Web.Extensions;
 global using NOIR.Web.Filters;
 global using NOIR.Web.Internal;
 global using NOIR.Web.Json;
+global using NOIR.Web.Mcp;
 global using NOIR.Web.Middleware;
 
 // NOIR Application Behaviors

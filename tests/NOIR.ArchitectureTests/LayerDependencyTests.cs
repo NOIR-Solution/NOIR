@@ -576,6 +576,32 @@ public class LayerDependencyTests
 
     #endregion
 
+    #region No Duplicate Common Types
+
+    [Fact]
+    public void Features_ShouldNotRedefine_CommonModelTypes()
+    {
+        // Common model type names that must only exist in Common.Models namespace
+        var protectedTypeNames = new HashSet<string> { "PagedResult`1", "Result`1" };
+
+        // Act - Find any types in Features namespace that shadow Common.Models types
+        var duplicates = Types
+            .InAssembly(ApplicationAssembly)
+            .That()
+            .ResideInNamespaceContaining("Features")
+            .GetTypes()
+            .Where(t => protectedTypeNames.Contains(t.Name))
+            .ToList();
+
+        // Assert
+        duplicates.Should().BeEmpty(
+            because: "Feature namespaces must not redefine common types like PagedResult<T> — " +
+                     "use NOIR.Application.Common.Models.PagedResult<T> instead. " +
+                     $"Found duplicates: {string.Join(", ", duplicates.Select(t => t.FullName))}");
+    }
+
+    #endregion
+
     #region CQRS Pattern Tests
 
     [Fact]
