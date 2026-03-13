@@ -1,10 +1,15 @@
-import { useState, useDeferredValue, useMemo, useTransition, useCallback } from 'react'
+import { useState, useMemo, useTransition, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef, RowSelectionState, SortingState } from '@tanstack/react-table'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
 import { getPaginationRange } from '@/lib/utils/pagination'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable, useSelectedIds } from '@/hooks/useServerTable'
+import { createSelectColumn, createActionsColumn } from '@/lib/table/columnHelpers'
 import {
   Search,
   Package,
@@ -14,7 +19,6 @@ import {
   Trash2,
   Send,
   Archive,
-  EllipsisVertical,
   LayoutGrid,
   List as ListIcon,
   Loader2,
@@ -22,7 +26,6 @@ import {
 } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
-import { useSelection } from '@/hooks/useSelection'
 import { BulkActionToolbar } from '@/components/BulkActionToolbar'
 import {
   Badge,
@@ -32,7 +35,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  Checkbox,
   Credenza,
   CredenzaContent,
   CredenzaDescription,
@@ -40,28 +42,22 @@ import {
   CredenzaHeader,
   CredenzaTitle,
   CredenzaBody,
-  DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   EmptyState,
   FilePreviewTrigger,
   Input,
   PageHeader,
-  Pagination,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
   Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  DataTable,
+  DataTablePagination,
+  DataTableToolbar,
+  Pagination,
   ViewModeToggle,
   type ViewModeOption,
 } from '@uikit'
@@ -93,6 +89,17 @@ import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/utils/currency'
 import { PRODUCT_STATUS_CONFIG, DEFAULT_PRODUCT_PAGE_SIZE, LOW_STOCK_THRESHOLD } from '@/lib/constants/product'
 
+type ProductFilters = {
+  status?: ProductStatus
+  categoryId?: string
+  brand?: string
+  inStockOnly?: boolean
+  lowStockOnly?: boolean
+  attributeFilters?: Record<string, string[]>
+}
+
+const ch = createColumnHelper<ProductListItem>()
+
 export const ProductsPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
@@ -105,15 +112,28 @@ export const ProductsPage = () => {
   const canDeleteProducts = hasPermission(Permissions.ProductsDelete)
   const canPublishProducts = hasPermission(Permissions.ProductsPublish)
 
-  // Filter params managed as component state
-  const [params, setParams] = useState<GetProductsParams>({
-    page: 1,
-    pageSize: DEFAULT_PRODUCT_PAGE_SIZE,
-  })
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
+  const {
+    params,
+    searchInput,
+    setSearchInput,
+    isSearchStale,
+    isFilterPending,
+    setFilter,
+    setPage,
+    setPageSize,
+  } = useTableParams<ProductFilters>({ defaultPageSize: DEFAULT_PRODUCT_PAGE_SIZE })
+
+  const queryParams = useMemo((): GetProductsParams => ({
+    page: params.page,
+    pageSize: params.pageSize,
+    search: params.search,
+    status: params.filters.status,
+    categoryId: params.filters.categoryId,
+    brand: params.filters.brand,
+    inStockOnly: params.filters.inStockOnly,
+    lowStockOnly: params.filters.lowStockOnly,
+    attributeFilters: params.filters.attributeFilters,
+  }), [params])
 
   const { data, isLoading: loading, isPlaceholderData, error: queryError, refetch } = useProductsQuery(queryParams)
   const { data: stats = { total: 0, active: 0, draft: 0, archived: 0, outOfStock: 0, lowStock: 0 } } = useProductStatsQuery()
@@ -142,45 +162,22 @@ export const ProductsPage = () => {
     }
   }
 
-  // Transition for filter/pagination updates
-  const [isFilterPending, startFilterTransition] = useTransition()
-
-  // Param setters — wrapped in startFilterTransition for smooth UI
-  const setPage = (page: number) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, page }))
-  )
-  const setStatus = (status: ProductStatus | undefined) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, status, page: 1 }))
-  )
-  const setCategoryId = (categoryId: string | undefined) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, categoryId, page: 1 }))
-  )
-  const setBrand = (brand: string | undefined) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, brand, page: 1 }))
-  )
-  const setInStockOnly = (inStockOnly: boolean | undefined) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, inStockOnly, page: 1 }))
-  )
-  const setLowStockOnly = (lowStockOnly: boolean | undefined) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, lowStockOnly, page: 1 }))
-  )
-  const setAttributeFilters = (attributeFilters: Record<string, string[]> | undefined) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, attributeFilters, page: 1 }))
-  )
-
-
   const [productToDelete, setProductToDelete] = useState<ProductListItem | null>(null)
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const viewModeOptions: ViewModeOption<'table' | 'grid'>[] = useMemo(() => [
     { value: 'table', label: t('labels.list', 'List'), icon: ListIcon, ariaLabel: t('labels.tableView', 'Table view') },
     { value: 'grid', label: t('labels.grid', 'Grid'), icon: LayoutGrid, ariaLabel: t('labels.gridView', 'Grid view') },
   ], [t])
-  const { selectedIds, setSelectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(data?.items)
+
+  const selectedIds = useSelectedIds(rowSelection)
+  const selectedIdsSet = useMemo(() => new Set(selectedIds), [selectedIds])
+  const clearSelection = useCallback(() => setRowSelection({}), [])
 
   const handleCollectionUpdate = useCallback(() => {
-    if (selectedIds.size === 0) refetch()
-  }, [selectedIds.size, refetch])
+    if (selectedIds.length === 0) refetch()
+  }, [selectedIds.length, refetch])
 
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'Product',
@@ -192,16 +189,16 @@ export const ProductsPage = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value)
-    setParams((prev) => ({ ...prev, page: 1 }))
+    setPage(1)
   }
 
   // Bulk action handlers - use bulk API endpoints for better performance
   const onBulkPublish = () => {
-    if (selectedIds.size === 0) return
+    if (selectedIds.length === 0) return
 
     // Get IDs of draft products only (bulk publish only works on drafts)
     const draftProductIds = data?.items
-      .filter(p => selectedIds.has(p.id) && p.status === 'Draft')
+      .filter(p => selectedIdsSet.has(p.id) && p.status === 'Draft')
       .map(p => p.id) || []
 
     if (draftProductIds.length === 0) {
@@ -222,16 +219,16 @@ export const ProductsPage = () => {
         const message = err instanceof Error ? err.message : t('products.bulkPublishFailed', 'Failed to publish products')
         toast.error(message)
       }
-      setSelectedIds(new Set())
+      setRowSelection({})
     })
   }
 
   const onBulkArchive = () => {
-    if (selectedIds.size === 0) return
+    if (selectedIds.length === 0) return
 
     // Get IDs of active products only (bulk archive only works on active)
     const activeProductIds = data?.items
-      .filter(p => selectedIds.has(p.id) && p.status === 'Active')
+      .filter(p => selectedIdsSet.has(p.id) && p.status === 'Active')
       .map(p => p.id) || []
 
     if (activeProductIds.length === 0) {
@@ -252,17 +249,17 @@ export const ProductsPage = () => {
         const message = err instanceof Error ? err.message : t('products.bulkArchiveFailed', 'Failed to archive products')
         toast.error(message)
       }
-      setSelectedIds(new Set())
+      setRowSelection({})
     })
   }
 
   const onBulkDelete = () => {
-    if (selectedIds.size === 0) return
+    if (selectedIds.length === 0) return
     setShowBulkDeleteConfirm(true)
   }
 
   const handleBulkDeleteConfirm = () => {
-    const selectedProductIds = Array.from(selectedIds)
+    const selectedProductIds = [...selectedIds]
 
     startBulkTransition(async () => {
       try {
@@ -277,18 +274,18 @@ export const ProductsPage = () => {
         const message = err instanceof Error ? err.message : t('products.bulkDeleteFailed', 'Failed to delete products')
         toast.error(message)
       }
-      setSelectedIds(new Set())
+      setRowSelection({})
       setShowBulkDeleteConfirm(false)
     })
   }
 
   // Get counts for bulk action buttons
   const selectedDraftCount = data?.items.filter(
-    p => selectedIds.has(p.id) && p.status === 'Draft'
+    p => selectedIdsSet.has(p.id) && p.status === 'Draft'
   ).length || 0
 
   const selectedActiveCount = data?.items.filter(
-    p => selectedIds.has(p.id) && p.status === 'Active'
+    p => selectedIdsSet.has(p.id) && p.status === 'Active'
   ).length || 0
 
   // Count items with low stock (in stock but below threshold)
@@ -297,19 +294,19 @@ export const ProductsPage = () => {
   ).length || 0
 
   const handleStatusChange = (value: string) => {
-    setStatus(value === 'all' ? undefined : (value as ProductStatus))
+    setFilter('status', value === 'all' ? undefined : (value as ProductStatus))
   }
 
   const handleCategoryChange = (value: string) => {
-    setCategoryId(value === 'all' ? undefined : value)
+    setFilter('categoryId', value === 'all' ? undefined : value)
   }
 
   const handleBrandChange = (value: string) => {
-    setBrand(value === 'all' ? undefined : value)
+    setFilter('brand', value === 'all' ? undefined : value)
   }
 
   const handleStockFilterChange = (value: string) => {
-    setInStockOnly(value === 'inStock' ? true : undefined)
+    setFilter('inStockOnly', value === 'inStock' ? true : undefined)
   }
 
 
@@ -343,6 +340,161 @@ export const ProductsPage = () => {
       toast.error(message)
     }
   }
+
+  const columns = useMemo((): ColumnDef<ProductListItem, unknown>[] => [
+    createActionsColumn<ProductListItem>((product) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
+            <Eye className="h-4 w-4 mr-2" />
+            {t('labels.viewDetails', 'View Details')}
+          </ViewTransitionLink>
+        </DropdownMenuItem>
+        {canUpdateProducts && (
+          <DropdownMenuItem className="cursor-pointer" asChild>
+            <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}/edit`}>
+              <Pencil className="h-4 w-4 mr-2" />
+              {t('products.editProduct', 'Edit Product')}
+            </ViewTransitionLink>
+          </DropdownMenuItem>
+        )}
+        {canCreateProducts && (
+          <DropdownMenuItem className="cursor-pointer" onClick={() => onDuplicate(product)}>
+            <Copy className="h-4 w-4 mr-2" />
+            {t('products.duplicate', 'Duplicate')}
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        {canPublishProducts && product.status === 'Draft' && (
+          <DropdownMenuItem className="cursor-pointer text-emerald-600 dark:text-emerald-400" onClick={() => onPublish(product)}>
+            <Send className="h-4 w-4 mr-2" />
+            {t('labels.publish', 'Publish')}
+          </DropdownMenuItem>
+        )}
+        {canUpdateProducts && product.status === 'Active' && (
+          <DropdownMenuItem className="cursor-pointer text-amber-600 dark:text-amber-400" onClick={() => onArchive(product)}>
+            <Archive className="h-4 w-4 mr-2" />
+            {t('labels.archive', 'Archive')}
+          </DropdownMenuItem>
+        )}
+        {canDeleteProducts && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive" onClick={() => setProductToDelete(product)}>
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('labels.delete', 'Delete')}
+            </DropdownMenuItem>
+          </>
+        )}
+      </>
+    )),
+    createSelectColumn<ProductListItem>(),
+    ch.accessor('name', {
+      id: 'product',
+      header: t('products.product', 'Product'),
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div style={{ viewTransitionName: `product-image-${row.original.id}` }} onClick={(e) => e.stopPropagation()}>
+            <FilePreviewTrigger
+              file={{ url: row.original.primaryImageUrl ?? '', name: row.original.name }}
+              thumbnailWidth={56}
+              thumbnailHeight={56}
+              className="rounded-xl"
+            />
+          </div>
+          <div className="flex flex-col min-w-0">
+            <span className="font-medium truncate">{row.original.name}</span>
+            {row.original.sku && (
+              <span className="text-xs text-muted-foreground font-mono">SKU: {row.original.sku}</span>
+            )}
+          </div>
+        </div>
+      ),
+    }) as ColumnDef<ProductListItem, unknown>,
+    ch.accessor('status', {
+      header: t('labels.status', 'Status'),
+      enableSorting: false,
+      cell: ({ getValue }) => {
+        const status = PRODUCT_STATUS_CONFIG[getValue()]
+        const StatusIcon = status.icon
+        return (
+          <Badge className={`${status.color} border`} variant="outline">
+            <StatusIcon className="h-3 w-3" />
+            {t(status.labelKey)}
+          </Badge>
+        )
+      },
+    }) as ColumnDef<ProductListItem, unknown>,
+    ch.accessor('categoryName', {
+      id: 'category',
+      header: t('labels.category', 'Category'),
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm">{getValue() || '—'}</span>,
+    }) as ColumnDef<ProductListItem, unknown>,
+    ch.accessor((r) => r.brandName || r.brand, {
+      id: 'brand',
+      header: t('labels.brand', 'Brand'),
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm">{getValue() || '—'}</span>,
+    }) as ColumnDef<ProductListItem, unknown>,
+    ch.accessor('basePrice', {
+      id: 'price',
+      header: t('products.price', 'Price'),
+      enableSorting: false,
+      meta: { align: 'right' as const },
+      cell: ({ row }) => (
+        <span className="font-semibold text-foreground">
+          {formatCurrency(row.original.basePrice, row.original.currency)}
+        </span>
+      ),
+    }) as ColumnDef<ProductListItem, unknown>,
+    ch.accessor('totalStock', {
+      id: 'stock',
+      header: t('labels.stock', 'Stock'),
+      enableSorting: false,
+      meta: { align: 'right' as const },
+      cell: ({ getValue, row }) => (
+        <Badge variant={row.original.inStock ? 'default' : 'destructive'}>
+          {getValue()}
+        </Badge>
+      ),
+    }) as ColumnDef<ProductListItem, unknown>,
+    ch.accessor('createdAt', {
+      id: 'created',
+      header: t('labels.created', 'Created'),
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDistanceToNow(new Date(getValue()), { addSuffix: true })}
+        </span>
+      ),
+    }) as ColumnDef<ProductListItem, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, canUpdateProducts, canCreateProducts, canPublishProducts, canDeleteProducts])
+
+  const tableData = useMemo(() => data?.items ?? [], [data?.items])
+  const table = useServerTable({
+    data: tableData,
+    columns,
+    rowCount: data?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'products',
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: [] as SortingState,
+      rowSelection,
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function'
+        ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize })
+        : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
+    getRowId: (row) => row.id,
+  })
 
   const paginationRange = data
     ? getPaginationRange(data.page, params.pageSize || DEFAULT_PRODUCT_PAGE_SIZE, data.totalCount)
@@ -381,18 +533,17 @@ export const ProductsPage = () => {
       <LowStockAlert
         lowStockCount={lowStockCount}
         onViewLowStock={() => {
-          // Clear other stock filters and set low stock filter
-          setInStockOnly(undefined)
-          setLowStockOnly(true)
+          setFilter('inStockOnly', undefined)
+          setFilter('lowStockOnly', true)
         }}
       />
 
       {/* Stats Dashboard */}
       <ProductStatsCards
         stats={stats}
-        hasActiveFilters={!!(deferredSearch || params.categoryId || params.brand || params.inStockOnly || params.lowStockOnly || (params.attributeFilters && Object.keys(params.attributeFilters).length > 0))}
-        activeFilter={params.status || null}
-        onFilterChange={(status) => setStatus(status || undefined)}
+        hasActiveFilters={!!(params.search || params.filters.categoryId || params.filters.brand || params.filters.inStockOnly || params.filters.lowStockOnly || (params.filters.attributeFilters && Object.keys(params.filters.attributeFilters).length > 0))}
+        activeFilter={params.filters.status || null}
+        onFilterChange={(status) => setFilter('status', status || undefined)}
       />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-0">
@@ -408,81 +559,135 @@ export const ProductsPage = () => {
               <ViewModeToggle options={viewModeOptions} value={viewMode} onChange={setViewMode} />
             </div>
 
-            {/* Filter Bar */}
-            <div className="flex flex-wrap items-center gap-2">
-            {/* Search */}
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-              <Input
-                placeholder={t('products.searchPlaceholder', 'Search products...')}
-                value={searchInput}
-                onChange={handleSearchChange}
-                className="pl-9 h-9"
-                aria-label={t('products.searchProducts', 'Search products')}
+            {/* Filter Bar - DataTableToolbar for table view, inline for grid view */}
+            {viewMode === 'table' ? (
+              <DataTableToolbar
+                table={table}
+                searchInput={searchInput}
+                onSearchChange={setSearchInput}
+                searchPlaceholder={t('products.searchPlaceholder', 'Search products...')}
+                isSearchStale={isSearchStale}
+                showColumnToggle={true}
+                onResetColumnVisibility={table.resetColumnVisibility}
+                filterSlot={
+                  <>
+                    <Select value={params.filters.status || 'all'} onValueChange={handleStatusChange}>
+                      <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer" aria-label={t('products.filterByStatus', 'Filter by status')}>
+                        <SelectValue placeholder={t('labels.status', 'Status')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all" className="cursor-pointer">{t('labels.allStatus', 'All Status')}</SelectItem>
+                        <SelectItem value="Draft" className="cursor-pointer">{t('products.status.draft', 'Draft')}</SelectItem>
+                        <SelectItem value="Active" className="cursor-pointer">{t('products.status.active', 'Active')}</SelectItem>
+                        <SelectItem value="Archived" className="cursor-pointer">{t('products.status.archived', 'Archived')}</SelectItem>
+                        <SelectItem value="OutOfStock" className="cursor-pointer">{t('products.status.outOfStock', 'Out of Stock')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={params.filters.categoryId || 'all'} onValueChange={handleCategoryChange}>
+                      <SelectTrigger className="w-full sm:w-40 h-9 cursor-pointer" aria-label={t('products.filterByCategory', 'Filter by category')}>
+                        <SelectValue placeholder={t('labels.category', 'Category')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all" className="cursor-pointer">{t('labels.allCategories', 'All Categories')}</SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">{cat.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={params.filters.brand || 'all'} onValueChange={handleBrandChange}>
+                      <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer" aria-label={t('products.filterByBrand', 'Filter by brand')}>
+                        <SelectValue placeholder={t('labels.brand', 'Brand')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all" className="cursor-pointer">{t('labels.allBrands', 'All Brands')}</SelectItem>
+                        {brands.map((brand) => (
+                          <SelectItem key={brand.id} value={brand.name} className="cursor-pointer">{brand.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={params.filters.inStockOnly ? 'inStock' : 'all'} onValueChange={handleStockFilterChange}>
+                      <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer" aria-label={t('products.filterByStock', 'Filter by stock')}>
+                        <SelectValue placeholder={t('labels.stock', 'Stock')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all" className="cursor-pointer">{t('labels.allStock', 'All Stock')}</SelectItem>
+                        <SelectItem value="inStock" className="cursor-pointer">{t('products.inStock', 'In Stock')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {filterableAttributes.length > 0 && (
+                      <AttributeFilterDialog
+                        attributes={filterableAttributes}
+                        activeFilters={params.filters.attributeFilters}
+                        onApply={(f) => setFilter('attributeFilters', f)}
+                      />
+                    )}
+                  </>
+                }
               />
-            </div>
-
-            <Select onValueChange={handleStatusChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByStatus', 'Filter by status')}>
-                <SelectValue placeholder={t('labels.status', 'Status')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all" className="cursor-pointer">{t('labels.allStatus', 'All Status')}</SelectItem>
-                <SelectItem value="Draft" className="cursor-pointer">{t('products.status.draft', 'Draft')}</SelectItem>
-                <SelectItem value="Active" className="cursor-pointer">{t('products.status.active', 'Active')}</SelectItem>
-                <SelectItem value="Archived" className="cursor-pointer">{t('products.status.archived', 'Archived')}</SelectItem>
-                <SelectItem value="OutOfStock" className="cursor-pointer">{t('products.status.outOfStock', 'Out of Stock')}</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={handleCategoryChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-40 h-9 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByCategory', 'Filter by category')}>
-                <SelectValue placeholder={t('labels.category', 'Category')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all" className="cursor-pointer">{t('labels.allCategories', 'All Categories')}</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={handleBrandChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByBrand', 'Filter by brand')}>
-                <SelectValue placeholder={t('labels.brand', 'Brand')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all" className="cursor-pointer">{t('labels.allBrands', 'All Brands')}</SelectItem>
-                {brands.map((brand) => (
-                  <SelectItem key={brand.id} value={brand.name} className="cursor-pointer">
-                    {brand.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={handleStockFilterChange} defaultValue="all">
-              <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('products.filterByStock', 'Filter by stock')}>
-                <SelectValue placeholder={t('labels.stock', 'Stock')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all" className="cursor-pointer">{t('labels.allStock', 'All Stock')}</SelectItem>
-                <SelectItem value="inStock" className="cursor-pointer">{t('products.inStock', 'In Stock')}</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Attribute Filter Dialog */}
-            {filterableAttributes.length > 0 && (
-              <AttributeFilterDialog
-                attributes={filterableAttributes}
-                activeFilters={params.attributeFilters}
-                onApply={setAttributeFilters}
-              />
+            ) : (
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                  <Input
+                    placeholder={t('products.searchPlaceholder', 'Search products...')}
+                    value={searchInput}
+                    onChange={handleSearchChange}
+                    className="pl-9 h-9"
+                    aria-label={t('products.searchProducts', 'Search products')}
+                  />
+                </div>
+                <Select value={params.filters.status || 'all'} onValueChange={handleStatusChange}>
+                  <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer" aria-label={t('products.filterByStatus', 'Filter by status')}>
+                    <SelectValue placeholder={t('labels.status', 'Status')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all" className="cursor-pointer">{t('labels.allStatus', 'All Status')}</SelectItem>
+                    <SelectItem value="Draft" className="cursor-pointer">{t('products.status.draft', 'Draft')}</SelectItem>
+                    <SelectItem value="Active" className="cursor-pointer">{t('products.status.active', 'Active')}</SelectItem>
+                    <SelectItem value="Archived" className="cursor-pointer">{t('products.status.archived', 'Archived')}</SelectItem>
+                    <SelectItem value="OutOfStock" className="cursor-pointer">{t('products.status.outOfStock', 'Out of Stock')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={params.filters.categoryId || 'all'} onValueChange={handleCategoryChange}>
+                  <SelectTrigger className="w-full sm:w-40 h-9 cursor-pointer" aria-label={t('products.filterByCategory', 'Filter by category')}>
+                    <SelectValue placeholder={t('labels.category', 'Category')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all" className="cursor-pointer">{t('labels.allCategories', 'All Categories')}</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={params.filters.brand || 'all'} onValueChange={handleBrandChange}>
+                  <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer" aria-label={t('products.filterByBrand', 'Filter by brand')}>
+                    <SelectValue placeholder={t('labels.brand', 'Brand')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all" className="cursor-pointer">{t('labels.allBrands', 'All Brands')}</SelectItem>
+                    {brands.map((brand) => (
+                      <SelectItem key={brand.id} value={brand.name} className="cursor-pointer">{brand.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={params.filters.inStockOnly ? 'inStock' : 'all'} onValueChange={handleStockFilterChange}>
+                  <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer" aria-label={t('products.filterByStock', 'Filter by stock')}>
+                    <SelectValue placeholder={t('labels.stock', 'Stock')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all" className="cursor-pointer">{t('labels.allStock', 'All Stock')}</SelectItem>
+                    <SelectItem value="inStock" className="cursor-pointer">{t('products.inStock', 'In Stock')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                {filterableAttributes.length > 0 && (
+                  <AttributeFilterDialog
+                    attributes={filterableAttributes}
+                    activeFilters={params.filters.attributeFilters}
+                    onApply={(f) => setFilter('attributeFilters', f)}
+                  />
+                )}
+              </div>
             )}
-
-            </div>
           </div>
         </CardHeader>
 
@@ -495,7 +700,7 @@ export const ProductsPage = () => {
 
           {/* Bulk Action Toolbar */}
           {viewMode === 'table' && (
-            <BulkActionToolbar selectedCount={selectedIds.size} onClearSelection={handleSelectNone}>
+            <BulkActionToolbar selectedCount={selectedIds.length} onClearSelection={clearSelection}>
               {canPublishProducts && selectedDraftCount > 0 && (
                 <Button
                   variant="outline"
@@ -541,7 +746,7 @@ export const ProductsPage = () => {
                   ) : (
                     <Trash2 className="h-4 w-4 mr-2" />
                   )}
-                  {t('products.deleteCount', { count: selectedIds.size, defaultValue: `Delete ${selectedIds.size}` })}
+                  {t('products.deleteCount', { count: selectedIds.length, defaultValue: `Delete ${selectedIds.length}` })}
                 </Button>
               )}
             </BulkActionToolbar>
@@ -574,254 +779,56 @@ export const ProductsPage = () => {
                 className="border-0 rounded-none px-4 py-12"
               />
             ) : (
-              <EnhancedProductGridView
-                products={data?.items || []}
-                onDelete={canDeleteProducts ? setProductToDelete : undefined}
-                onPublish={canPublishProducts ? onPublish : undefined}
-                onArchive={canUpdateProducts ? onArchive : undefined}
-                onDuplicate={canCreateProducts ? onDuplicate : undefined}
-                canEdit={canUpdateProducts}
-                canDelete={canDeleteProducts}
-                canPublish={canPublishProducts}
-                canCreate={canCreateProducts}
-              />
+              <>
+                <EnhancedProductGridView
+                  products={data?.items || []}
+                  onDelete={canDeleteProducts ? setProductToDelete : undefined}
+                  onPublish={canPublishProducts ? onPublish : undefined}
+                  onArchive={canUpdateProducts ? onArchive : undefined}
+                  onDuplicate={canCreateProducts ? onDuplicate : undefined}
+                  canEdit={canUpdateProducts}
+                  canDelete={canDeleteProducts}
+                  canPublish={canPublishProducts}
+                  canCreate={canCreateProducts}
+                />
+                {data && data.totalPages > 1 && (
+                  <Pagination
+                    currentPage={data.page}
+                    totalPages={data.totalPages}
+                    totalItems={data.totalCount}
+                    pageSize={params.pageSize || DEFAULT_PRODUCT_PAGE_SIZE}
+                    onPageChange={setPage}
+                    showPageSizeSelector={false}
+                    className="mt-4 justify-center"
+                  />
+                )}
+              </>
             )
           ) : (
-            // Table View
-            <div className="rounded-xl border border-border/50 overflow-hidden min-h-[400px]">
-              <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
-                  <TableHead className="w-[40px]">
-                    <Checkbox
-                      checked={isAllSelected}
-                      onCheckedChange={(checked) => {
-                        if (checked) handleSelectAll()
-                        else handleSelectNone()
-                      }}
-                      aria-label={t('labels.selectAll', 'Select all')}
-                      className="cursor-pointer"
-                    />
-                  </TableHead>
-                  <TableHead className="w-[35%] font-semibold">{t('products.product', 'Product')}</TableHead>
-                  <TableHead className="font-semibold">{t('labels.status', 'Status')}</TableHead>
-                  <TableHead className="font-semibold">{t('labels.category', 'Category')}</TableHead>
-                  <TableHead className="font-semibold">{t('labels.brand', 'Brand')}</TableHead>
-                  <TableHead className="text-right font-semibold">{t('products.price', 'Price')}</TableHead>
-                  <TableHead className="text-right font-semibold">{t('labels.stock', 'Stock')}</TableHead>
-                  <TableHead className="font-semibold">{t('labels.created', 'Created')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  // Enhanced loading skeletons
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-9 w-9 rounded-lg" /></TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-4 rounded" />
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Skeleton className="h-14 w-14 rounded-xl" />
-                          <div className="space-y-2 flex-1">
-                            <Skeleton className="h-4 w-3/4" />
-                            <Skeleton className="h-3 w-1/2" />
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-4 w-20 ml-auto" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : data?.items.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className="p-0">
-                      <EmptyState
-                        icon={Package}
-                        title={t('products.noProductsFound', 'No products found')}
-                        description={t('products.noProductsDescription', 'Get started by creating your first product to build your catalog.')}
-                        action={canCreateProducts ? {
-                          label: t('products.addProduct', 'Add Product'),
-                          onClick: () => navigate('/portal/ecommerce/products/new'),
-                        } : undefined}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  data?.items.map((product) => {
-                    const status = PRODUCT_STATUS_CONFIG[product.status]
-                    const StatusIcon = status.icon
-
-                    return (
-                      <TableRow
-                        key={product.id}
-                        className={`group transition-all duration-200 hover:bg-muted/30 ${selectedIds.size === 0 ? 'cursor-pointer' : ''} ${selectedIds.has(product.id) ? 'bg-primary/5' : ''}`}
-                        onClick={() => { if (selectedIds.size === 0) navigate(`/portal/ecommerce/products/${product.id}`) }}
-                      >
-                        <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                                aria-label={t('labels.actionsFor', { name: product.name })}
-                              >
-                                <EllipsisVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-48">
-                              <DropdownMenuItem className="cursor-pointer" asChild>
-                                <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}`}>
-                                  <Eye className="h-4 w-4 mr-2" />
-                                  {t('labels.viewDetails', 'View Details')}
-                                </ViewTransitionLink>
-                              </DropdownMenuItem>
-                              {canUpdateProducts && (
-                                <DropdownMenuItem className="cursor-pointer" asChild>
-                                  <ViewTransitionLink to={`/portal/ecommerce/products/${product.id}/edit`}>
-                                    <Pencil className="h-4 w-4 mr-2" />
-                                    {t('products.editProduct', 'Edit Product')}
-                                  </ViewTransitionLink>
-                                </DropdownMenuItem>
-                              )}
-                              {canCreateProducts && (
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  onClick={() => onDuplicate(product)}
-                                >
-                                  <Copy className="h-4 w-4 mr-2" />
-                                  {t('products.duplicate', 'Duplicate')}
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuSeparator />
-                              {canPublishProducts && product.status === 'Draft' && (
-                                <DropdownMenuItem
-                                  className="cursor-pointer text-emerald-600 dark:text-emerald-400"
-                                  onClick={() => onPublish(product)}
-                                >
-                                  <Send className="h-4 w-4 mr-2" />
-                                  {t('labels.publish', 'Publish')}
-                                </DropdownMenuItem>
-                              )}
-                              {canUpdateProducts && product.status === 'Active' && (
-                                <DropdownMenuItem
-                                  className="cursor-pointer text-amber-600 dark:text-amber-400"
-                                  onClick={() => onArchive(product)}
-                                >
-                                  <Archive className="h-4 w-4 mr-2" />
-                                  {t('labels.archive', 'Archive')}
-                                </DropdownMenuItem>
-                              )}
-                              {canDeleteProducts && (
-                                <>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    className="cursor-pointer text-destructive focus:text-destructive"
-                                    onClick={() => setProductToDelete(product)}
-                                  >
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    {t('labels.delete', 'Delete')}
-                                  </DropdownMenuItem>
-                                </>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Checkbox
-                            checked={selectedIds.has(product.id)}
-                            onCheckedChange={() => handleToggleSelect(product.id)}
-                            aria-label={t('labels.selectItem', { name: product.name, defaultValue: `Select ${product.name}` })}
-                            className="cursor-pointer"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            {/* Product image thumbnail - Click to view full image */}
-                            <div style={{ viewTransitionName: `product-image-${product.id}` }} onClick={(e) => e.stopPropagation()}>
-                              <FilePreviewTrigger
-                                file={{
-                                  url: product.primaryImageUrl ?? '',
-                                  name: product.name,
-                                }}
-                                thumbnailWidth={56}
-                                thumbnailHeight={56}
-                                className="rounded-xl"
-                              />
-                            </div>
-                            <div className="flex flex-col min-w-0">
-                              <span className="font-medium truncate group-hover:text-primary transition-colors duration-200">
-                                {product.name}
-                              </span>
-                              {product.sku && (
-                                <span className="text-xs text-muted-foreground font-mono">
-                                  SKU: {product.sku}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={`${status.color} border transition-all duration-200 hover:scale-105`}
-                            variant="outline"
-                          >
-                            <StatusIcon className="h-3 w-3" />
-                            {t(status.labelKey)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm">{product.categoryName || '—'}</span>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm">{product.brandName || product.brand || '—'}</span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span className="font-semibold text-foreground">
-                            {formatCurrency(product.basePrice, product.currency)}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Badge
-                            variant={product.inStock ? 'default' : 'destructive'}
-                            className="transition-all duration-200 hover:scale-105"
-                          >
-                            {product.totalStock}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(product.createdAt), { addSuffix: true })}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
-                )}
-              </TableBody>
-            </Table>
+            // Table View - DataTable
+            <div className="space-y-3">
+              <DataTable
+                table={table}
+                isLoading={loading}
+                isStale={isSearchStale || isFilterPending || isPlaceholderData}
+                onRowClick={selectedIds.length === 0 ? (product) => navigate(`/portal/ecommerce/products/${product.id}`) : undefined}
+                emptyState={
+                  <EmptyState
+                    icon={Package}
+                    title={t('products.noProductsFound', 'No products found')}
+                    description={t('products.noProductsDescription', 'Get started by creating your first product to build your catalog.')}
+                    action={canCreateProducts ? {
+                      label: t('products.addProduct', 'Add Product'),
+                      onClick: () => navigate('/portal/ecommerce/products/new'),
+                    } : undefined}
+                    className="border-0 rounded-none px-4 py-12"
+                  />
+                }
+              />
+              {data && data.totalPages > 1 && (
+                <DataTablePagination table={table} showPageSizeSelector={false} />
+              )}
             </div>
-          )}
-
-          {/* Enhanced Pagination */}
-          {data && data.totalPages > 1 && (
-            <Pagination
-              currentPage={data.page}
-              totalPages={data.totalPages}
-              totalItems={data.totalCount}
-              pageSize={params.pageSize || DEFAULT_PRODUCT_PAGE_SIZE}
-              onPageChange={setPage}
-              showPageSizeSelector={false}
-              className="mt-4 justify-center"
-            />
           )}
         </CardContent>
       </Card>
@@ -846,8 +853,8 @@ export const ProductsPage = () => {
                 <CredenzaTitle>{t('products.bulkDeleteTitle', 'Delete Products')}</CredenzaTitle>
                 <CredenzaDescription>
                   {t('products.bulkDeleteConfirmation', {
-                    count: selectedIds.size,
-                    defaultValue: `Are you sure you want to delete ${selectedIds.size} selected products? This action cannot be undone.`,
+                    count: selectedIds.length,
+                    defaultValue: `Are you sure you want to delete ${selectedIds.length} selected products? This action cannot be undone.`,
                   })}
                 </CredenzaDescription>
               </div>
@@ -872,7 +879,7 @@ export const ProductsPage = () => {
               {isBulkPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isBulkPending
                 ? t('labels.deleting', 'Deleting...')
-                : t('products.deleteCount', { count: selectedIds.size, defaultValue: `Delete ${selectedIds.size} Products` })}
+                : t('products.deleteCount', { count: selectedIds.length, defaultValue: `Delete ${selectedIds.length} Products` })}
             </Button>
           </CredenzaFooter>
         </CredenzaContent>

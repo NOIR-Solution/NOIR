@@ -1,18 +1,21 @@
-import { useState, useMemo, useDeferredValue, useTransition } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Warehouse,
   CheckCircle2,
   Eye,
   Loader2,
-  Search,
   XCircle,
-  EllipsisVertical,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -29,28 +32,20 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   Label,
   PageHeader,
-  Pagination,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Textarea,
 } from '@uikit'
 
@@ -59,12 +54,13 @@ import {
   useConfirmInventoryReceiptMutation,
   useCancelInventoryReceiptMutation,
 } from '@/portal-app/inventory/queries'
-import type { GetInventoryReceiptsParams } from '@/types/inventory'
 import type { InventoryReceiptType, InventoryReceiptStatus, InventoryReceiptSummaryDto } from '@/types/inventory'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { formatCurrency } from '@/lib/utils/currency'
 import { RECEIPT_TYPE_CONFIG, RECEIPT_STATUS_CONFIG } from './inventoryReceiptConfig'
 import { InventoryReceiptDetailDialog } from './InventoryReceiptDetailDialog'
+
+const ch = createColumnHelper<InventoryReceiptSummaryDto>()
 
 export const InventoryReceiptsPage = () => {
   const { t } = useTranslation('common')
@@ -75,22 +71,23 @@ export const InventoryReceiptsPage = () => {
   const canWriteInventory = hasPermission(Permissions.InventoryWrite)
   const canManageInventory = hasPermission(Permissions.InventoryManage)
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-  const [params, setParams] = useState<GetInventoryReceiptsParams>({ page: 1, pageSize: 20 })
-  const [typeFilter, setTypeFilter] = useState<string>('all')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [isFilterPending, startFilterTransition] = useTransition()
+  const [receiptToCancel, setReceiptToCancel] = useState<InventoryReceiptSummaryDto | null>(null)
+  const [cancelReason, setCancelReason] = useState('')
+  const [receiptToConfirm, setReceiptToConfirm] = useState<InventoryReceiptSummaryDto | null>(null)
+  const [selectedReceiptId, setSelectedReceiptId] = useState<string | undefined>(undefined)
 
-  const queryParams = useMemo(() => ({
-    ...params,
-    search: deferredSearch || undefined,
-    type: typeFilter !== 'all' ? typeFilter as InventoryReceiptType : undefined,
-    status: statusFilter !== 'all' ? statusFilter as InventoryReceiptStatus : undefined,
-  }), [params, deferredSearch, typeFilter, statusFilter])
+  const {
+    params,
+    searchInput,
+    setSearchInput,
+    isSearchStale,
+    isFilterPending,
+    setFilter,
+    setPage,
+    setPageSize,
+  } = useTableParams<{ type?: InventoryReceiptType; status?: InventoryReceiptStatus }>({ defaultPageSize: 20 })
 
-  const { data: receiptsResponse, isLoading: loading, error: queryError, refetch } = useInventoryReceiptsQuery(queryParams)
+  const { data: receiptsResponse, isLoading, error: queryError, refetch } = useInventoryReceiptsQuery(params)
   const confirmMutation = useConfirmInventoryReceiptMutation()
   const cancelMutation = useCancelInventoryReceiptMutation()
   const error = queryError?.message ?? null
@@ -101,39 +98,9 @@ export const InventoryReceiptsPage = () => {
   })
 
   const receipts = receiptsResponse?.items ?? []
-  const totalCount = receiptsResponse?.totalCount ?? 0
-  const totalPages = receiptsResponse?.totalPages ?? 1
-  const currentPage = params.page ?? 1
 
-  // Cancel dialog state
-  const [receiptToCancel, setReceiptToCancel] = useState<InventoryReceiptSummaryDto | null>(null)
-  const [cancelReason, setCancelReason] = useState('')
-
-  // Confirm dialog state
-  const [receiptToConfirm, setReceiptToConfirm] = useState<InventoryReceiptSummaryDto | null>(null)
-
-  // Detail dialog state
-  const [selectedReceiptId, setSelectedReceiptId] = useState<string | undefined>(undefined)
-
-  const handleTypeFilter = (value: string) => {
-    startFilterTransition(() => {
-      setTypeFilter(value)
-      setParams((prev) => ({ ...prev, page: 1 }))
-    })
-  }
-
-  const handleStatusFilter = (value: string) => {
-    startFilterTransition(() => {
-      setStatusFilter(value)
-      setParams((prev) => ({ ...prev, page: 1 }))
-    })
-  }
-
-  const handlePageChange = (page: number) => {
-    startFilterTransition(() => {
-      setParams((prev) => ({ ...prev, page }))
-    })
-  }
+  const handleTypeFilter = (value: string) => setFilter('type', value === 'all' ? undefined : (value as InventoryReceiptType))
+  const handleStatusFilter = (value: string) => setFilter('status', value === 'all' ? undefined : (value as InventoryReceiptStatus))
 
   const handleConfirm = (receipt: InventoryReceiptSummaryDto) => {
     setReceiptToConfirm(receipt)
@@ -164,6 +131,133 @@ export const InventoryReceiptsPage = () => {
     }
   }
 
+  const columns = useMemo((): ColumnDef<InventoryReceiptSummaryDto, unknown>[] => [
+    createActionsColumn<InventoryReceiptSummaryDto>((receipt) => {
+      const isDraft = receipt.status === 'Draft'
+      return (
+        <>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => setSelectedReceiptId(receipt.id)}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            {t('labels.viewDetails', 'View Details')}
+          </DropdownMenuItem>
+          {isDraft && canWriteInventory && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer text-green-600 dark:text-green-400"
+                onClick={() => handleConfirm(receipt)}
+              >
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                {t('inventory.confirm', 'Confirm')}
+              </DropdownMenuItem>
+            </>
+          )}
+          {isDraft && (canWriteInventory || canManageInventory) && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer text-destructive focus:text-destructive"
+                onClick={() => setReceiptToCancel(receipt)}
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                {t('inventory.cancel', 'Cancel')}
+              </DropdownMenuItem>
+            </>
+          )}
+        </>
+      )
+    }),
+    ch.accessor('receiptNumber', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('inventory.receiptNumber', 'Receipt #')} />,
+      meta: { label: t('inventory.receiptNumber', 'Receipt #') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="font-mono font-medium text-sm">{getValue()}</span>,
+    }) as ColumnDef<InventoryReceiptSummaryDto, unknown>,
+    ch.accessor('type', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.type', 'Type')} />,
+      meta: { label: t('labels.type', 'Type') },
+      enableSorting: false,
+      cell: ({ row }) => {
+        const typeConfig = RECEIPT_TYPE_CONFIG[row.original.type]
+        const TypeIcon = typeConfig.icon
+        return (
+          <Badge variant="outline" className={typeConfig.color}>
+            <TypeIcon className="h-3 w-3 mr-1.5" />
+            {t(`inventory.type.${typeConfig.label}`)}
+          </Badge>
+        )
+      },
+    }) as ColumnDef<InventoryReceiptSummaryDto, unknown>,
+    ch.accessor('status', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
+      meta: { label: t('labels.status', 'Status') },
+      enableSorting: false,
+      cell: ({ row }) => {
+        const statusConfig = RECEIPT_STATUS_CONFIG[row.original.status]
+        const StatusIcon = statusConfig.icon
+        return (
+          <Badge variant="outline" className={statusConfig.color}>
+            <StatusIcon className="h-3 w-3 mr-1.5" />
+            {t(`inventory.status.${statusConfig.label}`)}
+          </Badge>
+        )
+      },
+    }) as ColumnDef<InventoryReceiptSummaryDto, unknown>,
+    ch.accessor('itemCount', {
+      id: 'items',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('inventory.items', 'Items')} />,
+      meta: { label: t('inventory.items', 'Items'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<InventoryReceiptSummaryDto, unknown>,
+    ch.accessor('totalQuantity', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('inventory.totalQuantity', 'Total Qty')} />,
+      meta: { label: t('inventory.totalQuantity', 'Total Qty'), align: 'right' },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
+    }) as ColumnDef<InventoryReceiptSummaryDto, unknown>,
+    ch.accessor('totalCost', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('inventory.totalCost', 'Total Cost')} />,
+      meta: { label: t('inventory.totalCost', 'Total Cost'), align: 'right' },
+      enableSorting: false,
+      cell: ({ row }) => <span className="font-medium">{formatCurrency(row.original.totalCost)}</span>,
+    }) as ColumnDef<InventoryReceiptSummaryDto, unknown>,
+    ch.accessor('createdAt', {
+      id: 'date',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.date', 'Date')} />,
+      meta: { label: t('labels.date', 'Date') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDateTime(row.original.createdAt)}
+        </span>
+      ),
+    }) as ColumnDef<InventoryReceiptSummaryDto, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, canWriteInventory, canManageInventory])
+
+  const table = useServerTable({
+    data: receipts,
+    columns,
+    rowCount: receiptsResponse?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'inventory-receipts',
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: [],
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function'
+        ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize })
+        : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    getRowId: (row) => row.id,
+  })
+
   return (
     <div className="space-y-6">
       <OfflineBanner visible={isReconnecting} />
@@ -180,45 +274,42 @@ export const InventoryReceiptsPage = () => {
             <div>
               <CardTitle className="text-lg">{t('inventory.allReceipts', 'All Receipts')}</CardTitle>
               <CardDescription>
-                {t('labels.showingCountOfTotal', { count: receipts.length, total: totalCount })}
+                {receiptsResponse ? t('labels.showingCountOfTotal', { count: receipts.length, total: receiptsResponse.totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                <Input
-                  placeholder={t('inventory.searchPlaceholder')}
-                  value={searchInput}
-                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
-                  className="pl-9 h-9"
-                  aria-label={t('inventory.searchPlaceholder')}
-                />
-              </div>
-              {/* Type Filter */}
-              <Select value={typeFilter} onValueChange={handleTypeFilter}>
-                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('inventory.filterByType', 'Filter by type')}>
-                  <SelectValue placeholder={t('labels.type', 'Type')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                  <SelectItem value="StockIn" className="cursor-pointer">{t('inventory.type.stockIn', 'Stock In')}</SelectItem>
-                  <SelectItem value="StockOut" className="cursor-pointer">{t('inventory.type.stockOut', 'Stock Out')}</SelectItem>
-                </SelectContent>
-              </Select>
-              {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('inventory.filterByStatus', 'Filter by status')}>
-                  <SelectValue placeholder={t('labels.status', 'Status')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                  <SelectItem value="Draft" className="cursor-pointer">{t('inventory.status.draft', 'Draft')}</SelectItem>
-                  <SelectItem value="Confirmed" className="cursor-pointer">{t('inventory.status.confirmed', 'Confirmed')}</SelectItem>
-                  <SelectItem value="Cancelled" className="cursor-pointer">{t('inventory.status.cancelled', 'Cancelled')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('inventory.searchPlaceholder')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <>
+                  <Select value={params.filters.type ?? 'all'} onValueChange={handleTypeFilter}>
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('inventory.filterByType', 'Filter by type')}>
+                      <SelectValue placeholder={t('labels.type', 'Type')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                      <SelectItem value="StockIn" className="cursor-pointer">{t('inventory.type.stockIn', 'Stock In')}</SelectItem>
+                      <SelectItem value="StockOut" className="cursor-pointer">{t('inventory.type.stockOut', 'Stock Out')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={params.filters.status ?? 'all'} onValueChange={handleStatusFilter}>
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('inventory.filterByStatus', 'Filter by status')}>
+                      <SelectValue placeholder={t('labels.status', 'Status')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                      <SelectItem value="Draft" className="cursor-pointer">{t('inventory.status.draft', 'Draft')}</SelectItem>
+                      <SelectItem value="Confirmed" className="cursor-pointer">{t('inventory.status.confirmed', 'Confirmed')}</SelectItem>
+                      <SelectItem value="Cancelled" className="cursor-pointer">{t('inventory.status.cancelled', 'Cancelled')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
+              }
+            />
           </div>
         </CardHeader>
         <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
@@ -228,155 +319,21 @@ export const InventoryReceiptsPage = () => {
             </div>
           )}
 
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
-                  <TableHead>{t('inventory.receiptNumber', 'Receipt #')}</TableHead>
-                  <TableHead>{t('labels.type', 'Type')}</TableHead>
-                  <TableHead>{t('labels.status', 'Status')}</TableHead>
-                  <TableHead className="text-center">{t('inventory.items', 'Items')}</TableHead>
-                  <TableHead className="text-right">{t('inventory.totalQuantity', 'Total Qty')}</TableHead>
-                  <TableHead className="text-right">{t('inventory.totalCost', 'Total Cost')}</TableHead>
-                  <TableHead>{t('labels.date', 'Date')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-4 w-24 ml-auto" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : receipts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="p-0">
-                      <EmptyState
-                        icon={Warehouse}
-                        title={t('inventory.noReceiptsFound', 'No receipts found')}
-                        description={t('inventory.noReceiptsDescription', 'Inventory receipts will appear here when stock movements are recorded.')}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  receipts.map((receipt) => {
-                    const typeConfig = RECEIPT_TYPE_CONFIG[receipt.type]
-                    const statusConfig = RECEIPT_STATUS_CONFIG[receipt.status]
-                    const TypeIcon = typeConfig.icon
-                    const StatusIcon = statusConfig.icon
-                    const isDraft = receipt.status === 'Draft'
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale || isFilterPending}
+            onRowClick={(receipt) => setSelectedReceiptId(receipt.id)}
+            emptyState={
+              <EmptyState
+                icon={Warehouse}
+                title={t('inventory.noReceiptsFound', 'No receipts found')}
+                description={t('inventory.noReceiptsDescription', 'Inventory receipts will appear here when stock movements are recorded.')}
+              />
+            }
+          />
 
-                    return (
-                      <TableRow
-                        key={receipt.id}
-                        className="group transition-colors hover:bg-muted/50 cursor-pointer"
-                        onClick={() => setSelectedReceiptId(receipt.id)}
-                      >
-                        <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                                aria-label={t('labels.actionsFor', { name: receipt.receiptNumber, defaultValue: `Actions for ${receipt.receiptNumber}` })}
-                              >
-                                <EllipsisVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start">
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setSelectedReceiptId(receipt.id)}
-                              >
-                                <Eye className="h-4 w-4 mr-2" />
-                                {t('labels.viewDetails', 'View Details')}
-                              </DropdownMenuItem>
-                              {isDraft && canWriteInventory && (
-                                <>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    className="cursor-pointer text-green-600 dark:text-green-400"
-                                    onClick={() => handleConfirm(receipt)}
-                                  >
-                                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                                    {t('inventory.confirm', 'Confirm')}
-                                  </DropdownMenuItem>
-                                </>
-                              )}
-                              {isDraft && (canWriteInventory || canManageInventory) && (
-                                <>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    className="cursor-pointer text-destructive focus:text-destructive"
-                                    onClick={() => setReceiptToCancel(receipt)}
-                                  >
-                                    <XCircle className="h-4 w-4 mr-2" />
-                                    {t('inventory.cancel', 'Cancel')}
-                                  </DropdownMenuItem>
-                                </>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                        <TableCell>
-                          <span className="font-mono font-medium text-sm">{receipt.receiptNumber}</span>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={typeConfig.color}>
-                            <TypeIcon className="h-3 w-3 mr-1.5" />
-                            {t(`inventory.type.${typeConfig.label}`)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={statusConfig.color}>
-                            <StatusIcon className="h-3 w-3 mr-1.5" />
-                            {t(`inventory.status.${statusConfig.label}`)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="secondary">{receipt.itemCount}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {receipt.totalQuantity}
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {formatCurrency(receipt.totalCost)}
-                        </TableCell>
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {formatDateTime(receipt.createdAt)}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCount}
-              pageSize={params.pageSize || 20}
-              onPageChange={handlePageChange}
-              showPageSizeSelector={false}
-              className="mt-4"
-            />
-          )}
+          <DataTablePagination table={table} showPageSizeSelector={false} />
         </CardContent>
       </Card>
 
@@ -463,7 +420,6 @@ export const InventoryReceiptsPage = () => {
         </CredenzaContent>
       </Credenza>
 
-      {/* Receipt Detail Dialog */}
       <InventoryReceiptDetailDialog
         receiptId={selectedReceiptId}
         open={!!selectedReceiptId}

@@ -90,8 +90,8 @@ const MetricCard = ({
   iconColor?: string
   iconBg?: string
 }) => (
-  <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
-    <CardContent className="pt-6">
+  <Card className="gap-0 py-4 shadow-sm hover:shadow-lg transition-all duration-300">
+    <CardContent>
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
@@ -405,8 +405,8 @@ export const ReportsPage = () => {
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {revenueLoading ? (
           [...Array(4)].map((_, i) => (
-            <Card key={i} className="shadow-sm border-border/50">
-              <CardContent className="pt-6">
+            <Card key={i} className="gap-0 py-4 shadow-sm border-border/50">
+              <CardContent>
                 <Skeleton className="h-20 w-full" />
               </CardContent>
             </Card>
@@ -634,8 +634,8 @@ export const ReportsPage = () => {
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {inventoryLoading ? (
                 [...Array(4)].map((_, i) => (
-                  <Card key={i} className="shadow-sm border-border/50">
-                    <CardContent className="pt-6">
+                  <Card key={i} className="gap-0 py-4 shadow-sm border-border/50">
+                    <CardContent>
                       <Skeleton className="h-16 w-full" />
                     </CardContent>
                   </Card>
@@ -746,8 +746,8 @@ export const ReportsPage = () => {
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
               {customerLoading ? (
                 [...Array(3)].map((_, i) => (
-                  <Card key={i} className="shadow-sm border-border/50">
-                    <CardContent className="pt-6">
+                  <Card key={i} className="gap-0 py-4 shadow-sm border-border/50">
+                    <CardContent>
                       <Skeleton className="h-16 w-full" />
                     </CardContent>
                   </Card>

@@ -1,11 +1,16 @@
-import { useState, useDeferredValue, useMemo, useTransition } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, UsersRound, Plus, Eye, Trash2, EllipsisVertical, Loader2 } from 'lucide-react'
+import { UsersRound, Plus, Eye, Trash2, Loader2 } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -22,75 +27,49 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   PageHeader,
-  Pagination,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from '@uikit'
 
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { useCustomerGroupsQuery, useDeleteCustomerGroupMutation } from '@/portal-app/customer-groups/queries'
-import type { GetCustomerGroupsParams } from '@/services/customerGroups'
 import { CustomerGroupDialog } from '../../components/CustomerGroupDialog'
 import type { CustomerGroupListItem } from '@/types/customerGroup'
 
 import { toast } from 'sonner'
+
+const ch = createColumnHelper<CustomerGroupListItem>()
 
 export const CustomerGroupsPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('CustomerGroups')
 
-  // Permission checks
   const canCreateGroups = hasPermission(Permissions.CustomerGroupsCreate)
   const canUpdateGroups = hasPermission(Permissions.CustomerGroupsUpdate)
   const canDeleteGroups = hasPermission(Permissions.CustomerGroupsDelete)
+  const showActions = canUpdateGroups || canDeleteGroups
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-  const [isFilterPending, startFilterTransition] = useTransition()
+  const { params, searchInput, setSearchInput, isSearchStale, isFilterPending, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
+  const { data: groupsResponse, isLoading, error: queryError, refetch: refresh } = useCustomerGroupsQuery(params)
+  const deleteMutation = useDeleteCustomerGroupMutation()
+
+  const groups = groupsResponse?.items ?? []
+  const { editItem: groupToEdit, openEdit: openEditGroup, closeEdit: closeEditGroup } = useUrlEditDialog<CustomerGroupListItem>(groups)
   const [groupToDelete, setGroupToDelete] = useState<CustomerGroupListItem | null>(null)
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-group' })
-  const [params, setParams] = useState<GetCustomerGroupsParams>({ page: 1, pageSize: 20 })
 
-  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
-  const { data: groupsResponse, isLoading: loading, error: queryError, refetch: refresh } = useCustomerGroupsQuery(queryParams)
-  const deleteMutation = useDeleteCustomerGroupMutation()
   const error = queryError?.message ?? null
 
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'CustomerGroup',
     onCollectionUpdate: refresh,
   })
-
-  const groups = groupsResponse?.items ?? []
-  const { editItem: groupToEdit, openEdit: openEditGroup, closeEdit: closeEditGroup } = useUrlEditDialog<CustomerGroupListItem>(groups)
-  const totalCount = groupsResponse?.totalCount ?? 0
-  const totalPages = groupsResponse?.totalPages ?? 1
-  const currentPage = params.page ?? 1
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value)
-    startFilterTransition(() => setParams((prev) => ({ ...prev, page: 1 })))
-  }
-
-  const handlePageChange = (page: number) => {
-    startFilterTransition(() => {
-      setParams(prev => ({ ...prev, page }))
-    })
-  }
 
   const handleDelete = async () => {
     if (!groupToDelete) return
@@ -104,6 +83,85 @@ export const CustomerGroupsPage = () => {
     }
   }
 
+  const columns = useMemo((): ColumnDef<CustomerGroupListItem, unknown>[] => [
+    ...(showActions ? [
+      createActionsColumn<CustomerGroupListItem>((group) => (
+        <>
+          <DropdownMenuItem className="cursor-pointer" onClick={() => openEditGroup(group)}>
+            <Eye className="h-4 w-4 mr-2" />
+            {canUpdateGroups ? t('labels.edit', 'Edit') : t('labels.viewDetails', 'View Details')}
+          </DropdownMenuItem>
+          {canDeleteGroups && (
+            <DropdownMenuItem
+              className="text-destructive cursor-pointer"
+              onClick={() => setGroupToDelete(group)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('labels.delete', 'Delete')}
+            </DropdownMenuItem>
+          )}
+        </>
+      )),
+    ] : []),
+    ch.accessor('name', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.name', 'Name')} />,
+      meta: { label: t('labels.name', 'Name') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div>
+          <span className="font-medium">{row.original.name}</span>
+          {row.original.description && (
+            <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
+              {row.original.description}
+            </p>
+          )}
+        </div>
+      ),
+    }) as ColumnDef<CustomerGroupListItem, unknown>,
+    ch.accessor('slug', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.slug', 'Slug')} />,
+      meta: { label: t('labels.slug', 'Slug') },
+      enableSorting: false,
+      cell: ({ getValue }) => <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{getValue()}</code>,
+    }) as ColumnDef<CustomerGroupListItem, unknown>,
+    ch.accessor('isActive', {
+      id: 'status',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
+      meta: { label: t('labels.status', 'Status') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Badge variant="outline" className={getStatusBadgeClasses(row.original.isActive ? 'green' : 'gray')}>
+          {row.original.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
+        </Badge>
+      ),
+    }) as ColumnDef<CustomerGroupListItem, unknown>,
+    ch.accessor('memberCount', {
+      id: 'members',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('customerGroups.members', 'Members')} />,
+      meta: { label: t('customerGroups.members', 'Members'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<CustomerGroupListItem, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, canUpdateGroups, canDeleteGroups, showActions])
+
+  const table = useServerTable({
+    data: groups,
+    columns,
+    rowCount: groupsResponse?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'customer-groups',
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: [],
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function' ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize }) : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    getRowId: (row) => row.id,
+  })
+
   return (
     <div className="space-y-6">
       <OfflineBanner visible={isReconnecting} />
@@ -114,7 +172,7 @@ export const CustomerGroupsPage = () => {
         responsive
         action={
           canCreateGroups && (
-            <Button className="group transition-all duration-300" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('customerGroups.newGroup', 'New Group')}
             </Button>
@@ -128,153 +186,45 @@ export const CustomerGroupsPage = () => {
             <div>
               <CardTitle className="text-lg">{t('customerGroups.allGroups', 'All Groups')}</CardTitle>
               <CardDescription>
-                {t('labels.showingCountOfTotal', { count: groups.length, total: totalCount })}
+                {groupsResponse ? t('labels.showingCountOfTotal', { count: groups.length, total: groupsResponse.totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('customerGroups.searchPlaceholder', 'Search groups...')}
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  className="pl-9 h-9"
-                  aria-label={t('customerGroups.searchGroups', 'Search customer groups')}
-                />
-              </div>
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('customerGroups.searchPlaceholder', 'Search groups...')}
+              isSearchStale={isSearchStale || isFilterPending}
+              onResetColumnVisibility={table.resetColumnVisibility}
+            />
           </div>
         </CardHeader>
-        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={`space-y-3 ${(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}`}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
             </div>
           )}
 
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background" />
-                  <TableHead className="w-[30%]">{t('labels.name', 'Name')}</TableHead>
-                  <TableHead>{t('labels.slug', 'Slug')}</TableHead>
-                  <TableHead>{t('labels.status', 'Status')}</TableHead>
-                  <TableHead className="text-center">{t('customerGroups.members', 'Members')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  // Skeleton loading
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-32" />
-                      </TableCell>
-                      <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : groups.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="p-0">
-                      <EmptyState
-                        icon={UsersRound}
-                        title={t('customerGroups.noGroupsFound', 'No customer groups found')}
-                        description={t('customerGroups.noGroupsDescription', 'Get started by creating your first customer group.')}
-                        action={canCreateGroups ? {
-                          label: t('customerGroups.addGroup', 'Add Group'),
-                          onClick: () => openCreate(),
-                        } : undefined}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  groups.map((group) => (
-                    <TableRow
-                      key={group.id}
-                      className="group transition-colors hover:bg-muted/50 cursor-pointer"
-                      onClick={() => openEditGroup(group)}
-                    >
-                      <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: group.name, defaultValue: `Actions for ${group.name}` })}
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start">
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={() => openEditGroup(group)}
-                            >
-                              <Eye className="h-4 w-4 mr-2" />
-                              {canUpdateGroups ? t('labels.edit', 'Edit') : t('labels.viewDetails', 'View Details')}
-                            </DropdownMenuItem>
-                            {canDeleteGroups && (
-                              <DropdownMenuItem
-                                className="text-destructive cursor-pointer"
-                                onClick={() => setGroupToDelete(group)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('labels.delete', 'Delete')}
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium">{group.name}</span>
-                        {group.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
-                            {group.description}
-                          </p>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
-                          {group.slug}
-                        </code>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={getStatusBadgeClasses(group.isActive ? 'green' : 'gray')}>
-                          {group.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{group.memberCount}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale || isFilterPending}
+            onRowClick={openEditGroup}
+            emptyState={
+              <EmptyState
+                icon={UsersRound}
+                title={t('customerGroups.noGroupsFound', 'No customer groups found')}
+                description={t('customerGroups.noGroupsDescription', 'Get started by creating your first customer group.')}
+                action={canCreateGroups ? { label: t('customerGroups.addGroup', 'Add Group'), onClick: () => openCreate() } : undefined}
+              />
+            }
+          />
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCount}
-              pageSize={params.pageSize || 20}
-              onPageChange={handlePageChange}
-              showPageSizeSelector={false}
-              className="mt-4"
-            />
-          )}
+          <DataTablePagination table={table} showPageSizeSelector={false} />
         </CardContent>
       </Card>
 
-      {/* Create/Edit Customer Group Dialog */}
       <CustomerGroupDialog
         open={isCreateOpen || !!groupToEdit}
         onOpenChange={(open) => {
@@ -287,7 +237,6 @@ export const CustomerGroupsPage = () => {
         onSuccess={() => refresh()}
       />
 
-      {/* Delete Confirmation Dialog */}
       <Credenza open={!!groupToDelete} onOpenChange={(open) => !open && setGroupToDelete(null)}>
         <CredenzaContent className="border-destructive/30">
           <CredenzaHeader>
@@ -300,7 +249,7 @@ export const CustomerGroupsPage = () => {
                 <CredenzaDescription>
                   {t('customerGroups.deleteDescription', {
                     name: groupToDelete?.name,
-                    defaultValue: `Are you sure you want to delete "${groupToDelete?.name}"? This action cannot be undone.`
+                    defaultValue: `Are you sure you want to delete "${groupToDelete?.name}"? This action cannot be undone.`,
                   })}
                 </CredenzaDescription>
               </div>

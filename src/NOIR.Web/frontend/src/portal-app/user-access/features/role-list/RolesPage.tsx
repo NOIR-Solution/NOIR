@@ -234,35 +234,36 @@ export const RolesPage = () => {
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-0">
         <CardHeader className="pb-3">
-          <div>
-            <CardTitle className="text-lg">{t('roles.listTitle', 'All Roles')}</CardTitle>
-            <CardDescription>
-              {data ? t('labels.showingCountOfTotal', { count: tableData.length, total: data.totalCount }) : ''}
-            </CardDescription>
+          <div className="space-y-3">
+            <div>
+              <CardTitle className="text-lg">{t('roles.listTitle', 'All Roles')}</CardTitle>
+              <CardDescription>
+                {data ? t('labels.showingCountOfTotal', { count: tableData.length, total: data.totalCount }) : ''}
+              </CardDescription>
+            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('roles.searchPlaceholder', 'Search roles...')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <Select value={typeFilter} onValueChange={handleTypeFilter}>
+                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('roles.filterByType', 'Filter by type')}>
+                    <SelectValue placeholder={t('roles.filterByType', 'Type')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                    <SelectItem value="system" className="cursor-pointer">{t('roles.system', 'System')}</SelectItem>
+                    <SelectItem value="custom" className="cursor-pointer">{t('roles.custom', 'Custom')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              }
+            />
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <DataTableToolbar
-            table={table}
-            searchInput={searchInput}
-            onSearchChange={setSearchInput}
-            searchPlaceholder={t('roles.searchPlaceholder', 'Search roles...')}
-            isSearchStale={isSearchStale}
-            showColumnToggle={false}
-            filterSlot={
-              <Select value={typeFilter} onValueChange={handleTypeFilter}>
-                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('roles.filterByType', 'Filter by type')}>
-                  <SelectValue placeholder={t('roles.filterByType', 'Type')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                  <SelectItem value="system" className="cursor-pointer">{t('roles.system', 'System')}</SelectItem>
-                  <SelectItem value="custom" className="cursor-pointer">{t('roles.custom', 'Custom')}</SelectItem>
-                </SelectContent>
-              </Select>
-            }
-          />
-
           <DataTable
             table={table}
             isLoading={isLoading}

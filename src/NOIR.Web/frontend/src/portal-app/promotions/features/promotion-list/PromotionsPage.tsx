@@ -282,51 +282,54 @@ export const PromotionsPage = () => {
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-0">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{t('promotions.allPromotions', 'All Promotions')}</CardTitle>
-          <CardDescription>
-            {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
-          </CardDescription>
+          <div className="space-y-3">
+            <div>
+              <CardTitle className="text-lg">{t('promotions.allPromotions', 'All Promotions')}</CardTitle>
+              <CardDescription>
+                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
+              </CardDescription>
+            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('promotions.searchPlaceholder', 'Search promotions...')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <>
+                  <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('promotions.filterByStatus', 'Filter by status')}>
+                      <SelectValue placeholder={t('promotions.filterByStatus', 'Filter status')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                      {PROMOTION_STATUSES.map((status) => (
+                        <SelectItem key={status} value={status} className="cursor-pointer">
+                          {t(`promotions.status.${status.toLowerCase()}`, status)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={typeFilter} onValueChange={handleTypeFilter}>
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('promotions.filterByType', 'Filter by type')}>
+                      <SelectValue placeholder={t('promotions.filterByType', 'Filter type')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                      {PROMOTION_TYPES.map((type) => (
+                        <SelectItem key={type} value={type} className="cursor-pointer">
+                          {t(`promotions.type.${type.toLowerCase()}`, type)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              }
+            />
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <DataTableToolbar
-            table={table}
-            searchInput={searchInput}
-            onSearchChange={setSearchInput}
-            searchPlaceholder={t('promotions.searchPlaceholder', 'Search promotions...')}
-            isSearchStale={isSearchStale}
-            onResetColumnVisibility={table.resetColumnVisibility}
-            filterSlot={
-              <>
-                <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('promotions.filterByStatus', 'Filter by status')}>
-                    <SelectValue placeholder={t('promotions.filterByStatus', 'Filter status')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                    {PROMOTION_STATUSES.map((status) => (
-                      <SelectItem key={status} value={status} className="cursor-pointer">
-                        {t(`promotions.status.${status.toLowerCase()}`, status)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={typeFilter} onValueChange={handleTypeFilter}>
-                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('promotions.filterByType', 'Filter by type')}>
-                    <SelectValue placeholder={t('promotions.filterByType', 'Filter type')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                    {PROMOTION_TYPES.map((type) => (
-                      <SelectItem key={type} value={type} className="cursor-pointer">
-                        {t(`promotions.type.${type.toLowerCase()}`, type)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </>
-            }
-          />
-
           <DataTable
             table={table}
             isLoading={isLoading}

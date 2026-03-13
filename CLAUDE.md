@@ -255,7 +255,7 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 - **Status badges**: `variant="outline"` + `getStatusBadgeClasses('green'|'gray'|'red'|...)` from `@/utils/statusBadge`. Never `variant="default"/"secondary"` for status.
 - **Empty states**: Use `<EmptyState icon={X} title={t('...')} description={t('...')} />` from `@uikit`. Never plain `<div className="text-center py-8 text-muted-foreground">`.
 - **Create buttons**: No `shadow-lg hover:shadow-xl`. Use `className="group transition-all duration-300"`.
-- **Table list pages**: Card `gap-0` + CardHeader `pb-3` + CardContent `space-y-3`. Always show `CardDescription` with "Showing X of Y items". See `.claude/rules/table-list-standard.md`.
+- **Table list pages**: MUST use DataTable (TanStack Table) — no custom tables. Card `gap-0` + CardHeader `pb-3` + CardContent `space-y-3`. Always show `CardDescription` with "Showing X of Y items". See `.claude/rules/table-list-standard.md`, `.claude/rules/datatable-standard.md`, `.claude/rules/datatable-migration.md`.
 - **Form spacing**: `space-y-4` in dialog bodies. Never `space-y-5`.
 - **No gradient buttons**: Never use `bg-gradient-to-r` on standard action buttons. Use default Button variants.
 

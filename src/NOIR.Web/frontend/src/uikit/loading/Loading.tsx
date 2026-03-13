@@ -99,7 +99,7 @@ export const PageSpinner = ({ className, text, fullScreen = false }: PageSpinner
 
 /**
  * TableRowSkeleton - Skeleton for table rows
- * Use for: Table loading states (UserTable, RoleTable, TenantTable)
+ * Use for: Table loading states (DataTable, RoleTable, TenantTable)
  */
 export const TableRowSkeleton = ({
   columns = 4,

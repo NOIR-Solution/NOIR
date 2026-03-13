@@ -1,16 +1,15 @@
-import { useState, useEffect, useDeferredValue, useMemo, useTransition } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import {
-  CreditCard,
-  Eye,
-  EllipsisVertical,
-  Plus,
-  Search,
-} from 'lucide-react'
+import { CreditCard, Eye, Plus } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import {
   Badge,
   Button,
@@ -19,29 +18,21 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   PageHeader,
-  Pagination,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from '@uikit'
 import { usePaymentsQuery } from '@/portal-app/payments/queries'
-import type { GetPaymentsParams, PaymentStatus, PaymentMethod, PaymentTransactionListDto } from '@/services/payments'
+import type { PaymentStatus, PaymentMethod, PaymentTransactionListDto } from '@/services/payments'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { formatCurrency } from '@/lib/utils/currency'
 import { paymentStatusColors } from '../../utils/paymentStatus'
@@ -58,6 +49,8 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   'Installment', 'COD', 'BuyNowPayLater',
 ]
 
+const ch = createColumnHelper<PaymentTransactionListDto>()
+
 export const PaymentsPage = () => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
@@ -65,26 +58,19 @@ export const PaymentsPage = () => {
   usePageContext('Payments')
 
   const [recordDialogOpen, setRecordDialogOpen] = useState(false)
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-  const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [methodFilter, setMethodFilter] = useState<string>('all')
-  const [isFilterPending, startFilterTransition] = useTransition()
-  const [params, setParams] = useState<GetPaymentsParams>({ page: 1, pageSize: 20 })
 
-  useEffect(() => {
-    setParams(prev => ({ ...prev, page: 1 }))
-  }, [deferredSearch])
+  const {
+    params,
+    searchInput,
+    setSearchInput,
+    isSearchStale,
+    isFilterPending,
+    setFilter,
+    setPage,
+    setPageSize,
+  } = useTableParams<{ status?: PaymentStatus; paymentMethod?: PaymentMethod }>({ defaultPageSize: 20 })
 
-  const queryParams = useMemo(() => ({
-    ...params,
-    search: deferredSearch || undefined,
-    status: statusFilter !== 'all' ? statusFilter as PaymentStatus : undefined,
-    paymentMethod: methodFilter !== 'all' ? methodFilter as PaymentMethod : undefined,
-  }), [params, deferredSearch, statusFilter, methodFilter])
-
-  const { data: paymentsResponse, isLoading: loading, error: queryError, refetch } = usePaymentsQuery(queryParams)
+  const { data: paymentsResponse, isLoading, error: queryError, refetch } = usePaymentsQuery(params)
   const error = queryError?.message ?? null
 
   const { isReconnecting } = useEntityUpdateSignal({
@@ -93,38 +79,105 @@ export const PaymentsPage = () => {
   })
 
   const payments = paymentsResponse?.items ?? []
-  const totalCount = paymentsResponse?.totalCount ?? 0
-  const pageSize = paymentsResponse?.pageSize ?? 20
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize))
-  const currentPage = params.page ?? 1
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value)
-  }
-
-  const handleStatusFilter = (value: string) => {
-    startFilterTransition(() => {
-      setStatusFilter(value)
-      setParams(prev => ({ ...prev, page: 1 }))
-    })
-  }
-
-  const handleMethodFilter = (value: string) => {
-    startFilterTransition(() => {
-      setMethodFilter(value)
-      setParams(prev => ({ ...prev, page: 1 }))
-    })
-  }
-
-  const handlePageChange = (page: number) => {
-    startFilterTransition(() => {
-      setParams(prev => ({ ...prev, page }))
-    })
-  }
+  const handleStatusFilter = (value: string) => setFilter('status', value === 'all' ? undefined : (value as PaymentStatus))
+  const handleMethodFilter = (value: string) => setFilter('paymentMethod', value === 'all' ? undefined : (value as PaymentMethod))
 
   const handleViewPayment = (payment: PaymentTransactionListDto) => {
     navigate(`/portal/ecommerce/payments/${payment.id}`)
   }
+
+  const columns = useMemo((): ColumnDef<PaymentTransactionListDto, unknown>[] => [
+    createActionsColumn<PaymentTransactionListDto>((payment) => (
+      <DropdownMenuItem className="cursor-pointer" onClick={() => handleViewPayment(payment)}>
+        <Eye className="h-4 w-4 mr-2" />
+        {t('labels.viewDetails')}
+      </DropdownMenuItem>
+    )),
+    ch.accessor('transactionNumber', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.transactionNumber')} />,
+      meta: { label: t('payments.transactionNumber') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="font-mono font-medium text-sm">{getValue()}</span>,
+    }) as ColumnDef<PaymentTransactionListDto, unknown>,
+    ch.accessor('amount', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.amount')} />,
+      meta: { label: t('payments.amount') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="font-medium">
+          {formatCurrency(row.original.amount, row.original.currency)}
+        </span>
+      ),
+    }) as ColumnDef<PaymentTransactionListDto, unknown>,
+    ch.accessor('status', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.status')} />,
+      meta: { label: t('payments.status') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Badge variant="outline" className={paymentStatusColors[row.original.status]}>
+          {t(`payments.statuses.${row.original.status}`, row.original.status)}
+        </Badge>
+      ),
+    }) as ColumnDef<PaymentTransactionListDto, unknown>,
+    ch.accessor('provider', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.provider')} />,
+      meta: { label: t('payments.provider') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm capitalize">{getValue()}</span>,
+    }) as ColumnDef<PaymentTransactionListDto, unknown>,
+    ch.accessor('paymentMethod', {
+      id: 'method',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.method')} />,
+      meta: { label: t('payments.method') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-sm">
+          {t(`payments.methods.${row.original.paymentMethod}`, row.original.paymentMethod)}
+        </span>
+      ),
+    }) as ColumnDef<PaymentTransactionListDto, unknown>,
+    ch.accessor('createdAt', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.createdAt')} />,
+      meta: { label: t('payments.createdAt') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDateTime(row.original.createdAt)}
+        </span>
+      ),
+    }) as ColumnDef<PaymentTransactionListDto, unknown>,
+    ch.accessor('paidAt', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.paidAt')} />,
+      meta: { label: t('payments.paidAt') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-sm text-muted-foreground">
+          {row.original.paidAt ? formatDateTime(row.original.paidAt) : '—'}
+        </span>
+      ),
+    }) as ColumnDef<PaymentTransactionListDto, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t])
+
+  const table = useServerTable({
+    data: payments,
+    columns,
+    rowCount: paymentsResponse?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'payments',
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: [],
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function'
+        ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize })
+        : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    getRowId: (row) => row.id,
+  })
 
   return (
     <div className="space-y-6">
@@ -151,50 +204,47 @@ export const PaymentsPage = () => {
             <div>
               <CardTitle className="text-lg">{t('payments.title')}</CardTitle>
               <CardDescription>
-                {t('labels.showingCountOfTotal', { count: payments.length, total: totalCount })}
+                {paymentsResponse ? t('labels.showingCountOfTotal', { count: payments.length, total: paymentsResponse.totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('payments.searchPlaceholder')}
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  className="pl-9 h-9"
-                  aria-label={t('payments.searchPlaceholder')}
-                />
-              </div>
-              {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-[160px] h-9 cursor-pointer" aria-label={t('payments.filterByStatus')}>
-                  <SelectValue placeholder={t('payments.filterByStatus')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">{t('payments.allStatuses')}</SelectItem>
-                  {PAYMENT_STATUSES.map((status) => (
-                    <SelectItem key={status} value={status} className="cursor-pointer">
-                      {t(`payments.statuses.${status}`, status)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {/* Method Filter */}
-              <Select value={methodFilter} onValueChange={handleMethodFilter}>
-                <SelectTrigger className="w-[160px] h-9 cursor-pointer" aria-label={t('payments.filterByMethod')}>
-                  <SelectValue placeholder={t('payments.filterByMethod')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">{t('payments.allMethods')}</SelectItem>
-                  {PAYMENT_METHODS.map((method) => (
-                    <SelectItem key={method} value={method} className="cursor-pointer">
-                      {t(`payments.methods.${method}`, method)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('payments.searchPlaceholder')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <>
+                  <Select value={params.filters.status ?? 'all'} onValueChange={handleStatusFilter}>
+                    <SelectTrigger className="w-[160px] h-9 cursor-pointer" aria-label={t('payments.filterByStatus')}>
+                      <SelectValue placeholder={t('payments.filterByStatus')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('payments.allStatuses')}</SelectItem>
+                      {PAYMENT_STATUSES.map((status) => (
+                        <SelectItem key={status} value={status} className="cursor-pointer">
+                          {t(`payments.statuses.${status}`, status)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={params.filters.paymentMethod ?? 'all'} onValueChange={handleMethodFilter}>
+                    <SelectTrigger className="w-[160px] h-9 cursor-pointer" aria-label={t('payments.filterByMethod')}>
+                      <SelectValue placeholder={t('payments.filterByMethod')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('payments.allMethods')}</SelectItem>
+                      {PAYMENT_METHODS.map((method) => (
+                        <SelectItem key={method} value={method} className="cursor-pointer">
+                          {t(`payments.methods.${method}`, method)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              }
+            />
           </div>
         </CardHeader>
         <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
@@ -204,122 +254,21 @@ export const PaymentsPage = () => {
             </div>
           )}
 
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
-                  <TableHead>{t('payments.transactionNumber')}</TableHead>
-                  <TableHead>{t('payments.amount')}</TableHead>
-                  <TableHead>{t('payments.status')}</TableHead>
-                  <TableHead>{t('payments.provider')}</TableHead>
-                  <TableHead>{t('payments.method')}</TableHead>
-                  <TableHead>{t('payments.createdAt')}</TableHead>
-                  <TableHead>{t('payments.paidAt')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : payments.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="p-0">
-                      <EmptyState
-                        icon={CreditCard}
-                        title={t('payments.noPayments')}
-                        description={t('payments.noPaymentsDescription', 'Payment transactions will appear here.')}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  payments.map((payment) => (
-                    <TableRow
-                      key={payment.id}
-                      className="group transition-colors hover:bg-muted/50 cursor-pointer"
-                      onClick={() => handleViewPayment(payment)}
-                    >
-                      <TableCell className="sticky left-0 z-10 bg-background" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: payment.transactionNumber, defaultValue: `Actions for ${payment.transactionNumber}` })}
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="cursor-pointer" onClick={() => handleViewPayment(payment)}>
-                              <Eye className="h-4 w-4 mr-2" />
-                              {t('labels.viewDetails')}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-mono font-medium text-sm">{payment.transactionNumber}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium">
-                          {formatCurrency(payment.amount, payment.currency)}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={paymentStatusColors[payment.status]}>
-                          {t(`payments.statuses.${payment.status}`, payment.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm capitalize">{payment.provider}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm">
-                          {t(`payments.methods.${payment.paymentMethod}`, payment.paymentMethod)}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {formatDateTime(payment.createdAt)}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {payment.paidAt ? formatDateTime(payment.paidAt) : '—'}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale || isFilterPending}
+            onRowClick={handleViewPayment}
+            emptyState={
+              <EmptyState
+                icon={CreditCard}
+                title={t('payments.noPayments')}
+                description={t('payments.noPaymentsDescription', 'Payment transactions will appear here.')}
+              />
+            }
+          />
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCount}
-              pageSize={params.pageSize || 20}
-              onPageChange={handlePageChange}
-              showPageSizeSelector={false}
-              className="mt-4"
-            />
-          )}
+          <DataTablePagination table={table} showPageSizeSelector={false} />
         </CardContent>
       </Card>
 

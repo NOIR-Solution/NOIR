@@ -19,6 +19,9 @@ interface MediaToolbarProps {
   sortBy: string
   sortOrder: string
   onSortChange: (sortBy: string, sortOrder: string) => void
+  actionSlot?: React.ReactNode
+  /** When true, hide the search input (e.g. when used inside DataTableToolbar which has its own search) */
+  hideSearch?: boolean
 }
 
 const SORT_OPTIONS = [
@@ -40,6 +43,8 @@ export const MediaToolbar = ({
   sortBy,
   sortOrder,
   onSortChange,
+  actionSlot,
+  hideSearch = false,
 }: MediaToolbarProps) => {
   const { t } = useTranslation('common')
 
@@ -54,16 +59,18 @@ export const MediaToolbar = ({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div className="relative flex-1 min-w-[200px]">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-        <Input
-          placeholder={t('media.searchPlaceholder', 'Search media files...')}
-          value={searchValue}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-9 h-9"
-          aria-label={t('media.searchMedia', 'Search media files')}
-        />
-      </div>
+      {!hideSearch && (
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <Input
+            placeholder={t('media.searchPlaceholder', 'Search media files...')}
+            value={searchValue}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-9 h-9"
+            aria-label={t('media.searchMedia', 'Search media files')}
+          />
+        </div>
+      )}
 
       <Select onValueChange={(v) => onFileTypeChange(v === 'all' ? undefined : v)} value={fileType || 'all'}>
         <SelectTrigger className="w-full sm:w-36 h-9 cursor-pointer transition-all duration-200 hover:border-primary/50" aria-label={t('media.filterByType', 'Filter by type')}>
@@ -104,6 +111,8 @@ export const MediaToolbar = ({
           <SelectItem value="sizeBytes-asc" className="cursor-pointer">{t('media.sortSmallest', 'Size (smallest)')}</SelectItem>
         </SelectContent>
       </Select>
+
+      {actionSlot}
     </div>
   )
 }

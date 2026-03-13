@@ -314,35 +314,34 @@ export const ReviewsPage = () => {
                 {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('reviews.searchPlaceholder', 'Search reviews...')}
+              isSearchStale={isSearchStale || isFilterPending || isTabPending}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <Select value={ratingFilter} onValueChange={handleRatingFilter}>
+                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('reviews.filterByRating', 'Filter rating')}>
+                    <SelectValue placeholder={t('reviews.filterByRating', 'Filter rating')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all" className="cursor-pointer">
+                      {t('reviews.allRatings', 'All ratings')}
+                    </SelectItem>
+                    {RATING_OPTIONS.map((rating) => (
+                      <SelectItem key={rating} value={rating.toString()} className="cursor-pointer">
+                        {rating} {rating === 1 ? t('reviews.star', 'star') : t('reviews.stars', 'stars')}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              }
+            />
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <DataTableToolbar
-            table={table}
-            searchInput={searchInput}
-            onSearchChange={setSearchInput}
-            searchPlaceholder={t('reviews.searchPlaceholder', 'Search reviews...')}
-            isSearchStale={isSearchStale || isFilterPending || isTabPending}
-            showColumnToggle={false}
-            filterSlot={
-              <Select value={ratingFilter} onValueChange={handleRatingFilter}>
-                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('reviews.filterByRating', 'Filter rating')}>
-                  <SelectValue placeholder={t('reviews.filterByRating', 'Filter rating')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">
-                    {t('reviews.allRatings', 'All ratings')}
-                  </SelectItem>
-                  {RATING_OPTIONS.map((rating) => (
-                    <SelectItem key={rating} value={rating.toString()} className="cursor-pointer">
-                      {rating} {rating === 1 ? t('reviews.star', 'star') : t('reviews.stars', 'stars')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            }
-          />
-
           <BulkActionToolbar
             selectedCount={selectedCount}
             onClearSelection={() => table.resetRowSelection()}

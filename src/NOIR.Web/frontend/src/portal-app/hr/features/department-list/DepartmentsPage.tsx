@@ -1,21 +1,22 @@
 import { useState, useDeferredValue, useMemo } from 'react'
-import { useVirtualTableRows } from '@/hooks/useVirtualTableRows'
 import { useTranslation } from 'react-i18next'
 import {
   Building2,
-  EllipsisVertical,
   GitBranch,
   List,
   Pencil,
   Plus,
-  Search,
   Trash2,
-  Users,
 } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import {
   Badge,
@@ -26,20 +27,13 @@ import {
   CardHeader,
   CardTitle,
   CategoryTreeView,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   PageHeader,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   ViewModeToggle,
   type ViewModeOption,
   type TreeCategory,
@@ -60,7 +54,6 @@ interface DepartmentFlatItem extends TreeCategory {
 }
 
 // Flatten tree → flat list for CategoryTreeView
-// Assigns sortOrder from position in parent's children array (backend returns in order)
 const flattenDepartmentTree = (
   nodes: DepartmentTreeNodeDto[],
   parentId: string | null = null,
@@ -69,7 +62,7 @@ const flattenDepartmentTree = (
     {
       id: node.id,
       name: node.name,
-      slug: node.code,        // CategoryTreeView shows slug field as code badge
+      slug: node.code,
       code: node.code,
       description: undefined,
       sortOrder: index,
@@ -84,13 +77,13 @@ const flattenDepartmentTree = (
     ...flattenDepartmentTree(node.children, node.id),
   ])
 
+const ch = createColumnHelper<DepartmentFlatItem>()
+
 export const DepartmentsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Departments')
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
+  const { params, searchInput, setSearchInput, isSearchStale, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
 
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
   const viewModeOptions: ViewModeOption<'table' | 'tree'>[] = useMemo(() => [
@@ -107,13 +100,12 @@ export const DepartmentsPage = () => {
     onCollectionUpdate: refresh,
   })
 
-  // Flat list used by CategoryTreeView, useUrlEditDialog, and table
   const flatDepartments = useMemo(
     () => (departments ? flattenDepartmentTree(departments) : []),
     [departments],
   )
 
-  // Client-side search (name or code)
+  const deferredSearch = useDeferredValue(searchInput)
   const filteredDepartments = useMemo(() => {
     if (!deferredSearch) return flatDepartments
     const q = deferredSearch.toLowerCase()
@@ -122,18 +114,18 @@ export const DepartmentsPage = () => {
     )
   }, [flatDepartments, deferredSearch])
 
+  const paginatedDepartments = useMemo(() => {
+    const start = (params.page - 1) * params.pageSize
+    return filteredDepartments.slice(start, start + params.pageSize)
+  }, [filteredDepartments, params.page, params.pageSize])
+
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-department' })
   const { editItem: departmentToEdit, openEdit: openEditDepartment, closeEdit: closeEditDepartment } = useUrlEditDialog<DepartmentFlatItem>(flatDepartments)
 
   const [parentIdForCreate, setParentIdForCreate] = useState<string | null>(null)
   const [departmentToDelete, setDepartmentToDelete] = useState<DepartmentFlatItem | null>(null)
 
-  const { scrollRef, height, shouldVirtualize, virtualItems, topPad, bottomPad } =
-    useVirtualTableRows(filteredDepartments)
-
   const handleReorder = (items: ReorderItem[]) => {
-    // Always send parentDepartmentId — backend handles reparenting + sortOrder in one call.
-    // null = root level (no parent).
     reorderMutation.mutate({
       items: items.map(i => ({
         id: i.id,
@@ -142,6 +134,107 @@ export const DepartmentsPage = () => {
       })),
     })
   }
+
+  const columns = useMemo((): ColumnDef<DepartmentFlatItem, unknown>[] => [
+    createActionsColumn<DepartmentFlatItem>((dept) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => openEditDepartment(dept)}>
+          <Pencil className="h-4 w-4 mr-2" />
+          {t('labels.edit', 'Edit')}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => { setParentIdForCreate(dept.id); openCreate() }}>
+          <Plus className="h-4 w-4 mr-2" />
+          {t('hr.addSubDepartment')}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive cursor-pointer"
+          onClick={() => setDepartmentToDelete(dept)}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          {t('labels.delete', 'Delete')}
+        </DropdownMenuItem>
+      </>
+    )),
+    ch.accessor('name', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.name', 'Name')} />,
+      meta: { label: t('labels.name', 'Name') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+          <span className="font-medium">{row.original.name}</span>
+          <Badge variant="outline" className="text-xs font-mono">{row.original.code}</Badge>
+          {!row.original.isActive && (
+            <Badge variant="outline" className={getStatusBadgeClasses('gray')}>
+              {t('labels.inactive', 'Inactive')}
+            </Badge>
+          )}
+        </div>
+      ),
+    }) as ColumnDef<DepartmentFlatItem, unknown>,
+    ch.accessor('managerName', {
+      id: 'manager',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.manager')} />,
+      meta: { label: t('hr.manager') },
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        <span className="text-sm text-muted-foreground">{getValue() || '—'}</span>
+      ),
+    }) as ColumnDef<DepartmentFlatItem, unknown>,
+    ch.accessor((row) => row.parentId, {
+      id: 'parentDepartment',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.parentDepartment')} />,
+      meta: { label: t('hr.parentDepartment') },
+      enableSorting: false,
+      cell: ({ row }) => {
+        const parentName = row.original.parentId
+          ? flatDepartments.find(d => d.id === row.original.parentId)?.name ?? '—'
+          : '—'
+        return <span className="text-sm text-muted-foreground">{parentName}</span>
+      },
+    }) as ColumnDef<DepartmentFlatItem, unknown>,
+    ch.accessor('employeeCount', {
+      id: 'employeeCount',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.employees', 'Employees')} />,
+      meta: { label: t('hr.employees', 'Employees'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<DepartmentFlatItem, unknown>,
+    ch.accessor('childCount', {
+      id: 'subDepartments',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.subDepartments', 'Sub-depts')} />,
+      meta: { label: t('hr.subDepartments', 'Sub-depts'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        getValue() > 0 ? (
+          <Badge variant="outline">{getValue()}</Badge>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )
+      ),
+    }) as ColumnDef<DepartmentFlatItem, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, flatDepartments])
+
+  const table = useServerTable({
+    data: paginatedDepartments,
+    columns,
+    rowCount: filteredDepartments.length,
+    columnVisibilityStorageKey: 'departments',
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: [],
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function' ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize }) : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    getRowId: (row) => row.id,
+  })
+
+  const displayCount = viewMode === 'tree' ? filteredDepartments.length : paginatedDepartments.length
+  const displayTotal = viewMode === 'tree' ? flatDepartments.length : filteredDepartments.length
 
   return (
     <div className="space-y-6">
@@ -170,22 +263,20 @@ export const DepartmentsPage = () => {
                 <CardTitle className="text-lg">{t('hr.departmentHierarchy', 'Department Hierarchy')}</CardTitle>
                 <CardDescription>
                   {flatDepartments.length > 0
-                    ? t('labels.showingCountOfTotal', { count: flatDepartments.length, total: flatDepartments.length })
+                    ? t('labels.showingCountOfTotal', { count: displayCount, total: displayTotal })
                     : t('hr.departmentHierarchyDescription', 'View and manage your organizational structure')}
                 </CardDescription>
               </div>
               <ViewModeToggle options={viewModeOptions} value={viewMode} onChange={setViewMode} />
             </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={t('hr.searchDepartments', 'Search departments...')}
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-9 h-9"
-                aria-label={t('hr.searchDepartments', 'Search departments')}
-              />
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('hr.searchDepartments', 'Search departments...')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+            />
           </div>
         </CardHeader>
 
@@ -215,162 +306,30 @@ export const DepartmentsPage = () => {
               />
             </div>
           ) : (
-            <div
-              ref={scrollRef}
-              className="rounded-xl border border-border/50 overflow-auto"
-              style={{ height }}
-            >
-              <Table>
-                <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
-                  <TableRow>
-                    <TableHead className="w-10 sticky left-0 z-10 bg-background" />
-                    <TableHead className="w-[35%]">{t('labels.name', 'Name')}</TableHead>
-                    <TableHead>{t('hr.manager')}</TableHead>
-                    <TableHead>{t('hr.parentDepartment')}</TableHead>
-                    <TableHead className="text-center">
-                      <span className="flex items-center justify-center gap-1">
-                        <Users className="h-3.5 w-3.5" />
-                        {t('hr.employees', 'Employees')}
-                      </span>
-                    </TableHead>
-                    <TableHead className="text-center">{t('hr.subDepartments', 'Sub-depts')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    [...Array(5)].map((_, i) => (
-                      <TableRow key={i} className="animate-pulse">
-                        <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Skeleton className="h-4 w-4" />
-                            <Skeleton className="h-4 w-32" />
-                            <Skeleton className="h-5 w-12 rounded-full" />
-                          </div>
-                        </TableCell>
-                        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                        <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                        <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                      </TableRow>
-                    ))
-                  ) : filteredDepartments.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="p-0">
-                        <EmptyState
-                          icon={Building2}
-                          title={t('hr.noDepartmentsFound')}
-                          description={t('hr.noDepartmentsDescription')}
-                          action={{
-                            label: t('hr.createDepartment'),
-                            onClick: () => { setParentIdForCreate(null); openCreate() },
-                          }}
-                          className="border-0 rounded-none px-4 py-12"
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    <>
-                      {topPad > 0 && (
-                        <TableRow><TableCell colSpan={6} className="p-0 border-0" style={{ height: topPad }} /></TableRow>
-                      )}
-                      {(shouldVirtualize ? virtualItems.map(vr => filteredDepartments[vr.index]) : filteredDepartments).map((dept) => (
-                        <TableRow
-                          key={dept.id}
-                          className="group cursor-pointer transition-colors hover:bg-muted/50"
-                          onClick={(e) => {
-                            if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
-                            openEditDepartment(dept)
-                          }}
-                        >
-                          <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                                  aria-label={t('labels.actionsFor', { name: dept.name, defaultValue: `Actions for ${dept.name}` })}
-                                >
-                                  <EllipsisVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="start">
-                                <DropdownMenuItem className="cursor-pointer" onClick={() => openEditDepartment(dept)}>
-                                  <Pencil className="h-4 w-4 mr-2" />
-                                  {t('labels.edit', 'Edit')}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  onClick={() => { setParentIdForCreate(dept.id); openCreate() }}
-                                >
-                                  <Plus className="h-4 w-4 mr-2" />
-                                  {t('hr.addSubDepartment')}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="text-destructive cursor-pointer"
-                                  onClick={(e) => { e.stopPropagation(); setDepartmentToDelete(dept) }}
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  {t('labels.delete', 'Delete')}
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
-                              <span className="font-medium">{dept.name}</span>
-                              <Badge variant="outline" className="text-xs font-mono">{dept.code}</Badge>
-                              {!dept.isActive && (
-                                <Badge variant="outline" className={getStatusBadgeClasses('gray')}>
-                                  {t('labels.inactive', 'Inactive')}
-                                </Badge>
-                              )}
-                            </div>
-                          </TableCell>
-
-                          <TableCell>
-                            <span className="text-sm text-muted-foreground">
-                              {dept.managerName || '—'}
-                            </span>
-                          </TableCell>
-
-                          <TableCell>
-                            <span className="text-sm text-muted-foreground">
-                              {dept.parentId
-                                ? flatDepartments.find(d => d.id === dept.parentId)?.name ?? '—'
-                                : '—'}
-                            </span>
-                          </TableCell>
-
-                          <TableCell className="text-center">
-                            <Badge variant="secondary">{dept.employeeCount}</Badge>
-                          </TableCell>
-
-                          <TableCell className="text-center">
-                            {dept.childCount > 0 ? (
-                              <Badge variant="outline">{dept.childCount}</Badge>
-                            ) : (
-                              <span className="text-muted-foreground">—</span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      {bottomPad > 0 && (
-                        <TableRow><TableCell colSpan={6} className="p-0 border-0" style={{ height: bottomPad }} /></TableRow>
-                      )}
-                    </>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+            <>
+              <DataTable
+                table={table}
+                isLoading={loading}
+                isStale={isSearchStale}
+                onRowClick={openEditDepartment}
+                emptyState={
+                  <EmptyState
+                    icon={Building2}
+                    title={t('hr.noDepartmentsFound')}
+                    description={t('hr.noDepartmentsDescription')}
+                    action={{
+                      label: t('hr.createDepartment'),
+                      onClick: () => { setParentIdForCreate(null); openCreate() },
+                    }}
+                  />
+                }
+              />
+              <DataTablePagination table={table} showPageSizeSelector={false} />
+            </>
           )}
         </CardContent>
       </Card>
 
-      {/* Create/Edit Department Dialog */}
       <DepartmentFormDialog
         open={isCreateOpen || !!departmentToEdit}
         onOpenChange={(open) => {
@@ -384,7 +343,6 @@ export const DepartmentsPage = () => {
         parentDepartmentId={!departmentToEdit ? parentIdForCreate : undefined}
       />
 
-      {/* Delete Confirmation Dialog */}
       <DeleteDepartmentDialog
         department={departmentToDelete}
         open={!!departmentToDelete}

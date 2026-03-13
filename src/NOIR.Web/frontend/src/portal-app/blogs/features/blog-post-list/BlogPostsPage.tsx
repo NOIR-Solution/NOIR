@@ -329,50 +329,53 @@ export const BlogPostsPage = () => {
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-0">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{t('blog.allPosts', 'All Posts')}</CardTitle>
-          <CardDescription>
-            {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
-          </CardDescription>
+          <div className="space-y-3">
+            <div>
+              <CardTitle className="text-lg">{t('blog.allPosts', 'All Posts')}</CardTitle>
+              <CardDescription>
+                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
+              </CardDescription>
+            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('blog.searchPlaceholder')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <>
+                  <Select value={statusFilter} onValueChange={handleStatusChange}>
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('blog.filterByStatus')}>
+                      <SelectValue placeholder={t('labels.status')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.allStatus')}</SelectItem>
+                      <SelectItem value="Draft" className="cursor-pointer">{t('blog.status.draft')}</SelectItem>
+                      <SelectItem value="Published" className="cursor-pointer">{t('blog.status.published')}</SelectItem>
+                      <SelectItem value="Scheduled" className="cursor-pointer">{t('blog.status.scheduled')}</SelectItem>
+                      <SelectItem value="Archived" className="cursor-pointer">{t('blog.status.archived')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={categoryFilter} onValueChange={handleCategoryChange}>
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('blog.filterByCategory')}>
+                      <SelectValue placeholder={t('labels.category')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.allCategories')}</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              }
+            />
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <DataTableToolbar
-            table={table}
-            searchInput={searchInput}
-            onSearchChange={setSearchInput}
-            searchPlaceholder={t('blog.searchPlaceholder')}
-            isSearchStale={isSearchStale}
-            onResetColumnVisibility={table.resetColumnVisibility}
-            filterSlot={
-              <>
-                <Select value={statusFilter} onValueChange={handleStatusChange}>
-                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('blog.filterByStatus')}>
-                    <SelectValue placeholder={t('labels.status')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" className="cursor-pointer">{t('labels.allStatus')}</SelectItem>
-                    <SelectItem value="Draft" className="cursor-pointer">{t('blog.status.draft')}</SelectItem>
-                    <SelectItem value="Published" className="cursor-pointer">{t('blog.status.published')}</SelectItem>
-                    <SelectItem value="Scheduled" className="cursor-pointer">{t('blog.status.scheduled')}</SelectItem>
-                    <SelectItem value="Archived" className="cursor-pointer">{t('blog.status.archived')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={categoryFilter} onValueChange={handleCategoryChange}>
-                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('blog.filterByCategory')}>
-                    <SelectValue placeholder={t('labels.category')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" className="cursor-pointer">{t('labels.allCategories')}</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id} className="cursor-pointer">
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </>
-            }
-          />
-
           <BulkActionToolbar selectedCount={selectedCount} onClearSelection={() => table.resetRowSelection()}>
             {canPublish && selectedDraftCount > 0 && (
               <Button

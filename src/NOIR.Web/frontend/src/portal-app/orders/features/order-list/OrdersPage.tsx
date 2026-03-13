@@ -285,36 +285,39 @@ export const OrdersPage = () => {
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-0">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{t('orders.allOrders', 'All Orders')}</CardTitle>
-          <CardDescription>
-            {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
-          </CardDescription>
+          <div className="space-y-3">
+            <div>
+              <CardTitle className="text-lg">{t('orders.allOrders', 'All Orders')}</CardTitle>
+              <CardDescription>
+                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
+              </CardDescription>
+            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('orders.searchPlaceholder', 'Search by email...')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('orders.filterByStatus', 'Filter by status')}>
+                    <SelectValue placeholder={t('orders.filterByStatus', 'Filter status')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                    {ORDER_STATUSES.map((status) => (
+                      <SelectItem key={status} value={status} className="cursor-pointer">
+                        {t(`orders.status.${status.toLowerCase()}`, status)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              }
+            />
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <DataTableToolbar
-            table={table}
-            searchInput={searchInput}
-            onSearchChange={setSearchInput}
-            searchPlaceholder={t('orders.searchPlaceholder', 'Search by email...')}
-            isSearchStale={isSearchStale}
-            onResetColumnVisibility={table.resetColumnVisibility}
-            filterSlot={
-              <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('orders.filterByStatus', 'Filter by status')}>
-                  <SelectValue placeholder={t('orders.filterByStatus', 'Filter status')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                  {ORDER_STATUSES.map((status) => (
-                    <SelectItem key={status} value={status} className="cursor-pointer">
-                      {t(`orders.status.${status.toLowerCase()}`, status)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            }
-          />
-
           {canManageOrders && (
             <BulkActionToolbar selectedCount={selectedCount} onClearSelection={() => table.resetRowSelection()}>
               {selectedPendingCount > 0 && (

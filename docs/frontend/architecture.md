@@ -917,6 +917,40 @@ useLayoutEffect(() => {
 
 ---
 
+## DataTable (TanStack Table) for List Pages
+
+**All paginated table list pages** MUST use TanStack Table via `DataTable`, `DataTableToolbar`, `DataTablePagination`, `useServerTable`, and `useTableParams`. This ensures consistent column visibility, sorting, and UX.
+
+**Reference rules:**
+- `.claude/rules/datatable-standard.md` — Column order, actions, visibility, image columns
+- `.claude/rules/table-list-standard.md` — Card layout, search, verification
+- `.claude/rules/datatable-migration.md` — Migration checklist, 100/100 verification
+
+**Pattern:**
+```tsx
+const ch = createColumnHelper<ItemType>()
+const columns = useMemo(() => [
+  createActionsColumn<ItemType>(...),
+  createSelectColumn<ItemType>(),  // if row selection
+  ch.accessor('name', { header: ..., meta: { label: t('...') } }),
+], [deps])
+
+const { params, searchInput, setSearchInput, isSearchStale, setFilter, ... } = useTableParams<Filters>({ defaultPageSize })
+const { data } = useQuery(params)
+const table = useServerTable({ data: data?.items ?? [], columns, rowCount: data?.totalCount ?? 0, columnVisibilityStorageKey: 'page-key', ... })
+
+<DataTableToolbar table={table} searchInput={...} onSearchChange={...} onResetColumnVisibility={table.resetColumnVisibility} filterSlot={...} />
+<DataTable table={table} isLoading={...} emptyState={<EmptyState ... />} />
+<DataTablePagination table={table} />
+```
+
+**Key points:**
+- Filter values: use `params.filters.role` (not `params.role`) — TypeScript `TableParams` nests filters
+- Image columns: use `FilePreviewTrigger` per `.claude/rules/image-preview-in-lists.md`
+- Post-migration: run UI audit — target 0 CRITICAL, 0 HIGH
+
+---
+
 ## Table Virtualization — `useVirtualTableRows`
 
 For non-paginated flat list pages (DepartmentsPage, BlogCategoriesPage, ProductCategoriesPage) where the TABLE mode could have hundreds of rows.

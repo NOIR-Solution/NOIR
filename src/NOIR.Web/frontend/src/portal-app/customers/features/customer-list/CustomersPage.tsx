@@ -405,51 +405,54 @@ export const CustomersPage = () => {
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-0">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{t('customers.allCustomers', 'All Customers')}</CardTitle>
-          <CardDescription>
-            {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
-          </CardDescription>
+          <div className="space-y-3">
+            <div>
+              <CardTitle className="text-lg">{t('customers.allCustomers', 'All Customers')}</CardTitle>
+              <CardDescription>
+                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
+              </CardDescription>
+            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('customers.searchPlaceholder', 'Search customers...')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <>
+                  <Select value={segmentFilter} onValueChange={handleSegmentFilter}>
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('customers.filterBySegment', 'Filter by segment')}>
+                      <SelectValue placeholder={t('customers.filterBySegment', 'Segment')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                      {CUSTOMER_SEGMENTS.map((segment) => (
+                        <SelectItem key={segment} value={segment} className="cursor-pointer">
+                          {t(`customers.segment.${segment.toLowerCase()}`, segment)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={tierFilter} onValueChange={handleTierFilter}>
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('customers.filterByTier', 'Filter by tier')}>
+                      <SelectValue placeholder={t('customers.filterByTier', 'Tier')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                      {CUSTOMER_TIERS.map((tier) => (
+                        <SelectItem key={tier} value={tier} className="cursor-pointer">
+                          {t(`customers.tier.${tier.toLowerCase()}`, tier)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              }
+            />
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <DataTableToolbar
-            table={table}
-            searchInput={searchInput}
-            onSearchChange={setSearchInput}
-            searchPlaceholder={t('customers.searchPlaceholder', 'Search customers...')}
-            isSearchStale={isSearchStale}
-            onResetColumnVisibility={table.resetColumnVisibility}
-            filterSlot={
-              <>
-                <Select value={segmentFilter} onValueChange={handleSegmentFilter}>
-                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('customers.filterBySegment', 'Filter by segment')}>
-                    <SelectValue placeholder={t('customers.filterBySegment', 'Segment')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                    {CUSTOMER_SEGMENTS.map((segment) => (
-                      <SelectItem key={segment} value={segment} className="cursor-pointer">
-                        {t(`customers.segment.${segment.toLowerCase()}`, segment)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={tierFilter} onValueChange={handleTierFilter}>
-                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('customers.filterByTier', 'Filter by tier')}>
-                    <SelectValue placeholder={t('customers.filterByTier', 'Tier')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                    {CUSTOMER_TIERS.map((tier) => (
-                      <SelectItem key={tier} value={tier} className="cursor-pointer">
-                        {t(`customers.tier.${tier.toLowerCase()}`, tier)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </>
-            }
-          />
-
           <BulkActionToolbar selectedCount={selectedCount} onClearSelection={() => table.resetRowSelection()}>
             {canManage && selectedInactiveCount > 0 && (
               <Button

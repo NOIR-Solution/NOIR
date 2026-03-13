@@ -1,54 +1,84 @@
-import { useState, useDeferredValue, useMemo, useTransition } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, Users, Plus } from 'lucide-react'
-import { usePermissions, Permissions } from '@/hooks/usePermissions'
+import { useNavigate } from 'react-router-dom'
+import { Users, Plus, Edit, Trash2, Shield, Lock, LockOpen, ShieldCheck, Activity } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
+import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
+  Badge,
   Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  Input,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  EmptyState,
   PageHeader,
-  Pagination,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@uikit'
-
-import { UserTable } from '../../components/users/UserTable'
-import { CreateUserDialog } from '../../components/users/CreateUserDialog'
-import { EditUserDialog } from '../../components/users/EditUserDialog'
-import { DeleteUserDialog } from '../../components/users/DeleteUserDialog'
-import { AssignRolesDialog } from '../../components/users/AssignRolesDialog'
+import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import {
   useUsersQuery,
   useAvailableRolesQuery,
   useLockUserMutation,
   useUnlockUserMutation,
-  type UsersParams,
 } from '@/portal-app/user-access/queries'
 import type { UserListItem } from '@/types'
+import { CreateUserDialog } from '../../components/users/CreateUserDialog'
+import { EditUserDialog } from '../../components/users/EditUserDialog'
+import { DeleteUserDialog } from '../../components/users/DeleteUserDialog'
+import { AssignRolesDialog } from '../../components/users/AssignRolesDialog'
+
+const ch = createColumnHelper<UserListItem>()
 
 export const UsersPage = () => {
   const { t } = useTranslation('common')
+  const navigate = useNavigate()
   const { hasPermission } = usePermissions()
   usePageContext('Users')
-  const [isFilterPending, startFilterTransition] = useTransition()
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-  const [params, setParams] = useState<UsersParams>({ page: 1, pageSize: 10 })
-  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
-  const { data, isLoading: loading, error: queryError, refetch: refresh } = useUsersQuery(queryParams)
+
+  const canCreateUsers = hasPermission(Permissions.UsersCreate)
+  const canEditUsers = hasPermission(Permissions.UsersUpdate)
+  const canDeleteUsers = hasPermission(Permissions.UsersDelete)
+  const canAssignRoles = hasPermission(Permissions.UsersManageRoles)
+  const showActions = canEditUsers || canDeleteUsers || canAssignRoles
+
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-user' })
+  const [userToDelete, setUserToDelete] = useState<UserListItem | null>(null)
+  const [userForRoles, setUserForRoles] = useState<UserListItem | null>(null)
+
+  const {
+    params,
+    searchInput,
+    setSearchInput,
+    isSearchStale,
+    isFilterPending,
+    setFilter,
+    setPage,
+    setPageSize,
+    setSorting,
+  } = useTableParams<{ role?: string; isLocked?: boolean }>({ defaultPageSize: 10 })
+
+  const { data, isLoading, error: queryError, refetch: refresh } = useUsersQuery(params)
   const { data: availableRoles = [] } = useAvailableRolesQuery()
   const lockMutation = useLockUserMutation()
   const unlockMutation = useUnlockUserMutation()
@@ -58,16 +88,6 @@ export const UsersPage = () => {
     entityType: 'User',
     onCollectionUpdate: refresh,
   })
-
-  const setPage = (page: number) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, page }))
-  )
-  const setRoleFilter = (role: string) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, role: role || undefined, page: 1 }))
-  )
-  const setLockedFilter = (isLocked: boolean | undefined) => startFilterTransition(() =>
-    setParams((prev) => ({ ...prev, isLocked, page: 1 }))
-  )
 
   const handleLock = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
@@ -89,27 +109,155 @@ export const UsersPage = () => {
     }
   }
 
-  // Permission checks
-  const canCreateUsers = hasPermission(Permissions.UsersCreate)
-  const canEditUsers = hasPermission(Permissions.UsersUpdate)
-  const canDeleteUsers = hasPermission(Permissions.UsersDelete)
-  const canAssignRoles = hasPermission(Permissions.UsersManageRoles)
-
-  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-user' })
-  const { editItem: userToEdit, openEdit: openEditUser, closeEdit: closeEditUser } = useUrlEditDialog<UserListItem>(data?.items)
-  const [userToDelete, setUserToDelete] = useState<UserListItem | null>(null)
-  const [userForRoles, setUserForRoles] = useState<UserListItem | null>(null)
-
-  const handleEditClick = (user: UserListItem) => {
-    openEditUser(user)
+  const setRoleFilter = (value: string) => setFilter('role', value === 'all' ? undefined : value)
+  const setLockedFilter = (value: string) => {
+    const isLocked = value === 'all' ? undefined : value === 'locked'
+    setFilter('isLocked', isLocked)
   }
 
-  const handleDeleteClick = (user: UserListItem) => {
-    setUserToDelete(user)
+  const handleViewActivity = (user: UserListItem) => {
+    navigate(`/portal/activity-timeline?userId=${encodeURIComponent(user.id)}&userEmail=${encodeURIComponent(user.email)}`)
   }
 
-  const handleRolesClick = (user: UserListItem) => {
-    setUserForRoles(user)
+  const getInitials = (user: UserListItem) => {
+    if (user.displayName) return user.displayName.charAt(0).toUpperCase()
+    return user.email.charAt(0).toUpperCase()
+  }
+
+  const columns = useMemo((): ColumnDef<UserListItem, unknown>[] => [
+    ...(showActions ? [
+      createActionsColumn<UserListItem>((user) => (
+        <>
+          {canAssignRoles && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setUserForRoles(user)}>
+              <Shield className="mr-2 h-4 w-4" />
+              {t('users.assignRoles', 'Assign Roles')}
+            </DropdownMenuItem>
+          )}
+          {canEditUsers && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => openEditUser(user)}>
+              <Edit className="mr-2 h-4 w-4" />
+              {t('buttons.edit', 'Edit')}
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem className="cursor-pointer" onClick={() => handleViewActivity(user)}>
+            <Activity className="mr-2 h-4 w-4" />
+            {t('users.viewActivity', 'View Activity')}
+          </DropdownMenuItem>
+          {canDeleteUsers && (canAssignRoles || canEditUsers) && <DropdownMenuSeparator />}
+          {canDeleteUsers && (
+            user.isSystemUser ? (
+              <DropdownMenuItem disabled className="text-muted-foreground">
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                {t('users.protectedSystemUser', 'Protected (System User)')}
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive cursor-pointer"
+                onClick={() => setUserToDelete(user)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {user.isLocked ? t('users.unlock', 'Unlock') : t('users.lock', 'Lock')}
+              </DropdownMenuItem>
+            )
+          )}
+        </>
+      )),
+    ] : []),
+    ch.accessor((row) => row.displayName || row.email, {
+      id: 'user',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('users.columns.user', 'User')} />,
+      meta: { label: t('users.columns.user', 'User') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+            <span className="text-primary text-sm font-medium">{getInitials(row.original)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="font-medium">{row.original.displayName || row.original.email.split('@')[0]}</p>
+            {row.original.isSystemUser && (
+              <Badge variant="secondary" className="gap-1 text-xs">
+                <ShieldCheck className="h-3 w-3" />
+                {t('users.systemUser', 'System')}
+              </Badge>
+            )}
+          </div>
+        </div>
+      ),
+    }) as ColumnDef<UserListItem, unknown>,
+    ch.accessor('email', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('users.columns.email', 'Email')} />,
+      meta: { label: t('users.columns.email', 'Email') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-muted-foreground">{getValue()}</span>,
+    }) as ColumnDef<UserListItem, unknown>,
+    ch.accessor('roles', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('users.columns.roles', 'Roles')} />,
+      meta: { label: t('users.columns.roles', 'Roles') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex flex-wrap gap-1">
+          {row.original.roles.length > 0 ? (
+            row.original.roles.slice(0, 3).map((role) => (
+              <Badge key={role} variant="outline" className="text-xs">{role}</Badge>
+            ))
+          ) : (
+            <span className="text-muted-foreground text-sm">-</span>
+          )}
+          {row.original.roles.length > 3 && (
+            <Badge variant="secondary" className="text-xs">+{row.original.roles.length - 3}</Badge>
+          )}
+        </div>
+      ),
+    }) as ColumnDef<UserListItem, unknown>,
+    ch.accessor('isLocked', {
+      id: 'status',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('users.columns.status', 'Status')} />,
+      meta: { label: t('users.columns.status', 'Status'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        getValue() ? (
+          <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('red')}`}>
+            <Lock className="h-3 w-3" />
+            {t('users.locked', 'Locked')}
+          </Badge>
+        ) : (
+          <Badge variant="outline" className={`gap-1 ${getStatusBadgeClasses('green')}`}>
+            <LockOpen className="h-3 w-3" />
+            {t('labels.active', 'Active')}
+          </Badge>
+        )
+      ),
+    }) as ColumnDef<UserListItem, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, canEditUsers, canDeleteUsers, canAssignRoles, showActions])
+
+  const users = data?.items ?? []
+  const { editItem: userToEdit, openEdit: openEditUser, closeEdit: closeEditUser } = useUrlEditDialog<UserListItem>(users)
+
+  const table = useServerTable({
+    data: users,
+    columns,
+    rowCount: data?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'users',
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: params.sorting as SortingState,
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function'
+        ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize })
+        : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    onSortingChange: setSorting,
+    getRowId: (row) => row.id,
+  })
+
+  if (queryError) {
+    console.error(queryError)
   }
 
   return (
@@ -121,7 +269,7 @@ export const UsersPage = () => {
         description={t('users.description', 'Manage platform users and their roles')}
         action={
           canCreateUsers && (
-            <Button className="group transition-all duration-300" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('users.newUser', 'New User')}
             </Button>
@@ -138,54 +286,47 @@ export const UsersPage = () => {
                 {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('users.searchPlaceholder', 'Search users...')}
-                  value={searchInput}
-                  onChange={(e) => { setSearchInput(e.target.value); setParams((prev) => ({ ...prev, page: 1 })) }}
-                  className="pl-9 h-9"
-                  aria-label={t('users.searchUsers', 'Search users')}
-                />
-              </div>
-              {/* Role Filter */}
-              <Select
-                value={params.role || 'all'}
-                onValueChange={(value) => setRoleFilter(value === 'all' ? '' : value)}
-              >
-                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('users.filterByRole', 'Filter by role')}>
-                  <SelectValue placeholder={t('users.filterByRole', 'Filter by role')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                  {availableRoles.map((role) => (
-                    <SelectItem key={role.id} value={role.name} className="cursor-pointer">
-                      {role.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {/* Status Filter */}
-              <Select
-                value={params.isLocked === undefined ? 'all' : params.isLocked ? 'locked' : 'active'}
-                onValueChange={(value) => {
-                  if (value === 'all') setLockedFilter(undefined)
-                  else if (value === 'locked') setLockedFilter(true)
-                  else setLockedFilter(false)
-                }}
-              >
-                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('users.filterByStatus', 'Filter by status')}>
-                  <SelectValue placeholder={t('users.filterByStatus', 'Status')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
-                  <SelectItem value="active" className="cursor-pointer">{t('labels.active', 'Active')}</SelectItem>
-                  <SelectItem value="locked" className="cursor-pointer">{t('users.locked', 'Locked')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('users.searchPlaceholder', 'Search users...')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <>
+                  <Select
+                    value={params.filters.role || 'all'}
+                    onValueChange={setRoleFilter}
+                  >
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('users.filterByRole', 'Filter by role')}>
+                      <SelectValue placeholder={t('users.filterByRole', 'Filter by role')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                      {availableRoles.map((role) => (
+                        <SelectItem key={role.id} value={role.name} className="cursor-pointer">
+                          {role.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={params.filters.isLocked === undefined ? 'all' : params.filters.isLocked ? 'locked' : 'active'}
+                    onValueChange={setLockedFilter}
+                  >
+                    <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('users.filterByStatus', 'Filter by status')}>
+                      <SelectValue placeholder={t('users.filterByStatus', 'Status')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="cursor-pointer">{t('labels.all', 'All')}</SelectItem>
+                      <SelectItem value="active" className="cursor-pointer">{t('labels.active', 'Active')}</SelectItem>
+                      <SelectItem value="locked" className="cursor-pointer">{t('users.locked', 'Locked')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
+              }
+            />
           </div>
         </CardHeader>
         <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
@@ -195,29 +336,21 @@ export const UsersPage = () => {
             </div>
           )}
 
-          <UserTable
-            users={data?.items || []}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-            onAssignRoles={handleRolesClick}
-            loading={loading}
-            canEdit={canEditUsers}
-            canDelete={canDeleteUsers}
-            canAssignRoles={canAssignRoles}
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale || isFilterPending}
+            onRowClick={canEditUsers ? openEditUser : undefined}
+            emptyState={
+              <EmptyState
+                icon={Users}
+                title={t('users.noUsers', 'No users found')}
+                description={t('users.noUsersDescription', 'No users match your current filters.')}
+              />
+            }
           />
 
-          {/* Pagination */}
-          {data && data.totalPages > 1 && (
-            <Pagination
-              currentPage={data.pageNumber}
-              totalPages={data.totalPages}
-              totalItems={data.totalCount}
-              pageSize={params.pageSize || 10}
-              onPageChange={setPage}
-              showPageSizeSelector={false}
-              className="mt-4"
-            />
-          )}
+          <DataTablePagination table={table} showPageSizeSelector={false} />
         </CardContent>
       </Card>
 

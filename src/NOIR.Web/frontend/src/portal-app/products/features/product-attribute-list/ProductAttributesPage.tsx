@@ -1,11 +1,16 @@
-import { useState, useDeferredValue, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, EllipsisVertical, Filter, List, Loader2, Minus, Pencil, Plus, Search, Tags, Trash2 } from 'lucide-react'
+import { Check, Loader2, Minus, Pencil, Plus, Tags, Trash2 } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -22,65 +27,50 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   PageHeader,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from '@uikit'
 
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { useProductAttributesQuery, useDeleteProductAttributeMutation } from '@/portal-app/products/queries'
-import type { GetProductAttributesParams } from '@/services/productAttributes'
 import { ProductAttributeDialog } from '../../components/product-attributes/ProductAttributeDialog'
 import type { ProductAttributeListItem } from '@/types/productAttribute'
 import { getTypeBadge } from '../../utils/attribute.utils'
 
 import { toast } from 'sonner'
 
+const ch = createColumnHelper<ProductAttributeListItem>()
+
 export const ProductAttributesPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('ProductAttributes')
 
-  // Permission checks
   const canCreateAttributes = hasPermission(Permissions.AttributesCreate)
   const canUpdateAttributes = hasPermission(Permissions.AttributesUpdate)
   const canDeleteAttributes = hasPermission(Permissions.AttributesDelete)
+  const showActions = canUpdateAttributes || canDeleteAttributes
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
+  const { params, searchInput, setSearchInput, isSearchStale, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
+  const { data: attributesResponse, isLoading, error: queryError, refetch: refresh } = useProductAttributesQuery(params)
+  const deleteMutation = useDeleteProductAttributeMutation()
+
+  const attributes = attributesResponse?.items ?? []
+  const { editItem: attributeToEdit, openEdit: openEditAttribute, closeEdit: closeEditAttribute } = useUrlEditDialog<ProductAttributeListItem>(attributes)
   const [attributeToDelete, setAttributeToDelete] = useState<ProductAttributeListItem | null>(null)
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-attribute' })
-  const [params, setParams] = useState<GetProductAttributesParams>({ page: 1, pageSize: 20 })
 
-  const queryParams = useMemo(() => ({ ...params, search: deferredSearch || undefined }), [params, deferredSearch])
-  const { data: attributesResponse, isLoading: loading, error: queryError, refetch: refresh } = useProductAttributesQuery(queryParams)
-  const deleteMutation = useDeleteProductAttributeMutation()
   const error = queryError?.message ?? null
 
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'ProductAttribute',
     onCollectionUpdate: refresh,
   })
-
-  const attributes = attributesResponse?.items ?? []
-  const { editItem: attributeToEdit, openEdit: openEditAttribute, closeEdit: closeEditAttribute } = useUrlEditDialog<ProductAttributeListItem>(attributes)
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value)
-    setParams((prev) => ({ ...prev, page: 1 }))
-  }
 
   const handleDelete = async () => {
     if (!attributeToDelete) return
@@ -94,6 +84,108 @@ export const ProductAttributesPage = () => {
     }
   }
 
+  const columns = useMemo((): ColumnDef<ProductAttributeListItem, unknown>[] => [
+    ...(showActions ? [
+      createActionsColumn<ProductAttributeListItem>((attribute) => (
+        <>
+          {canUpdateAttributes && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => openEditAttribute(attribute)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              {t('labels.edit', 'Edit')}
+            </DropdownMenuItem>
+          )}
+          {canDeleteAttributes && (
+            <DropdownMenuItem
+              className="text-destructive cursor-pointer"
+              onClick={() => setAttributeToDelete(attribute)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('labels.delete', 'Delete')}
+            </DropdownMenuItem>
+          )}
+        </>
+      )),
+    ] : []),
+    ch.accessor('name', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.name', 'Name')} />,
+      meta: { label: t('labels.name', 'Name') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
+    }) as ColumnDef<ProductAttributeListItem, unknown>,
+    ch.accessor('code', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.code', 'Code')} />,
+      meta: { label: t('labels.code', 'Code') },
+      enableSorting: false,
+      cell: ({ getValue }) => <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{getValue()}</code>,
+    }) as ColumnDef<ProductAttributeListItem, unknown>,
+    ch.accessor('type', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.type', 'Type')} />,
+      meta: { label: t('labels.type', 'Type') },
+      enableSorting: false,
+      cell: ({ row }) => {
+        const { label, className, icon: TypeIcon } = getTypeBadge(row.original.type, t)
+        return (
+          <Badge variant="outline" className={className}>
+            <TypeIcon className="h-3 w-3 mr-1" />
+            {label}
+          </Badge>
+        )
+      },
+    }) as ColumnDef<ProductAttributeListItem, unknown>,
+    ch.accessor('valueCount', {
+      id: 'values',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('productAttributes.values', 'Values')} />,
+      meta: { label: t('productAttributes.values', 'Values'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<ProductAttributeListItem, unknown>,
+    ch.accessor('isFilterable', {
+      id: 'filterable',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('productAttributes.filterable', 'Filterable')} />,
+      meta: { label: t('productAttributes.filterable', 'Filterable'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) =>
+        getValue() ? <Check className="h-4 w-4 text-emerald-500 mx-auto" /> : <Minus className="h-4 w-4 text-muted-foreground mx-auto" />,
+    }) as ColumnDef<ProductAttributeListItem, unknown>,
+    ch.accessor('isVariantAttribute', {
+      id: 'variant',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('productAttributes.variant', 'Variant')} />,
+      meta: { label: t('productAttributes.variant', 'Variant'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) =>
+        getValue() ? <Check className="h-4 w-4 text-emerald-500 mx-auto" /> : <Minus className="h-4 w-4 text-muted-foreground mx-auto" />,
+    }) as ColumnDef<ProductAttributeListItem, unknown>,
+    ch.accessor('isActive', {
+      id: 'status',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
+      meta: { label: t('labels.status', 'Status') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Badge variant="outline" className={getStatusBadgeClasses(row.original.isActive ? 'green' : 'gray')}>
+          {row.original.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
+        </Badge>
+      ),
+    }) as ColumnDef<ProductAttributeListItem, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, canUpdateAttributes, canDeleteAttributes, showActions])
+
+  const table = useServerTable({
+    data: attributes,
+    columns,
+    rowCount: attributesResponse?.totalCount ?? 0,
+    columnVisibilityStorageKey: 'product-attributes',
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: [],
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function' ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize }) : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    getRowId: (row) => row.id,
+  })
+
   return (
     <div className="space-y-6">
       <OfflineBanner visible={isReconnecting} />
@@ -104,7 +196,7 @@ export const ProductAttributesPage = () => {
         responsive
         action={
           canCreateAttributes && (
-            <Button className="group transition-all duration-300" onClick={() => openCreate()}>
+            <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
               {t('productAttributes.newAttribute', 'New Attribute')}
             </Button>
@@ -121,173 +213,42 @@ export const ProductAttributesPage = () => {
                 {attributesResponse ? t('labels.showingCountOfTotal', { count: attributes.length, total: attributesResponse.totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('productAttributes.searchPlaceholder', 'Search attributes...')}
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  className="pl-9 h-9"
-                  aria-label={t('productAttributes.searchAttributes', 'Search product attributes')}
-                />
-              </div>
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('productAttributes.searchPlaceholder', 'Search attributes...')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+            />
           </div>
         </CardHeader>
-        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={`space-y-3 ${isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}`}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
             </div>
           )}
 
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
-                  <TableHead className="w-[20%]">{t('labels.name', 'Name')}</TableHead>
-                  <TableHead>{t('labels.code', 'Code')}</TableHead>
-                  <TableHead>{t('labels.type', 'Type')}</TableHead>
-                  <TableHead className="text-center">{t('productAttributes.values', 'Values')}</TableHead>
-                  <TableHead className="text-center">
-                    <Filter className="h-4 w-4 inline mr-1" />
-                    {t('productAttributes.filterable', 'Filterable')}
-                  </TableHead>
-                  <TableHead className="text-center">
-                    <List className="h-4 w-4 inline mr-1" />
-                    {t('productAttributes.variant', 'Variant')}
-                  </TableHead>
-                  <TableHead>{t('labels.status', 'Status')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  // Skeleton loading
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-12 mx-auto rounded-full" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-12 mx-auto rounded-full" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : attributes.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="p-0">
-                      <EmptyState
-                        icon={Tags}
-                        title={t('productAttributes.noAttributesFound', 'No attributes found')}
-                        description={t('productAttributes.noAttributesDescription', 'Get started by creating your first product attribute.')}
-                        action={canCreateAttributes ? {
-                          label: t('productAttributes.addAttribute', 'Add Attribute'),
-                          onClick: () => openCreate(),
-                        } : undefined}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  attributes.map((attribute) => (
-                    <TableRow
-                      key={attribute.id}
-                      className={`group transition-colors hover:bg-muted/50${canUpdateAttributes ? ' cursor-pointer' : ''}`}
-                      onClick={canUpdateAttributes ? (e) => {
-                        if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
-                        openEditAttribute(attribute)
-                      } : undefined}
-                    >
-                      <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: attribute.name, defaultValue: `Actions for ${attribute.name}` })}
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start">
-                            {canUpdateAttributes && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => openEditAttribute(attribute)}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                            )}
-                            {canDeleteAttributes && (
-                              <DropdownMenuItem
-                                className="text-destructive cursor-pointer"
-                                onClick={(e) => { e.stopPropagation(); setAttributeToDelete(attribute); }}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('labels.delete', 'Delete')}
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium">{attribute.name}</span>
-                      </TableCell>
-                      <TableCell>
-                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
-                          {attribute.code}
-                        </code>
-                      </TableCell>
-                      <TableCell>
-                        {(() => {
-                          const { label, className, icon: TypeIcon } = getTypeBadge(attribute.type, t)
-                          return (
-                            <Badge variant="outline" className={className}>
-                              <TypeIcon className="h-3 w-3 mr-1" />
-                              {label}
-                            </Badge>
-                          )
-                        })()}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{attribute.valueCount}</Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {attribute.isFilterable ? (
-                          <Check className="h-4 w-4 text-emerald-500 mx-auto" />
-                        ) : (
-                          <Minus className="h-4 w-4 text-muted-foreground mx-auto" />
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {attribute.isVariantAttribute ? (
-                          <Check className="h-4 w-4 text-emerald-500 mx-auto" />
-                        ) : (
-                          <Minus className="h-4 w-4 text-muted-foreground mx-auto" />
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={getStatusBadgeClasses(attribute.isActive ? 'green' : 'gray')}>
-                          {attribute.isActive ? t('labels.active', 'Active') : t('labels.inactive', 'Inactive')}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale}
+            onRowClick={canUpdateAttributes ? openEditAttribute : undefined}
+            emptyState={
+              <EmptyState
+                icon={Tags}
+                title={t('productAttributes.noAttributesFound', 'No attributes found')}
+                description={t('productAttributes.noAttributesDescription', 'Get started by creating your first product attribute.')}
+                action={canCreateAttributes ? { label: t('productAttributes.addAttribute', 'Add Attribute'), onClick: () => openCreate() } : undefined}
+              />
+            }
+          />
+
+          <DataTablePagination table={table} showPageSizeSelector={false} />
         </CardContent>
       </Card>
 
-      {/* Create/Edit Attribute Dialog */}
       <ProductAttributeDialog
         open={isCreateOpen || !!attributeToEdit}
         onOpenChange={(open) => {
@@ -300,7 +261,6 @@ export const ProductAttributesPage = () => {
         onSuccess={() => refresh()}
       />
 
-      {/* Delete Confirmation Dialog */}
       <Credenza open={!!attributeToDelete} onOpenChange={(open) => !open && setAttributeToDelete(null)}>
         <CredenzaContent className="border-destructive/30">
           <CredenzaHeader>
@@ -313,7 +273,7 @@ export const ProductAttributesPage = () => {
                 <CredenzaDescription>
                   {t('productAttributes.deleteDescription', {
                     name: attributeToDelete?.name,
-                    defaultValue: `Are you sure you want to delete "${attributeToDelete?.name}"? This action cannot be undone.`
+                    defaultValue: `Are you sure you want to delete "${attributeToDelete?.name}"? This action cannot be undone.`,
                   })}
                 </CredenzaDescription>
               </div>

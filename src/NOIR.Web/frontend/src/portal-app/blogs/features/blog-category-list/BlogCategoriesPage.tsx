@@ -1,7 +1,16 @@
-import { useState, useDeferredValue, useMemo } from 'react'
-import { useVirtualTableRows } from '@/hooks/useVirtualTableRows'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, FolderTree, Plus, Pencil, Trash2, List, GitBranch, EllipsisVertical } from 'lucide-react'
+import { FolderTree, Plus, Pencil, Trash2, List, GitBranch } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
+import { usePageContext } from '@/hooks/usePageContext'
+import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { OfflineBanner } from '@/components/OfflineBanner'
+import { useUrlDialog } from '@/hooks/useUrlDialog'
+import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import {
   Badge,
   Button,
@@ -11,31 +20,17 @@ import {
   CardHeader,
   CardTitle,
   CategoryTreeView,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   PageHeader,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   ViewModeToggle,
   type ViewModeOption,
   type TreeCategory,
   type ReorderItem,
 } from '@uikit'
-
-import { usePageContext } from '@/hooks/usePageContext'
-import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
-import { OfflineBanner } from '@/components/OfflineBanner'
-import { useUrlDialog } from '@/hooks/useUrlDialog'
-import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 
 import { useBlogCategoriesQuery, useDeleteBlogCategoryMutation, useReorderBlogCategoriesMutation } from '@/portal-app/blogs/queries'
 import { BlogCategoryDialog } from '../../components/blog-categories/BlogCategoryDialog'
@@ -43,45 +38,39 @@ import { DeleteBlogCategoryDialog } from '../../components/blog-categories/Delet
 
 import type { PostCategoryListItem } from '@/types'
 
-// Adapter to map PostCategoryListItem to TreeCategory
-const toTreeCategory = (category: PostCategoryListItem): TreeCategory & PostCategoryListItem => {
-  return {
-    ...category,
-    itemCount: category.postCount,
-  }
-}
+const toTreeCategory = (category: PostCategoryListItem): TreeCategory & PostCategoryListItem => ({
+  ...category,
+  itemCount: category.postCount,
+})
+
+const ch = createColumnHelper<PostCategoryListItem>()
 
 export const BlogCategoriesPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Categories')
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-blog-category' })
-  const [parentIdForCreate, setParentIdForCreate] = useState<string | null>(null)
-  const [categoryToDelete, setCategoryToDelete] = useState<PostCategoryListItem | null>(null)
-  const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
-  const viewModeOptions: ViewModeOption<'table' | 'tree'>[] = useMemo(() => [
-    { value: 'table', label: t('labels.list', 'List'), icon: List, ariaLabel: t('labels.tableView', 'Table view') },
-    { value: 'tree', label: t('labels.tree', 'Tree'), icon: GitBranch, ariaLabel: t('labels.treeView', 'Tree view') },
-  ], [t])
-
-  const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
-  const { data = [], isLoading: loading, error: queryError, refetch: refresh } = useBlogCategoriesQuery(queryParams)
+  const { params, searchInput, setSearchInput, isSearchStale } = useTableParams({ defaultPageSize: 1000 })
+  const queryParams = useMemo(() => ({ search: params.search }), [params.search])
+  const { data = [], isLoading, error: queryError, refetch: refresh } = useBlogCategoriesQuery(queryParams)
   const { editItem: categoryToEdit, openEdit: openEditCategory, closeEdit: closeEditCategory } = useUrlEditDialog<PostCategoryListItem>(data)
   const deleteMutation = useDeleteBlogCategoryMutation()
   const reorderMutation = useReorderBlogCategoriesMutation()
   const error = queryError?.message ?? null
 
+  const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-blog-category' })
+  const [parentIdForCreate, setParentIdForCreate] = useState<string | null>(null)
+  const [categoryToDelete, setCategoryToDelete] = useState<PostCategoryListItem | null>(null)
+  const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
+
+  const viewModeOptions: ViewModeOption<'table' | 'tree'>[] = useMemo(() => [
+    { value: 'table', label: t('labels.list', 'List'), icon: List, ariaLabel: t('labels.tableView', 'Table view') },
+    { value: 'tree', label: t('labels.tree', 'Tree'), icon: GitBranch, ariaLabel: t('labels.treeView', 'Tree view') },
+  ], [t])
+
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'PostCategory',
     onCollectionUpdate: refresh,
   })
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value)
-  }
 
   const handleReorder = (items: ReorderItem[]) => {
     reorderMutation.mutate({
@@ -103,14 +92,78 @@ export const BlogCategoriesPage = () => {
     }
   }
 
-  const handleDialogSuccess = () => {
-    refresh()
-  }
+  const handleDialogSuccess = () => refresh()
 
-  const { scrollRef, height, shouldVirtualize, virtualItems, topPad, bottomPad } =
-    useVirtualTableRows(data)
+  const columns = useMemo((): ColumnDef<PostCategoryListItem, unknown>[] => [
+    createActionsColumn<PostCategoryListItem>((category) => (
+      <>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => openEditCategory(category)}>
+          <Pencil className="h-4 w-4 mr-2" />
+          {t('labels.edit', 'Edit')}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive cursor-pointer"
+          onClick={() => setCategoryToDelete(category)}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          {t('labels.delete', 'Delete')}
+        </DropdownMenuItem>
+      </>
+    )),
+    ch.accessor('name', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.name', 'Name')} />,
+      meta: { label: t('labels.name', 'Name') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
+    }) as ColumnDef<PostCategoryListItem, unknown>,
+    ch.accessor('slug', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.slug', 'Slug')} />,
+      meta: { label: t('labels.slug', 'Slug') },
+      enableSorting: false,
+      cell: ({ getValue }) => <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{getValue()}</code>,
+    }) as ColumnDef<PostCategoryListItem, unknown>,
+    ch.accessor('parentName', {
+      id: 'parent',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('blogCategories.parent', 'Parent')} />,
+      meta: { label: t('blogCategories.parent', 'Parent') },
+      enableSorting: false,
+      cell: ({ getValue }) => getValue() || '-',
+    }) as ColumnDef<PostCategoryListItem, unknown>,
+    ch.accessor('postCount', {
+      id: 'posts',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('blogCategories.posts', 'Posts')} />,
+      meta: { label: t('blogCategories.posts', 'Posts') },
+      enableSorting: false,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<PostCategoryListItem, unknown>,
+    ch.accessor('childCount', {
+      id: 'children',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('blogCategories.children', 'Children')} />,
+      meta: { label: t('blogCategories.children', 'Children') },
+      enableSorting: false,
+      cell: ({ getValue }) => (getValue() ?? 0) > 0 ? <Badge variant="outline">{getValue()}</Badge> : null,
+    }) as ColumnDef<PostCategoryListItem, unknown>,
+    ch.accessor('sortOrder', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.sortOrder', 'Sort Order')} />,
+      meta: { label: t('labels.sortOrder', 'Sort Order') },
+      enableSorting: false,
+    }) as ColumnDef<PostCategoryListItem, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t])
 
-  // Map categories to tree format
+  const table = useServerTable({
+    data,
+    columns,
+    rowCount: data.length,
+    columnVisibilityStorageKey: 'blog-categories',
+    state: {
+      pagination: { pageIndex: 0, pageSize: 1000 },
+      sorting: [],
+    },
+    onPaginationChange: () => {},
+    getRowId: (row) => row.id,
+  })
+
   const treeCategories = data.map(toTreeCategory)
 
   return (
@@ -141,19 +194,15 @@ export const BlogCategoriesPage = () => {
               </div>
               <ViewModeToggle options={viewModeOptions} value={viewMode} onChange={setViewMode} />
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('blogCategories.searchPlaceholder', 'Search categories...')}
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  className="pl-9 h-9"
-                  aria-label={t('blogCategories.searchCategories', 'Search categories')}
-                />
-              </div>
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('blogCategories.searchPlaceholder', 'Search categories...')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              showColumnToggle={viewMode === 'table'}
+            />
           </div>
         </CardHeader>
         <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
@@ -168,7 +217,7 @@ export const BlogCategoriesPage = () => {
               <CategoryTreeView
                 maxHeight="100%"
                 categories={treeCategories}
-                loading={loading}
+                loading={isLoading}
                 onEdit={(cat) => openEditCategory(cat as PostCategoryListItem)}
                 onDelete={(cat) => setCategoryToDelete(cat as PostCategoryListItem)}
                 onAddChild={(cat) => { setParentIdForCreate((cat as PostCategoryListItem).id); openCreate() }}
@@ -182,124 +231,26 @@ export const BlogCategoriesPage = () => {
               />
             </div>
           ) : (
-          <div
-            ref={scrollRef}
-            className="rounded-xl border border-border/50 overflow-auto"
-            style={{ height }}
-          >
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background" />
-                  <TableHead className="w-[30%]">{t('labels.name', 'Name')}</TableHead>
-                  <TableHead>{t('labels.slug', 'Slug')}</TableHead>
-                  <TableHead>{t('blogCategories.parent', 'Parent')}</TableHead>
-                  <TableHead>{t('blogCategories.posts', 'Posts')}</TableHead>
-                  <TableHead>{t('blogCategories.children', 'Children')}</TableHead>
-                  <TableHead>{t('labels.sortOrder', 'Sort Order')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-8 rounded-full" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-8 rounded-full" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : data.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="p-0">
-                      <EmptyState
-                        icon={FolderTree}
-                        title={t('blogCategories.noCategoriesFound', 'No categories found')}
-                        description={t('blogCategories.noCategoriesDescription', 'Get started by creating your first category to organize your blog posts.')}
-                        action={{
-                          label: t('blogCategories.newCategory', 'New Category'),
-                          onClick: () => openCreate(),
-                        }}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <>
-                    {topPad > 0 && (
-                      <TableRow><TableCell colSpan={7} className="p-0 border-0" style={{ height: topPad }} /></TableRow>
-                    )}
-                    {(shouldVirtualize ? virtualItems.map(vr => data[vr.index]) : data).map((category) => (
-                      <TableRow
-                        key={category.id}
-                        className="group cursor-pointer transition-colors hover:bg-muted/50"
-                        onClick={(e) => {
-                          if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
-                          openEditCategory(category)
-                        }}
-                      >
-                        <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="cursor-pointer h-9 w-9 p-0"
-                                aria-label={t('labels.actionsFor', { name: category.name, defaultValue: `Actions for ${category.name}` })}
-                              >
-                                <EllipsisVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start">
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => openEditCategory(category)}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit', 'Edit')}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="text-destructive cursor-pointer"
-                                onClick={(e) => { e.stopPropagation(); setCategoryToDelete(category); }}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('labels.delete', 'Delete')}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                        <TableCell className="font-medium">{category.name}</TableCell>
-                        <TableCell>
-                          <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{category.slug}</code>
-                        </TableCell>
-                        <TableCell>{category.parentName || '-'}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">{category.postCount}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          {category.childCount > 0 && (
-                            <Badge variant="outline">{category.childCount}</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>{category.sortOrder}</TableCell>
-                      </TableRow>
-                    ))}
-                    {bottomPad > 0 && (
-                      <TableRow><TableCell colSpan={7} className="p-0 border-0" style={{ height: bottomPad }} /></TableRow>
-                    )}
-                  </>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+            <div className="space-y-3">
+              <DataTable
+                table={table}
+                isLoading={isLoading}
+                isStale={isSearchStale}
+                onRowClick={openEditCategory}
+                emptyState={
+                  <EmptyState
+                    icon={FolderTree}
+                    title={t('blogCategories.noCategoriesFound', 'No categories found')}
+                    description={t('blogCategories.noCategoriesDescription', 'Get started by creating your first category to organize your blog posts.')}
+                    action={{ label: t('blogCategories.newCategory', 'New Category'), onClick: () => openCreate() }}
+                  />
+                }
+              />
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Create/Edit Category Dialog */}
       <BlogCategoryDialog
         open={isCreateOpen || !!categoryToEdit}
         onOpenChange={(open) => {
@@ -314,7 +265,6 @@ export const BlogCategoriesPage = () => {
         onSuccess={handleDialogSuccess}
       />
 
-      {/* Delete Confirmation Dialog */}
       <DeleteBlogCategoryDialog
         category={categoryToDelete}
         open={!!categoryToDelete}

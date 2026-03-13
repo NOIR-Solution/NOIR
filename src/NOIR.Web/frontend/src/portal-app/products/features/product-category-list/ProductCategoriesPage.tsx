@@ -1,12 +1,16 @@
-import { useState, useDeferredValue, useMemo } from 'react'
-import { useVirtualTableRows } from '@/hooks/useVirtualTableRows'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Search, FolderTree, Plus, Pencil, Trash2, ChevronRight, EllipsisVertical, List, GitBranch, Tags } from 'lucide-react'
+import { FolderTree, Plus, Pencil, Trash2, ChevronRight, List, GitBranch, Tags } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -17,20 +21,12 @@ import {
   CardHeader,
   CardTitle,
   CategoryTreeView,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
   PageHeader,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   ViewModeToggle,
   type ViewModeOption,
   type TreeCategory,
@@ -44,46 +40,42 @@ import { ProductCategoryAttributesDialog } from '../../components/product-catego
 
 import type { ProductCategoryListItem } from '@/types/product'
 
-// Adapter to map ProductCategoryListItem to TreeCategory
-const toTreeCategory = (category: ProductCategoryListItem): TreeCategory & ProductCategoryListItem => {
-  return {
-    ...category,
-    itemCount: category.productCount,
-  }
-}
+const toTreeCategory = (category: ProductCategoryListItem): TreeCategory & ProductCategoryListItem => ({
+  ...category,
+  itemCount: category.productCount,
+})
+
+const ch = createColumnHelper<ProductCategoryListItem>()
 
 export const ProductCategoriesPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
   usePageContext('Product Categories')
 
-  // Permission checks
   const canCreateCategories = hasPermission(Permissions.ProductCategoriesCreate)
   const canUpdateCategories = hasPermission(Permissions.ProductCategoriesUpdate)
   const canDeleteCategories = hasPermission(Permissions.ProductCategoriesDelete)
+  const showActions = canUpdateCategories || canDeleteCategories
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
+  const { params, searchInput, setSearchInput, isSearchStale } = useTableParams({ defaultPageSize: 1000 })
+  const queryParams = useMemo(() => ({ search: params.search }), [params.search])
+  const { data: categories = [], isLoading, error: queryError, refetch: refresh } = useProductCategoriesQuery(queryParams)
+  const { editItem: categoryToEdit, openEdit: openEditCategory, closeEdit: closeEditCategory } = useUrlEditDialog<ProductCategoryListItem>(categories)
+  const deleteMutation = useDeleteProductCategory()
+  const reorderMutation = useReorderProductCategories()
+
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-product-category' })
   const [parentIdForCreate, setParentIdForCreate] = useState<string | null>(null)
   const [categoryToDelete, setCategoryToDelete] = useState<ProductCategoryListItem | null>(null)
   const [categoryToManageAttributes, setCategoryToManageAttributes] = useState<ProductCategoryListItem | null>(null)
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
+
   const viewModeOptions: ViewModeOption<'table' | 'tree'>[] = useMemo(() => [
     { value: 'table', label: t('labels.list', 'List'), icon: List, ariaLabel: t('labels.tableView', 'Table view') },
     { value: 'tree', label: t('labels.tree', 'Tree'), icon: GitBranch, ariaLabel: t('labels.treeView', 'Tree view') },
   ], [t])
 
-  const queryParams = useMemo(() => ({ search: deferredSearch || undefined }), [deferredSearch])
-  const { data: categories = [], isLoading: loading, error: queryError, refetch: refresh } = useProductCategoriesQuery(queryParams)
-  const { editItem: categoryToEdit, openEdit: openEditCategory, closeEdit: closeEditCategory } = useUrlEditDialog<ProductCategoryListItem>(categories)
-  const deleteMutation = useDeleteProductCategory()
-  const reorderMutation = useReorderProductCategories()
   const error = queryError?.message ?? null
-
-  const { scrollRef, height, shouldVirtualize, virtualItems, topPad, bottomPad } =
-    useVirtualTableRows(categories)
 
   const { isReconnecting } = useEntityUpdateSignal({
     entityType: 'ProductCategory',
@@ -110,11 +102,108 @@ export const ProductCategoriesPage = () => {
     })
   }
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value)
-  }
+  const columns = useMemo((): ColumnDef<ProductCategoryListItem, unknown>[] => [
+    ...(showActions ? [
+      createActionsColumn<ProductCategoryListItem>((category) => (
+        <>
+          {canUpdateCategories && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => openEditCategory(category)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              {t('labels.edit', 'Edit')}
+            </DropdownMenuItem>
+          )}
+          {canUpdateCategories && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setCategoryToManageAttributes(category)}>
+              <Tags className="h-4 w-4 mr-2" />
+              {t('categoryAttributes.manageAttributes', 'Manage Attributes')}
+            </DropdownMenuItem>
+          )}
+          {canDeleteCategories && (
+            <DropdownMenuItem
+              className="text-destructive cursor-pointer"
+              onClick={() => setCategoryToDelete(category)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('labels.delete', 'Delete')}
+            </DropdownMenuItem>
+          )}
+        </>
+      )),
+    ] : []),
+    ch.accessor('name', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.name', 'Name')} />,
+      meta: { label: t('labels.name', 'Name') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div>
+          <div className="flex items-center gap-2">
+            <FolderTree className="h-4 w-4 text-muted-foreground shrink-0" />
+            <span className="font-medium">{row.original.name}</span>
+          </div>
+          {row.original.description && (
+            <p className="text-sm text-muted-foreground line-clamp-1 mt-1 ml-6">
+              {row.original.description}
+            </p>
+          )}
+        </div>
+      ),
+    }) as ColumnDef<ProductCategoryListItem, unknown>,
+    ch.accessor('slug', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.slug', 'Slug')} />,
+      meta: { label: t('labels.slug', 'Slug') },
+      enableSorting: false,
+      cell: ({ getValue }) => <code className="text-sm bg-muted px-1.5 py-0.5 rounded">{getValue()}</code>,
+    }) as ColumnDef<ProductCategoryListItem, unknown>,
+    ch.accessor('parentName', {
+      id: 'parent',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('categories.parent', 'Parent')} />,
+      meta: { label: t('categories.parent', 'Parent') },
+      enableSorting: false,
+      cell: ({ getValue }) =>
+        getValue() ? (
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <ChevronRight className="h-3 w-3" />
+            {getValue()}
+          </div>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        ),
+    }) as ColumnDef<ProductCategoryListItem, unknown>,
+    ch.accessor('productCount', {
+      id: 'products',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('categories.products', 'Products')} />,
+      meta: { label: t('categories.products', 'Products'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<ProductCategoryListItem, unknown>,
+    ch.accessor('childCount', {
+      id: 'children',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('categories.children', 'Children')} />,
+      meta: { label: t('categories.children', 'Children'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) =>
+        (getValue() ?? 0) > 0 ? (
+          <Badge variant="outline">{getValue()}</Badge>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        ),
+    }) as ColumnDef<ProductCategoryListItem, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, canUpdateCategories, canDeleteCategories, showActions])
 
-  // Map categories to tree format
+  const table = useServerTable({
+    data: categories,
+    columns,
+    rowCount: categories.length,
+    columnVisibilityStorageKey: 'product-categories',
+    state: {
+      pagination: { pageIndex: 0, pageSize: 1000 },
+      sorting: [],
+    },
+    onPaginationChange: () => {},
+    getRowId: (row) => row.id,
+  })
+
   const treeCategories = categories.map(toTreeCategory)
 
   return (
@@ -147,19 +236,15 @@ export const ProductCategoriesPage = () => {
               </div>
               <ViewModeToggle options={viewModeOptions} value={viewMode} onChange={setViewMode} />
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('categories.searchPlaceholder', 'Search categories...')}
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  className="pl-9 h-9"
-                  aria-label={t('categories.searchCategories', 'Search categories')}
-                />
-              </div>
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('categories.searchPlaceholder', 'Search categories...')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              showColumnToggle={viewMode === 'table'}
+            />
           </div>
         </CardHeader>
         <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
@@ -174,7 +259,7 @@ export const ProductCategoriesPage = () => {
               <CategoryTreeView
                 maxHeight="100%"
                 categories={treeCategories}
-                loading={loading}
+                loading={isLoading}
                 onEdit={(cat) => openEditCategory(cat as ProductCategoryListItem)}
                 onDelete={(cat) => setCategoryToDelete(cat as ProductCategoryListItem)}
                 onAddChild={canCreateCategories ? (cat) => { setParentIdForCreate((cat as ProductCategoryListItem).id); openCreate() } : undefined}
@@ -188,163 +273,26 @@ export const ProductCategoriesPage = () => {
               />
             </div>
           ) : (
-          <div
-            ref={scrollRef}
-            className="rounded-xl border border-border/50 overflow-auto"
-            style={{ height }}
-          >
-  <Table>
-              <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
-                <TableRow>
-                  <TableHead className="w-10 sticky left-0 z-10 bg-background"></TableHead>
-                  <TableHead className="w-[40%]">{t('labels.name', 'Name')}</TableHead>
-                  <TableHead>{t('labels.slug', 'Slug')}</TableHead>
-                  <TableHead>{t('categories.parent', 'Parent')}</TableHead>
-                  <TableHead className="text-center">{t('categories.products', 'Products')}</TableHead>
-                  <TableHead className="text-center">{t('categories.children', 'Children')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  // Skeleton loading - 21st.dev pattern
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="sticky left-0 z-10 bg-background"><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Skeleton className="h-4 w-4" />
-                          <Skeleton className="h-4 w-32" />
-                        </div>
-                      </TableCell>
-                      <TableCell><Skeleton className="h-5 w-24 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto rounded-full" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : categories.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="p-0">
-                      <EmptyState
-                        icon={FolderTree}
-                        title={t('categories.noCategoriesFound', 'No categories found')}
-                        description={t('categories.noCategoriesDescription', 'Get started by creating your first category to organize products.')}
-                        action={canCreateCategories ? {
-                          label: t('categories.addCategory', 'Add Category'),
-                          onClick: () => openCreate(),
-                        } : undefined}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <>
-                    {topPad > 0 && (
-                      <TableRow><TableCell colSpan={6} className="p-0 border-0" style={{ height: topPad }} /></TableRow>
-                    )}
-                    {(shouldVirtualize ? virtualItems.map(vr => categories[vr.index]) : categories).map((category) => (
-                      <TableRow
-                        key={category.id}
-                        className={`group transition-colors hover:bg-muted/50${canUpdateCategories ? ' cursor-pointer' : ''}`}
-                        onClick={canUpdateCategories ? (e) => {
-                          if ((e.target as HTMLElement).closest('[data-no-row-click]')) return
-                          openEditCategory(category)
-                        } : undefined}
-                      >
-                        <TableCell className="sticky left-0 z-10 bg-background" data-no-row-click>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                                aria-label={t('labels.actionsFor', { name: category.name, defaultValue: `Actions for ${category.name}` })}
-                              >
-                                <EllipsisVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start">
-                              {canUpdateCategories && (
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  onClick={() => openEditCategory(category)}
-                                >
-                                  <Pencil className="h-4 w-4 mr-2" />
-                                  {t('labels.edit', 'Edit')}
-                                </DropdownMenuItem>
-                              )}
-                              {canUpdateCategories && (
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  onClick={() => setCategoryToManageAttributes(category)}
-                                >
-                                  <Tags className="h-4 w-4 mr-2" />
-                                  {t('categoryAttributes.manageAttributes', 'Manage Attributes')}
-                                </DropdownMenuItem>
-                              )}
-                              {canDeleteCategories && (
-                                <DropdownMenuItem
-                                  className="text-destructive cursor-pointer"
-                                  onClick={() => setCategoryToDelete(category)}
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  {t('labels.delete', 'Delete')}
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <FolderTree className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium">{category.name}</span>
-                          </div>
-                          {category.description && (
-                            <p className="text-sm text-muted-foreground line-clamp-1 mt-1 ml-6">
-                              {category.description}
-                            </p>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
-                            {category.slug}
-                          </code>
-                        </TableCell>
-                        <TableCell>
-                          {category.parentName ? (
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <ChevronRight className="h-3 w-3" />
-                              {category.parentName}
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground">—</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="secondary">{category.productCount}</Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {category.childCount > 0 ? (
-                            <Badge variant="outline">{category.childCount}</Badge>
-                          ) : (
-                            <span className="text-muted-foreground">—</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {bottomPad > 0 && (
-                      <TableRow><TableCell colSpan={6} className="p-0 border-0" style={{ height: bottomPad }} /></TableRow>
-                    )}
-                  </>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+            <div className="space-y-3">
+              <DataTable
+                table={table}
+                isLoading={isLoading}
+                isStale={isSearchStale}
+                onRowClick={canUpdateCategories ? openEditCategory : undefined}
+                emptyState={
+                  <EmptyState
+                    icon={FolderTree}
+                    title={t('categories.noCategoriesFound', 'No categories found')}
+                    description={t('categories.noCategoriesDescription', 'Get started by creating your first category to organize products.')}
+                    action={canCreateCategories ? { label: t('categories.addCategory', 'Add Category'), onClick: () => openCreate() } : undefined}
+                  />
+                }
+              />
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Create/Edit Category Dialog */}
       <ProductCategoryDialog
         open={isCreateOpen || !!categoryToEdit}
         onOpenChange={(open) => {
@@ -360,7 +308,6 @@ export const ProductCategoriesPage = () => {
         onSuccess={refresh}
       />
 
-      {/* Delete Confirmation Dialog */}
       <DeleteProductCategoryDialog
         category={categoryToDelete}
         open={!!categoryToDelete}
@@ -368,7 +315,6 @@ export const ProductCategoriesPage = () => {
         onConfirm={handleDelete}
       />
 
-      {/* Category Attributes Dialog */}
       <ProductCategoryAttributesDialog
         open={!!categoryToManageAttributes}
         onOpenChange={(open) => !open && setCategoryToManageAttributes(null)}

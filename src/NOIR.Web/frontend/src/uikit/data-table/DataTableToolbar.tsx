@@ -61,14 +61,14 @@ export const DataTableToolbar = <TData extends RowData>({
       {/* Left: search + filters */}
       <div className="flex flex-1 flex-wrap items-center gap-2">
         {onSearchChange !== undefined && (
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={searchPlaceholder ?? t('labels.search', 'Search…')}
               value={searchInput ?? ''}
               onChange={(e) => onSearchChange(e.target.value)}
               className={cn(
-                'h-9 w-[200px] pl-8 sm:w-[260px]',
+                'h-9 w-full pl-8',
                 isSearchStale && 'opacity-70',
               )}
             />

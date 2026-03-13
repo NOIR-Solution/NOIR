@@ -1,22 +1,25 @@
-import { useState, useEffect, useDeferredValue, useMemo, useTransition } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
   Building2,
-  EllipsisVertical,
   Eye,
   Loader2,
   Pencil,
   Plus,
-  Search,
   Trash2,
 } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -33,25 +36,20 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
-  Pagination,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  PageHeader,
 } from '@uikit'
 import { useCompaniesQuery, useDeleteCompany } from '@/portal-app/crm/queries'
-import type { GetCompaniesParams, CompanyListDto } from '@/types/crm'
+import type { CompanyListDto } from '@/types/crm'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { CompanyDialog } from './components/CompanyDialog'
+
+const ch = createColumnHelper<CompanyListDto>()
 
 export const CompaniesPage = () => {
   const { t } = useTranslation('common')
@@ -63,27 +61,15 @@ export const CompaniesPage = () => {
   const canCreate = hasPermission(Permissions.CrmCompaniesCreate)
   const canUpdate = hasPermission(Permissions.CrmCompaniesUpdate)
   const canDelete = hasPermission(Permissions.CrmCompaniesDelete)
+  const showActions = canUpdate || canDelete
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-  const [isFilterPending, startFilterTransition] = useTransition()
-  const [params, setParams] = useState<GetCompaniesParams>({ page: 1, pageSize: 20 })
+  const { params, searchInput, setSearchInput, isSearchStale, isFilterPending, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-crm-company' })
   const [companyToDelete, setCompanyToDelete] = useState<CompanyListDto | null>(null)
   const deleteMutation = useDeleteCompany()
 
-  useEffect(() => {
-    setParams(prev => ({ ...prev, page: 1 }))
-  }, [deferredSearch])
-
-  const queryParams = useMemo(() => ({
-    ...params,
-    search: deferredSearch || undefined,
-  }), [params, deferredSearch])
-
-  const { data: companiesResponse, isLoading: loading, error: queryError, refetch } = useCompaniesQuery(queryParams)
+  const { data: companiesResponse, isLoading, error: queryError, refetch } = useCompaniesQuery(params)
   const error = queryError?.message ?? null
 
   const { isReconnecting } = useEntityUpdateSignal({
@@ -94,14 +80,6 @@ export const CompaniesPage = () => {
   const companies = companiesResponse?.items ?? []
   const { editItem: companyToEdit, openEdit, closeEdit } = useUrlEditDialog<CompanyListDto>(companies)
   const totalCount = companiesResponse?.totalCount ?? 0
-  const totalPages = companiesResponse?.totalPages ?? 1
-  const currentPage = params.page ?? 1
-
-  const handlePageChange = (page: number) => {
-    startFilterTransition(() => {
-      setParams(prev => ({ ...prev, page }))
-    })
-  }
 
   const handleViewCompany = (company: CompanyListDto) => {
     navigate(`/portal/crm/companies/${company.id}`)
@@ -118,21 +96,110 @@ export const CompaniesPage = () => {
     }
   }
 
+  const columns = useMemo((): ColumnDef<CompanyListDto, unknown>[] => [
+    ...(showActions ? [
+      createActionsColumn<CompanyListDto>((company) => (
+        <>
+          <DropdownMenuItem className="cursor-pointer" onClick={() => handleViewCompany(company)}>
+            <Eye className="h-4 w-4 mr-2" />
+            {t('labels.viewDetails')}
+          </DropdownMenuItem>
+          {canUpdate && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => openEdit(company)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              {t('labels.edit')}
+            </DropdownMenuItem>
+          )}
+          {canDelete && (
+            <DropdownMenuItem
+              className="text-destructive cursor-pointer"
+              onClick={() => setCompanyToDelete(company)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('labels.delete')}
+            </DropdownMenuItem>
+          )}
+        </>
+      )),
+    ] : []),
+    ch.accessor('name', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.companies.name')} />,
+      meta: { label: t('crm.companies.name') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="font-medium text-sm">{getValue()}</span>,
+    }) as ColumnDef<CompanyListDto, unknown>,
+    ch.accessor('domain', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.companies.domain')} />,
+      meta: { label: t('crm.companies.domain') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{getValue() || '-'}</span>,
+    }) as ColumnDef<CompanyListDto, unknown>,
+    ch.accessor('industry', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.companies.industry')} />,
+      meta: { label: t('crm.companies.industry') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{getValue() || '-'}</span>,
+    }) as ColumnDef<CompanyListDto, unknown>,
+    ch.accessor('ownerName', {
+      id: 'owner',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.companies.owner')} />,
+      meta: { label: t('crm.companies.owner') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{getValue() || '-'}</span>,
+    }) as ColumnDef<CompanyListDto, unknown>,
+    ch.accessor('contactCount', {
+      id: 'contactCount',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.companies.contactsCount')} />,
+      meta: { label: t('crm.companies.contactsCount'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<CompanyListDto, unknown>,
+    ch.accessor('createdAt', {
+      id: 'created',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.created')} />,
+      meta: { label: t('labels.created') },
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        <span className="text-sm text-muted-foreground">{formatDateTime(getValue())}</span>
+      ),
+    }) as ColumnDef<CompanyListDto, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, canUpdate, canDelete, showActions])
+
+  const table = useServerTable({
+    data: companies,
+    columns,
+    rowCount: totalCount,
+    columnVisibilityStorageKey: 'crm-companies',
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: [],
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function' ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize }) : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    getRowId: (row) => row.id,
+  })
+
   return (
     <div className="space-y-6">
       <OfflineBanner visible={isReconnecting} />
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('crm.companies.title')}</h1>
-          <p className="text-muted-foreground">{t('crm.companies.description')}</p>
-        </div>
-        {canCreate && (
-          <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
-            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-            {t('crm.companies.create')}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        icon={Building2}
+        title={t('crm.companies.title')}
+        description={t('crm.companies.description')}
+        responsive
+        action={
+          canCreate && (
+            <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
+              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+              {t('crm.companies.create')}
+            </Button>
+          )
+        }
+      />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-0">
         <CardHeader className="pb-3">
@@ -140,19 +207,17 @@ export const CompaniesPage = () => {
             <div>
               <CardTitle className="text-lg">{t('crm.companies.title')}</CardTitle>
               <CardDescription>
-                {t('labels.showingCountOfTotal', { count: companies.length, total: totalCount })}
+                {companiesResponse ? t('labels.showingCountOfTotal', { count: companies.length, total: totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={t('crm.companies.searchPlaceholder')}
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-9 h-9"
-                aria-label={t('crm.companies.searchPlaceholder')}
-              />
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('crm.companies.searchPlaceholder')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+            />
           </div>
         </CardHeader>
         <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
@@ -160,111 +225,25 @@ export const CompaniesPage = () => {
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">{error}</div>
           )}
 
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10" />
-                  <TableHead>{t('crm.companies.name')}</TableHead>
-                  <TableHead>{t('crm.companies.domain')}</TableHead>
-                  <TableHead>{t('crm.companies.industry')}</TableHead>
-                  <TableHead>{t('crm.companies.owner')}</TableHead>
-                  <TableHead className="text-center">{t('crm.companies.contactsCount')}</TableHead>
-                  <TableHead>{t('labels.created')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : companies.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="p-0">
-                      <EmptyState
-                        icon={Building2}
-                        title={t('crm.companies.noCompaniesFound')}
-                        description={t('crm.companies.noCompaniesDescription')}
-                        action={canCreate ? {
-                          label: t('crm.companies.create'),
-                          onClick: () => openCreate(),
-                        } : undefined}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  companies.map((company) => (
-                    <TableRow
-                      key={company.id}
-                      className="group transition-colors hover:bg-muted/50 cursor-pointer"
-                      onClick={() => handleViewCompany(company)}
-                    >
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: company.name })}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start">
-                            <DropdownMenuItem className="cursor-pointer" onClick={(e) => { e.stopPropagation(); handleViewCompany(company) }}>
-                              <Eye className="h-4 w-4 mr-2" />
-                              {t('labels.viewDetails')}
-                            </DropdownMenuItem>
-                            {canUpdate && (
-                              <DropdownMenuItem className="cursor-pointer" onClick={(e) => { e.stopPropagation(); openEdit(company) }}>
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit')}
-                              </DropdownMenuItem>
-                            )}
-                            {canDelete && (
-                              <DropdownMenuItem className="text-destructive cursor-pointer" onClick={(e) => { e.stopPropagation(); setCompanyToDelete(company) }}>
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('labels.delete')}
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                      <TableCell><span className="font-medium text-sm">{company.name}</span></TableCell>
-                      <TableCell><span className="text-sm text-muted-foreground">{company.domain || '-'}</span></TableCell>
-                      <TableCell><span className="text-sm text-muted-foreground">{company.industry || '-'}</span></TableCell>
-                      <TableCell><span className="text-sm text-muted-foreground">{company.ownerName || '-'}</span></TableCell>
-                      <TableCell className="text-center"><Badge variant="secondary">{company.contactCount}</Badge></TableCell>
-                      <TableCell><span className="text-sm text-muted-foreground">{formatDateTime(company.createdAt)}</span></TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale || isFilterPending}
+            onRowClick={handleViewCompany}
+            emptyState={
+              <EmptyState
+                icon={Building2}
+                title={t('crm.companies.noCompaniesFound')}
+                description={t('crm.companies.noCompaniesDescription')}
+                action={canCreate ? {
+                  label: t('crm.companies.create'),
+                  onClick: () => openCreate(),
+                } : undefined}
+              />
+            }
+          />
 
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCount}
-              pageSize={params.pageSize || 20}
-              onPageChange={handlePageChange}
-              showPageSizeSelector={false}
-              className="mt-4"
-            />
-          )}
+          <DataTablePagination table={table} showPageSizeSelector={false} />
         </CardContent>
       </Card>
 

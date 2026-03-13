@@ -228,21 +228,24 @@ export const TenantsPage = () => {
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-0">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{t('tenants.listTitle')}</CardTitle>
-          <CardDescription>
-            {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
-          </CardDescription>
+          <div className="space-y-3">
+            <div>
+              <CardTitle className="text-lg">{t('tenants.listTitle')}</CardTitle>
+              <CardDescription>
+                {data ? t('labels.showingCountOfTotal', { count: data.items.length, total: data.totalCount }) : ''}
+              </CardDescription>
+            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('tenants.searchPlaceholder')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+            />
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <DataTableToolbar
-            table={table}
-            searchInput={searchInput}
-            onSearchChange={setSearchInput}
-            searchPlaceholder={t('tenants.searchPlaceholder')}
-            isSearchStale={isSearchStale}
-            onResetColumnVisibility={table.resetColumnVisibility}
-          />
-
           <DataTable
             table={table}
             isLoading={isLoading}

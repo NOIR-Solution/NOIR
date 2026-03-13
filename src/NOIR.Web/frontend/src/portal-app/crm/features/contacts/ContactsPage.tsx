@@ -1,22 +1,25 @@
-import { useState, useEffect, useDeferredValue, useMemo, useTransition } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
   Contact,
-  EllipsisVertical,
   Eye,
   Loader2,
   Pencil,
   Plus,
-  Search,
   Trash2,
 } from 'lucide-react'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
+import { useTableParams } from '@/hooks/useTableParams'
+import { useServerTable } from '@/hooks/useServerTable'
+import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
   Badge,
@@ -33,32 +36,27 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  DropdownMenu,
-  DropdownMenuContent,
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   EmptyState,
-  Input,
-  Pagination,
+  PageHeader,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from '@uikit'
 import { useContactsQuery, useDeleteContact } from '@/portal-app/crm/queries'
-import type { GetContactsParams, ContactListDto, ContactSource } from '@/types/crm'
+import type { ContactListDto, ContactSource } from '@/types/crm'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
 import { ContactDialog } from './components/ContactDialog'
 
 const CONTACT_SOURCES: ContactSource[] = ['Web', 'Referral', 'Social', 'Cold', 'Event', 'Other']
+
+const ch = createColumnHelper<ContactListDto>()
 
 export const ContactsPage = () => {
   const { t } = useTranslation('common')
@@ -69,29 +67,24 @@ export const ContactsPage = () => {
   const canCreate = hasPermission(Permissions.CrmContactsCreate)
   const canUpdate = hasPermission(Permissions.CrmContactsUpdate)
   const canDelete = hasPermission(Permissions.CrmContactsDelete)
+  const showActions = canUpdate || canDelete
 
-  const [searchInput, setSearchInput] = useState('')
-  const deferredSearch = useDeferredValue(searchInput)
-  const isSearchStale = searchInput !== deferredSearch
-  const [sourceFilter, setSourceFilter] = useState<string>('all')
-  const [isFilterPending, startFilterTransition] = useTransition()
-  const [params, setParams] = useState<GetContactsParams>({ page: 1, pageSize: 20 })
+  const {
+    params,
+    searchInput,
+    setSearchInput,
+    isSearchStale,
+    isFilterPending,
+    setFilter,
+    setPage,
+    setPageSize,
+  } = useTableParams<{ source?: ContactSource }>({ defaultPageSize: 20 })
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-crm-contact' })
   const [contactToDelete, setContactToDelete] = useState<ContactListDto | null>(null)
   const deleteMutation = useDeleteContact()
 
-  useEffect(() => {
-    setParams(prev => ({ ...prev, page: 1 }))
-  }, [deferredSearch])
-
-  const queryParams = useMemo(() => ({
-    ...params,
-    search: deferredSearch || undefined,
-    source: sourceFilter !== 'all' ? sourceFilter as ContactSource : undefined,
-  }), [params, deferredSearch, sourceFilter])
-
-  const { data: contactsResponse, isLoading: loading, error: queryError, refetch } = useContactsQuery(queryParams)
+  const { data: contactsResponse, isLoading, error: queryError, refetch } = useContactsQuery(params)
   const error = queryError?.message ?? null
 
   const { isReconnecting } = useEntityUpdateSignal({
@@ -102,21 +95,8 @@ export const ContactsPage = () => {
   const contacts = contactsResponse?.items ?? []
   const { editItem: contactToEdit, openEdit, closeEdit } = useUrlEditDialog<ContactListDto>(contacts)
   const totalCount = contactsResponse?.totalCount ?? 0
-  const totalPages = contactsResponse?.totalPages ?? 1
-  const currentPage = params.page ?? 1
 
-  const handleSourceFilter = (value: string) => {
-    startFilterTransition(() => {
-      setSourceFilter(value)
-      setParams(prev => ({ ...prev, page: 1 }))
-    })
-  }
-
-  const handlePageChange = (page: number) => {
-    startFilterTransition(() => {
-      setParams(prev => ({ ...prev, page }))
-    })
-  }
+  const handleSourceFilter = (value: string) => setFilter('source', value === 'all' ? undefined : (value as ContactSource))
 
   const handleViewContact = (contact: ContactListDto) => {
     navigate(`/portal/crm/contacts/${contact.id}`)
@@ -145,21 +125,114 @@ export const ContactsPage = () => {
     return getStatusBadgeClasses(colorMap[source] || 'gray')
   }
 
+  const columns = useMemo((): ColumnDef<ContactListDto, unknown>[] => [
+    ...(showActions ? [
+      createActionsColumn<ContactListDto>((contact) => (
+        <>
+          <DropdownMenuItem className="cursor-pointer" onClick={() => handleViewContact(contact)}>
+            <Eye className="h-4 w-4 mr-2" />
+            {t('labels.viewDetails')}
+          </DropdownMenuItem>
+          {canUpdate && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => openEdit(contact)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              {t('labels.edit')}
+            </DropdownMenuItem>
+          )}
+          {canDelete && (
+            <DropdownMenuItem
+              className="text-destructive cursor-pointer"
+              onClick={() => setContactToDelete(contact)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('labels.delete')}
+            </DropdownMenuItem>
+          )}
+        </>
+      )),
+    ] : []),
+    ch.accessor((row) => `${row.firstName} ${row.lastName}`.trim(), {
+      id: 'name',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.name')} />,
+      meta: { label: t('labels.name') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="font-medium text-sm">{row.original.firstName} {row.original.lastName}</span>
+      ),
+    }) as ColumnDef<ContactListDto, unknown>,
+    ch.accessor('email', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.contacts.email')} />,
+      meta: { label: t('crm.contacts.email') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{getValue()}</span>,
+    }) as ColumnDef<ContactListDto, unknown>,
+    ch.accessor('phone', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.contacts.phone')} />,
+      meta: { label: t('crm.contacts.phone') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{getValue() || '-'}</span>,
+    }) as ColumnDef<ContactListDto, unknown>,
+    ch.accessor('companyName', {
+      id: 'company',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.contacts.company')} />,
+      meta: { label: t('crm.contacts.company') },
+      enableSorting: false,
+      cell: ({ getValue }) => <span className="text-sm text-muted-foreground">{getValue() || '-'}</span>,
+    }) as ColumnDef<ContactListDto, unknown>,
+    ch.accessor('source', {
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.contacts.source')} />,
+      meta: { label: t('crm.contacts.source') },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Badge variant="outline" className={getSourceBadgeColor(row.original.source)}>
+          {t(`crm.sources.${row.original.source}`)}
+        </Badge>
+      ),
+    }) as ColumnDef<ContactListDto, unknown>,
+    ch.accessor('leadCount', {
+      id: 'leadsCount',
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('crm.contacts.leadsCount')} />,
+      meta: { label: t('crm.contacts.leadsCount'), align: 'center' },
+      enableSorting: false,
+      cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
+    }) as ColumnDef<ContactListDto, unknown>,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [t, canUpdate, canDelete, showActions])
+
+  const table = useServerTable({
+    data: contacts,
+    columns,
+    rowCount: totalCount,
+    columnVisibilityStorageKey: 'crm-contacts',
+    state: {
+      pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
+      sorting: [],
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === 'function' ? updater({ pageIndex: params.page - 1, pageSize: params.pageSize }) : updater
+      if (next.pageIndex !== params.page - 1) setPage(next.pageIndex + 1)
+      if (next.pageSize !== params.pageSize) setPageSize(next.pageSize)
+    },
+    getRowId: (row) => row.id,
+  })
+
   return (
     <div className="space-y-6">
       <OfflineBanner visible={isReconnecting} />
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('crm.contacts.title')}</h1>
-          <p className="text-muted-foreground">{t('crm.contacts.description')}</p>
-        </div>
-        {canCreate && (
-          <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
-            <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
-            {t('crm.contacts.create')}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        icon={Contact}
+        title={t('crm.contacts.title')}
+        description={t('crm.contacts.description')}
+        responsive
+        action={
+          canCreate && (
+            <Button className="group transition-all duration-300 cursor-pointer" onClick={() => openCreate()}>
+              <Plus className="h-4 w-4 mr-2 transition-transform group-hover:rotate-90 duration-300" />
+              {t('crm.contacts.create')}
+            </Button>
+          )
+        }
+      />
 
       <Card className="shadow-sm hover:shadow-lg transition-all duration-300 gap-0">
         <CardHeader className="pb-3">
@@ -167,34 +240,32 @@ export const ContactsPage = () => {
             <div>
               <CardTitle className="text-lg">{t('crm.contacts.title')}</CardTitle>
               <CardDescription>
-                {t('labels.showingCountOfTotal', { count: contacts.length, total: totalCount })}
+                {contactsResponse ? t('labels.showingCountOfTotal', { count: contacts.length, total: totalCount }) : ''}
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={t('crm.contacts.searchPlaceholder')}
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="pl-9 h-9"
-                  aria-label={t('crm.contacts.searchPlaceholder')}
-                />
-              </div>
-              <Select value={sourceFilter} onValueChange={handleSourceFilter}>
-                <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('crm.contacts.filterBySource')}>
-                  <SelectValue placeholder={t('crm.contacts.filterBySource')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="cursor-pointer">{t('labels.all')}</SelectItem>
-                  {CONTACT_SOURCES.map((source) => (
-                    <SelectItem key={source} value={source} className="cursor-pointer">
-                      {t(`crm.sources.${source}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <DataTableToolbar
+              table={table}
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              searchPlaceholder={t('crm.contacts.searchPlaceholder')}
+              isSearchStale={isSearchStale}
+              onResetColumnVisibility={table.resetColumnVisibility}
+              filterSlot={
+                <Select value={params.filters.source ?? 'all'} onValueChange={handleSourceFilter}>
+                  <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('crm.contacts.filterBySource')}>
+                    <SelectValue placeholder={t('crm.contacts.filterBySource')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all" className="cursor-pointer">{t('labels.all')}</SelectItem>
+                    {CONTACT_SOURCES.map((source) => (
+                      <SelectItem key={source} value={source} className="cursor-pointer">
+                        {t(`crm.sources.${source}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              }
+            />
           </div>
         </CardHeader>
         <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
@@ -202,138 +273,28 @@ export const ContactsPage = () => {
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">{error}</div>
           )}
 
-          <div className="rounded-xl border border-border/50 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10" />
-                  <TableHead>{t('labels.name')}</TableHead>
-                  <TableHead>{t('crm.contacts.email')}</TableHead>
-                  <TableHead>{t('crm.contacts.phone')}</TableHead>
-                  <TableHead>{t('crm.contacts.company')}</TableHead>
-                  <TableHead>{t('crm.contacts.source')}</TableHead>
-                  <TableHead className="text-center">{t('crm.contacts.leadsCount')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell><Skeleton className="h-8 w-8 rounded" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
-                      <TableCell className="text-center"><Skeleton className="h-5 w-8 mx-auto" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : contacts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="p-0">
-                      <EmptyState
-                        icon={Contact}
-                        title={t('crm.contacts.noContactsFound')}
-                        description={t('crm.contacts.noContactsDescription')}
-                        action={canCreate ? {
-                          label: t('crm.contacts.create'),
-                          onClick: () => openCreate(),
-                        } : undefined}
-                        className="border-0 rounded-none px-4 py-12"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  contacts.map((contact) => (
-                    <TableRow
-                      key={contact.id}
-                      className="group transition-colors hover:bg-muted/50 cursor-pointer"
-                      onClick={() => handleViewContact(contact)}
-                    >
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="cursor-pointer h-9 w-9 p-0 transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                              aria-label={t('labels.actionsFor', { name: `${contact.firstName} ${contact.lastName}` })}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start">
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={(e) => { e.stopPropagation(); handleViewContact(contact) }}
-                            >
-                              <Eye className="h-4 w-4 mr-2" />
-                              {t('labels.viewDetails')}
-                            </DropdownMenuItem>
-                            {canUpdate && (
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={(e) => { e.stopPropagation(); openEdit(contact) }}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                {t('labels.edit')}
-                              </DropdownMenuItem>
-                            )}
-                            {canDelete && (
-                              <DropdownMenuItem
-                                className="text-destructive cursor-pointer"
-                                onClick={(e) => { e.stopPropagation(); setContactToDelete(contact) }}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('labels.delete')}
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium text-sm">{contact.firstName} {contact.lastName}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">{contact.email}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">{contact.phone || '-'}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">{contact.companyName || '-'}</span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={getSourceBadgeColor(contact.source)}>
-                          {t(`crm.sources.${contact.source}`)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{contact.leadCount}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isStale={isSearchStale || isFilterPending}
+            onRowClick={handleViewContact}
+            emptyState={
+              <EmptyState
+                icon={Contact}
+                title={t('crm.contacts.noContactsFound')}
+                description={t('crm.contacts.noContactsDescription')}
+                action={canCreate ? {
+                  label: t('crm.contacts.create'),
+                  onClick: () => openCreate(),
+                } : undefined}
+              />
+            }
+          />
 
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalCount}
-              pageSize={params.pageSize || 20}
-              onPageChange={handlePageChange}
-              showPageSizeSelector={false}
-              className="mt-4"
-            />
-          )}
+          <DataTablePagination table={table} showPageSizeSelector={false} />
         </CardContent>
       </Card>
 
-      {/* Create/Edit Contact Dialog */}
       <ContactDialog
         open={isCreateOpen || !!contactToEdit}
         onOpenChange={(open) => {
@@ -345,7 +306,6 @@ export const ContactsPage = () => {
         contact={contactToEdit}
       />
 
-      {/* Delete Confirmation Dialog */}
       <Credenza open={!!contactToDelete} onOpenChange={(open) => !open && setContactToDelete(null)}>
         <CredenzaContent className="border-destructive/30">
           <CredenzaHeader>
