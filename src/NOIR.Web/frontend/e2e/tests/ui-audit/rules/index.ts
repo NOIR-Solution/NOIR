@@ -10,6 +10,7 @@ import { gradientTextRule } from './gradient-text.rule';
 import { destructiveButtonRule } from './destructive-button.rule';
 import { consoleErrorsRule } from './console-errors.rule';
 import { networkErrorsRule } from './network-errors.rule';
+import { viewModeToggleRule } from './view-mode-toggle.rule';
 
 export const AUDIT_RULES: AuditRule[] = [
   cursorPointerRule,
@@ -23,6 +24,7 @@ export const AUDIT_RULES: AuditRule[] = [
   destructiveButtonRule,
   consoleErrorsRule,
   networkErrorsRule,
+  viewModeToggleRule,
 ];
 
 export { dialogFooterRule } from './dialog-footer.rule';

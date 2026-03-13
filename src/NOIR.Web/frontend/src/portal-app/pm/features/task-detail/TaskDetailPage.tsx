@@ -29,6 +29,7 @@ import {
   Card,
   CardContent,
   Credenza,
+  EmptyState,
   CredenzaContent,
   CredenzaDescription,
   CredenzaFooter,
@@ -249,9 +250,7 @@ export const TaskDetailPage = () => {
 
   if (!task) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">{t('pm.noTasksFound')}</p>
-      </div>
+      <EmptyState icon={CheckSquare} title={t('pm.noTasksFound')} description={t('pm.taskNotFoundDescription', { defaultValue: 'The task may have been deleted or you do not have access.' })} />
     )
   }
 

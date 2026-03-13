@@ -29,6 +29,7 @@ import {
   Badge,
   Button,
   Credenza,
+  EmptyState,
   CredenzaContent,
   CredenzaDescription,
   CredenzaFooter,
@@ -130,9 +131,7 @@ export const ProjectDetailPage = () => {
 
   if (!project) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">{t('pm.noProjectsFound')}</p>
-      </div>
+      <EmptyState icon={KanbanSquare} title={t('pm.noProjectsFound')} description={t('pm.projectNotFoundDescription', { defaultValue: 'The project may have been deleted or you do not have access.' })} />
     )
   }
 

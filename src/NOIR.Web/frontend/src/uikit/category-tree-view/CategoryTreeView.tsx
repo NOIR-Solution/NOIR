@@ -433,7 +433,7 @@ export const CategoryTreeView = <T extends TreeCategory>({
         {/* Badges */}
         <div className="flex items-center gap-2 shrink-0">
           {category.itemCount !== undefined && category.itemCount > 0 && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="outline" className="text-xs">
               {category.itemCount} {itemCountLabel}
             </Badge>
           )}

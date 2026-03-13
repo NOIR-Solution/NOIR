@@ -20,7 +20,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Star, Trash2, Pencil, GripVertical, Eye } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Badge, Button, Input } from '@uikit'
+import { Badge, Button, EmptyState, Input } from '@uikit'
 
 import type { ProductImage } from '@/types/product'
 
@@ -275,17 +275,11 @@ export const SortableImageGallery = ({
 
   if (images.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="rounded-full bg-muted p-4 mb-4">
-          <Star className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <p className="text-muted-foreground">
-          {t('products.noImages', 'No images yet')}
-        </p>
-        <p className="text-sm text-muted-foreground mt-1">
-          {t('products.uploadFirstImage', 'Upload your first product image')}
-        </p>
-      </div>
+      <EmptyState
+        icon={Star}
+        title={t('products.noImages', 'No images yet')}
+        description={t('products.uploadFirstImage', 'Upload your first product image')}
+      />
     )
   }
 

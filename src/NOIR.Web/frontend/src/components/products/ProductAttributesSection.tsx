@@ -27,6 +27,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  EmptyState,
   Skeleton,
 } from '@uikit'
 
@@ -217,16 +218,10 @@ export const ProductAttributesSection = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="p-3 rounded-xl bg-muted/50 mb-3">
-              <FolderOpen className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <p className="text-muted-foreground">
-              {categoryId
-                ? t('products.attributes.noAttributesForCategory')
-                : t('products.attributes.selectCategoryFirst')}
-            </p>
-          </div>
+          <EmptyState
+            icon={FolderOpen}
+            title={categoryId ? t('products.attributes.noAttributesForCategory') : t('products.attributes.selectCategoryFirst')}
+          />
         </CardContent>
       </Card>
     )
