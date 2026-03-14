@@ -7,6 +7,8 @@ interface DataTablePaginationProps<TData> {
   totalItems?: number
   showPageSizeSelector?: boolean
   pageSizeOptions?: number[]
+  /** The page's default page size — shows "Default (X)" in the page size selector */
+  defaultPageSize?: number
   className?: string
 }
 
@@ -19,6 +21,7 @@ export const DataTablePagination = <TData,>({
   totalItems,
   showPageSizeSelector = true,
   pageSizeOptions,
+  defaultPageSize,
   className,
 }: DataTablePaginationProps<TData>) => {
   const { pageIndex, pageSize } = table.getState().pagination
@@ -40,6 +43,7 @@ export const DataTablePagination = <TData,>({
       }}
       showPageSizeSelector={showPageSizeSelector}
       pageSizeOptions={pageSizeOptions}
+      defaultPageSize={defaultPageSize}
       className={className}
     />
   )

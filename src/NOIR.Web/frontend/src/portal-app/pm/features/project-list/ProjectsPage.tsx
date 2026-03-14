@@ -209,7 +209,8 @@ export const ProjectsPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams<{ status?: ProjectStatus }>({ defaultPageSize: 12 })
+    defaultPageSize,
+  } = useTableParams<{ status?: ProjectStatus }>({ defaultPageSize: 12, tableKey: 'projects' })
 
   const { data, isLoading, refetch } = useProjectsQuery({
     ...params,
@@ -496,7 +497,7 @@ export const ProjectsPage = () => {
                   />
                 }
               />
-              <DataTablePagination table={table} showPageSizeSelector={false} />
+              <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
             </>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

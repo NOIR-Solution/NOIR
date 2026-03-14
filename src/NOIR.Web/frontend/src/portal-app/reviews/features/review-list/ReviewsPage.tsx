@@ -73,7 +73,7 @@ export const ReviewsPage = () => {
   const [isFilterPending, startFilterTransition] = useTransition()
 
   // Table params (search, pagination, sorting)
-  const { params, searchInput, setSearchInput, isSearchStale, setSorting, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
+  const { params, searchInput, setSearchInput, isSearchStale, setSorting, setPage, setPageSize, defaultPageSize } = useTableParams({ defaultPageSize: 20, tableKey: 'reviews' })
 
   // Dialog state
   const [detailReviewId, setDetailReviewId] = useState<string | undefined>()
@@ -387,7 +387,7 @@ export const ReviewsPage = () => {
             }
           />
 
-          <DataTablePagination table={table} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

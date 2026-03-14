@@ -76,7 +76,8 @@ export const UsersPage = () => {
     setPage,
     setPageSize,
     setSorting,
-  } = useTableParams<{ role?: string; isLocked?: boolean }>({ defaultPageSize: 10 })
+    defaultPageSize,
+  } = useTableParams<{ role?: string; isLocked?: boolean }>({ defaultPageSize: 10, tableKey: 'users' })
 
   const { data, isLoading, error: queryError, refetch: refresh } = useUsersQuery(params)
   const { data: availableRoles = [] } = useAvailableRolesQuery()
@@ -331,7 +332,7 @@ export const UsersPage = () => {
             />
           </div>
         </CardHeader>
-        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'space-y-3 opacity-70 transition-opacity duration-200' : 'space-y-3 transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
@@ -353,7 +354,7 @@ export const UsersPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

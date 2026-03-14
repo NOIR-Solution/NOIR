@@ -55,7 +55,7 @@ export const CustomerGroupsPage = () => {
   const canDeleteGroups = hasPermission(Permissions.CustomerGroupsDelete)
   const showActions = canUpdateGroups || canDeleteGroups
 
-  const { params, searchInput, setSearchInput, isSearchStale, isFilterPending, setSorting, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
+  const { params, searchInput, setSearchInput, isSearchStale, isFilterPending, setSorting, setPage, setPageSize, defaultPageSize } = useTableParams({ defaultPageSize: 20, tableKey: 'customer-groups' })
   const { data: groupsResponse, isLoading, error: queryError, refetch: refresh } = useCustomerGroupsQuery(params)
   const deleteMutation = useDeleteCustomerGroupMutation()
 
@@ -224,7 +224,7 @@ export const CustomerGroupsPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

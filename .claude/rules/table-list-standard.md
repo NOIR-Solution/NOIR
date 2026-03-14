@@ -23,7 +23,7 @@ Every table list page MUST use this Card structure:
   </CardHeader>
   <CardContent className="space-y-3">
     <DataTable table={table} ... />
-    <DataTablePagination table={table} />
+    <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
   </CardContent>
 </Card>
 ```
@@ -32,7 +32,7 @@ Every table list page MUST use this Card structure:
 
 1. **`gap-0`** on Card — overrides default `gap-6` (24px) between header and content
 2. **`pb-3`** on CardHeader — provides 12px spacing between header and content
-3. **`space-y-3`** on CardContent — 12px between DataTable and DataTablePagination (NOT `space-y-4`)
+3. **`space-y-3`** on CardContent — 12px between DataTable and DataTablePagination (NOT `space-y-4`). **CRITICAL**: When using conditional opacity (`isSearchStale ? '...' : '...'`), `space-y-3` MUST appear in BOTH branches of the ternary. Missing it causes pagination to sit flush against the table (0px gap).
 4. **CardDescription** REQUIRED — always show `Showing X of Y items` count
 5. **CardTitle** — always `className="text-lg"`, uses `t('domain.allItems')` pattern
 

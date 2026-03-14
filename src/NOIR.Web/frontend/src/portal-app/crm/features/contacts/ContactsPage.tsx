@@ -79,7 +79,8 @@ export const ContactsPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams<{ source?: ContactSource }>({ defaultPageSize: 20 })
+    defaultPageSize,
+  } = useTableParams<{ source?: ContactSource }>({ defaultPageSize: 20, tableKey: 'crm-contacts' })
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-crm-contact' })
   const [contactToDelete, setContactToDelete] = useState<ContactListDto | null>(null)
@@ -270,7 +271,7 @@ export const ContactsPage = () => {
             />
           </div>
         </CardHeader>
-        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'space-y-3 opacity-70 transition-opacity duration-200' : 'space-y-3 transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">{error}</div>
           )}
@@ -294,7 +295,7 @@ export const ContactsPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

@@ -36,6 +36,7 @@ import {
 } from '../table/Table'
 import { Skeleton } from '../skeleton/Skeleton'
 import { EmptyState } from '../empty-state/EmptyState'
+import { DataTableHeaderContextMenu } from './DataTableHeaderContextMenu'
 
 // ─── Internal: per-header draggable TH ───────────────────────────────────────
 
@@ -66,7 +67,7 @@ const DraggableTableHead = ({ header, canDragReorder }: {
       }
     : {}
 
-  return (
+  const tableHead = (
     <TableHead
       ref={isDraggable ? setNodeRef : undefined}
       colSpan={header.colSpan}
@@ -89,6 +90,8 @@ const DraggableTableHead = ({ header, canDragReorder }: {
         minWidth: isFixed ? `${minSize}px` : `var(--col-${header.column.id}-min-size, auto)`,
         maxWidth: isFixed ? `${maxSize}px` : `var(--col-${header.column.id}-max-size, auto)`,
         ...(isFixed && ({ '--col-fixed-size': `${minSize}px` } as React.CSSProperties)),
+        // Centered headers: zero th padding — inner flex div handles centering symmetrically
+        ...(header.column.columnDef.meta?.align === 'center' && { padding: 0 }),
         ...(nativePinLeft && !isMetaSticky && { left: `${header.column.getStart('left')}px` }),
         ...(nativePinRight && { right: `${header.column.getAfter('right')}px` }),
       }}
@@ -118,7 +121,7 @@ const DraggableTableHead = ({ header, canDragReorder }: {
           ? null
           : header.column.columnDef.meta?.align === 'center'
             ? (
-              <div className="flex h-full items-center justify-center py-[var(--density-cell-padding-y)] px-[var(--density-cell-padding-x)]">
+              <div className="flex h-full w-full items-center justify-center">
                 {flexRender(header.column.columnDef.header, header.getContext())}
               </div>
             )
@@ -142,6 +145,12 @@ const DraggableTableHead = ({ header, canDragReorder }: {
         />
       )}
     </TableHead>
+  )
+
+  return (
+    <DataTableHeaderContextMenu column={header.column}>
+      {tableHead}
+    </DataTableHeaderContextMenu>
   )
 }
 
@@ -171,6 +180,11 @@ interface DataTableProps<TData extends RowData> {
    * Adds data-density attribute for CSS targeting.
    */
   density?: 'compact' | 'normal' | 'comfortable'
+  /**
+   * Returns a CSS class name for row animation (highlight flash, fade-out).
+   * Use with `useRowHighlight` hook.
+   */
+  getRowAnimationClass?: (rowId: string) => string
 }
 
 /**
@@ -197,6 +211,7 @@ export const DataTable = <TData extends RowData>({
   skeletonRowCount = 5,
   className,
   density = 'normal',
+  getRowAnimationClass,
 }: DataTableProps<TData>) => {
   const visibleColumns = table.getVisibleLeafColumns()
   const visibleColumnCount = visibleColumns.length
@@ -265,30 +280,45 @@ export const DataTable = <TData extends RowData>({
     >
       <div
         className={cn(
-          'rounded-xl border border-border/50 overflow-hidden transition-opacity duration-150',
+          'rounded-xl border border-border/50 overflow-hidden transition-opacity duration-150 [container-type:inline-size]',
           isStale && 'opacity-60 pointer-events-none',
           className,
         )}
         data-density={density}
       >
         <UITable style={{ ...columnSizeVars, minWidth: `${minTableWidth}px` }}>
-          {/* Colgroup — explicit widths for fixed columns, getSize() for resizable */}
+          {/* Colgroup — fixed cols get exact px, flex cols use cqi to fill remaining space */}
           <colgroup>
-            {visibleColumns.map((column) => {
-              const minSize = column.columnDef.minSize
-              const maxSize = column.columnDef.maxSize
-              const isFixed = minSize !== undefined && maxSize !== undefined && minSize === maxSize
-              return (
-                <col
-                  key={column.id}
-                  data-col-id={column.id}
-                  style={{
-                    width: isFixed ? `${minSize}px` : `${column.getSize()}px`,
-                    minWidth: isFixed ? `${minSize}px` : `${column.columnDef.minSize ?? column.getSize()}px`,
-                  }}
-                />
-              )
-            })}
+            {(() => {
+              const fixedTotal = visibleColumns.reduce((acc, col) => {
+                const min = col.columnDef.minSize
+                const max = col.columnDef.maxSize
+                return acc + (min !== undefined && max !== undefined && min === max ? min : 0)
+              }, 0)
+              const flexTotal = visibleColumns.reduce((acc, col) => {
+                const min = col.columnDef.minSize
+                const max = col.columnDef.maxSize
+                return acc + (min !== undefined && max !== undefined && min === max ? 0 : col.getSize())
+              }, 0)
+
+              return visibleColumns.map((column) => {
+                const minSize = column.columnDef.minSize
+                const maxSize = column.columnDef.maxSize
+                const isFixed = minSize !== undefined && maxSize !== undefined && minSize === maxSize
+                // Fixed: exact pixels. Flex: proportional share of (container - fixed) via cqi units.
+                // cqi = 1% of container inline size. 100cqi = container width.
+                const flexWidth = flexTotal > 0
+                  ? `calc((100cqi - ${fixedTotal}px) * ${column.getSize()} / ${flexTotal})`
+                  : `${column.getSize()}px`
+                return (
+                  <col
+                    key={column.id}
+                    data-col-id={column.id}
+                    style={{ width: isFixed ? `${minSize}px` : flexWidth }}
+                  />
+                )
+              })
+            })()}
           </colgroup>
 
           {/* Header — SortableContext for column reorder when ordering is active */}
@@ -411,7 +441,10 @@ export const DataTable = <TData extends RowData>({
                         }
                       : undefined
                   }
-                  className={cn(onRowClick && 'cursor-pointer')}
+                  className={cn(
+                    onRowClick && 'cursor-pointer',
+                    getRowAnimationClass?.(row.id),
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => {
                     const isMetaSticky = cell.column.columnDef.meta?.sticky === 'left'
@@ -444,6 +477,8 @@ export const DataTable = <TData extends RowData>({
                           maxWidth: isFixed
                             ? `${maxSize}px`
                             : `var(--col-${cell.column.id}-max-size, auto)`,
+                          // Centered cells: zero td padding — inner flex div handles centering symmetrically
+                          ...(cell.column.columnDef.meta?.align === 'center' && { padding: 0 }),
                           ...(nativePinLeft &&
                             !isMetaSticky && {
                               left: `${cell.column.getStart('left')}px`,
@@ -454,7 +489,7 @@ export const DataTable = <TData extends RowData>({
                         }}
                       >
                         {cell.column.columnDef.meta?.align === 'center' ? (
-                          <div className="flex h-full items-center justify-center py-[var(--density-cell-padding-y)] px-[var(--density-cell-padding-x)]">
+                          <div className="flex h-full w-full items-center justify-center">
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </div>
                         ) : (

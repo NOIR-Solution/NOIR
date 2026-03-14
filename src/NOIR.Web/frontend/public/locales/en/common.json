@@ -2000,6 +2000,12 @@
     "showingOfItems": "Showing {{from}}-{{to}} of {{total}} items",
     "showingCountOfTotal": "Showing {{count}} of {{total}} items",
     "rowsPerPage": "Rows per page:",
+    "pageSizeDefault": "Default ({{size}})",
+    "pageSizeDefaultOption": "Default ({{size}})",
+    "pageSizeCustom": "Custom ({{size}})",
+    "pageSizeCustomOption": "Custom...",
+    "pageSizeCustomActive": "Custom ({{size}})",
+    "customPageSize": "Custom page size",
     "logo": "Logo",
     "logoUploaded": "Logo uploaded",
     "removeLogo": "Remove logo",
@@ -2101,6 +2107,17 @@
     "uploaded": "Uploaded",
     "preview": "Preview",
     "moreActions": "More actions"
+  },
+  "dataTable": {
+    "sortAscending": "Sort Ascending",
+    "sortDescending": "Sort Descending",
+    "clearSort": "Clear Sort",
+    "pinColumn": "Pin Column",
+    "pinLeft": "Pin Left",
+    "pinRight": "Pin Right",
+    "unpinColumn": "Unpin Column",
+    "hideColumn": "Hide Column",
+    "resetColumnWidth": "Reset Column Width"
   },
   "permissions": {
     "categories": {

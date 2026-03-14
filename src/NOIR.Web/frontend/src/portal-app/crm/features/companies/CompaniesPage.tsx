@@ -63,7 +63,7 @@ export const CompaniesPage = () => {
   const canDelete = hasPermission(Permissions.CrmCompaniesDelete)
   const showActions = canUpdate || canDelete
 
-  const { params, searchInput, setSearchInput, isSearchStale, isFilterPending, setSorting, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
+  const { params, searchInput, setSearchInput, isSearchStale, isFilterPending, setSorting, setPage, setPageSize, defaultPageSize } = useTableParams({ defaultPageSize: 20, tableKey: 'crm-companies' })
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-crm-company' })
   const [companyToDelete, setCompanyToDelete] = useState<CompanyListDto | null>(null)
@@ -220,7 +220,7 @@ export const CompaniesPage = () => {
             />
           </div>
         </CardHeader>
-        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'space-y-3 opacity-70 transition-opacity duration-200' : 'space-y-3 transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">{error}</div>
           )}
@@ -244,7 +244,7 @@ export const CompaniesPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

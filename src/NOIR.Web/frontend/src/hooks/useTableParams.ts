@@ -1,9 +1,42 @@
 import { useState, useDeferredValue, useTransition, useMemo, useEffect, useCallback } from 'react'
 import type { SortingState, Updater } from '@tanstack/react-table'
 
+const PAGE_SIZE_STORAGE_PREFIX = 'noir:table-page-size'
+
+const loadSavedPageSize = (tableKey: string): number | undefined => {
+  try {
+    const raw = localStorage.getItem(`${PAGE_SIZE_STORAGE_PREFIX}:${tableKey}`)
+    if (raw) {
+      const num = parseInt(raw, 10)
+      if (!isNaN(num) && num >= 1 && num <= 500) return num
+    }
+  } catch {
+    // localStorage unavailable
+  }
+  return undefined
+}
+
+const savePageSize = (tableKey: string, size: number) => {
+  try {
+    localStorage.setItem(`${PAGE_SIZE_STORAGE_PREFIX}:${tableKey}`, String(size))
+  } catch {
+    // quota exceeded or unavailable
+  }
+}
+
+const clearSavedPageSize = (tableKey: string) => {
+  try {
+    localStorage.removeItem(`${PAGE_SIZE_STORAGE_PREFIX}:${tableKey}`)
+  } catch {
+    // unavailable
+  }
+}
+
 interface UseTableParamsOptions<TFilters extends Record<string, unknown>> {
   defaultPageSize?: number
   defaultFilters?: TFilters
+  /** localStorage key for persisting page size. Must match useEnterpriseTable's tableKey. */
+  tableKey?: string
 }
 
 interface TableParams<TFilters extends Record<string, unknown>> {
@@ -34,12 +67,14 @@ interface UseTableParamsReturn<TFilters extends Record<string, unknown>> {
   setPageSize: (size: number) => void
   /** Accepts both direct SortingState and TanStack's functional Updater<SortingState> */
   setSorting: (updaterOrValue: Updater<SortingState>) => void
+  /** The page's configured default page size (pass to DataTablePagination) */
+  defaultPageSize: number
 }
 
 export const useTableParams = <TFilters extends Record<string, unknown> = Record<string, never>>(
   options: UseTableParamsOptions<TFilters> = {},
 ): UseTableParamsReturn<TFilters> => {
-  const { defaultPageSize = 20, defaultFilters = {} as TFilters } = options
+  const { defaultPageSize = 20, defaultFilters = {} as TFilters, tableKey } = options
 
   const [searchInput, setSearchInput] = useState('')
   const deferredSearch = useDeferredValue(searchInput)
@@ -47,7 +82,13 @@ export const useTableParams = <TFilters extends Record<string, unknown> = Record
 
   const [sorting, setSortingState] = useState<SortingState>([])
   const [page, setPageState] = useState(1)
-  const [pageSize, setPageSizeState] = useState(defaultPageSize)
+  const [pageSize, setPageSizeState] = useState(() => {
+    if (tableKey) {
+      const saved = loadSavedPageSize(tableKey)
+      if (saved != null) return saved
+    }
+    return defaultPageSize
+  })
   const [filters, setFilters] = useState<TFilters>(defaultFilters)
   const [isFilterPending, startFilterTransition] = useTransition()
 
@@ -65,7 +106,16 @@ export const useTableParams = <TFilters extends Record<string, unknown> = Record
       setPageSizeState(size)
       setPageState(1)
     })
-  }, [])
+    // Persist to localStorage when tableKey is provided
+    if (tableKey) {
+      if (size === defaultPageSize) {
+        // Clear saved value when resetting to default — avoids stale entries
+        clearSavedPageSize(tableKey)
+      } else {
+        savePageSize(tableKey, size)
+      }
+    }
+  }, [tableKey, defaultPageSize])
 
   const setSorting = useCallback((updaterOrValue: Updater<SortingState>) => {
     startFilterTransition(() => {
@@ -114,5 +164,6 @@ export const useTableParams = <TFilters extends Record<string, unknown> = Record
     setPage,
     setPageSize,
     setSorting,
+    defaultPageSize,
   }
 }

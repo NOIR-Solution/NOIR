@@ -95,7 +95,8 @@ export const CustomersPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams({ defaultPageSize: 20 })
+    defaultPageSize,
+  } = useTableParams({ defaultPageSize: 20, tableKey: 'customers' })
 
   const queryParams = useMemo(() => ({
     ...params,
@@ -512,7 +513,7 @@ export const CustomersPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

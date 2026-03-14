@@ -40,18 +40,19 @@ const columns = useMemo((): ColumnDef<T, unknown>[] => [
 
 ## Fixed Width Columns
 
-DataTable automatically enforces fixed width for columns where `minSize === maxSize`. The implementation uses a `<colgroup>` with explicit widths:
+DataTable automatically enforces fixed width for columns where `minSize === maxSize`. The implementation uses a `<colgroup>` with CSS Container Query units (`cqi`):
 
 - **Fixed columns**: `width: Npx` (exact pixel width)
-- **Flexible columns**: `width: 100%` (absorb remaining space)
+- **Flexible columns**: `width: calc((100cqi - fixedTotalPx) * ratio)` (proportional share of remaining space)
 
-This ensures fixed columns (actions at 44px, select at 40px) maintain their exact widths while flexible columns share the remaining table width equally.
+This ensures fixed columns (actions at 44px, select at 40px) maintain their exact widths at ALL viewport sizes. The `cqi` approach solves a fundamental CSS limitation: both `table-fixed` and `table-auto` distribute extra table width to ALL columns (including "fixed" ones) when the table is wider than the sum of column widths. `100cqi` resolves to the container's inline size, enabling exact proportional calculations that sum to the container width — leaving zero extra space to distribute.
 
 **Implementation details**:
-1. `DataTable` renders a `<colgroup>` with `<col>` elements for each column
-2. Fixed columns (`minSize === maxSize`) get explicit pixel widths
-3. Flexible columns get `width: 100%` to distribute remaining space
-4. The underlying `<table>` uses `table-layout: fixed` (via `Table.tsx`)
+1. DataTable wrapper has `[container-type:inline-size]` to establish a CSS container
+2. `DataTable` renders a `<colgroup>` with `<col>` elements for each column
+3. Fixed columns (`minSize === maxSize`) get explicit pixel widths
+4. Flexible columns get `calc((100cqi - fixedTotalPx) * colSize / flexTotal)` — proportional width from remaining space
+5. The underlying `<table>` uses `table-layout: fixed` (via `Table.tsx`)
 
 **Creating fixed-width columns**:
 ```tsx
@@ -103,6 +104,52 @@ DataTable MUST receive an `emptyState` prop with `<EmptyState icon={...} title={
 
 - All icon-only action buttons: `aria-label={t('...')}` or contextual label (e.g. `aria-label={t('labels.actions', 'Actions')}`)
 - All interactive elements: `cursor-pointer` (Tabs, Checkbox, Select, Switch, etc.)
+
+## Centered Column Alignment (Actions, Select)
+
+Columns with `meta: { align: 'center' }` (actions, select) get special handling in DataTable:
+- `<th>` and `<td>` padding is set to `0` — the inner flex wrapper handles centering
+- Content is wrapped in `<div className="flex h-full w-full items-center justify-center">`
+- This prevents the `[&:has([role=checkbox])]:pr-0` rule in `TableCell` from creating asymmetric padding (left pad kept, right pad removed → off-center checkbox)
+
+**Never** add manual padding/alignment to actions or select column cells — DataTable handles it automatically via `meta.align`.
+
+## Pagination Spacing (MANDATORY)
+
+`CardContent` wrapping `<DataTable>` and `<DataTablePagination>` **MUST** include `space-y-3` to ensure 12px gap between table and pagination — matching the gap between toolbar and table.
+
+```tsx
+// CORRECT — space-y-3 always present, even with opacity transitions
+<CardContent className={(isSearchStale || isFilterPending)
+  ? 'space-y-3 opacity-70 transition-opacity duration-200'
+  : 'space-y-3 transition-opacity duration-200'}>
+
+// ALSO CORRECT — simple case
+<CardContent className="space-y-3">
+```
+
+**Bug prevented**: Without `space-y-3`, pagination sits flush against the table bottom border (0px gap) while the toolbar-to-table gap is 12px — visually inconsistent.
+
+## Page Size Selector & Persistence
+
+`DataTablePagination` includes a built-in `PageSizeSelector` (Popover-based) with options: Default (page-specific), 20, 50, 100, and Custom (max 500).
+
+**Required wiring:**
+1. `useTableParams` — pass `tableKey` and `defaultPageSize` to enable localStorage persistence:
+   ```tsx
+   const { params, ..., defaultPageSize } = useTableParams<Filters>({
+     defaultPageSize: 20, tableKey: 'users'
+   })
+   ```
+2. `DataTablePagination` — pass `defaultPageSize` so the selector knows what "Default" means:
+   ```tsx
+   <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
+   ```
+3. `tableKey` in `useTableParams` MUST match `tableKey` in `useEnterpriseTable` for the same page.
+
+**Storage**: `noir:table-page-size:{tableKey}` in localStorage. Cleared when user selects Default (avoids stale entries).
+
+**Load-all pages** (BlogTags, BlogCategories, ProductCategories): Do NOT pass `defaultPageSize` — they fetch all items client-side and don't need page size selection.
 
 ## Bug Prevention
 

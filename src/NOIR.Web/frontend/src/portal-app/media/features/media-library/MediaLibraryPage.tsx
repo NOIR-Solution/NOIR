@@ -451,7 +451,7 @@ export const MediaLibraryPage = () => {
                 }
               />
               {data && data.totalPages > 1 && (
-                <DataTablePagination table={table} showPageSizeSelector={false} />
+                <DataTablePagination table={table} defaultPageSize={DEFAULT_PAGE_SIZE} />
               )}
             </div>
           )}

@@ -83,7 +83,7 @@ export const DepartmentsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Departments')
 
-  const { params, searchInput, setSearchInput, isSearchStale, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
+  const { params, searchInput, setSearchInput, isSearchStale, setPage, setPageSize, defaultPageSize } = useTableParams({ defaultPageSize: 20, tableKey: 'departments' })
 
   const [viewMode, setViewMode] = useState<'table' | 'tree'>('tree')
   const viewModeOptions: ViewModeOption<'table' | 'tree'>[] = useMemo(() => [
@@ -282,7 +282,7 @@ export const DepartmentsPage = () => {
           </div>
         </CardHeader>
 
-        <CardContent className={isSearchStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={isSearchStale ? 'space-y-3 opacity-70 transition-opacity duration-200' : 'space-y-3 transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
@@ -327,7 +327,7 @@ export const DepartmentsPage = () => {
                   />
                 }
               />
-              <DataTablePagination table={table} showPageSizeSelector={false} />
+              <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
             </>
           )}
         </CardContent>

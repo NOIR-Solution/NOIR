@@ -83,7 +83,8 @@ export const BlogPostsPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams({ defaultPageSize: 10 })
+    defaultPageSize,
+  } = useTableParams({ defaultPageSize: 10, tableKey: 'blog-posts' })
 
   const queryParams = useMemo(() => ({
     ...params,
@@ -439,7 +440,7 @@ export const BlogPostsPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

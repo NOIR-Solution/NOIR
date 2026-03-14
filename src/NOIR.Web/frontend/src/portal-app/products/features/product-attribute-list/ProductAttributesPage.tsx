@@ -56,7 +56,7 @@ export const ProductAttributesPage = () => {
   const canDeleteAttributes = hasPermission(Permissions.AttributesDelete)
   const showActions = canUpdateAttributes || canDeleteAttributes
 
-  const { params, searchInput, setSearchInput, isSearchStale, setSorting, setPage, setPageSize } = useTableParams({ defaultPageSize: 20 })
+  const { params, searchInput, setSearchInput, isSearchStale, setSorting, setPage, setPageSize, defaultPageSize } = useTableParams({ defaultPageSize: 20, tableKey: 'product-attributes' })
   const { data: attributesResponse, isLoading, error: queryError, refetch: refresh } = useProductAttributesQuery(params)
   const deleteMutation = useDeleteProductAttributeMutation()
 
@@ -245,7 +245,7 @@ export const ProductAttributesPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

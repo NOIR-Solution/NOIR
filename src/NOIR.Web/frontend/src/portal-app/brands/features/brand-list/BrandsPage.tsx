@@ -67,7 +67,8 @@ export const BrandsPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams({ defaultPageSize: 20 })
+    defaultPageSize,
+  } = useTableParams({ defaultPageSize: 20, tableKey: 'brands' })
 
   const { data, isLoading, error: queryError, refetch: refresh } = useBrandsQuery(params)
   const deleteMutation = useDeleteBrandMutation()
@@ -283,7 +284,7 @@ export const BrandsPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

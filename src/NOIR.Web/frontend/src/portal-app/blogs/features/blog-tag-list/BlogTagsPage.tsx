@@ -168,7 +168,7 @@ export const BlogTagsPage = () => {
             />
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <DataTable
             table={table}
             density={settings.density}

@@ -86,7 +86,8 @@ export const InventoryReceiptsPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams<{ type?: InventoryReceiptType; status?: InventoryReceiptStatus }>({ defaultPageSize: 20 })
+    defaultPageSize,
+  } = useTableParams<{ type?: InventoryReceiptType; status?: InventoryReceiptStatus }>({ defaultPageSize: 20, tableKey: 'inventory-receipts' })
 
   const { data: receiptsResponse, isLoading, error: queryError, refetch } = useInventoryReceiptsQuery(params)
   const confirmMutation = useConfirmInventoryReceiptMutation()
@@ -312,7 +313,7 @@ export const InventoryReceiptsPage = () => {
             />
           </div>
         </CardHeader>
-        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'space-y-3 opacity-70 transition-opacity duration-200' : 'space-y-3 transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
@@ -334,7 +335,7 @@ export const InventoryReceiptsPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

@@ -57,7 +57,8 @@ export const TenantsPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams({ defaultPageSize: 10 })
+    defaultPageSize,
+  } = useTableParams({ defaultPageSize: 10, tableKey: 'tenants' })
 
   const { data, isLoading, error: queryError, refetch: refresh } = useTenantsQuery(params)
   const deleteMutation = useDeleteTenantMutation()
@@ -263,7 +264,7 @@ export const TenantsPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

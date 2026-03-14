@@ -117,7 +117,8 @@ export const EmployeesPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams<{ departmentId?: string; status?: EmployeeStatus; employmentType?: EmploymentType }>({ defaultPageSize: 20 })
+    defaultPageSize,
+  } = useTableParams<{ departmentId?: string; status?: EmployeeStatus; employmentType?: EmploymentType }>({ defaultPageSize: 20, tableKey: 'employees' })
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-employee' })
 
@@ -460,7 +461,7 @@ export const EmployeesPage = () => {
             />
           </div>
         </CardHeader>
-        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'space-y-3 opacity-70 transition-opacity duration-200' : 'space-y-3 transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
@@ -497,7 +498,7 @@ export const EmployeesPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

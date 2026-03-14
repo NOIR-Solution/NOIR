@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, SlidersHorizontal, RotateCcw, ArrowUp, ArrowDown, Layers } from 'lucide-react'
+import { GripVertical, SlidersHorizontal, RotateCcw, ArrowUp, ArrowDown, Layers, Pin, PinOff } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button } from '../button/Button'
@@ -112,6 +112,45 @@ const SortableColumnItem = ({ columnId, column, isDragEnabled }: SortableColumnI
       >
         {label}
       </span>
+
+      {/* Pin toggle — cycles: unpinned → left → right → unpinned */}
+      {column.getCanPin() && (() => {
+        const pinState = column.getIsPinned() // false | 'left' | 'right'
+        const pinLabel = pinState === 'left'
+          ? t('dataTable.pinnedLeft', 'Pinned left — click to pin right')
+          : pinState === 'right'
+            ? t('dataTable.pinnedRight', 'Pinned right — click to unpin')
+            : t('dataTable.pinColumn', 'Pin column left')
+        return (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              if (!pinState) column.pin('left')
+              else if (pinState === 'left') column.pin('right')
+              else column.pin(false)
+            }}
+            className={cn(
+              'cursor-pointer rounded p-0.5 transition-colors shrink-0',
+              pinState
+                ? 'text-primary hover:text-primary/80'
+                : 'text-muted-foreground/30 hover:text-muted-foreground',
+            )}
+            aria-label={pinLabel}
+          >
+            {pinState ? (
+              <span className="relative">
+                <PinOff className="h-3.5 w-3.5" />
+                <span className="absolute -top-1 -right-1.5 text-[8px] font-bold leading-none">
+                  {pinState === 'left' ? 'L' : 'R'}
+                </span>
+              </span>
+            ) : (
+              <Pin className="h-3.5 w-3.5" />
+            )}
+          </button>
+        )
+      })()}
 
       {/* Sort controls (only for sortable columns) */}
       {column.getCanSort() && (

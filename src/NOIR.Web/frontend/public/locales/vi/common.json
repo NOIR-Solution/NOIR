@@ -2000,6 +2000,12 @@
     "showingOfItems": "Hiển thị {{from}}-{{to}} trong số {{total}} mục",
     "showingCountOfTotal": "Hiển thị {{count}} trong số {{total}} mục",
     "rowsPerPage": "Số hàng mỗi trang:",
+    "pageSizeDefault": "Mặc định ({{size}})",
+    "pageSizeDefaultOption": "Mặc định ({{size}})",
+    "pageSizeCustom": "Tùy chỉnh ({{size}})",
+    "pageSizeCustomOption": "Tùy chỉnh...",
+    "pageSizeCustomActive": "Tùy chỉnh ({{size}})",
+    "customPageSize": "Số hàng tùy chỉnh",
     "logo": "Logo",
     "logoUploaded": "Đã tải lên logo",
     "removeLogo": "Xóa logo",
@@ -2101,6 +2107,17 @@
     "uploaded": "Đã tải lên",
     "preview": "Xem trước",
     "moreActions": "Thêm hành động"
+  },
+  "dataTable": {
+    "sortAscending": "Sắp xếp tăng dần",
+    "sortDescending": "Sắp xếp giảm dần",
+    "clearSort": "Xóa sắp xếp",
+    "pinColumn": "Ghim cột",
+    "pinLeft": "Ghim trái",
+    "pinRight": "Ghim phải",
+    "unpinColumn": "Bỏ ghim cột",
+    "hideColumn": "Ẩn cột",
+    "resetColumnWidth": "Đặt lại chiều rộng cột"
   },
   "permissions": {
     "categories": {

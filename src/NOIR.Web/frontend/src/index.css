@@ -476,6 +476,42 @@
   background-clip: text;
 }
 
+/* ─── DataTable Row Animations ─────────────────────────────── */
+
+/* Highlight pulse for newly created/updated rows */
+@keyframes row-highlight {
+  0% {
+    background-color: color-mix(in oklch, var(--primary) 20%, transparent);
+  }
+  40% {
+    background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Fade-out for deleted rows */
+@keyframes row-fadeout {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+.animate-row-highlight {
+  animation: row-highlight 1.5s ease-out forwards;
+}
+
+.animate-row-fadeout {
+  animation: row-fadeout 400ms ease-in forwards;
+  pointer-events: none;
+}
+
 /* Respect user's motion preferences (accessibility) */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -492,6 +528,8 @@
   .animate-fade-in,
   .animate-fade-in-up,
   .animate-bounce,
+  .animate-row-highlight,
+  .animate-row-fadeout,
   .orbital-animated circle {
     animation: none !important;
   }

@@ -123,7 +123,8 @@ export const ProductsPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams<ProductFilters>({ defaultPageSize: DEFAULT_PRODUCT_PAGE_SIZE })
+    defaultPageSize,
+  } = useTableParams<ProductFilters>({ defaultPageSize: DEFAULT_PRODUCT_PAGE_SIZE, tableKey: 'products' })
 
   const queryParams = useMemo((): GetProductsParams => ({
     page: params.page,
@@ -826,7 +827,7 @@ export const ProductsPage = () => {
                 }
               />
               {data && data.totalPages > 1 && (
-                <DataTablePagination table={table} showPageSizeSelector={false} />
+                <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
               )}
             </div>
           )}

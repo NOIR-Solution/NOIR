@@ -69,7 +69,8 @@ export const PaymentsPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams<{ status?: PaymentStatus; paymentMethod?: PaymentMethod }>({ defaultPageSize: 20 })
+    defaultPageSize,
+  } = useTableParams<{ status?: PaymentStatus; paymentMethod?: PaymentMethod }>({ defaultPageSize: 20, tableKey: 'payments' })
 
   const { data: paymentsResponse, isLoading, error: queryError, refetch } = usePaymentsQuery(params)
   const error = queryError?.message ?? null
@@ -247,7 +248,7 @@ export const PaymentsPage = () => {
             />
           </div>
         </CardHeader>
-        <CardContent className={(isSearchStale || isFilterPending) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={(isSearchStale || isFilterPending) ? 'space-y-3 opacity-70 transition-opacity duration-200' : 'space-y-3 transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg">
               {error}
@@ -269,7 +270,7 @@ export const PaymentsPage = () => {
             }
           />
 
-          <DataTablePagination table={table} showPageSizeSelector={false} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 

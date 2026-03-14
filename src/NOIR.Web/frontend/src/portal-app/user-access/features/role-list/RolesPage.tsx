@@ -69,7 +69,8 @@ export const RolesPage = () => {
     setSorting,
     setPage,
     setPageSize,
-  } = useTableParams({ defaultPageSize: 10 })
+    defaultPageSize,
+  } = useTableParams({ defaultPageSize: 10, tableKey: 'roles' })
 
   const { data, isLoading, error: queryError, refetch: refresh } = useRolesQuery(params)
   const { editItem: roleToEdit, openEdit: openEditRole, closeEdit: closeEditRole } = useUrlEditDialog<RoleListItem>(data?.items)
@@ -282,7 +283,7 @@ export const RolesPage = () => {
             }
           />
 
-          <DataTablePagination table={table} />
+          <DataTablePagination table={table} defaultPageSize={defaultPageSize} />
         </CardContent>
       </Card>
 
