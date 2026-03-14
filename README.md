@@ -8,11 +8,13 @@
 
 *Multi-Tenancy · E-commerce · ERP Modules · Clean Architecture*
 
+[![CI](https://github.com/NOIR-Solution/NOIR/actions/workflows/ci.yml/badge.svg)](https://github.com/NOIR-Solution/NOIR/actions/workflows/ci.yml)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-13%2C546_passing-brightgreen.svg?style=flat-square)](tests/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 [![AI-Coded](https://img.shields.io/badge/Built_with-Claude_Code-blueviolet?style=flat-square&logo=anthropic)](https://claude.ai/download)
 
 [Features](#features) · [Quick Start](#quick-start) · [Architecture](#architecture) · [Documentation](#documentation) · [Contributing](#contributing)
@@ -25,7 +27,11 @@
 
 NOIR is a production-ready foundation for building multi-tenant SaaS applications. It provides a complete vertical stack — from database to UI — with built-in e-commerce, ERP modules, and enterprise patterns out of the box.
 
-**100% AI-coded.** Every line of code, every test, every document in this repository was written using [Claude Code](https://claude.ai/download). NOIR is a proof that AI-assisted development can produce enterprise-grade software — with clean architecture, 13,546 passing tests, and full-stack functionality — when used effectively.
+**100% AI-coded.** Every line of code, every test, every document in this repository was written using [Claude Code](https://claude.ai/download). NOIR is proof that AI-assisted development can produce enterprise-grade software — with clean architecture, 13,546 passing tests, and full-stack functionality — when used effectively.
+
+### Why NOIR?
+
+Building a multi-tenant SaaS platform from scratch typically takes months of boilerplate: authentication, tenant isolation, RBAC, audit trails, feature flags, real-time updates, and more — before you even start on business logic. NOIR provides all of this out of the box, plus production-ready e-commerce and ERP modules, so you can focus on what makes your product unique.
 
 **Use cases:**
 - Multi-tenant B2B/B2C SaaS platforms
@@ -215,7 +221,23 @@ git clone https://github.com/NOIR-Solution/NOIR.git && cd NOIR
 dotnet build src/NOIR.sln
 ```
 
-Run backend and frontend in separate terminals:
+#### Database
+
+NOIR uses SQL Server 2022. On first run, EF Core applies migrations automatically via `DbInitializer`. No manual migration step needed.
+
+- **Windows**: SQL Server LocalDB works out of the box (included with Visual Studio)
+- **macOS/Linux**: Use the [SQL Server Docker image](https://hub.docker.com/_/microsoft-mssql-server)
+- **Connection string**: `src/NOIR.Web/appsettings.Development.json` — update if using a non-default instance
+
+#### Run
+
+Use the convenience script (recommended):
+
+```bash
+./start-dev.sh    # Auto-detects OS, frees ports, starts backend + frontend
+```
+
+Or run backend and frontend in separate terminals:
 
 ```bash
 # Terminal 1 — Backend (port 4000)
@@ -309,15 +331,31 @@ dotnet ef migrations add <NAME> \
 
 ## Contributing
 
+NOIR welcomes contributions. The project is 100% AI-assisted, but we value high-quality contributions regardless of how they're written.
+
+**Before you start:**
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and coding standards
+2. Review [CLAUDE.md](CLAUDE.md) for architecture rules and patterns
+3. Explore [docs/](docs/) for detailed architecture documentation
+
+**Workflow:**
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/your-feature`)
 3. Write tests for new functionality
-4. Ensure all tests pass (`dotnet test src/NOIR.sln`)
-5. Submit a pull request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines and coding standards.
+4. Ensure all tests pass: `dotnet test src/NOIR.sln && cd src/NOIR.Web/frontend && pnpm run build`
+5. Submit a pull request with a clear description
 
 ---
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Port 3000/4000 already in use | Kill existing processes or use `./start-dev.sh` (auto-frees ports) |
+| SQL Server connection failed | Check connection string in `appsettings.Development.json`, ensure LocalDB or Docker is running |
+| `pnpm install` fails | Ensure Node.js 20+ and pnpm 10+ are installed |
+| Frontend build type errors | Run `pnpm run generate:api` to sync types from backend |
+| First build is slow | Normal — NuGet restore + frontend dependency install on first run |
 
 ## License
 

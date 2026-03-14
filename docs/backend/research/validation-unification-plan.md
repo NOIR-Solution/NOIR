@@ -1,5 +1,7 @@
 # Validation Unification Plan
 
+> **Status**: Phases 1-2 implemented (Zod codegen from FluentValidation). Phases 3-5 (OpenAPI metadata export, further unification) are future work.
+
 > **Goal**: Single source of truth for validation with real-time frontend validation using identical backend rules.
 
 ## Executive Summary

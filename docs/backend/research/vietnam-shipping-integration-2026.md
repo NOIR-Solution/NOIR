@@ -2,7 +2,7 @@
 
 **Date:** 2026-01-30
 **Version:** 1.0
-**Status:** Research Complete
+**Status:** Deferred Feature Research — Shipping provider integration is Phase 4+ (not yet scheduled)
 **Target Platform:** NOIR E-commerce Platform
 
 ---

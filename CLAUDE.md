@@ -1,6 +1,6 @@
 # NOIR - Claude Code Instructions
 
-> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.7 (2026-03-13).
+> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.8 (2026-03-14).
 
 ## SuperClaude Framework
 
@@ -100,7 +100,7 @@
 
 ### UI Audit
 
-31. **UI/UX audit automation** — `cd src/NOIR.Web/frontend/e2e && npx playwright test --project=ui-audit --project=ui-audit-platform`. Crawls 52 pages with 11 custom rules + axe-core. Output in `.ui-audit/` (gitignored). Feed `claude < .ui-audit/prompt.md` for batch fixes.
+31. **UI/UX audit automation** — `cd src/NOIR.Web/frontend/e2e && npx playwright test --project=ui-audit --project=ui-audit-platform`. Crawls 52 admin + 4 platform pages (56 total) with 11 custom rules + axe-core. Output in `.ui-audit/` (gitignored). Feed `claude < .ui-audit/prompt.md` for batch fixes.
 
 See `docs/backend/patterns/mcp-server.md` for full guide including prompts, resources, and SDK gotchas.
 
@@ -181,13 +181,17 @@ src/NOIR.Infrastructure/  # EF Core, Repositories, Service implementations
 src/NOIR.Web/             # Endpoints, Middleware, Program.cs
     └── Mcp/             # MCP server — Tools/, Resources/, Prompts/, Filters/
     └── frontend/         # React 19 SPA (pnpm)
-        ├── src/portal-app/      # Domain-driven feature modules
-        ├── src/uikit/           # UI components + stories (@uikit)
+        ├── src/portal-app/      # Domain-driven feature modules (56 pages)
+        ├── src/uikit/           # UI components + stories (@uikit, 98 components)
         ├── src/components/      # Shared app components
-        ├── src/hooks/           # Custom hooks
-        ├── src/services/        # API services
+        ├── src/hooks/           # Custom hooks (41+)
+        ├── src/services/        # API service clients (generated + manual)
+        ├── src/contexts/        # React Context providers (Auth, Regional, Theme)
         ├── src/lib/             # Utility functions
-        └── src/layouts/         # Page layouts
+        ├── src/layouts/         # Page layouts
+        ├── src/types/           # TypeScript type definitions
+        ├── src/validation/      # Zod schemas (generated from backend)
+        └── src/i18n/            # i18next configuration (EN + VI)
 ```
 
 ---
@@ -238,6 +242,10 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 
 **Mermaid node labels**: Use `<br/>` for line breaks, NEVER `\n`. GitHub renders node text as HTML — `\n` shows as literal text. Wrong: `["Title\nSubtitle"]`. Right: `["Title<br/>Subtitle"]`.
 
+**Pagination spacing**: `CardContent` wrapping DataTable + DataTablePagination MUST have `space-y-3`. When using ternary for opacity transitions, include `space-y-3` in BOTH branches.
+
+**Checkbox centering**: DataTable handles `meta.align === 'center'` columns automatically (zero td padding + flex wrapper). Never add manual padding to actions or select column cells.
+
 ### Validation
 
 **Stack**: react-hook-form + Zod + `mode: 'onBlur'`. FluentValidation rules must match Zod schemas.
@@ -255,7 +263,7 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 - **Status badges**: `variant="outline"` + `getStatusBadgeClasses('green'|'gray'|'red'|...)` from `@/utils/statusBadge`. Never `variant="default"/"secondary"` for status.
 - **Empty states**: Use `<EmptyState icon={X} title={t('...')} description={t('...')} />` from `@uikit`. Never plain `<div className="text-center py-8 text-muted-foreground">`.
 - **Create buttons**: No `shadow-lg hover:shadow-xl`. Use `className="group transition-all duration-300"`.
-- **Table list pages**: MUST use `useEnterpriseTable` + `DataTable` (TanStack Table) — no custom tables. Card `gap-0` + CardHeader `pb-3` + CardContent `space-y-3`. Always show `CardDescription` with "Showing X of Y items". See `.claude/rules/table-list-standard.md`, `.claude/rules/datatable-standard.md`.
+- **Table list pages**: MUST use `useEnterpriseTable` + `DataTable` (TanStack Table) — no custom tables. Card `gap-0` + CardHeader `pb-3` + CardContent `space-y-3`. Always show `CardDescription` with "Showing X of Y items". Pass `defaultPageSize` to `DataTablePagination`. See `.claude/rules/table-list-standard.md`, `.claude/rules/datatable-standard.md`.
 - **Form spacing**: `space-y-4` in dialog bodies. Never `space-y-5`.
 - **No gradient buttons**: Never use `bg-gradient-to-r` on standard action buttons. Use default Button variants.
 
@@ -349,4 +357,4 @@ Research reports → `docs/backend/research/`.
 
 ---
 
-> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.7 (2026-03-13).
+> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.8 (2026-03-14).
