@@ -21,12 +21,13 @@ public class ImageProcessorServiceTests
 
         _settings = new ImageProcessingSettings
         {
-            DefaultQuality = 80,
-            WebPQuality = 80,
-            AvifQuality = 65,
+            DefaultQuality = 90,
+            WebPQuality = 90,
+            AvifQuality = 75,
             ThumbSize = 150,
             MediumSize = 640,
             LargeSize = 1280,
+            ExtraLargeSize = 1920,
             GenerateWebP = true,
             GenerateJpeg = true,
             GenerateAvif = false,

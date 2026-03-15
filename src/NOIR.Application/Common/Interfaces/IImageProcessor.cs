@@ -99,9 +99,9 @@ public sealed record ImageProcessingOptions
     public IReadOnlyList<OutputFormat>? Formats { get; init; }
 
     /// <summary>
-    /// Quality for lossy formats (1-100). Default: 80.
+    /// Quality for lossy formats (1-100). Higher = better quality, larger file. Default: 90.
     /// </summary>
-    public int Quality { get; init; } = 80;
+    public int Quality { get; init; } = 90;
 
     /// <summary>
     /// Generate ThumbHash placeholder. Default: true.
@@ -283,7 +283,7 @@ public sealed record ImageMetadata
 
 /// <summary>
 /// Image variant sizes.
-/// SEO-optimized: 3 variants for optimal performance and storage.
+/// SEO-optimized: 4 variants for optimal performance and storage.
 /// </summary>
 public enum ImageVariant
 {
@@ -294,7 +294,10 @@ public enum ImageVariant
     Medium = 640,
 
     /// <summary>Large: 1280px - hero images, desktop full display</summary>
-    Large = 1280
+    Large = 1280,
+
+    /// <summary>ExtraLarge: 1920px - high-DPI displays, full-screen galleries</summary>
+    ExtraLarge = 1920
 }
 
 /// <summary>

@@ -15,22 +15,22 @@ public class ImageProcessingSettings
     public long MaxUploadSizeBytes { get; set; } = 10 * 1024 * 1024;
 
     /// <summary>
-    /// Default quality for JPEG/WebP/AVIF (1-100). Default: 80.
+    /// Default quality for JPEG/WebP/AVIF (1-100). Default: 90 for high-quality product images.
     /// </summary>
     [Range(1, 100, ErrorMessage = "DefaultQuality must be between 1 and 100")]
-    public int DefaultQuality { get; set; } = 80;
+    public int DefaultQuality { get; set; } = 90;
 
     /// <summary>
-    /// AVIF quality (1-100). Lower than JPEG for similar visual quality. Default: 65.
+    /// AVIF quality (1-100). Lower than JPEG for similar visual quality. Default: 75.
     /// </summary>
     [Range(1, 100, ErrorMessage = "AvifQuality must be between 1 and 100")]
-    public int AvifQuality { get; set; } = 65;
+    public int AvifQuality { get; set; } = 75;
 
     /// <summary>
-    /// WebP quality (1-100). Default: 80.
+    /// WebP quality (1-100). Default: 90 for high-quality product images.
     /// </summary>
     [Range(1, 100, ErrorMessage = "WebPQuality must be between 1 and 100")]
-    public int WebPQuality { get; set; } = 80;
+    public int WebPQuality { get; set; } = 90;
 
     /// <summary>
     /// Maximum dimension for thumbnail variant. Default: 150px.
@@ -47,8 +47,14 @@ public class ImageProcessingSettings
     /// <summary>
     /// Maximum dimension for large variant. Default: 1280px.
     /// </summary>
-    [Range(640, 2560, ErrorMessage = "LargeSize must be between 640 and 2560")]
+    [Range(640, 3840, ErrorMessage = "LargeSize must be between 640 and 3840")]
     public int LargeSize { get; set; } = 1280;
+
+    /// <summary>
+    /// Maximum dimension for extra large variant. Default: 1920px.
+    /// </summary>
+    [Range(1280, 3840, ErrorMessage = "ExtraLargeSize must be between 1280 and 3840")]
+    public int ExtraLargeSize { get; set; } = 1920;
 
     /// <summary>
     /// Generate AVIF format. Default: false (slow encoding).
@@ -133,6 +139,7 @@ public class ImageProcessingSettings
         ImageVariant.Thumb => ThumbSize,
         ImageVariant.Medium => MediumSize,
         ImageVariant.Large => LargeSize,
+        ImageVariant.ExtraLarge => ExtraLargeSize,
         _ => MediumSize
     };
 

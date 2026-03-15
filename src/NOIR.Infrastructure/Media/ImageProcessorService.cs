@@ -210,7 +210,8 @@ public class ImageProcessorService : IImageProcessor, IScopedService
                 break;
 
             case OutputFormat.WebP:
-                var webpEncoder = new WebpEncoder { Quality = _settings.CurrentValue.WebPQuality, FileFormat = WebpFileFormatType.Lossy };
+                // Use lossless WebP for maximum quality
+                var webpEncoder = new WebpEncoder { FileFormat = WebpFileFormatType.Lossless };
                 await image.SaveAsync(ms, webpEncoder, ct);
                 break;
 
@@ -379,10 +380,11 @@ public class ImageProcessorService : IImageProcessor, IScopedService
 
     /// <summary>
     /// Get default variants based on original image size.
-    /// SEO-optimized: 3 variants (Thumb 150px, Medium 640px, Large 1280px)
+    /// SEO-optimized: 4 variants (Thumb 150px, Medium 640px, Large 1280px, ExtraLarge 1920px)
     /// - Thumb: avatars, list thumbnails
     /// - Medium: cards, mobile, content images
     /// - Large: hero images, desktop full display
+    /// - ExtraLarge: high-DPI displays, full-screen galleries
     /// </summary>
     private List<ImageVariant> GetDefaultVariants(int width, int height)
     {
@@ -391,9 +393,13 @@ public class ImageProcessorService : IImageProcessor, IScopedService
         // Always generate Thumb and Medium
         var variants = new List<ImageVariant> { ImageVariant.Thumb, ImageVariant.Medium };
 
-        // Only add Large if image is big enough (no upscaling)
+        // Add Large if image is big enough
         if (maxDimension >= _settings.CurrentValue.LargeSize)
             variants.Add(ImageVariant.Large);
+
+        // Add ExtraLarge for high-resolution images
+        if (maxDimension >= _settings.CurrentValue.ExtraLargeSize)
+            variants.Add(ImageVariant.ExtraLarge);
 
         return variants;
     }

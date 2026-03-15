@@ -62,15 +62,16 @@ public class UploadProductImageCommandHandler : IScopedService
         var storageFolder = $"{ProductImagesFolder}/{command.ProductId}";
         var options = new ImageProcessingOptions
         {
-            // Product images need all variants for responsive display
-            Variants = [ImageVariant.Thumb, ImageVariant.Medium, ImageVariant.Large],
+            // Product images need all variants including ExtraLarge for high-DPI displays
+            Variants = [ImageVariant.Thumb, ImageVariant.Medium, ImageVariant.Large, ImageVariant.ExtraLarge],
             // Generate all modern formats for optimal delivery
             Formats = [OutputFormat.WebP, OutputFormat.Jpeg],
             // Generate placeholder for smooth loading
             GenerateThumbHash = true,
             ExtractDominantColor = true,
             PreserveOriginal = true,
-            StorageFolder = storageFolder
+            StorageFolder = storageFolder,
+            Quality = 95  // High quality for product images
         };
 
         // Process the image
@@ -104,13 +105,15 @@ public class UploadProductImageCommandHandler : IScopedService
 
         var primaryUrl = primaryVariant.Url ?? primaryVariant.Path;
 
-        // Get variant URLs
+        // Get variant URLs (prefer WebP for best quality/size ratio)
         var thumbUrl = result.Variants
             .FirstOrDefault(v => v.Variant == ImageVariant.Thumb && v.Format == OutputFormat.WebP)?.Url;
         var mediumUrl = result.Variants
             .FirstOrDefault(v => v.Variant == ImageVariant.Medium && v.Format == OutputFormat.WebP)?.Url;
         var largeUrl = result.Variants
             .FirstOrDefault(v => v.Variant == ImageVariant.Large && v.Format == OutputFormat.WebP)?.Url;
+        var extraLargeUrl = result.Variants
+            .FirstOrDefault(v => v.Variant == ImageVariant.ExtraLarge && v.Format == OutputFormat.WebP)?.Url;
 
         // TWO-SAVE PATTERN: Add image without isPrimary first to avoid ClearPrimary() causing
         // DbUpdateConcurrencyException when Variants are loaded (they have StockQuantity as concurrency token)
@@ -154,6 +157,7 @@ public class UploadProductImageCommandHandler : IScopedService
             thumbUrl,
             mediumUrl,
             largeUrl,
+            extraLargeUrl,
             result.Metadata?.Width,
             result.Metadata?.Height,
             result.ThumbHash,

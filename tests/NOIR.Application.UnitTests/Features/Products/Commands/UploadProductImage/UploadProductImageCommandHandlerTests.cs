@@ -80,6 +80,16 @@ public class UploadProductImageCommandHandlerTests
             [
                 new ImageVariantInfo
                 {
+                    Variant = ImageVariant.Thumb,
+                    Format = OutputFormat.WebP,
+                    Path = "/products/test/test-image-thumb.webp",
+                    Url = "https://cdn.example.com/products/test/test-image-thumb.webp",
+                    Width = 150,
+                    Height = 84,
+                    SizeBytes = 5000
+                },
+                new ImageVariantInfo
+                {
                     Variant = ImageVariant.Large,
                     Format = OutputFormat.WebP,
                     Path = "/products/test/test-image-large.webp",
@@ -100,13 +110,13 @@ public class UploadProductImageCommandHandlerTests
                 },
                 new ImageVariantInfo
                 {
-                    Variant = ImageVariant.Thumb,
+                    Variant = ImageVariant.ExtraLarge,
                     Format = OutputFormat.WebP,
-                    Path = "/products/test/test-image-thumb.webp",
-                    Url = "https://cdn.example.com/products/test/test-image-thumb.webp",
-                    Width = 150,
-                    Height = 84,
-                    SizeBytes = 5000
+                    Path = "/products/test/test-image-extralarge.webp",
+                    Url = "https://cdn.example.com/products/test/test-image-extralarge.webp",
+                    Width = 1920,
+                    Height = 1080,
+                    SizeBytes = 75000
                 }
             ],
             Metadata = new ImageMetadata

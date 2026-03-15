@@ -325,6 +325,7 @@ public sealed record ProductImageUploadResultDto(
     string? ThumbUrl,
     string? MediumUrl,
     string? LargeUrl,
+    string? ExtraLargeUrl,
     int? Width,
     int? Height,
     string? ThumbHash,
